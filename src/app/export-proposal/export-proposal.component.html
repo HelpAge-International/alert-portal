@@ -27,37 +27,37 @@
 
             <tr>
               <td class="tg" colspan="9" style="width: 40%; text-align: center;"><br>
-                <h1 style="color: maroon;">Response Plan</h1><br></td>
+                <h1 style="color: maroon;">{{"RESPONSE_PLAN" | translate}}</h1><br></td>
             </tr>
 
             <!--1 out of 10 Plan Details-->
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;">
-                <h2 style="margin: 0; padding: 0; font-weight: normal;">1 of 10 Plan Details</h2>
+                <h2 style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_1_TITLE" | translate}}</h2>
               </td>
             </tr>
             <tr>
               <td class="tg" colspan="9"></td>
             </tr>
             <tr>
-              <td class="tg" colspan="4" style="background: lightgrey;">Plan Name</td>
+              <td class="tg" colspan="4" style="background: lightgrey;">{{"PLAN_NAME" | translate}}</td>
               <td class="tg" colspan="5">{{responsePlan.name}}</td>
             </tr>
             <tr>
-              <td class="tg" colspan="4" style="background: lightgrey;">Geographical location</td>
+              <td class="tg" colspan="4" style="background: lightgrey;">{{"GEOGRAPHICAL_LOCATION" | translate}}</td>
               <td class="tg" colspan="5">{{responsePlan.location}}</td>
             </tr>
 
             <tr>
-              <td class="tg" colspan="4" style="background: lightgrey;">Hazard scenario</td>
+              <td class="tg" colspan="4" style="background: lightgrey;">{{"HAZARD_SCENARIO" | translate}}</td>
               <td class="tg" colspan="5">{{responsePlan.hazardScenario ?
                 (HazardScenariosList[responsePlan.hazardScenario] | translate) : ''}}
               </td>
             </tr>
 
             <tr>
-              <td class="tg" colspan="4" style="background: lightgrey;">Plan Lead</td>
+              <td class="tg" colspan="4" style="background: lightgrey;">{{"PLAN_LEAD" | translate}}</td>
               <td class="tg" colspan="5">{{planLeadName}}</td>
             </tr>
 
@@ -69,13 +69,12 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">2 of 10 Plan Context</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_2_TITLE" | translate}}</h2></td>
             </tr>
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Summarize the crisis event and how it is likely to develop over the next month (maximum 5
-                  points)</strong></p>
+                <p><strong>{{"SUMMARIZE_CRISIS" | translate}}</strong></p>
               </td>
             </tr>
 
@@ -89,7 +88,7 @@
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Explain the impact of the crisis on people you want to help (maximum 5 points)</strong></p>
+                <p><strong>{{"EXPLAIN_CRISIS_IMPACT" | translate}}</strong></p>
               </td>
             </tr>
             <tr>
@@ -103,8 +102,7 @@
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
                 <p>
-                  <strong>Explain the availability of funding your agency can access for this crisis (maximum 3
-                    points)</strong>
+                  <strong>{{"EXPLAIN_AVAILABILITY_OF_FUNDING" | translate}}</strong>
                 </p>
               </td>
             </tr>
@@ -122,24 +120,24 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">3 out of 10 Basic Information</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_3_TITLE" | translate}}</h2></td>
             </tr>
 
             <tr>
               <td class="tg" colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>What sectors will the intervention’s activities most relate to?</strong></p></td>
+                <p><strong>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}</strong></p></td>
             </tr>
 
             <tr style="text-align: center;">
-              <td class="1"><p>WaSH</p></td>
-              <td class="1"><p>Health</p></td>
-              <td class="1"><p>Shelter</p></td>
-              <td class="1"><p>Nutrition</p></td>
-              <td class="1"><p>Food security & livelihoods</p></td>
-              <td class="1"><p>Protection</p></td>
-              <td class="1"><p>Education</p></td>
-              <td class="1"><p>Camp Management</p></td>
-              <td class="1"><p>Other (specify)</p></td>
+              <td class="1"><p>{{"SECTOR_WASH" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_HEALTH" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_SHELTER" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_NUTRITION" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_FOOD_SECURITY_LIVELIHOOD" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_PROTECTION" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_EDUCATION" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_CAMP_MANAGEMENT" | translate}}</p></td>
+              <td class="1"><p>{{"SECTOR_OTHER" | translate}}</p></td>
             </tr>
 
             <tr style="text-align: center;">
@@ -163,31 +161,26 @@
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Presence in the country before project</strong></p>
+                <p><strong>{{"PRESENCE_IN_COUNTRY" | translate}}</strong></p>
               </td>
             </tr>
             <tr>
               <td colspan="9" style="text-align: left;">
-                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">Current
-                  programmes</p>
-                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">Pre-existing
-                  partner</p>
-                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">No
-                  pre-existing presence</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">{{"CURRENT_PROGRAMMES" | translate}}</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">{{"PRE_EXISITING_PARTNER" | translate}}</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">{{"EXISTING_PRESENCE" | translate}}</p>
               </td>
             </tr>
 
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Method of Implementation</strong></p></td>
+                <p><strong>{{"METHOD_OF_IMPLEMENTATION" | translate}}</strong></p></td>
             </tr>
             <tr>
               <td colspan="9">
-                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">Directly through
-                  field staff</p>
-                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">Working through
-                  partners</p>
+                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">{{"DIRECTLY_THROUGH_STAFF" | translate}}</p>
+                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">{{"WORKING_WITH_PARTNERS" | translate}}</p>
               </td>
             </tr>
 
@@ -195,13 +188,12 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">4 out of 10 Activity Summary</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_4_TITLE" | translate}}</h2></td>
             </tr>
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Explain your proposed project and why you have selected this particular response to the
-                  crisis</strong></p>
+                <p><strong>{{"EXPLAIN_PROPOSED_PROJECT" | translate}}</strong></p>
               </td>
             </tr>
             <tr>
@@ -213,7 +205,7 @@
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Explain how you will start your activities in 7 days and finish within 45 days.</strong></p>
+                <p><strong>{{"EXPLAIN_HOW_WILL_YOU_START_ACTIVITIES" | translate}}</strong></p>
               </td>
             </tr>
             <tr>
@@ -225,7 +217,7 @@
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>How are you co-ordinating and with whom?</strong></p></td>
+                <p><strong>{{"HOW_ARE_YOU_CO_ORDINATING" | translate}}</strong></p></td>
             </tr>
             <tr>
               <td colspan="9">
@@ -238,13 +230,13 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">5 out of 10 Target Population</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_5_TITLE" | translate}}</h2></td>
             </tr>
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong><span>How many beneficiaries are you targeting?</span>
-                  <span style="font-style: italic;">(Beneficiaries = People Per Household * Number Of Households)</span></strong>
+                <p><strong><span>{{"HOW_MANY_BENEFICIARIES" | translate}}</span>
+                  <span style="font-style: italic;">{{"FORMULA_BENEFICIARIES" | translate}}</span></strong>
                 </p></td>
             </tr>
             <tr>
@@ -258,7 +250,7 @@
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Which vulnerable groups are you specifically targeting?</strong></p></td>
+                <p><strong>{{"WHICH_VULNERABLE_GROUP_TARGETING" | translate}}</strong></p></td>
             </tr>
             <tr>
               <td colspan="9">
@@ -270,7 +262,7 @@
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Explain how the target population is/will be involved in your proposed intervention.</strong>
+                <p><strong>{{"EXPLAIN_TARGET_POPULATION_INVOLVEMENT" | translate}}</strong>
                 </p></td>
             </tr>
             <tr>
@@ -285,12 +277,12 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">6 out of 10 Risk Management</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_6_TITLE" | translate}}</h2></td>
             </tr>
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Describe the risks to a successful response and how you are managing them.</strong></p></td>
+                <p><strong>{{"DESCRIBE_THE_RISKS" | translate}}</strong></p></td>
             </tr>
             <tr>
               <td colspan="9">
@@ -302,7 +294,7 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">7 out of 10 Activties</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_7_TITLE" | translate}}</h2></td>
             </tr>
 
             <ng-container *ngFor="let sector of sectors">
@@ -317,13 +309,13 @@
 
                 <tr>
                   <td colspan="9" style="background-color: darkred; color: white; font-weight: bold;">
-                    <p style="text-transform: uppercase;">Activity {{i+1}}</p>
+                    <p style="text-transform: uppercase;">{{"ACTIVITY" | translate}} {{i+1}}</p>
                   </td>
                 </tr>
 
                 <tr>
                   <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                    <p><strong>What is the planned activity?</strong></p></td>
+                    <p><strong>{{"WHAT_IS_PLANNED_ACTIVITY" | translate}}</strong></p></td>
                 </tr>
                 <tr>
                   <td colspan="9">
@@ -333,7 +325,7 @@
 
                 <tr>
                   <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                    <p><strong>Planned outputs for this activity</strong></p></td>
+                    <p><strong>{{"PLANNED_OUTPUTS_FOR_ACTIVITY" | translate}}</strong></p></td>
                 </tr>
                 <tr>
                   <td colspan="9">
@@ -343,7 +335,7 @@
 
                 <tr>
                   <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                    <p><strong>Provide one indicator (KPI) to capture the effects of this activity</strong></p></td>
+                    <p><strong>{{"PROVIDE_ONE_INDICATOR" | translate}}</strong></p></td>
                 </tr>
                 <tr>
                   <td colspan="9">
@@ -353,29 +345,29 @@
 
                 <tr>
                   <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                    <p><strong>Beneficiaries of this activity by age and gender</strong></p></td>
+                    <p><strong>{{"BENEFICIARIES_OF_THIS_ACTIVITY" | translate}}</strong></p></td>
                 </tr>
                 <tr>
-                  <td colspan="3"><p>Female <18</p></td>
+                  <td colspan="3"><p>{{"FEMALE_LESS_18" | translate}}</p></td>
                   <td colspan="2"><p>{{activity.beneficiary &&
                     activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
-                  <td colspan="2"><p>Male <18</p></td>
+                  <td colspan="2"><p>{{"MALE_LESS_18" | translate}}</p></td>
                   <td colspan="2"><p>{{activity.beneficiary &&
                     activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
                 </tr>
                 <tr>
-                  <td colspan="3"><p>Female 18-50</p></td>
+                  <td colspan="3"><p>{{"FEMALE_18_50" | translate}}</p></td>
                   <td colspan="2"><p>{{activity.beneficiary &&
                     activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
-                  <td colspan="2"><p>Male 18-50</p></td>
+                  <td colspan="2"><p>{{"MALE_18_50" | translate}}</p></td>
                   <td colspan="2"><p>{{activity.beneficiary &&
                     activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
                 </tr>
                 <tr>
-                  <td colspan="3"><p>Female >50</p></td>
+                  <td colspan="3"><p>{{"FEMALE_GREATER_50" | translate}}</p></td>
                   <td colspan="2"><p>{{activity.beneficiary &&
                     activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
-                  <td colspan="2"><p>Male >50</p></td>
+                  <td colspan="2"><p>{{"MALE_GREATER_50" | translate}}</p></td>
                   <td colspan="2"><p>{{activity.beneficiary &&
                     activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
                 </tr>
@@ -383,7 +375,7 @@
 
               <tr>
                 <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                  <p><strong>How are you planning to source your goods?</strong></p></td>
+                  <p><strong>{{"HOW_ARE_YOY_PLANNING_TO_OUTSOURCE_GOODS" | translate}}</strong></p></td>
               </tr>
 
               <tr>
@@ -402,14 +394,13 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">8 of 10 Monitoring, Accountability and Learning</h2>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_8_TITLE" | translate}}</h2>
               </td>
             </tr>
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Describe the monitoring, accountability and learning systems that you will employ to ensure
-                  quality and accountability.</strong></p></td>
+                <p><strong>{{"DESCRIBE_MONITORING_ACCOUNTABILITY_LEARNING" | translate}}</strong></p></td>
             </tr>
             <tr>
               <td colspan="9">
@@ -420,30 +411,29 @@
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Do you intend to visually document your response?</strong></p></td>
+                <p><strong>{{"DO_YOU_INTEND_TO_VISSUALLY_DOCUMENT_YOUR_RESPONSE" | translate}}</strong></p></td>
             </tr>
             <tr>
-              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>Yes</p></td>
+              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>{{"YES" | translate}}</p></td>
               <td colspan="2" style="text-align: center;"><p>{{responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
               </td>
-              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>No</p></td>
+              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>{{"NO" | translate}}</p></td>
               <td colspan="1" style="text-align: center;"><p>{{!responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
               </td>
             </tr>
             <tr>
-              <td colspan="9" style="background: lightgrey;"><p><strong>If so, will this be photographic, video, or
-                both?<span
-                  style="font-style: italic;">(please mark)</span></strong>
+              <td colspan="9" style="background: lightgrey;"><p><strong>{{"WILL_THIS_BE_PHOTO_VIDEO_BOTH" | translate}}<span
+                  style="font-style: italic;">{{"PLEASE_MARK" | translate}}</span></strong>
               </p></td>
             </tr>
             <tr>
-              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>Photographic</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"PHOTOGRAPHIC" | translate}}</p></td>
               <td colspan="1" style="text-align: center;"><p
                 *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
-              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>Video</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"VIDEO" | translate}}</p></td>
               <td colspan="1" style="text-align: center;"><p
                 *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
-              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>Both</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"BOTH" | translate}}</p></td>
               <td colspan="1" style="text-align: center;"><p
                 *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
             </tr>
@@ -452,31 +442,30 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">9 of 10 Adjust Beneficiaries for Double
-                Counting</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_9_TITLE" | translate}}</h2></td>
             </tr>
 
             <tr>
               <td colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>Total beneficiaries after adjustment</strong></p></td>
+                <p><strong>{{"TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT" | translate}}</strong></p></td>
             </tr>
 
             <tr>
-              <td colspan="3"><p>Female <18</p></td>
+              <td colspan="3"><p>{{"FEMALE_LESS_18" | translate}}</p></td>
               <td colspan="2"><p>{{totalFemaleUnder18}}</p></td>
-              <td colspan="2"><p>Male <18</p></td>
+              <td colspan="2"><p>{{"MALE_LESS_18" | translate}}</p></td>
               <td colspan="2"><p>{{totalMaleUnder18}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>Female 18-50</p></td>
+              <td colspan="3"><p>{{"FEMALE_18_50" | translate}}</p></td>
               <td colspan="2"><p>{{totalFemale18To50}}</p></td>
-              <td colspan="2"><p>Male 18-50</p></td>
+              <td colspan="2"><p>{{"MALE_18_50" | translate}}</p></td>
               <td colspan="2"><p>{{totalMale18To50}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>Female >50</p></td>
+              <td colspan="3"><p>{{"FEMALE_GREATER_50" | translate}}</p></td>
               <td colspan="2"><p>{{totalFemaleOver50}}</p></td>
-              <td colspan="2"><p>Male >50</p></td>
+              <td colspan="2"><p>{{"MALE_GREATER_50" | translate}}</p></td>
               <td colspan="2"><p>{{totalMaleOver50}}</p></td>
             </tr>
 
@@ -484,96 +473,96 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">10 of 10 Budget</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_10_TITLE" | translate}}</h2></td>
             </tr>
 
             <tr>
-              <td colspan="3"><p><strong>A: Total Inputs (autosum)</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_TOTAL_INPUTS" | translate}}</strong></p></td>
               <td colspan="3"><p>{{totalInputs}}</p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-1: WaSH</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_WASH" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-2:Health</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_HEALTH" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-3: Shelter</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_SHELTER" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-4: Nutrition</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_NUTRITION" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-5: Camp Management</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_CAMP_MANAGEMENT" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-6: Education</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_EDUCATION" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-7: Protection</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_PROTECTION" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-8: Food Security & Livelihoods</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_FOOD_SECURITY" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p>A-10: Other</p></td>
+              <td colspan="3"><p>{{"BUDGET_A_OTHER" | translate}}</p></td>
               <td colspan="3"><p></p></td>
               <td colspan="3"><p></p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>B:Transport</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_B_TRANSPORT" | translate}}</strong></p></td>
               <td colspan="3"><p>{{transportBudget}}</p></td>
               <td colspan="3"><p>{{transportNarrative}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>C:Security</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_C_SECURITY" | translate}}</strong></p></td>
               <td colspan="3"><p>{{securityBudget}}</p></td>
               <td colspan="3"><p>{{securityNarrative}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>D:Logistics & overheads</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_D_LOGISTICS_AND_OVERHEADS" | translate}}</strong></p></td>
               <td colspan="3"><p>{{logisticsAndOverheadsBudget}}</p></td>
               <td colspan="3"><p>{{logisticsAndOverheadsNarrative}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>E:Staffing & support</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_E_STAFFING_AND_SUPPORT" | translate}}</strong></p></td>
               <td colspan="3"><p>{{staffingAndSupportBudget}}</p></td>
               <td colspan="3"><p>{{staffingAndSupportNarrative}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>F:Monitoring & evaluation</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_F_MONITORING_EVALUATION" | translate}}</strong></p></td>
               <td colspan="3"><p>{{monitoringAndEvolutionBudget}}</p></td>
               <td colspan="3"><p>{{monitoringAndEvolutionNarrative}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>G:Capital Items</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_G_CAPITAL_ITEMS" | translate}}</strong></p></td>
               <td colspan="3"><p>{{capitalItemsBudget}}</p></td>
               <td colspan="3"><p>{{capitalItemsNarrative}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>H: Management support (maximum 10% of direct costs)</strong></p></td>
+              <td colspan="3"><p><strong>{{"BUDGET_H_MANAGEMENT_SUPPORT" | translate}}</strong></p></td>
               <td colspan="3"><p>{{totalOfAllCosts}}</p></td>
               <td colspan="3"><p>{{managementSupportNarrative}}</p></td>
             </tr>
             <tr>
-              <td colspan="3"><p><strong>Total (autosum)</strong></p></td>
+              <td colspan="3"><p><strong>{{"TOTAL_AUTOSUM" | translate}}</strong></p></td>
               <td colspan="3"><p><strong>{{total}}</strong></p></td>
               <td colspan="3"><p></p></td>
             </tr>

@@ -209,25 +209,18 @@
             <br>
             <div *ngIf="alert.alertLevel == AlertLevels.Red">
               <div class="Centered row Spaced-above">
-                <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong> has requested
-                  the alert
-                  level
-                  to
-                  go from Amber to Red on the <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated |
-                    date:"dd/MM/yyyy"}}</strong></h6>
+                <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong> {{"HAS_REQ_ALERT_LEVEL_TO_GO_FROM_AMBER_TO_RED_ON_THE" | translate}} <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated | date:"dd/MM/yyyy"}}</strong></h6>
               </div>
               <div class="Centered row Spaced-above">
-                <p class="text-gray-dark text-left col-sm-7"><strong>Reasons for raising the alert level:</strong>
+                <p class="text-gray-dark text-left col-sm-7"><strong>{{"REASONS_FOR_RAISING_ALERT_LEVEL" : translate}}:</strong>
                   "{{alert?.reasonForRedAlert}}" - {{alert?.createdByName.split(" ")[0]}}</p>
               </div>
               <div class="Centered row Spaced">
                 <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
-                        (click)="approveRedAlert(alert.id)">approve red alert
-                  level
+                        (click)="approveRedAlert(alert.id)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
-              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">Or reject this
-                request</a></div>
+              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">{{"OR_REJECT_THIS_REQUEST" | translate}}</a></div>
             </div>
             <br>
           </div>
@@ -680,7 +673,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>Affected areas</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AFFECTED_AREAS" | translate}}</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

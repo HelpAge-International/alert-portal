@@ -69,7 +69,7 @@
 
             <div *ngFor="let indicator of indicatorsToday" class="row alert-danger">
               <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-              <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
+              <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"TODAY" | translate}}</strong>.<span>{{indicator.name}}</span></a>
               </div>
               <div class="col-md-3">
                 <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |

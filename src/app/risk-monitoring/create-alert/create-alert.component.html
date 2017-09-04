@@ -61,8 +61,7 @@
     </div>
 
     <br>
-    <h6 class="Spaced-above" *ngIf="alertData.alertLevel && alertData.alertLevel == 2"><b>Reasons for red alert
-      request</b></h6>
+    <h6 class="Spaced-above" *ngIf="alertData.alertLevel && alertData.alertLevel == 2"><b>{{"REASONS_FOR_RED_ALERT_REQUEST" | translate}}</b></h6>
     <div class="Spaced-above form-group col-sm-12 row" *ngIf="alertData.alertLevel && alertData.alertLevel == 2">
       <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5"
              id="smFormGroupInput" [(ngModel)]="alertData.reasonForRedAlert">
