@@ -7,6 +7,7 @@ import {AngularFire} from "angularfire2";
 import {UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import { MessageModel } from "../../model/message.model";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-donor-header',
@@ -32,7 +33,7 @@ export class DonorHeaderComponent implements OnInit {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService, private translate : TranslateService) {
   }
 
   ngOnInit() {
@@ -53,7 +54,7 @@ export class DonorHeaderComponent implements OnInit {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(countryId => {
         this.countryId = countryId;
-      }); 
+      });
 
       this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
@@ -93,7 +94,7 @@ export class DonorHeaderComponent implements OnInit {
             this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
               .takeUntil(this.ngUnsubscribe)
               .subscribe((agencyName) => {
-                this.agencyName = agencyName ? agencyName.$value : "Agency";
+                this.agencyName = agencyName ? agencyName.$value : this.translate.instant("AGENCY");
                 res(true);
               });
           }

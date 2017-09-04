@@ -13,6 +13,7 @@ import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import {MapCountry, MapService} from "../../services/map.service";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -45,7 +46,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
 
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private translate : TranslateService) {
     this.regions = [];
     this.mapService = MapService.init(this.af, this.ngUnsubscribe);
   }
@@ -66,7 +67,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
       /** Setup the region count **/
       this.otherRegion = new RegionHolder();
       this.otherRegion.regionId = "unassigned";
-      this.otherRegion.regionName = "Other";
+      this.otherRegion.regionName = this.translate.instant("OTHER");
 
       // Initialise the department map
       this.initDepartments();
@@ -156,7 +157,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((deps) => {
         this.DEPARTMENT_MAP.clear();
-        this.DEPARTMENT_MAP.set("unassigned", "Unassigned");
+        this.DEPARTMENT_MAP.set("unassigned", this.translate.instant("UNASSIGNED"));
         for (let x of deps) {
           this.DEPARTMENT_MAP.set(x.key, x.val().name);
         }

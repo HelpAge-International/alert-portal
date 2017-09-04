@@ -46,7 +46,6 @@ export class ActionsService {
       .map(actions => {
         let filteredActions = [];
         actions.forEach(action => {
-          // TODO - Change to 'assignee' in db
           if (action.asignee === uid && !action.isComplete) {
             filteredActions.push(action);
           }
@@ -134,17 +133,17 @@ export class ActionsService {
     let today = moment().startOf('day').valueOf();
 
     if (action.type == ActionType.chs) {
-      title = "A CHS preparedness action"
+      title = this.translate.instant("A_CHS_PREP_ACTION")
     } else if (action.level == ActionLevel.MPA) {
-      title = "A minimum preparedness action"
+      title = this.translate.instant("A_MIN_PREP_ACTION")
     } else if (action.level == ActionLevel.APA) {
-      title = "An advanced preparedness action"
+      title = this.translate.instant("AN_ADVANCED_PREP_ACTION")
     }
 
     if (action.dueDate && today > action.dueDate) {
-      title += "  was due on";
+      title += "  "+this.translate.instant("WAS_DUE_ON");
     } else {
-      title += "  needs to be completed";
+      title += "  "+this.translate.instant("NEEDS_TO_BE_COMPLETED");
     }
 
     return title;
@@ -155,17 +154,17 @@ export class ActionsService {
     let today = moment().startOf('day').valueOf();
 
     if (indicator.triggerSelected == AlertLevels.Green) {
-      title = "A green level indicator"
+      title = this.translate.instant("A_GREEN_LEVEL_INDICATOR");
     } else if (indicator.triggerSelected == AlertLevels.Amber) {
-      title = "An amber level indicator"
+      title = this.translate.instant("AN_AMBER_LEVEL_INDICATOR");
     } else if (indicator.triggerSelected == AlertLevels.Red) {
-      title = "A red level indicator"
+      title = this.translate.instant("A_RED_LEVEL_INDICATOR");
     }
 
     if (indicator.dueDate && today > indicator.dueDate) {
-      title += "  was due on";
+      title += "  "+this.translate.instant("WAS_DUE_ON");
     } else {
-      title += "  needs to be completed";
+      title += "  "+this.translate.instant("NEEDS_TO_BE_COMPLETED");
     }
 
     return title;

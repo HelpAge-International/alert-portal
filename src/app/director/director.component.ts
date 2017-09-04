@@ -10,6 +10,7 @@ import {ActionsService} from "../services/actions.service";
 import {AgencyService} from "../services/agency-service.service";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
+import {TranslateService} from "@ngx-translate/core";
 
 declare const jQuery: any;
 
@@ -65,7 +66,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private actionService: ActionsService,
-              private userService: UserService) {
+              private userService: UserService, private translate: TranslateService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
@@ -240,7 +241,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe((region) => {
 
-            this.regionName = region.name ? region.name : "Region";
+            this.regionName = region.name ? region.name : this.translate.instant("REGION");
             for (let country in region.countries) {
               this.idsOfCountriesInRegion.push(country);
             }
@@ -256,7 +257,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     let promise = new Promise((res, rej) => {
       this.otherRegion = new RegionHolder();
       this.otherRegion.regionId = "Unassigned";
-      this.otherRegion.regionName = "Other Countries";
+      this.otherRegion.regionName =  this.translate.instant("OTHER_COUNTRIES");
       this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[this.userType], (key, obj) => {
         let hRegion = new RegionHolder();
         hRegion.regionName = obj.name;

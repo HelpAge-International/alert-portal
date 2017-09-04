@@ -10,6 +10,7 @@ import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {CommonService} from "../../services/common.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import * as firebase from "firebase";
+import {TranslateService} from "@ngx-translate/core";
 
 declare var jQuery: any;
 
@@ -40,7 +41,8 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
               private router: Router,
               private orgService: PartnerOrganisationService,
               private commonService: CommonService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private translate : TranslateService) {
   }
 
   ngOnInit() {
@@ -114,7 +116,7 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
 
   validatePartnership() {
     this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + this.partnerOrgId + "/isApproved").set(true).then(() => {
-      this.alertMessage = new AlertMessageModel("Successfully validate partnership!", AlertMessageType.Success);
+      this.alertMessage = new AlertMessageModel(this.translate.instant("SUCCESSFULLY_VALIDATE_PARTNERSHIP"), AlertMessageType.Success);
       setTimeout(() => {
         this.router.navigate(["/after-validation", {"partner":true}], {skipLocationChange:true});
       }, Constants.ALERT_REDIRECT_DURATION)

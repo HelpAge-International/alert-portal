@@ -72,12 +72,10 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(groups => {
       if (groups.length == 0) {
-        console.log("came 1");
         this.errorMessage = "MESSAGES.NO_USERS_IN_GROUP";
         this.showAlert();
         return;
       } else {
-        console.log("came 2");
         this.currentDateTimeInMilliseconds = new Date().getTime();
 
         let newMessage: Message = new Message(this.uid, this.messageTitle, this.messageContent, this.currentDateTimeInMilliseconds);

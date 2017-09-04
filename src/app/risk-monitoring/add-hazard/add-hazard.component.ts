@@ -304,11 +304,11 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
                 this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + hazardKey.key).update(updateHazardObj).then(_ => {
                   this.router.navigate(['/risk-monitoring/']);
                 }).catch(err => {
-                  this.alertMessage = new AlertMessageModel("Error updating other hazard reference");
+                  this.alertMessage = new AlertMessageModel("ERROR_UPDATING_OTHER_HAZARD_REF");
                 });
               }).catch(err => {
                 console.log(err);
-                this.alertMessage = new AlertMessageModel("Error updating the other hazard data");
+                this.alertMessage = new AlertMessageModel("ERROR_UPDATING_OTHER_HAZARD_DATA");
               });
             } else {
               this.router.navigate(['/risk-monitoring/']);

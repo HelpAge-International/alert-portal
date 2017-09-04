@@ -8,6 +8,7 @@ import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
 import {MapCountry, MapService} from "../services/map.service";
+import {TranslateService} from "@ngx-translate/core";
 
 declare var jQuery: any;
 
@@ -42,7 +43,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private translate : TranslateService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
   }
 
@@ -111,7 +112,7 @@ export class MapComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe((snap) => {
               this.DEPARTMENT_MAP.clear();
-              this.DEPARTMENT_MAP.set("unassigned", "Unassigned");
+              this.DEPARTMENT_MAP.set("unassigned", this.translate.instant("UNASSIGNED"));
               for (let x of snap) {
                 this.DEPARTMENT_MAP.set(x.key, x.val().name);
               }
