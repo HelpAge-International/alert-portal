@@ -95,7 +95,6 @@
           <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry"
                   name="agencyAdminCountry">
             <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-            <!--<option *ngFor="let country of countryList" [ngValue]="country">{{Country[country] | translate}}</option>-->
             <option *ngFor="let country of countryList">{{Country[country] | translate}}</option>
           </select>
         </div>
@@ -120,18 +119,6 @@
       [level1]="'TOOLTIPS.SYSTEM_ADMIN.TT1.LEVEL1'">
       </tooltip>
     </div>
-
-
-    <!--<div class="Radio&#45;&#45;ribbon">-->
-    <!--<input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">-->
-    <!--<label for="yes-donor"> Yes </label>-->
-    <!--</div>-->
-
-    <!--<div class="Radio&#45;&#45;ribbon">-->
-    <!--<input type="radio" name="donor-agency" id="no-donor" [checked]="!isDonor" (change)="notDonorSelected()">-->
-    <!--<label for="no-donor"> No </label>-->
-    <!--</div>-->
-
 
     <div class="row no-gutters">
       <label for="yes-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
@@ -158,21 +145,3 @@
   </div>
 
 </div>
-
-<!--<div class="modal fade" id="delete-agency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
-     <!--aria-hidden="true">-->
-  <!--<div class="modal-dialog" role="document">-->
-    <!--<div class="modal-content">-->
-      <!--<div class="modal-header">-->
-        <!--<h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>-->
-      <!--</div>-->
-      <!--<div class="modal-body">-->
-        <!--<div class="text-center"><p>{{"DELETE_AGENCY_DIALOG.CONTENT" | translate}}</p></div>-->
-      <!--</div>-->
-      <!--<div class="modal-footer">-->
-        <!--<button type="button" class="btn btn-primary" (click)="deleteAgencyFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}</button>-->
-        <!--<button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
-<!--</div>-->

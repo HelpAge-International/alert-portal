@@ -103,7 +103,7 @@
         <div class="Spaced-above form-group-risk-frequency col-sm-12 row" *ngFor="let alertLevelKey of alertLevelsList">
           <img class="align-middle oval_green__wrap--risk"
                src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
-          <label class="oval_green__wrap--risk">Every</label>
+          <label class="oval_green__wrap--risk">{{"EVERY" | translate}}</label>
           <div class="form-group-risk-frequency">
             <select class="form-control" id="select1" name="frequencyValue"
                     [(ngModel)]="indicatorData.trigger[alertLevelKey].frequencyValue">
