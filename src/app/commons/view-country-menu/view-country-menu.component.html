@@ -25,7 +25,7 @@
             </div>
           </div>
         </li>
-        <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public" [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">Plans</li>
+        <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public" [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"PLANS" | translate}}</li>
       </ul>
     </div>
   </div>

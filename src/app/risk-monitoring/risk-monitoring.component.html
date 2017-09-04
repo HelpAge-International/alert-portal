@@ -853,7 +853,7 @@
                               <div class="col-lg-6">
                                 <p>{{log.content}}</p>
                                 <br>
-                                <p><strong>by {{log.addedByFullName}}</strong></p>
+                                <p><strong>{"BY" | translate}} {{log.addedByFullName}}</strong></p>
                                 <div class="edit_delete_log_tooltip__wrap--risk">
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
@@ -1145,13 +1145,13 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title" class="Spaced-above">Assign this indicator</h6>
+        <h6 class="modal-title" class="Spaced-above">{{"ASSIGN_THIS_INDICATOR" | translate}}</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p class="col-sm-12"><strong>Assign to</strong></p>
+        <p class="col-sm-12"><strong>{{"ASSIGN_TO" | translate}}</strong></p>
         <div class="col-sm-12">
           <select class="form-control" [(ngModel)]="assignedUser">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
@@ -1163,9 +1163,9 @@
       </div>
       <div class="modal-footer">
         <div class="row Right-aligned Spaced col-sm-12">
-          <a class="col-sm-9 margin-top-one" data-dismiss="modal">Cancel</a>
+          <a class="col-sm-9 margin-top-one" data-dismiss="modal">{{"CANCEL" | translate}}</a>
           <button
-            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">Save
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">{{"SAVE" | translate}}
           </button>
         </div>
       </div>

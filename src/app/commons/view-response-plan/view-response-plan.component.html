@@ -297,7 +297,7 @@
         </div>
         <div *ngFor="let activity of activityMap.get(sector.id); index as i">
           <div class="Response__rule__seperator col-sm-12">
-            <p><b>ACTIVITY {{i+1}}</b></p>
+            <p><b>{{"ACTIVITY" | translate}} {{i+1}}</b></p>
           </div>
           <div class="Response__rule__seperator col-sm-12">
             <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_ACTIVITY_TEXT?"

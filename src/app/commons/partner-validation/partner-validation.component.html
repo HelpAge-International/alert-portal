@@ -13,47 +13,47 @@
   <div class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
       <div class="Header-title__wrap">
-        <h1>Partnership validation</h1>
+        <h1>{{"PARTNERSHIP_VALIDATION" | translate}}</h1>
       </div>
 
 
       <div class="Partnership__wrap">
 
         <div class="Underline-title__wrap">
-          <h3>Partnership details</h3>
+          <h3>{{"PARTNERSHIP_DETAILS" | translate}}</h3>
         </div>
 
         <div class="Partnership__seperator">
-          <p><b>Your organisation</b></p>
+          <p><b>{{"YOUR_ORGANISATION" | translate}}</b></p>
           <p>{{modelPartnerOrg.organisationName}}</p>
         </div>
 
         <div class="Partnership__seperator">
-          <p><b>Relationship with agency</b></p>
+          <p><b>{{"RELATIONSHIP_WITH_AGENCY" | translate}}</b></p>
           <p>{{modelPartnerOrg.relationship}}</p>
         </div>
 
         <div class="Partnership__seperator">
-          <p><b>Areas of operation</b></p>
+          <p><b>{{"AREAS_OF_OPERATION" | translate}}</b></p>
           <a href="javascript:void(0)" class="text-primary" (click)="showAffectedAreasForPartner()">
             {{'COUNTRY_ADMIN.PROFILE.PARTNERS.VIEW_FOR_PROJECTS' | translate}} {{modelPartnerOrg.projects.length}}
             {{'COUNTRY_ADMIN.PROFILE.PARTNERS.PROJECTS_LOWERCASE' | translate}}
           </a>
         </div>
         <div class="Partnership__seperator">
-          <p><b>Contact’s Name</b></p>
+          <p><b>{{"CONTACT_NAME" | translate}}</b></p>
           <p>{{modelPartnerOrg.firstName +" "+modelPartnerOrg.lastName}}</p>
         </div>
         <div class="Partnership__seperator">
-          <p><b>Contact’s Position</b></p>
+          <p><b>{{"CONTACT_POSITION" | translate}}</b></p>
           <p>{{modelPartnerOrg.position}}</p>
         </div>
         <div class="Partnership__seperator">
-          <p><b>Contact’s Email</b></p>
+          <p><b>{{"CONTACT_EMAIL" | translate}}</b></p>
           <p>{{modelPartnerOrg.email}}</p>
         </div>
         <div class="Partnership__seperator">
-          <p><b>Contact’s Telephone</b></p>
+          <p><b>{{"CONTACT_TELEPHONE" | translate}}</b></p>
           <p>{{modelPartnerOrg.phone}}</p>
         </div>
       </div>
@@ -61,18 +61,18 @@
       <div class="Partnership__wrap">
 
         <div class="Underline-title__wrap">
-          <h3>Projects</h3>
+          <h3>{{"PROJECTS" | translate}}</h3>
         </div>
 
         <div *ngFor="let project of modelPartnerOrg.projects">
           <h6>{{project.title}}</h6>
-          <p><b>Sectors</b></p>
+          <p><b>{{"SECTORS" | translate}}</b></p>
           <div class="Selection-row">
             <div *ngFor="let sector of project.sector" class="Item__selectable Icon__selectable">
               <div class="{{sectorIcons[sector]}}"></div>
               <label>{{sectorLabels[sector] | translate}}</label></div>
           </div>
-          <p><b>Project End date</b></p>
+          <p><b>{{"PROJECT_END_DATE" | translate}}</b></p>
           <p>{{project.endDate | date:"MM/yy"}}</p>
           <hr>
         </div>
@@ -91,10 +91,8 @@
         <!--</div>-->
 
         <div class="Form-submit__wrapper margin-top-eight">
-          <button *ngIf="!modelPartnerOrg.isApproved" class="btn btn-success" (click)="validatePartnership()">Validate
-            partnership
-          </button>
-          <button *ngIf="modelPartnerOrg.isApproved" class="btn btn-ghost" disabled>Approved already</button>
+          <button *ngIf="!modelPartnerOrg.isApproved" class="btn btn-success" (click)="validatePartnership()">{{"VALIDATE_PARTNERSHIP" | translate}}</button>
+          <button *ngIf="modelPartnerOrg.isApproved" class="btn btn-ghost" disabled>{{"APPROVE_ALREADY" | translate}}</button>
         </div>
       </div>
     </div>
