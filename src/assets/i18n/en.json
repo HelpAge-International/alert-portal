@@ -42,7 +42,6 @@
     "ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION":"Attach documents as proof of completion",
     "UPLOAD_DOCUMENTS":"Upload documents",
     "ATTACHMENTS":"Attachments",
-    "REMOVE":"Remove",
     "MARK_AS_COMPLETE":"Mark as complete",
     "EDIT":"Edit",
     "EDITING":"Editing...",
@@ -75,16 +74,11 @@
     "REASONS_FOR_RED_ALERT_REQUEST":"Reasons for red alert request",
     "AGENCY_SETTINGS":"Agency Settings",
     "NETWORK_DETAILS":"Network details",
-    "TITLE":"Title",
-    "ADDRESS_LINE_1":"Address Line 1",
-    "ADDRESS_LINE_2":"Address Line 2",
-    "ADDRESS_LINE_3":"Address Line 3",
     "CITY":"City",
     "POSTCODE":"Postcode",
     "NETWORK_CONTACT_DETAILS":"Network contact details",
     "FIRST_NAME":"First Name",
     "EMAIL_ADDRESS":"Email Address",
-    "PHONE_NUMBER":"Phone Number",
     "SAVE_NEW_NETWORK_ACCOUNT":"Save new network account",
     "HAS_REQ_ALERT_LEVEL_TO_GO_FROM_AMBER_TO_RED_ON_THE":"has requested the alert level to go from Amber to Red on the",
     "REASONS_FOR_RAISING_ALERT_LEVEL":"Reasons for raising the alert level",
@@ -146,7 +140,6 @@
     "DESCRIBE_MONITORING_ACCOUNTABILITY_LEARNING":"Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability.",
     "DO_YOU_INTEND_TO_VISSUALLY_DOCUMENT_YOUR_RESPONSE":"Do you intend to visually document your response?",
     "YES":"Yes",
-    "NO":"No",
     "WILL_THIS_BE_PHOTO_VIDEO_BOTH":"If so, will this be photographic, video, or both?",
     "PHOTOGRAPHIC":"Photographic",
     "VIDEO":"Video",
@@ -186,7 +179,6 @@
     "ADD_NOTE":"ADD NOTE",
     "ASSIGN_TO_ME":"Assigned to me",
     "NETWORK_ACCOUNTS":"Network Accounts",
-    "DEACTIVATE": "Deactivate",
     "ADD_NEW_NETWORK_ACCOUNT":"Add new network account",
     "FILTER":"Filter",
     "ALL_DOCUMENTS":"All documents",
@@ -257,8 +249,6 @@
         "MALE": "Male",
         "FEMALE": "Female",
         "TITLE": "Title",
-        "EDIT": "Edit",
-        "SAVE": "Save",
         "FROM": "From: ",
         "DATE": "Date",
         "SIZE": "Size",
@@ -345,7 +335,6 @@
         },
         "USER_INFO": {
             "LAST_NAME": "Last Name",
-            "EMAIL": "Email Address",
             "ADDRESS_LINE_1": "Address Line 1",
             "ADDRESS_LINE_2": "Address Line 2",
             "ADDRESS_LINE_3": "Address Line 3",
@@ -383,7 +372,6 @@
             "NEW_PASSWORD": "New Password",
             "CONFIRM_PASSWORD": "Confirm Password",
             "UPDATE_PASSORD": "Update password",
-            "SAVE": "Save changes",
             "SUCCESS_PROFILE": "Profile successfully updated!",
             "SUCCESS_PASSWORD": "Password successfully updated!",
             "INCORRECT_CURRENT_PASSWORD": "Current password is incorrect. Please re enter",
@@ -661,7 +649,6 @@
             "ZW": "Umbazi"
         },
         "DEPARTMENT_LIST": {
-            "CHS": "CHS",
             "FINANCE": "Finance",
             "HR": "HR",
             "PROGRAMME": "Programme"
@@ -717,7 +704,6 @@
         "LOGIN": "Login",
         "FORGOT_PASSWORD_BUTTON": "Forgot your password?",
         "NO_DATA_ERROR": "Please enter your email address and password to login",
-        "NO_EMAIL_ERROR": "Please enter your email address",
         "NO_PASSWORD_ERROR": "Please enter your password",
         "UNRECOGNISED_ERROR": "This email address is not recognised",
         "INCORRECT_PASSWORD": "Incorrect password",
@@ -799,7 +785,6 @@
             "CREATE_NEW_ACTION": "Create new action",
             "EDIT_CHS_ACTION": "Edit CHS action",
             "SAVE_BUTTON_TEXT": "Save new action",
-            "EDIT_BUTTON_TEXT": "Save changes",
             "EDIT_CONFIRM_SAVE_CHANGES": "Changes saved",
             "NO_CONTENT_ERROR": "Please insert the action content",
             "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
@@ -844,8 +829,6 @@
             "ADD_A_NEW_DEPARTMENT": "Add a new department",
             "MIN": "Minimum preparedness threshold",
             "ADV": "Advanced preparedness threshold",
-            "GREEN": "Green",
-            "AMBER": "Amber",
             "DOC_SETTING": "Document upload settings",
             "FILE_FORMAT": "File Format",
             "FILE_SIZE": "Maximum file size",
@@ -914,9 +897,7 @@
             "NO_DEPARTMENT_NAME": "Please enter department name",
             "NEW_DEPARTMENT_SUCCESS": "New department added",
             "PREPAREDNESS_LEVEL": "Preparedness Level: ",
-            "SAVE_BUTTON_TEXT": "Save new action",
             "EDIT_MANDATED_PA": "Edit mandated preparedness action",
-            "EDIT_BUTTON_TEXT": "Save changes",
             "NO_DEPARTMENT_ERROR": "Please select a department",
             "NO_CONTENT_ERROR": "Please insert the action content",
             "NO_ACTION_SELECTED": "Please select generic action(s) to be added to mandated actions"
@@ -998,7 +979,6 @@
                 "NO_DEPARTMENTS": "No departments are added to your agency"
             },
             "SKILLS": {
-                "TITLE_TEXT": "Skills",
                 "DELETE_SKILLS": "Delete Skills",
                 "EDIT_SKILLS": "Edit Skills",
                 "SKILLS_SAVED": "Skills successfully saved",
@@ -1036,7 +1016,6 @@
                 "BASIC_INFORMATION": "Basic Information",
                 "TARGET_POPULATION": "Target Population",
                 "EXPECTED_RESULTS": "Expected Results",
-                "ACTIVITIES": "Activities",
                 "MONITORING_ACC_LEARNING": "Monitoring, Accountability and Learning",
                 "DOUBLE_COUNTING": "Adjust Beneficiaries for Double Counting",
                 "BUDGET": "Budget"
@@ -1046,7 +1025,6 @@
                   "ALL_COUNTRIES": "All countries",
                   "ALL_MODULES": "All modules",
                   "UPLOADED_BY_EVERYONE": "Uploaded by everyone",
-                  "EXPORT_DOCS": "Export selected documents",
                   "SELECT_DOCS": "Select documents",
                   "YOU_ARE_ABOUT_TO_EXPORT": "You are about to export",
                   "DOCUMENT(S)": "document(s)",
@@ -1101,7 +1079,6 @@
             "NO_EMAIL": "Please enter the email address of the staff",
             "NO_PHONE": "Please enter the phone number of the staff",
             "NO_TRAINING_NEEDS": "Please enter training needs",
-            "NO_RESPONSE_TEAM_ANSWER": "Please select an answer for 'Is this staff member part of the response team?'",
             "SUCCESS_STAFF_MEMBER_ADDED": "Staff member successfully saved",
             "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this staff member? Any assigned indicators and MPAs will be marked as unassigned",
             "ADDITIONAL_INFO": "Additional Info"
@@ -1138,10 +1115,7 @@
                 "OTHER": "Other permissions",
                 "ASSIGN": "Assign",
                 "NEW": "New",
-                "EDIT": "Edit",
-                "DELETE": "Delete",
                 "ADD_NOTE": "Add note",
-                "DOWNLOAD": "Download",
                 "VIEW": "View",
                 "DOWNLOAD_DOC": "Download documents"
             }
@@ -1151,8 +1125,7 @@
             "MENU": {
                 "PERMISSIONS": "Permissions",
                 "MODULES": "Modules",
-                "CLOCK_SETTINGS": "Clock settings",
-                "NOTIFICATIONS": "Notifications"
+                "CLOCK_SETTINGS": "Clock settings"
             },
             "PERMISSIONS": {
                 "TITLE_TEXT": "Permission settings",
@@ -1172,7 +1145,6 @@
             "CLOCK_SETTINGS": {
                 "TITLE_TEXT": "Clock settings",
                 "SAVE_SETTINGS": "Save clock settings",
-                "RISK_MONITORING": "Risk Monitoring",
                 "RISK_MONITORING_SHOW_LOGS": "Initially show log from the past:",
                 "RISK_MONITORING_HAZARD_VALID": "Hazards will remain valid for:",
                 "PREPAREDNESS": "Preparedness",
@@ -1198,8 +1170,6 @@
                 "ADD_RECIPIENT": "Add external recipient",
                 "EDIT_RECIPIENT": "Edit external recipient",
                 "DELETE_RECIPIENT": "Delete recipient",
-                "RECIPIENT_NAME": "Name",
-                "RECIPIENT_ORGANISATION": "Organisation",
                 "NO_ORGANISATION": "Please enter the Organisation",
                 "SAVE_RECIPIENT": "Save external recipient",
                 "SAVED_RECIPIENT_SUCCESS": "External Recipient successfully saved",
@@ -1215,14 +1185,11 @@
         "PROFILE": {
             "TITLE_TEXT": "Country Office Profile",
             "MENU": {
-                "PROGRAMME": "Programmes",
                 "OFFICE_CAPACITY": "Office Capacity",
-                "PARTNERS": "Partners",
                 "EQUIPMENT": "Equipment",
                 "COORDINATION": "Coordination",
                 "STOCK_CAPACITY": "Stock Capacity",
-                "DOCUMENTS": "Documents",
-                "CONTACTS": "Contacts"
+                "DOCUMENTS": "Documents"
             },
             "OFFICE_CAPACITY": {
                "TITLE_TEXT": "Office & surge capacity",
@@ -1254,12 +1221,10 @@
                 "EMPTY_LIST": "Use the add partners button to add your partner organisations",
                 "UPDATED": "Updated",
                 "ORGANISATION": "Organisation",
-                "RELATIONSHIP": "Relationship",
                 "AREAS_OF_OPERATION": "Area(s) of operation",
                 "VIEW_FOR_PROJECTS": "View for all ",
                 "PROJECTS": "Project(s)",
                 "PROJECTS_LOWERCASE": "project(s)",
-                "PARTNERSHIP_DETAILS": "Partnership details",
                 "NOTES": "Notes",
                 "CONTACT_NAME": "Contact's Name",
                 "CONTACT_EMAIL": "Contact's Email",
@@ -1272,14 +1237,11 @@
                 "VIEW": "View equipment",
                 "TITLE": "Equipment",
                 "QUANTITY": "Quantity",
-                "STATUS": "Status",
                 "SUPPLIER": "Supplier",
                 "RELATIONSHIP": "Relationship",
                 "EQUIPMENT_PROVIDED": "Equipment provided",
                 "CONTACT_INFO": "Contact info",
                 "SUPPLIER_CONTACT_INFO": "Supplier contact information",
-                "CONTACT_NAME": "Contact's Name",
-                "CONTACT_EMAIL": "Contact's Email",
                 "EMPTY_LIST": "Use the add equipment button to add your equipment",
                 "NO_NAME": "Please enter the equipment name",
                 "NO_LOCATION": "Please enter the equipment location",
@@ -1288,9 +1250,7 @@
                 "SURGE_TITLE": "Surge equipment",
                 "NO_EQUIPMENT_PROVIDED": "Please enter the equipment provided",
                 "NO_SUPPLIER": "Please enter the supplier",
-                "NO_RELATIONSHIP": "Please enter the relationship",
                 "NO_CONTACT_NAME": "Please enter the contact name",
-                "NO_CONTACT_PHONE": "Please enter the contact phone",
                 "SUCCESS_SAVED": "The equipment was successfully saved",
                 "SUCCESS_DELETED": "The equipment was successfully deleted",
                 "EDIT_EQUIPMENT": "Edit Equipment & surge equipment",
@@ -1309,8 +1269,6 @@
             "TITLE_TEXT": "Coordination Arrangements",
             "EDIT": "Edit coordination arrangements",
             "VIEW": "View coordination arrangements",
-            "UPDATED": "Updated",
-            "SECTOR": "Sector",
             "SECTOR_LEAD": "Sector lead",
             "IS_AGENCY_MEMBER": "Is {{value}} a member?",
             "STAFF_MEMBER": "Staff member representing {{value}}",
@@ -1421,7 +1379,6 @@
             "EDIT_MAPPING": {
               "BACK_BUTTON": "Edit Programme",
               "TITLE": "Edit Programme Mapping",
-              "SECTOR": "Sector",
               "WHERE": "Where",
               "TO_WHO": "To Whom",
               "WHEN": "When",
@@ -1441,7 +1398,6 @@
               "EDIT_4W_MAPPING": "Edit Programme Mapping",
               "NO_SECTOR_SELECTED": "No sector expertise selected",
               "NO_4WMAPPING" : "Use the edit programme button to enter your Programme mapping",
-              "TABLE_SECTOR": "Sector",
               "TABLE_WHAT": "What",
               "TABLE_WHERE": "Where",
               "TABLE_TO_WHO": "To Whom",
@@ -1449,7 +1405,6 @@
             },
             "NOTE": "Note",
             "MODALS": {
-              "EDIT_NOTE_MODAL_TITLE": "Edit note",
               "DELETE_NOTE_MODAL_TITLE": "Delete this note?",
               "DELETE_NOTE_TEXT_PART_ONE": "Are you sure you want to delete this note?",
               "DELETE_NOTE_TEXT_PART_TWO": "This action cannot be undone"
@@ -1466,9 +1421,7 @@
             "NO_COUNTRIES": "No countries",
             "NO_COUNTRIES_BY": "Countries doesn't exist with",
             "ALERT_LEVEL": "Alert level",
-            "ALL_ALERT_LEVEL": "All alert levels",
             "NO_AGENCIES": "No Agencies",
-            "AGENCIES_IN": "Agencies in",
             "OVERVIEW": "Overview"
         }
     },
@@ -1480,10 +1433,6 @@
     },
     "DELETE_REGION_DIALOG": {
         "CONTENT": "Are you sure you want to delete this region? The associated regional director will no longer be able to approve response plans from the country offices within this region"
-    },
-    "DELETE_ACTION_DIALOG": {
-        "TITLE": "Delete",
-        "CONTENT": "Are you sure you want to delete this action?"
     },
     "DELETE_INDICATOR_DIALOG": {
       "UNABLE_TO_DELETE": "Unable to delete your indicator. Please try again",
@@ -1525,7 +1474,6 @@
         "OTHER": "Other permissions",
         "ASSIGN": "Assign",
         "NEW": "New",
-        "DELETE": "Delete",
         "ADD_NOTE": "Add note",
         "DOWNLOAD": "Download",
         "VIEW": "View",
@@ -1639,7 +1587,6 @@
                 "VIEW_THIS_ACTIVITY": "View this activity",
                 "REMOVE_THIS_ACTIVITY": "Remove this activity",
                 "PLANNED_ACTIVITY_TEXT?": "What is the planned activity?",
-                "PLANNED_OUTPUTS_TEXT": "Planned outputs for this activity",
                 "INDICATOR_TEXT?": "Provide one indicator (KPI) to capture the effects of this activity",
                 "BENEFICIARIES_OF_ACTIVITIES": "Beneficiaries of this activity by age and gender",
                 "ADD_ANOTHER_ACTIVITY": "Add another activity",
@@ -1657,7 +1604,6 @@
                 "TITLE_TEXT": "Monitoring, Accountability and Learning",
                 "DESCRIBE_MON_ACC_LEA": "Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability",
                 "FORMAT_OF_DOCUMENTATION?": "What is the format of the documentation?",
-                "VIDEO": "Video",
                 "PHOTOGRAPHIC_AND_VIDEO": "Photographic and Video"
             },
             "BENEFICIARIES": {
@@ -1700,7 +1646,6 @@
         "ADD_NEW_PARTNER_ORGANISATION": "Add new partner organisation",
         "ADD_ANOTHER_PROJECT": "Add another project",
         "REMOVE_PROJECT": "Remove this project",
-        "PROJECTS": "Projects",
         "PROJECT_TITLE": "Project title",
         "PROJECT_UNTITLED": "Untitled project",
         "VIEW_PROJECT": "View project",
@@ -1734,7 +1679,6 @@
         "ADD_A_NOTE": "Add a note",
         "EDIT_DIALOG_TITLE": "Edit note",
         "DELETE_DIALOG_TITLE": "Delete note",
-        "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this note?",
         "SUCCESS_DELETED": "The note has been successfully deleted"
     },
     "DOCUMENTS": {
@@ -1745,7 +1689,6 @@
         "MODULE": "Module",
         "SIZE": "Size",
         "UPLOADED_BY": "Uploaded by",
-        "DATE": "Date",
         "DIALOG_EXPORT_CONTENT": "You are about to export {{value}} document(s) with a total size of {{value2}}MB. Are you sure you wish to continue?"
     },
     "COPY_ACTION_DIALOG": {
@@ -1814,7 +1757,6 @@
         "LAST_UPDATED": "Last updated"
     },
     "DASHBOARD": {
-        "RISK_MONITORING": "Risk Monitoring",
         "INDICATORS": "indicators",
         "CONTEXT": "Context",
         "THIS_WEEK": "this week",
@@ -1919,7 +1861,6 @@
             "EDIT_SEASONS": "Edit Seasons",
             "ADD_HAZARD": "add hazard",
             "SELECT_SEASONS": "Select seasons",
-            "ADD_SEASONAL_TO_CALENDAR": "Add season to the calendar",
             "ADD_SEASONAL_TO_CALENDAR_NO_START_DATE": "Please complete the start date",
             "ADD_SEASONAL_TO_CALENDAR_NO_END_DATE": "Please complete the end date",
             "ADD_SEASONAL_TO_CALENDAR_NO_COLOUR": "Please select a colour",
@@ -1949,12 +1890,10 @@
             "EXPAND_ALL": "Expand All",
             "COLLAPSE_ALL": "Collapse All",
             "ADD_NEW_HAZARD": "ADD NEW HAZARD",
-            "CREATE_AN_ALERT": "Create an alert",
             "SUCCESS_MESSAGE_NEW_HAZARD_PART_ONE": "You just added ",
             "SUCCESS_MESSAGE_NEW_HAZARD_PART_TWO": "as a new hazard.",
             "COUNTRY_CONTEXT": "Country Context",
             "INDICATORS_COUNT": "Indicators",
-            "ARCHIVE": "Archive",
             "CHECK_EVERY": "Check every",
             "INFO_SOURCES": "Info sources",
             "LOG": "Log",
@@ -1977,9 +1916,6 @@
                     "MESSAGE_PART_TWO": "the hazard? All indicators will become",
                     "MESSAGE_PART_THREE": "and any assigned users will no longer recieve notifications about indicators"
                 },
-                "EDIT_NOTE": {
-                    "TITLE": "Edit note"
-                },
                 "DELETE_LOG": {
                     "MESSAGE": "Are you sure you want to delete this log?",
                     "TITLE": "Delete log"
@@ -1988,8 +1924,7 @@
                     "MESSAGE": "Are you sure you want to delete this hazard? All indicators and logs will be removed"
                 }
             }
-        },
-        "TITLE": "Risk Monitoring"
+        }
     },
     "DIRECTORS": {
         "NO_COUNTRIES_TO_SHOW": "No countries to show"

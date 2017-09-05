@@ -12,10 +12,10 @@
 
     <li *ngIf="!isViewing" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile/programme">{{
-        "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" | translate}}</a>
+        "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('programme')">
-      <a (click)="viewingToProgramme()">{{ "COUNTRY_ADMIN.PROFILE.MENU.PROGRAMME" |
+      <a (click)="viewingToProgramme()">{{ "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" |
         translate}}</a>
     </li>
 
@@ -30,11 +30,11 @@
 
     <li *ngIf="!isViewing" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile/partners">{{
-        "COUNTRY_ADMIN.PROFILE.MENU.PARTNERS" |
+        "GLOBAL.USER_TYPE.PARTNER" |
         translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('partners')">
-      <a (click)="viewingToPartners()">{{ "COUNTRY_ADMIN.PROFILE.MENU.PARTNERS" |
+      <a (click)="viewingToPartners()">{{ "GLOBAL.USER_TYPE.PARTNER" |
         translate}}</a>
     </li>
 
@@ -78,11 +78,11 @@
 
     <li *ngIf="!isViewing" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile/contacts">{{
-        "COUNTRY_ADMIN.PROFILE.MENU.CONTACTS" |
+        "COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT" |
         translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('contacts')">
-      <a (click)="viewingToContacts()">{{ "COUNTRY_ADMIN.PROFILE.MENU.CONTACTS" |
+      <a (click)="viewingToContacts()">{{ "COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT" |
         translate}}</a>
     </li>
   </ul>

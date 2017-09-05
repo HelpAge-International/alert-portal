@@ -52,7 +52,7 @@
       </div>
       <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-three">
         <button href="#edit-total-staff" data-toggle="modal"
-                class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}
+                class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
         </button>
         <!--<a href="#edit-total-staff" data-toggle="modal">Edit</a>-->
       </div>
@@ -182,7 +182,7 @@
                     <a
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('staff', staff.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                      (click)="editNote('staff', staff.id, note)">{{ 'EDIT' | translate }}</a>
                     <p
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="padding-left-one">|</p>
@@ -254,7 +254,7 @@
           </div>
           <button type="button" class="btn btn-outline-primary text-uppercase"
                   *ngIf="canEdit && isEditingCapacity"
-                  (click)="editSurgeCapacity(surge.$key)">{{"GLOBAL.EDIT" | translate}}
+                  (click)="editSurgeCapacity(surge.$key)">{{"EDIT" | translate}}
           </button>
         </div> <!--Estimated time of arrival-->
         <div class="row Line-row"></div>
@@ -286,7 +286,7 @@
             </div>
 
             <div class="row">
-              <div class="col-sm-2"><strong>{{"GLOBAL.USER_INFO.EMAIL" | translate}}</strong></div>
+              <div class="col-sm-2"><strong>{{"EMAIL_ADDRESS" | translate}}</strong></div>
               <div class="col-sm-2">{{surge.email}}</div>
             </div>
 
@@ -324,7 +324,7 @@
                     <a
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('surge', surge.$key, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                      (click)="editNote('surge', surge.$key, note)">{{ 'EDIT' | translate }}</a>
                     <p
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="padding-left-one">|</p>
@@ -371,7 +371,7 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -404,7 +404,7 @@
           |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editAction(activeType, activeId, activeNote)">{{"GLOBAL.SAVE" | translate}}
+                (click)="editAction(activeType, activeId, activeNote)">{{"SAVE" | translate}}
         </button>
       </div>
     </div>
@@ -431,7 +431,7 @@
           |
           translate}}</a>
         <button href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editTotalStaff()">{{"GLOBAL.SAVE" | translate}}
+                (click)="editTotalStaff()">{{"SAVE" | translate}}
         </button>
       </div>
     </div>

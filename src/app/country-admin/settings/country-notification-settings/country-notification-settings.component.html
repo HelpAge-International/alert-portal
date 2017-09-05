@@ -43,8 +43,8 @@
 
         <div class="Spaced">
             <div class="row Spaced">
-                <div class="col-sm-3"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.RECIPIENT_NAME" | translate}}</p></b></div>
-                <div class="col-sm-3"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.RECIPIENT_ORGANISATION" | translate}}</p></b></div>
+                <div class="col-sm-3"><b><p>{{ "GLOBAL.NAME" | translate}}</p></b></div>
+                <div class="col-sm-3"><b><p>{{ "COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION" | translate}}</p></b></div>
                 <div class="col-sm-3"><b><p>{{ "GLOBAL.USER_INFO.PHONE" | translate}}</p></b></div>
                 <div class="col-sm-2"><b><p>{{ "GLOBAL.USER_INFO.EMAIL_ADDRESS" | translate}}</p></b></div>
                 <div class="col-sm-1"><b><p></p></b></div>
@@ -57,7 +57,7 @@
                 <div class="col-sm-3"><p>{{ externalRecipient.organisation }}</p></div>
                 <div class="col-sm-3"><p>{{ externalRecipient.phone }}</p></div>
                 <div class="col-sm-2"><p>{{ externalRecipient.email }}</p></div>
-                <div class="col-sm-1"><a href="javascript:void(0)" (click) = "editRecipient( externalRecipient.id )"><p>{{ "GLOBAL.EDIT" | translate}}</p></a></div>
+                <div class="col-sm-1"><a href="javascript:void(0)" (click) = "editRecipient( externalRecipient.id )"><p>{{ "EDIT" | translate}}</p></a></div>
             </div>
         </div>
   </div>
@@ -94,7 +94,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
-                <button type="button" class="btn btn-primary" (click)="saveUserType()">{{"GLOBAL.SAVE"| translate}}</button>
+                <button type="button" class="btn btn-primary" (click)="saveUserType()">{{"SAVE"| translate}}</button>
             </div>
         </div>
     </div>

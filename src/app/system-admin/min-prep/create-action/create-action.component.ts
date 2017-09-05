@@ -39,7 +39,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
         if (params["id"]) {
           // EDIT MODE
           this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.EDIT_CHS_ACTION';
-          this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
+          this.buttonText = 'GLOBAL.SAVE_CHANGES';
           this.chsUid = params["id"];
           this.editInitialDisable = true;
         }

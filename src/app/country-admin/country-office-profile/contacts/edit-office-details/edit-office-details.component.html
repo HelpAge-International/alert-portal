@@ -70,7 +70,7 @@
                 </div>
                 <div class="col-lg-4 col-md-6">
                     <div class="form-group">
-                    <label for="email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}</label>
+                    <label for="email">{{"EMAIL_ADDRESS" | translate}}</label>
                     <input type="email" class="form-control" id="email" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" name="email"
                         [(ngModel)]="countryOfficeAddress && countryOfficeAddress.email">
                     </div>
@@ -80,7 +80,7 @@
 
             <!--Save and cancel-->
             <div class="row margin-top-ten margin-left-one">
-                <button class="btn btn-primary text-uppercase Spaced col-sm-0" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <button class="btn btn-primary text-uppercase Spaced col-sm-0" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
                 <div class="col-sm-1 margin-top-five">
                     <a href="javascript:void(0)" (click)="goBack()">
                         {{ 'GLOBAL.CANCEL' | translate }}

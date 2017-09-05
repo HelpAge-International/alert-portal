@@ -67,9 +67,9 @@
     <div class="row Spaced-above font-weight-bold" *ngIf="partnerOrganisations">
       <p class="col-sm-1">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.UPDATED' | translate }}</p>
       <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</p>
-      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.RELATIONSHIP' | translate }}</p>
+      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP' | translate }}</p>
       <p class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</p>
-      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS' | translate }}</p>
+      <p class="col-sm-2">{{ 'GLOBAL.STATUS' | translate }}</p>
     </div>
     <div class="row Line-row"></div>
 
@@ -88,7 +88,7 @@
       <div class="col-sm-2"><img class="" style="margin-bottom: 0.5em;" src="assets/images/icons/info_source.svg"
                                  alt="{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHI_DETAILS' | translate }}">
         <a href="#partnership_{{ i }}" data-toggle="collapse" class="margin-left-one">
-          {{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHIP_DETAILS' | translate }}
+          {{ 'PARTNERSHIP_DETAILS' | translate }}
         </a>
       </div>
 
@@ -103,7 +103,7 @@
       <div class="col-sm-1" *ngIf="canEdit && isEdit">
         <button class="btn btn-outline-primary text-uppercase"
                 (click)="editPartnerOrganisation(partnerOrganisation.id)">
-          {{ 'GLOBAL.EDIT' | translate }}
+          {{ 'EDIT' | translate }}
         </button>
       </div>
 
@@ -134,7 +134,7 @@
                   <a
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -165,14 +165,14 @@
       <div class="Tooltip__bubble container-fluid Blue info log collapse" id="partnership_{{ i }}"
            data-parent="#partnerDetailsOne">
         <div class="log_left row Spaced-above">
-          <h3 class="col-sm-4 text-right">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.PARTNERSHIP_DETAILS' | translate }}</h3>
+          <h3 class="col-sm-4 text-right">{{ 'PARTNERSHIP_DETAILS' | translate }}</h3>
           <a href="#partnership_{{ i }}" data-toggle="collapse" class="margin-left-five text-right col-sm-6">{{
             'GLOBAL.CLOSE' | translate }}</a>
         </div>
         <div class="Spaced">
           <div class="row">
             <div class="col-sm-3 text-center margin-left-two">
-              <strong>{{ 'ADD_PARTNER.PROJECTS' | translate }}</strong>
+              <strong>{{ 'PROJECTS' | translate }}</strong>
             </div>
           </div>
 
@@ -253,7 +253,7 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -285,7 +285,7 @@
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editAction(activePartnerOrganisation, activeNote)">{{"GLOBAL.SAVE" | translate}}
+                (click)="editAction(activePartnerOrganisation, activeNote)">{{"SAVE" | translate}}
         </button>
       </div>
     </div>

@@ -4,7 +4,7 @@
   </div>
   <div class="col-lg-3 col-md-4 col-sm-6">
     <select class="form-control" (change)="filterAlertLevel($event)">
-      <option value="all" selected>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALL_ALERT_LEVEL" | translate}}</option>
+      <option value="all" selected>{{"GLOBAL.ALERT_LEVELS.ALL" | translate}}</option>
       <option *ngFor="let alertLevelKey of alertLevelsList" [value]="alertLevelKey">{{alertLevels[alertLevelKey] |
         translate}}
       </option>

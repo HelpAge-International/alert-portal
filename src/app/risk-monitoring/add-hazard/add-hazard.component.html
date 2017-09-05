@@ -8,7 +8,7 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng" [ngSwitch]="count">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row" routerLink="/risk-monitoring">{{"DASHBOARD.RISK_MONITORING" | translate}}</div> <!-- Back button-->
+    <div class="Back--button row" routerLink="/risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
     <div class="Header-title__wrap--risk Spaced-above">
       <h1>{{"RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" | translate}}</h1>
       <tooltip
@@ -174,7 +174,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
-                  (click)="saveSelectSeasons('select-seasons')">{{"GLOBAL.SAVE" | translate}}
+                  (click)="saveSelectSeasons('select-seasons')">{{"SAVE" | translate}}
           </button>
           <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" (click)="closeModal()">
             {{"GLOBAL.CANCEL" | translate}}
@@ -241,7 +241,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
-                    [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"GLOBAL.SAVE" | translate}}
+                    [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"SAVE" | translate}}
             </button>
             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
           </div>

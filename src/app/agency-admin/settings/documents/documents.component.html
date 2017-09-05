@@ -6,7 +6,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.EXPORT_DOCS" | translate}}</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{"DOCUMENTS.EXPORT" | translate}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
@@ -35,7 +35,7 @@
     <app-settings-menu></app-settings-menu>
         <div class="Sub-header-title__wrap">
             <h2>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.TITLE_TEXT" | translate}}</h2>
-             <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="exporting" (click)="exportSelectedDocuments($event)">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.EXPORT_DOCS" | translate | uppercase}}</button>
+             <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="exporting" (click)="exportSelectedDocuments($event)">{{"DOCUMENTS.EXPORT" | translate | uppercase}}</button>
              <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable"  *ngIf="exporting" (click)="cancelExportDocuments($event)">{{"GLOBAL.CANCEL" | translate}}</button>
              <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!exporting" (click)="selectDocuments($event)">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.SELECT_DOCS" | translate | uppercase}}</button>
         </div>

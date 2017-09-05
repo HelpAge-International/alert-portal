@@ -372,7 +372,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return false;
     } else if (!(this.localUser.userEmail)) {
       this.alerts[this.localUser.userEmail] = true;
-      this.errorMessage = "LOGIN.NO_EMAIL_ERROR";
+      this.errorMessage = "FORGOT_PASSWORD.NO_EMAIL_ERROR";
       return false;
     } else if (!CustomerValidator.EmailValidator(this.localUser.userEmail)) {
       this.alerts[this.localUser.userEmail] = true;

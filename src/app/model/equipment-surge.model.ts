@@ -22,7 +22,7 @@ export class SurgeEquipmentModel extends BaseModel {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_SUPPLIER');
         }
         if (!this.relationship && !this.isExcluded('quantity', excludedFields)) {
-            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_RELATIONSHIP');
+            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_RELATIONSHIP');
         }
         if (!this.contactName && !this.isExcluded('contactName', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_CONTACT_NAME');
@@ -34,7 +34,7 @@ export class SurgeEquipmentModel extends BaseModel {
           return new AlertMessageModel('GLOBAL.EMAIL_NOT_VALID');
         }
         if (!this.contactPhone && !this.isExcluded('contactPhone', excludedFields)) {
-            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_CONTACT_PHONE');
+            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_CONTACT_PHONE');
         }
 
         return null;

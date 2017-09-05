@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="col-sm-3">
-          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="onSubmit()">{{"GLOBAL.SAVE" | translate}}</div></span>
+          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="onSubmit()">{{"SAVE" | translate}}</div></span>
       </div>
     </div>
 
@@ -684,7 +684,7 @@
 
                         <div class="row col-lg-12">
                           <div class="col-lg-12 form-group">
-                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.PLANNED_OUTPUTS_TEXT"
+                            <label for="P-activity">{{"PLANNED_OUTPUTS_FOR_ACTIVITY"
                               | translate}}</label>
                             <input type="text" class="form-control" [(ngModel)]="activity.output" #output>
                           </div>
@@ -768,7 +768,7 @@
                             <div class="col-lg-2">
                               <button class="btn btn-secondary"
                                       (click)="saveActivity(sector, activity, i)">
-                                {{"GLOBAL.SAVE" | translate}}
+                                {{"SAVE" | translate}}
                               </button>
                             </div>
                           </div>
@@ -905,7 +905,7 @@
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="V-doc" value="1"
                        #video
                        (change)="updateMediaFormat(video.value)" [checked]="mediaFormat == 1">
-                {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VIDEO" | translate}}</label>
+                {{"VIDEO" | translate}}</label>
               <label for="VP-doc" class="Checkbox--ribbon Left col-lg-4 col-md-4 col-sm-4">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="F-document" id="VP-doc" value="2"
                        #both

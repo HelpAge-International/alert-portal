@@ -16,7 +16,7 @@
 
         <form (ngSubmit)="submit()">
             <div class="row">
-                <p class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR' | translate }}</strong></p>
+                <p class="col-sm-12"><strong>{{ 'ADD_PARTNER.SECTOR' | translate }}</strong></p>
                 <div class="col-sm-4">
                     <select class="form-control" id="sector"  name="sector"
                             [(ngModel)] = "coordinationArrangement.sector">
@@ -90,7 +90,7 @@
 
             <!--Save and cancel-->
             <div class="row Spaced">
-                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
                 <div class="col-sm-1 margin-top-one">
                     <a href="javascript:void(0)" (click)="goBack()">
                         {{ 'GLOBAL.CANCEL' | translate }}

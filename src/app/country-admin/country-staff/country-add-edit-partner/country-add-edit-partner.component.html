@@ -54,7 +54,7 @@
                 <input type="text" class="form-control" [(ngModel)]="partner.position" name="position" id="Position" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
             </div>
             <div class="col-lg-4 col-md-6 form-group">
-                <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
+                <label for="e-Address">{{"EMAIL_ADDRESS"| translate}}</label>
                 <input [disabled]="isEdit" type="text" class="form-control" [(ngModel)]="userPublic.email" name="email" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}">
             </div>
             <div class="col-lg-4 col-md-6 form-group">
@@ -152,7 +152,7 @@
                         <input type="checkbox" name="customMpaDelete"
                             [(ngModel)] = "partner.permissions && partner.permissions.customMpa.delete"
                             (checked) = "partner.permissions.customMpa.delete">
-                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                        {{"DELETE"| translate}}</label>
                 </div>
                 <div class="Form-submit__wrapper">
                     <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
@@ -207,7 +207,7 @@
                         <input type="checkbox" name="customApaDelete"
                             [(ngModel)] = "partner.permissions && partner.permissions.customApa.delete"
                             (checked) = "partner.permissions.customApa.delete">
-                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                        {{"DELETE"| translate}}</label>
                 </div>
                 <div class="Form-submit__wrapper">
                     <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
@@ -237,7 +237,7 @@
                         <input type="checkbox" name="notesDelete"
                             [(ngModel)] = "partner.permissions && partner.permissions.notes.delete"
                             (checked) = "partner.permissions.notes.delete">
-                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                        {{"DELETE"| translate}}</label>
                 </div>
                 <div class="Form-submit__wrapper">
                     <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
@@ -267,7 +267,7 @@
                         <input type="checkbox" name="contactsDelete"
                             [(ngModel)] = "partner.permissions && partner.permissions.contacts.delete"
                             (checked) = "partner.permissions.contacts.delete">
-                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DELETE"| translate}}</label>
+                        {{"DELETE"| translate}}</label>
                 </div>
                 <div class="Form-submit__wrapper">
                     <div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE"| translate}}</div>
@@ -297,7 +297,7 @@
                         <input type="checkbox" name="crossCountryDownload"
                             [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.download"
                             (checked) = "partner.permissions.crossCountry.download">
-                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD"| translate}}</label>
+                        {{"DOWNLOAD"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
                         <input type="checkbox" name="crossCountryEdit"
                             [(ngModel)] = "partner.permissions && partner.permissions.crossCountry.edit"
@@ -343,7 +343,7 @@
                         <input type="checkbox" name="interAgencyDownload"
                             [(ngModel)] = "partner.permissions && partner.permissions.interAgency.download"
                             (checked) = "partner.permissions.interAgency.download">
-                        {{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.DOWNLOAD"| translate}}</label>
+                        {{"DOWNLOAD"| translate}}</label>
                     <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
                         <input type="checkbox" name="interAgencyEdit"
                             [(ngModel)] = "partner.permissions && partner.permissions.interAgency.edit"

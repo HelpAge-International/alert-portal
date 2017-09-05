@@ -246,7 +246,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       return false;
     }
     if (typeof (this.isResponseMember) === 'undefined') {
-      this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_RESPONSE_TEAM_ANSWER';
+      this.warningMessage = 'AGENCY_ADMIN.STAFF.NO_REPONSE_TEAM_ANSWER';
       return false;
     }
     if (!CustomerValidator.EmailValidator(this.email)) {

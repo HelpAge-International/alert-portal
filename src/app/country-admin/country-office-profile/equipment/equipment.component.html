@@ -38,7 +38,7 @@
       <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE' | translate }}</strong></div>
       <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></div>
       <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></div>
-      <div class="col-sm-5"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS' | translate }}</strong></div>
+      <div class="col-sm-5"><strong>{{ 'GLOBAL.STATUS' | translate }}</strong></div>
     </div>
     <div class="row Line-row Spaced-above"></div>
 
@@ -60,7 +60,7 @@
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditEquipment(equipment.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -95,7 +95,7 @@
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote('equipment', equipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote('equipment', equipment.id, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -174,7 +174,7 @@
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditSurgeEquipment(surgeEquipment.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -190,7 +190,7 @@
         </div>
 
         <div class="row Spaced-above"> <!--Name-->
-          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_NAME" |
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" |
             translate}}</strong></p>
           <p class="col-sm-5 margin-left-five">{{ surgeEquipment.contactName }}</p>
         </div>
@@ -202,7 +202,7 @@
         </div>
 
         <div class="row"> <!--Email-->
-          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_EMAIL" |
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" |
             translate}}</strong></p>
           <p class="col-sm-5 margin-left-five"><a href="mailto:{{ surgeEquipment.contactEmail }}">{{
             surgeEquipment.contactEmail }}</a></p>
@@ -236,7 +236,7 @@
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote('surgeEquipment', surgeEquipment.id, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -286,7 +286,7 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -319,7 +319,7 @@
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editAction(activeEquipmentType, activeEquipmentId, activeNote)">{{"GLOBAL.SAVE" | translate}}
+                (click)="editAction(activeEquipmentType, activeEquipmentId, activeNote)">{{"SAVE" | translate}}
         </button>
       </div>
     </div>

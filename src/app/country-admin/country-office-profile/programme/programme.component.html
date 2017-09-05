@@ -31,9 +31,9 @@
       </div>
       <div *ngIf="canEdit && isEdit" class="col-sm-0 padding-left-two">
         <button data-toggle="modal" data-target="#sectorSelection"
-                class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}
+                class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
         </button>
-        <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#sectorSelection">{{"GLOBAL.EDIT" |-->
+        <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#sectorSelection">{{"EDIT" |-->
           <!--translate}}</a>-->
       </div>
     </div>
@@ -84,7 +84,7 @@
 
         <div *ngIf="canEdit && isEdit" class="col-sm-1">
           <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/', m.key]"
-                  class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}
+                  class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
           </button>
         </div>
 
@@ -120,7 +120,7 @@
               <div class="row">
                 <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
                 <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote"
-                   class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"GLOBAL.EDIT" |
+                   class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"EDIT" |
                   translate}}</a>
                 <p *ngIf="note.uploadBy == uid" href="#" class="padding-left-one">|</p>
                 <a *ngIf="note.uploadBy == uid" href="#deleteNote" data-toggle="modal" data-target="#deleteNote"
@@ -152,7 +152,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h6 class="modal-title" class="Spaced-above">
-              {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.EDIT_NOTE_MODAL_TITLE" | translate}}</h6>
+              {{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -163,7 +163,7 @@
           <div class="row Right-aligned Spaced col-sm-12">
             <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
             <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase " (click)="saveLog()">
-              {{"GLOBAL.SAVE" | translate}}
+              {{"SAVE" | translate}}
             </button>
           </div>
         </div>
@@ -249,7 +249,7 @@
       <div class="row Right-aligned Spaced col-sm-12">
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="saveSectors()">
-          {{"GLOBAL.SAVE" | translate}}
+          {{"SAVE" | translate}}
         </button>
       </div>
     </div>

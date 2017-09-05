@@ -31,7 +31,7 @@
       <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="editGroups($event)">
         {{"SYSTEM_ADMIN.SETTING.EDIT_GROUPS" | translate | uppercase}}
       </button>
-      <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEditedGroups()">{{"GLOBAL.SAVE" | translate |
+      <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEditedGroups()">{{"SAVE" | translate |
         uppercase}}</button>
       <button class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEditGroups($event)">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
@@ -50,7 +50,7 @@
                  [(ngModel)]="newGroupName">
         </div>
         <div class="col-md-8 col-4">
-          <button type="button" class="btn btn-outline-primary" (click)="addGroup()">{{"GLOBAL.SAVE" | translate}}
+          <button type="button" class="btn btn-outline-primary" (click)="addGroup()">{{"SAVE" | translate}}
           </button>
         </div>
       </div>

@@ -65,7 +65,7 @@
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditStockCapacity(STOCK_TYPE.Country, stockCapacity.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -98,7 +98,7 @@
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit && note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -172,7 +172,7 @@
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditStockCapacity(STOCK_TYPE.External, stockCapacity.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -205,7 +205,7 @@
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -254,7 +254,7 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -286,7 +286,7 @@
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editAction(activeStockCapacity, activeNote)">{{"GLOBAL.SAVE" | translate}}
+                (click)="editAction(activeStockCapacity, activeNote)">{{"SAVE" | translate}}
         </button>
       </div>
     </div>

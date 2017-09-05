@@ -46,7 +46,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.EDIT_MPA_APA';
-          this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
+          this.buttonText = 'GLOBAL.SAVE_CHANGES';
           this.editActionId = params["id"];
           this.editInitialDisable = true;
         }

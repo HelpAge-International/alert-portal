@@ -47,7 +47,7 @@
             </div><br>
 
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_NAME' | translate }}</strong></h6>
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate }}</strong></h6>
                 <div class="col-sm-4">
                     <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="contactName"
                         [(ngModel)]="surgeEquipment.contactName">
@@ -55,7 +55,7 @@
             </div><br>
 
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_EMAIL' | translate }}</strong></h6>
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL' | translate }}</strong></h6>
                 <div class="col-sm-4">
                     <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="contactEmail"
                         [(ngModel)]="surgeEquipment.contactEmail">
@@ -71,7 +71,7 @@
 
             <!--Save and cancel-->
             <div class="row Spaced">
-                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
                 <div class="col-sm-1 margin-top-one">
                     <a href="javascript:void(0)" (click)="goBack()">
                         {{ 'GLOBAL.CANCEL' | translate }}

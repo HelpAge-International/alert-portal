@@ -116,25 +116,25 @@
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customMpa.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customMpa.edit, ['customMpa', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
+                                       (click)="selectUserType(permissionSettings?.customMpa.edit, ['customMpa', 'edit'], 'EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customMpa.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customMpa.delete, ['customMpa', 'delete'], 'PERMISSIONS.DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
+                                       (click)="selectUserType(permissionSettings?.customMpa.delete, ['customMpa', 'delete'], 'DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
@@ -206,25 +206,25 @@
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customApa.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customApa.edit, ['customApa', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
+                                       (click)="selectUserType(permissionSettings?.customApa.edit, ['customApa', 'edit'], 'EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customApa.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customApa.delete, ['customApa', 'delete'], 'PERMISSIONS.DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
+                                       (click)="selectUserType(permissionSettings?.customApa.delete, ['customApa', 'delete'], 'DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
@@ -256,25 +256,25 @@
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.notes.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.notes.edit, ['notes', 'edit'], 'PERMISSIONS.EDIT', 'GLOBAL.NOTES')">
+                                       (click)="selectUserType(permissionSettings?.notes.edit, ['notes', 'edit'], 'EDIT', 'GLOBAL.NOTES')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.notes.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.notes.delete, ['notes', 'delete'], 'PERMISSIONS.DELETE', 'GLOBAL.NOTES')">
+                                       (click)="selectUserType(permissionSettings?.notes.delete, ['notes', 'delete'], 'DELETE', 'GLOBAL.NOTES')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
@@ -307,25 +307,25 @@
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.countryContacts.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.countryContacts.edit, ['countryContacts', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
+                                       (click)="selectUserType(permissionSettings?.countryContacts.edit, ['countryContacts', 'edit'], 'EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.countryContacts.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.countryContacts.delete, ['countryContacts', 'delete'], 'PERMISSIONS.DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
+                                       (click)="selectUserType(permissionSettings?.countryContacts.delete, ['countryContacts', 'delete'], 'DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
@@ -395,7 +395,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="saveUserType()">{{"GLOBAL.SAVE"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="saveUserType()">{{"SAVE"| translate}}</button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>

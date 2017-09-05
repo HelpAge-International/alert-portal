@@ -48,7 +48,7 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[systemAdminEmail]}">
-          <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
+          <label for="Email">{{"EMAIL_ADDRESS" | translate}}*</label>
           <input type="text" class="form-control" id="Email" [(ngModel)]="systemAdminEmail">
         </div>
       </div>
@@ -60,7 +60,7 @@
       </div>
     </div>
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</div>
+      <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}</div>
       <div class="btn btn-outline-secondary" routerLink="/system-admin/agency">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
   </div>

@@ -64,7 +64,7 @@
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminEmail]}">
-            <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
+            <label for="Email">{{"EMAIL_ADDRESS" | translate}}*</label>
             <input type="text" class="form-control" id="Email" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="countryAdminEmail"
                    name="countryAdminEmail">
           </div>
