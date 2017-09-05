@@ -224,7 +224,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
     this.alerts = {};
     if (!(this.agencyAddressLine1)) {
       this.alerts[this.agencyAddressLine1] = true;
-      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
+      this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
       return false;
     } else if (!(this.agencyCountry) && (this.agencyCountry != 0)) {
       this.alerts[this.agencyCountry] = true;

@@ -302,7 +302,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   validateForm(): boolean {
     console.log("validate form");
     if (!this.title) {
-      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_TITLE";
+      this.waringMessage = "GLOBAL.ACCOUNT_SETTINGS.NO_TITLE";
       this.showAlert();
       return false;
     }

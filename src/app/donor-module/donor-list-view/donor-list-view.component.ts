@@ -238,7 +238,7 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
 
     this.otherRegion = new RegionHolder();
     this.otherRegion.regionId = "Unassigned";
-    this.otherRegion.regionName  = this.translate.instant("OTHER_COUNTRIES");
+    this.otherRegion.regionName  = this.translate.instant("AGENCY_ADMIN.COUNTRY_OFFICES.OTHER_COUNTRIES");
     this.mapHelper.getRegionsForAgency(this.uid, 'donor', (key, obj) => {
       let hRegion = new RegionHolder();
       hRegion.regionName = obj.name;

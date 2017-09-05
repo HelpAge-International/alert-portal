@@ -8,7 +8,7 @@
         <div class="Back--button row" (click)="goBack()">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT_EQUIPMENT' | translate }}</div> <!-- Back button-->
         <div class="Header-title__wrap">
             <h1 *ngIf="!equipment.id">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.ADD_EQUIPMENT_TITLE' | translate }}</h1>
-            <div class="col-sm-11" *ngIf="equipment.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT_EQUIPMENT_TITLE' | translate }}</h1></div>
+            <div class="col-sm-11" *ngIf="equipment.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT' | translate }}</h1></div>
             <div class="col-sm-1 Right-aligned" *ngIf="equipment.id">
                 <button class="btn btn-danger text-uppercase" (click)="deleteEquipment()">{{ 'DELETE' | translate }}</button>
             </div>

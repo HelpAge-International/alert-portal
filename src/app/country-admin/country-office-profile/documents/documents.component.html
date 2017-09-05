@@ -12,7 +12,7 @@
     <app-country-office-profile-menu></app-country-office-profile-menu>
 
     <div class="Sub-header-title__wrap">
-      <h2>{{ 'DOCUMENTS.TITLE_TEXT' | translate }}</h2>
+      <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
       <button *ngIf="countryPermissionsMatrix.other.DownloadDocuments" type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
               [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
       </button>
@@ -80,7 +80,7 @@
             <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.MODULE' | translate }}</div>
             <div class="col-lg-3 col-md-3">{{ 'GLOBAL.TITLE' | translate }}</div>
             <div class="col-lg-2 col-md-2">{{ 'GLOBAL.NAME' | translate }}</div>
-            <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.SIZE' | translate }}</div>
+            <div class="col-lg-1 col-md-1">{{ 'GLOBAL.SIZE' | translate }}</div>
             <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS2.UPLOADED_BY' | translate }}</div>
             <div class="col-lg-1 col-md-2">{{ 'GLOBAL.DATE' | translate }}</div>
           </div>

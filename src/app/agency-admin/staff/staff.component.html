@@ -57,7 +57,7 @@
 
         <div [hidden]="office?.staffs.length==0" class="row Line-row Small-spaced Header">
           <div class="col-lg-2">{{"GLOBAL.NAME"| translate}}</div>
-          <div class="col-lg-2">{{"DEPARTMENT"| translate}}</div>
+          <div class="col-lg-2">{{"GLOBAL.DEPARTMENT"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
           <div class="col-lg-1"></div>
@@ -83,7 +83,7 @@
             <div class="row  Spaced">
               <div class="col-sm-10 col-8"><h4>{{"ADDITIONAL_INFORMATION"| translate}}</h4></div>
               <div class="col-sm-2 col-4 text-right">
-                <button class="btn-link" (click)="closeAdditionalInfo(staff.id)">{{"CLOSE" | translate}}</button>
+                <button class="btn-link" (click)="closeAdditionalInfo(staff.id)">{{"GLOBAL.CLOSE" | translate}}</button>
               </div>
             </div>
             <div class="row">
@@ -141,7 +141,7 @@
       <div *ngIf="showCountryStaff.get('globaluser')">
         <div class="row Line-row Small-spaced Header">
           <div class="col-lg-2">{{"GLOBAL.NAME"| translate}}</div>
-          <div class="col-lg-2">{{"DEPARTMENT"| translate}}</div>
+          <div class="col-lg-2">{{"GLOBAL.DEPARTMENT"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
           <div class="col-lg-1"></div>
@@ -167,7 +167,7 @@
             <div class="row  Spaced">
               <div class="col-sm-10 col-8"><h4>{{"ADDITIONAL_INFORMATION"| translate}}</h4></div>
               <div class="col-sm-2 col-4 text-right">
-                <button class="btn-link" (click)="closeAdditionalInfo(globalUser.$key)">{{"CLOSE"| translate}}</button>
+                <button class="btn-link" (click)="closeAdditionalInfo(globalUser.$key)">{{"GLOBAL.CLOSE"| translate}}</button>
               </div>
             </div>
             <div class="row">

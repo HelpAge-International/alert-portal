@@ -31,7 +31,7 @@
             translate}}</p>
         </div>
         <div class="Response__rule__seperator col-sm-12">
-          <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
+          <p><b>{{"HAZARD_SCENARIO" |
             translate}}</b></p>
           <p>{{responsePlanToShow.hazardScenario ? (HazardScenariosList[responsePlanToShow.hazardScenario] | translate)
             :
@@ -56,7 +56,7 @@
         <div class="Ribbon__header__number"><span>{{showingSections.indexOf(1)+1}}</span>{{"GLOBAL.OF" |
           translate}} {{showingSections?.length}}
         </div>
-        <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
+        <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.PLAN_CONTEXT" |
           translate}}</h4>
         <div class="Ribbon__header__status text-primary"></div>
         <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
@@ -111,7 +111,7 @@
         <div class="Ribbon__header__number"><span>{{showingSections.indexOf(2)+1}}</span>{{"GLOBAL.OF" |
           translate}} {{showingSections?.length}}
         </div>
-        <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
+        <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BASIC_INFORMATION" |
           translate}}</h4>
         <div class="Ribbon__header__status text-primary"></div>
         <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
@@ -207,7 +207,7 @@
     </div>
     <div class="Response__content No-indent Spaced">
       <div class="Response__rule__seperator col-sm-12">
-        <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_MANY_BENEFICIARIES?" |
+        <p><b>{{"HOW_MANY_BENEFICIARIES" |
           translate}}</b></p>
         <p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.BENEFICIARIES" | translate}} -
           {{responsePlanToShow.peoplePerHousehold && responsePlanToShow.numOfHouseholds &&
@@ -310,7 +310,7 @@
             <p>{{activity.output}}</p>
           </div>
           <div class="Response__rule__seperator col-sm-12">
-            <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
+            <p><b>{{"PROVIDE_ONE_INDICATOR" |
               translate}}</b></p>
             <p>{{activity.indicator}}</p>
           </div>
@@ -371,7 +371,7 @@
         <div class="Ribbon__header__number"><span>{{showingSections.indexOf(7)+1}}</span>{{"GLOBAL.OF" |
           translate}} {{showingSections?.length}}
         </div>
-        <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
+        <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.MONITORING_ACC_LEARNING" |
           translate}}</h4>
         <div class="Ribbon__header__status text-primary"></div>
         <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
@@ -414,7 +414,7 @@
     <div class="Response__content No-indent Spaced">
 
       <div class="Response__rule__seperator col-sm-12">
-        <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT" |
+        <p><b>{{"TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT" |
           translate}}</b></p>
         <div class="row">
           <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} < 18</p>
@@ -485,7 +485,7 @@
         <p class="col-sm-4">{{transportNarrative | translate}}</p>
       </div>
       <div class="row">
-        <p class="col-sm-4"><b>C: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.SECURITY" |
+        <p class="col-sm-4"><b>C: {{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Security" |
           translate}}</b></p>
         <p class="col-sm-4">£{{securityBudget}}</p>
         <p class="col-sm-4">{{securityNarrative | translate}}</p>

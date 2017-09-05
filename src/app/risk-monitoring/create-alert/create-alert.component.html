@@ -69,7 +69,7 @@
 
     <!--Affected Areas-->
     <br><br>
-    <h6 class="Spaced-above font-weight-bold">{{"RISK_MONITORING.ADD_ALERT.INPUTS.AFFECTED_AREAS" | translate}}</h6>
+    <h6 class="Spaced-above font-weight-bold">{{"ALERT.AFFECTED_AREAS" | translate}}</h6>
     <div class="locations_affected__wrap--risk row text-left Spaced-above">
       <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
       <div class="col-sm-12 row" *ngFor="let location of alertData.affectedAreas; let locationKey = index">
@@ -135,7 +135,7 @@
 
     <!--Information sources and notes -->
     <br>
-    <h6><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.INFORMATION_SOURCE_NOTES" | translate}}</b></h6>
+    <h6><b>{{"ALERT.INFO_AND_NOTES" | translate}}</b></h6>
     <div class="Spaced-above form-group col-sm-12 row">
       <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5"
              [(ngModel)]="alertData.infoNotes">
@@ -145,7 +145,7 @@
     <br>
     <div class="Form-submit__wrapper">
       <div *ngIf="alertData.alertLevel != AlertLevels.Red" class="btn btn-primary" (click)="saveAlert()">
-        {{"RISK_MONITORING.ADD_ALERT.CONFIRM_ALERT_LEVEL" |
+        {{"ALERT.CONFIRM_ALERT_LEVEL" |
         translate}}
       </div>
       <div *ngIf="alertData.alertLevel == AlertLevels.Red" class="btn btn-primary" (click)="saveAlert()">

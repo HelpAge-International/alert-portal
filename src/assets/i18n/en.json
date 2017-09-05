@@ -1,13 +1,9 @@
 {
-    "ACCOUNT_SETTINGS":"Account Settings",
     "ADD_GENERIC_PREPARED":"Add generic preparedness actions",
     "EVERY":"Every",
-    "EXPORT_SELECTED_DOCUMENTS":"Export selected documents",
     "YOU_ARE_ABOUT_TO_EXPORT":"You are about to export",
     "DOCUMENT_S":"document(s)",
-    "WITH_A_TOTAL_SIZE_OF":"with a total size of",
     "ARE_YOU_SURE_YOU_WISH_TO_CONTINUE":"are you sure you wish to continue?",
-    "CANCEL":"Cancel",
     "CONFIRM":"Confirm",
     "ADVANCED_PREP_ACTIONS":"Advanced Preparedness Actions",
     "TOGGLE_DROPDOWN":"Toggle Dropdown",
@@ -27,15 +23,12 @@
     "DOC":"Doc",
     "INACTIVE_UNTIL_RED_ALERT_LEVEL":"Inactive until Red Alert Level",
     "COPY_ACTION":"Copy action",
-    "BUDGET":"Budget",
     "TYPE":"Type",
-    "DEPARTMENT":"Department",
     "ASSIGNED_TO":"Assigned to",
     "ASSIGN_TO":"Assign to",
     "DELETE":"Delete",
     "STOP_EDITING":"Stop editing",
     "DOWNLOAD_ALL":"Download all",
-    "CLOSE": "Close",
     "DOWNLOAD":"Download",
     "CONFIRM_THIS_ACTION_IS_COMPLETED":"Confirm this action is completed.",
     "ADD_A_COMPLETION_NOTE_HERE":"Add a completion note here",
@@ -53,7 +46,6 @@
     "EDIT_ACTION":"Edit action",
     "BY":"by",
     "ARCHIVED_ACTIONS":"Archived Actions",
-    "RE_ACTIVATE":"Re-activate",
     "SAVE":"Save",
     "HELPAGE_OVERVIEW":"HelpAge International : Overview",
     "COUNTRY_OFFICE_PROFILE":"Country Office Profile",
@@ -62,15 +54,12 @@
     "ADVANCED_PREPAREDNESS":"Advanced preparedness",
     "PREPAREDNESS_BUDGET":"Preparedness budget",
     "PLANS":"Plans",
-    "RISK":"Risk",
     "POPULATION_AFFECTED":"Population affected",
     "AFFECTED_AREAS":"Affected areas",
     "AND":"and",
     "VIEW_MY_AGENCY":"View My Agency",
     "VIEW_AGENCIES_IN_MY_COUNTRIES":"View agencies in my country",
     "PREPAREDNESS_TEXT":"Preparedness",
-    "AGENCIES_IN":"Agencies in",
-    "OVERVIEW":"Overview",
     "REASONS_FOR_RED_ALERT_REQUEST":"Reasons for red alert request",
     "AGENCY_SETTINGS":"Agency Settings",
     "NETWORK_DETAILS":"Network details",
@@ -109,7 +98,6 @@
     "PRESENCE_IN_COUNTRY":"Presence in the country before project",
     "CURRENT_PROGRAMMES":"Current programmes",
     "PRE_EXISITING_PARTNER":"Pre-existing partner",
-    "NO_PRE-EXISTING_PRESENCE":"No pre-existing presence",
     "METHOD_OF_IMPLEMENTATION":"Method of Implementation",
     "DIRECTLY_THROUGH_STAFF":"Directly through field staff",
     "WORKING_WITH_PARTNERS":"Working through partners",
@@ -167,7 +155,6 @@
     "TOTAL_AUTOSUM":"Total (autosum)",
     "FORMULA_BENEFICIARIES":"(Beneficiaries = People Per Household * Number Of Households)",
     "PLEASE_MARK":"(please mark)",
-    "EXPORT_FOR_START_FUND":"Export for Start Fund",
     "MINIMUM_PREP_ACTIONS":"Minimum Preparedness Actions",
     "ACTIONS_ASSIGNED_TO":"Actions assigned to",
     "ME":"me",
@@ -188,7 +175,6 @@
     "CONTACT_EMAIL":"Contact Email Address",
     "STATUS":"Status",
     "ACTIONS":"Actions",
-    "ACTIVE":"Active",
     "PARTNERSHIP_VALIDATION":"Partnership validation",
     "PARTNERSHIP_DETAILS":"Partnership details",
     "YOUR_ORGANISATION":"Your organisation",
@@ -220,7 +206,6 @@
     "ERROR_UPDATING_OTHER_HAZARD_REF":"Error updating other hazard reference",
     "ERROR_UPDATING_OTHER_HAZARD_DATA":"Error updating the other hazard data",
     "REGION":"Region",
-    "OTHER_COUNTRIES":"Other Countries",
     "AGENCY":"Agency",
     "OTHER":"Other",
     "SUCCESSFULLY_VALIDATE_PARTNERSHIP":"Successfully validate partnership!",
@@ -245,7 +230,6 @@
         "REJECT": "Reject",
         "ACTION_LEVEL": "Action Level",
         "WARNING": "Warning!",
-        "COUNTRY_TEXT": "Country",
         "MALE": "Male",
         "FEMALE": "Female",
         "TITLE": "Title",
@@ -296,7 +280,6 @@
         "NO": "No",
         "TOTAL": "TOTAL",
         "GRAND_TOTAL": "GRAND TOTAL",
-        "WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
         "NAME_MISSING": "Name is missing!",
         "EMAIL_NOT_VALID": "Email address is not valid!",
         "GENERAL_LOGIN_ERROR": "The email address or password you entered is incorrect. Please check and try again",
@@ -339,7 +322,6 @@
             "ADDRESS_LINE_2": "Address Line 2",
             "ADDRESS_LINE_3": "Address Line 3",
             "COUNTRY": "Country",
-            "EMAIL_ADDRESS": "Email Address",
             "POSTCODE": "Postcode/Zip Code",
             "PHONE": "Phone Number",
             "WEB_ADDRESS": "Website address",
@@ -351,7 +333,6 @@
             "AGENCY_ADMINS": "Agency Administrators",
             "GLOBAL_DIRECTOR": "Global Directors",
             "GLOBAL_DIRECTOR_SINGLE": "Global Director",
-            "GLOBAL_USER": "Global Users",
             "COUNTRY_USER": "Country User",
             "REGIONAL_DIRECTOR": "Regional Directors",
             "REGIONAL_DIRECTOR_SINGLE": "Regional Director",
@@ -385,7 +366,6 @@
             "NO_L_NAME": "Please enter the last name",
             "NO_EMAIL": "Please enter the email address",
             "NO_CITY": "Please enter the the city",
-            "NO_PHONE": "Please enter the phone number",
             "NO_COUNTRY": "Please select a country",
             "NO_TITLE": "Please select a title"
         },
@@ -649,7 +629,6 @@
             "ZW": "Umbazi"
         },
         "DEPARTMENT_LIST": {
-            "FINANCE": "Finance",
             "HR": "HR",
             "PROGRAMME": "Programme"
         },
@@ -658,10 +637,6 @@
             "GREEN": "Green alert level",
             "AMBER": "Amber alert level",
             "RED": "Red alert level"
-        },
-        "GEO_LOCATION": {
-            "NATIONAL": "National",
-            "SUBNATIONAL": "Subnational"
         },
         "ALERTS": {
             "GREEN": "Green Alert",
@@ -784,9 +759,7 @@
         "ACTIONS": {
             "CREATE_NEW_ACTION": "Create new action",
             "EDIT_CHS_ACTION": "Edit CHS action",
-            "SAVE_BUTTON_TEXT": "Save new action",
             "EDIT_CONFIRM_SAVE_CHANGES": "Changes saved",
-            "NO_CONTENT_ERROR": "Please insert the action content",
             "EMPTY_LIST": "No default minimum preparedness or advanced preparedness actions have been added to ALERT",
             "CHS_MPA": {
                 "CHS_TITLE_TEXT": "CHS minimum preparedness actions",
@@ -796,10 +769,8 @@
                 "EDIT_CHS_MPA": "Edit CHS minimum preparedness action"
             },
             "GENERIC_MPA_APA": {
-                "TITLE_TEXT": "Generic MPA/APAs",
                 "LEVEL": "Level",
                 "CREATE_NEW_GENERIC_MPA": "Create new generic MPA/APA",
-                "MPA_OR_APA?": "Is this a minimum or advanced preparedness action?",
                 "EDIT_MPA_APA": "Edit generic preparedness action",
                 "EDIT_MPA_OR_APA": "MPA_OR_APA",
                 "NO_CATEGORY_ERROR": "Please select a category",
@@ -887,7 +858,6 @@
             "ADD_NEW_ACTIONS": "Add new action(s)",
             "NO_ACTIONS": "No mandated preparedness actions have been added to ALERT",
             "NO_GENERIC_ACTIONS": "No generic preparedness actions have been added to ALERT",
-            "MANDATED": "Mandated",
             "CREATE_NEW_MANDATED_PA": "Create new mandated preparedness action",
             "MPA_OR_APA?": "Is this a minimum or adavanced preparedness action?",
             "ADD_DEPARTMENT_TITLE": "Add new department",
@@ -917,19 +887,15 @@
             "ALL_OFFICES": "All offices",
             "FIELD_OFFICE": "Field Office",
             "MAIN_OFFICE": "Main Office",
-            "POSITION": "Position",
             "ALL_POSITIONS": "All positions",
             "OFFICE_DIRECTOR": "Office Director",
             "OFFICE_STAFF": "Office Staff",
             "OFFICE_TYPE": "Office Type",
             "USER_TYPE": "User Type",
             "ADDITIONAL_INFO": "Additional Info",
-            "TECHNICAL_SKILLS": "Technical Skills",
-            "ADDITIONAL_NOTIFICATIONS": "Additional Notifications",
             "IS_PART_OF_RESPONSE_TEAM?": "Is this staff member part of the response team?",
             "SAVE_NEW_STAFF": "Save new staff member",
             "GLOBAL_USERS": "Global Users",
-            "NO_TITLE": "Please select a title",
             "NO_FIRST_NAME": "Please enter the first name of the staff",
             "NO_LAST_NAME": "Please enter the last name of the staff",
             "NO_USER_TYPE": "Please select a user type",
@@ -957,14 +923,12 @@
             "REPLACE_IMAGE": "Replace image",
             "REMOVE_IMAGE": "Remove image",
             "DELETE_LOGO_MODEL_TEXT": "Are you sure you want to remove the logo of your agency?",
-            "NO_ADDRESS_1": "Please enter address line 1",
             "NO_COUNTRY": "Please select a country",
             "NO_CITY": "Please enter the name of the city",
             "NO_PHONE": "Please enter the phone number",
             "NO_CURRENCY": "Please select a currency type"
         },
         "SETTINGS": {
-            "TITLE_TEXT": "Agency Settings",
             "DEFAULT_AGENCY_CLOCK_SETTINGS_TEXT": "These are the default clock settings for your agency. However, countries have the ability to make these more frequent if they wish",
             "SAVE_SUCCESS_RES_PLAN_SETTINGS": "Response Plan Settings successfully saved",
             "DEPARTMENTS": {
@@ -972,7 +936,6 @@
                 "DELETE_DEPARTMENTS": "Delete Departments",
                 "DELETE_DEPARTMENTS_INFO": "Departments which has actions assigned to them can not be deleted",
                 "EDIT_DEPARTMENTS": "Edit Departments",
-                "DEPARTMENT_NEW_SUCCESS": "New department added",
                 "DEPARTMENT_SAVED_SUCCESS": "Department successfully saved",
                 "DEPARTMENT_REMOVED_SUCCESS": "Departments successfully removed",
                 "DEPARTMENT_DELETING_ERROR": "Error deleting your departments",
@@ -989,7 +952,6 @@
                 "MINIMUM_PREP_ACTIONS": "Minimum preparedness actions",
                 "ADVANCED_PREP_ACTIONS": "Advanced preparedness actions",
                 "CHS_PREP_ACTIONS": "CHS preparedness actions",
-                "RISK_MONITORING": "Risk Monitoring",
                 "COUNTRY_OFFICE_PROFILE": "Country office profile",
                 "RESPONSE_PLANNING": "Response planning",
                 "GLOBAL_MAPS": "Global maps",
@@ -1014,19 +976,16 @@
                 "APPROVAL_HIERARCHY": "Approval Hierarchy",
                 "PLAN_CONTEXT": "Plan Context",
                 "BASIC_INFORMATION": "Basic Information",
-                "TARGET_POPULATION": "Target Population",
                 "EXPECTED_RESULTS": "Expected Results",
                 "MONITORING_ACC_LEARNING": "Monitoring, Accountability and Learning",
                 "DOUBLE_COUNTING": "Adjust Beneficiaries for Double Counting",
                 "BUDGET": "Budget"
             },
            "DOCUMENTS": {
-                  "TITLE_TEXT": "Documents",
                   "ALL_COUNTRIES": "All countries",
                   "ALL_MODULES": "All modules",
                   "UPLOADED_BY_EVERYONE": "Uploaded by everyone",
                   "SELECT_DOCS": "Select documents",
-                  "YOU_ARE_ABOUT_TO_EXPORT": "You are about to export",
                   "DOCUMENT(S)": "document(s)",
                   "WITH_SIZE": "with a total size of",
                   "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?",
@@ -1061,19 +1020,14 @@
             "TITLE_DELETE_STAFF": "Delete staff member",
             "COUNTRY_OFFICE": "Country Office",
             "USER_TYPE": "User Type",
-            "POSITION": "Position",
             "OFFICE_TYPE": "Office Type",
-            "TECHNICAL_SKILLS": "Technical Skills",
-            "IS_PART_OF_RESPONSE_TEAM": "Is this staff member part of the response team?",
             "SAVE_NEW_STAFF": "Save new staff member",
             "SAVE_CHANGES": "Save changes",
             "EMPTY_LIST": "There are no staff users for this country office.",
-            "NO_TITLE": "Please select a title",
             "NO_FIRST_NAME": "Please enter the first name of the staff",
             "NO_LAST_NAME": "Please enter the last name of the staff",
             "NO_USER_TYPE": "Please select a user type",
             "NO_REGION": "Region cannot be empty",
-            "NO_COUNTRY_OFFICE": "Please select a country office",
             "NO_POSITION": "Please select a position",
             "NO_OFFICE_TYPE": "Please select an office type",
             "NO_EMAIL": "Please enter the email address of the staff",
@@ -1115,7 +1069,6 @@
                 "OTHER": "Other permissions",
                 "ASSIGN": "Assign",
                 "NEW": "New",
-                "ADD_NOTE": "Add note",
                 "VIEW": "View",
                 "DOWNLOAD_DOC": "Download documents"
             }
@@ -1123,9 +1076,7 @@
         "SETTINGS": {
             "TITLE_TEXT": "Country Office Settings",
             "MENU": {
-                "PERMISSIONS": "Permissions",
-                "MODULES": "Modules",
-                "CLOCK_SETTINGS": "Clock settings"
+                "MODULES": "Modules"
             },
             "PERMISSIONS": {
                 "TITLE_TEXT": "Permission settings",
@@ -1137,7 +1088,6 @@
             "MODULES": {
                 "TITLE_TEXT": "Module Settings",
                 "PRIVACY_SETTINGS": "Privacy settings",
-                "STATUS": "Status",
                 "SAVE_MODULES": "Save module settings",
                 "NO_PRIVACY": "Please select the privacy setting",
                 "NO_STATUS": "Please select the status"
@@ -1149,7 +1099,6 @@
                 "RISK_MONITORING_HAZARD_VALID": "Hazards will remain valid for:",
                 "PREPAREDNESS": "Preparedness",
                 "PREPAREDNESS_MPA": "MPA's will remain green for:",
-                "RESPONSE_PLANS": "Response plans",
                 "RESPONSE_PLANS_STATE": "Response plans will remain in an approved state for:",
                 "SAVED_SUCCESS": "Clock Settings successfully saved",
                 "NO_DURATION": "Please enter the duration",
@@ -1183,13 +1132,10 @@
             "TITLE_TEXT": "Country Office Messages"
         },
         "PROFILE": {
-            "TITLE_TEXT": "Country Office Profile",
             "MENU": {
                 "OFFICE_CAPACITY": "Office Capacity",
                 "EQUIPMENT": "Equipment",
-                "COORDINATION": "Coordination",
-                "STOCK_CAPACITY": "Stock Capacity",
-                "DOCUMENTS": "Documents"
+                "COORDINATION": "Coordination"
             },
             "OFFICE_CAPACITY": {
                "TITLE_TEXT": "Office & surge capacity",
@@ -1214,28 +1160,22 @@
                "NO_SUPPORT_SKILLS": "No support skills to show"
              },
             "PARTNERS": {
-                "TITLE_TEXT": "Partners",
                 "IMPLEMENTING_PARTNERS": "Current implementing partners",
                 "EDIT": "Edit partners",
                 "VIEW": "View partners",
                 "EMPTY_LIST": "Use the add partners button to add your partner organisations",
-                "UPDATED": "Updated",
                 "ORGANISATION": "Organisation",
                 "AREAS_OF_OPERATION": "Area(s) of operation",
                 "VIEW_FOR_PROJECTS": "View for all ",
                 "PROJECTS": "Project(s)",
                 "PROJECTS_LOWERCASE": "project(s)",
-                "NOTES": "Notes",
                 "CONTACT_NAME": "Contact's Name",
-                "CONTACT_EMAIL": "Contact's Email",
-                "CONTACT_PHONE": "Contact's Telephone",
                 "CONTACT_POSITION": "Contact's Position"
             },
             "EQUIPMENT": {
                 "TITLE_TEXT": "Equipment & surge equipment",
                 "EDIT": "Edit equipment",
                 "VIEW": "View equipment",
-                "TITLE": "Equipment",
                 "QUANTITY": "Quantity",
                 "SUPPLIER": "Supplier",
                 "RELATIONSHIP": "Relationship",
@@ -1255,7 +1195,6 @@
                 "SUCCESS_DELETED": "The equipment was successfully deleted",
                 "EDIT_EQUIPMENT": "Edit Equipment & surge equipment",
                 "ADD_EQUIPMENT_TITLE": "Add equipment",
-                "EDIT_EQUIPMENT_TITLE": "Edit equipment",
                 "DELETE_DIALOG_TITLE": "Delete Equipment",
                 "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this equipment?",
                 "ADD_SURGE_EQUIPMENT_TITLE": "Add surge equipment",
@@ -1273,7 +1212,6 @@
             "IS_AGENCY_MEMBER": "Is {{value}} a member?",
             "STAFF_MEMBER": "Staff member representing {{value}}",
             "VIEW_LEAD_AGENCY": "View lead agency contact info",
-            "CONTACT_NAME": "Contact's Name",
             "CONTACT_EMAIL": "Contact's Email",
             "CONTACT_PHONE": "Contact's Telephone",
             "SECTOR_LEAD_CONTACT_INFO": "Sector lead contact info",
@@ -1284,7 +1222,6 @@
             "NO_SECTOR": "Please select the sector",
             "NO_SECTOR_LEAD": "Please enter the sector lead",
             "NO_IS_AGENCY_MEMBER": "Please select if the agency is a member",
-            "NO_CONTACT_NAME": "Please enter the contact name",
             "NO_CONTACT_EMAIL": "Please enter the contact email",
             "NO_CONTACT_PHONE": "Please enter the contact phone",
             "DELETE_DIALOG_TITLE": "Delete coordination arrangement",
@@ -1297,12 +1234,8 @@
             "EDIT": "Edit stock capacity",
             "VIEW": "View stock capacity",
             "STOCK_IN": "In-country stock",
-            "UPDATED": "Updated",
-            "DESCRIPTION": "Description",
-            "QUANTITY": "Quantity",
             "LOCATION": "Location",
             "ETA_IN": "Lead time for delivery to affected population",
-            "NOTES": "Notes",
             "STOCK_OUT": "External country stock",
             "ETA_OUT": "Lead time to warehouse",
             "GO_BACK_TITLE": "Edit Stock Capacity",
@@ -1356,7 +1289,6 @@
             "SKYPE_NAME": "Skype name",
             "PHONE": "Office telephone",
             "NO_STAFF_MEMBER": "Please select a staff member",
-            "NO_PHONE": "Please enter the phone number",
             "NO_SKYPE": "Please enter the skype name",
             "DELETE_DIALOG_TITLE": "Delete point of contact",
             "DELETE_DIALOG_CONTENT": "Are you sure you want to delete this point of contact?",
@@ -1390,7 +1322,6 @@
               "TITLE": "Edit Programme",
               "MODAL_EDIT_SECTOR_TITLE": "Sector Expertise Selection"
             },
-            "TITLE": "Programmes",
             "COMMON": {
               "SECTOR_EXPERTISE": "Sector expertise",
               "4WMAPPING": "Programme Mapping",
@@ -1399,8 +1330,6 @@
               "NO_SECTOR_SELECTED": "No sector expertise selected",
               "NO_4WMAPPING" : "Use the edit programme button to enter your Programme mapping",
               "TABLE_WHAT": "What",
-              "TABLE_WHERE": "Where",
-              "TABLE_TO_WHO": "To Whom",
               "TABLE_UPDATED": "Updated"
             },
             "NOTE": "Note",
@@ -1426,7 +1355,6 @@
         }
     },
     "DIALOG": {
-        "TITLE": "ALERT",
         "CONTENT": "Are you sure you want to proceed this action?",
         "ACTIVATE_AGENCY": "Are you sure you want to activate this agency?",
         "DEACTIVATE_AGENCY": "Are you sure you want to deactivate this agency? The agency users will be unable to login to ALERT"
@@ -1441,7 +1369,6 @@
       "CONTENT": "Are you sure you want to delete this indicator?"
     },
     "DELETE_MESSAGE_DIALOG": {
-        "SINGLE_MSG_CONTENT": "Are you sure you want to delete this message?",
         "ALL_MSG_CONTENT": "Are you sure you want to delete all the message?"
     },
     "DELETE_AGENCY_DIALOG": {
@@ -1474,8 +1401,6 @@
         "OTHER": "Other permissions",
         "ASSIGN": "Assign",
         "NEW": "New",
-        "ADD_NOTE": "Add note",
-        "DOWNLOAD": "Download",
         "VIEW": "View",
         "VIEW_CONTACTS": "View contacts",
         "DOWNLOAD_DOC": "Download documents",
@@ -1506,7 +1431,6 @@
             "WAITING_APPROVAL": "Waiting for approval",
             "APPROVED": "Approved",
             "NEEDS_REVIEWING": "Needs reviewing",
-            "PARTNERS": "Partners",
             "DIRECTORS": "Directors",
             "APPROVAL": "Approval",
             "REVIEW_NOTES": "Review notes",
@@ -1542,19 +1466,15 @@
                 "TITLE_TEXT": "Plan Details",
                 "PLAN_NAME": "Plan name",
                 "GEO_LOCATION": "Geographical location (city, province)",
-                "HAZARD_SCENARIO": "Hazard scenario",
                 "PLAN_LEAD": "Plan lead"
             },
             "PLAN_CONTEXT": {
-                "TITLE_TEXT": "Plan Context",
                 "SUMMARIZE_SCENARIO_TEXT": "Summarize the scenario crisis event and how is it likely to develop over the first month",
                 "IMPACT_OF_CRISIS_TEXT": "Explain the impact of the crisis on people you want to help",
                 "AVAILABILITY_OF_FUNDS_TEXT": "Explain the availability of funds your agency can access for this crisis"
             },
             "BASIC_INFORMATION": {
-                "TITLE_TEXT": "Basic Information",
                 "PRESENCE_IN_THE_COUNTRY": "Presence in the country before project",
-                "PRE-EXISTING_PARTNER": "Pre-existing partner",
                 "NO_PRE-EXISTING_PRESENCE": "No pre-existing presence",
                 "METHOD_OF_IMPLEMENTATION": "Method of implementation",
                 "WORKING_WITH_PARTNERS": "Working with partners",
@@ -1568,7 +1488,6 @@
             },
             "TARGET_POPULATION": {
                 "TITLE_TEXT": "Target Population",
-                "HOW_MANY_BENEFICIARIES?": "How many beneficiaries are you targeting?",
                 "PEOPLE_PER_HOUSEHOLD": "People per household",
                 "HOUSEHOLDS": "Households",
                 "BENEFICIARIES": "Beneficiairies",
@@ -1587,7 +1506,6 @@
                 "VIEW_THIS_ACTIVITY": "View this activity",
                 "REMOVE_THIS_ACTIVITY": "Remove this activity",
                 "PLANNED_ACTIVITY_TEXT?": "What is the planned activity?",
-                "INDICATOR_TEXT?": "Provide one indicator (KPI) to capture the effects of this activity",
                 "BENEFICIARIES_OF_ACTIVITIES": "Beneficiaries of this activity by age and gender",
                 "ADD_ANOTHER_ACTIVITY": "Add another activity",
                 "SOURCE_PLAN?": "How are you planning to source your goods for this sector?",
@@ -1601,7 +1519,6 @@
                 "NO_INDICATOR": "Please enter the activity indicator"
             },
             "MON_ACC_LEA": {
-                "TITLE_TEXT": "Monitoring, Accountability and Learning",
                 "DESCRIBE_MON_ACC_LEA": "Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability",
                 "FORMAT_OF_DOCUMENTATION?": "What is the format of the documentation?",
                 "PHOTOGRAPHIC_AND_VIDEO": "Photographic and Video"
@@ -1609,18 +1526,15 @@
             "BENEFICIARIES": {
                 "CONFIRM_BENEFICIARIES_TEXT": "Please confirm or adjust the total number of beneficiaries to prevent double counting of individual beneficiaries",
                 "TOTAL_BENEFICIARIES": "Total beneficiaries",
-                "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting",
-                "TOTAL_BENEFICIARIES_AFTER_ADJUSTMENT": "Total beneficiaries after adjustment"
+                "TOTAL_BENEFICIARIES_ADJUSTED": "Total adjusted for double counting"
             },
             "BUDGET": {
                 "BUDGET_CATEGORY": "Budget Category",
-                "BUDGET_NARRATIVE": "Budget Narrative",
                 "INPUTS": "Inputs",
                 "ADD_ITEM": "Add item",
                 "DO_YOU_HAVE_CAPITAL_ITEMS?": "Do you have any capital items costing more than £1,000?",
                 "CATEGORY": {
                     "TRANSPORT": "Transport",
-                    "SECURITY": "Security",
                     "LOGISTICS_AND_OVERHEADS": "Logistics & overheads",
                     "STAFFING_AND_SUPPORT": "Staffing & support",
                     "MON_AND_EVALUATION": "Monitoring & evaluation",
@@ -1639,7 +1553,6 @@
         "SECTOR": "Sector",
         "OTHER_SECTOR": "Other Sector",
         "TYPE_OF_PROJECT": "Type of project",
-        "AREAS_OF_OPERATION": "Area(s) of operation",
         "AREAS_OF_OPERATION_SELECT_A": "Select a",
         "ADD_ANOTHER_LOCATION": "Add another location",
         "PARTNER_CONTACT_DETAILS": "Partner contact details",
@@ -1652,7 +1565,6 @@
         "NO_ORGANISATION_NAME": "Please enter the organisation name",
         "NO_RELATIONSHIP": "Please enter the organisation relationship",
         "NO_PROJECT_TITLE": "Please enter the project title",
-        "NO_POSITION": "Please enter the position",
         "NO_PROJECT_END_DATE": "Please enter the project end date",
         "PROJECT_END_DATE_IN_PAST": "Project end date cannot be in the past",
         "NO_PROJECT_SECTOR": "Please select the project sector(s)",
@@ -1682,12 +1594,10 @@
         "SUCCESS_DELETED": "The note has been successfully deleted"
     },
     "DOCUMENTS": {
-        "TITLE_TEXT": "Documents",
         "EXPORT": "Export selected documents",
         "ALL_COUNTRIES": "All countries",
         "UPLOADED_BY_EVERYONE": "Uploaded by everyone",
         "MODULE": "Module",
-        "SIZE": "Size",
         "UPLOADED_BY": "Uploaded by",
         "DIALOG_EXPORT_CONTENT": "You are about to export {{value}} document(s) with a total size of {{value2}}MB. Are you sure you wish to continue?"
     },
@@ -1704,12 +1614,10 @@
         "TITLE_TEXT_CREATE_PAGE": "Create new custom action",
         "TITLE_TEXT_EDIT_PAGE": "Edit preparedness action",
         "BACK_BUTTON": "Preparedness actions",
-        "TASK": "What needs to be done?",
         "ACTION_SELECT_TEXT": "Is this a minimum or advanced preparedness action?",
         "HAZARD_SELECT_TEXT": "Hazzard association",
         "DUE_DATE": "Due date",
         "FREQUENCY": "Frequency",
-        "BUDGET": "Budget",
         "BUDGET_NARRATIVE_ERROR": "An error occured submitting your budget narratives",
         "DOCUMENT_REQUIRED_COMPLETION": "Is a document required for completion",
         "SAVE_NEW_ACTION": "Save new action",
@@ -1737,7 +1645,6 @@
         "SEE_COUNTRIES_LIST": "See countries as a list"
     },
     "ALERT": {
-        "RED_ALERT": "Red Alert",
         "RISK": "Risk",
         "PEOPLE": "People",
         "POPULATION_AFFECTED": "Estimated population affected",
@@ -1750,7 +1657,6 @@
         "AMBER_ALERT_LEVEL": "Amber Alert Level",
         "RED_ALERT_LEVEL": "Red Alert Level",
         "REASON_FOR_RED_ALERT": "Reason for red alert request",
-        "ADD_ANOTHER_LOCATION": "Add another location",
         "CONFIRM_ALERT_LEVEL": "Confirm alert level",
         "UPDATE_ALERT_LEVEL": "Update alert level",
         "ACCEPT_REJECT_ALERT_LEVEL":"Accept or reject",
@@ -1803,7 +1709,6 @@
             "NO_TRIGGER_VALUE": "Please enter indicator trigger value",
             "NO_TRIGGER_DURATION_TYPE": "Please select indicator trigger duration type",
             "NO_TRIGGER_FREQUENCY_VALUE": "Please select indicator trigger frequency value",
-            "NO_CATEGORY": "Please select hazard",
             "NO_GEO_LOCATION": "Please select geo location",
             "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
             "SUCCESS_MESSAGE_UPDATE_INDICATOR": "Indicator successfully updated!",
@@ -1816,8 +1721,7 @@
                 "ADD_ANOTHER_SOURCE": "Add another source",
                 "TRIGGER_VALUES": "Trigger Values",
                 "FREQUENCY_MONITORING": "Frequency of monitoring",
-                "GEO_LOCATION": "Geographical location of indicator monitoring",
-                "LOCATION_SELECT": "Please select the locations affected"
+                "GEO_LOCATION": "Geographical location of indicator monitoring"
             },
             "SAVE_INDICATOR": "Save indicator",
             "SAVE_NEW_INDICATOR": "Save new indicator",
@@ -1838,12 +1742,9 @@
             "TITLE_PAGE": "Create an alert",
             "INPUTS": {
                 "SELECT_ALERT": "Select the Alert Level",
-                "AFFECTED_AREAS": "Affected areas",
                 "LOCATION_SELECT": "Please select the locations affected",
-                "INFORMATION_SOURCE_NOTES": "Information sources and notes",
                 "ADD_ANOTHER_AREAS": "Add another areas"
             },
-            "CONFIRM_ALERT_LEVEL": "Confirm alert level",
             "ERROR_ONLY_NUMBERS": "Please enter only numbers for this field."
         },
         "ADD_HAZARD": {
@@ -1864,9 +1765,7 @@
             "ADD_SEASONAL_TO_CALENDAR_NO_START_DATE": "Please complete the start date",
             "ADD_SEASONAL_TO_CALENDAR_NO_END_DATE": "Please complete the end date",
             "ADD_SEASONAL_TO_CALENDAR_NO_COLOUR": "Please select a colour",
-            "SEASON_NAME": "Season Name",
             "START_DATE": "Start Date",
-            "END_DATE": "End Date",
             "NEXT": "Next"
         },
         "EXPORT_LOG": {
@@ -1897,7 +1796,6 @@
             "CHECK_EVERY": "Check every",
             "INFO_SOURCES": "Info sources",
             "LOG": "Log",
-            "UPDATE_INDICATOR_STATE": "Update",
             "BY_USER": "By",
             "ADD_LOG_ENTRY": "ADD LOG ENTRY",
             "EXPORT_LOG": "EXPORT LOG",
@@ -1907,7 +1805,6 @@
             "PLACEHOLDER_ADD_LOG": "Add a log entry",
             "ARCHIVED_HAZARDS": "Archived Hazards",
             "VIEW_ALL": "View all",
-            "ACTIVATE": "Activate",
             "NATIONAL": "National",
             "SUBNATIONAL": "Subnational",
             "MODAL": {

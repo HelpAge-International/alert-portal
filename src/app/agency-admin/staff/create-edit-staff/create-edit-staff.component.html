@@ -72,20 +72,9 @@
             <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
           </select>
         </div>
-        <!--</div>-->
 
-        <!--<div class="row Spaced">-->
-        <!--<div class="col-lg-4 col-md-6 form-group">-->
-        <!--<label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>-->
-        <!--<select class="form-control" id="Position" [(ngModel)]="position" name="position" required>-->
-        <!--<option *ngFor="let position of STAFF_POSITION_SELECTION; let idx = index" [hidden]="idx==0"-->
-        <!--[value]="position">{{STAFF_POSITION[position] |-->
-        <!--translate}}-->
-        <!--</option>-->
-        <!--</select>-->
-        <!--</div>-->
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>
+          <label for="Position">{{"GLOBAL.USER_INFO.POSITION"| translate}}</label>
           <input type="text" class="form-control" id="Position" [(ngModel)]="position" name="position"
                  placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
@@ -124,7 +113,7 @@
 
       </div>
 
-      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
+      <div class="form-group"><label>{{"TECHNICAL_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
 
       <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
@@ -142,7 +131,7 @@
         </div>
       </div>
 
-      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.ADDITIONAL_NOTIFICATIONS"| translate}}</label></div>
+      <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">

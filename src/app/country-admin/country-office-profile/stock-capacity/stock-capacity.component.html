@@ -33,11 +33,11 @@
     </div>
 
     <div class="row Spaced-above" *ngIf="stockCapacitiesIN">
-      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.UPDATED' |
+      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
         translate }}</strong></p></div>
-      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' |
+      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
         translate }}</strong></p></div>
-      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' |
+      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' |
         translate }}</strong></p></div>
       <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
         translate }}</strong></p></div>
@@ -59,7 +59,7 @@
                                                    style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
           <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
@@ -74,7 +74,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
@@ -141,11 +141,11 @@
     </div>
 
     <div class="row" *ngIf="stockCapacitiesOUT">
-      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.UPDATED' |
+      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
         translate }}</strong></p></div>
-      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' |
+      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
         translate }}</strong></p></div>
-      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' |
+      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' |
         translate }}</strong></p></div>
       <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
         translate }}</strong></p></div>
@@ -166,7 +166,7 @@
                                                    style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
           <a href="#notes_ext_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
@@ -181,7 +181,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_ext_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"

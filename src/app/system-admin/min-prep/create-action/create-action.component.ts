@@ -22,7 +22,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   private errorMessage: any;
   private alerts = {};
   private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.CHS_MPA.CHS_TITLE_TEXT';
-  private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
+  private buttonText: string = 'PREPAREDNESS.SAVE_NEW_ACTION';
 
   private textArea: string = "";
   private systemUid: string;

@@ -23,7 +23,7 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   private errorMessage: any;
   private alerts = {};
   private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CREATE_NEW_GENERIC_MPA';
-  private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
+  private buttonText: string = 'PREPAREDNESS.SAVE_NEW_ACTION';
   private textArea: string;
 
   private isMpa: boolean = true;

@@ -46,7 +46,7 @@
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[CountryOfficeAddressModel.location]}">
               <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
-              <input type="text" class="form-control" id="Country" placeholder="{{'GLOBAL.COUNTRY_TEXT' | translate}}" disabled value="{{Country[CountryOfficeAddressModel.location] | translate}}"/>
+              <input type="text" class="form-control" id="Country" placeholder="{{'GLOBAL.USER_INFO.COUNTRY' | translate}}" disabled value="{{Country[CountryOfficeAddressModel.location] | translate}}"/>
               <!--<select name="Country" [disabled] = "CountryOfficeAddressModel.location" id="Country" class="form-control" [(ngModel)]="CountryOfficeAddressModel.location">-->
                 <!--<option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>-->
               <!--</select>-->

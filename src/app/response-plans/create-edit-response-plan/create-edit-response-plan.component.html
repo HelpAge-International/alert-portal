@@ -57,7 +57,7 @@
 
           <div class="row Spaced">
             <div class="col-lg-6 col-md-6">
-              <label for="H-scen">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.HAZARD_SCENARIO" |
+              <label for="H-scen">{{"HAZARD_SCENARIO" |
                 translate}}</label>
               <select class="form-control" id="H-scen" [(ngModel)]="hazardScenarioSelected">
                 <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
@@ -95,7 +95,7 @@
             <div class="Ribbon__header__number"><span>{{sectionTwoNum}}</span>{{"GLOBAL.OF" | translate}}
               {{totalSections}}
             </div>
-            <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.TITLE_TEXT" |
+            <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.PLAN_CONTEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
             <div id="header_section_2" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
@@ -208,7 +208,7 @@
             <div class="Ribbon__header__number"><span>{{sectionThreeNum}}</span>{{"GLOBAL.OF" | translate}}
               {{totalSections}}
             </div>
-            <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.TITLE_TEXT" |
+            <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BASIC_INFORMATION" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
             <div id="header_section_3" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
@@ -294,7 +294,7 @@
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog"
                      [checked]="presenceInTheCountry === 2"
                      (click)="preExistingPartnerSelected()">
-              {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.PRE-EXISTING_PARTNER" | translate}}</label>
+              {{"PRE_EXISITING_PARTNER" | translate}}</label>
             <label for="N-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="N-prog"
                      [checked]="presenceInTheCountry === 3"
@@ -456,7 +456,7 @@
         </div>
         <div class="Response__content Spaced">
           <div class="form-group">
-            <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.HOW_MANY_BENEFICIARIES?" |
+            <label>{{"HOW_MANY_BENEFICIARIES" |
               translate}}
               <tooltip
             [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
@@ -692,7 +692,7 @@
 
                         <div class="row col-lg-12">
                           <div class="col-lg-12 form-group">
-                            <label for="P-activity">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.INDICATOR_TEXT?" |
+                            <label for="P-activity">{{"PROVIDE_ONE_INDICATOR" |
                               translate}}</label>
                             <input type="text" class="form-control" [(ngModel)]="activity.indicator" #indicator>
                           </div>
@@ -858,7 +858,7 @@
             <div class="Ribbon__header__number"><span>{{sectionEightNum}}</span>{{"GLOBAL.OF" | translate}}
               {{totalSections}}
             </div>
-            <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.TITLE_TEXT" |
+            <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.MONITORING_ACC_LEARNING" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section8Status | translate}}</div>
             <div id="header_section_8" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
@@ -1082,7 +1082,7 @@
                 translate}}
               </div>
               <div class="col-lg-2 col-3">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} (&pound;)</div>
-              <div class="col-lg-4 col-5">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.BUDGET_NARRATIVE" |
+              <div class="col-lg-4 col-5">{{"PREPAREDNESS.BUDGET_NARRATIVE" |
                 translate}}
               </div>
             </div>
@@ -1120,7 +1120,7 @@
               </div>
             </div>
             <div class="row Line-row Header Spaced">
-              <div class="col-lg-3 col-4">C: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.SECURITY" |
+              <div class="col-lg-3 col-4">C: {{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Security" |
                 translate}}
               </div>
               <div class="col-lg-2 col-3">

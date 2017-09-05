@@ -1,5 +1,5 @@
 <div class="Header-title__wrap">
-  <h1>{{ "COUNTRY_ADMIN.PROFILE.TITLE_TEXT" | translate}}</h1>
+  <h1>{{ "COUNTRY_OFFICE_PROFILE" | translate}}</h1>
 </div>
 
 <!--<div class="Page-top__wrap&#45;&#45;w_sub_header&#45;&#45;no-paddng">-->
@@ -40,11 +40,11 @@
 
     <li *ngIf="!isViewing" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile/equipment">{{
-        "COUNTRY_ADMIN.PROFILE.MENU.EQUIPMENT" |
+        "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE" |
         translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('equipment')">
-      <a (click)="viewingToEquipment()">{{ "COUNTRY_ADMIN.PROFILE.MENU.EQUIPMENT" |
+      <a (click)="viewingToEquipment()">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE" |
         translate}}</a>
     </li>
 
@@ -59,20 +59,20 @@
 
     <li *ngIf="!isViewing" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile/stock-capacity">{{
-        "COUNTRY_ADMIN.PROFILE.MENU.STOCK_CAPACITY" | translate}}</a>
+        "COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT" | translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('stockCapacity')">
       <a (click)="viewingToStockCapacity()">{{
-        "COUNTRY_ADMIN.PROFILE.MENU.STOCK_CAPACITY" | translate}}</a>
+        "COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT" | translate}}</a>
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile/documents">{{
-        "COUNTRY_ADMIN.PROFILE.MENU.DOCUMENTS" |
+        "DOCUMENTS_TEXT" |
         translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('documents')">
-      <a (click)="viewingToDocuments()">{{ "COUNTRY_ADMIN.PROFILE.MENU.DOCUMENTS" |
+      <a (click)="viewingToDocuments()">{{ "DOCUMENTS_TEXT" |
         translate}}</a>
     </li>
 

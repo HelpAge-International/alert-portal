@@ -195,7 +195,7 @@
                     <div class="Update__button">
                       <div *ngIf="!isViewing && indicatorC?.assignee" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
-                        {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                        {{"GLOBAL.UPDATE" | translate}}
                       </div>
                       <div *ngIf="!isViewing && !indicatorC?.assignee">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
@@ -247,7 +247,7 @@
                           <div class="row Spaced log-post__wrap--risk">
                             <div class="log-date__wrap--risk col-lg-1">
                               <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
-                              <p>{{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}} <img
+                              <p>{{"GLOBAL.UPDATE" | translate}} <img
                                 src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                               </p>
                             </div>
@@ -487,7 +487,7 @@
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <div *ngIf="!isViewing && indicator?.assignee" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
-                      {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                      {{"GLOBAL.UPDATE" | translate}}
                     </div>
                     <div *ngIf="!isViewing && !indicator?.assignee">
                       <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
@@ -538,7 +538,7 @@
                           <div class="row Spaced log-post__wrap--risk">
                             <div class="log-date__wrap--risk col-lg-1">
                               <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
-                              <p>{{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}} <img
+                              <p>{{"GLOBAL.UPDATE" | translate}} <img
                                 src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                               </p>
                             </div>
@@ -672,7 +672,7 @@
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
                   <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#archiveHazard"
-                     (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE"
+                     (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"GLOBAL.ACTIVATE"
                     | translate}}</a>
                   <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#deleteHazardModal"
@@ -811,7 +811,7 @@
                          *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
-                        {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                        {{"GLOBAL.UPDATE" | translate}}
                       </div>
                       <p>Last update: <strong>{{indicator.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
                       <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong>
@@ -943,7 +943,7 @@
       <div class="modal-header">
         <div class="modal-title text-center Spaced-above" id="archiveHazardModal">
           <h5>
-            <span *ngIf="tmpHazardData['activeStatus']">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE" | translate}}</span>
+            <span *ngIf="tmpHazardData['activeStatus']">{{"GLOBAL.ACTIVATE" | translate}}</span>
             <span *ngIf="!tmpHazardData['activeStatus']">{{"ARCHIVE_ACTION_DIALOG.TITLE" | translate}}</span>
             <strong *ngIf="hazardScenario[tmpHazardData['scenario']]">
               {{hazardScenario[tmpHazardData['scenario']] | translate}}?
@@ -1163,7 +1163,7 @@
       </div>
       <div class="modal-footer">
         <div class="row Right-aligned Spaced col-sm-12">
-          <a class="col-sm-9 margin-top-one" data-dismiss="modal">{{"CANCEL" | translate}}</a>
+          <a class="col-sm-9 margin-top-one" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</a>
           <button
             class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">{{"SAVE" | translate}}
           </button>

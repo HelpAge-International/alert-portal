@@ -50,7 +50,7 @@ export class PartnerOrganisationModel extends BaseModel {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_L_NAME');
     }
     if (!this.position && !this.isExcluded('position', excludedFields)) {
-      return new AlertMessageModel('ADD_PARTNER.NO_POSITION');
+      return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_POSITION');
     }
     if (!this.email && !this.isExcluded('email', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_EMAIL');
@@ -59,7 +59,7 @@ export class PartnerOrganisationModel extends BaseModel {
       return new AlertMessageModel('GLOBAL.EMAIL_NOT_VALID');
     }
     if (!this.phone && !this.isExcluded('phone', excludedFields)) {
-      return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_PHONE');
+      return new AlertMessageModel('COUNTRY_ADMIN.UPDATE_DETAILS.NO_PHONE');
     }
 
     return null;

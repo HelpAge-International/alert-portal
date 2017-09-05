@@ -257,7 +257,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     let promise = new Promise((res, rej) => {
       this.otherRegion = new RegionHolder();
       this.otherRegion.regionId = "Unassigned";
-      this.otherRegion.regionName =  this.translate.instant("OTHER_COUNTRIES");
+      this.otherRegion.regionName =  this.translate.instant("AGENCY_ADMIN.COUNTRY_OFFICES.OTHER_COUNTRIES");
       this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[this.userType], (key, obj) => {
         let hRegion = new RegionHolder();
         hRegion.regionName = obj.name;

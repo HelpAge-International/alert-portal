@@ -210,7 +210,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   validateForm() {
     if (!this.title) {
-      this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_TITLE';
+      this.warningMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_TITLE';
       return false;
     }
     if (!this.firstName) {

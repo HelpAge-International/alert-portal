@@ -22,7 +22,7 @@ export class Indicator extends BaseModel {
 
   validate(excludedFields = []): AlertMessageModel {
     if (typeof (this.category) == 'undefined' && !this.isExcluded('category', excludedFields)) {
-      return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_CATEGORY');
+      return new AlertMessageModel('RISK_MONITORING.ADD_HAZARD.NO_HAZARD');
     }
 
     if (!this.name && !this.isExcluded('name', excludedFields)) {

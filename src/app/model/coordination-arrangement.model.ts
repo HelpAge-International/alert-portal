@@ -24,7 +24,7 @@ export class CoordinationArrangementModel extends BaseModel {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_IS_AGENCY_MEMBER');
         }
         if (!this.contactName && !this.isExcluded('contactName', excludedFields)) {
-            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_CONTACT_NAME');
+            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_CONTACT_NAME');
         }
         if (!this.contactEmail && !this.isExcluded('contactEmail', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_CONTACT_EMAIL');
