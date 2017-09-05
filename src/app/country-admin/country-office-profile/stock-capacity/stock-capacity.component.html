@@ -92,7 +92,7 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
@@ -106,7 +106,7 @@
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                    (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -199,7 +199,7 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
@@ -213,7 +213,7 @@
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                    (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
                 </div>
               </div>
             </div>

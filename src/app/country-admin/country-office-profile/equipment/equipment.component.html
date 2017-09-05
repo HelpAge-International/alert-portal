@@ -34,9 +34,9 @@
     </div>
 
     <div class="row Spaced-above" *ngIf="equipments">
-      <div class="col-sm-1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.UPDATED' | translate }}</strong></div>
+      <div class="col-sm-1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' | translate }}</strong></div>
       <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE' | translate }}</strong></div>
-      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.LOCATION' | translate }}</strong></div>
+      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></div>
       <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></div>
       <div class="col-sm-5"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS' | translate }}</strong></div>
     </div>
@@ -54,7 +54,7 @@
           <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ equipment.notes.length }}</p>
           <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
@@ -71,7 +71,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote('equipment', equipment.id, newNote[equipment.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType!=USER_TYPE.CountryAdmin" type="text"
@@ -89,7 +89,7 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
@@ -103,7 +103,7 @@
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote('equipment', equipment.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                    (click)="deleteNote('equipment', equipment.id, note)">{{ 'DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -140,7 +140,7 @@
     </div>
 
     <div class="row Spaced-above" *ngIf="surgeEquipments">
-      <div class="col-sm-1"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.UPDATED" | translate}}</strong></div>
+      <div class="col-sm-1"><strong>{{ "COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUPPLIER" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP" | translate}}</strong></div>
       <div class="col-sm-7"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.EQUIPMENT_PROVIDED" | translate}}</strong></div>
@@ -168,7 +168,7 @@
           <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ surgeEquipment.notes.length }}</p>
           <a href="#notes_surge_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
@@ -196,7 +196,7 @@
         </div>
 
         <div class="row"> <!--Telephone-->
-          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_PHONE" |
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" |
             translate}}</strong></p>
           <p class="col-sm-2">{{ surgeEquipment.contactPhone }}</p>
         </div>
@@ -212,7 +212,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_surge_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote('surgeEquipment', surgeEquipment.id, newNote[surgeEquipment.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType!=USER_TYPE.CountryAdmin" type="text"
@@ -230,7 +230,7 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
@@ -244,7 +244,7 @@
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.DELETE' | translate
+                    (click)="deleteNote('surgeEquipment', surgeEquipment.id, note)">{{ 'DELETE' | translate
                     }}</a>
                 </div>
               </div>

@@ -19,7 +19,7 @@
       </div>
       <div class="col-lg-3 col-md-4">
         <select class="form-control" [(ngModel)]="filterPosition" (change)="filterStaff()">
-          <option value="allDepartments">{{"AGENCY_ADMIN.MANDATED_PA.ALL_DEPARTMENTS" | translate}}</option>
+          <option value="allDepartments">{{"ALL_DEPARTMENTS" | translate}}</option>
           <option *ngFor="let department of departments" [value]="department.id">{{department.name}}
           </option>
         </select>
@@ -45,8 +45,8 @@
     <div *ngFor="let office of staffs">
       <div class="Sub-header-title__wrap">
         <h2>{{countries[office?.country]|translate}}</h2>
-        <span *ngIf="!showCountryStaff.get(office.id)" class="Hide-all" (click)="hideCountryStaff(office)">{{"GLOBAL.HIDE_ALL"| translate}}</span>
-        <span *ngIf="showCountryStaff.get(office.id)" class="Hide-all" (click)="hideCountryStaff(office)">{{"GLOBAL.SHOW_ALL"| translate}}</span>
+        <span *ngIf="!showCountryStaff.get(office.id)" class="Hide-all" (click)="hideCountryStaff(office)">{{"HIDE_ALL"| translate}}</span>
+        <span *ngIf="showCountryStaff.get(office.id)" class="Hide-all" (click)="hideCountryStaff(office)">{{"SHOW_ALL"| translate}}</span>
       </div>
 
       <div [hidden]="showCountryStaff.get(office.id)">
@@ -57,7 +57,7 @@
 
         <div [hidden]="office?.staffs.length==0" class="row Line-row Small-spaced Header">
           <div class="col-lg-2">{{"GLOBAL.NAME"| translate}}</div>
-          <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.DEPARTMENT"| translate}}</div>
+          <div class="col-lg-2">{{"DEPARTMENT"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
           <div class="col-lg-1"></div>
@@ -134,15 +134,14 @@
     <div [hidden]="globalUsers.length==0">
       <div class="Sub-header-title__wrap">
         <h2>{{"AGENCY_ADMIN.STAFF.GLOBAL_USERS" | translate}}</h2>
-        <span *ngIf="showCountryStaff.get('globaluser')" class="Hide-all" (click)="hideCountryStaff('globaluser')">{{"GLOBAL.HIDE_ALL"| translate}}</span>
-        <span *ngIf="!showCountryStaff.get('globaluser')" class="Hide-all" (click)="hideCountryStaff('globaluser')">{{"GLOBAL.SHOW_ALL"| translate}}</span>
-        <!--<span  class="Hide-all" >{{"GLOBAL.SHOW_ALL"| translate}}</span>-->
+        <span *ngIf="showCountryStaff.get('globaluser')" class="Hide-all" (click)="hideCountryStaff('globaluser')">{{"HIDE_ALL"| translate}}</span>
+        <span *ngIf="!showCountryStaff.get('globaluser')" class="Hide-all" (click)="hideCountryStaff('globaluser')">{{"SHOW_ALL"| translate}}</span>
       </div>
 
       <div *ngIf="showCountryStaff.get('globaluser')">
         <div class="row Line-row Small-spaced Header">
           <div class="col-lg-2">{{"GLOBAL.NAME"| translate}}</div>
-          <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.DEPARTMENT"| translate}}</div>
+          <div class="col-lg-2">{{"DEPARTMENT"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
           <div class="col-lg-2">{{"AGENCY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
           <div class="col-lg-1"></div>

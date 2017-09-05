@@ -50,7 +50,7 @@
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[countryAdminFirstName]}">
-            <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+            <label for="f-Name">{{"FIRST_NAME" | translate}}*</label>
             <input type="text" class="form-control" id="f-Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="countryAdminFirstName"
                    name="countryAdminFirstName">
           </div>
@@ -111,7 +111,7 @@
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+            <label for="City">{{"CITY" | translate}}</label>
             <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="countryAdminCity" name="countryAdminCity">
           </div>
         </div>

@@ -216,7 +216,7 @@
         </div>
         <div class="Response__content Spaced">
           <div class="form-group Spaced">
-            <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WHAT_SECTORS?" | translate}}
+            <label>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}
               <tooltip
             [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
             </tooltip>
@@ -227,44 +227,44 @@
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" [class.Selected]="waSHSectorSelected" class="water"
                    (click)="isWaSHSectorSelected()"></div>
-              <label>{{"SECTORS.WASH" | translate}}</label></div>
+              <label>{{"SECTOR_WASH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="health" [class.Selected]="healthSectorSelected"
                    (click)="isHealthSectorSelected()"></div>
-              <label>{{"SECTORS.HEALTH" | translate}}</label></div>
+              <label>{{"SECTOR_HEALTH" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="shelter" [class.Selected]="shelterSectorSelected"
                    (click)="isShelterSectorSelected()"></div>
-              <label>{{"SECTORS.SHELTER" | translate}}</label></div>
+              <label>{{"SECTOR_SHELTER" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="nutrition"
                    [class.Selected]="nutritionSectorSelected"
                    (click)="isNutritionSectorSelected()"></div>
-              <label>{{"SECTORS.NUTRITION" | translate}}</label></div>
+              <label>{{"SECTOR_NUTRITION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="food"
                    [class.Selected]="foodSecAndLivelihoodsSectorSelected"
                    (click)="isFoodSecAndLivelihoodsSectorSelected()"></div>
-              <label>{{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</label></div>
+              <label>{{"SECTOR_FOOD_SECURITY_LIVELIHOOD" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="protection"
                    [class.Selected]="protectionSectorSelected"
                    (click)="isProtectionSectorSelected()"></div>
-              <label>{{"SECTORS.PROTECTION" | translate}}</label></div>
+              <label>{{"SECTOR_PROTECTION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="education"
                    [class.Selected]="educationSectorSelected"
                    (click)="isEducationSectorSelected()"></div>
-              <label>{{"SECTORS.EDUCATION" | translate}}</label></div>
+              <label>{{"SECTOR_EDUCATION" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="camp"
                    [class.Selected]="campManagementSectorSelected"
                    (click)="isCampManagementSectorSelected()"></div>
-              <label>{{"SECTORS.CAMP_MANAGEMENT" | translate}}</label></div>
+              <label>{{"SECTOR_CAMP_MANAGEMENT" | translate}}</label></div>
             <div class="Item__selectable Icon__selectable">
               <div onClick="$(this).toggleClass('Selected');" class="misc" [class.Selected]="otherSectorSelected"
                    (click)="isOtherSectorSelected()"></div>
-              <label>{{"SECTORS.OTHER" | translate}}</label></div>
+              <label>{{"SECTOR_OTHER" | translate}}</label></div>
           </div>
 
           <div class="row Spaced subitem" *ngIf="otherSectorSelected">
@@ -289,7 +289,7 @@
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="C-prog"
                      [checked]="presenceInTheCountry === 1"
                      (click)="currentProgrammesSelected()">
-              {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.CURRENT_PROGRAMMES" | translate}}</label>
+              {{"CURRENT_PROGRAMMES" | translate}}</label>
             <label for="Pre-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="prog-1" id="Pre-prog"
                      [checked]="presenceInTheCountry === 2"
@@ -312,7 +312,7 @@
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-direct"
                      [checked]="isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedDirect()">
-              {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.DIRECTLY_THROUGH_STAFF" | translate}}</label>
+              {{"DIRECTLY_THROUGH_STAFF" | translate}}</label>
             <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6" [hidden]="!moduleAccess.countryOffice">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part" [hidden]="!moduleAccess.countryOffice"
                      [checked]="isWorkingWithPartners"
@@ -419,7 +419,7 @@
           <div class="row Spaced">
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
-                <label for="n-exp-coo">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_COORDINATION_TEXT?"
+                <label for="n-exp-coo">{{"HOW_ARE_YOU_CO_ORDINATING"
                   | translate}}
                 <tooltip
                 [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
@@ -499,7 +499,7 @@
           <div class="row Spaced">
             <div class="col-lg-8 col-md-10 col-sm-12">
               <div class="form-group">
-                <label for="n-Done">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
+                <label for="n-Done">{{"WHICH_VULNERABLE_GROUP_TARGETING" |
                   translate}}
                 <tooltip
                 [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
@@ -879,11 +879,11 @@
           <div class="Spaced">
             <div class="Selection-row Selection-row--column Spaced">
               <div class="form-group">
-                <label>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VISUALLY_DOCUMENT?" | translate}}</label>
+                <label>{{"DO_YOU_INTEND_TO_VISSUALLY_DOCUMENT_YOUR_RESPONSE" | translate}}</label>
               </div>
               <label for="Y-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="Y-vis"
-                       [checked]="intentToVisuallyDocument" (click)="yesSelectedForVisualDocument()">{{"GLOBAL.YES" |
+                       [checked]="intentToVisuallyDocument" (click)="yesSelectedForVisualDocument()">{{"YES" |
                 translate}}</label>
               <label for="N-vis" class="Checkbox--ribbon Left col-lg-2 col-md-2 col-sm-2">
                 <input type="radio" onClick="multi_select_radioSelected(this)" name="V-document" id="N-vis"
@@ -1069,7 +1069,7 @@
             <div class="Ribbon__header__number"><span>{{sectionTenNum}}</span>{{"GLOBAL.OF" | translate}}
               {{totalSections}}
             </div>
-            <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
+            <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
             <div id="header_section_10" class="Ribbon__header__chevron" onClick="ribbonClick(this)" (click)="checkAllSections()"></div>
@@ -1081,7 +1081,7 @@
               <div class="col-lg-3 col-4">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.BUDGET_CATEGORY" |
                 translate}}
               </div>
-              <div class="col-lg-2 col-3">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" | translate}} (&pound;)</div>
+              <div class="col-lg-2 col-3">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} (&pound;)</div>
               <div class="col-lg-4 col-5">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.BUDGET_NARRATIVE" |
                 translate}}
               </div>
@@ -1200,7 +1200,7 @@
             </div>
             <label for="Y-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="Y-cap"
-                     [checked]="capitalsExist" (click)="yesSelectedForCapitalsExist()">{{"GLOBAL.YES" |
+                     [checked]="capitalsExist" (click)="yesSelectedForCapitalsExist()">{{"YES" |
               translate}}</label>
             <label for="N-cap" class="Checkbox--ribbon Left col-lg-2 col-md-3 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="C-cap" id="N-cap"
@@ -1211,7 +1211,7 @@
           <div class="col-lg-6 Spaced subitem" *ngIf="capitalsExist">
             <label>{{"GLOBAL.PLEASE_SPECIFY" | translate}}</label>
             <div class="row Header Small-spaced">
-              <div class="col-lg-3 col-4">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" | translate}} (&pound;)</div>
+              <div class="col-lg-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} (&pound;)</div>
               <div class="col-lg-9 col-5">{{"GLOBAL.DESCRIPTION" | translate}}</div>
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
@@ -1263,7 +1263,7 @@
         <div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.YES" | translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"YES" | translate}}</button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"| translate}}</button>
       </div>
     </div>

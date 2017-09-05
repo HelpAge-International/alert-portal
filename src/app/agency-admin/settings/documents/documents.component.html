@@ -85,15 +85,15 @@
                   </div>
                   <div class="col-sm-11">
                       <h2>{{COUNTRIES[country.location] | translate}}</h2>
-                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all" *ngIf="country.hasDocs">{{"GLOBAL.HIDE_ALL" | translate}}</a>
-                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all" *ngIf="country.hasDocs">{{"GLOBAL.SHOW_ALL" | translate}}</a>
+                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all" *ngIf="country.hasDocs">{{"HIDE_ALL" | translate}}</a>
+                      <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all" *ngIf="country.hasDocs">{{"SHOW_ALL" | translate}}</a>
                   </div>
               </div>
           </div>
           <div class="Accordion__Content collapse" id="collapse{{country.$key}}">
                   <div class="row Line-row Small-spaced Header">
                   <div class="col-lg-1 col-md-1" *ngIf="exporting"></div>
-                  <div class="col-lg-1 col-md-1">{{"COUNTRY_ADMIN.SETTINGS.MODULE" | translate}}</div>
+                  <div class="col-lg-1 col-md-1">{{"DOCUMENTS.MODULE" | translate}}</div>
                   <div class="col-lg-3 col-md-3">{{"GLOBAL.TITLE" | translate}}</div>
                   <div class="col-lg-2 col-md-2">{{"GLOBAL.NAME" | translate}}</div>
                   <div class="col-lg-1 col-md-1">{{"GLOBAL.SIZE" | translate}}</div>

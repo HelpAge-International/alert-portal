@@ -27,7 +27,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME"| translate}}</label>
+          <label for="f-Name">{{"FIRST_NAME"| translate}}</label>
           <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName"
                  placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
@@ -49,7 +49,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
-          <label for="region">{{"AGENCY_ADMIN.STAFF.REGION"| translate}}</label>
+          <label for="region">{{"REGION"| translate}}</label>
           <select class="form-control" id="region" [(ngModel)]="region" name="region" [required]="!hideRegion" (change)="selectRegion()">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let region of regionList | async" [ngValue]="region">{{region.name}}</option>
@@ -113,7 +113,7 @@
         </div>
       </div>
 
-      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
+      <div class="form-group"><label>{{"SUPPORT_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
       <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
           <label *ngIf="allSkills[skillKey].type == SupportSkill"
@@ -136,7 +136,7 @@
 
       <div class="row Spaced">
         <div class="col-lg-8 col-md-10 form-group">
-          <label for="n-Done">{{"AGENCY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</label>
+          <label for="n-Done">{{"TRAINING_NEEDS"| translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
                     [(ngModel)]="trainingNeeds"></textarea>
         </div>
@@ -159,7 +159,7 @@
       </div>
       <div class="row">
         <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2">
-          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"GLOBAL.YES"|
+          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"YES"|
           translate}}</label>
       </div>
 

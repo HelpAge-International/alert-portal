@@ -332,7 +332,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       return false;
     }
     else if (!this.department) {
-      this.waringMessage = "AGENCY_ADMIN.STAFF.NO_DEPARTMENT";
+      this.waringMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR";
       this.showAlert();
       return false;
     }

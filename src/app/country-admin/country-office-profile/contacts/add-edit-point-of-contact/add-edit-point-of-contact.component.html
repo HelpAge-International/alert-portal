@@ -13,7 +13,7 @@
 
         <div class="row" *ngIf="pointOfContact.id">
             <div class="col-sm-10"><h1>{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_EDIT' | translate }}</h1></div>
-            <div class="col-sm-2 Right-aligned"><button *ngIf="countryPermissionsMatrix.countryContacts.Delete" class="btn btn-danger text-uppercase" (click)="deletePointOfContact()">{{ 'GLOBAL.DELETE' | translate }}</button></div>
+            <div class="col-sm-2 Right-aligned"><button *ngIf="countryPermissionsMatrix.countryContacts.Delete" class="btn btn-danger text-uppercase" (click)="deletePointOfContact()">{{ 'DELETE' | translate }}</button></div>
         </div>
         <br>
 

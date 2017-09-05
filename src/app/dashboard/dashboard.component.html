@@ -17,7 +17,7 @@
                  [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
                  [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
               <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
-              <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+              <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
             </div>
 
             <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
@@ -92,7 +92,7 @@
                       {{alert.infoNotes}}
                     </p>
                     <p>
-                      <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                      <strong>{{"BY" | translate}} {{alert.createdByName}}</strong>
                     </p>
                   </div>
                 </div>
@@ -118,7 +118,7 @@
                    [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
                    [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
                 <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
-                <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+                <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
               </div>
 
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
@@ -193,7 +193,7 @@
                         {{alert.infoNotes}}
                       </p>
                       <p>
-                        <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                        <strong>{{"BY" | translate}} {{alert.createdByName}}</strong>
                       </p>
                     </div>
                   </div>
@@ -296,7 +296,7 @@
           <div class="Widget Alert-Widget ">
             <div class="row">
               <div class="col-md-3 Alert-Widget__item bg-warning">
-                <h4>{{"ALERT.AMBER_ALERT" | translate}}</h4>
+                <h4>{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
               </div>
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
                 <i
@@ -369,7 +369,7 @@
                         {{alert.infoNotes}}
                       </p>
                       <p>
-                        <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                        <strong>{{"BY" | translate}} {{alert.createdByName}}</strong>
                       </p>
                     </div>
                   </div>
@@ -536,7 +536,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.<br/>
+              <p>{{getActionTitle(action)}}<strong> {{"TODAY" | translate}}</strong>.<br/>
                 <span>{{getCHSActionTask(action)}} {{action.task}}</span>
               </p>
             </div>
@@ -555,7 +555,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.<br/>
+              <p>{{getIndicatorName(indicator)}}<strong> {{"TODAY" | translate}}</strong>.<br/>
                 <span>{{indicator.name}}</span>
               </p>
             </div>

@@ -19,7 +19,7 @@
             <div class="row Spaced">
                 <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EVENTS" | translate}}</p></b></div>
                 <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.USERS_NOTIFIED" | translate}}</p></b></div>
-                <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ACTIONS" | translate}}</p></b></div>
+                <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row" *ngFor = "let notificationSetting of NOTIFICATION_SETTINGS | enumKeyValues">
                 <div class="col-sm-4"><p>{{ NOTIFICATION_SETTINGS_SELECTION[notificationSetting.key] | translate }}</p></div>

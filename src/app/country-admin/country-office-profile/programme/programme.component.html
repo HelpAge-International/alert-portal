@@ -59,11 +59,11 @@
     <div class="row">
       <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong>
       </div>
-      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_SECTOR" | translate}}</strong></div>
+      <div class="col-sm-2"><strong>{{"ADD_PARTNER.SECTOR" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHAT" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHERE" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_TO_WHO" | translate}}</strong></div>
-      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHEN" | translate}}</strong></div>
+      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" | translate}}</strong></div>
     </div>
     <div class="Line-row margin-left"></div>
     <div *ngFor="let m of mapping">
@@ -124,7 +124,7 @@
                   translate}}</a>
                 <p *ngIf="note.uploadBy == uid" href="#" class="padding-left-one">|</p>
                 <a *ngIf="note.uploadBy == uid" href="#deleteNote" data-toggle="modal" data-target="#deleteNote"
-                   class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"GLOBAL.DELETE" |
+                   class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"DELETE" |
                   translate}}</a>
               </div>
             </div>
@@ -135,7 +135,7 @@
         <!--add Note button-->
         <div class="add_log mt-auto p-2 text-right float-right">
           <div class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">
-            {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.ADD_NOTE" | translate}}
+            {{"NOTES.ADD" | translate}}
           </div>
           <br>
           <br><a href="#notesFor{{m.key}}" class="margin-left-two" data-toggle="collapse">{{"GLOBAL.CANCEL" |

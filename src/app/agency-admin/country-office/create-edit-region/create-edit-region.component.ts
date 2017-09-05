@@ -215,7 +215,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
   submit() {
     console.log("submit");
     if (!this.regionName) {
-      this.errorMessage = 'AGENCY_ADMIN.COUNTRY_OFFICES.ERROR_NO_NAME';
+      this.errorMessage = 'COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_NAME';
       this.showAlert();
       return;
     }

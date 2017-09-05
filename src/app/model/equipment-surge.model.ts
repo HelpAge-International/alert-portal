@@ -28,7 +28,7 @@ export class SurgeEquipmentModel extends BaseModel {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_CONTACT_NAME');
         }
         if (!this.contactEmail && !this.isExcluded('contactEmail', excludedFields)) {
-            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_CONTACT_EMAIL');
+            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_CONTACT_EMAIL');
         }
         if (!CustomerValidator.EmailValidator(this.contactEmail) && !this.isExcluded('contactEmail', excludedFields)) {
           return new AlertMessageModel('GLOBAL.EMAIL_NOT_VALID');

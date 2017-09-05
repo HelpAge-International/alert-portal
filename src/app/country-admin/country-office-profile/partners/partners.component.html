@@ -69,7 +69,7 @@
       <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</p>
       <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.RELATIONSHIP' | translate }}</p>
       <p class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</p>
-      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.STATUS' | translate }}</p>
+      <p class="col-sm-2">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS' | translate }}</p>
     </div>
     <div class="row Line-row"></div>
 
@@ -129,7 +129,7 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
@@ -141,7 +141,7 @@
                   <a
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote(partnerOrganisation, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                    (click)="deleteNote(partnerOrganisation, note)">{{ 'DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -197,7 +197,7 @@
             </div>
 
             <div class="row">
-              <p class="col-sm-3 font-weight-bold">{{ 'ADD_PARTNER.PROJECT_END_DATE' | translate }}</p>
+              <p class="col-sm-3 font-weight-bold">{{ 'PROJECT_END_DATE' | translate }}</p>
               <div class="col-sm-0"><p>{{ project.endDate | date: 'MM/yy'}}</p></div>
             </div>
           </div> <!--border box end-->

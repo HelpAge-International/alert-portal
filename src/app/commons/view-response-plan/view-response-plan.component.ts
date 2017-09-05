@@ -431,10 +431,10 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     if (responsePlan.monAccLearning) {
       if (responsePlan.monAccLearning['isMedia']) {
         if (responsePlan.monAccLearning['mediaFormat'] || responsePlan.monAccLearning['mediaFormat'] == 0) {
-          this.intendToVisuallyDoc = "GLOBAL.YES";
+          this.intendToVisuallyDoc = "YES";
           this.mediaType = Constants.MEDIA_TYPES[responsePlan.monAccLearning['mediaFormat']];
         } else {
-          this.intendToVisuallyDoc = "GLOBAL.YES";
+          this.intendToVisuallyDoc = "YES";
           this.mediaType = '';
         }
       } else {

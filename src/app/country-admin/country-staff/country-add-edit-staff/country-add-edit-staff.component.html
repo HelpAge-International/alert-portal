@@ -29,7 +29,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME"| translate}}</label>
+          <label for="f-Name">{{"FIRST_NAME"| translate}}</label>
           <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName"
                  placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}
+      <div class="form-group"><label>{{"SUPPORT_SKILLS"| translate}}
       <!-- Tooltip partial -->
         <tooltip
         [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT3.LEVEL1'">
@@ -122,7 +122,7 @@
 
       <div class="row Spaced">
         <div class="col-lg-8 col-md-10 form-group">
-          <label for="n-Done">{{"COUNTRY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</label>
+          <label for="n-Done">{{"TRAINING_NEEDS"| translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
               [(ngModel)]="trainingNeeds"></textarea>
         </div>
@@ -159,7 +159,7 @@
       </div>
       <div class="row">
         <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2">
-          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"GLOBAL.YES"|
+          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"YES"|
           translate}}</label>
       </div>
 
@@ -184,8 +184,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">
-          <strong *ngIf="firstName && lastName">{{"GLOBAL.DELETE" | translate}} {{firstName + " " + lastName}}?</strong>
-          <strong *ngIf="!(firstName && lastName)">{{"GLOBAL.DELETE" | translate}}?</strong>
+          <strong *ngIf="firstName && lastName">{{"DELETE" | translate}} {{firstName + " " + lastName}}?</strong>
+          <strong *ngIf="!(firstName && lastName)">{{"DELETE" | translate}}?</strong>
         </h5>
       </div>
       <div class="modal-body">

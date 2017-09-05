@@ -19,7 +19,7 @@
       <h1 *ngIf="!isEditing" class="col-sm-11">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ADD_SURGE_CAPACITY" | translate}}</h1>
       <h1 *ngIf="isEditing" class="col-sm-11">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.EDIT_SURGE_CAPACITY" | translate}}</h1>
       <div class="col-sm-1 Right-aligned" *ngIf="isEditing">
-        <button class="btn btn-danger text-uppercase" (click)="deleteSurge()">{{ 'GLOBAL.DELETE' | translate }}</button>
+        <button class="btn btn-danger text-uppercase" (click)="deleteSurge()">{{ 'DELETE' | translate }}</button>
       </div>
     </div>
 
@@ -78,41 +78,41 @@
       <div class="Item__selectable Icon__selectable">
         <div [class.Selected]="sectorsMap.get(ResponseSectors.wash)" class="water"
              (click)="sectorClicked(ResponseSectors.wash)"></div>
-        <label>{{"SECTORS.WASH" | translate}}</label></div>
+        <label>{{"SECTOR_WASH" | translate}}</label></div>
       <div class="Item__selectable Icon__selectable">
         <div class="health" [class.Selected]="sectorsMap.get(ResponseSectors.health)"
              (click)="sectorClicked(ResponseSectors.health)"></div>
-        <label>{{"SECTORS.HEALTH" | translate}}</label></div>
+        <label>{{"SECTOR_HEALTH" | translate}}</label></div>
       <div class="Item__selectable Icon__selectable">
         <div [class.Selected]="sectorsMap.get(ResponseSectors.shelter)" class="shelter"
              (click)="sectorClicked(ResponseSectors.shelter)"></div>
-        <label>{{"SECTORS.SHELTER" | translate}}</label></div>
+        <label>{{"SECTOR_SHELTER" | translate}}</label></div>
       <div class="Item__selectable Icon__selectable">
         <div [class.Selected]="sectorsMap.get(ResponseSectors.nutrition)" class="nutrition"
              (click)="sectorClicked(ResponseSectors.nutrition)"></div>
-        <label>{{"SECTORS.NUTRITION" | translate}}</label></div>
+        <label>{{"SECTOR_NUTRITION" | translate}}</label></div>
       <div class="Item__selectable Icon__selectable">
         <div [class.Selected]="sectorsMap.get(ResponseSectors.foodSecurityAndLivelihoods)" class="food"
              (click)="sectorClicked(ResponseSectors.foodSecurityAndLivelihoods)"></div>
-        <label>{{"SECTORS.FOOD_SEC_AND_LIVELIHOOD" | translate}}</label></div>
+        <label>{{"SECTOR_FOOD_SECURITY_LIVELIHOOD" | translate}}</label></div>
       <div class="Item__selectable Icon__selectable">
         <div [class.Selected]="sectorsMap.get(ResponseSectors.protection)" class="protection"
              (click)="sectorClicked(ResponseSectors.protection)"></div>
-        <label>{{"SECTORS.PROTECTION" | translate}}</label></div>
+        <label>{{"SECTOR_PROTECTION" | translate}}</label></div>
       <div class="Item__selectable Icon__selectable">
         <div [class.Selected]="sectorsMap.get(ResponseSectors.education)" class="education"
              (click)="sectorClicked(ResponseSectors.education)"></div>
-        <label>{{"SECTORS.EDUCATION" | translate}}</label></div>
+        <label>{{"SECTOR_EDUCATION" | translate}}</label></div>
       <div class="Item__selectable Icon__selectable">
         <div [class.Selected]="sectorsMap.get(ResponseSectors.campManagement)" class="camp"
              (click)="sectorClicked(ResponseSectors.campManagement)"></div>
-        <label>{{"SECTORS.CAMP_MANAGEMENT" | translate}}</label></div>
+        <label>{{"SECTOR_CAMP_MANAGEMENT" | translate}}</label></div>
     </div>
 
     <br>
 
     <div class="row">
-      <strong>{{"COUNTRY_ADMIN.PROFILE.EQUIPMENT.LOCATION" | translate}}</strong>
+      <strong>{{"COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION" | translate}}</strong>
       <tooltip
       [level1]= "'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT7.LEVEL1'"
       ></tooltip>

@@ -10,7 +10,7 @@
             <h1 *ngIf="!surgeEquipment.id">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.ADD_SURGE_EQUIPMENT_TITLE' | translate }}</h1>
             <div class="col-sm-11" *ngIf="surgeEquipment.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT_SURGE_EQUIPMENT_TITLE' | translate }}</h1></div>
             <div class="col-sm-1 Right-aligned" *ngIf="surgeEquipment.id">
-                <button class="btn btn-danger text-uppercase" (click)="deleteEquipment()">{{ 'GLOBAL.DELETE' | translate }}</button>
+                <button class="btn btn-danger text-uppercase" (click)="deleteEquipment()">{{ 'DELETE' | translate }}</button>
             </div>
         </div><br>
 
@@ -30,7 +30,7 @@
                 [level1]= "'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT9.LEVEL1'"
             ></tooltip>
                 </h6>
-                
+
 
                 <div class="col-sm-4">
                     <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="relationship"
@@ -63,7 +63,7 @@
             </div><br>
 
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_PHONE' | translate }}</strong></h6>
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE' | translate }}</strong></h6>
                 <div class="col-sm-4"><input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="contactPhone"
                     [(ngModel)]="surgeEquipment.contactPhone"></div>
             </div>

@@ -72,7 +72,7 @@
                     <div class="col-md-10 col-sm-6">{{ staffPublicUser[staff?.id]?.phone }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</div>
+                    <div class="col-md-2 col-sm-6 text-bold">{{"SUPPORT_SKILLS"| translate}}</div>
                     <div class="col-md-10 col-sm-6">
                         <ul>
                             <li *ngFor="let skill of getSupportSkills(countryId, staff.id)"> {{skill}}</li>
@@ -88,7 +88,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</div>
+                    <div class="col-md-2 col-sm-6 text-bold">{{"TRAINING_NEEDS"| translate}}</div>
                     <div class="col-md-10 col-sm-6">{{staff.training}}</div>
                 </div>
                 <div class="row">
@@ -147,7 +147,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-2 col-sm-6 text-bold">{{"COUNTRY_ADMIN.PARTNER.PARTNER_PLAN_VALIDATION"| translate}}</div>
-                    <div class="col-md-10 col-sm-6" *ngIf="partner.hasValidationPermission">{{ "GLOBAL.YES" | translate }}</div>
+                    <div class="col-md-10 col-sm-6" *ngIf="partner.hasValidationPermission">{{ "YES" | translate }}</div>
                     <div class="col-md-10 col-sm-6" *ngIf="!partner.hasValidationPermission">{{ "GLOBAL.NO" | translate }}</div>
                 </div>
                 <div class="row">

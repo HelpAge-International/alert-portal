@@ -179,7 +179,7 @@
           responsePlanToShow.activitySummary['q2'] : 'RESPONSE_PLANS.NO_INFO_TO_SHOW' | translate}}</p>
       </div>
       <div class="Response__rule__seperator col-sm-12">
-        <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_COORDINATION_TEXT?"
+        <p><b>{{"HOW_ARE_YOU_CO_ORDINATING"
           | translate}}</b></p>
         <p>{{responsePlanToShow.activitySummary && responsePlanToShow.activitySummary['q3'] ?
           responsePlanToShow.activitySummary['q3'] : 'RESPONSE_PLANS.NO_INFO_TO_SHOW' | translate}}</p>
@@ -217,7 +217,7 @@
           | translate)}}</p>
       </div>
       <div class="Response__rule__seperator col-sm-12">
-        <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.WHICH_GROUPS_TEXT?" |
+        <p><b>{{"WHICH_VULNERABLE_GROUP_TARGETING" |
           translate}}</b></p>
         <div *ngIf="responsePlanToShow.vulnerableGroups">
           <p *ngFor="let group of vulnerableGroupsToShow">
@@ -386,7 +386,7 @@
           translate)}}</p>
       </div>
       <div class="Response__rule__seperator col-sm-12">
-        <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.VISUALLY_DOCUMENT?" | translate}}</b></p>
+        <p><b>{{"DO_YOU_INTEND_TO_VISSUALLY_DOCUMENT_YOUR_RESPONSE" | translate}}</b></p>
         <p>{{intendToVisuallyDoc | translate}}</p>
         <p>{{mediaType | translate}}</p>
       </div>
@@ -405,7 +405,7 @@
         <div class="Ribbon__header__number"><span>{{showingSections.indexOf(8)+1}}</span>{{"GLOBAL.OF" |
           translate}} {{showingSections?.length}}
         </div>
-        <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TITLE_TEXT" |
+        <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.DOUBLE_COUNTING" |
           translate}}</h4>
         <div class="Ribbon__header__status text-primary"></div>
         <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
@@ -456,7 +456,7 @@
         <div class="Ribbon__header__number"><span>{{showingSections.indexOf(9)+1}}</span>{{"GLOBAL.OF" |
           translate}} {{showingSections?.length}}
         </div>
-        <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.TITLE_TEXT" |
+        <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
           translate}}</h4>
         <div class="Ribbon__header__status text-primary"></div>
         <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>

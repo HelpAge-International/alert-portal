@@ -9,14 +9,14 @@
         <div class="Header-title__wrap">
             <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_IN_TITLE' | translate }}</h1>
             <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_OUT_TITLE' | translate }}</h1>
-            
+
             <div class="col-sm-11" *ngIf="stockCapacity.id">
                 <h1 *ngIf="stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_IN_TITLE' | translate }}</h1>
                 <h1 *ngIf="stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_OUT_TITLE' | translate }}</h1>
             </div>
 
             <div class="col-sm-1 Right-aligned" *ngIf="stockCapacity.id">
-                <button class="btn btn-danger text-uppercase" (click)="deleteStockCapacity()">{{ 'GLOBAL.DELETE' | translate }}</button>
+                <button class="btn btn-danger text-uppercase" (click)="deleteStockCapacity()">{{ 'DELETE' | translate }}</button>
             </div>
         </div><br>
 

@@ -68,7 +68,7 @@
         </div>
 
         <!--Is < agency > a member?-->
-        <div class="col-sm-2" *ngIf="coordinationArrangement.isAMember">{{ 'GLOBAL.YES' | translate }}</div>
+        <div class="col-sm-2" *ngIf="coordinationArrangement.isAMember">{{ 'YES' | translate }}</div>
         <div class="col-sm-2" *ngIf="!coordinationArrangement.isAMember">{{ 'GLOBAL.NO' | translate }}</div>
 
         <div class="col-sm-2"><p>{{ getStaffName(coordinationArrangement.staffMember)}}</p></div>

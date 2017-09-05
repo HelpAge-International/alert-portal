@@ -226,7 +226,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       return false;
     }
     if (!this.department) {
-      this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_DEPARTMENT';
+      this.warningMessage = 'AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR';
       return false;
     }
     if (!this.position) {

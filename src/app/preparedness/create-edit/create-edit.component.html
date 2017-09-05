@@ -111,7 +111,7 @@
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
-            <label for="n-Done">{{"PREPAREDNESS.DEPARTMENT_SELECT_TEXT" | translate}}</label>
+            <label for="n-Done">{{"DEPARTMENT" | translate}}</label>
             <select class="form-control form-control-sm col-sm-5" [(ngModel)]="action.department"
                     [disabled]="editDisableLoading || action.type == actionType.mandated" (change)="removeFilterLockDepartment()">
               <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
@@ -131,19 +131,19 @@
       <div class="row System-admin--form-wrap" *ngIf="(!(action.level == actionLevelEnum.MPA && (!permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && (!permissionsAreEnabled.customAPA.Assign))))">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
-            <label for="n-AssignTo">{{"PREPAREDNESS.ASSIGN_TO" | translate}}</label>
+            <label for="n-AssignTo">{{"ASSIGN_TO" | translate}}</label>
             <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"  *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader"
                     [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
                                     || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions))
                                     || ((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
-              <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
+              <option selected value="">{{"UNASSIGNED" | translate}}</option>
               <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}} {{userAssign.lastName}}</option>
             </select>
             <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
             <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert || userType == userTypes.PartnerUser" [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.mandatedMPA.Assign))
                                     || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA && !permissionsAreEnabled.chsActions.Assign))
                                     || ((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign))">
-              <option selected value="">{{"PREPAREDNESS.UNASSIGNED" | translate}}</option>
+              <option selected value="">{{"UNASSIGNED" | translate}}</option>
               <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
             </select>
           </div>
@@ -190,7 +190,7 @@
             </tooltip>
           </div>
           <div class="row align-items-center" *ngIf="action.isFrequencyActive">
-            <div class="col-sm-1 col-2">{{"PREPAREDNESS.EVERY" | translate}}</div>
+            <div class="col-sm-1 col-2">{{"EVERY" | translate}}</div>
             <div class="col-sm-2 col-4">
               <select class="form-control" [(ngModel)]="action.frequencyQuantity">
                 <option *ngFor="let f of frequencyQuantities" [value]="f"
@@ -239,7 +239,7 @@
           <div class="row no-gutters">
             <label for="yes-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
               <input type="radio"  #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true" (change)="removeFilterLockDoc()"
-                     [(ngModel)]="action.requireDoc">{{"GLOBAL.YES" | translate}}</label>
+                     [(ngModel)]="action.requireDoc">{{"YES" | translate}}</label>
           </div>
           <div class="row no-gutters">
             <label for="no-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">

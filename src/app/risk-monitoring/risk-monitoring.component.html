@@ -66,7 +66,7 @@
                   {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
                 <!--(click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>-->
-                <a [routerLink]="['/risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
+                <a [routerLink]="['/risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -215,7 +215,7 @@
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                          (click)="updateIndicatorStatus('countryContext', indicatorC, indicatorKey)">
-                      {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
+                      {{"ACCOUNT_SETTINGS.SAVE" | translate}}
                     </div>
                     <br>
                     <p class="Right-aligned col-lg-6">
@@ -267,7 +267,7 @@
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"GLOBAL.DELETE" |
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" |
                                   translate}}</a>
                               </div>
                             </div>
@@ -372,8 +372,8 @@
                   | translate}}</a>
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#deleteHazardModal"
-                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
-                <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
+                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
+                <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -508,7 +508,7 @@
                        *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                          (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
-                      {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
+                      {{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate}}
                     </div>
                     <br>
                     <p class="Right-aligned col-lg-6">
@@ -558,7 +558,7 @@
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
                                   translate}}</a>
                               </div>
                             </div>
@@ -676,8 +676,8 @@
                     | translate}}</a>
                   <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#deleteHazardModal"
-                     (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
-                  <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
+                     (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
+                  <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
                 </div>
               </div>
@@ -820,7 +820,7 @@
                          *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                            (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
-                        {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
+                        {{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate}}
                       </div>
                       <br>
                       <p class="Right-aligned col-lg-6">
@@ -846,7 +846,7 @@
                             <div class="row Spaced log-post__wrap--risk">
                               <div class="log-date__wrap--risk col-lg-1">
                                 <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
-                                <p>{{"RISK_MONITORING.MAIN_PAGE.LOG_STATUS" | translate}} <img
+                                <p>{{"COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS" | translate}} <img
                                   src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                 </p>
                               </div>
@@ -865,7 +865,7 @@
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
                                     translate}}</a>
                                 </div>
                               </div>
@@ -1055,7 +1055,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title text-center Spaced-above" id="deleteHazardModal">
-          <h5>{{"GLOBAL.DELETE" | translate}}
+          <h5>{{"DELETE" | translate}}
             <strong>{{hazardScenario[tmpHazardData['scenario']] | translate}}?</strong>
           </h5>
         </div>

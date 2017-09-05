@@ -40,7 +40,7 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminFirstName]}">
-          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+          <label for="f-Name">{{"FIRST_NAME" | translate}}*</label>
           <input type="text" class="form-control" id="f-Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyAdminFirstName"
                  name="agencyAdminFirstName">
         </div>
@@ -101,7 +101,7 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+          <label for="City">{{"CITY" | translate}}</label>
           <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyAdminCity"
                  name="agencyAdminCity">
         </div>
@@ -123,7 +123,7 @@
     <div class="row no-gutters">
       <label for="yes-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
         <input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">
-        {{"GLOBAL.YES" | translate}}
+        {{"YES" | translate}}
       </label>
     </div>
     <div class="row no-gutters">
@@ -137,7 +137,7 @@
       <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE_CHANGES" |
         translate | uppercase}}
       </button>
-      <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.AGENCIES.SAVE_NEW_AGENCY" | translate | uppercase}}
+      <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.AGENCIES.SAVE" | translate | uppercase}}
       </button>
       <div class="btn btn-outline-secondary" (click)="cancelSubmit()">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>

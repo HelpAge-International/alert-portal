@@ -36,7 +36,7 @@ export class CoordinationArrangementModel extends BaseModel {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_CONTACT_PHONE');
         }
         if (!this.staffMember && !this.isExcluded('staffMember', excludedFields)) {
-            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_STAFF_MEMBER');
+            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.NO_STAFF_MEMBER');
         }
         return null;
     }

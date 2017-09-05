@@ -11,7 +11,7 @@
       <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
       <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePartnerOrganisation()">
-        {{"GLOBAL.DELETE" | translate}}
+        {{"DELETE" | translate}}
       </button>
     </div>
 
@@ -24,13 +24,13 @@
 
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="P-org">{{ "ADD_PARTNER.PARTNER_ORGANISATION" | translate }}</label>
+          <label for="P-org">{{ "COUNTRY_ADMIN.PARTNER.PARTNER_ORGANISATION" | translate }}</label>
           <input type="text" class="form-control" name="P-org" id="P-org"
                  [(ngModel)]="partnerOrganisation && partnerOrganisation.organisationName"
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Relationship">{{ "ADD_PARTNER.RELATIONSHIP" | translate }}</label>
+          <label for="Relationship">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP" | translate }}</label>
           <input type="text" class="form-control" name="Relationship" id="Relationship"
                  [(ngModel)]="partnerOrganisation && partnerOrganisation.relationship"
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
@@ -86,7 +86,7 @@
                      [(ngModel)]="project.title" id="P-title" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
             </div>
             <div class="col-lg-8 col-md-10 form-group">
-              <label for="P-end-date_{{pin}}">{{ "ADD_PARTNER.PROJECT_END_DATE" | translate }}</label>
+              <label for="P-end-date_{{pin}}">{{ "PROJECT_END_DATE" | translate }}</label>
               <material-datepicker id="P-end-date_{{pin}}"
                                    placeholder="{{project.endDate ? (project.endDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
                                    class="form-control col-sm-5"
@@ -181,7 +181,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="f-Name">{{ "GLOBAL.USER_INFO.FIRST_NAME" | translate }}</label>
+          <label for="f-Name">{{ "FIRST_NAME" | translate }}</label>
           <input type="text" class="form-control" name="f-name"
                  [(ngModel)]="partnerOrganisation && partnerOrganisation.firstName" id="f-Name"
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
