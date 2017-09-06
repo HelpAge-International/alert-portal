@@ -109,8 +109,7 @@
           <option value="-1">{{"UNASSIGNED" | translate}}</option>
           <option value="0">{{"ASSIGNED_TO_ANYONE" | translate}}</option>
           <!-- If it's me, show "Assigned to me" instead -->
-          <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ?
-            {{"ASSIGN_TO_ME" | translate}} : x.firstName + ' ' + x.lastName}}
+          <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ? {{"ASSIGN_TO_ME" | translate}} : x.firstName + ' ' + x.lastName}}
           </option>
         </select>
       </div>

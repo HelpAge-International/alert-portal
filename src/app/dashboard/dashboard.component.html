@@ -212,7 +212,7 @@
                 <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong> {{"HAS_REQ_ALERT_LEVEL_TO_GO_FROM_AMBER_TO_RED_ON_THE" | translate}} <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated | date:"dd/MM/yyyy"}}</strong></h6>
               </div>
               <div class="Centered row Spaced-above">
-                <p class="text-gray-dark text-left col-sm-7"><strong>{{"REASONS_FOR_RAISING_ALERT_LEVEL" : translate}}:</strong>
+                <p class="text-gray-dark text-left col-sm-7"><strong>{{"REASONS_FOR_RAISING_ALERT_LEVEL" | translate}}:</strong>
                   "{{alert?.reasonForRedAlert}}" - {{alert?.createdByName.split(" ")[0]}}</p>
               </div>
               <div class="Centered row Spaced">

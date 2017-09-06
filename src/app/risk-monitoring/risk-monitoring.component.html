@@ -79,8 +79,7 @@
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <a *ngIf="!isViewing"
-                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT"
-                      | translate}}
+                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" | translate}}
                     </a>
                   </div>
                 </div>
@@ -260,15 +259,13 @@
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" |
-                                  translate}} </a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" | translate}} </a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" |
-                                  translate}}</a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" | translate}}</a>
                               </div>
                             </div>
                           </div>
@@ -385,8 +382,7 @@
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <a *ngIf="!isViewing"
-                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT"
-                      | translate}}
+                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
                     </a>
                   </div>
                 </div>
@@ -551,15 +547,13 @@
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" |
-                                  translate}} </a>
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}} </a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
-                                  translate}}</a>
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
                               </div>
                             </div>
                           </div>
@@ -691,8 +685,7 @@
                       *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                       *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                       <a *ngIf="!isViewing"
-                         [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT"
-                        | translate}}
+                         [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
                       </a>
                     </div>
                   </div>
@@ -853,20 +846,18 @@
                               <div class="col-lg-6">
                                 <p>{{log.content}}</p>
                                 <br>
-                                <p><strong>{"BY" | translate}} {{log.addedByFullName}}</strong></p>
+                                <p><strong>{{"BY" | translate}} {{log.addedByFullName}}</strong></p>
                                 <div class="edit_delete_log_tooltip__wrap--risk">
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" |
-                                    translate}} </a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}}</a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
-                                    translate}}</a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
                                 </div>
                               </div>
                             </div>
@@ -1125,8 +1116,7 @@
             </div>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
-            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">{{ 'GLOBAL.CANCEL' | translate
-              }}</a>
+            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">{{ 'GLOBAL.CANCEL' | translate}}</a>
             <button href="javascript:void(0)" class="btn btn-primary col-sm-4" (click)="exportLog(logsToExport)">{{
               'RISK_MONITORING.EXPORT_LOG.EXPORT_BUTTON' | translate }}
             </button>
