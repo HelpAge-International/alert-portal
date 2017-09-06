@@ -4,7 +4,6 @@
     "YOU_ARE_ABOUT_TO_EXPORT":"You are about to export",
     "DOCUMENT_S":"document(s)",
     "ARE_YOU_SURE_YOU_WISH_TO_CONTINUE":"are you sure you wish to continue?",
-    "CONFIRM":"Confirm",
     "ADVANCED_PREP_ACTIONS":"Advanced Preparedness Actions",
     "TOGGLE_DROPDOWN":"Toggle Dropdown",
     "CREATE_CUSTOM_ACTIONS":"Create custom action",
@@ -53,7 +52,6 @@
     "MINIMUM_PREPAREDNESS":"Minimum preparedness",
     "ADVANCED_PREPAREDNESS":"Advanced preparedness",
     "PREPAREDNESS_BUDGET":"Preparedness budget",
-    "PLANS":"Plans",
     "POPULATION_AFFECTED":"Population affected",
     "AFFECTED_AREAS":"Affected areas",
     "AND":"and",
@@ -173,7 +171,6 @@
     "APA":"APA",
     "CONTACT_NAME":"Contact Name",
     "CONTACT_EMAIL":"Contact Email Address",
-    "STATUS":"Status",
     "ACTIONS":"Actions",
     "PARTNERSHIP_VALIDATION":"Partnership validation",
     "PARTNERSHIP_DETAILS":"Partnership details",
@@ -306,7 +303,6 @@
             "CLICK_HERE": "click here",
             "MORE_INFO": "More info"
         },
-        "ACCOUNT_SETTING": "Account Settings",
         "LOGOUT": "Logout",
         "PERSON_TITLE": {
             "MR": "Mr",
@@ -875,7 +871,6 @@
         "STAFF": {
             "TITLE_TEXT": "Agency Staff",
             "TITLE_ADD_STAFF": "Add staff member",
-            "TITLE_EDIT_STAFF": "Edit staff member",
             "ADD_NEW_STAFF": "Add new staff member",
             "SAVE_SETTINGS": "Save settings",
             "SAVE_CHANGES": "SAVE CHANGES",
@@ -923,7 +918,6 @@
             "REPLACE_IMAGE": "Replace image",
             "REMOVE_IMAGE": "Remove image",
             "DELETE_LOGO_MODEL_TEXT": "Are you sure you want to remove the logo of your agency?",
-            "NO_COUNTRY": "Please select a country",
             "NO_CITY": "Please enter the name of the city",
             "NO_PHONE": "Please enter the phone number",
             "NO_CURRENCY": "Please select a currency type"
@@ -932,7 +926,6 @@
             "DEFAULT_AGENCY_CLOCK_SETTINGS_TEXT": "These are the default clock settings for your agency. However, countries have the ability to make these more frequent if they wish",
             "SAVE_SUCCESS_RES_PLAN_SETTINGS": "Response Plan Settings successfully saved",
             "DEPARTMENTS": {
-                "TITLE_TEXT": "Departments",
                 "DELETE_DEPARTMENTS": "Delete Departments",
                 "DELETE_DEPARTMENTS_INFO": "Departments which has actions assigned to them can not be deleted",
                 "EDIT_DEPARTMENTS": "Edit Departments",
@@ -986,13 +979,11 @@
                   "ALL_MODULES": "All modules",
                   "UPLOADED_BY_EVERYONE": "Uploaded by everyone",
                   "SELECT_DOCS": "Select documents",
-                  "DOCUMENT(S)": "document(s)",
                   "WITH_SIZE": "with a total size of",
                   "DO_YOU_WISH_TO_CONTINUE?": "do you sure you wish to continue?",
                   "INVALID_DOCUMENT_TYPE": "Invalid Document Type"
             },
             "DOCUMENT_TYPE": {
-                "RESPONSE_PLAN": "Response Plan",
                 "HAZARD_DOCUMENT": "Hazard Document"
             },
             "NOTIFICATIONS": {
@@ -1007,7 +998,6 @@
         "PLEASE_FILL": "Please fill in your country office details below.",
         "UPDATE_DETAILS": {
             "NO_ADDRESS_1": "Please enter address line 1",
-            "NO_COUNTRY": "Please select a country",
             "NO_CITY": "Please enter the name of the city",
             "NO_PHONE": "Please enter the phone number",
             "INVALID_PHONE": "Please enter a valid phone number"
@@ -1049,7 +1039,6 @@
             "HAS_VALIDATION_PERMISSION": "Grant this user the partner & response plan validation permission",
             "PARTNER_PLAN_VALIDATION": "Partner & Plan Validation",
             "NO_PARTNER_ORGANISATION": "Please select a partner organisation",
-            "NO_POSITION": "Please select a position",
             "NO_VALIDATION_PERMISSION": "Please specify if you would like to grant the user partner & response plan validation permission",
             "SUCCESS_SAVED": "Partner user successfully saved",
             "DELETE_DIALOG_TITLE": "Delete Partner",
@@ -1097,7 +1086,6 @@
                 "SAVE_SETTINGS": "Save clock settings",
                 "RISK_MONITORING_SHOW_LOGS": "Initially show log from the past:",
                 "RISK_MONITORING_HAZARD_VALID": "Hazards will remain valid for:",
-                "PREPAREDNESS": "Preparedness",
                 "PREPAREDNESS_MPA": "MPA's will remain green for:",
                 "RESPONSE_PLANS_STATE": "Response plans will remain in an approved state for:",
                 "SAVED_SUCCESS": "Clock Settings successfully saved",
@@ -1277,7 +1265,6 @@
         "CONTACTS":{
             "EDIT_COUNTRY_OFFICE_DETAILS": "Edit country office details",
             "GO_BACK_TITLE": "Edit contacts",
-            "EDIT": "Edit contacts",
             "TITLE_TEXT": "Contacts",
             "OFFICE_DETAILS": "office details",
             "POINT_OF_CONTACT": "Point of contact",
@@ -1310,7 +1297,6 @@
             "SUCCESS_EDIT_MAPPING": "You successfully updated Programme Mapping",
             "EDIT_MAPPING": {
               "BACK_BUTTON": "Edit Programme",
-              "TITLE": "Edit Programme Mapping",
               "WHERE": "Where",
               "TO_WHO": "To Whom",
               "WHEN": "When",
@@ -1319,7 +1305,6 @@
               "MODAL_TEXT_PART_ONE": "Are you sure you want to delete this Programme Mapping?"
             },
             "EDIT_PROGRAMME": {
-              "TITLE": "Edit Programme",
               "MODAL_EDIT_SECTOR_TITLE": "Sector Expertise Selection"
             },
             "COMMON": {
@@ -1344,7 +1329,6 @@
         },
         "VIEW_MY_AGENCY": {
             "RESPONSE_PLANS": "Response plans",
-            "APA": "Advanced preparedness",
             "CHS": "CHS Preparedness",
             "SORT_BY": "Sort by",
             "NO_COUNTRIES": "No countries",
@@ -1446,7 +1430,6 @@
             "EXPORT_FOR_START_FUND": "Export for Start Fund",
             "ARCHIVE_PLAN": "Archive plan",
             "ARCHIVED_PLANS": "Archived Plans",
-            "ARCHIVED": "Archived",
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE": "Submit without partner validation",
             "SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT": "This plan has not been validated by your partners. Are you sure you want to submit it for director approval?",
             "ERROR_NO_COUNTRY_DIRECTOR": "No country director, can not submit for approval!",
@@ -1474,7 +1457,6 @@
                 "AVAILABILITY_OF_FUNDS_TEXT": "Explain the availability of funds your agency can access for this crisis"
             },
             "BASIC_INFORMATION": {
-                "PRESENCE_IN_THE_COUNTRY": "Presence in the country before project",
                 "NO_PRE-EXISTING_PRESENCE": "No pre-existing presence",
                 "METHOD_OF_IMPLEMENTATION": "Method of implementation",
                 "WORKING_WITH_PARTNERS": "Working with partners",
@@ -1505,8 +1487,6 @@
                 "TITLE_TEXT": "Activities",
                 "VIEW_THIS_ACTIVITY": "View this activity",
                 "REMOVE_THIS_ACTIVITY": "Remove this activity",
-                "PLANNED_ACTIVITY_TEXT?": "What is the planned activity?",
-                "BENEFICIARIES_OF_ACTIVITIES": "Beneficiaries of this activity by age and gender",
                 "ADD_ANOTHER_ACTIVITY": "Add another activity",
                 "SOURCE_PLAN?": "How are you planning to source your goods for this sector?",
                 "INTERNATIONALLY": "Internationally",
@@ -1652,7 +1632,6 @@
         "RED_ALERT_REQUESTED": "Red Alert Requested",
         "INFO_AND_NOTES": "Information sources and notes",
         "CHANGE_LEVEL": "Change Alert Level",
-        "SELECT_ALERT_LEVEL": "Select the Alert Level",
         "GREEN_ALERT_LEVEL": "Green Alert Level",
         "AMBER_ALERT_LEVEL": "Amber Alert Level",
         "RED_ALERT_LEVEL": "Red Alert Level",
@@ -1681,7 +1660,6 @@
             "ADD_SEASON": "Add season to the calendar",
             "EDIT_SEASON": "Edit season",
             "SEASON_NAME": "Season Name",
-            "START_DATE": "Start Date",
             "END_DATE": "End Date",
             "COLOUR": "Colour"
         }
@@ -1710,7 +1688,6 @@
             "NO_TRIGGER_DURATION_TYPE": "Please select indicator trigger duration type",
             "NO_TRIGGER_FREQUENCY_VALUE": "Please select indicator trigger frequency value",
             "NO_GEO_LOCATION": "Please select geo location",
-            "SUCCESS_MESSAGE_ADD_INDICATOR": "Indicator successfully saved!",
             "SUCCESS_MESSAGE_UPDATE_INDICATOR": "Indicator successfully updated!",
             "TITLE_PAGE": "Add new indicator",
             "INPUTS": {

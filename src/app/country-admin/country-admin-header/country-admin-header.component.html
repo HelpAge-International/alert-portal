@@ -22,7 +22,7 @@
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[countryLocation]
           | translate}}</a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/country-admin/country-account-settings">{{"GLOBAL.ACCOUNT_SETTING" | translate}}</a>
+          <a class="dropdown-item" routerLink="/country-admin/country-account-settings">{{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}</a>
           <a class="dropdown-item" routerLink="/country-admin/country-my-agency">{{"VIEW_MY_AGENCY" | translate}}</a>
           <a
             *ngIf="userType == UserType.CountryAdmin || userType == UserType.CountryDirector || userType==UserType.ErtLeader"

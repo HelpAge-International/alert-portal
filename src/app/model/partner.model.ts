@@ -24,7 +24,7 @@ export class PartnerModel extends BaseModel {
     }
     if(!this.position && !this.isExcluded('position', excludedFields))
     {
-      return new AlertMessageModel('COUNTRY_ADMIN.PARTNER.NO_POSITION');
+      return new AlertMessageModel('COUNTRY_ADMIN.STAFF.NO_POSITION');
     }
     if(typeof(this.hasValidationPermission) !== typeof(true) && !this.isExcluded('hasValidationPermission', excludedFields))
     {

@@ -416,11 +416,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
               } else {
                 this._location.back();
               }
-              // this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.SUCCESS_MESSAGE_ADD_INDICATOR', AlertMessageType.Success);
-              // this.indicatorData = new Indicator();
-              // this.addAnotherSource();
-              // this.addAnotherLocation();
-              // this.addIndicatorTrigger();
             }).catch((error: any) => {
             console.log(error, 'You do not have access!')
           });

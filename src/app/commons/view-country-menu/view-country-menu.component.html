@@ -17,7 +17,7 @@
         <li *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public || privacy?.apa == Privacy.Public" [class.Active]="menuMap.get('preparedness')" routerLinkActive="active">
           <div class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
-               aria-expanded="false">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS" | translate}}</a>
+               aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
             <div class="dropdown-menu">
               <a *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-min')">{{"HEADERS.MIN_PREP" | translate}}</a>
               <a *ngIf="userAgencyId==agencyId || privacy?.apa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-adv')">{{"HEADERS.ADV_PREP" | translate}}</a>
@@ -25,7 +25,7 @@
             </div>
           </div>
         </li>
-        <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public" [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"PLANS" | translate}}</li>
+        <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public" [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"HEADERS.PLANS" | translate}}</li>
       </ul>
     </div>
   </div>
