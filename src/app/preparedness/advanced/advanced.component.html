@@ -19,7 +19,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"YOU_ARE_ABOUT_TO_EXPORT" | translate}} <strong>{{documents.length}} {{"DOCUMENT_S" | translate}}</strong> {{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.WITH_SIZE" | translate}} <strong>{{docsSize | number:'1.0-2'}}MB</strong> {{"ARE_YOU_SURE_YOU_WISH_TO_CONTINUE" | translate}}</p></div>
+        <div class="text-center"><p>{{"YOU_ARE_ABOUT_TO_EXPORT" | translate}} <strong>{{(documents.length) ("DOCUMENT_S" | translate)}}</strong> {{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.WITH_SIZE" | translate}} <strong>{{docsSize | number:'1.0-2'}}MB</strong> {{"ARE_YOU_SURE_YOU_WISH_TO_CONTINUE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">{{"GLOBAL.CANCEL" | translate}}</button>
@@ -106,7 +106,7 @@
           <option value="-1">{{"UNASSIGNED" | translate}}</option>
           <option value="0">{{"ASSIGNED_TO_ANYONE" | translate}}</option>
           <!-- If it's me, show "Assigned to me" instead -->
-          <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ? {{"ASSIGN_TO_ME" | translate}} : x.firstName + ' ' + x.lastName}}
+          <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ? ("ASSIGN_TO_ME" | translate) : x.firstName + ' ' + x.lastName}}
           </option>
         </select>
       </div>
@@ -195,7 +195,7 @@
                     </div>
                     <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                       CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName :
-                      'Unassigned'}}</strong></div>
+                      ("UNASSIGNED" | translate)}}</strong></div>
 
                   </div>
                 </div>

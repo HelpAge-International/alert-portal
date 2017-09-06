@@ -1,4 +1,5 @@
 {
+	"WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "ADD_GENERIC_PREPARED":"Add generic preparedness actions",
     "EVERY":"Every",
     "YOU_ARE_ABOUT_TO_EXPORT":"You are about to export",
@@ -1353,7 +1354,8 @@
       "CONTENT": "Are you sure you want to delete this indicator?"
     },
     "DELETE_MESSAGE_DIALOG": {
-        "ALL_MSG_CONTENT": "Are you sure you want to delete all the message?"
+        "ALL_MSG_CONTENT": "Are you sure you want to delete all the messages?",
+        "SINGLE_MSG_CONTENT": "Are you sure you want to delete this message?"
     },
     "DELETE_AGENCY_DIALOG": {
         "CONTENT": "Are you sure you want to delete this agency?"

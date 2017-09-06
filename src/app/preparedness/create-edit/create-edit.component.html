@@ -31,7 +31,7 @@
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
           <div class="form-group">
-            <label for="n-Done">{{"PREPAREDNESS.TASK" | translate}}</label>
+            <label for="n-Done">{{"WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
             <textarea [disabled]="editDisableLoading || action.type != actionType.custom" id="n-Done" cols="30"
                       (keypress)="removeFilterLockTask()"
                       rows="10" class="form-control" required [(ngModel)]="action.task"></textarea>

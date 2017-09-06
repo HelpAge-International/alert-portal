@@ -82,8 +82,7 @@
         <!-- STATUS -->
         <select class="form-control" id="ActionStatusFilter" [(ngModel)]="filterStatus">
           <option value="-1" selected>{{"ACTION_STATUS" | translate}}</option>
-          <option *ngFor="let x of ACTION_STATUS; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_STATUS[i]
-            | translate}}
+          <option *ngFor="let x of ACTION_STATUS; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_STATUS[i] | translate}}
           </option>
         </select>
       </div>
@@ -98,8 +97,7 @@
         <!-- TYPE -->
         <select class="form-control" id="TypesFilter" [(ngModel)]="filterType">
           <option value="-1" selected>{{"ALL_TYPES" | translate}}</option>
-          <option *ngFor="let x of ACTION_TYPE; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_TYPE[i] |
-            translate}}
+          <option *ngFor="let x of ACTION_TYPE; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_TYPE[i] | translate}}
           </option>
         </select>
       </div>
@@ -109,7 +107,7 @@
           <option value="-1">{{"UNASSIGNED" | translate}}</option>
           <option value="0">{{"ASSIGNED_TO_ANYONE" | translate}}</option>
           <!-- If it's me, show "Assigned to me" instead -->
-          <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ? {{"ASSIGN_TO_ME" | translate}} : x.firstName + ' ' + x.lastName}}
+          <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.isMe ? ("ASSIGN_TO_ME" | translate) : x.firstName + ' ' + x.lastName}}
           </option>
         </select>
       </div>
@@ -140,12 +138,12 @@
              START :: ASSIGNED TOO
     -->
     <div class="Ribbon__section__wrap Spaced">
-      <h2>{{"ACTIONS_ASSIGNED_TO" | translate}} {{
-        filterAssigned == uid ? {{"ME" | translate}} : (filterAssigned == '0' ? {{"ANYONE" | translate}} :
-        (CURRENT_USERS.get(filterAssigned) != null ? CURRENT_USERS.get(filterAssigned).firstName + ' ' +
-        CURRENT_USERS.get(filterAssigned).lastName : {{"NO_ONE" | translate}})
-        )
-        }}</h2>
+      <h2>
+        {{("ACTIONS_ASSIGNED_TO" | translate) (filterAssigned == uid ?
+        ("ME" | translate) : (filterAssigned == '0' ? ("ANYONE" | translate) :
+        (CURRENT_USERS.get(filterAssigned) != null ? CURRENT_USERS.get(filterAssigned).firstName + ' ' + CURRENT_USERS.get(filterAssigned).lastName : ("NO_ONE" | translate)))
+        )}}
+      </h2>
 
       <div *ngFor="let action of prepActionService.actions">
 
@@ -287,7 +285,7 @@
                           <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
-                            : {{"UNASSIGNED" | translate}}}}</strong></div>
+                            : ("UNASSIGNED" | translate)}}</strong></div>
 
                         </div>
                       </div>
@@ -327,9 +325,11 @@
                                 </div>
                                 <div class="row align-items-center">
                                   <div class="col-6 text-bold Small-spaced">
-                                    {{"BY" | translate}} {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                    {{
+                                    ("BY" | translate) (CURRENT_USERS.get(note.uploadedBy) != null ?
                                     CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
-                                    CURRENT_USERS.get(note.uploadedBy).lastName : {{"UNASSIGNED" | translate}}}}
+                                    CURRENT_USERS.get(note.uploadedBy).lastName : ("UNASSIGNED" | translate))
+                                    }}
                                   </div>
                                   <div class="col-6 text-bold text-right"
                                        *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
@@ -352,8 +352,7 @@
                             <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                                href="javascript:void(0)" class="btn btn-primary btn-block"
-                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? {{"SAVE_NOTE" | translate}} :
-                              {{"ADD_NOTE" | translate}}}}</a>
+                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) : ("ADD_NOTE" | translate)}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                                onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
@@ -371,7 +370,7 @@
                           <div class="col-md-10">
                             <div class="row Spaced align-items-center">
                               <div class="col-sm-6 col-8">
-                                <h4>{{"DOCUMENTS_TEXT" | translate}} ({{action.documents.length}})</h4>&nbsp;&nbsp;<a
+                                <h4>{{("DOCUMENTS_TEXT" | translate) (action.documents.length)}}</h4>&nbsp;&nbsp;<a
                                 *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
                                 class="text-nowrap"
                                 (click)="exportAllDocuments(action)">{{"DOWNLOAD_ALL" | translate}}</a>
@@ -422,7 +421,7 @@
                         </div>
                         <div class="row">
                           <div class="col-12">
-                            <p>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}} {{action.requireDoc ? '(required)' : ''}}</p>
+                            <p>{{("ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate) (action.requireDoc ? '(required)' : '')}}</p>
                           </div>
                         </div>
                         <div class="row">
@@ -506,21 +505,21 @@
                       <!-- Logic for the clock settings -->
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                        Due on <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
+                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
-                        Expired on <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
-                        Expired on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
-                        Expires on <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
                         ''yy"}}</strong>
                       </div>
 
@@ -608,7 +607,7 @@
                           <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
-                            : {{"UNASSIGNED" | translate}}}}</strong></div>
+                            : ("UNASSIGNED" | translate)}}</strong></div>
 
                         </div>
                       </div>
@@ -648,9 +647,11 @@
                                 </div>
                                 <div class="row align-items-center">
                                   <div class="col-6 text-bold Small-spaced">
-                                    {{"BY" | translate}} {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                    {{
+                                    ("BY" | translate) (CURRENT_USERS.get(note.uploadedBy) != null ?
                                     CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
-                                    CURRENT_USERS.get(note.uploadedBy).lastName : {{"UNASSIGNED" | translate}}}}
+                                    CURRENT_USERS.get(note.uploadedBy).lastName : ("UNASSIGNED" | translate))
+                                    }}
                                   </div>
                                   <div class="col-6 text-bold text-right"
                                        *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
@@ -673,8 +674,8 @@
                             <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                                href="javascript:void(0)" class="btn btn-primary btn-block"
-                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? {{"SAVE_NOTE" | translate}} :
-                              {{"ADD_NOTE" | translate}}}}</a>
+                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                              ("ADD_NOTE" | translate)}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                                onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
@@ -692,7 +693,7 @@
                           <div class="col-md-10">
                             <div class="row Spaced align-items-center">
                               <div class="col-sm-6 col-8">
-                                <h4>Documents ({{action.documents.length}})</h4>&nbsp;&nbsp;<a
+                                <h4>{{("DOCUMENTS_TEXT" | translate) (action.documents.length)}}</h4>&nbsp;&nbsp;<a
                                 *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
                                 class="text-nowrap"
                                 (click)="exportAllDocuments(action)">{{"DOWNLOAD_ALL" | translate}}</a>
@@ -743,7 +744,7 @@
                         </div>
                         <div class="row">
                           <div class="col-12">
-                            <p>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}} {{action.requireDoc ? '(required)' : ''}}</p>
+                            <p>{{("ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate) (action.requireDoc ? '(required)' : '')}}</p>
                           </div>
                         </div>
                         <div class="row">
@@ -883,7 +884,7 @@
                           <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
-                            : {{"UNASSIGNED" | translate}}}}</strong></div>
+                            : ("UNASSIGNED" | translate)}}</strong></div>
 
                         </div>
                       </div>
@@ -925,9 +926,11 @@
                               </div>
                               <div class="row align-items-center">
                                 <div class="col-6 text-bold Small-spaced">
-                                  {{"BY" | translate}} {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                  {{
+                                  ("BY" | translate) (CURRENT_USERS.get(note.uploadedBy) != null ?
                                   CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
-                                  CURRENT_USERS.get(note.uploadedBy).lastName : {{"UNASSIGNED" | translate}}}}
+                                  CURRENT_USERS.get(note.uploadedBy).lastName : ("UNASSIGNED" | translate))
+                                  }}
                                 </div>
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
@@ -950,8 +953,8 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? {{"SAVE_NOTE" | translate}} :
-                            {{"ADD_NOTE" | translate}}}}</a>
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                            ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
@@ -970,7 +973,7 @@
                         <div class="col-md-10">
                           <div class="row Spaced align-items-center">
                             <div class="col-sm-6 col-8">
-                              <h4>{{"DOCUMENTS_TEXT" | translate}} ({{action.documents.length}})</h4>
+                              <h4>{{("DOCUMENTS_TEXT" | translate) (action.documents.length)}}</h4>
                               <!--tooltip-->
                               <tooltip
                                 [level1]="'TOOLTIPS.PREPAREDNESS.TT6.LEVEL1'">
@@ -1091,7 +1094,7 @@
                           <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
-                            : {{"UNASSIGNED" | translate}}}}</strong></div>
+                            : ("UNASSIGNED" | translate)}}</strong></div>
 
                         </div>
                       </div>
@@ -1133,9 +1136,9 @@
                               </div>
                               <div class="row align-items-center">
                                 <div class="col-6 text-bold Small-spaced">
-                                  {{"BY" | translate}} {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                  {{("BY" | translate) (CURRENT_USERS.get(note.uploadedBy) != null ?
                                   CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
-                                  CURRENT_USERS.get(note.uploadedBy).lastName : {{"UNASSIGNED" | translate}}}}
+                                  CURRENT_USERS.get(note.uploadedBy).lastName : ("UNASSIGNED" | translate))}}
                                 </div>
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
@@ -1158,8 +1161,7 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? {{"SAVE_NOTE" | translate}} :
-                            {{"ADD_NOTE" | translate}}}}</a>
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) : ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
@@ -1178,7 +1180,7 @@
                         <div class="col-md-10">
                           <div class="row Spaced align-items-center">
                             <div class="col-sm-6 col-8">
-                              <h4>{{"DOCUMENTS_TEXT" | translate}} ({{action.documents.length}})</h4>
+                              <h4>{{("DOCUMENTS_TEXT" | translate) (action.documents.length)}}</h4>
                               <!--tooltip-->
                               <tooltip
                                 [level1]="'TOOLTIPS.PREPAREDNESS.TT6.LEVEL1'">
@@ -1313,7 +1315,7 @@
                         </div>
                         <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
                           CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
-                          : {{"UNASSIGNED" | translate}}}}</strong></div>
+                          : ("UNASSIGNED" | translate)}}</strong></div>
 
                       </div>
                     </div>
@@ -1354,9 +1356,11 @@
                               </div>
                               <div class="row align-items-center">
                                 <div class="col-6 text-bold Small-spaced">
-                                  {{"BY" | translate}} {{CURRENT_USERS.get(note.uploadedBy) != null ?
+                                  {{
+                                  ("BY" | translate) (CURRENT_USERS.get(note.uploadedBy) != null ?
                                   CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
-                                  CURRENT_USERS.get(note.uploadedBy).lastName : {{"UNASSIGNED" | translate}}}}
+                                  CURRENT_USERS.get(note.uploadedBy).lastName : ("UNASSIGNED" | translate))
+                                  }}
                                 </div>
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
@@ -1379,8 +1383,7 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? {{"SAVE_NOTE" | translate}} :
-                            {{"ADD_NOTE" | translate}}}}</a>
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) : ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
@@ -1398,7 +1401,7 @@
                         <div class="col-md-10">
                           <div class="row Spaced align-items-center">
                             <div class="col-sm-6 col-8">
-                              <h4>{{"DOCUMENTS_TEXT" | translate}} ({{action.documents.length}})</h4>&nbsp;&nbsp;<a
+                              <h4>{{("DOCUMENTS_TEXT" | translate) (action.documents.length)}}</h4>&nbsp;&nbsp;<a
                               *ngIf="userType == userTypes.CountryAdmin" href="javascript:void(0);"
                               class="text-nowrap"
                               (click)="exportAllDocuments(action)">{{"DOWNLOAD_ALL" | translate}}</a>
