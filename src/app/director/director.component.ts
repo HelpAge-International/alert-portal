@@ -135,7 +135,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
   getDirectorName(directorId) {
 
-    this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
+    this.directorName = "UNASSIGNED";
     if (directorId && directorId != "null") {
       this.userService.getUser(directorId)
         .takeUntil(this.ngUnsubscribe)

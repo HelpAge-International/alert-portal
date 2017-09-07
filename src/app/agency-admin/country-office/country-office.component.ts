@@ -222,7 +222,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   getDirectorName(director) {
-    this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
+    this.directorName = "UNASSIGNED";
     if (director && director.directorId && director.directorId != "null") {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + director.directorId)
         .takeUntil(this.ngUnsubscribe)

@@ -229,7 +229,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       this.showAlert();
       return;
     }
-    if (!this.regionalDirectorId || this.regionalDirectorId == 'AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED') {
+    if (!this.regionalDirectorId || this.regionalDirectorId == 'UNASSIGNED') {
       this.regionalDirectorId = "null";
     }
     // console.log(this.regionName);

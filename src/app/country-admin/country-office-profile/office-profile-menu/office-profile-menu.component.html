@@ -40,11 +40,11 @@
 
     <li *ngIf="!isViewing" routerLinkActive="active">
       <a routerLink="/country-admin/country-office-profile/equipment">{{
-        "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE" |
+        "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT" |
         translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('equipment')">
-      <a (click)="viewingToEquipment()">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE" |
+      <a (click)="viewingToEquipment()">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT" |
         translate}}</a>
     </li>
 

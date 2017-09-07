@@ -238,7 +238,7 @@ export class Constants {
   ];
 
   static RESPONSE_PLANS_SECTORS_ICONS = [
-    "SECTOR_WASH.WASH",
+    "SECTOR_WASH",
     "SECTOR_HEALTH",
     "SECTOR_SHELTER",
     "SECTOR_NUTRITION",

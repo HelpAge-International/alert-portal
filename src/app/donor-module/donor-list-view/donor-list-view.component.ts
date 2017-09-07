@@ -90,7 +90,7 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
   }
 
   getDirectorName(directorId) {
-    this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
+    this.directorName = "UNASSIGNED";
     if (directorId && directorId != "null") {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + directorId)
         .takeUntil(this.ngUnsubscribe)
