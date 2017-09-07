@@ -1,0 +1,49 @@
+{
+  "GLOBAL": {
+    "TYPE": "Type: ",
+    "DELETE": "Effacer",
+    "CANCEL": "Annuler",
+    "CONFIRM": "Confirmer",
+    "EDIT": "Modifier",
+    "FROM": "De: ",
+    "AT": "Ã€: ",
+    "TITLE": "Titre",
+    "WHAT_NEEDS_TO_BE_DONE": "Ce qui doit Ãªtre fait?",
+    "EMAIL_ADDRESS": "Adresse e-mail",
+    "GENERAL_ERROR": "Une erreur est survenue. S'il vous plaÃ®t, vÃ©rifiez et essayez Ã  nouveau"
+  },
+  "MENU": {
+    "HOME": "Accueil",
+    "NETWORK": "RÃ‰SEAU",
+    "CHS": "CHS Mesures minimales de prÃ©paration",
+    "MPAAPA": "GÃ©nÃ©rique MPA/APAs",
+    "SETTING": "Les paramÃ¨tres du systÃ¨me",
+    "MESSAGE": "Messages"
+  },
+  "HOME":{
+    "TITLE":"Agences",
+    "LOGO":"Logo",
+    "NAME":"Nom d'agence",
+    "STATUS":"Statut",
+    "ACTIONS":"Actes",
+    "ADD_NEW_AGENCY":"nouvelle agence"
+  },
+  "DIALOG":{
+    "TITLE":"Alert",
+    "CONTENT":"Voulez-vous vraiment effectuer cette action?"
+  },
+  "MESSAGES": {
+    "TITLE_TEXT": "Messages",
+    "CREATE_NEW_MESSAGE": "CrÃ©er un nouveau message",
+    "NO_MESSAGES":"Aucun message envoyÃ©",
+    "MESSAGE_CONTENT": "Contenu du message",
+    "RECIPIENTS": "Destinataires",
+    "ALL_USERS": "Tous les utilisateurs",
+    "AGENCY_ADMINS": "Administrateurs d'agence",
+    "COUNTRY_ADMINS": "Administrateurs Pays",
+    "SEND_MESSAGE": "Envoyer le message",
+    "NO_TITLE_ERROR": "Veuillez entrer un titre pour le message",
+    "NO_CONTENT_ERROR": "Veuillez ajouter du contenu au message",
+    "NO_RECIPIENTS_ERROR": "Veuillez sÃ©lectionner le groupe de destinataires"
+  }
+}
