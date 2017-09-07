@@ -1,4 +1,6 @@
 {
+	"CREATE_ACTION": "Create action",
+	"MINIMUM_PREP_ACTIONS_TITLE" : "Minimum Preparedness Actions",
 	"WHAT_NEEDS_TO_BE_DONE": "What needs to be done?",
     "ADD_GENERIC_PREPARED":"Add generic preparedness actions",
     "EVERY":"Every",
