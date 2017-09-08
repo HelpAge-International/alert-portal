@@ -307,6 +307,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           .subscribe((agencyAdminIds) => {
             this.agencyAdminUid = agencyAdminIds[0].$key;
             this.getSettings();
+            this.calculateCurrency();
             this.getPartners();
 
             this.af.database.list(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + '/systemAdmin')
