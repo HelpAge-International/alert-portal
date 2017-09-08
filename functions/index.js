@@ -1033,7 +1033,6 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
 
         // \n https://uat.portal.alertpreparedness.org
         mailOptions.subject = `Welcome to ${APP_NAME}!`;
-        // https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
@@ -1182,48 +1181,48 @@ exports.sendPartnerOrganisationValidationEmailUat2 = functions.database.ref('/ua
   });
 
 //for live
-// exports.sendPartnerOrganisationValidationEmailLive = functions.database.ref('/live/partnerOrganisation/{partnerId}')
-//   .onWrite(event => {
-//     const preData = event.data.previous.val();
-//     const currData = event.data.current.val();
-//
-//     let partnerOrganisation = event.data.val();
-//     let isApproved = partnerOrganisation.isApproved;
-//
-//     if (!preData && currData) {
-//       console.log("Partner Organisation created");
-//
-//       let partnerId = event.params['partnerId'];
-//       let email = partnerOrganisation.email;
-//       let expiry = moment.utc().add(1, 'weeks').valueOf();
-//
-//       let validationToken = {'token': uuidv4(), 'expiry': expiry};
-//
-//       console.log("email: " + email);
-//
-//       admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-//         console.log('success validationToken');
-//         const mailOptions = {
-//           from: '"ALERT partner organisation" <noreply@firebase.com>',
-//           to: email
-//         };
-//
-//         // \n https://uat.portal.alertpreparedness.org
-//         mailOptions.subject = `Welcome to ${APP_NAME}!`;
-//         mailOptions.text = `Hello,
-//                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
-//                           \n To confirm, please click on the link below
-//                           \n http://platform.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
-//         return mailTransport.sendMail(mailOptions).then(() => {
-//           console.log('New welcome email sent to:', email);
-//         });
-//       }, error => {
-//         console.log(error.message);
-//       });
-//     }
-//   });
+exports.sendPartnerOrganisationValidationEmailLive = functions.database.ref('/live/partnerOrganisation/{partnerId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    let partnerOrganisation = event.data.val();
+    let isApproved = partnerOrganisation.isApproved;
+
+    if (!preData && currData) {
+      console.log("Partner Organisation created");
+
+      let partnerId = event.params['partnerId'];
+      let email = partnerOrganisation.email;
+      let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+      let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+      console.log("email: " + email);
+
+      admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+        console.log('success validationToken');
+        const mailOptions = {
+          from: '"ALERT partner organisation" <noreply@firebase.com>',
+          to: email
+        };
+
+        // \n https://uat.portal.alertpreparedness.org
+        mailOptions.subject = `Welcome to ${APP_NAME}!`;
+        mailOptions.text = `Hello,
+                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+                          \n To confirm, please click on the link below
+                          \n http://platform.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
+                          \n Thanks
+                          \n Your ALERT team `;
+        return mailTransport.sendMail(mailOptions).then(() => {
+          console.log('New welcome email sent to:', email);
+        });
+      }, error => {
+        console.log(error.message);
+      });
+    }
+  });
 
 //for d1s1
 exports.sendPartnerOrganisationValidationEmailD1s1 = functions.database.ref('/d1s1/partnerOrganisation/{partnerId}')
