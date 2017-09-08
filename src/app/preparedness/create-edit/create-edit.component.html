@@ -219,7 +219,7 @@
             <label for="n-Budget">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}</label>
             <input type="number" required name="budget" #budget="ngModel" [(ngModel)]="action.budget"
                    (keypress)="removeFilterLockBudget()"
-                   class="form-control col-sm-5" id="n-Budget" min="0" placeholder="&pound;">
+                   class="form-control col-sm-5" id="n-Budget" min="0" placeholder="{{CURRENCIES[currency]}}">
           </div>
           <div [hidden]="action.budget != undefined || filterLockBudget" class="alert alert-danger">{{"PREPAREDNESS.NO_BUDGET" | translate}}</div>
         </div>

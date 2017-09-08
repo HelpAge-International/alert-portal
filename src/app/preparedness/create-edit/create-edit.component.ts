@@ -3,7 +3,7 @@ import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {
-  ActionLevel, ActionType, AlertLevels, AlertMessageType, DurationType, HazardScenario,
+  ActionLevel, ActionType, AlertLevels, AlertMessageType, Currency, DurationType, HazardScenario,
   UserType
 } from "../../utils/Enums";
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -152,6 +152,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.getHazards();
         this.initStaff();
         this.getDepartments();
+        this.calculateCurrency();
       });
     });
   }
@@ -215,6 +216,20 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       console.log(this.action);
     });
   }
+
+  /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
+      });
+  }
+
 
 
   /**

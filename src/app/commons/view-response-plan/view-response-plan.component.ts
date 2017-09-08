@@ -7,7 +7,7 @@ import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
   AgeRange,
-  BudgetCategory,
+  BudgetCategory, Currency,
   Gender,
   MethodOfImplementation,
   PresenceInTheCountry,
@@ -163,6 +163,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
                       }
                       this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
                       this.handleLoadResponsePlan();
+                      this.calculateCurrency();
                     } else {
                       this.navigateToLogin();
                     }
@@ -190,6 +191,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
               this.countryId = countryId;
               this.systemAdminUid = systemId;
               this.handleLoadResponsePlan();
+              this.calculateCurrency();
             } else {
               this.loadData(userType);
             }
@@ -206,6 +208,19 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   isNumber(n) {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
+  }
+
+  /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
+      });
   }
 
   /**

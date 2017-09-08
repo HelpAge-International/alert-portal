@@ -6,7 +6,7 @@ import {
   ActionLevel,
   ActionStatusMin,
   ActionType,
-  AlertMessageType,
+  AlertMessageType, Currency,
   DocumentType,
   FileExtensionsEnding, Privacy,
   SizeType,
@@ -201,6 +201,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             .subscribe(privacy => {
               this.privacy = privacy;
             });
+
+          // Currency
+          this.calculateCurrency();
         });
 
       });
@@ -268,6 +271,19 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         snap.forEach((snapshot) => {
           this.getStaffDetails(snapshot.key, false);
         });
+      });
+  }
+
+  /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
       });
   }
 

@@ -7,7 +7,7 @@ import {
   ActionStatus,
   ActionType,
   AlertLevels,
-  AlertMessageType,
+  AlertMessageType, Currency,
   DocumentType,
   FileExtensionsEnding,
   HazardScenario, Privacy,
@@ -176,6 +176,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.initDepartments();
             this.initDocumentTypes();
             this.initAlerts();
+            this.calculateCurrency();
 
             this.countryService.getPrivacySettingForCountry(this.countryId)
               .takeUntil(this.ngUnsubscribe)
@@ -194,6 +195,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.initDepartments();
             this.initDocumentTypes();
             this.initAlerts();
+            this.calculateCurrency();
           }
         });
       });
@@ -293,6 +295,19 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         snap.forEach((snapshot) => {
           this.getStaffDetails(snapshot.key, false);
         });
+      });
+  }
+
+  /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
       });
   }
 

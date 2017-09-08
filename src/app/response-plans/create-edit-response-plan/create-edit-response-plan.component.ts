@@ -10,7 +10,7 @@ import {
   MethodOfImplementation,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors, BudgetCategory, AlertMessageType, UserType
+  ResponsePlanSectors, BudgetCategory, AlertMessageType, UserType, Currency
 } from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {ResponsePlan} from "../../model/responsePlan";
@@ -291,6 +291,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.getSettings();
     this.getPartners();
     this.getGroups();
+    this.calculateCurrency();
   }
 
   private getSystemAgencyCountryIds(userPath: string) {
@@ -580,6 +581,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
 
     this.saveToFirebase(newResponsePlan);
+  }
+
+  /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyAdminUid + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
+      });
   }
 
   /**

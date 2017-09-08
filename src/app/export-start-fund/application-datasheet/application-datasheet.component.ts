@@ -6,6 +6,7 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
+  Currency,
   MediaFormat,
   MethodOfImplementation,
   PresenceInTheCountry,
@@ -70,6 +71,19 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
   }
 
   /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency(agencyId: string) {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
+      });
+  }
+
+  /**
    * Private Functions
    */
 
@@ -106,6 +120,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
             this.memberAgencyName = name.$value;
           }
         });
+        this.calculateCurrency(agencyId);
       });
   }
 

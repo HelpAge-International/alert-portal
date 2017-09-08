@@ -15,7 +15,7 @@
       </div>
       <div class="row text-bold Line-row--no-border align-items-center">
         <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
-        <div class="col-sm-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} (&pound;)</div>
+        <div class="col-sm-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} ({{CURRENCIES[currency]}})</div>
         <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
       </div>
       <div class="row Line-row  align-items-center" *ngFor="let dept of departments" name="department">
@@ -29,7 +29,7 @@
       </div>
       <div class="row Line-row text-bold align-items-center">
         <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-        <div class="col-sm-3 col-6">&pound;{{minTotal}}</div>
+        <div class="col-sm-3 col-6">{{CURRENCIES[currency]}} {{minTotal}}</div>
       </div>
     </div>
     <div class="Ribbon__section__wrap col-lg-8 Spaced">
@@ -38,7 +38,7 @@
       </div>
       <div class="row text-bold Line-row--no-border align-items-center">
         <div class="col-sm-4 col-4">{{"GLOBAL.DEPARTMENT" | translate}}</div>
-        <div class="col-sm-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} (&pound;)</div>
+        <div class="col-sm-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} ({{CURRENCIES[currency]}})</div>
         <div class="col-sm-5 col-4">{{"PREPAREDNESS.BUDGET_NARRATIVE" | translate}}</div>
       </div>
       <div class="row Line-row align-items-center" *ngFor="let department of departments">
@@ -53,14 +53,14 @@
       </div>
       <div class="row Line-row text-bold align-items-center">
         <div class="col-sm-4 col-6 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-        <div class="col-sm-3 col-6">&pound;{{advTotal}}</div>
+        <div class="col-sm-3 col-6">{{CURRENCIES[currency]}} {{advTotal}}</div>
       </div>
     </div>
 
     <div class="Ribbon__section__wrap col-lg-8">
       <div class="row Line-row--no-border text-bold align-items-center">
         <div class="col-sm-4 col-6 text-right">{{"GLOBAL.GRAND_TOTAL" | translate}}</div>
-        <div class="col-sm-3 col-6">&pound;{{minTotal + advTotal}}</div>
+        <div class="col-sm-3 col-6">{{CURRENCIES[currency]}} {{minTotal + advTotal}}</div>
       </div>
     </div>
     <div *ngIf="!isViewing" class="Form-submit__wrapper">
