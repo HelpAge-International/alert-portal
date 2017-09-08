@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Router} from "@angular/router";
+import {Constants} from "../utils/Constants";
 
 @Component({
   selector: 'app-under-maintenance',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UnderMaintenanceComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
+    if (!Constants.SHOW_MAINTENANCE_PAGE) {
+      this.router.navigateByUrl("/login");
+    }
   }
 
 }

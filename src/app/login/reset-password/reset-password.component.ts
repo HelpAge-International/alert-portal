@@ -3,6 +3,7 @@ import {FirebaseApp} from 'angularfire2';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Observable, Subject} from "rxjs";
 import {ErrorCodesService} from "../../services/errorcodes.service";
+import {Constants} from "../../utils/Constants";
 
 @Component({
   selector: 'app-reset-password',
@@ -30,11 +31,16 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.actRoute.queryParams.subscribe((params: Params) => {
-      let oobCode: string = params['oobCode'];
-      this.oobCode = oobCode;
-      console.log("Code; " + this.oobCode);
-    });
+    if (Constants.SHOW_MAINTENANCE_PAGE) {
+      this.router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
+    }
+    else {
+      this.actRoute.queryParams.subscribe((params: Params) => {
+        let oobCode: string = params['oobCode'];
+        this.oobCode = oobCode;
+        console.log("Code; " + this.oobCode);
+      });
+    }
   }
 
   ngOnDestroy() {

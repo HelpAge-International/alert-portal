@@ -1081,7 +1081,7 @@
               <div class="col-lg-3 col-4">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.BUDGET_CATEGORY" |
                 translate}}
               </div>
-              <div class="col-lg-2 col-3">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} (&pound;)</div>
+              <div class="col-lg-2 col-3">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} ({{CURRENCIES[currency]}})</div>
               <div class="col-lg-4 col-5">{{"PREPAREDNESS.BUDGET_NARRATIVE" |
                 translate}}
               </div>
@@ -1089,7 +1089,7 @@
             <div class="row Line-row Header Spaced">
               <div class="col-lg-3 col-4">A: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.INPUTS" | translate}}
               </div>
-              <div class="col-lg-2 col-3">&pound; {{totalInputs}}</div>
+              <div class="col-lg-2 col-3">{{CURRENCIES[currency]}} {{totalInputs}}</div>
               <div class="col-lg-4 col-5"></div>
             </div>
             <div *ngIf="sectorsRelatedTo&&sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
@@ -1180,14 +1180,14 @@
                 <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage"
                        min="0"
                        (change)="calculateBudget(null, null, false)">
-                <br/> &pound; {{totalOfAllCosts}}
+                <br/> {{CURRENCIES[currency]}} {{totalOfAllCosts}}
               </div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="managementSupportNarrative"></div>
             </div>
             <div class="row Line-row Header Spaced">
               <div class="col-lg-3 col-4 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-              <div class="col-lg-2 col-3">&pound; {{totalBudget}}</div>
+              <div class="col-lg-2 col-3">{{CURRENCIES[currency]}} {{totalBudget}}</div>
               <div class="col-lg-4 col-5"></div>
             </div>
           </div>
@@ -1211,7 +1211,7 @@
           <div class="col-lg-6 Spaced subitem" *ngIf="capitalsExist">
             <label>{{"GLOBAL.PLEASE_SPECIFY" | translate}}</label>
             <div class="row Header Small-spaced">
-              <div class="col-lg-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} (&pound;)</div>
+              <div class="col-lg-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} ({{CURRENCIES[currency]}})</div>
               <div class="col-lg-9 col-5">{{"GLOBAL.DESCRIPTION" | translate}}</div>
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">

@@ -8,6 +8,10 @@ import {
 
 export class Constants {
 
+  /* ENABLING THE MAINTENANCE PAGE */
+  static SHOW_MAINTENANCE_PAGE: boolean = false;
+  static MAINTENANCE_PAGE_URL: string = "/maintenance";
+
   static TEMP_PASSWORD = "testtest";
   static ALERT_DURATION: number = 5000;
   static ALERT_REDIRECT_DURATION: number = 1500;
@@ -104,6 +108,17 @@ export class Constants {
     "PHP",
     "BDT",
     "PKR"
+  ];
+  static CURRENCY_SYMBOL: string[] = [
+    "£",
+    "€",
+    "$",
+    "KSh",
+    "MT",
+    "FC",
+    "₱",
+    "৳",
+    "₨"
   ];
   static CURRENCY_SELECTION = [
     Currency.GBP,

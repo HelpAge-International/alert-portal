@@ -41,16 +41,20 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((params: Params) => {
-        if (params["emailEntered"]) {
-          this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
-          this.emailEntered = params["emailEntered"];
-          this.showAlert(false, "");
-          console.log("From Forgot Password");
-        }
-      });
+    if (Constants.SHOW_MAINTENANCE_PAGE) {
+      this.router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
+    } else {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["emailEntered"]) {
+            this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
+            this.emailEntered = params["emailEntered"];
+            this.showAlert(false, "");
+            console.log("From Forgot Password");
+          }
+        });
+    }
   }
 
   ngOnDestroy() {

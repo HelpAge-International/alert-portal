@@ -465,12 +465,12 @@
     <div class="Response__content No-indent Response__content--budget Spaced">
       <div class="row">
         <p class="col-sm-4"><b>A: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.INPUTS" | translate}}</b></p>
-        <p class="col-sm-4">£{{totalInputs}}</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{totalInputs}}</p>
       </div>
       <div class="row" *ngFor="let sector of responsePlanToShow.sectorsRelatedTo; index as i">
         <p class="col-sm-4">A-{{i+1}}: {{responsePlanToShow && responsePlanToShow.sectors ? (SectorsList[sector] |
           translate) : ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
-        <p class="col-sm-4">£{{responsePlanToShow && responsePlanToShow.budget &&
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{responsePlanToShow && responsePlanToShow.budget &&
           responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget'] ?
           (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
         <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow.budget &&
@@ -481,48 +481,48 @@
       <div class="row">
         <p class="col-sm-4"><b>B: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.TRANSPORT" |
           translate}}</b></p>
-        <p class="col-sm-4">£{{transportBudget}}</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{transportBudget}}</p>
         <p class="col-sm-4">{{transportNarrative | translate}}</p>
       </div>
       <div class="row">
         <p class="col-sm-4"><b>C: {{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Security" |
           translate}}</b></p>
-        <p class="col-sm-4">£{{securityBudget}}</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{securityBudget}}</p>
         <p class="col-sm-4">{{securityNarrative | translate}}</p>
       </div>
       <div class="row">
         <p class="col-sm-4"><b>D: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.LOGISTICS_AND_OVERHEADS" |
           translate}}</b></p>
-        <p class="col-sm-4">£{{logisticsAndOverheadsBudget}}</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{logisticsAndOverheadsBudget}}</p>
         <p class="col-sm-4">{{logisticsAndOverheadsNarrative | translate}}</p>
       </div>
       <div class="row">
         <p class="col-sm-4"><b>E: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.STAFFING_AND_SUPPORT" |
           translate}}</b></p>
-        <p class="col-sm-4">£{{staffingAndSupportBudget}}</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{staffingAndSupportBudget}}</p>
         <p class="col-sm-4">{{staffingAndSupportNarrative | translate}}</p>
       </div>
       <div class="row">
         <p class="col-sm-4"><b>F: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MON_AND_EVALUATION" |
           translate}}</b></p>
-        <p class="col-sm-4">£{{monitoringAndEvolutionBudget}}</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{monitoringAndEvolutionBudget}}</p>
         <p class="col-sm-4">{{monitoringAndEvolutionNarrative | translate}}</p>
       </div>
       <div class="row">
         <p class="col-sm-4"><b>G: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.CAPITAL_ITEMS" |
           translate}}</b></p>
-        <p class="col-sm-4">£{{capitalItemsBudget}}</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{capitalItemsBudget}}</p>
         <p class="col-sm-4">{{capitalItemsNarrative | translate}}</p>
       </div>
       <div class="row">
         <p class="col-sm-4"><b>H: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.CATEGORY.MANAGEMENT_SUPPORT" |
           translate}}</b></p>
-        <p class="col-sm-4">£{{totalOfAllCosts}} ({{managementSupportPercentage}})</p>
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{totalOfAllCosts}} ({{managementSupportPercentage}})</p>
         <p class="col-sm-4">{{managementSupportNarrative | translate}}</p>
       </div>
       <div class="row">
         <p class="col-sm-4"><b>{{"GLOBAL.TOTAL" | translate}}</b></p>
-        <p class="col-sm-4"><b>£{{total}}</b></p>
+        <p class="col-sm-4"><b>{{CURRENCIES[currency]}}{{total}}</b></p>
       </div>
       <!--<div class="Form-submit__wrapper">-->
       <!--<div class="btn btn-primary btn-continue" onClick="continueToNextRibbon(this)">{{"GLOBAL.CONTINUE" | translate}}-->

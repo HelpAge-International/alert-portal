@@ -118,6 +118,8 @@ import {NewUserPasswordComponent} from "./new-user-password/new-user-password.co
 import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
 import {AfterValidationComponent} from "./commons/partner-validation/after-validation/after-validation.component";
 import {DirectorAccountSettingsComponent} from "./director/director-account-settings/director-account-settings.component";
+import {UnderMaintenanceComponent} from "./under-maintenance/under-maintenance.component";
+
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -356,8 +358,13 @@ const routes: Routes = [
    * Partner Vlidation
    * */
   {path: 'partner-validation', component: PartnerValidationComponent},
-  {path: 'after-validation', component: AfterValidationComponent}
+  {path: 'after-validation', component: AfterValidationComponent},
 
+
+  /**
+   * Maintanace page
+   * */
+  {path: 'maintenance', component: UnderMaintenanceComponent}
 ];
 
 @NgModule({
