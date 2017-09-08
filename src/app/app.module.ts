@@ -193,6 +193,7 @@ import {AccountSettingProfileComponent} from './commons/account-setting-profile/
 import {AccountSettingPasswordComponent} from './commons/account-setting-password/account-setting-password.component';
 import {DirectorAccountSettingsComponent} from './director/director-account-settings/director-account-settings.component';
 import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
+import { UnderMaintenanceComponent } from './under-maintenance/under-maintenance.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -378,7 +379,8 @@ const firebaseAuthConfig = {
     AfterValidationComponent,
     AccountSettingProfileComponent,
     AccountSettingPasswordComponent,
-    DirectorAccountSettingsComponent
+    DirectorAccountSettingsComponent,
+    UnderMaintenanceComponent
   ],
   imports: [
     BrowserModule,
