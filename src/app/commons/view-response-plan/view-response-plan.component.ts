@@ -163,7 +163,6 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
                       }
                       this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
                       this.handleLoadResponsePlan();
-                      this.calculateCurrency();
                     } else {
                       this.navigateToLogin();
                     }
@@ -171,6 +170,10 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
               }
             }
           });
+
+          if (this.agencyId != null) {
+            this.calculateCurrency(this.agencyId);
+          }
 
         } else {
           this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
@@ -191,10 +194,10 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
               this.countryId = countryId;
               this.systemAdminUid = systemId;
               this.handleLoadResponsePlan();
-              this.calculateCurrency();
             } else {
               this.loadData(userType);
             }
+            this.calculateCurrency(agencyId);
           });
         }
 
@@ -215,8 +218,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
-  public calculateCurrency() {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
+  public calculateCurrency(agencyId: string) {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.currency = snap.val();
