@@ -55,7 +55,7 @@ export class InformService {
       });
   }
   private buildUrl(countryCode: string) {
-    return 'https://alert-190fa.appspot.com/inform/' + countryCode;
+    return 'https://alert-live.appspot.com/inform/' + countryCode;
   }
   private validResponse(response) {
     return response != null && response.data != null && response.data.length === 1;
