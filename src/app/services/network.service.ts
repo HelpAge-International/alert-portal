@@ -10,7 +10,7 @@ import {NetworkOfficeModel} from "../network-admin/network-offices/add-edit-netw
 import {ModelNetwork} from "../model/network.model";
 import {NetworkActionModel} from "../network-admin/network-mpa/network-create-edit-mpa/network-mpa.model";
 import {GenericActionModel} from "../network-admin/network-mpa/network-add-generic-action/generic-action.model";
-import {NetworkAdminAccount} from "../network-admin/network-account-selection/Models/network-admin-account";
+import {NetworkAdminAccount} from "../network-admin/network-account-selection/models/network-admin-account";
 
 @Injectable()
 export class NetworkService {

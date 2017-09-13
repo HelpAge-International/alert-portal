@@ -3,7 +3,7 @@ import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
-import {NetworkAdminAccount} from "./Models/network-admin-account";
+import {NetworkAdminAccount} from "./models/network-admin-account";
 import {Constants} from "../../utils/Constants";
 import {NetworkUserAccountType, UserType} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
