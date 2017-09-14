@@ -11,6 +11,8 @@ import {ModelNetwork} from "../model/network.model";
 import {NetworkActionModel} from "../network-admin/network-mpa/network-create-edit-mpa/network-mpa.model";
 import {GenericActionModel} from "../network-admin/network-mpa/network-add-generic-action/generic-action.model";
 import {NetworkAdminAccount} from "../network-admin/network-account-selection/models/network-admin-account";
+import {NetworkMessageModel} from "../network-admin/network-message/network-create-edit-message/network-message.model";
+import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class NetworkService {
@@ -198,10 +200,6 @@ export class NetworkService {
     return firebase.database().ref(Constants.APP_STATUS + "/actionMandated/" + networkId).push().key;
   }
 
-  public generateKeyMessage(): string {
-    return firebase.database().ref(Constants.APP_STATUS + "/message").push().key;
-  }
-
   getNetworkActions(networkId): Observable<NetworkActionModel[]> {
     return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId)
       .map(mpaObjs => {
@@ -326,8 +324,52 @@ export class NetworkService {
     return this.updateNetworkField(update);
   }
 
-  saveNetworkMessage(networkId:string, agencyId:string,  messageId:string, groupPaths:string[]) {
 
+  saveMessageDataToFirebase(uid : string, networkId : string, agencyIds : string[], groupPaths: string[], message : NetworkMessageModel, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) {
+    let messagePath = Constants.APP_STATUS + '/message';
+    message.senderId = uid;
+    message.time = this.getUnixTimestampMiliseconds();
+
+    this.af.database.list(messagePath).push(message)
+      .then(msg => {
+        this.saveMessageReferences(uid, networkId, agencyIds, groupPaths, msg.key, sendToAllUsers, ngUnsubscribe);
+      });
   }
 
+  /** Utility functions **/
+
+  private saveMessageReferences(uid : string, networkId : string, agencyIds : string[], groupPaths: string[], msgId : string, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) {
+    let GROUP_PATH = Constants.APP_STATUS + '/group/network/' + uid + '/';
+    let MSG_REF_PATH = Constants.APP_STATUS + '/messageRef/network/' + uid + '/';
+
+    let msgRefData = {};
+    msgRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId] = true;
+
+    if (sendToAllUsers){
+      let networkAllUsersSelected = GROUP_PATH+'networkallusersgroup/';
+      let networkAllUsersMessageRefPath = MSG_REF_PATH+'networkallusersgroup/';
+
+      this.af.database.list(networkAllUsersSelected)
+        .takeUntil(ngUnsubscribe)
+        .subscribe(networkAllUsersIds => {
+          networkAllUsersIds.forEach(networkAllUsersId => {
+            msgRefData[networkAllUsersMessageRefPath + networkAllUsersId.$key + '/' + msgId] = true;
+          });
+
+          this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+            console.log("Message Ref successfully added to all nodes");
+            // TODO return success = true
+          }).catch(error => {
+            console.log("Message creation unsuccessful" + error);
+            // TODO return success = false with error
+          });
+        });
+    }else{
+      // TODO all other ref nodes
+    }
+  }
+
+  private getUnixTimestampMiliseconds(){
+    return new Date().getTime();
+  }
 }

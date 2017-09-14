@@ -9,6 +9,7 @@ import {UserService} from "../../../services/user.service";
 import {NetworkMessageModel} from "./network-message.model";
 import {NetworkMessageRecipientModel} from "./network-message-recipient.model";
 import {AgencyService} from "../../../services/agency-service.service";
+import {Constants} from "../../../utils/Constants";
 
 @Component({
   selector: 'app-network-create-edit-message',
@@ -22,7 +23,6 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
 
   //constants and enums
 
-
   // Models
   private alertMessage: AlertMessageModel = null;
   private alertMessageType = AlertMessageType;
@@ -33,7 +33,7 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
   private networkId: string;
   private showLoader: boolean;
   private agencyIds: string[];
-
+  private uid : string;
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -45,9 +45,10 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+    this.uid = user.uid;
 
       //get network id
-      this.networkService.getSelectedIdObj(user.uid)
+      this.networkService.getSelectedIdObj(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
@@ -72,14 +73,10 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
     //do validation first
     this.alertMessage = this.message.validate([]);
     this.alertMessage ? console.log("error") : this.alertMessage = this.recipients.validate([]);
-    this.alertMessage ? console.log("error") : this.sendMessage();
+    this.alertMessage ? console.log("error") : this.storeMessageData();
   }
 
-  private sendMessage() {
-    //TODO NOT FINISHED, NEED TO CARRY ON SAVE MESSAGE AND MESSAGE REF
-    let groupPaths = this.recipients.getGroupPaths();
-    let messageId = this.networkService.generateKeyMessage();
-
+  private storeMessageData() {
+    this.networkService.saveMessageDataToFirebase(this.uid, this.networkId, this.agencyIds, this.recipients.getGroupPaths(), this.message, this.recipients.allUsers, this.ngUnsubscribe)
   }
-
 }
