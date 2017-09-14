@@ -833,7 +833,7 @@ export class ModelUserTypeReturn {
     // x.push(new ModelUserTypeReturn(UserType.NonAlert, "globalDirector"));
     x.push(new ModelUserTypeReturn(UserType.CountryUser, "countryUser"));
     x.push(new ModelUserTypeReturn(UserType.AgencyAdmin, "administratorAgency"));
-    x.push(new ModelUserTypeReturn(UserType.SystemAdmin, "systemAdmin"));
+    x.push(new ModelUserTypeReturn(UserType.SystemAdmin, "system"));
     x.push(new ModelUserTypeReturn(UserType.PartnerUser, "partnerUser"));
     return x;
   }
