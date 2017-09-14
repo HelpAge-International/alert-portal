@@ -2786,7 +2786,7 @@ exports.sendCountryNotificationsEmail_D3S2 = functions.database.ref('/d3s2/messa
 
 /***********************************************************************************************************************/
 //for sand
-exports.sendNetworkAgencyValidationEmail = functions.database.ref('/sand/network/{networkId}/agencies/{agencyId}')
+exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/network/{networkId}/agencies/{agencyId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -2845,7 +2845,7 @@ exports.sendNetworkAgencyValidationEmail = functions.database.ref('/sand/network
 
 /***********************************************************************************************************************/
 //for sand
-exports.sandCreateUserNetworkCountry = functions.database.ref('/sand/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/networkCountryAdmin/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
