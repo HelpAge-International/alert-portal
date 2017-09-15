@@ -30,41 +30,4 @@ export class NetworkMessageRecipientModel extends BaseModel {
     return null;
   }
 
-  getGroupPaths(): string[] {
-    let paths = [];
-    return this.allUsers ? paths.concat(["agencyallusersgroup"]) : this.checkEachNode();
-  }
-
-  private checkEachNode(): string[] {
-    let paths = [];
-    if (this.globalDirectors) {
-      paths = paths.concat(["globaldirector"]);
-    }
-    if (this.globalUsers) {
-      paths = paths.concat(["globaluser"]);
-    }
-    if (this.regionalDirectors) {
-      paths = paths.concat(["regionaldirector"]);
-    }
-    if (this.countryAdmins) {
-      paths = paths.concat(["countryadmins"]);
-    }
-    if (this.countryDirectors) {
-      paths = paths.concat(["countrydirectors"]);
-    }
-    if (this.ertLeaders) {
-      paths = paths.concat(["ertleads"]);
-    }
-    if (this.erts) {
-      paths = paths.concat(["erts"]);
-    }
-    if (this.donors) {
-      paths = paths.concat(["donor"]);
-    }
-    if (this.partners) {
-      paths = paths.concat(["partner"]);
-    }
-    return paths;
-  }
-
 }

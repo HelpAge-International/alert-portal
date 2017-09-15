@@ -13,6 +13,7 @@ import {GenericActionModel} from "../network-admin/network-mpa/network-add-gener
 import {NetworkAdminAccount} from "../network-admin/network-account-selection/models/network-admin-account";
 import {NetworkMessageModel} from "../network-admin/network-message/network-create-edit-message/network-message.model";
 import {Subject} from "rxjs/Subject";
+import {NetworkMessageRecipientModel} from "../network-admin/network-message/network-create-edit-message/network-message-recipient.model";
 
 @Injectable()
 export class NetworkService {
@@ -325,20 +326,24 @@ export class NetworkService {
   }
 
 
-  saveMessageDataToFirebase(uid : string, networkId : string, agencyIds : string[], groupPaths: string[], message : NetworkMessageModel, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) {
+  saveMessageDataToFirebase(uid : string, networkId : string, agencyIds : string[], groups: NetworkMessageRecipientModel, message : NetworkMessageModel, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) : any{
     let messagePath = Constants.APP_STATUS + '/message';
     message.senderId = uid;
     message.time = this.getUnixTimestampMiliseconds();
 
-    this.af.database.list(messagePath).push(message)
+    return this.af.database.list(messagePath).push(message)
       .then(msg => {
-        this.saveMessageReferences(uid, networkId, agencyIds, groupPaths, msg.key, sendToAllUsers, ngUnsubscribe);
+        console.log("Message created successfully");
+        return this.saveMessageReferences(uid, networkId, agencyIds, groups, msg.key, sendToAllUsers, ngUnsubscribe);
+      })
+      .catch(error => {
+        console.log("Message creation unsuccessful" + error);
       });
   }
 
   /** Utility functions **/
 
-  private saveMessageReferences(uid : string, networkId : string, agencyIds : string[], groupPaths: string[], msgId : string, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) {
+  private saveMessageReferences(uid : string, networkId : string, agencyIds : string[], groups: NetworkMessageRecipientModel, msgId : string, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) : any {
     let GROUP_PATH = Constants.APP_STATUS + '/group/network/' + uid + '/';
     let MSG_REF_PATH = Constants.APP_STATUS + '/messageRef/network/' + uid + '/';
 
@@ -348,24 +353,12 @@ export class NetworkService {
     if (sendToAllUsers){
       let networkAllUsersSelected = GROUP_PATH+'networkallusersgroup/';
       let networkAllUsersMessageRefPath = MSG_REF_PATH+'networkallusersgroup/';
+      //TODO
 
-      this.af.database.list(networkAllUsersSelected)
-        .takeUntil(ngUnsubscribe)
-        .subscribe(networkAllUsersIds => {
-          networkAllUsersIds.forEach(networkAllUsersId => {
-            msgRefData[networkAllUsersMessageRefPath + networkAllUsersId.$key + '/' + msgId] = true;
-          });
-
-          this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
-            console.log("Message Ref successfully added to all nodes");
-            // TODO return success = true
-          }).catch(error => {
-            console.log("Message creation unsuccessful" + error);
-            // TODO return success = false with error
-          });
-        });
     }else{
-      // TODO all other ref nodes
+      //TODO
+
+      console.log(groups);
     }
   }
 

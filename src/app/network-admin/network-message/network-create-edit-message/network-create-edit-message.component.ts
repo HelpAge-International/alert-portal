@@ -76,7 +76,15 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
     this.alertMessage ? console.log("error") : this.storeMessageData();
   }
 
+  /** Utility methods **/
+
   private storeMessageData() {
-    this.networkService.saveMessageDataToFirebase(this.uid, this.networkId, this.agencyIds, this.recipients.getGroupPaths(), this.message, this.recipients.allUsers, this.ngUnsubscribe)
+    this.networkService.saveMessageDataToFirebase(this.uid, this.networkId, this.agencyIds, this.recipients, this.message, this.recipients.allUsers, this.ngUnsubscribe).then(_ => {
+      console.log("Message ref successfully added to all nodes");
+      this.router.navigate(['/network/network-message']);
+    }).catch(error => {
+      console.log("Message ref creation unsuccessful" + error);
+      //TODO Display error alert here
+    });
   }
 }
