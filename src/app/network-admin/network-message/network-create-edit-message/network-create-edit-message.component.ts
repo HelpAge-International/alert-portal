@@ -9,6 +9,8 @@ import {UserService} from "../../../services/user.service";
 import {NetworkMessageModel} from "./network-message.model";
 import {NetworkMessageRecipientModel} from "./network-message-recipient.model";
 import {AgencyService} from "../../../services/agency-service.service";
+import {Observable} from "rxjs/Observable";
+import {Constants} from "../../../utils/Constants";
 
 @Component({
   selector: 'app-network-create-edit-message',
@@ -33,6 +35,7 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
   private showLoader: boolean;
   private agencyIds: string[];
   private uid : string;
+  private hideWarning: boolean;
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -74,18 +77,29 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
     //do validation first
     this.alertMessage = this.message.validate([]);
     this.alertMessage ? console.log("Error: recipients are invalid") : this.alertMessage = this.recipients.validate([]);
-    this.alertMessage ? console.log("Error: msg data are invalid") : this.networkService.saveMessageDataToFirebase(this.router, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
+    this.alertMessage ? console.log("Error: msg data are invalid") : this.networkService.saveMessageDataToFirebase(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
   }
 
-  /** Utility methods **/
+  /**
+  * Utility methods
+  */
 
-  private storeMessageDataCallback(error, router: Router){
+  private storeMessageDataCallback(error, context: any){
     if (error){
       console.log("Message ref creation unsuccessful" + error);
-      //TODO show alert to the user
+      context.waringMessage = "GLOBAL.GENERAL_ERROR";
+      context.showAlert();
     }else{
       console.log("Message references successfully updated");
-      router.navigate(['/network/network-message']);
+      context.router.navigate(['/network/network-message']);
     }
+  }
+
+  private showAlert() {
+    this.hideWarning = false;
+    Observable.timer(Constants.ALERT_DURATION)
+      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      this.hideWarning = true;
+    });
   }
 }

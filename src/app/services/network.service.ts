@@ -327,7 +327,7 @@ export class NetworkService {
   }
 
 
-  saveMessageDataToFirebase(router: Router, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, sendToAllUsers : boolean, callback: any) {
+  saveMessageDataToFirebase(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, sendToAllUsers : boolean, callback: any) {
     let messagePath = Constants.APP_STATUS + '/message';
     message.senderId = uid;
     message.time = this.getUnixTimestampMiliseconds();
@@ -335,13 +335,16 @@ export class NetworkService {
     this.af.database.list(messagePath).push(message)
       .then(msg => {
         console.log("Message created successfully");
-        this.saveMessageReferences(router, uid, networkId, agencyIds, recipientTypes, msg.key, sendToAllUsers, callback);
+        this.saveMessageReferences(context, uid, networkId, agencyIds, recipientTypes, msg.key, sendToAllUsers, callback);
+      })
+      .catch( error => {
+        callback(error, context);
       });
   }
 
   /** Utility functions **/
 
-  private saveMessageReferences(router: Router, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], msgId : string, sendToAllUsers : boolean, callback: any) {
+  private saveMessageReferences(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], msgId : string, sendToAllUsers : boolean, callback: any) {
 
     let msgRefData = {};
     let agencyGroupPath = Constants.APP_STATUS + '/group/agency/';
@@ -359,19 +362,23 @@ export class NetworkService {
                   msgRefData[agencyMessageRefPath + agencyId + '/agencyallusersgroup/' + snapshot.key + '/' + msgId] = true;
                 });
                  this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
-                  callback(null, router);
+                  callback(null, context);
                  }).catch(error => {
-                   callback(error, router);
+                   callback(error, context);
                  });
               });
           });
-
-          //TODO go through all the country group nodes
       }else{
         this.saveMessageReferencesForNetworkCountryAdmins();
       }
     }else{
-      //TODO
+      console.log(recipientTypes);
+
+      recipientTypes.forEach(recipient => {
+        //TODO other users
+
+      });
+      this.saveMessageReferencesForNetworkCountryAdmins();
     }
   }
 
