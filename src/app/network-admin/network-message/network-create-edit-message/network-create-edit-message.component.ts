@@ -9,7 +9,6 @@ import {UserService} from "../../../services/user.service";
 import {NetworkMessageModel} from "./network-message.model";
 import {NetworkMessageRecipientModel} from "./network-message-recipient.model";
 import {AgencyService} from "../../../services/agency-service.service";
-import {Constants} from "../../../utils/Constants";
 
 @Component({
   selector: 'app-network-create-edit-message',
@@ -52,15 +51,17 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
+          if (this.networkId){
+            //prepare for message save
+            this.networkService.getAgencyIdsForNetwork(this.networkId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencyIds =>{
+                this.agencyIds = agencyIds;
+              });
+          }else{
+            console.log("Network id is null");
+          }
         });
-
-      //prepare for message save
-      this.networkService.getAgencyIdsForNetwork(this.networkId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(agencyIds =>{
-          this.agencyIds = agencyIds;
-        });
-
     });
   }
 
@@ -72,19 +73,19 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
   submit() {
     //do validation first
     this.alertMessage = this.message.validate([]);
-    this.alertMessage ? console.log("error") : this.alertMessage = this.recipients.validate([]);
-    this.alertMessage ? console.log("error") : this.storeMessageData();
+    this.alertMessage ? console.log("Error: recipients are invalid") : this.alertMessage = this.recipients.validate([]);
+    this.alertMessage ? console.log("Error: msg data are invalid") : this.networkService.saveMessageDataToFirebase(this.router, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
   }
 
   /** Utility methods **/
 
-  private storeMessageData() {
-    this.networkService.saveMessageDataToFirebase(this.uid, this.networkId, this.agencyIds, this.recipients, this.message, this.recipients.allUsers, this.ngUnsubscribe).then(_ => {
-      console.log("Message ref successfully added to all nodes");
-      this.router.navigate(['/network/network-message']);
-    }).catch(error => {
+  private storeMessageDataCallback(error, router: Router){
+    if (error){
       console.log("Message ref creation unsuccessful" + error);
-      //TODO Display error alert here
-    });
+      //TODO show alert to the user
+    }else{
+      console.log("Message references successfully updated");
+      router.navigate(['/network/network-message']);
+    }
   }
 }

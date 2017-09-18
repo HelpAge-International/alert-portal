@@ -2,6 +2,20 @@
  * Created by Sanjaya on 07/03/2017.
  */
 
+export enum NetworkMessageRecipientType{
+  AllUsers = 0,
+  NetworkCountryAdmins = 1,
+  GlobalDirectors = 2,
+  GlobalUsers = 3,
+  RegionalDirectors = 4,
+  CountryAdmins = 5,
+  CountryDirectors = 6,
+  ERTLeaders = 7,
+  ERTs = 8,
+  Donors = 9,
+  Partners = 10
+}
+
 export enum ActionType {
   chs = 0,
   mandated = 1,
@@ -23,7 +37,6 @@ export enum GenericActionCategory {
   EmergencyResponseTeamManagement = 11
 }
 
-// TODO - Update when Ryan provides actual Hazard Scenario names
 export enum HazardScenario {
   HazardScenario0 = 0,
   HazardScenario1 = 1,

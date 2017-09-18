@@ -40,6 +40,9 @@
         <input type="checkbox" name="f-Format" [(ngModel)]="recipients.allUsers">{{"GLOBAL.USER_TYPE.ALL_USERS" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.networkCountryAdmins">Network Country Administrators
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
         <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.globalDirectors">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR" | translate}}
       </label>
       <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">

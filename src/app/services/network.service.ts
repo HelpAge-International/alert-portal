@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {ActionLevel, NetworkUserAccountType} from "../utils/Enums";
+import {ActionLevel, NetworkMessageRecipientType, NetworkUserAccountType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network-admin/network-agencies/network-agency.model";
@@ -14,6 +14,7 @@ import {NetworkAdminAccount} from "../network-admin/network-account-selection/mo
 import {NetworkMessageModel} from "../network-admin/network-message/network-create-edit-message/network-message.model";
 import {Subject} from "rxjs/Subject";
 import {NetworkMessageRecipientModel} from "../network-admin/network-message/network-create-edit-message/network-message-recipient.model";
+import {Router} from "@angular/router";
 
 @Injectable()
 export class NetworkService {
@@ -326,40 +327,56 @@ export class NetworkService {
   }
 
 
-  saveMessageDataToFirebase(uid : string, networkId : string, agencyIds : string[], groups: NetworkMessageRecipientModel, message : NetworkMessageModel, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) : any{
+  saveMessageDataToFirebase(router: Router, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, sendToAllUsers : boolean, callback: any) {
     let messagePath = Constants.APP_STATUS + '/message';
     message.senderId = uid;
     message.time = this.getUnixTimestampMiliseconds();
 
-    return this.af.database.list(messagePath).push(message)
+    this.af.database.list(messagePath).push(message)
       .then(msg => {
         console.log("Message created successfully");
-        return this.saveMessageReferences(uid, networkId, agencyIds, groups, msg.key, sendToAllUsers, ngUnsubscribe);
-      })
-      .catch(error => {
-        console.log("Message creation unsuccessful" + error);
+        this.saveMessageReferences(router, uid, networkId, agencyIds, recipientTypes, msg.key, sendToAllUsers, callback);
       });
   }
 
   /** Utility functions **/
 
-  private saveMessageReferences(uid : string, networkId : string, agencyIds : string[], groups: NetworkMessageRecipientModel, msgId : string, sendToAllUsers : boolean, ngUnsubscribe: Subject<void>) : any {
-    let GROUP_PATH = Constants.APP_STATUS + '/group/network/' + uid + '/';
-    let MSG_REF_PATH = Constants.APP_STATUS + '/messageRef/network/' + uid + '/';
+  private saveMessageReferences(router: Router, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], msgId : string, sendToAllUsers : boolean, callback: any) {
 
     let msgRefData = {};
+    let agencyGroupPath = Constants.APP_STATUS + '/group/agency/';
+    let agencyMessageRefPath = '/messageRef/agency/';
+
     msgRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId] = true;
 
     if (sendToAllUsers){
-      let networkAllUsersSelected = GROUP_PATH+'networkallusersgroup/';
-      let networkAllUsersMessageRefPath = MSG_REF_PATH+'networkallusersgroup/';
-      //TODO
+      if(agencyIds != null){
+          agencyIds.forEach(agencyId => {
+            let agencyAllUsersSelected: string = agencyGroupPath + agencyId +'/agencyallusersgroup';
+             this.af.database.list(agencyAllUsersSelected, {preserveSnapshot: true})
+               .subscribe((snapshots) => {
+                 snapshots.forEach(snapshot => {
+                  msgRefData[agencyMessageRefPath + agencyId + '/agencyallusersgroup/' + snapshot.key + '/' + msgId] = true;
+                });
+                 this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+                  callback(null, router);
+                 }).catch(error => {
+                   callback(error, router);
+                 });
+              });
+          });
 
+          //TODO go through all the country group nodes
+      }else{
+        this.saveMessageReferencesForNetworkCountryAdmins();
+      }
     }else{
       //TODO
-
-      console.log(groups);
     }
+  }
+
+  private saveMessageReferencesForNetworkCountryAdmins(){
+    //TODO send to network country admins
   }
 
   private getUnixTimestampMiliseconds(){
