@@ -32,11 +32,11 @@
         <input type='file' id="imgInp" (change)="fileChange($event)" class="Input-form--hidden"/>
         <div><a href="javascript:void(0);" *ngIf="!showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE"
           | translate}}</a></div>
-        <div><a href="javascript:void(0);" *ngIf="showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS"
+        <div><a href="javascript:void(0);" *ngIf="showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"AGENCY_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE"
           | translate}}</a></div>
         <div><a href="javascript:void(0);" class="text-danger" (click)="removeLogoPreview()"
-                *ngIf="showReplaceRemoveLinks">{{"NETWORK_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
-        <div>{{"NETWORK_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS" | translate}}: jpeg, png, gif</div>
+                *ngIf="showReplaceRemoveLinks">{{"AGENCY_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>
+        <div>{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS" | translate}}: jpeg, png, gif</div>
         <div>{{"SYSTEM_ADMIN.SETTING.FILE_SIZE" | translate}}: 2MB</div>
       </div>
 
@@ -45,7 +45,7 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group">
-            <label for="A-line-1">{{"NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_NAME" | translate}}*</label>
+            <label for="A-line-1">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME" | translate}}*</label>
             <input type="text" class="form-control" id="A-line-0" placeholder="Please enter" value={{networkName}}
                    required>
           </div>
@@ -86,7 +86,7 @@
         </div>
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCity]}">
-            <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}*</label>
+            <label for="City">{{"CITY" | translate}}*</label>
             <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                    required [(ngModel)]="networkCity">
           </div>
@@ -104,7 +104,7 @@
       <div class="row">
         <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyPhone]}">
-            <label for="T-number">{{"GLOBAL.USER_INFO.TELEPHONE_NUMBER" | translate}}*</label>
+            <label for="T-number">{{"TELEPHONE_NUMBER" | translate}}*</label>
             <input type="text" class="form-control" id="T-number" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                    required [(ngModel)]="networkTelephone">
           </div>
@@ -118,7 +118,7 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE" | translate | uppercase}}</div>
+          <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.CONTINUE" | translate | uppercase}}</div>
         </div>
 
       </div>

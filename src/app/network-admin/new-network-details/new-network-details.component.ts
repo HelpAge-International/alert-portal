@@ -255,29 +255,29 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
     this.alerts = {};
     if (!(this.networkAddressLine1)) {
       this.alerts[this.networkAddressLine1] = true;
-      this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
+      this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_ADDRESS_1";
       return false;
     } else if (!(this.networkCountry) && (this.networkCountry != 0)) {
       this.alerts[this.networkCountry] = true;
-      this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NO_COUNTRY";
+      this.errorMessage = "GLOBAL.ACCOUNT_SETTINGS.NO_COUNTRY";
       return false;
     } else if (!(this.networkCity)) {
       this.alerts[this.networkCity] = true;
-      this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NO_CITY";
+      this.errorMessage = "COUNTRY_ADMIN.UPDATE_DETAILS.NO_CITY";
       return false;
     } else if (!(this.networkTelephone)) {
       this.alerts[this.networkTelephone] = true;
-      this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NO_TELEPHONE";
+      this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.NO_PHONE";
       return false;
     } else if (this.logoFile) {
       // Check for file size
       if (this.logoFile.size > Constants.NETWORK_ADMIN_LOGO_MAX_SIZE) {
-        this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_LOGO_SIZE_EXCEEDED";
+        this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO_SIZE_EXCEEDED";
         return false;
       }
       // Check for file type
       if (!(Constants.NETWORK_ADMIN_LOGO_FILE_TYPES.indexOf(this.logoFile.type) > -1 )) {
-        this.errorMessage = "NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_LOGO_INVALID_FILETYPE";
+        this.errorMessage = "AGENCY_ADMIN.UPDATE_DETAILS.AGENCY_LOGO_INVALID_FILETYPE";
         return false;
       }
     }

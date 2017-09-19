@@ -8,13 +8,13 @@
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{network?.name}}</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" routerLink="/network/network-account-details">
-            Network Details
+            {{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_DETAIL" | translate}}
           </a>
           <a class="dropdown-item" routerLink="/network/network-account-settings">
             {{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}
           </a>
           <a class="dropdown-item" routerLink="/network/network-account-selection">
-            Switch Accounts
+            {{"NETWORK.SWITCH_ACCOUNTS" | translate}}
           </a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
