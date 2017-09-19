@@ -32,7 +32,6 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
 
   private loadNetworks() {
     this.networks = this.af.database.list(Constants.APP_STATUS + "/network");
-    console.log(this.networks)
   }
 
   ngOnDestroy() {

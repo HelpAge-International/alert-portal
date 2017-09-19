@@ -22,17 +22,17 @@
         <div class="Header-title__wrap">
           <h1>{{"GLOBAL.WELCOME" | translate}}, {{networkAdminName}}</h1>
         </div>
-        <h3>{{"NETWORK_ADMIN.PLEASE_FILL" | translate}}</h3>
+        <h3>{{"NETWORK.PLEASE_FILL" | translate}}</h3>
       </div>
 
       <div class="Agency-details__logo">
-        <div class="form-group"><label>{{"NETWORK_ADMIN.UPDATE_DETAILS.NETWORK_LOGO" | translate}}</label></div>
+        <div class="form-group"><label>{{"NETWORK.NETWORK_LOGO" | translate}}</label></div>
         <label for="imgInp" class="Agency-details__logo__preview" [class.Selected]="networkLogo"
                [style.background-image]="'url('+ networkLogo + ')'"></label>
         <input type='file' id="imgInp" (change)="fileChange($event)" class="Input-form--hidden"/>
         <div><a href="javascript:void(0);" *ngIf="!showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"GLOBAL.ADD_IMAGE"
           | translate}}</a></div>
-        <div><a href="javascript:void(0);" *ngIf="showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"NETWORK_ADMIN.UPDATE_DETAILS.REPLACE_IMAGE"
+        <div><a href="javascript:void(0);" *ngIf="showReplaceRemoveLinks" onClick="triggerPreviewLogo(event)">{{"AGENCY_ADMIN.UPDATE_DETAILS.SUPPORTED_FORMATS"
           | translate}}</a></div>
         <div><a href="javascript:void(0);" class="text-danger" (click)="removeLogoPreview()"
                 *ngIf="showReplaceRemoveLinks">{{"NETWORK_ADMIN.UPDATE_DETAILS.REMOVE_IMAGE" | translate}}</a></div>

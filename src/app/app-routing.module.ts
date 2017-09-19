@@ -402,7 +402,7 @@ const routes: Routes = [
   {path: 'network/network-mpa', component: NetworkMpaComponent},
   {path: 'network/network-mpa/network-create-edit-mpa', component: NetworkCreateEditMpaComponent},
   {path: 'network/network-mpa/network-add-generic-action', component: NetworkAddGenericActionComponent},
-  {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
+  {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent},
 
   /**
    * Maintanace page

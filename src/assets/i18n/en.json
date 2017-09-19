@@ -1,6 +1,10 @@
 {
   "NETWORK": {
-    "NETWORK_MESSAGES":"Network Messages"
+    "ACCOUNT_SELECTION":"Account selection",
+    "PLEASE_SELECT_ACCOUNT":"Please select the account you would like to log in as",
+    "NETWORK_ADMINISTRATOR":"Network Administrator",
+    "PLEASE_FILL":"Please fill in your network details below",
+    "NETWORK_LOGO":"Network logo"
   },
   "PORTAL_UNDER_MAINTENANCE":"ALERT portal is under maintenance and will be live shortly.",
   "VERSION_TEXT":"Version",
