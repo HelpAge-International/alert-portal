@@ -62,7 +62,7 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyCity]}">
-          <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}*</label>
+          <label for="City">{{"CITY" | translate}}*</label>
           <input type="text" class="form-control" id="City" required
                  [(ngModel)]="agencyCity">
         </div>
@@ -103,7 +103,7 @@
     </div>
 
     <div class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</div>
+      <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}</div>
       <div class="btn btn-outline-secondary" routerLink="/agency-admin/country-office">{{"GLOBAL.CANCEL" | translate}}
       </div>
     </div>
@@ -116,7 +116,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE" | translate}}</strong></h5>
       </div>
       <div class="modal-body">
         <div class="text-center"><p>{{"AGENCY_ADMIN.UPDATE_DETAILS.DELETE_LOGO_MODEL_TEXT" | translate}}</p></div>

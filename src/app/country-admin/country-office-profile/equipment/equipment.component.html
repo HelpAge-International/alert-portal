@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <h3 class="Spaced-above">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE' | translate }}</h3>
+    <h3 class="Spaced-above">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT' | translate }}</h3>
 
     <div class="row">
       <p class="text-gray-v-light col-sm-9" *ngIf="!equipments">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EMPTY_LIST' |
@@ -34,11 +34,11 @@
     </div>
 
     <div class="row Spaced-above" *ngIf="equipments">
-      <div class="col-sm-1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.UPDATED' | translate }}</strong></div>
-      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE' | translate }}</strong></div>
-      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.LOCATION' | translate }}</strong></div>
+      <div class="col-sm-1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' | translate }}</strong></div>
+      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT' | translate }}</strong></div>
+      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></div>
       <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></div>
-      <div class="col-sm-5"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS' | translate }}</strong></div>
+      <div class="col-sm-5"><strong>{{ 'GLOBAL.STATUS' | translate }}</strong></div>
     </div>
     <div class="row Line-row Spaced-above"></div>
 
@@ -54,13 +54,13 @@
           <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ equipment.notes.length }}</p>
           <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditEquipment(equipment.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -71,7 +71,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote('equipment', equipment.id, newNote[equipment.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType!=USER_TYPE.CountryAdmin" type="text"
@@ -89,13 +89,13 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote('equipment', equipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote('equipment', equipment.id, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -103,7 +103,7 @@
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote('equipment', equipment.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                    (click)="deleteNote('equipment', equipment.id, note)">{{ 'DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -140,7 +140,7 @@
     </div>
 
     <div class="row Spaced-above" *ngIf="surgeEquipments">
-      <div class="col-sm-1"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.UPDATED" | translate}}</strong></div>
+      <div class="col-sm-1"><strong>{{ "COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUPPLIER" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP" | translate}}</strong></div>
       <div class="col-sm-7"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.EQUIPMENT_PROVIDED" | translate}}</strong></div>
@@ -168,13 +168,13 @@
           <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ surgeEquipment.notes.length }}</p>
           <a href="#notes_surge_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditSurgeEquipment(surgeEquipment.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -190,19 +190,19 @@
         </div>
 
         <div class="row Spaced-above"> <!--Name-->
-          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_NAME" |
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" |
             translate}}</strong></p>
           <p class="col-sm-5 margin-left-five">{{ surgeEquipment.contactName }}</p>
         </div>
 
         <div class="row"> <!--Telephone-->
-          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_PHONE" |
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" |
             translate}}</strong></p>
           <p class="col-sm-2">{{ surgeEquipment.contactPhone }}</p>
         </div>
 
         <div class="row"> <!--Email-->
-          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_EMAIL" |
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" |
             translate}}</strong></p>
           <p class="col-sm-5 margin-left-five"><a href="mailto:{{ surgeEquipment.contactEmail }}">{{
             surgeEquipment.contactEmail }}</a></p>
@@ -212,7 +212,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_surge_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote('surgeEquipment', surgeEquipment.id, newNote[surgeEquipment.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType!=USER_TYPE.CountryAdmin" type="text"
@@ -230,13 +230,13 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote('surgeEquipment', surgeEquipment.id, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -244,7 +244,7 @@
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote('surgeEquipment', surgeEquipment.id, note)">{{ 'GLOBAL.DELETE' | translate
+                    (click)="deleteNote('surgeEquipment', surgeEquipment.id, note)">{{ 'DELETE' | translate
                     }}</a>
                 </div>
               </div>
@@ -286,7 +286,7 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -319,7 +319,7 @@
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editAction(activeEquipmentType, activeEquipmentId, activeNote)">{{"GLOBAL.SAVE" | translate}}
+                (click)="editAction(activeEquipmentType, activeEquipmentId, activeNote)">{{"SAVE" | translate}}
         </button>
       </div>
     </div>

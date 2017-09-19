@@ -44,7 +44,7 @@ export class ModelUserPublic extends BaseModel {
       return new AlertMessageModel('GLOBAL.EMAIL_NOT_VALID');
     }
     if (!this.phone && !this.isExcluded('phone', excludedFields)) {
-      return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_PHONE');
+      return new AlertMessageModel('COUNTRY_ADMIN.UPDATE_DETAILS.NO_PHONE');
     }
     if (!this.city && !this.isExcluded('city', excludedFields)) {
       return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_CITY');

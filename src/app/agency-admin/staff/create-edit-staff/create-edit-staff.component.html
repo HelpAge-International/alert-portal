@@ -9,7 +9,7 @@
     <!--<div class="Back&#45;&#45;button">Agency Staff</div>-->
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_ADD_STAFF"| translate}}</h1>
-      <h1 *ngIf="isEdit">{{"AGENCY_ADMIN.STAFF.TITLE_EDIT_STAFF"| translate}}</h1>
+      <h1 *ngIf="isEdit">{{"COUNTRY_ADMIN.STAFF.TITLE_EDIT_STAFF"| translate}}</h1>
       <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deleteStaff()">
         {{"AGENCY_ADMIN.STAFF.DELETE_STAFF_MEMBER" | translate}}
       </button>
@@ -27,7 +27,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME"| translate}}</label>
+          <label for="f-Name">{{"FIRST_NAME"| translate}}</label>
           <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName"
                  placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
@@ -49,7 +49,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideRegion">
-          <label for="region">{{"AGENCY_ADMIN.STAFF.REGION"| translate}}</label>
+          <label for="region">{{"REGION"| translate}}</label>
           <select class="form-control" id="region" [(ngModel)]="region" name="region" [required]="!hideRegion" (change)="selectRegion()">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let region of regionList | async" [ngValue]="region">{{region.name}}</option>
@@ -72,20 +72,9 @@
             <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
           </select>
         </div>
-        <!--</div>-->
 
-        <!--<div class="row Spaced">-->
-        <!--<div class="col-lg-4 col-md-6 form-group">-->
-        <!--<label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>-->
-        <!--<select class="form-control" id="Position" [(ngModel)]="position" name="position" required>-->
-        <!--<option *ngFor="let position of STAFF_POSITION_SELECTION; let idx = index" [hidden]="idx==0"-->
-        <!--[value]="position">{{STAFF_POSITION[position] |-->
-        <!--translate}}-->
-        <!--</option>-->
-        <!--</select>-->
-        <!--</div>-->
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Position">{{"AGENCY_ADMIN.STAFF.POSITION"| translate}}</label>
+          <label for="Position">{{"GLOBAL.USER_INFO.POSITION"| translate}}</label>
           <input type="text" class="form-control" id="Position" [(ngModel)]="position" name="position"
                  placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
@@ -100,7 +89,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
+          <label for="e-Address">{{"EMAIL_ADDRESS"| translate}}</label>
           <input [disabled]="isEdit" type="text" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
                  [(ngModel)]="email"
                  name="email" required>
@@ -113,7 +102,7 @@
         </div>
       </div>
 
-      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}</label></div>
+      <div class="form-group"><label>{{"SUPPORT_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
       <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
           <label *ngIf="allSkills[skillKey].type == SupportSkill"
@@ -124,7 +113,7 @@
 
       </div>
 
-      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}</label></div>
+      <div class="form-group"><label>{{"TECHNICAL_SKILLS"| translate}}</label></div>
       <div class="row Spaced">
 
       <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
@@ -136,18 +125,18 @@
 
       <div class="row Spaced">
         <div class="col-lg-8 col-md-10 form-group">
-          <label for="n-Done">{{"AGENCY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</label>
+          <label for="n-Done">{{"TRAINING_NEEDS"| translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
                     [(ngModel)]="trainingNeeds"></textarea>
         </div>
       </div>
 
-      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.ADDITIONAL_NOTIFICATIONS"| translate}}</label></div>
+      <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
       <div class="row Spaced">
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
-                 [checked]="notificationSettings[notification?.$key]">{{NOTIFICATION_SETTINGS[notification.$key] |
+                 [checked]="notificationSettings[notification?.$key]" [disabled]="userType==UserType.CountryDirector && notification.$key==1">{{NOTIFICATION_SETTINGS[notification.$key] |
           translate}}</label>
       </div>
 
@@ -159,7 +148,7 @@
       </div>
       <div class="row">
         <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2">
-          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"GLOBAL.YES"|
+          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"YES"|
           translate}}</label>
       </div>
 

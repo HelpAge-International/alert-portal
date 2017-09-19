@@ -82,7 +82,7 @@
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[adminFirstName]}">
-              <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+              <label for="f-Name">{{"FIRST_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="f-Name" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      [(ngModel)]="adminFirstName" name="adminFirstName">
@@ -102,7 +102,7 @@
         <div class="row">
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[adminEmail]}">
-              <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
+              <label for="Email">{{"EMAIL_ADDRESS" | translate}}*</label>
               <input type="text" class="form-control" id="Email" required
                      placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                      [(ngModel)]="adminEmail"
@@ -149,7 +149,7 @@
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="form-group">
-              <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+              <label for="City">{{"CITY" | translate}}</label>
               <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
                      [(ngModel)]="adminCity" name="adminCity">
             </div>

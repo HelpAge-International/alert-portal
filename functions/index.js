@@ -176,29 +176,6 @@ exports.handleUserAccountUat2 = functions.database.ref('/uat-2/userPublic/{userI
     }
   });
 
-// exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId}')
-//   .onWrite(event => {
-//     console.log("agency node triggered");
-//     const userId = event.params.userId;
-//     const preData = event.data.previous.val();
-//     const currData = event.data.current.val();
-//     if (!preData && currData) {
-//       //add user account
-//       console.log("user added: " + userId);
-//     } else if (preData && currData) {
-//       //user account change
-//       console.log("user data changed: " + userId);
-//     } else if (preData && !currData) {
-//       //delete user account
-//       console.log("delete user: " + userId);
-//       admin.auth().deleteUser(userId).then(() => {
-//         console.log("successfully deleted user: " + userId);
-//       }, error => {
-//         console.log(error.message);
-//       });
-//     }
-//   });
-
 exports.handleUserAccountD1s1 = functions.database.ref('/d1s1/userPublic/{userId}')
   .onWrite(event => {
     console.log("agency node triggered");
@@ -337,6 +314,30 @@ exports.handleUserAccountD3s2 = functions.database.ref('/d3s2/userPublic/{userId
     }
   });
 
+//UNCOMMENT BELOW ONLY FOR LIVE AND COMMENT ALL ABOVE
+
+// exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
 
 /**
  * Response plans partner Validation
@@ -942,7 +943,9 @@ exports.sendResponsePlanValidationEmailD3s2 = functions.database.ref('/d3s2/resp
     }
   });
 
-//for live response plans
+//UNCOMMENT BELOW ONLY FOR LIVE AND COMMENT ALL ABOVE
+
+// //for live response plans
 // exports.sendResponsePlanValidationEmailLive = functions.database.ref('/live/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
 //   .onWrite(event => {
 //
@@ -1035,7 +1038,6 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
 
         // \n https://uat.portal.alertpreparedness.org
         mailOptions.subject = `Welcome to ${APP_NAME}!`;
-        // https://us-central1-alert-190fa.cloudfunctions.net/validatePartnerOrganisationRequest?token=${validationToken.token}&partnerId=${partnerId}
         mailOptions.text = `Hello,
                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
                           \n To confirm, please click on the link below
@@ -1182,50 +1184,6 @@ exports.sendPartnerOrganisationValidationEmailUat2 = functions.database.ref('/ua
       });
     }
   });
-
-//for live
-// exports.sendPartnerOrganisationValidationEmailLive = functions.database.ref('/live/partnerOrganisation/{partnerId}')
-//   .onWrite(event => {
-//     const preData = event.data.previous.val();
-//     const currData = event.data.current.val();
-//
-//     let partnerOrganisation = event.data.val();
-//     let isApproved = partnerOrganisation.isApproved;
-//
-//     if (!preData && currData) {
-//       console.log("Partner Organisation created");
-//
-//       let partnerId = event.params['partnerId'];
-//       let email = partnerOrganisation.email;
-//       let expiry = moment.utc().add(1, 'weeks').valueOf();
-//
-//       let validationToken = {'token': uuidv4(), 'expiry': expiry};
-//
-//       console.log("email: " + email);
-//
-//       admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-//         console.log('success validationToken');
-//         const mailOptions = {
-//           from: '"ALERT partner organisation" <noreply@firebase.com>',
-//           to: email
-//         };
-//
-//         // \n https://uat.portal.alertpreparedness.org
-//         mailOptions.subject = `Welcome to ${APP_NAME}!`;
-//         mailOptions.text = `Hello,
-//                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
-//                           \n To confirm, please click on the link below
-//                           \n http://platform.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
-//         return mailTransport.sendMail(mailOptions).then(() => {
-//           console.log('New welcome email sent to:', email);
-//         });
-//       }, error => {
-//         console.log(error.message);
-//       });
-//     }
-//   });
 
 //for d1s1
 exports.sendPartnerOrganisationValidationEmailD1s1 = functions.database.ref('/d1s1/partnerOrganisation/{partnerId}')
@@ -1491,6 +1449,52 @@ exports.sendPartnerOrganisationValidationEmailD3s2 = functions.database.ref('/d3
     }
   });
 
+//UNCOMMENT BELOW ONLY FOR LIVE AND COMMENT ALL ABOVE
+
+//for live
+// exports.sendPartnerOrganisationValidationEmailLive = functions.database.ref('/live/partnerOrganisation/{partnerId}')
+//   .onWrite(event => {
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//
+//     let partnerOrganisation = event.data.val();
+//     let isApproved = partnerOrganisation.isApproved;
+//
+//     if (!preData && currData) {
+//       console.log("Partner Organisation created");
+//
+//       let partnerId = event.params['partnerId'];
+//       let email = partnerOrganisation.email;
+//       let expiry = moment.utc().add(1, 'weeks').valueOf();
+//
+//       let validationToken = {'token': uuidv4(), 'expiry': expiry};
+//
+//       console.log("email: " + email);
+//
+//       admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+//         console.log('success validationToken');
+//         const mailOptions = {
+//           from: '"ALERT partner organisation" <noreply@firebase.com>',
+//           to: email
+//         };
+//
+//         // \n https://uat.portal.alertpreparedness.org
+//         mailOptions.subject = `Welcome to ${APP_NAME}!`;
+//         mailOptions.text = `Hello,
+//                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+//                           \n To confirm, please click on the link below
+//                           \n http://platform.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
+//                           \n Thanks
+//                           \n Your ALERT team `;
+//         return mailTransport.sendMail(mailOptions).then(() => {
+//           console.log('New welcome email sent to:', email);
+//         });
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
+
 /**
  * Sending an email when a system admin notification sent
  *
@@ -1502,43 +1506,43 @@ exports.sendPartnerOrganisationValidationEmailD3s2 = functions.database.ref('/d3
 
 //Only enable SAND for testing during development
 
-exports.sendSystemAdminNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
-  .onWrite(event => {
-
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-
-    let userId = event.params['userId'];
-    let msgId = event.params['messageId'];
-
-    if (!preData && currData) {
-      admin.database().ref('sand/userPublic/' + userId + "/email").on('value', snapshot => {
-
-        let email = snapshot.val();
-
-        if (email) {
-          admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
-            let title = snapshot.val().title;
-            let content = snapshot.val().content;
-
-            const mailOptions = {
-              from: '"ALERT Preparedness" <noreply@firebase.com>',
-              to: email
-            };
-            mailOptions.subject = title;
-            mailOptions.text = content;
-            return mailTransport.sendMail(mailOptions).then(() => {
-              console.log('Notification email sent to :', email);
-            });
-          }, error => {
-            console.log(error.message);
-          });
-        }
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
+// exports.sendSystemAdminNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
+//   .onWrite(event => {
+//
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//
+//     let userId = event.params['userId'];
+//     let msgId = event.params['messageId'];
+//
+//     if (!preData && currData) {
+//       admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
+//
+//         let email = snapshot.val();
+//
+//         if(email){
+//           admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
+//             let title = snapshot.val().title;
+//             let content = snapshot.val().content;
+//
+//             const mailOptions = {
+//               from: '"ALERT Preparedness" <noreply@firebase.com>',
+//               to: email
+//             };
+//             mailOptions.subject = title;
+//             mailOptions.text = content;
+//             return mailTransport.sendMail(mailOptions).then(() => {
+//               console.log('Notification email sent to :', email);
+//             });
+//           }, error => {
+//             console.log(error.message);
+//           });
+//         }
+//       }, error => {
+//          console.log(error.message);
+//       });
+//     }
+//   });
 
 exports.sendSystemAdminNotificationsEmail_TEST = functions.database.ref('/test/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
   .onWrite(event => {
@@ -1933,43 +1937,43 @@ exports.sendSystemAdminNotificationsEmail_D3S2 = functions.database.ref('/d3s2/m
 
 //Only enable SAND for testing during development
 
-exports.sendAgencyNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
-  .onWrite(event => {
-
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-
-    let userId = event.params['userId'];
-    let msgId = event.params['messageId'];
-
-    if (!preData && currData) {
-      admin.database().ref('sand/userPublic/' + userId + "/email").on('value', snapshot => {
-
-        let email = snapshot.val();
-
-        if (email) {
-          admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
-            let title = snapshot.val().title;
-            let content = snapshot.val().content;
-
-            const mailOptions = {
-              from: '"ALERT Preparedness" <noreply@firebase.com>',
-              to: email
-            };
-            mailOptions.subject = title;
-            mailOptions.text = content;
-            return mailTransport.sendMail(mailOptions).then(() => {
-              console.log('Notification email sent to :', email);
-            });
-          }, error => {
-            console.log(error.message);
-          });
-        }
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
+// exports.sendAgencyNotificationsEmail_SAND = functions.database.ref('/sand/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
+//   .onWrite(event => {
+//
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//
+//     let userId = event.params['userId'];
+//     let msgId = event.params['messageId'];
+//
+//     if (!preData && currData) {
+//       admin.database().ref('sand/userPublic/' + userId+ "/email").on('value', snapshot => {
+//
+//         let email = snapshot.val();
+//
+//         if(email){
+//           admin.database().ref('sand/message/' + msgId).on('value', snapshot => {
+//             let title = snapshot.val().title;
+//             let content = snapshot.val().content;
+//
+//             const mailOptions = {
+//               from: '"ALERT Preparedness" <noreply@firebase.com>',
+//               to: email
+//             };
+//             mailOptions.subject = title;
+//             mailOptions.text = content;
+//             return mailTransport.sendMail(mailOptions).then(() => {
+//               console.log('Notification email sent to :', email);
+//             });
+//           }, error => {
+//             console.log(error.message);
+//           });
+//         }
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
 
 exports.sendAgencyNotificationsEmail_TEST = functions.database.ref('/test/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
   .onWrite(event => {

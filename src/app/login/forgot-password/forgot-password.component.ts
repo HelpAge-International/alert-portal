@@ -27,6 +27,9 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (Constants.SHOW_MAINTENANCE_PAGE) {
+      this.router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
+    }
   }
 
   ngOnDestroy() {

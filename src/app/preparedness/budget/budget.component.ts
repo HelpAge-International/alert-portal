@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {ActionLevel, AlertMessageType} from "../../utils/Enums";
+import {ActionLevel, AlertMessageType, Currency} from "../../utils/Enums";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -61,37 +61,33 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
-      if (this.countryId != null && this.agencyId != null && this.isViewing) {
-        this.populateDepartments();
-        this.populateNarratives();
-        this.populateBudgets();
-      }
-      else {
+      if (!(this.countryId != null && this.agencyId != null && this.isViewing)) {
         this.agencyId = agencyId;
         this.countryId = countryId;
-        this.populateDepartments();
-        this.populateNarratives();
-        this.populateBudgets();
-        // this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-        //   .takeUntil(this.ngUnsubscribe)
-        //   .subscribe((agencyId) => {
-        //     this.agencyId = agencyId;
-        //     this.populateDepartments();
-        //     this.userService.getCountryId(Constants.USER_PATHS[userType], this.uid)
-        //       .takeUntil(this.ngUnsubscribe)
-        //       .subscribe((countryId) => {
-        //         this.countryId = countryId;
-        //         this.populateNarratives();
-        //         this.populateBudgets();
-        //       });
-        //   });
       }
+      this.populateDepartments();
+      this.populateNarratives();
+      this.populateBudgets();
+      this.calculateCurrency();
     });
   }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
+      });
   }
 
   /**

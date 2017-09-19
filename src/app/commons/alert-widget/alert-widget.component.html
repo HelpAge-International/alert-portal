@@ -12,26 +12,26 @@
         <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk">
                 <i div class="Icon__circle Icon--sm Icon--b-dark-blue {{getCSSHazard(alert.hazardScenario)}}"></i>
                 <div>
-                    <span>Risk:</span>
+                    <span>{{"ALERT.RISK" | translate}}:</span>
                     {{hazardScenarios[alert.hazardScenario] | translate}}<br>
                 </div>
         </div>
         <div class="col-md-3 Alert-Widget__item">
             <div>
-                <span>Population affected:</span> {{alert.estimatedPopulation}} people
+                <span>{{"POPULATION_AFFECTED" | translate}}:</span> {{alert.estimatedPopulation}} people
             </div>
         </div>
         <div class="col-md-3 Alert-Widget__item">
             <div>
-                <span>Affected areas:</span>
+                <span>{{"AFFECTED_AREAS" | translate}}:</span>
                 <ng-template ngFor let-area [ngForOf]="alert.affectedAreas | keyValues" let-isLast="last">
-                    {{area.value.region}}, {{area.value.province}} <ng-template [ngIf]="!isLast">and </ng-template>
+                    {{area.value.region}}, {{area.value.province}} <ng-template [ngIf]="!isLast">{{"AND" | translate}} </ng-template>
                 </ng-template>
-                 
+
             </div>
         </div>
-        
-        
+
+
     </div>
 </div>
 </ng-template>

@@ -7,12 +7,11 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Back--button" (click)="goBack()">{{"GLOBAL.USER_TYPE.PARTNER"| translate}}</div>
-    <!--<div class="Back&#45;&#45;button" (click) = "goBack()" [hidden]="!fromResponsePlans">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate}}</div>-->
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
       <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePartnerOrganisation()">
-        {{"GLOBAL.DELETE" | translate}}
+        {{"DELETE" | translate}}
       </button>
     </div>
 
@@ -25,13 +24,13 @@
 
       <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="P-org">{{ "ADD_PARTNER.PARTNER_ORGANISATION" | translate }}</label>
+          <label for="P-org">{{ "COUNTRY_ADMIN.PARTNER.PARTNER_ORGANISATION" | translate }}</label>
           <input type="text" class="form-control" name="P-org" id="P-org"
                  [(ngModel)]="partnerOrganisation && partnerOrganisation.organisationName"
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Relationship">{{ "ADD_PARTNER.RELATIONSHIP" | translate }}</label>
+          <label for="Relationship">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP" | translate }}</label>
           <input type="text" class="form-control" name="Relationship" id="Relationship"
                  [(ngModel)]="partnerOrganisation && partnerOrganisation.relationship"
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
@@ -39,7 +38,7 @@
       </div>
 
       <div class="Underline-title__wrap">
-        <h5>{{ "ADD_PARTNER.PROJECTS" | translate }}</h5>
+        <h5>{{ "PROJECTS" | translate }}</h5>
       </div>
 
       <div class="Outline__bubble__wrap Grey" *ngFor="let project of partnerOrganisation?.projects; let pin = index;">
@@ -71,6 +70,15 @@
               </div>
             </div>
           </div>
+
+          <div *ngIf="project.sector[responsePlansSectors.other]" class="row Spaced">
+            <div class="col-lg-4 col-md-6 form-group">
+              <label for="P-title">{{ "ADD_PARTNER.OTHER_SECTOR" | translate }}</label>
+              <input class="form-control" name="otherName"
+                     [(ngModel)]="project.otherName" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
+            </div>
+          </div>
+
           <div class="row Spaced">
             <div class="col-lg-4 col-md-6 form-group">
               <label for="P-title">{{ "ADD_PARTNER.PROJECT_TITLE" | translate }}</label>
@@ -78,11 +86,11 @@
                      [(ngModel)]="project.title" id="P-title" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
             </div>
             <div class="col-lg-8 col-md-10 form-group">
-              <label for="P-end-date_{{pin}}">{{ "ADD_PARTNER.PROJECT_END_DATE" | translate }}</label>
+              <label for="P-end-date_{{pin}}">{{ "PROJECT_END_DATE" | translate }}</label>
               <material-datepicker id="P-end-date_{{pin}}"
                                    placeholder="{{project.endDate ? (project.endDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
                                    class="form-control col-sm-5"
-                                   dateFormat="DD-MM-YYYY" 
+                                   dateFormat="DD-MM-YYYY"
                                    (onSelect)="selectDate(project, pin)"
                                    [(date)]="projectEndDate[pin]"
                                    [rangeStart]="todayDayMonth"></material-datepicker>
@@ -90,7 +98,7 @@
           </div>
           <div class="row Spaced">
             <div class="col-lg-12 col-md-12 form-group">
-              <label for="A-operation">{{ "ADD_PARTNER.AREAS_OF_OPERATION" | translate }}</label>
+              <label>{{ "COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION" | translate }}</label>
               <div class="row" *ngFor="let operationArea of project?.operationAreas; let opin = index;">
                 <div class="col-sm-3">
                   <div class="form-group">
@@ -173,7 +181,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="f-Name">{{ "GLOBAL.USER_INFO.FIRST_NAME" | translate }}</label>
+          <label for="f-Name">{{ "FIRST_NAME" | translate }}</label>
           <input type="text" class="form-control" name="f-name"
                  [(ngModel)]="partnerOrganisation && partnerOrganisation.firstName" id="f-Name"
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
@@ -193,7 +201,7 @@
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="e-Address">{{ "GLOBAL.USER_INFO.EMAIL_ADDRESS" | translate }}</label>
+          <label for="e-Address">{{ "EMAIL_ADDRESS" | translate }}</label>
           <input type="text" class="form-control" name="e-Address"
                  [(ngModel)]="partnerOrganisation && partnerOrganisation.email" id="e-Address"
                  placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}">
@@ -243,7 +251,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"ADD_PARTNER.DIALOG_DELETE_TITLE" |
+        <h5 class="modal-title"><strong>{{"ADD_PARTNER.DIALOG_DELETE_TITLE" |
           translate}}</strong></h5>
       </div>
       <div class="modal-body">

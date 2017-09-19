@@ -41,16 +41,20 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((params: Params) => {
-        if (params["emailEntered"]) {
-          this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
-          this.emailEntered = params["emailEntered"];
-          this.showAlert(false, "");
-          console.log("From Forgot Password");
-        }
-      });
+    if (Constants.SHOW_MAINTENANCE_PAGE) {
+      this.router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
+    } else {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["emailEntered"]) {
+            this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
+            this.emailEntered = params["emailEntered"];
+            this.showAlert(false, "");
+            console.log("From Forgot Password");
+          }
+        });
+    }
   }
 
   ngOnDestroy() {
@@ -372,7 +376,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return false;
     } else if (!(this.localUser.userEmail)) {
       this.alerts[this.localUser.userEmail] = true;
-      this.errorMessage = "LOGIN.NO_EMAIL_ERROR";
+      this.errorMessage = "FORGOT_PASSWORD.NO_EMAIL_ERROR";
       return false;
     } else if (!CustomerValidator.EmailValidator(this.localUser.userEmail)) {
       this.alerts[this.localUser.userEmail] = true;

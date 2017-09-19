@@ -9,19 +9,19 @@
         <div class="Header-title__wrap">
             <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_IN_TITLE' | translate }}</h1>
             <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_OUT_TITLE' | translate }}</h1>
-            
+
             <div class="col-sm-11" *ngIf="stockCapacity.id">
                 <h1 *ngIf="stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_IN_TITLE' | translate }}</h1>
                 <h1 *ngIf="stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_OUT_TITLE' | translate }}</h1>
             </div>
 
             <div class="col-sm-1 Right-aligned" *ngIf="stockCapacity.id">
-                <button class="btn btn-danger text-uppercase" (click)="deleteStockCapacity()">{{ 'GLOBAL.DELETE' | translate }}</button>
+                <button class="btn btn-danger text-uppercase" (click)="deleteStockCapacity()">{{ 'DELETE' | translate }}</button>
             </div>
         </div><br>
 
         <form (ngSubmit)="submit()">
-            <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' | translate }}</strong>
+            <p><strong>{{ 'GLOBAL.DESCRIPTION' | translate }}</strong>
             <tooltip
                 [level1]= "'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT10.LEVEL1'"
             ></tooltip>
@@ -31,7 +31,7 @@
                     [(ngModel)]="stockCapacity && stockCapacity.description">
             </div><br>
 
-            <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' | translate }}</strong></p>
+            <p><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></p>
             <div>
                 <input type="text" class="form-control col-sm-4" placeholder="Please enter" name="quantity"
                     [(ngModel)]="stockCapacity && stockCapacity.quantity">
@@ -58,7 +58,7 @@
 
             <!--Save and cancel-->
             <div class="row margin-top-ten margin-left-one">
-                <button class="btn btn-primary text-uppercase Spaced col-sm-0" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <button class="btn btn-primary text-uppercase Spaced col-sm-0" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
                 <div class="col-sm-1 margin-top-five">
                     <a href="javascript:void(0)" (click)="goBack()">
                         {{ 'GLOBAL.CANCEL' | translate }}

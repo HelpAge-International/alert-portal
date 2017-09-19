@@ -9,6 +9,7 @@ import {Countries, AlertLevels, HazardScenario} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {HazardImages} from "../../utils/HazardImages";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-donor-list-view',
@@ -60,7 +61,7 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
 
   private countryIds: string[] = [];
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService, private translate: TranslateService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
@@ -89,7 +90,7 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
   }
 
   getDirectorName(directorId) {
-    this.directorName = "AGENCY_ADMIN.COUNTRY_OFFICES.UNASSIGNED";
+    this.directorName = "UNASSIGNED";
     if (directorId && directorId != "null") {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + directorId)
         .takeUntil(this.ngUnsubscribe)
@@ -237,7 +238,7 @@ export class DonorListViewComponent implements OnInit, OnDestroy {
 
     this.otherRegion = new RegionHolder();
     this.otherRegion.regionId = "Unassigned";
-    this.otherRegion.regionName = "Other Countries";
+    this.otherRegion.regionName  = this.translate.instant("AGENCY_ADMIN.COUNTRY_OFFICES.OTHER_COUNTRIES");
     this.mapHelper.getRegionsForAgency(this.uid, 'donor', (key, obj) => {
       let hRegion = new RegionHolder();
       hRegion.regionName = obj.name;

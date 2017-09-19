@@ -5,9 +5,9 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-  
+
   <div class="Back--button" (click) = "goBack()">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.TITLE_TEXT" | translate}}</div>
-  
+
   <div class="Header-title__wrap">
     <h1 *ngIf="!isEdit">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ADD_RECIPIENT" | translate}}</h1>
     <h1 *ngIf="isEdit">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EDIT_RECIPIENT" | translate}}</h1>
@@ -15,12 +15,12 @@
       {{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.DELETE_RECIPIENT" | translate}}
     </button>
   </div>
-  
+
   <form (ngSubmit)="submit()">
 
     <div class="row Spaced">
       <div class="col-lg-4 col-md-6 form-group">
-        <label for="Title">{{ "GLOBAL.USER_INFO.TITLE" | translate}}</label>      
+        <label for="Title">{{ "GLOBAL.TITLE" | translate}}</label>
         <select name="Title" id="Title" class="form-control"
             [(ngModel)] = "externalRecipient && externalRecipient.title">
           <option value="undefined" disabled selected hidden>{{ "GLOBAL.PLEASE_SELECT" | translate}}</option>
@@ -28,7 +28,7 @@
         </select>
       </div>
       <div class="col-lg-4 col-md-6 form-group">
-              <label for="f-Name">{{ "GLOBAL.USER_INFO.FIRST_NAME" | translate}}</label>
+              <label for="f-Name">{{ "FIRST_NAME" | translate}}</label>
               <input type="text" class="form-control" name="f-Name" id="f-Name" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
                   [(ngModel)] = "externalRecipient && externalRecipient.firstName">
       </div>
@@ -40,7 +40,7 @@
     </div>
     <div class="row Spaced">
         <div class="col-lg-4 col-md-6 form-group">
-                <label for="Organisation">{{ "COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.RECIPIENT_ORGANISATION" | translate}}</label>
+                <label for="Organisation">{{ "COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION" | translate}}</label>
                 <input type="text" class="form-control" name="organisation" id="Organisation" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
                     [(ngModel)] = "externalRecipient && externalRecipient.organisation">
         </div>
@@ -50,7 +50,7 @@
                     [(ngModel)] = "externalRecipient && externalRecipient.phone">
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-                <label for="e-Address">{{ "GLOBAL.USER_INFO.EMAIL_ADDRESS" | translate}}</label>
+                <label for="e-Address">{{ "EMAIL_ADDRESS" | translate}}</label>
                 <input type="text" class="form-control" name="email" id="e-Address" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate}}"
                     [(ngModel)] = "externalRecipient && externalRecipient.email">
         </div>

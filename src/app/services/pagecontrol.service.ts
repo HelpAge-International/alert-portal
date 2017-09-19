@@ -10,7 +10,6 @@ import {Pair} from "../utils/bundles";
 import {SettingsService} from "./settings.service";
 import {PermissionSettingsModel} from "../model/permission-settings.model";
 import {Observable} from "rxjs/Observable";
-
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -209,6 +208,7 @@ export class PageControlService {
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*",
     "dashboard/dashboard-overview*",
+    "response-plans/view-plan*",
     "new-user-password"
   ]);
   public static GlobalUser = PageUserType.create(UserType.GlobalUser, "director", [
@@ -216,6 +216,7 @@ export class PageControlService {
     "dashboard/dashboard-overview*",
     "map;isDirector=true",
     "map/map-countries-list;isDirector=true",
+    "response-plans/view-plan*",
     // "risk-monitoring*",
     // "preparedness*",
     // "response-plans*",
@@ -345,54 +346,60 @@ export class PageControlService {
   private static auth(af: AngularFire, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
                       authUser: (auth: firebase.User, userType: UserType) => void,
                       authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
-    af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
-      if (auth) {
-        UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
-          if (userType == null) {
-            if (authUser != null) {
-              authUser(auth.auth, null);
-            }
-            else if (authObj != null) {
-              authObj(auth, null);
-            }
-          }
-          else {
-            let type: PageUserType = PageControlService.initPageControlMap().get(userType);
-            if (PageControlService.checkUrl(route, userType, type)) {
-              PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, auth.auth.uid, Constants.USER_PATHS[userType], (list) => {
-                let s = PageControlService.buildEndUrl(route);
-                let skip = false;
-                // We have [AgencyPermissionObj], need to iterate through those.
-                //  For every one of those, check if our current URL is contained in one of thise
-                //   If so and we're not authorised to view it, kick us out
-                for (let x of list) {
-                  for (let y of x.urls) {
-                    // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
-                    if ((s == y) && !x.isAuthorized) {
-                      router.navigateByUrl(type.redirectTo);
-                      skip = true;
+    if (Constants.SHOW_MAINTENANCE_PAGE) {
+      router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
+    }
+    else {
+      af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+          if (auth) {
+            UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
+              if (userType == null) {
+                if (authUser != null) {
+                  authUser(auth.auth, null);
+                }
+                else if (authObj != null) {
+                  authObj(auth, null);
+                }
+              }
+              else {
+                let type: PageUserType = PageControlService.initPageControlMap().get(userType);
+                if (PageControlService.checkUrl(route, userType, type)) {
+                  PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, auth.auth.uid, Constants.USER_PATHS[userType], (list) => {
+                    let s = PageControlService.buildEndUrl(route);
+                    let skip = false;
+                    // We have [AgencyPermissionObj], need to iterate through those.
+                    //  For every one of those, check if our current URL is contained in one of thise
+                    //   If so and we're not authorised to view it, kick us out
+                    for (let x of list) {
+                      for (let y of x.urls) {
+                        // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
+                        if ((s == y) && !x.isAuthorized) {
+                          router.navigateByUrl(type.redirectTo);
+                          skip = true;
+                        }
+                      }
                     }
-                  }
+                    if (!skip) {
+                      if (authUser != null) {
+                        authUser(auth.auth, userType);
+                      }
+                      else if (authObj != null) {
+                        authObj(auth, userType);
+                      }
+                    }
+                  });
                 }
-                if (!skip) {
-                  if (authUser != null) {
-                    authUser(auth.auth, userType);
-                  }
-                  else if (authObj != null) {
-                    authObj(auth, userType);
-                  }
+                else {
+                  router.navigateByUrl(type.redirectTo);
                 }
-              });
-            }
-            else {
-              router.navigateByUrl(type.redirectTo);
-            }
+              }
+            });
+          } else {
+            router.navigateByUrl("/login");
           }
-        });
-      } else {
-        router.navigateByUrl("/login");
-      }
-    });
+        }
+      );
+    }
   }
 
   // =============================================================================================
@@ -612,6 +619,7 @@ export class PageControlService {
   // public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
   //   // TODO: Implement this functionality
   // }
+
   // ========================================================================================================
 
 

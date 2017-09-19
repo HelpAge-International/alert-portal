@@ -1,5 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from "@angular/router";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-after-validation',
@@ -8,9 +9,9 @@ import {ActivatedRoute, Params} from "@angular/router";
 })
 export class AfterValidationComponent implements OnInit, OnDestroy {
 
-  private msg = "Thanks. You can now exit this page.";
+  private msg = "";
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute, private _translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -18,10 +19,10 @@ export class AfterValidationComponent implements OnInit, OnDestroy {
       .first()
       .subscribe((params: Params) => {
         if (params["partner"]) {
-          this.msg = "Thank you for validating the partner organisation. You can now exit from this page.";
+          this.msg = this._translate.instant("Thank you for validating the partner organisation. You can now exit from this page.");
         }
         if (params["plan"]) {
-          this.msg = "Thank you for updating the response plan. You can now exit from this page.";
+          this.msg = this._translate.instant("Thank you for updating the response plan. You can now exit from this page.");
         }
       })
   }

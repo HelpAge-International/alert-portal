@@ -8,7 +8,7 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng" [ngSwitch]="count">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row" routerLink="/risk-monitoring">{{"DASHBOARD.RISK_MONITORING" | translate}}</div> <!-- Back button-->
+    <div class="Back--button row" routerLink="/risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
     <div class="Header-title__wrap--risk Spaced-above">
       <h1>{{"RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" | translate}}</h1>
       <tooltip
@@ -98,7 +98,7 @@
         <div class="row no-gutters">
           <label class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
             <input type="radio" name="RT" id="RT_yes" value="false" (change)="seasonHazard($event)">
-            {{'GLOBAL.YES' | translate}}
+            {{'YES' | translate}}
           </label>
         </div>
 
@@ -174,7 +174,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
-                  (click)="saveSelectSeasons('select-seasons')">{{"GLOBAL.SAVE" | translate}}
+                  (click)="saveSelectSeasons('select-seasons')">{{"SAVE" | translate}}
           </button>
           <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" (click)="closeModal()">
             {{"GLOBAL.CANCEL" | translate}}
@@ -188,7 +188,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"><b>{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR" | translate}}</b>
+            <h5 class="modal-title" id="exampleModalLabel"><b>{{"DASHBOARD.CALENDAR.ADD_SEASON" | translate}}</b>
               <tooltip
                 [level1]= "'TOOLTIPS.RISK_MONITORING.TT11.LEVEL1'"
               ></tooltip>
@@ -202,7 +202,7 @@
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
-                    <label for="S-name">{{"RISK_MONITORING.ADD_HAZARD.SEASON_NAME" | translate}}</label>
+                    <label for="S-name">{{"DASHBOARD.CALENDAR.SEASON_NAME" | translate}}</label>
                     <input type="text" class="form-control form-control-danger" id="S-name"
                            placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" name="name" ngModel required>
                   </div>
@@ -219,7 +219,7 @@
                 </div>
                 <div class="col-sm-6">
                   <div class="form-group">
-                    <label for="E-date">{{"RISK_MONITORING.ADD_HAZARD.END_DATE" | translate}}:</label>
+                    <label for="E-date">{{"DASHBOARD.CALENDAR.END_DATE" | translate}}:</label>
                     <material-datepicker id="E-date" placeholder="{{addSeasonEnd ? (addSeasonEnd | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
                                          dateFormat="DD-MM-YYYY" (onSelect)="selectEndDate(addSeasonEndDate)" [(date)]="addSeasonEndDate" required></material-datepicker>
                     <div [hidden]="submitNewCalendar || addSeasonEnd != null" class="alert alert-danger">{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_END_DATE" | translate}}</div>
@@ -241,7 +241,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
-                    [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"GLOBAL.SAVE" | translate}}
+                    [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"SAVE" | translate}}
             </button>
             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
           </div>

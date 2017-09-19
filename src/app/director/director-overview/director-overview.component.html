@@ -21,8 +21,8 @@
                [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
                [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
                [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
-            <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
-            <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"GLOBAL.ALERTS.RED" | translate}}</h4>
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
           </div>
           <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk Centered">
             <i div
@@ -58,7 +58,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>Affected areas</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AFFECTED_AREAS" | translate}}</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

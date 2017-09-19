@@ -34,7 +34,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.ASSIGN" | translate }}</p></div>
@@ -63,7 +63,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.ASSIGN" | translate }}</p></div>
@@ -91,7 +91,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.ASSIGN" | translate }}</p></div>
@@ -116,25 +116,25 @@
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customMpa.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customMpa.edit, ['customMpa', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
+                                       (click)="selectUserType(permissionSettings?.customMpa.edit, ['customMpa', 'edit'], 'EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customMpa.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customMpa.delete, ['customMpa', 'delete'], 'PERMISSIONS.DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
+                                       (click)="selectUserType(permissionSettings?.customMpa.delete, ['customMpa', 'delete'], 'DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_MPA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
@@ -153,7 +153,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.ASSIGN" | translate }}</p></div>
@@ -181,7 +181,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.ASSIGN" | translate }}</p></div>
@@ -206,25 +206,25 @@
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customApa.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customApa.edit, ['customApa', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
+                                       (click)="selectUserType(permissionSettings?.customApa.edit, ['customApa', 'edit'], 'EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.customApa.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.customApa.delete, ['customApa', 'delete'], 'PERMISSIONS.DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
+                                       (click)="selectUserType(permissionSettings?.customApa.delete, ['customApa', 'delete'], 'DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CUSTOM_APA')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
@@ -233,7 +233,7 @@
         <!--Ribbon Item-->
         <div class="Ribbon__response" id="Ribbon__response__4">
           <div class="Ribbon__header__wrap">
-            <h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.NOTES"| translate}}</h4>
+            <h4 class="Ribbon__header__title Spaced">{{"GLOBAL.NOTES"| translate}}</h4>
             <div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
@@ -242,7 +242,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.NEW" | translate }}</p></div>
@@ -252,29 +252,29 @@
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.notes.new, ['notes', 'new'], 'PERMISSIONS.NEW', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.NOTES')">
+                                       (click)="selectUserType(permissionSettings?.notes.new, ['notes', 'new'], 'PERMISSIONS.NEW', 'GLOBAL.NOTES')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.notes.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.notes.edit, ['notes', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.NOTES')">
+                                       (click)="selectUserType(permissionSettings?.notes.edit, ['notes', 'edit'], 'EDIT', 'GLOBAL.NOTES')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.notes.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.notes.delete, ['notes', 'delete'], 'PERMISSIONS.DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.NOTES')">
+                                       (click)="selectUserType(permissionSettings?.notes.delete, ['notes', 'delete'], 'DELETE', 'GLOBAL.NOTES')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
@@ -293,7 +293,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.NEW" | translate }}</p></div>
@@ -307,197 +307,29 @@
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "EDIT" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.countryContacts.edit | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.countryContacts.edit, ['countryContacts', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
+                                       (click)="selectUserType(permissionSettings?.countryContacts.edit, ['countryContacts', 'edit'], 'EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
             <div class="row Spaced Line-row">
-              <div class="col-sm-4"><p>{{ "PERMISSIONS.DELETE" | translate }}</p></div>
+              <div class="col-sm-4"><p>{{ "DELETE" | translate }}</p></div>
               <div class="col-sm-4">
                 <p *ngFor="let userType of permissionSettings?.countryContacts.delete | keyValues"
                    [hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>
 
               </div>
               <div class="col-sm-2"><a href="javascript:void(0)"
-                                       (click)="selectUserType(permissionSettings?.countryContacts.delete, ['countryContacts', 'delete'], 'PERMISSIONS.DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
+                                       (click)="selectUserType(permissionSettings?.countryContacts.delete, ['countryContacts', 'delete'], 'DELETE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.COUNTRY_CONTACTS')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
           </div>
         </div>
-
-        <!--Ribbon Item-->
-        <!--<div class="Ribbon__response" id="Ribbon__response__5">-->
-        <!--<div class="Ribbon__header__wrap">-->
-        <!--<h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY"| translate}}</h4>-->
-        <!--<div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--<div class="Response__content No-indent Spaced">-->
-        <!--<div class="Spaced">-->
-        <!--<div class="row Spaced">-->
-        <!--<div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>-->
-        <!--<div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>-->
-        <!--<div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.ADD_NOTE" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.crossCountry.addNotes | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.crossCountry.addNotes, ['crossCountry', 'addNotes'], 'PERMISSIONS.ADD_NOTE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.COPY_ACTION" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.crossCountry.copyAction | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.crossCountry.copyAction, ['crossCountry', 'copyAction'], 'PERMISSIONS.COPY_ACTION', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.DOWNLOAD" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.crossCountry.download | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.crossCountry.download, ['crossCountry', 'download'], 'PERMISSIONS.DOWNLOAD', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.crossCountry.edit | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.crossCountry.edit, ['crossCountry', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.VIEW" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.crossCountry.view | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.crossCountry.view, ['crossCountry', 'view'], 'PERMISSIONS.VIEW', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.VIEW_CONTACTS" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.crossCountry.viewContacts | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.crossCountry.viewContacts, ['crossCountry', 'viewContacts'], 'PERMISSIONS.VIEW_CONTACTS', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.CROSS_COUNTRY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-
-        <!--&lt;!&ndash;Ribbon Item&ndash;&gt;-->
-        <!--<div class="Ribbon__response" id="Ribbon__response__5">-->
-        <!--<div class="Ribbon__header__wrap">-->
-        <!--<h4 class="Ribbon__header__title Spaced">{{"COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY"| translate}}</h4>-->
-        <!--<div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--<div class="Response__content No-indent Spaced">-->
-        <!--<div class="Spaced">-->
-        <!--<div class="row Spaced">-->
-        <!--<div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>-->
-        <!--<div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>-->
-        <!--<div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.ADD_NOTE" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.interAgency.addNotes | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.interAgency.addNotes, ['interAgency', 'addNotes'], 'PERMISSIONS.ADD_NOTE', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.COPY_ACTION" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.interAgency.copyAction | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.interAgency.copyAction, ['interAgency', 'copyAction'], 'PERMISSIONS.COPY_ACTION', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.DOWNLOAD" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.interAgency.download | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.interAgency.download, ['interAgency', 'download'], 'PERMISSIONS.DOWNLOAD', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.EDIT" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.interAgency.edit | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.interAgency.edit, ['interAgency', 'edit'], 'PERMISSIONS.EDIT', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.VIEW" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.interAgency.view | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.interAgency.view, ['interAgency', 'view'], 'PERMISSIONS.VIEW', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--<div class="row Spaced Line-row">-->
-        <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.VIEW_CONTACTS" | translate }}</p></div>-->
-        <!--<div class="col-sm-4">-->
-        <!--<p *ngFor="let userType of permissionSettings?.interAgency.viewContacts | keyValues"-->
-        <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-        <!--</div>-->
-        <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-        <!--(click) = "selectUserType(permissionSettings?.interAgency.viewContacts, ['interAgency', 'viewContacts'], 'PERMISSIONS.VIEW_CONTACTS', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.INTER_AGENCY')">-->
-        <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
 
         <!--Ribbon Item-->
         <div class="Ribbon__response" id="Ribbon__response__5">
@@ -511,7 +343,7 @@
             <div class="row Spaced">
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.PERMISSION" | translate}}</p></b></div>
               <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.GRANTED_TO" | translate}}</p></b></div>
-              <div class="col-sm-4"><b><p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.ACTIONS" | translate}}</p></b></div>
+              <div class="col-sm-4"><b><p>{{ "ACTIONS" | translate}}</p></b></div>
             </div>
             <div class="row Spaced Line-row">
               <div class="col-sm-4"><p>{{ "PERMISSIONS.DOWNLOAD_DOC" | translate }}</p></div>
@@ -524,17 +356,6 @@
                                        (click)="selectUserType(permissionSettings?.other.downloadDoc, ['other', 'downloadDoc'], 'PERMISSIONS.DOWNLOAD_DOC', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.OTHER')">
                 <p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>
             </div>
-            <!--<div class="row Spaced Line-row">-->
-            <!--<div class="col-sm-4"><p>{{ "PERMISSIONS.UPLOAD_DOC" | translate }}</p></div>-->
-            <!--<div class="col-sm-4">-->
-            <!--<p *ngFor="let userType of permissionSettings?.other.uploadDoc | keyValues"-->
-            <!--[hidden]="userType.value === false">{{ userTypeConstant[userType.key] | translate}}</p>-->
-
-            <!--</div>-->
-            <!--<div class="col-sm-2"><a href="javascript:void(0)"-->
-            <!--(click) = "selectUserType(permissionSettings?.other.uploadDoc, ['other', 'uploadDoc'], 'PERMISSIONS.UPLOAD_DOC', 'COUNTRY_ADMIN.PARTNER.PERMISSIONS.OTHER')">-->
-            <!--<p>{{ "COUNTRY_ADMIN.SETTINGS.PERMISSIONS.SELECT_USER_TYPE" | translate}}</p></a></div>-->
-            <!--</div>-->
           </div>
         </div>
       </div>
@@ -574,7 +395,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="saveUserType()">{{"GLOBAL.SAVE"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="saveUserType()">{{"SAVE"| translate}}</button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>

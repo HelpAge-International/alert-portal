@@ -8,16 +8,16 @@
         <div class="Back--button row" (click)="goBack()">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT_EQUIPMENT' | translate }}</div> <!-- Back button-->
         <div class="Header-title__wrap">
             <h1 *ngIf="!equipment.id">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.ADD_EQUIPMENT_TITLE' | translate }}</h1>
-            <div class="col-sm-11" *ngIf="equipment.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT_EQUIPMENT_TITLE' | translate }}</h1></div>
+            <div class="col-sm-11" *ngIf="equipment.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EDIT' | translate }}</h1></div>
             <div class="col-sm-1 Right-aligned" *ngIf="equipment.id">
-                <button class="btn btn-danger text-uppercase" (click)="deleteEquipment()">{{ 'GLOBAL.DELETE' | translate }}</button>
+                <button class="btn btn-danger text-uppercase" (click)="deleteEquipment()">{{ 'DELETE' | translate }}</button>
             </div>
         </div><br>
 
         <form (ngSubmit)="submit()">
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE' | translate }}</strong></h6>
-                
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT' | translate }}</strong></h6>
+
 
                 <div class="col-sm-4">
                     <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="name"
@@ -25,7 +25,7 @@
             </div>
 
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.LOCATION' | translate }}</strong></h6>
+                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></h6>
                 <div class="col-sm-4">
                     <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="location"
                         [(ngModel)]="equipment && equipment.location">
@@ -41,7 +41,7 @@
             </div>
 
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.STATUS' | translate }}</strong>
+                <h6 class="col-sm-12"><strong>{{ 'GLOBAL.STATUS' | translate }}</strong>
                 <!-- TOOLTIP 5.8 -->
             <tooltip
                 [level1]= "'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT8.LEVEL1'"
@@ -55,7 +55,7 @@
 
             <!--Save and cancel-->
             <div class="row Spaced">
-                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
                 <div class="col-sm-1 margin-top-one">
                     <a href="javascript:void(0)" (click)="goBack()">
                         {{ 'GLOBAL.CANCEL' | translate }}

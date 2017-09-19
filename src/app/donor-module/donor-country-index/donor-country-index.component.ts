@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {AlertLevels, Countries} from "../../utils/Enums";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Countries} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Router, Params, ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -49,6 +49,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.agencyId = agencyId;
       this.systemAdminId = systemId;
       this.UserType = userType;
       this.route.params
@@ -75,11 +76,11 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
    */
   private loadData() {
     this.getCountry().then(() => {
-      this.getAgencyID().then(() => {
+      // this.getAgencyID().then(() => {
         this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
-            this.loaderInactive = true;
+          this.loaderInactive = true;
         });
-      });
+      // });
     });
   }
 
@@ -143,19 +144,19 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
 
             if (countries.length > 0) {
 
-                // An agency should only have one country office per country
-                this.countryOffices.push(countries[0]);
+              // An agency should only have one country office per country
+              this.countryOffices.push(countries[0]);
 
-                // To make sure the number of country offices don't change with filters
-                if (fromOnInit) {
-                  this.numOfCountryOffices++;
-                }
+              // To make sure the number of country offices don't change with filters
+              if (fromOnInit) {
+                this.numOfCountryOffices++;
+              }
 
-                this.agencyService.getAgency(agency.$key)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies[countries[0].countryId] = agency;
-                  });
+              this.agencyService.getAgency(agency.$key)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => {
+                  this.agencies[countries[0].countryId] = agency;
+                });
             }
             res(true);
           });

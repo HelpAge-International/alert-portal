@@ -40,7 +40,7 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminFirstName]}">
-          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+          <label for="f-Name">{{"FIRST_NAME" | translate}}*</label>
           <input type="text" class="form-control" id="f-Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyAdminFirstName"
                  name="agencyAdminFirstName">
         </div>
@@ -57,7 +57,7 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAdminEmail]}">
-          <label for="Email">{{"GLOBAL.USER_INFO.EMAIL_ADDRESS" | translate}}*</label>
+          <label for="Email">{{"EMAIL_ADDRESS" | translate}}*</label>
           <input type="text" class="form-control" id="Email" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyAdminEmail"
                  name="agencyAdminEmail">
         </div>
@@ -95,14 +95,13 @@
           <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry"
                   name="agencyAdminCountry">
             <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-            <!--<option *ngFor="let country of countryList" [ngValue]="country">{{Country[country] | translate}}</option>-->
             <option *ngFor="let country of countryList">{{Country[country] | translate}}</option>
           </select>
         </div>
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+          <label for="City">{{"CITY" | translate}}</label>
           <input type="text" class="form-control" id="City" placeholder="{{'GLOBAL.OPTIONAL' | translate}}" [(ngModel)]="agencyAdminCity"
                  name="agencyAdminCity">
         </div>
@@ -121,22 +120,10 @@
       </tooltip>
     </div>
 
-
-    <!--<div class="Radio&#45;&#45;ribbon">-->
-    <!--<input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">-->
-    <!--<label for="yes-donor"> Yes </label>-->
-    <!--</div>-->
-
-    <!--<div class="Radio&#45;&#45;ribbon">-->
-    <!--<input type="radio" name="donor-agency" id="no-donor" [checked]="!isDonor" (change)="notDonorSelected()">-->
-    <!--<label for="no-donor"> No </label>-->
-    <!--</div>-->
-
-
     <div class="row no-gutters">
       <label for="yes-donor" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
         <input type="radio" name="donor-agency" id="yes-donor" [checked]="isDonor" (change)="donorSelected()">
-        {{"GLOBAL.YES" | translate}}
+        {{"YES" | translate}}
       </label>
     </div>
     <div class="row no-gutters">
@@ -150,7 +137,7 @@
       <button *ngIf="isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE_CHANGES" |
         translate | uppercase}}
       </button>
-      <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.AGENCIES.SAVE_NEW_AGENCY" | translate | uppercase}}
+      <button *ngIf="!isEdit" type="submit" class="btn btn-primary" (click)="onSubmit()">{{"SYSTEM_ADMIN.AGENCIES.SAVE" | translate | uppercase}}
       </button>
       <div class="btn btn-outline-secondary" (click)="cancelSubmit()">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
@@ -158,21 +145,3 @@
   </div>
 
 </div>
-
-<!--<div class="modal fade" id="delete-agency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
-     <!--aria-hidden="true">-->
-  <!--<div class="modal-dialog" role="document">-->
-    <!--<div class="modal-content">-->
-      <!--<div class="modal-header">-->
-        <!--<h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_ACTION_DIALOG.TITLE" | translate}}</strong></h5>-->
-      <!--</div>-->
-      <!--<div class="modal-body">-->
-        <!--<div class="text-center"><p>{{"DELETE_AGENCY_DIALOG.CONTENT" | translate}}</p></div>-->
-      <!--</div>-->
-      <!--<div class="modal-footer">-->
-        <!--<button type="button" class="btn btn-primary" (click)="deleteAgencyFromFirebase()">{{"GLOBAL.CONFIRM" | translate}}</button>-->
-        <!--<button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
-<!--</div>-->

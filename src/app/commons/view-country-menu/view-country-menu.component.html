@@ -10,22 +10,22 @@
       <div>{{CountryNames[countryLocation] | translate}}</div>
       <ul>
         <li *ngIf="userAgencyId==agencyId || privacy?.officeProfile == Privacy.Public" [class.Active]="menuMap.get('officeProfile')" (click)="menuSelection('officeProfile')">
-          Country office profile
+         {{COUNTRY_OFFICE_PROFILE | translate}}
         </li>
-        <li *ngIf="userAgencyId==agencyId || privacy?.riskMonitoring == Privacy.Public" [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">Risk Monitoring</li>
+        <li *ngIf="userAgencyId==agencyId || privacy?.riskMonitoring == Privacy.Public" [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">{{"RISK_MONITORING_TEXT" | translate}}</li>
         <!--<li [class.Active]="menuMap.get('preparedness')" (click)="menuSelection('preparedness')">Preparedness</li>-->
         <li *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public || privacy?.apa == Privacy.Public" [class.Active]="menuMap.get('preparedness')" routerLinkActive="active">
           <div class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
-               aria-expanded="false">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS" | translate}}</a>
+               aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
             <div class="dropdown-menu">
-              <a *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-min')">{{"HEADERS.MIN_PREP" | translate}}</a>
-              <a *ngIf="userAgencyId==agencyId || privacy?.apa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-adv')">{{"HEADERS.ADV_PREP" | translate}}</a>
+              <a *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-min')">{{"MINIMUM_PREPAREDNESS" | translate}}</a>
+              <a *ngIf="userAgencyId==agencyId || privacy?.apa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-adv')">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
               <a class="dropdown-item" (click)="menuSelection('preparedness-budget')">{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET" | translate}}</a>
             </div>
           </div>
         </li>
-        <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public" [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">Plans</li>
+        <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public" [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"HEADERS.PLANS" | translate}}</li>
       </ul>
     </div>
   </div>

@@ -8,6 +8,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
+    "build-prod": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --prod --aot",
     "e2e": "ng e2e",
     "extract": "ngx-translate-extract --dir ./src --output ./ --format=json --clean"
   },

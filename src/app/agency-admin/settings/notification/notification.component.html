@@ -13,7 +13,7 @@
     <div class="row Line-row no-gutters Header">
       <div class="col-lg-4 col-4">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.EVENTS" | translate}}</div>
       <div class="col-lg-5 col-4">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.USERS_NOTIFIED" | translate}}</div>
-      <div class="col-lg-3 col-4">{{"COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.ACTIONS" | translate}}</div>
+      <div class="col-lg-3 col-4">{{"ACTIONS" | translate}}</div>
     </div>
 
     <div class="row Line-row no-gutters" *ngFor="let nSetting of notificationSettingsList">
@@ -68,7 +68,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="saveNotificationSettings()">{{"GLOBAL.SAVE"|
+        <button type="button" class="btn btn-primary" (click)="saveNotificationSettings()">{{"SAVE"|
           translate}}
         </button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}

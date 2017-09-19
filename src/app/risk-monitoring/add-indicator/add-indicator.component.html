@@ -8,7 +8,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <br>
-    <div class="Back--button" routerLink="/risk-monitoring" (click)="back()">{{"RISK_MONITORING.TITLE" | translate}}
+    <div class="Back--button" routerLink="/risk-monitoring" (click)="back()">{{"RISK_MONITORING_TEXT" | translate}}
     </div>
     <div class="row">
       <div class="Header-title col-sm-10 col-xs-2">
@@ -62,10 +62,10 @@
          *ngIf="indicatorData.source && indicatorData.source.length > 0">
       <div class="col-sm-12 row" style="padding-top:10px;"
            *ngFor="let source of indicatorData.source; let sourceKey = index">
-        <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="source.name"
+        <input type="text" class="form-control form-control-sm col-sm-5" id="sourceName" [(ngModel)]="source.name"
                placeholder="Name of source">
         <span class="col-sm-1"></span>
-        <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" [(ngModel)]="source.link"
+        <input type="text" class="form-control form-control-sm col-sm-5" id="sourceLink" [(ngModel)]="source.link"
                placeholder="Link to source if available">
         <div class="col-sm-1">
           <a href="javascript:void(0)" class="text-danger" *ngIf="indicatorData.source.length > 1"
@@ -90,7 +90,7 @@
              class="form-group col-sm-12 row Spaced-above">
           <img class="oval_green__wrap--risk Spaced-above"
                src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
-          <input type="text" class="form-control form-control-sm col-sm-6" id="smFormGroupInput"
+          <input type="text" class="form-control form-control-sm col-sm-6"
                  [(ngModel)]="indicatorData.trigger[alertLevelKey].triggerValue"
                  placeholder="{{alertLevels[alertLevelKey] | translate}}">
           <span class="oval_green__wrap--risk"></span>
@@ -103,7 +103,7 @@
         <div class="Spaced-above form-group-risk-frequency col-sm-12 row" *ngFor="let alertLevelKey of alertLevelsList">
           <img class="align-middle oval_green__wrap--risk"
                src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
-          <label class="oval_green__wrap--risk">Every</label>
+          <label class="oval_green__wrap--risk">{{"EVERY" | translate}}</label>
           <div class="form-group-risk-frequency">
             <select class="form-control" id="select1" name="frequencyValue"
                     [(ngModel)]="indicatorData.trigger[alertLevelKey].frequencyValue">
@@ -113,7 +113,7 @@
           </div>
           <!--frequency-->
           <div class="form-group-risk-frequency">
-            <select class="form-control" id="select1" name="durationType"
+            <select class="form-control" id="select2" name="durationType"
                     [(ngModel)]="indicatorData.trigger[alertLevelKey].durationType">
               <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
               <option *ngFor="let dKey of durationTypeList" [value]="dKey">{{durationType[dKey] | translate}}</option>
@@ -126,9 +126,9 @@
     </div> <!--end of row-->
 
     <!--Assign to-->
-    <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.ASSIGN_TO" | translate}}:</b></h6>
+    <h6 class="Spaced-above"><b>{{"ASSIGN_TO" | translate}}:</b></h6>
     <div class="form-group col-sm-12 row">
-      <select class="form-control col-sm-4" id="select1" placeholder="Please select"
+      <select class="form-control col-sm-4" id="select3" placeholder="Please select"
               [(ngModel)]="indicatorData.assignee">
         <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
         <option *ngFor="let uAssign of usersForAssign" [value]="uAssign.userID">{{uAssign.name}}
@@ -157,7 +157,7 @@
             <select class="form-control" name="CountryArea"
                     [(ngModel)]="location.country">
               <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-              <option *ngFor="let countryKey of countriesList" [ngValue]="countryKey">{{countries[countryKey] |
+              <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] |
                 translate}}
               </option>
             </select>
@@ -200,7 +200,7 @@
       </div>
 
       <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherLocation()">+
-        {{"RISK_MONITORING.ADD_INDICATOR.INPUTS.ADD_ANOTHER_LOCATION" | translate}}</a>
+        {{"ADD_PARTNER.ADD_ANOTHER_LOCATION" | translate}}</a>
     </div>
 
 

@@ -153,7 +153,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
           this.saved = true;
           this.alertSuccess = true;
           this.alertShow = true;
-          this.alertMessage = "AGENCY_ADMIN.SETTINGS.SAVE_SUCCESS_CLOCK_SETTINGS";
+          this.alertMessage = "COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.SAVED_SUCCESS";
         }
       })
       .catch(err => {

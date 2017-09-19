@@ -52,7 +52,7 @@
       <div class="col-lg-3 col-md-3 col-sm-6 col-6">
         <div class="btn btn-outline-success btn_fixed_width"
              [ngClass]="{'btn-success': approval.$value == true, 'btn-outline-success': approval.$value == false}"
-             (click)="changeApproval(approval.$key, true)">{{"GLOBAL.YES" | translate}}
+             (click)="changeApproval(approval.$key, true)">{{"YES" | translate}}
         </div>
         <div class="btn btn-danger btn_fixed_width"
              [ngClass]="{'btn-danger': approval.$value == false, 'btn-outline-danger': approval.$value == true}"

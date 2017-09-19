@@ -6,7 +6,7 @@ import {
   ActionLevel,
   ActionStatusMin,
   ActionType,
-  AlertMessageType,
+  AlertMessageType, Currency,
   DocumentType,
   FileExtensionsEnding, Privacy,
   SizeType,
@@ -31,6 +31,7 @@ import {ModelDepartment} from "../../model/department.model";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {SettingsService} from "../../services/settings.service";
+import {WindowRefService} from "../../services/window-ref.service";
 
 declare var jQuery: any;
 
@@ -124,6 +125,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               protected agencyService: AgencyService,
               protected countryService: SettingsService,
               protected notificationService: NotificationService,
+              private windowService: WindowRefService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
@@ -199,6 +201,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             .subscribe(privacy => {
               this.privacy = privacy;
             });
+
+          // Currency
+          this.calculateCurrency();
         });
 
       });
@@ -266,6 +271,19 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         snap.forEach((snapshot) => {
           this.getStaffDetails(snapshot.key, false);
         });
+      });
+  }
+
+  /**
+   * Calculate the currency
+   */
+  private currency: number = Currency.GBP;
+  private CURRENCIES = Constants.CURRENCY_SYMBOL;
+  public calculateCurrency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.currency = snap.val();
       });
   }
 
@@ -679,5 +697,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   public closeModal() {
     jQuery("#leadAgencySelection").modal('hide');
+  }
+
+  checkIfLink(source) {
+    if (source.startsWith("http://")) {
+      this.windowService.getNativeWindow().open(source);
+    } else if (source.startsWith("www.")) {
+      this.windowService.getNativeWindow().open("http://" + source);
+    }
   }
 }

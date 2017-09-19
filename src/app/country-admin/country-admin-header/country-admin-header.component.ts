@@ -73,7 +73,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           });
         }
         if (!user.anonymous) {
-          this.uid = user.uid;
+          this.uid = user.auth.uid;
 
           if(userType == UserType.CountryAdmin){
             this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid+"/countryId")
@@ -167,8 +167,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
             this.isRed = true;
           }
-          if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
-            || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
+          if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))) {
+            // || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
             this.isAmber = true;
           }
         });

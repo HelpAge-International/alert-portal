@@ -27,9 +27,9 @@
     </div>
 
     <div class="row">
-      <p class="col-sm-1 margin-top-three" *ngIf="!isEdit"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.UPDATED' |
+      <p class="col-sm-1 margin-top-three" *ngIf="!isEdit"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
         translate }}</strong></p>
-      <p class="col-sm-2 margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR' | translate
+      <p class="col-sm-2 margin-top-three"><strong>{{ 'ADD_PARTNER.SECTOR' | translate
         }}</strong></p>
       <p class="col-sm-5 margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD' | translate
         }}</strong></p>
@@ -68,14 +68,14 @@
         </div>
 
         <!--Is < agency > a member?-->
-        <div class="col-sm-2" *ngIf="coordinationArrangement.isAMember">{{ 'GLOBAL.YES' | translate }}</div>
+        <div class="col-sm-2" *ngIf="coordinationArrangement.isAMember">{{ 'YES' | translate }}</div>
         <div class="col-sm-2" *ngIf="!coordinationArrangement.isAMember">{{ 'GLOBAL.NO' | translate }}</div>
 
         <div class="col-sm-2"><p>{{ getStaffName(coordinationArrangement.staffMember)}}</p></div>
         <!--Staff member representing < agency >-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
-                  (click)="addEditCoordinationArrangement(coordinationArrangement.id)">{{ 'GLOBAL.EDIT' | translate }}
+                  (click)="addEditCoordinationArrangement(coordinationArrangement.id)">{{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -93,7 +93,7 @@
 
         <div class="row Spaced-above"> <!--Name-->
           <p class="col-sm-0 margin-left-three text-capitalize"><strong>{{
-            "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_NAME" | translate}}</strong></p>
+            "COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" | translate}}</strong></p>
           <p class="col-sm-5 margin-left-five">{{ coordinationArrangement?.contactName }}</p>
         </div>
 

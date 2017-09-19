@@ -10,32 +10,32 @@
             <h1 *ngIf="!coordinationArrangement.id">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.ADD_TITLE' | translate }}</h1>
             <div class="col-sm-11" *ngIf="coordinationArrangement.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EDIT_TITLE' | translate }}</h1></div>
             <div class="col-sm-1 Right-aligned" *ngIf="coordinationArrangement.id">
-                <button class="btn btn-danger text-uppercase" (click)="deleteCoordinationArrangement()">{{ 'GLOBAL.DELETE' | translate }}</button>
+                <button class="btn btn-danger text-uppercase" (click)="deleteCoordinationArrangement()">{{ 'DELETE' | translate }}</button>
             </div>
         </div><br>
 
         <form (ngSubmit)="submit()">
             <div class="row">
-                <p class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR' | translate }}</strong></p>
+                <p class="col-sm-12"><strong>{{ 'ADD_PARTNER.SECTOR' | translate }}</strong></p>
                 <div class="col-sm-4">
                     <select class="form-control" id="sector"  name="sector"
                             [(ngModel)] = "coordinationArrangement.sector">
                         <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                         <option *ngFor="let responsePlanSector of responsePlansSectors | enumKeyValues"
-                                [value]="responsePlanSector.key">{{ responsePlansSectorsSelection[responsePlanSector.key] | translate}}</option> 
+                                [value]="responsePlanSector.key">{{ responsePlansSectorsSelection[responsePlanSector.key] | translate}}</option>
                     </select>
                 </div>
             </div><br>
 
             <div class="row form-group margin-bottom-none">
                 <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD' | translate }}</strong></p></div>
-                <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_NAME' | translate }}</strong></p></div>
+                <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate }}</strong></p></div>
                 <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL' | translate }}</strong></p></div>
             </div>
 
             <div class="row">
                 <div class="col-sm-4">
-                    <input class="col-sm-12 form-control" type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="sectorLead" 
+                    <input class="col-sm-12 form-control" type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="sectorLead"
                         [(ngModel)]="coordinationArrangement.sectorLead">
                 </div>
                 <div class="col-sm-4">
@@ -61,16 +61,16 @@
 
             <div class="col-sm-2 padding-left-none">
                 <div class="col-sm-8 radio Radio--ribbon dropdown-bg text-center ">
-                    <input type="radio" name="isAMember" id="isAMember-no" 
+                    <input type="radio" name="isAMember" id="isAMember-no"
                         [(ngModel)]="coordinationArrangement.isAMember"
                         [value]="false">
                     <label for="isAMember-no"> {{ 'GLOBAL.NO' | translate }}</label>
                 </div>
                 <div class="col-sm-8 radio Radio--ribbon dropdown-bg text-center ">
                     <input type="radio" name="isAMember" id="isAMember-yes"
-                        [(ngModel)]="coordinationArrangement.isAMember" 
+                        [(ngModel)]="coordinationArrangement.isAMember"
                         [value]="true">
-                    <label for="isAMember-yes"> {{ 'GLOBAL.YES' | translate }}</label>
+                    <label for="isAMember-yes"> {{ 'YES' | translate }}</label>
                 </div>
 
             </div><br>
@@ -83,14 +83,14 @@
                             [(ngModel)] = "coordinationArrangement.staffMember">
                         <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                         <option *ngFor="let staff of staffList"
-                                [value]="staff.id">{{ staffNamesList && staffNamesList[staff.id] }}</option> 
+                                [value]="staff.id">{{ staffNamesList && staffNamesList[staff.id] }}</option>
                     </select>
                 </div>
             </div><br>
 
             <!--Save and cancel-->
             <div class="row Spaced">
-                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'GLOBAL.SAVE' | translate }}</button>
+                <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
                 <div class="col-sm-1 margin-top-one">
                     <a href="javascript:void(0)" (click)="goBack()">
                         {{ 'GLOBAL.CANCEL' | translate }}

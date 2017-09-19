@@ -12,7 +12,7 @@
     <app-country-office-profile-menu></app-country-office-profile-menu>
 
     <div class="Sub-header-title__wrap">
-      <h2>{{ 'DOCUMENTS.TITLE_TEXT' | translate }}</h2>
+      <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
       <button *ngIf="countryPermissionsMatrix.other.DownloadDocuments" type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
               [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
       </button>
@@ -34,7 +34,7 @@
       <div class="col-lg-2 col-md-3">
 
         <select class="form-control" id="Documents" [(ngModel)]="docTypeSelected" (change)="filter()">
-          <option value="-1" selected>{{ 'DOCUMENTS.ALL_DOCUMENTS' | translate }}</option>
+          <option value="-1" selected>{{ 'ALL_DOCUMENTS' | translate }}</option>
           <template ngFor let-docType [ngForOf]="DocTypeEnum" let-docTypeIdx="index">
             <option value="{{docType}}">{{DOCUMENT_TYPE[docTypeIdx] | translate}}</option>
           </template>
@@ -70,7 +70,7 @@
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all"
                  *ngIf="country.hasDocs">{{ 'GLOBAL.HIDE_ADD' | translate }}</a>
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all"
-                 *ngIf="country.hasDocs">{{ 'GLOBAL.SHOW_ALL' | translate }}</a>
+                 *ngIf="country.hasDocs">{{ 'SHOW_ALL' | translate }}</a>
             </div>
           </div>
         </div>
@@ -78,11 +78,11 @@
           <div class="row Line-row Small-spaced Header">
             <div class="col-lg-1 col-md-1"></div>
             <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.MODULE' | translate }}</div>
-            <div class="col-lg-3 col-md-3">{{ 'DOCUMENTS.TITLE' | translate }}</div>
-            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.NAME' | translate }}</div>
-            <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.SIZE' | translate }}</div>
-            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.UPLOADED_BY' | translate }}</div>
-            <div class="col-lg-1 col-md-2">{{ 'DOCUMENTS.DATE' | translate }}</div>
+            <div class="col-lg-3 col-md-3">{{ 'GLOBAL.TITLE' | translate }}</div>
+            <div class="col-lg-2 col-md-2">{{ 'GLOBAL.NAME' | translate }}</div>
+            <div class="col-lg-1 col-md-1">{{ 'GLOBAL.SIZE' | translate }}</div>
+            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS2.UPLOADED_BY' | translate }}</div>
+            <div class="col-lg-1 col-md-2">{{ 'GLOBAL.DATE' | translate }}</div>
           </div>
 
           <div class="row Line-row Small-spaced" *ngFor="let doc of country.docsfiltered; let docIdx=index">
@@ -110,7 +110,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">{{ 'DOCUMENTS.DIALOG_EXPORT_TITLE' | translate }}</h5>
+          <h5 class="modal-title" id="exampleModalLabel">{{ 'DOCUMENTS.EXPORT' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

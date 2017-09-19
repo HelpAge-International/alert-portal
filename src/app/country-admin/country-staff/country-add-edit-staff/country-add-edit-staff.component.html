@@ -29,7 +29,7 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME"| translate}}</label>
+          <label for="f-Name">{{"FIRST_NAME"| translate}}</label>
           <input type="text" class="form-control" id="f-Name" [(ngModel)]="firstName" name="firstName"
                  placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
@@ -70,7 +70,7 @@
       </div>
       <div class="row">
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="Position">{{"COUNTRY_ADMIN.STAFF.POSITION"| translate}}</label>
+          <label for="Position">{{"GLOBAL.USER_INFO.POSITION"| translate}}</label>
           <input type="text" class="form-control" id="Position" [(ngModel)]="position" name="position"
                  placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}" required>
         </div>
@@ -84,13 +84,13 @@
           </select>
         </div>
         <div class="col-lg-4 col-md-6 form-group">
-          <label for="e-Address">{{"GLOBAL.USER_INFO.EMAIL"| translate}}</label>
+          <label for="e-Address">{{"EMAIL_ADDRESS"| translate}}</label>
           <input [disabled]="isEdit" type="email" class="form-control" id="e-Address" placeholder="{{'GLOBAL.PLEASE_ENTER'| translate}}"
                  [(ngModel)]="email" name="email" required>
         </div>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.SUPPORT_SKILLS"| translate}}
+      <div class="form-group"><label>{{"SUPPORT_SKILLS"| translate}}
       <!-- Tooltip partial -->
         <tooltip
         [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT3.LEVEL1'">
@@ -106,7 +106,7 @@
         </template>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.TECHNICAL_SKILLS"| translate}}
+      <div class="form-group"><label>{{"TECHNICAL_SKILLS"| translate}}
       <!-- Tooltip partial -->
         <tooltip
         [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT4.LEVEL1'">
@@ -122,12 +122,12 @@
 
       <div class="row Spaced">
         <div class="col-lg-8 col-md-10 form-group">
-          <label for="n-Done">{{"COUNTRY_ADMIN.STAFF.TRAINING_NEEDS"| translate}}</label>
+          <label for="n-Done">{{"TRAINING_NEEDS"| translate}}</label>
           <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
               [(ngModel)]="trainingNeeds"></textarea>
         </div>
       </div>
-      
+
       <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label>
         <!-- Tooltip partial -->
         <tooltip
@@ -140,11 +140,11 @@
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
-                 [checked]="notificationSettings[notification?.$key]">{{notificationsSettingsSelection[notification.$key] |
+                 [checked]="notificationSettings[notification?.$key]" [disabled]="userType==UserType.CountryDirector && notification.$key==1">{{notificationsSettingsSelection[notification.$key] |
           translate}}</label>
       </div>
 
-      <div class="form-group"><label>{{"COUNTRY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM"| translate}}
+      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM?"| translate}}
       <!--tooltip-->
       <tooltip
       [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT6.LEVEL1'"
@@ -159,7 +159,7 @@
       </div>
       <div class="row">
         <label for="RT_yes" class="Checkbox--ribbon col-md-1 col-sm-2">
-          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"GLOBAL.YES"|
+          <input type="radio" name="RT" id="RT_yes" [value]="true" [(ngModel)]="isResponseMember">{{"YES"|
           translate}}</label>
       </div>
 
@@ -184,8 +184,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">
-          <strong *ngIf="firstName && lastName">{{"GLOBAL.DELETE" | translate}} {{firstName + " " + lastName}}?</strong>
-          <strong *ngIf="!(firstName && lastName)">{{"GLOBAL.DELETE" | translate}}?</strong>
+          <strong *ngIf="firstName && lastName">{{"DELETE" | translate}} {{firstName + " " + lastName}}?</strong>
+          <strong *ngIf="!(firstName && lastName)">{{"DELETE" | translate}}?</strong>
         </h5>
       </div>
       <div class="modal-body">

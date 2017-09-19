@@ -76,7 +76,7 @@ export class CountryMessagesComponent implements OnInit, OnDestroy {
     console.log('delete called');
     this._messageService.deleteCountryMessage(this.countryId, this.agencyId, this.deleteMessageModel)
       .then(() => {
-        this.alertMessage = new AlertMessageModel('MESSAGES.DELETE_SUCCESS', AlertMessageType.Success);
+        this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
       })
       .catch(err => {
         this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR')

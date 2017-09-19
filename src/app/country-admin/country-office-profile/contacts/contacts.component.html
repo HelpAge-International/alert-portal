@@ -16,12 +16,12 @@
       <div *ngIf="!isViewing && countryPermissionsMatrix.countryContacts.Edit" class="col-sm-8 Right-aligned">
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="canEdit && !isEdit"
-                (click)="editPointsOfContact()">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.EDIT' | translate }}
+                (click)="editPointsOfContact()">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.GO_BACK_TITLE' | translate }}
         </button>
 
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="canEdit && isEdit"
-                (click)="viewPointsOfContact()">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.VIEW' | translate }}
+                (click)="viewPointsOfContact()">{{ 'PERMISSIONS.VIEW_CONTACTS' | translate }}
         </button>
       </div>
     </div>
@@ -53,7 +53,7 @@
           <div class="col-sm-12 Spaced Right-aligned">
             <button class="editContactButton btn btn-outline-primary text-uppercase" style="display: inline-block;"
                     (click)="editOfficeDetails()">
-              {{ 'GLOBAL.EDIT' | translate }}
+              {{ 'EDIT' | translate }}
             </button>
           </div>
         </div>
@@ -96,7 +96,7 @@
               <div class="col-sm-12 Spaced Right-aligned">
                 <button class="editContactButton btn btn-outline-primary text-uppercase" style="display: inline-block;"
                         (click)="addEditPointOfContact(pointOfContact.id)">
-                  {{ 'GLOBAL.EDIT' | translate }}
+                  {{ 'EDIT' | translate }}
                 </button>
               </div>
             </div>

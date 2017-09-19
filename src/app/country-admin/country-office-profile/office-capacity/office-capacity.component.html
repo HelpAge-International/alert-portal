@@ -52,7 +52,7 @@
       </div>
       <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-three">
         <button href="#edit-total-staff" data-toggle="modal"
-                class="btn btn-outline-primary text-uppercase">{{"GLOBAL.EDIT" | translate}}
+                class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
         </button>
         <!--<a href="#edit-total-staff" data-toggle="modal">Edit</a>-->
       </div>
@@ -65,12 +65,12 @@
     <!--Staff table headers-->
     <div *ngIf="!isEditingCapacity">
       <div class="row">
-        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.UPDATED" | translate}}</strong></div>
+        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
         <div class="col-sm-2"><strong>{{"GLOBAL.NAME" | translate}}</strong></div>
         <div class="col-sm-1"><strong>{{"GLOBAL.USER_INFO.POSITION" | translate}}</strong></div>
         <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.STAFF.OFFICE_TYPE" | translate}}</strong></div>
         <div class="col-sm-2"><strong>{{"GLOBAL.SKILLS" | translate}}</strong></div>
-        <div class="col-sm-4"><strong>{{"COUNTRY_ADMIN.STAFF.TRAINING_NEEDS" | translate}}</strong></div>
+        <div class="col-sm-4"><strong>{{"TRAINING_NEEDS" | translate}}</strong></div>
       </div>
       <div class="row Line-row margin-top-two"></div>
 
@@ -114,7 +114,7 @@
             <p class="notes-number__components--country-office-profile">{{getNotesNumber(staff)}}</p>
             <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
             <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-              {{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}
+              {{ 'GLOBAL.NOTES' | translate }}
             </a>
           </div>
         </div>
@@ -159,7 +159,7 @@
         <!-- Notes Drop Down -->
         <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
           <div class="log_left p-3">
-            <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+            <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
             <hr class="d-inline-flex">
 
             <form (ngSubmit)="addNote('staff', staff.id, newNote[staff.id])">
@@ -177,12 +177,12 @@
                   <p>{{ note.content }}</p>
                   <br>
                   <div class="row">
-                    <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                    <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                     </p>
                     <a
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('staff', staff.id, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                      (click)="editNote('staff', staff.id, note)">{{ 'EDIT' | translate }}</a>
                     <p
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="padding-left-one">|</p>
@@ -190,7 +190,7 @@
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)"
                       class="padding-left-one col-sm-0 text-danger"
-                      (click)="deleteNote('staff', staff.id, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                      (click)="deleteNote('staff', staff.id, note)">{{ 'DELETE' | translate }}</a>
                   </div>
                 </div>
               </div>
@@ -219,11 +219,11 @@
     <div *ngIf="surgeCapacities.length != 0">
       <div class="row">
         <!--Surge capacity table headers-->
-        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.UPDATED" | translate}}</strong></div>
+        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
         <div class="col-sm-2"><strong>{{"GLOBAL.USER_INFO.POSITION" | translate}}</strong></div>
         <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SECTOR_OF_EXPERTISE" |
           translate}}</strong></div>
-        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.EQUIPMENT.LOCATION" | translate}}</strong></div>
+        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION" | translate}}</strong></div>
         <div class="col-sm-5"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ETA" | translate}}</strong></div>
       </div>
       <div class="row Line-row"></div>
@@ -254,7 +254,7 @@
           </div>
           <button type="button" class="btn btn-outline-primary text-uppercase"
                   *ngIf="canEdit && isEditingCapacity"
-                  (click)="editSurgeCapacity(surge.$key)">{{"GLOBAL.EDIT" | translate}}
+                  (click)="editSurgeCapacity(surge.$key)">{{"EDIT" | translate}}
           </button>
         </div> <!--Estimated time of arrival-->
         <div class="row Line-row"></div>
@@ -286,7 +286,7 @@
             </div>
 
             <div class="row">
-              <div class="col-sm-2"><strong>{{"GLOBAL.USER_INFO.EMAIL" | translate}}</strong></div>
+              <div class="col-sm-2"><strong>{{"EMAIL_ADDRESS" | translate}}</strong></div>
               <div class="col-sm-2">{{surge.email}}</div>
             </div>
 
@@ -301,7 +301,7 @@
         <!-- Notes Drop Down -->
         <div id="notes_surge_{{surge.$key}}" class="Tooltip__bubble container-fluid notes log collapse">
           <div class="log_left p-3">
-            <h3>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.NOTES' | translate }}</h3>
+            <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
             <hr class="d-inline-flex">
 
             <form (ngSubmit)="addNote('surge', surge.$key, newNote[surge.$key])">
@@ -319,12 +319,12 @@
                   <p>{{ note.content }}</p>
                   <br>
                   <div class="row">
-                    <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                    <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                     </p>
                     <a
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('surge', surge.$key, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                      (click)="editNote('surge', surge.$key, note)">{{ 'EDIT' | translate }}</a>
                     <p
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)" class="padding-left-one">|</p>
@@ -332,7 +332,7 @@
                       *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                       href="javascript:void(0)"
                       class="padding-left-one col-sm-0 text-danger"
-                      (click)="deleteNote('surge', surge.$key, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                      (click)="deleteNote('surge', surge.$key, note)">{{ 'DELETE' | translate }}</a>
                   </div>
                 </div>
               </div>
@@ -371,7 +371,7 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -404,7 +404,7 @@
           |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editAction(activeType, activeId, activeNote)">{{"GLOBAL.SAVE" | translate}}
+                (click)="editAction(activeType, activeId, activeNote)">{{"SAVE" | translate}}
         </button>
       </div>
     </div>
@@ -431,7 +431,7 @@
           |
           translate}}</a>
         <button href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editTotalStaff()">{{"GLOBAL.SAVE" | translate}}
+                (click)="editTotalStaff()">{{"SAVE" | translate}}
         </button>
       </div>
     </div>

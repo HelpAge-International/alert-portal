@@ -7,16 +7,16 @@
             <a routerLink="/dashboard">{{"GLOBAL.HOME" | translate}}</a>
         </li>
         <li class="" [hidden]="permRiskMonitoring" routerLinkActive="active">
-            <a routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</a>
+            <a routerLink="/risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</a>
         </li>
 
         <li class="" routerLinkActive="active">
             <div class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
-                   aria-expanded="false">{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS" | translate}}</a>
+                   aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
                 <div class="dropdown-menu">
-                    <a [hidden]="permMinimumPreparedness" class="dropdown-item" routerLink="/preparedness/minimum">{{"HEADERS.MIN_PREP" | translate}}</a>
-                    <a [hidden]="permAdvancedPreparedness" class="dropdown-item" routerLink="/preparedness/advanced">{{"HEADERS.ADV_PREP" | translate}}</a>
+                    <a [hidden]="permMinimumPreparedness" class="dropdown-item" routerLink="/preparedness/minimum">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</a>
+                    <a [hidden]="permAdvancedPreparedness" class="dropdown-item" routerLink="/preparedness/advanced">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
                     <a class="dropdown-item" routerLink="/preparedness/budget">{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET" |
             translate}}</a>
                 </div>
@@ -39,7 +39,7 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" routerLink="/country-admin/country-staff">{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT" |
             translate}}</a>
-                    <a class="dropdown-item" routerLink="/country-admin/settings/country-permission-settings">{{"COUNTRY_ADMIN.SETTINGS.TITLE_TEXT"
+                    <a class="dropdown-item" routerLink="/country-admin/settings/country-permission-settings">{{"AGENCY_SETTINGS"
             | translate}}</a>
                     <a class="dropdown-item" routerLink="/country-admin/country-messages">{{"COUNTRY_ADMIN.MESSAGES.TITLE_TEXT" |
             translate}}</a>

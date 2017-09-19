@@ -14,7 +14,7 @@
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
           <div class="form-group" [ngClass]="{'has-danger': alerts[textArea]}">
-            <label for="n-Done">{{"GLOBAL.WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
+            <label for="n-Done">{{"WHAT_NEEDS_TO_BE_DONE" | translate}}</label>
             <textarea name="n-Done" id="n-Done" cols="30" rows="10" class="form-control" [disabled]="editInitialDisable" [(ngModel)]="textArea"></textarea>
           </div>
         </div>
@@ -22,7 +22,7 @@
 
       <div class="row System-admin--form-wrap">
         <div class="col-lg-8 col-md-10">
-          <div class="form-group"><label>{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.MPA_OR_APA?" | translate}}</label></div>
+          <div class="form-group"><label>{{"PREPAREDNESS.ACTION_SELECT_TEXT" | translate}}</label></div>
 
           <div class="Radio--ribbon">
             <input type="radio" name="Prep-level-mpa" id="Min-prep"  [disabled]="editInitialDisable" [checked]="isMpa" (change)="mpaSelected()">

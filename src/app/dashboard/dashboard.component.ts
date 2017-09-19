@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private Countries = Countries;
   private CountriesList = Constants.COUNTRIES;
-  private countryLocation: any;
+  private countryLocation: number;
 
   private AlertLevels = AlertLevels;
   private AlertStatus = AlertStatus;
@@ -104,6 +104,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.DashboardTypeUsed = DashboardType.default;
       }
       if (this.userType == UserType.PartnerUser) {
+        console.log("partner user")
         this.agencyId = agencyId;
         this.countryId = countryId;
         this.loadDataForPartnerUser(agencyId, countryId);
@@ -114,7 +115,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
         this.moduleSettings = isEnabled;
-        console.log(this.moduleSettings);
       }));
 
       // Load in the country permissions
@@ -124,7 +124,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TODO - New Subscriptions - Remove all subscriptions
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -193,7 +192,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getAlerts();
     this.getCountryContextIndicators();
     this.getHazards();
-    // this.initData();
+    this.initData();
     this.getCountryData();
   }
 
@@ -344,6 +343,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     //TODO change temp id to actual uid
     if (this.userType == UserType.PartnerUser) {
+      console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
@@ -389,7 +389,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getAlerts() {
     if (this.DashboardTypeUsed == DashboardType.default) {
-      console.log(this.countryId);
       this.alerts = this.actionService.getAlerts(this.countryId);
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
@@ -455,7 +454,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
       .subscribe(object => {
-        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).length;
+        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key =>!key.includes("$")).length;
       });
   }
 

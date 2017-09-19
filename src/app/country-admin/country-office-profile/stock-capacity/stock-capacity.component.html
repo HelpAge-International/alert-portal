@@ -33,11 +33,11 @@
     </div>
 
     <div class="row Spaced-above" *ngIf="stockCapacitiesIN">
-      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.UPDATED' |
+      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
         translate }}</strong></p></div>
-      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' |
+      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
         translate }}</strong></p></div>
-      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' |
+      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' |
         translate }}</strong></p></div>
       <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
         translate }}</strong></p></div>
@@ -59,13 +59,13 @@
                                                    style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
           <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditStockCapacity(STOCK_TYPE.Country, stockCapacity.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -74,7 +74,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
@@ -92,13 +92,13 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Edit && note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -106,7 +106,7 @@
                     *ngIf="note.uploadedBy==uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                    (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -141,11 +141,11 @@
     </div>
 
     <div class="row" *ngIf="stockCapacitiesOUT">
-      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.UPDATED' |
+      <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
         translate }}</strong></p></div>
-      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.DESCRIPTION' |
+      <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
         translate }}</strong></p></div>
-      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.QUANTITY' |
+      <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' |
         translate }}</strong></p></div>
       <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
         translate }}</strong></p></div>
@@ -166,13 +166,13 @@
                                                    style="width:2em;" alt="Notes">
           <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
           <a href="#notes_ext_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-            {{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}
+            {{ 'GLOBAL.NOTES' | translate }}
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"
                   (click)="addEditStockCapacity(STOCK_TYPE.External, stockCapacity.id)">
-            {{ 'GLOBAL.EDIT' | translate }}
+            {{ 'EDIT' | translate }}
           </button>
         </div>
       </div>
@@ -181,7 +181,7 @@
       <!-- Notes Drop Down -->
       <div id="notes_ext_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
         <div class="log_left p-3">
-          <h3>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NOTES' | translate }}</h3>
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
@@ -199,13 +199,13 @@
                 <p>{{ note.content }}</p>
                 <br>
                 <div class="row">
-                  <p class="col-sm-8"><strong>{{ "NOTES.BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                   </p>
                   <a
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="col-sm-0 margin-right-none"
-                    (click)="editNote(partnerOrganisation, note)">{{ 'GLOBAL.EDIT' | translate }}</a>
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
                   <p
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)" class="padding-left-one">|</p>
@@ -213,7 +213,7 @@
                     *ngIf="note.uploadedBy == uid && countryPermissionsMatrix.notes.Delete || userType == USER_TYPE.CountryAdmin"
                     href="javascript:void(0)"
                     class="padding-left-one col-sm-0 text-danger"
-                    (click)="deleteNote(stockCapacity, note)">{{ 'GLOBAL.DELETE' | translate }}</a>
+                    (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
                 </div>
               </div>
             </div>
@@ -254,7 +254,7 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"NOTES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -286,7 +286,7 @@
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL" |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editAction(activeStockCapacity, activeNote)">{{"GLOBAL.SAVE" | translate}}
+                (click)="editAction(activeStockCapacity, activeNote)">{{"SAVE" | translate}}
         </button>
       </div>
     </div>

@@ -35,7 +35,7 @@ export class ModelAlert extends BaseModel {
 
     validate(excludedFields = []): AlertMessageModel {
         if (typeof (this.hazardScenario) == 'undefined' && !this.isExcluded('hazardScenario', excludedFields)) {
-            return new AlertMessageModel('RISK_MONITORING.ADD_ALERT.NO_HAZARD');
+            return new AlertMessageModel('RISK_MONITORING.ADD_HAZARD.NO_HAZARD');
         }
 
         if (typeof (this.alertLevel) == 'undefined' && !this.isExcluded('alertLevel', excludedFields)) {

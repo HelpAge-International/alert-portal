@@ -59,7 +59,7 @@
             <div *ngFor="let action of actionsToday" class="row alert-danger">
               <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
               <div class="col-md-8"><a href="">{{getActionTitle(action)}}
-                <strong>{{"DASHBOARD.TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
+                <strong>{{"TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
               <div class="col-md-3">
                 <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
                   translate}}
@@ -69,7 +69,7 @@
 
             <div *ngFor="let indicator of indicatorsToday" class="row alert-danger">
               <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-              <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>today</strong>.<span>{{indicator.name}}</span></a>
+              <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"TODAY" | translate}}</strong>.<span>{{indicator.name}}</span></a>
               </div>
               <div class="col-md-3">
                 <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
@@ -102,7 +102,7 @@
         </div>
       </div>
 
-      <div *ngIf="userType != UserType.RegionalDirector" class="Ribbon__section__wrap Spaced">
+      <div class="Ribbon__section__wrap Spaced">
 
         <div *ngFor="let x of regions">
           <div class="Accordion map_header_bottom Spaced padding-left-three" role="tablist" aria-multiselectable="true"
@@ -125,7 +125,9 @@
 
           <div id="{{x.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
 
-            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionalCountryOffices[x.regionId]" [isDirector]="true"></app-country-overview>
+            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType"
+                                  [countryOfficeData]="regionalCountryOffices[x.regionId]"
+                                  [isDirector]="true"></app-country-overview>
 
           </div>
         </div>
@@ -141,18 +143,12 @@
             </div>
           </div>
           <div id="{{otherRegion.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
-            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionalCountryOffices[otherRegion.regionId]" [isDirector]="true"></app-country-overview>
+            <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType"
+                                  [countryOfficeData]="regionalCountryOffices[otherRegion.regionId]"
+                                  [isDirector]="true"></app-country-overview>
           </div>
         </div>
       </div>
-
-
-      <div *ngIf="userType == UserType.RegionalDirector">
-
-        <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType" [countryOfficeData]="regionCountryOffice" [isDirector]="true"></app-country-overview>
-
-      </div>
-
 
     </div>
   </div>

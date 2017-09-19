@@ -33,7 +33,7 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="f-Name">{{"GLOBAL.USER_INFO.FIRST_NAME" | translate}}*</label>
+          <label for="f-Name">{{"FIRST_NAME" | translate}}*</label>
           <input type="text" class="form-control" id="f-Name" name="f-Name"
             [(ngModel)]="userPublic && userPublic.firstName">
         </div>
@@ -49,7 +49,7 @@
     <div class="row">
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="Email">{{"GLOBAL.USER_INFO.EMAIL" | translate}}*</label>
+          <label for="Email">{{"EMAIL_ADDRESS" | translate}}*</label>
           <input type="text" class="form-control" id="Email" name="Email"
             [(ngModel)]="userPublic && userPublic.email">
         </div>
@@ -93,7 +93,7 @@
       </div>
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
-          <label for="City">{{"GLOBAL.USER_INFO.CITY" | translate}}</label>
+          <label for="City">{{"CITY" | translate}}</label>
           <input type="text" class="form-control" id="City" name="City" placeholder="{{'GLOBAL.OPTIONAL' | translate}}"
             [(ngModel)]="userPublic && userPublic.city">
         </div>
@@ -107,7 +107,7 @@
       </div>
     </div>
     <div class="Form-submit__wrapper">
-      <button type="submit" class="btn btn-primary">{{"GLOBAL.ACCOUNT_SETTINGS.SAVE" | translate | uppercase}}</button>
+      <button type="submit" class="btn btn-primary">{{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}</button>
       <button class="btn btn-outline-secondary" (click) = "goBack()">{{"GLOBAL.CANCEL" | translate}}</button>
     </div>
     </form>

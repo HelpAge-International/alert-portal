@@ -22,7 +22,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   private errorMessage: any;
   private alerts = {};
   private pageTitle: string = 'SYSTEM_ADMIN.ACTIONS.CHS_MPA.CHS_TITLE_TEXT';
-  private buttonText: string = 'SYSTEM_ADMIN.ACTIONS.SAVE_BUTTON_TEXT';
+  private buttonText: string = 'PREPAREDNESS.SAVE_NEW_ACTION';
 
   private textArea: string = "";
   private systemUid: string;
@@ -39,7 +39,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
         if (params["id"]) {
           // EDIT MODE
           this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.EDIT_CHS_ACTION';
-          this.buttonText = 'SYSTEM_ADMIN.ACTIONS.EDIT_BUTTON_TEXT';
+          this.buttonText = 'GLOBAL.SAVE_CHANGES';
           this.chsUid = params["id"];
           this.editInitialDisable = true;
         }

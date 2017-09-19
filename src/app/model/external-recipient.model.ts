@@ -15,8 +15,8 @@ export class ExternalRecipientModel extends BaseModel {
   organisation: string;
   notificationsSettings: any[];
 
-  constructor() { 
-    super(); 
+  constructor() {
+    super();
     this.notificationsSettings = [];
 }
 
@@ -37,7 +37,7 @@ export class ExternalRecipientModel extends BaseModel {
       return new AlertMessageModel('GLOBAL.EMAIL_NOT_VALID');
     }
     if (!this.phone && !this.isExcluded('phone', excludedFields)) {
-      return new AlertMessageModel('GLOBAL.ACCOUNT_SETTINGS.NO_PHONE');
+      return new AlertMessageModel('COUNTRY_ADMIN.UPDATE_DETAILS.NO_PHONE');
     }
     if (!this.organisation && !this.isExcluded('organisation', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.NO_ORGANISATION');

@@ -8266,6 +8266,14 @@ h3, h4 {
   display: block;
 }
 
+.Login__version {
+  text-align: center;
+  margin-top: 20px;
+  color: #4E5154;
+  width: 100%;
+  display: block;
+}
+
 .text-gray-v-light {
   color: #bdbdbd;
   opacity: 0.9;

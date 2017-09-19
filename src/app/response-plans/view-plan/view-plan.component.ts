@@ -3,6 +3,9 @@ import {Subject} from "rxjs/Subject";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
+import {PageControlService} from "../../services/pagecontrol.service";
+import {UserType} from "../../utils/Enums";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-view-plan',
@@ -20,30 +23,45 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   private canCopy: boolean;
   private agencyOverview: boolean;
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {
+  private userType: UserType;
+  private UserType = UserType;
+
+  constructor(private route: ActivatedRoute,
+              private router: Router,
+              private pageControl: PageControlService,
+              private location: Location,
+              private userService: UserService) {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((params: Params) => {
-        if (params["countryId"]) {
-          this.countryId = params["countryId"];
-        }
-        if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
-        }
-        if (params["isViewing"]) {
-          this.isViewing = params["isViewing"];
-        }
-        if (params["canCopy"]) {
-          this.canCopy = params["canCopy"];
-        }
-        if (params["agencyOverview"]) {
-          this.agencyOverview = params["agencyOverview"];
-        }
-        this.initData(this.countryId, this.agencyId);
-      });
+
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+      this.userType = userType;
+
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["countryId"]) {
+            this.countryId = params["countryId"];
+          }
+          if (params["agencyId"]) {
+            this.agencyId = params["agencyId"];
+          }
+          if (params["isViewing"]) {
+            this.isViewing = params["isViewing"];
+          }
+          if (params["canCopy"]) {
+            this.canCopy = params["canCopy"];
+          }
+          if (params["agencyOverview"]) {
+            this.agencyOverview = params["agencyOverview"];
+          }
+          this.initData(this.countryId, this.agencyId);
+        });
+
+    });
+
   }
 
   private initData(countryId, agencyId) {
@@ -76,6 +94,10 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigate(["/director/director-overview", headers]);
     }
+  }
+
+  backForDonor() {
+    this.location.back();
   }
 
 }

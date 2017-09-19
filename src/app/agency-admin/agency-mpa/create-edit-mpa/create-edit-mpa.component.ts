@@ -39,7 +39,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   private errorMessage: string = '';
   private pageTitle: string = 'AGENCY_ADMIN.MANDATED_PA.CREATE_NEW_MANDATED_PA';
-  private buttonText: string = 'AGENCY_ADMIN.MANDATED_PA.SAVE_BUTTON_TEXT';
+  private buttonText: string = 'PREPAREDNESS.SAVE_NEW_ACTION';
   private textArea: string;
   private forEditing: boolean = false;
 
@@ -55,7 +55,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.pageTitle = 'AGENCY_ADMIN.MANDATED_PA.EDIT_MANDATED_PA';
-          this.buttonText = 'AGENCY_ADMIN.MANDATED_PA.EDIT_BUTTON_TEXT';
+          this.buttonText = 'GLOBAL.SAVE_CHANGES';
           this.editActionId = params["id"];
           this.fieldsDisabled = true;
         }

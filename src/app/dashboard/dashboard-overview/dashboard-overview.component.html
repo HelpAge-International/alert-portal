@@ -17,14 +17,22 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <!--<div *ngIf="!agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
-    <div *ngIf="!agencyOverview"
-         class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
-      {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
-      translate}}
+    <div *ngIf="userType != UserType.Donor">
+      <div *ngIf="!agencyOverview"
+           class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
+        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+        translate}}
+      </div>
+      <!--<div *ngIf="agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
+      <div *ngIf="agencyOverview"
+           class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+        translate}}
+      </div>
     </div>
-    <!--<div *ngIf="agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
-    <div *ngIf="agencyOverview"
-         class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+
+    <div *ngIf="userType == UserType.Donor"
+         class="Back--button" (click)="backForDonor()">{{agencyName}} :
       {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
       translate}}
     </div>
@@ -44,15 +52,15 @@
                [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
                [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
                [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
-            <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
-            <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"GLOBAL.ALERTS.RED" | translate}}</h4>
+            <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
           </div>
           <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk Centered">
             <i div
                class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
             <div>
               <span>{{"ALERT.RISK" | translate}}:</span>
-              {{HazardScenariosList[alert.hazardScenario] | translate}}
+              {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : alert.otherName}}
             </div>
           </div>
           <div class="col-md-3 Alert-Widget__item">
@@ -82,7 +90,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>Affected areas</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AFFECTED_AREAS" | translate}}</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -119,7 +127,9 @@
 <app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
 <app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
 
-<div *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') " class="Page-top__wrap--w_sub_header--no-paddng">
+<div
+  *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
+  class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Empty--ribbon">
       No permission to view country details for this agency!

@@ -193,6 +193,7 @@ import {AccountSettingProfileComponent} from './commons/account-setting-profile/
 import {AccountSettingPasswordComponent} from './commons/account-setting-password/account-setting-password.component';
 import {DirectorAccountSettingsComponent} from './director/director-account-settings/director-account-settings.component';
 import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
+import { UnderMaintenanceComponent } from './under-maintenance/under-maintenance.component';
 import {NetworkCreatePasswordComponent} from "./network-admin/network-create-password/network-create-password.component";
 import {NewNetworkDetailsComponent} from "./network-admin/new-network-details/new-network-details.component";
 import {NetworkAccountSelectionComponent} from "./network-admin/network-account-selection/network-account-selection.component";
@@ -403,6 +404,8 @@ const firebaseAuthConfig = {
     AfterValidationComponent,
     AccountSettingProfileComponent,
     AccountSettingPasswordComponent,
+    DirectorAccountSettingsComponent,
+    UnderMaintenanceComponent,
     DirectorAccountSettingsComponent,
     NetworkCreatePasswordComponent,
     NewNetworkDetailsComponent,

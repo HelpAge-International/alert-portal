@@ -206,7 +206,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
           this.saved = true;
           this.alertSuccess = true;
           this.alertShow = true;
-          this.alertMessage = "AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DEPARTMENT_NEW_SUCCESS";
+          this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
         }
         this.departmentName = "";
       });

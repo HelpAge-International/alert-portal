@@ -9,9 +9,9 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap--risk">
-      <h1>{{"RISK_MONITORING.TITLE" | translate}}</h1>
+      <h1>{{"RISK_MONITORING_TEXT" | translate}}</h1>
       <div *ngIf="!isViewing" class="btn btn-tertiary" routerLink="/risk-monitoring/create-alert">
-        {{"RISK_MONITORING.MAIN_PAGE.CREATE_AN_ALERT" | translate}}
+        {{"RISK_MONITORING.ADD_ALERT.TITLE_PAGE" | translate}}
       </div>
       <a *ngIf="!isViewing" routerLink="/risk-monitoring/add-hazard" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD"
         |
@@ -63,10 +63,10 @@
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard">
-                  {{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</a>
+                  {{"ARCHIVE_ACTION_DIALOG.TITLE" | translate}}</a>
                 <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#deleteHazardModal"-->
                 <!--(click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>-->
-                <a [routerLink]="['/risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
+                <a [routerLink]="['/risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -79,8 +79,7 @@
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <a *ngIf="!isViewing"
-                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"GLOBAL.EDIT"
-                      | translate}}
+                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" | translate}}
                     </a>
                   </div>
                 </div>
@@ -195,7 +194,7 @@
                     <div class="Update__button">
                       <div *ngIf="!isViewing && indicatorC?.assignee" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
-                        {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                        {{"GLOBAL.UPDATE" | translate}}
                       </div>
                       <div *ngIf="!isViewing && !indicatorC?.assignee">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
@@ -215,7 +214,7 @@
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                          (click)="updateIndicatorStatus('countryContext', indicatorC, indicatorKey)">
-                      {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
+                      {{"ACCOUNT_SETTINGS.SAVE" | translate}}
                     </div>
                     <br>
                     <p class="Right-aligned col-lg-6">
@@ -247,7 +246,7 @@
                           <div class="row Spaced log-post__wrap--risk">
                             <div class="log-date__wrap--risk col-lg-1">
                               <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
-                              <p>{{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}} <img
+                              <p>{{"GLOBAL.UPDATE" | translate}} <img
                                 src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                               </p>
                             </div>
@@ -260,15 +259,13 @@
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"GLOBAL.EDIT" |
-                                  translate}} </a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" | translate}} </a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"GLOBAL.DELETE" |
-                                  translate}}</a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" | translate}}</a>
                               </div>
                             </div>
                           </div>
@@ -368,12 +365,12 @@
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard"
-                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ARCHIVE"
+                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"ARCHIVE_ACTION_DIALOG.TITLE"
                   | translate}}</a>
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#deleteHazardModal"
-                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
-                <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
+                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
+                <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -385,8 +382,7 @@
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <a *ngIf="!isViewing"
-                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"GLOBAL.EDIT"
-                      | translate}}
+                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
                     </a>
                   </div>
                 </div>
@@ -487,7 +483,7 @@
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <div *ngIf="!isViewing && indicator?.assignee" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
-                      {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                      {{"GLOBAL.UPDATE" | translate}}
                     </div>
                     <div *ngIf="!isViewing && !indicator?.assignee">
                       <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
@@ -508,7 +504,7 @@
                        *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                          (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
-                      {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
+                      {{"GLOBAL.SAVE_CHANGES" | translate}}
                     </div>
                     <br>
                     <p class="Right-aligned col-lg-6">
@@ -538,7 +534,7 @@
                           <div class="row Spaced log-post__wrap--risk">
                             <div class="log-date__wrap--risk col-lg-1">
                               <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
-                              <p>{{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}} <img
+                              <p>{{"GLOBAL.UPDATE" | translate}} <img
                                 src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                               </p>
                             </div>
@@ -551,15 +547,13 @@
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
-                                  translate}} </a>
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}} </a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
-                                  translate}}</a>
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
                               </div>
                             </div>
                           </div>
@@ -672,12 +666,12 @@
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
                   <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#archiveHazard"
-                     (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE"
+                     (click)="setTmpHazard(hazard.id, true, hazard.hazardScenario)">{{"GLOBAL.ACTIVATE"
                     | translate}}</a>
                   <a href="javascript:void(0)" data-toggle="modal"
                      data-target="#deleteHazardModal"
-                     (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"GLOBAL.DELETE" | translate}}</a>
-                  <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_INDICATOR"
+                     (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
+                  <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
                 </div>
               </div>
@@ -691,8 +685,7 @@
                       *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                       *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                       <a *ngIf="!isViewing"
-                         [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"GLOBAL.EDIT"
-                        | translate}}
+                         [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
                       </a>
                     </div>
                   </div>
@@ -811,7 +804,7 @@
                          *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
-                        {{"RISK_MONITORING.MAIN_PAGE.UPDATE_INDICATOR_STATE" | translate}}
+                        {{"GLOBAL.UPDATE" | translate}}
                       </div>
                       <p>Last update: <strong>{{indicator.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
                       <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong>
@@ -820,7 +813,7 @@
                          *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                            (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
-                        {{"RISK_MONITORING.MAIN_PAGE.INDICATOR_SAVE_CHANGES" | translate}}
+                        {{"GLOBAL.SAVE_CHANGES" | translate}}
                       </div>
                       <br>
                       <p class="Right-aligned col-lg-6">
@@ -846,27 +839,25 @@
                             <div class="row Spaced log-post__wrap--risk">
                               <div class="log-date__wrap--risk col-lg-1">
                                 <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
-                                <p>{{"RISK_MONITORING.MAIN_PAGE.LOG_STATUS" | translate}} <img
+                                <p>{{"GLOBAL.STATUS" | translate}} <img
                                   src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                 </p>
                               </div>
                               <div class="col-lg-6">
                                 <p>{{log.content}}</p>
                                 <br>
-                                <p><strong>by {{log.addedByFullName}}</strong></p>
+                                <p><strong>{{"BY" | translate}} {{log.addedByFullName}}</strong></p>
                                 <div class="edit_delete_log_tooltip__wrap--risk">
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"GLOBAL.EDIT" |
-                                    translate}} </a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}}</a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"GLOBAL.DELETE" |
-                                    translate}}</a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
                                 </div>
                               </div>
                             </div>
@@ -943,8 +934,8 @@
       <div class="modal-header">
         <div class="modal-title text-center Spaced-above" id="archiveHazardModal">
           <h5>
-            <span *ngIf="tmpHazardData['activeStatus']">{{"RISK_MONITORING.MAIN_PAGE.ACTIVATE" | translate}}</span>
-            <span *ngIf="!tmpHazardData['activeStatus']">{{"RISK_MONITORING.MAIN_PAGE.ARCHIVE" | translate}}</span>
+            <span *ngIf="tmpHazardData['activeStatus']">{{"GLOBAL.ACTIVATE" | translate}}</span>
+            <span *ngIf="!tmpHazardData['activeStatus']">{{"ARCHIVE_ACTION_DIALOG.TITLE" | translate}}</span>
             <strong *ngIf="hazardScenario[tmpHazardData['scenario']]">
               {{hazardScenario[tmpHazardData['scenario']] | translate}}?
             </strong>
@@ -989,7 +980,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title" class="Spaced-above">{{"RISK_MONITORING.MAIN_PAGE.MODAL.EDIT_NOTE.TITLE" |
+        <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" |
           translate}}</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -1003,7 +994,7 @@
           |
           translate}}</a>
         <button href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                (click)="editLog('editNote')">{{"GLOBAL.SAVE" | translate}}
+                (click)="editLog('editNote')">{{"SAVE" | translate}}
         </button>
       </div>
     </div>
@@ -1055,7 +1046,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title text-center Spaced-above" id="deleteHazardModal">
-          <h5>{{"GLOBAL.DELETE" | translate}}
+          <h5>{{"DELETE" | translate}}
             <strong>{{hazardScenario[tmpHazardData['scenario']] | translate}}?</strong>
           </h5>
         </div>
@@ -1125,8 +1116,7 @@
             </div>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
-            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">{{ 'GLOBAL.CANCEL' | translate
-              }}</a>
+            <a href="javascript:void(0)" class="px-1 col-sm-8" data-dismiss="modal">{{ 'GLOBAL.CANCEL' | translate}}</a>
             <button href="javascript:void(0)" class="btn btn-primary col-sm-4" (click)="exportLog(logsToExport)">{{
               'RISK_MONITORING.EXPORT_LOG.EXPORT_BUTTON' | translate }}
             </button>
@@ -1145,13 +1135,13 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title" class="Spaced-above">Assign this indicator</h6>
+        <h6 class="modal-title" class="Spaced-above">{{"ASSIGN_THIS_INDICATOR" | translate}}</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p class="col-sm-12"><strong>Assign to</strong></p>
+        <p class="col-sm-12"><strong>{{"ASSIGN_TO" | translate}}</strong></p>
         <div class="col-sm-12">
           <select class="form-control" [(ngModel)]="assignedUser">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
@@ -1163,9 +1153,9 @@
       </div>
       <div class="modal-footer">
         <div class="row Right-aligned Spaced col-sm-12">
-          <a class="col-sm-9 margin-top-one" data-dismiss="modal">Cancel</a>
+          <a class="col-sm-9 margin-top-one" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</a>
           <button
-            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">Save
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">{{"SAVE" | translate}}
           </button>
         </div>
       </div>

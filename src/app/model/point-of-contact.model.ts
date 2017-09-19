@@ -14,7 +14,7 @@ export class PointOfContactModel extends BaseModel {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.NO_STAFF_MEMBER');
         }
         if (!this.phone && !this.isExcluded('phone', excludedFields)) {
-            return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.NO_PHONE');
+            return new AlertMessageModel('COUNTRY_ADMIN.UPDATE_DETAILS.NO_PHONE');
         }
         if (!this.skypeName && !this.isExcluded('skypeName', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.NO_SKYPE');

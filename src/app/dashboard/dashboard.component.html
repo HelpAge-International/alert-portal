@@ -16,8 +16,8 @@
                  [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
                  [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
                  [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
-              <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
-              <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+              <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"GLOBAL.ALERTS.RED" | translate}}</h4>
+              <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
             </div>
 
             <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
@@ -92,7 +92,7 @@
                       {{alert.infoNotes}}
                     </p>
                     <p>
-                      <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                      <strong>{{"BY" | translate}} {{alert.createdByName}}</strong>
                     </p>
                   </div>
                 </div>
@@ -117,8 +117,8 @@
                    [class.AlertLevel-gray]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse"
                    [class.AlertLevel-red]="alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved"
                    [class.AlertLevel-amber]="alert.alertLevel == AlertLevels.Amber">
-                <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"ALERT.RED_ALERT" | translate}}</h4>
-                <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"ALERT.AMBER_ALERT" | translate}}</h4>
+                <h4 *ngIf="alert.alertLevel == AlertLevels.Red">{{"GLOBAL.ALERTS.RED" | translate}}</h4>
+                <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
               </div>
 
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
@@ -193,7 +193,7 @@
                         {{alert.infoNotes}}
                       </p>
                       <p>
-                        <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                        <strong>{{"BY" | translate}} {{alert.createdByName}}</strong>
                       </p>
                     </div>
                   </div>
@@ -209,25 +209,18 @@
             <br>
             <div *ngIf="alert.alertLevel == AlertLevels.Red">
               <div class="Centered row Spaced-above">
-                <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong> has requested
-                  the alert
-                  level
-                  to
-                  go from Amber to Red on the <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated |
-                    date:"dd/MM/yyyy"}}</strong></h6>
+                <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong> {{"HAS_REQ_ALERT_LEVEL_TO_GO_FROM_AMBER_TO_RED_ON_THE" | translate}} <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated | date:"dd/MM/yyyy"}}</strong></h6>
               </div>
               <div class="Centered row Spaced-above">
-                <p class="text-gray-dark text-left col-sm-7"><strong>Reasons for raising the alert level:</strong>
+                <p class="text-gray-dark text-left col-sm-7"><strong>{{"REASONS_FOR_RAISING_ALERT_LEVEL" | translate}}:</strong>
                   "{{alert?.reasonForRedAlert}}" - {{alert?.createdByName.split(" ")[0]}}</p>
               </div>
               <div class="Centered row Spaced">
                 <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
-                        (click)="approveRedAlert(alert.id)">approve red alert
-                  level
+                        (click)="approveRedAlert(alert.id)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
-              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">Or reject this
-                request</a></div>
+              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">{{"OR_REJECT_THIS_REQUEST" | translate}}</a></div>
             </div>
             <br>
           </div>
@@ -240,7 +233,7 @@
             <div class="row">
 
               <div class="col-md-3 Alert-Widget__item AlertLevel-red">
-                <h4>{{"ALERT.RED_ALERT" | translate}}</h4>
+                <h4>{{"GLOBAL.ALERTS.RED" | translate}}</h4>
               </div>
 
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
@@ -303,7 +296,7 @@
           <div class="Widget Alert-Widget ">
             <div class="row">
               <div class="col-md-3 Alert-Widget__item bg-warning">
-                <h4>{{"ALERT.AMBER_ALERT" | translate}}</h4>
+                <h4>{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
               </div>
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
                 <i
@@ -376,7 +369,7 @@
                         {{alert.infoNotes}}
                       </p>
                       <p>
-                        <strong>{{"DASHBOARD.BY" | translate}} {{alert.createdByName}}</strong>
+                        <strong>{{"BY" | translate}} {{alert.createdByName}}</strong>
                       </p>
                     </div>
                   </div>
@@ -543,7 +536,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.<br/>
+              <p>{{getActionTitle(action)}}<strong> {{"TODAY" | translate}}</strong>.<br/>
                 <span>{{getCHSActionTask(action)}} {{action.task}}</span>
               </p>
             </div>
@@ -562,7 +555,7 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.TODAY" | translate}}</strong>.<br/>
+              <p>{{getIndicatorName(indicator)}}<strong> {{"TODAY" | translate}}</strong>.<br/>
                 <span>{{indicator.name}}</span>
               </p>
             </div>
@@ -617,7 +610,7 @@
     <div class="Widget-Group" *ngIf="DashboardTypeUsed == DashboardType.default">
 
       <div class="Widget Risk-Monitoring" [hidden]="!moduleSettings.riskMonitoring">
-        <h3>{{"DASHBOARD.RISK_MONITORING" | translate}}</h3>
+        <h3>{{"RISK_MONITORING_TEXT" | translate}}</h3>
         <ul class="list-inline">
           <li class="list-inline-item">
             <div class="Icon">
@@ -680,7 +673,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>Affected areas</strong></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"AFFECTED_AREAS" | translate}}</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

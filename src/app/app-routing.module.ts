@@ -118,6 +118,7 @@ import {NewUserPasswordComponent} from "./new-user-password/new-user-password.co
 import {PartnerValidationComponent} from "./commons/partner-validation/partner-validation.component";
 import {AfterValidationComponent} from "./commons/partner-validation/after-validation/after-validation.component";
 import {DirectorAccountSettingsComponent} from "./director/director-account-settings/director-account-settings.component";
+import {UnderMaintenanceComponent} from "./under-maintenance/under-maintenance.component";
 import {NetworkCreatePasswordComponent} from "./network-admin/network-create-password/network-create-password.component";
 import {NewNetworkDetailsComponent} from "./network-admin/new-network-details/new-network-details.component";
 import {NetworkAccountSelectionComponent} from "./network-admin/network-account-selection/network-account-selection.component";
@@ -403,6 +404,10 @@ const routes: Routes = [
   {path: 'network/network-mpa/network-add-generic-action', component: NetworkAddGenericActionComponent},
   {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
 
+  /**
+   * Maintanace page
+   * */
+  {path: 'maintenance', component: UnderMaintenanceComponent}
 ];
 
 @NgModule({
