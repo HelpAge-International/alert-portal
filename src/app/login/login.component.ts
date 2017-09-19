@@ -111,8 +111,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   /**
    * Network login checking methods
    */
-  private NETWORK_NODE_ADMIN = "networkAdmin";
-  private NETWORK_NODE_COUNTRY_ADMIN = "networkCountryAdmin";
+  private NETWORK_NODE_ADMIN = "administratorNetwork";
+  private NETWORK_NODE_COUNTRY_ADMIN = "administratorNetworkCountry";
   private networkCount = 0;
   private networkAdmin: boolean = false;
   private networkCountryAdmin: boolean = false;
