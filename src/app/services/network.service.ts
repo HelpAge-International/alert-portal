@@ -349,16 +349,15 @@ export class NetworkService {
     let msgRefData = {};
     let agencyGroupPath = Constants.APP_STATUS + '/group/agency/';
     let agencyMessageRefPath = '/messageRef/agency/';
+    let networkGroupPath = Constants.APP_STATUS + 'group/network/';
+    let networkMessageRefPath = '/messageRef/network/';
 
     msgRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId] = true;
 
     if (sendToAllUsers){
       if(agencyIds != null) {
         agencyIds.forEach(agencyId => {
-          let groupPathName = NetworkService.getGroupPathNameForRecipientType(NetworkMessageRecipientType.AllUsers);
-          if (groupPathName == null){
-            return;
-          }
+          let groupPathName = 'agencyallusersgroup';
           let agencyAllUsersSelected: string = agencyGroupPath + agencyId + '/' + groupPathName;
           this.af.database.list(agencyAllUsersSelected, {preserveSnapshot: true})
             .subscribe((snapshots) => {
@@ -373,9 +372,19 @@ export class NetworkService {
             });
         });
       }
-      if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.NetworkCountryAdmins, recipientTypes)){
-        this.saveMessageReferencesForNetworkCountryAdmins();
-      }
+      let groupPathName = 'networkallusersgroup';
+      let networkAllUsersSelected: string = networkGroupPath + networkId + '/' + groupPathName;
+      this.af.database.list(networkAllUsersSelected, {preserveSnapshot: true})
+        .subscribe((snapshots) => {
+          snapshots.forEach(snapshot => {
+            msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
+          });
+          this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+            callback(null, context);
+          }).catch(error => {
+            callback(error, context);
+          });
+        });
     }else{
       if(agencyIds != null){
         agencyIds.forEach(agencyId => {
@@ -400,13 +409,29 @@ export class NetworkService {
         });
       }
       if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.NetworkCountryAdmins, recipientTypes)){
-        this.saveMessageReferencesForNetworkCountryAdmins();
+        let groupPathName = 'networkcountryadmins';
+        let networkAllUsersSelected: string = networkGroupPath + networkId + '/' + groupPathName;
+        this.af.database.list(networkAllUsersSelected, {preserveSnapshot: true})
+          .subscribe((snapshots) => {
+            snapshots.forEach(snapshot => {
+              msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
+            });
+            this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+              callback(null, context);
+            }).catch(error => {
+              callback(error, context);
+            });
+          });
       }
     }
   }
 
-  private saveMessageReferencesForNetworkCountryAdmins(){
-    //TODO send to network country admins
+  networkGroupNodeHasUsers(networkId : string) : Observable<boolean> {
+    let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
+    return this.af.database.list(networkGroupPath)
+      .map(users => {
+        return (users != null && users.length > 0);
+      });
   }
 
   private static getUnixTimestampMilliseconds(){
@@ -424,9 +449,7 @@ export class NetworkService {
 
   private static getGroupPathNameForRecipientType(recipientType : NetworkMessageRecipientType) : string{
     switch (recipientType){
-      case NetworkMessageRecipientType.AllUsers:
-        return "agencyallusersgroup";
-      case NetworkMessageRecipientType.Donors:
+    case NetworkMessageRecipientType.Donors:
         return "donor";
       case NetworkMessageRecipientType.Partners:
         return "partner";
@@ -448,13 +471,5 @@ export class NetworkService {
         console.log("No group name available for this type of user: "+recipientType);
         return null;
     }
-  }
-
-  networkGroupNodeHasUsers(networkId : string) : Observable<boolean> {
-    let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
-    return this.af.database.list(networkGroupPath)
-      .map(users => {
-        return (users != null && users.length > 0);
-        });
   }
 }

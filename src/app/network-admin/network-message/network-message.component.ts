@@ -92,7 +92,6 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
       .subscribe(agencyIds =>{
         if (agencyIds != null){
           for (let agencyId of agencyIds) {
-            console.log(agencyId);
             let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + agencyId + '/';
             let agencyMessageRefPath: string = '/messageRef/agency/' + agencyId + '/';
 
