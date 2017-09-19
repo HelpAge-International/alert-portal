@@ -81,7 +81,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.networkAdminAccount = new NetworkAdminAccount();
     this.networkAdminAccount.networks = [];
 
-    this.af.database.list(Constants.APP_STATUS + "/networkAdmin/" + this.uid + "/networkIds")
+    this.af.database.list(Constants.APP_STATUS + "/administratorNetwork/" + this.uid + "/networkIds")
       .flatMap(networkIds => {
         let keys = [];
         networkIds.forEach(id => {
@@ -197,8 +197,8 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
     //TODO DOUBLE CHECK
     let selectionUpdate = {};
-    selectionUpdate["/networkAdmin/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
-    selectionUpdate["/networkAdmin/" + this.uid + "/selectedNetworkCountry"] = null;
+    selectionUpdate["/administratorNetwork/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
+    selectionUpdate["/administratorNetwork/" + this.uid + "/selectedNetworkCountry"] = null;
     selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
     selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetworkCountry"] = null;
     this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(() => {

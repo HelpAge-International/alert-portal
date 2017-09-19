@@ -191,9 +191,9 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     data["/module/" + keyNetworkCountry] = this.networkModuleSetting;
     data["/userPublic/" + keyUser] = this.networkCountryUser;
     // data["/networkCountryAdmin/" + keyUser] = this.networkCountryAdmin;
-    data["/networkCountryAdmin/" + keyUser + "/firstLogin"] = this.networkCountryAdmin.firstLogin;
-    data["/networkCountryAdmin/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
-    data["/networkCountryAdmin/" + keyUser + "/networkId"] = this.networkCountryAdmin.networkId;
+    data["/administratorNetworkCountry/" + keyUser + "/firstLogin"] = this.networkCountryAdmin.firstLogin;
+    data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
+    data["/administratorNetworkCountry/" + keyUser + "/networkId"] = this.networkCountryAdmin.networkId;
 
     return data;
   }
@@ -219,7 +219,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     data["/networkCountry/" + this.networkId + "/" + keyNetworkCountry] = this.networkOffice;
     data["/userPublic/" + keyUser] = this.networkCountryUser;
     // data["/networkCountryAdmin/" + keyUser] = this.networkCountryAdmin;
-    data["/networkCountryAdmin/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
+    data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
 
     return data;
   }

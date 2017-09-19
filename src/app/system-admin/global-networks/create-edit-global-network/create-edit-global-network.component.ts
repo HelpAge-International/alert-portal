@@ -344,7 +344,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
      * Other referencing
      **/
 
-    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/' + networkAdminId;
+    let networkAdminPath = Constants.APP_STATUS + '/administratorNetwork/' + networkAdminId;
     this.af.database.object(networkAdminPath, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((networkAdmin: any) => {
@@ -394,7 +394,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   private editWithNewEmail() {
     console.log("edit with new email");
     let oldNetworkAdminId = this.networkAdminId;
-    let networkAdminPath = Constants.APP_STATUS + '/networkAdmin/' + oldNetworkAdminId;
+    let networkAdminPath = Constants.APP_STATUS + '/administratorNetwork/' + oldNetworkAdminId;
     this.af.database.object(networkAdminPath + "/networkIds/" + this.networkId).set(null).then(() => {
       console.log("Network id deleted from old user");
     });

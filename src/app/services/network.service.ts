@@ -24,12 +24,12 @@ export class NetworkService {
 
   checkNetworkUserFirstLogin(uid: string, type: NetworkUserAccountType) {
     if (type == NetworkUserAccountType.NetworkAdmin) {
-      return this.af.database.object(Constants.APP_STATUS + "/networkAdmin/" + uid)
+      return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid)
         .map(networkAdmin => {
           return networkAdmin.firstLogin ? networkAdmin.firstLogin : false;
         });
     } else {
-      return this.af.database.object(Constants.APP_STATUS + "/networkCountryAdmin/" + uid)
+      return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid)
         .map(networkCountryAdmin => {
           return networkCountryAdmin.firstLogin ? networkCountryAdmin.firstLogin : false;
         });
@@ -37,7 +37,7 @@ export class NetworkService {
   }
 
   checkNetworkUserSelection(uid: string): Observable<any> {
-    return this.af.database.object(Constants.APP_STATUS + "/networkAdmin/" + uid + "/selectedNetwork")
+    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/selectedNetwork")
       .flatMap(networkId => {
         if (networkId.$value) {
           let data = {};
@@ -45,7 +45,7 @@ export class NetworkService {
           data["networkId"] = networkId.$value;
           return Observable.of(data);
         } else {
-          return this.af.database.object(Constants.APP_STATUS + "/networkCountryAdmin/" + uid + "/selectedNetwork")
+          return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/selectedNetwork")
             .map(networkCountryId => {
               let data = {};
               data["isNetworkAdmin"] = false;
@@ -57,7 +57,7 @@ export class NetworkService {
   }
 
   getNetworkUserType(uid) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkAdmin/" + uid, {preserveSnapshot: true})
+    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid, {preserveSnapshot: true})
       .map(snap => {
         return snap.val() ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
       })
@@ -306,7 +306,7 @@ export class NetworkService {
   }
 
   getSystemIdForNetworkAdmin(uid): Observable<string> {
-    return this.af.database.object(Constants.APP_STATUS + "/networkAdmin/" + uid + "/systemAdmin")
+    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/systemAdmin")
       .map(obj => {
         return Object.keys(obj).shift();
       })
@@ -330,7 +330,7 @@ export class NetworkService {
   saveMessageDataToFirebase(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, sendToAllUsers : boolean, callback: any) {
     let messagePath = Constants.APP_STATUS + '/message';
     message.senderId = uid;
-    message.time = this.getUnixTimestampMiliseconds();
+    message.time = NetworkService.getUnixTimestampMilliseconds();
 
     this.af.database.list(messagePath).push(message)
       .then(msg => {
@@ -353,32 +353,55 @@ export class NetworkService {
     msgRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId] = true;
 
     if (sendToAllUsers){
-      if(agencyIds != null){
-          agencyIds.forEach(agencyId => {
-            let agencyAllUsersSelected: string = agencyGroupPath + agencyId +'/agencyallusersgroup';
-             this.af.database.list(agencyAllUsersSelected, {preserveSnapshot: true})
-               .subscribe((snapshots) => {
-                 snapshots.forEach(snapshot => {
-                  msgRefData[agencyMessageRefPath + agencyId + '/agencyallusersgroup/' + snapshot.key + '/' + msgId] = true;
-                });
-                 this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
-                  callback(null, context);
-                 }).catch(error => {
-                   callback(error, context);
-                 });
+      if(agencyIds != null) {
+        agencyIds.forEach(agencyId => {
+          let groupPathName = NetworkService.getGroupPathNameForRecipientType(NetworkMessageRecipientType.AllUsers);
+          if (groupPathName == null){
+            return;
+          }
+          let agencyAllUsersSelected: string = agencyGroupPath + agencyId + '/' + groupPathName;
+          this.af.database.list(agencyAllUsersSelected, {preserveSnapshot: true})
+            .subscribe((snapshots) => {
+              snapshots.forEach(snapshot => {
+                msgRefData[agencyMessageRefPath + agencyId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
               });
-          });
-      }else{
+              this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+                callback(null, context);
+              }).catch(error => {
+                callback(error, context);
+              });
+            });
+        });
+      }
+      if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.NetworkCountryAdmins, recipientTypes)){
         this.saveMessageReferencesForNetworkCountryAdmins();
       }
     }else{
-      console.log(recipientTypes);
-
-      recipientTypes.forEach(recipient => {
-        //TODO other users
-
-      });
-      this.saveMessageReferencesForNetworkCountryAdmins();
+      if(agencyIds != null){
+        agencyIds.forEach(agencyId => {
+          recipientTypes.forEach(recipient => {
+            let groupPathName = NetworkService.getGroupPathNameForRecipientType(recipient);
+            if (groupPathName == null){
+              return;
+            }
+            let usersSelected: string = agencyGroupPath + agencyId +'/'+groupPathName;
+            this.af.database.list(usersSelected, {preserveSnapshot: true})
+              .subscribe((snapshots) => {
+                snapshots.forEach(snapshot => {
+                  msgRefData[agencyMessageRefPath + agencyId + '/'+groupPathName+'/' + snapshot.key + '/' + msgId] = true;
+                });
+                this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+                  callback(null, context);
+                }).catch(error => {
+                  callback(error, context);
+                });
+              });
+          });
+        });
+      }
+      if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.NetworkCountryAdmins, recipientTypes)){
+        this.saveMessageReferencesForNetworkCountryAdmins();
+      }
     }
   }
 
@@ -386,7 +409,44 @@ export class NetworkService {
     //TODO send to network country admins
   }
 
-  private getUnixTimestampMiliseconds(){
+  private static getUnixTimestampMilliseconds(){
     return new Date().getTime();
+  }
+
+  private static recipientTypeExists(recipientType : NetworkMessageRecipientType, recipientTypes: NetworkMessageRecipientType[]) : boolean{
+    recipientTypes.forEach(recipient => {
+      if (recipient == recipientType){
+        return true;
+      }
+    });
+    return false;
+  }
+
+  private static getGroupPathNameForRecipientType(recipientType : NetworkMessageRecipientType) : string{
+    switch (recipientType){
+      case NetworkMessageRecipientType.AllUsers:
+        return "agencyallusersgroup";
+      case NetworkMessageRecipientType.Donors:
+        return "donor";
+      case NetworkMessageRecipientType.Partners:
+        return "partner";
+      case NetworkMessageRecipientType.ERTs:
+        return "erts";
+      case NetworkMessageRecipientType.ERTLeaders:
+        return "ertleads";
+      case NetworkMessageRecipientType.CountryDirectors:
+        return "countrydirectors";
+      case NetworkMessageRecipientType.CountryAdmins:
+        return "countryadmins";
+      case NetworkMessageRecipientType.RegionalDirectors:
+        return "regionaldirector";
+      case NetworkMessageRecipientType.GlobalUsers:
+        return "globaluser";
+      case NetworkMessageRecipientType.GlobalDirectors:
+        return "globaldirector";
+      default:
+        console.log("No group name available for this type of user: "+recipientType);
+        return null;
+    }
   }
 }

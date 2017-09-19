@@ -79,9 +79,9 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
         this.successInactive = false;
         let path = "";
         if (this.networkUserType == NetworkUserAccountType.NetworkAdmin) {
-          path = Constants.APP_STATUS + "/networkAdmin/" + this.uid + "/firstLogin";
+          path = Constants.APP_STATUS + "/administratorNetwork/" + this.uid + "/firstLogin";
         } else {
-          path = Constants.APP_STATUS + "/networkCountryAdmin/" + this.uid + "/firstLogin";
+          path = Constants.APP_STATUS + "/administratorNetworkCountry/" + this.uid + "/firstLogin";
         }
         console.log(path);
         this.af.database.object(path).set(false);
