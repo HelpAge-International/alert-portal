@@ -29,24 +29,23 @@
       <div *ngFor="let office of offices" class="row Spaced-above">
         <p class="col-sm-2">{{Countries[office.location] | translate}}</p>
         <p class="col-sm-6">{{office?.adminName | async}}</p>
-        <p class="col-sm-1">{{office.isActive ? 'Active' : 'Deactive'}}</p>
+        <p class="col-sm-1">{{office.isActive ? ('GLOBAL.ACTIVE' | translate) : ('GLOBAL.DEACTIVE' | translate)}}</p>
         <div class="col-sm-12 col-md-1 country-offices-btn">
           <button class="btn" [class.btn-danger]="office.isActive"
                   [class.btn-success]="!office.isActive" (click)="toggleOfficeActive(office)">
-            {{office.isActive ? 'Deactivate' : 'Activate'}}
+            {{office.isActive ? ('GLOBAL.DEACTIVATE' | translate) : ('GLOBAL.ACTIVATE' | translate)}}
           </button>
         </div>
         <span class="padding-one"></span>
         <div class="col-sm-12 col-md-1 country-offices-btn">
-          <button class="btn btn-primary" (click)="editOffice(office.id)">Edit</button>
+          <button class="btn btn-primary" (click)="editOffice(office.id)">{{"EDIT" | translate}}</button>
         </div>
       </div>
     </div>
 
     <!--empty message-->
     <ng-template #empty>
-      <div class="Spaced bg-grey padding-one text-center"><p class="Spaced font-weight-bold">You have not added any
-        network offices to your network</p></div>
+      <div class="Spaced bg-grey padding-one text-center"><p class="Spaced font-weight-bold">{{"NETWORK.NO_OFFICE" | translate}}</p></div>
     </ng-template>
 
   </div>
