@@ -449,4 +449,12 @@ export class NetworkService {
         return null;
     }
   }
+
+  networkGroupNodeHasUsers(networkId : string) : Observable<boolean> {
+    let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
+    return this.af.database.list(networkGroupPath)
+      .map(users => {
+        return (users != null && users.length > 0);
+        });
+  }
 }

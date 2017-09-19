@@ -35,7 +35,6 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
   private showLoader: boolean;
   private agencyIds: string[];
   private uid : string;
-  private hideWarning: boolean;
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -77,9 +76,23 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
     //do validation first
     this.alertMessage = this.message.validate([]);
     this.alertMessage ? console.log("Error: recipients are invalid") : this.alertMessage = this.recipients.validate([]);
-    this.alertMessage ? console.log("Error: msg data are invalid") : this.networkService.saveMessageDataToFirebase(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
+    this.alertMessage ? console.log("Error: msg data are invalid") : this.createMessage();
   }
 
+  private createMessage(){
+    if (this.agencyIds == null || this.agencyIds.length == 0){
+      this.networkService.networkGroupNodeHasUsers(this.networkId)
+        .takeUntil(this.ngUnsubscribe).subscribe (hasUsers => {
+        if (hasUsers){
+          this.networkService.saveMessageDataToFirebase(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
+        }else{
+          this.alertMessage = new AlertMessageModel("MESSAGES.NO_USERS_IN_GROUP");
+        }
+      });
+    }else{
+      this.networkService.saveMessageDataToFirebase(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
+    }
+  }
   /**
   * Utility methods
   */
@@ -87,19 +100,10 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
   private storeMessageDataCallback(error, context: any){
     if (error){
       console.log("Message ref creation unsuccessful" + error);
-      context.waringMessage = "GLOBAL.GENERAL_ERROR";
-      context.showAlert();
+      context.alertMessage = new AlertMessageModel("GLOBAL.GENERAL_ERROR");
     }else{
       console.log("Message references successfully updated");
       context.router.navigate(['/network/network-message']);
     }
-  }
-
-  private showAlert() {
-    this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
-      this.hideWarning = true;
-    });
   }
 }
