@@ -84,13 +84,13 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
       this.networkService.networkGroupNodeHasUsers(this.networkId)
         .takeUntil(this.ngUnsubscribe).subscribe (hasUsers => {
         if (hasUsers){
-          this.networkService.saveMessageDataToFirebase(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
+          this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
         }else{
           this.alertMessage = new AlertMessageModel("MESSAGES.NO_USERS_IN_GROUP");
         }
       });
     }else{
-      this.networkService.saveMessageDataToFirebase(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.recipients.allUsers, this.storeMessageDataCallback);
+      this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
     }
   }
   /**

@@ -326,8 +326,15 @@ export class NetworkService {
     return this.updateNetworkField(update);
   }
 
+  networkGroupNodeHasUsers(networkId : string) : Observable<boolean> {
+    let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
+    return this.af.database.list(networkGroupPath)
+      .map(users => {
+        return (users != null && users.length > 0);
+      });
+  }
 
-  saveMessageDataToFirebase(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, sendToAllUsers : boolean, callback: any) {
+  createMessage(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, callback: any) {
     let messagePath = Constants.APP_STATUS + '/message';
     message.senderId = uid;
     message.time = NetworkService.getUnixTimestampMilliseconds();
@@ -335,26 +342,25 @@ export class NetworkService {
     this.af.database.list(messagePath).push(message)
       .then(msg => {
         console.log("Message created successfully");
-        this.saveMessageReferences(context, uid, networkId, agencyIds, recipientTypes, msg.key, sendToAllUsers, callback);
+        this.createMessageReferences(context, uid, networkId, agencyIds, recipientTypes, msg.key, callback);
       })
       .catch( error => {
         callback(error, context);
       });
   }
 
-  /** Utility functions **/
-
-  private saveMessageReferences(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], msgId : string, sendToAllUsers : boolean, callback: any) {
+  private createMessageReferences(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], msgId : string, callback: any) {
 
     let msgRefData = {};
     let agencyGroupPath = Constants.APP_STATUS + '/group/agency/';
     let agencyMessageRefPath = '/messageRef/agency/';
-    let networkGroupPath = Constants.APP_STATUS + 'group/network/';
+    let networkGroupPath = Constants.APP_STATUS + '/group/network/';
     let networkMessageRefPath = '/messageRef/network/';
 
     msgRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId] = true;
 
-    if (sendToAllUsers){
+    if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.AllUsers, recipientTypes)){
+      console.log("Send to all users");
       if(agencyIds != null) {
         agencyIds.forEach(agencyId => {
           let groupPathName = 'agencyallusersgroup';
@@ -389,30 +395,35 @@ export class NetworkService {
       if(agencyIds != null){
         agencyIds.forEach(agencyId => {
           recipientTypes.forEach(recipient => {
-            let groupPathName = NetworkService.getGroupPathNameForRecipientType(recipient);
-            if (groupPathName == null){
-              return;
+            if (recipient != NetworkMessageRecipientType.NetworkCountryAdmins){
+              let groupPathName = NetworkService.getGroupPathNameForRecipientType(recipient);
+              if (groupPathName == null){
+                return;
+              }
+              let usersSelected: string = agencyGroupPath + agencyId +'/'+groupPathName;
+              this.af.database.list(usersSelected, {preserveSnapshot: true})
+                .subscribe((snapshots) => {
+                  snapshots.forEach(snapshot => {
+                    msgRefData[agencyMessageRefPath + agencyId + '/'+groupPathName+'/' + snapshot.key + '/' + msgId] = true;
+                  });
+                  this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+                    callback(null, context);
+                  }).catch(error => {
+                    callback(error, context);
+                  });
+                });
             }
-            let usersSelected: string = agencyGroupPath + agencyId +'/'+groupPathName;
-            this.af.database.list(usersSelected, {preserveSnapshot: true})
-              .subscribe((snapshots) => {
-                snapshots.forEach(snapshot => {
-                  msgRefData[agencyMessageRefPath + agencyId + '/'+groupPathName+'/' + snapshot.key + '/' + msgId] = true;
-                });
-                this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
-                  callback(null, context);
-                }).catch(error => {
-                  callback(error, context);
-                });
-              });
           });
         });
       }
+
       if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.NetworkCountryAdmins, recipientTypes)){
-        let groupPathName = 'networkcountryadmins';
-        let networkAllUsersSelected: string = networkGroupPath + networkId + '/' + groupPathName;
-        this.af.database.list(networkAllUsersSelected, {preserveSnapshot: true})
+        let groupPathName = NetworkService.getGroupPathNameForRecipientType(NetworkMessageRecipientType.NetworkCountryAdmins);
+        let networkCountryAdmins: string = networkGroupPath + networkId + '/' + groupPathName;
+
+        this.af.database.list(networkCountryAdmins, {preserveSnapshot: true})
           .subscribe((snapshots) => {
+            console.log(snapshots.length);
             snapshots.forEach(snapshot => {
               msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
             });
@@ -426,47 +437,42 @@ export class NetworkService {
     }
   }
 
-  networkGroupNodeHasUsers(networkId : string) : Observable<boolean> {
-    let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
-    return this.af.database.list(networkGroupPath)
-      .map(users => {
-        return (users != null && users.length > 0);
-      });
-  }
-
   private static getUnixTimestampMilliseconds(){
     return new Date().getTime();
   }
 
   private static recipientTypeExists(recipientType : NetworkMessageRecipientType, recipientTypes: NetworkMessageRecipientType[]) : boolean{
+    let exists : boolean = false;
     recipientTypes.forEach(recipient => {
       if (recipient == recipientType){
-        return true;
+        exists =  true;
       }
     });
-    return false;
+    return exists;
   }
 
   private static getGroupPathNameForRecipientType(recipientType : NetworkMessageRecipientType) : string{
     switch (recipientType){
-    case NetworkMessageRecipientType.Donors:
-        return "donor";
+      case NetworkMessageRecipientType.NetworkCountryAdmins:
+        return 'networkcountryadmins';
+      case NetworkMessageRecipientType.Donors:
+        return 'donor';
       case NetworkMessageRecipientType.Partners:
-        return "partner";
+        return 'partner';
       case NetworkMessageRecipientType.ERTs:
-        return "erts";
+        return 'erts';
       case NetworkMessageRecipientType.ERTLeaders:
-        return "ertleads";
+        return 'ertleads';
       case NetworkMessageRecipientType.CountryDirectors:
-        return "countrydirectors";
+        return 'countrydirectors';
       case NetworkMessageRecipientType.CountryAdmins:
-        return "countryadmins";
+        return 'countryadmins';
       case NetworkMessageRecipientType.RegionalDirectors:
-        return "regionaldirector";
+        return 'regionaldirector';
       case NetworkMessageRecipientType.GlobalUsers:
-        return "globaluser";
+        return 'globaluser';
       case NetworkMessageRecipientType.GlobalDirectors:
-        return "globaldirector";
+        return 'globaldirector';
       default:
         console.log("No group name available for this type of user: "+recipientType);
         return null;
