@@ -195,6 +195,12 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
     data["/administratorNetworkCountry/" + keyUser + "/networkId"] = this.networkCountryAdmin.networkId;
 
+    //create gourp node
+    data["/group/network/" + this.networkId + "/networkallusersgroup/"+keyUser] = true;
+    data["/group/network/" + this.networkId + "/networkcountryadmins/"+keyUser] = true;
+
+    console.log(data);
+
     return data;
   }
 
