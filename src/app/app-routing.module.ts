@@ -139,6 +139,7 @@ import {NetworkAgencyValidationComponent} from "./commons/network-agency-validat
 import {NetworkCreateEditMpaComponent} from "./network-admin/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component";
 import {NetworkAddGenericActionComponent} from "./network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component";
 import {NetworkCreateEditMessageComponent} from "./network-admin/network-message/network-create-edit-message/network-create-edit-message.component";
+import {LocalNetworkAdminCreatePasswordComponent} from "./local-network-admin/local-network-admin-create-password/local-network-admin-create-password.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -402,7 +403,13 @@ const routes: Routes = [
   {path: 'network/network-mpa', component: NetworkMpaComponent},
   {path: 'network/network-mpa/network-create-edit-mpa', component: NetworkCreateEditMpaComponent},
   {path: 'network/network-mpa/network-add-generic-action', component: NetworkAddGenericActionComponent},
-  {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent}
+  {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent},
+
+
+  /**
+   * Local Network Admin
+   */
+  {path: 'network/local-network-create-password', component: LocalNetworkAdminCreatePasswordComponent},
 
   /**
    * Maintanace page
