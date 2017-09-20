@@ -112,7 +112,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
   }
 
   private navigateToThanksPage() {
-    this.router.navigateByUrl("/after-validation");
+    this.router.navigate(["/after-validation", {"invite-network-agency":true}], {skipLocationChange:true});
   }
 
 }

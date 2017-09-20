@@ -19,10 +19,13 @@ export class AfterValidationComponent implements OnInit, OnDestroy {
       .first()
       .subscribe((params: Params) => {
         if (params["partner"]) {
-          this.msg = this._translate.instant("Thank you for validating the partner organisation. You can now exit from this page.");
+          this.msg = this._translate.instant("AFTER_ACCEPT_PARTNER_VALIDATION");
         }
         if (params["plan"]) {
-          this.msg = this._translate.instant("Thank you for updating the response plan. You can now exit from this page.");
+          this.msg = this._translate.instant("AFTER_ACCEPT_RES_PLAN_VALIDATION");
+        }
+        if (params["invite-network-agency"]) {
+          this.msg = this._translate.instant("AFTER_ACCEPT_NETWORK_INVITATION");
         }
       })
   }
