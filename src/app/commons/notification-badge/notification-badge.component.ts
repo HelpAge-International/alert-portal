@@ -18,6 +18,7 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
   private _countryId: string;
   private _agencyId: string;
   private _userId: string;
+  private _networkId: string;
 
   @Input() set USER_TYPE(USER_TYPE: string){
     this._USER_TYPE = USER_TYPE;
@@ -39,6 +40,11 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
     this.getUnreadMessages();
   }
 
+  @Input() set networkId(networkId: string){
+    this._networkId = networkId;
+    this.getUnreadMessages();
+  }
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private _notificationService: NotificationService,
@@ -57,6 +63,20 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
 
   goToNotifications() {
     switch(this._USER_TYPE){
+      case 'administratorNetwork':
+        let nodesAdministratorNetwork = this._notificationService.getNetworkAdministratorNodes(this._networkId, this._userId);
+        let consNetworkAdmin = 1;
+        for (let node of nodesAdministratorNetwork) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if(consNetworkAdmin == nodesAdministratorNetwork.length){
+              this.unreadMessages = [];
+              this.router.navigateByUrl("network/network-notifications");
+            }else{
+              consNetworkAdmin++;
+            }
+          });
+        }
+        break;
       case 'administratorAgency':
         let nodesAdministratorAgency = this._notificationService.getAgencyAdministratorNodes(this._agencyId);
 
@@ -211,8 +231,27 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
   }
 
   private getUnreadMessages(){
-    if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId)) {
+    if( this._USER_TYPE && this._userId && (this._countryId || this._agencyId || this._networkId)) {
       switch(this._USER_TYPE){
+        case 'administratorNetwork':
+          let nodesAdministratorNetwork = this._notificationService.getNetworkAdministratorNodes(this._networkId, this._userId);
+          for (let node of nodesAdministratorNetwork) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+              list.forEach((x) => {
+                if(x.$value === true) { // only unread messages
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                    this.unreadMessages.push(message);
+                    this.unreadMessages.sort(function (a, b){
+                      return b.time - a.time;
+                    });
+                  });
+                }
+              });
+            });
+          }
+          break;
         case 'administratorAgency':
           let nodesAdministratorAgency = this._notificationService.getAgencyAdministratorNodes(this._agencyId);
 

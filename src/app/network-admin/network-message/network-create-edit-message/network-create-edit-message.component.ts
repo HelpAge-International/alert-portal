@@ -115,9 +115,6 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
       }
     }
   }
-  /**
-  * Utility methods
-  */
 
   private storeMessageDataCallback(error, context: any){
     if (error){

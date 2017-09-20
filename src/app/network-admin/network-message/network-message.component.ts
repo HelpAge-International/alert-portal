@@ -110,6 +110,35 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
       });
   }
 
+  closeModal() {
+    jQuery("#delete-message").modal("hide");
+  }
+
+  private fetchSentMessages(){
+    this.af.database.list(Constants.APP_STATUS + '/administratorNetwork/' + this.uid + '/sentmessages')
+      .flatMap(list => {
+        this.sentMessages = [];
+        let tempList = [];
+        list.forEach(x => {
+          tempList.push(x);
+        });
+        return Observable.from(tempList)
+      })
+      .flatMap(item => {
+        return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
+      })
+      .distinctUntilChanged()
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(x => {
+        if (x != null && x.$value === undefined) {
+          this.sentMessages.push(x);
+          this.sentMessages.sort(function (a, b){
+            return b["time"] - a["time"];
+          });
+        }
+      });
+  }
+
   private deleteMessageForNetworkCountryAdmin(){
     let msgData = {};
     let networkGroups = [
@@ -142,31 +171,5 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
           }
         });
     }
-  }
-
-  closeModal() {
-    jQuery("#delete-message").modal("hide");
-  }
-
-  private fetchSentMessages(){
-    this.af.database.list(Constants.APP_STATUS + '/administratorNetwork/' + this.uid + '/sentmessages')
-      .flatMap(list => {
-        this.sentMessages = [];
-        let tempList = [];
-        list.forEach(x => {
-          tempList.push(x);
-        });
-        return Observable.from(tempList)
-      })
-      .flatMap(item => {
-        return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
-      })
-      .distinctUntilChanged()
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(x => {
-        if (x != null && x.$value === undefined) {
-          this.sentMessages.push(x);
-        }
-      });
   }
 }

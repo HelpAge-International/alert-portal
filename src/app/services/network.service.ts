@@ -378,7 +378,6 @@ export class NetworkService {
     msgRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId] = true;
 
     if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.AllUsers, recipientTypes)){
-      console.log("Send to all users");
       if(agencyIds != null) {
         agencyIds.forEach(agencyId => {
           let groupPathName = 'agencyallusersgroup';
@@ -441,7 +440,6 @@ export class NetworkService {
 
         this.af.database.list(networkCountryAdmins, {preserveSnapshot: true})
           .subscribe((snapshots) => {
-            console.log(snapshots.length);
             snapshots.forEach(snapshot => {
               msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
             });
