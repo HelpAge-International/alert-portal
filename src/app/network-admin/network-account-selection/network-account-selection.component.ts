@@ -29,6 +29,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   private networkAdminAccount: NetworkAdminAccount;
   private selectedAccountId: string;
   private selectedUserAccountType: any;
+  private isGlobal: boolean;
 
   private agencyDetail: any;
   private UserType = UserType;
@@ -131,6 +132,8 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     console.log(networkId);
     this.selectedAccountId = networkId;
     this.selectedUserAccountType = NetworkUserAccountType.NetworkAdmin;
+    this.setGlobalStatus();
+
   }
 
   onSelectedNetworkCountryAdminAccount(networkCountryId: string) {
@@ -148,7 +151,11 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
       console.log("submit");
       switch (this.selectedUserAccountType) {
         case NetworkUserAccountType.NetworkAdmin:
-          this.goToNetworkAdmin();
+          if (this.isGlobal) {
+            this.goToNetworkAdmin();
+          } else {
+            this.goToLocalNetworkAdmin();
+          }
           break;
         case NetworkUserAccountType.NetworkCountryAdmin:
           //TODO
@@ -226,7 +233,6 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
             if (firstLogin) {
               this.router.navigateByUrl("network/network-create-password");
             } else {
-              console.log("to main page")
               //TODO NAVIGATE TO ADMIN PAGE
               this.router.navigateByUrl('/network/network-offices');
             }
@@ -235,6 +241,19 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
     });
 
+
+  }
+
+  private goToLocalNetworkAdmin(){
+    this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
+      .first()
+      .subscribe(firstLogin => {
+        if (firstLogin) {
+          this.router.navigateByUrl("network/network-create-password");
+        } else {
+          this.router.navigateByUrl('/network/local-network-dashboard');
+        }
+      })
 
   }
 
@@ -254,4 +273,10 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.alertSuccess = true;
     this.alertMessage = "";
   }
+
+  private setGlobalStatus(){
+    this.af.database.object(Constants.APP_STATUS + "/network/" + this.selectedAccountId ).takeUntil(this.ngUnsubscribe).subscribe(obj => this.isGlobal = obj.isGlobal)
+  }
 }
+
+

@@ -1,0 +1,119 @@
+<div *ngIf="!isViewing">
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</div>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <app-local-network-profile-menu></app-local-network-profile-menu>
+
+    <div class="Header-title__wrap Spaced row">
+      <h2 class="col-sm-6">Network office profile</h2>
+      <div *ngIf="!isViewing" class="col-sm-6 Right-aligned">
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && !isEdit"
+                (click)="editCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EDIT' | translate }}
+        </button>
+
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && isEdit"
+                (click)="showCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <p class="col-sm-1 margin-top-three" *ngIf="!isEdit"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
+        translate }}</strong></p>
+      <p class="col-sm-2 margin-top-three"><strong>{{ 'ADD_PARTNER.SECTOR' | translate
+        }}</strong></p>
+      <p class="col-sm-5 margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD' | translate
+        }}</strong></p>
+      <p class="col-sm-4"><strong>Network members attending</strong></p>
+
+    </div>
+    <div class="Line-row Spaced-above"></div>
+    <div class="row" *ngIf="!coordinationArrangements">
+      <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EMPTY_LIST' | translate }}</p>
+    </div>
+    <div *ngFor="let coordinationArrangement of coordinationArrangements; let i = index">
+
+      <div class="row">
+        <div class="col-sm-1" *ngIf="!isEdit">
+          {{ coordinationArrangement.updatedAt | date: 'MM/yy'}}
+        </div>
+        <div class="col-sm-2"> <!--Sector-->
+          <div class="row">
+            <img src="assets/images/icons/{{ responsePlansSectors[coordinationArrangement.sector] }}.svg"
+                 class="margin-bottom-one" alt="Health">
+            <p class="margin-top-one-half margin-left-two">{{
+              responsePlansSectorsSelection[coordinationArrangement.sector] | translate }}</p>
+          </div>
+        </div>
+        <div class="col-sm-5">
+          <div class="row">
+            <div class="col-sm-5"><p>{{ coordinationArrangement.sectorLead }}</p></div>
+            <div class="col-sm-0"><img src="assets/images/icons/contact.svg"
+                                       alt="{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW_LEAD_AGENCY' | translate }}">
+            </div>
+            <div class="col-sm-6"><a class="col-sm-0" href="#contact_{{ i }}" data-toggle="collapse">{{
+              'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW_LEAD_AGENCY' | translate }}</a></div>
+          </div>
+        </div>
+
+        <!--Is < agency > a member?-->
+        <div class="col-sm-2" *ngIf="coordinationArrangement.isAMember">{{ 'YES' | translate }}</div>
+        <div class="col-sm-2" *ngIf="!coordinationArrangement.isAMember">{{ 'GLOBAL.NO' | translate }}</div>
+
+        <div class="col-sm-2"><p>{{ getStaffName(coordinationArrangement.staffMember)}}</p></div>
+        <!--Staff member representing < agency >-->
+        <div class="col-sm-1" *ngIf="canEdit && isEdit">
+          <button class="btn btn-outline-primary text-uppercase"
+                  (click)="addEditCoordinationArrangement(coordinationArrangement.id)">{{ 'EDIT' | translate }}
+          </button>
+        </div>
+      </div>
+      <div class="Line-row Spaced-above"></div>
+
+      <!--Lead agency contact info tooltip-->
+      <div class="Tooltip__bubble contact-agency-arrangement collapse margin-top-two" data-toggle="collapse"
+           id="contact_{{ i }}">
+        <div class="row">
+          <h3 class="font-weight-bold col-sm-10  text-capitalize">{{
+            "COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD_CONTACT_INFO" | translate}}</h3>
+          <div class="col-sm-2"><a data-toggle="collapse" href="#contact_{{ i }}">{{ "GLOBAL.CLOSE" | translate}}</a>
+          </div>
+        </div>
+
+        <div class="row Spaced-above"> <!--Name-->
+          <p class="col-sm-0 margin-left-three text-capitalize"><strong>{{
+            "COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" | translate}}</strong></p>
+          <p class="col-sm-5 margin-left-five">{{ coordinationArrangement?.contactName }}</p>
+        </div>
+
+        <div class="row"> <!--Telephone-->
+          <p class="col-sm-0 margin-left-three  text-capitalize"><strong>{{
+            "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" | translate}}</strong></p>
+          <p class="col-sm-2">{{ coordinationArrangement?.contactPhone }}</p>
+        </div>
+
+        <div class="row"> <!--Email-->
+          <p class="col-sm-0 margin-left-three  text-capitalize"><strong>{{
+            "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" | translate}}</strong></p>
+          <p class="col-sm-5 margin-left-five"><a href="mailto:{{ coordinationArrangement?.contactEmail }}">{{
+            coordinationArrangement?.contactEmail }}</a></p>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-outline-primary text-uppercase"
+            *ngIf="canEdit && !isViewing"
+            (click)="addEditCoordinationArrangement()">{{ 'GLOBAL.ADD' | translate }}
+    </button>
+
+  </div>
+</div>

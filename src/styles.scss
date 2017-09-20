@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+.Header-title{
+  &__wrap{
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}
+
+.Spaced-sm{
+  margin: 2rem 0;
+}
+
+.Spaced-above-large{
+  margin-top: 2.5rem;
+}

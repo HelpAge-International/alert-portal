@@ -219,7 +219,24 @@ import {NetworkCountryService} from "./services/network-country.service";
 import { NetworkCreateEditMpaComponent } from './network-admin/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component';
 import { NetworkAddGenericActionComponent } from './network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component';
 import { NetworkCreateEditMessageComponent } from './network-admin/network-message/network-create-edit-message/network-create-edit-message.component';
-import { LocalNetworkAdminCreatePasswordComponent } from './local-network-admin/local-network-admin-create-password/local-network-admin-create-password.component';
+import { LocalNetworkAdminDashboardComponent } from './local-network-admin/local-network-admin-dashboard/local-network-admin-dashboard.component';
+import { LocalNetworkHeaderComponent } from './local-network-admin/local-network-header/local-network-header.component';
+import { LocalNetworkMenuComponent } from './local-network-admin/local-network-menu/local-network-menu.component';
+import { LocalNetworkProfileProgrammeComponent } from './local-network-admin/local-network-profile/local-network-profile-programme/local-network-profile-programme.component';
+import { LocalNetworkProfileOfficeCapacityComponent } from './local-network-admin/local-network-profile/local-network-profile-office-capacity/local-network-profile-office-capacity.component';
+import { LocalNetworkProfilePartnersComponent } from './local-network-admin/local-network-profile/local-network-profile-partners/local-network-profile-partners.component';
+import { LocalNetworkProfileEquipmentComponent } from './local-network-admin/local-network-profile/local-network-profile-equipment/local-network-profile-equipment.component';
+import { LocalNetworkProfileCoordinationComponent } from './local-network-admin/local-network-profile/local-network-profile-coordination/local-network-profile-coordination.component';
+import { LocalNetworkProfileStockCapacityComponent } from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity.component';
+import { LocalNetworkProfileContactsComponent } from './local-network-admin/local-network-profile/local-network-profile-contacts/local-network-profile-contacts.component';
+import { LocalNetworkProfileDocumentsComponent } from './local-network-admin/local-network-profile/local-network-profile-documents/local-network-profile-documents.component';
+import { LocalNetworkProfileMenuComponent } from './local-network-admin/local-network-profile/local-network-profile-menu/local-network-profile-menu.component';
+import { LocalNetworkCoordinationAddEditComponent } from './local-network-admin/local-network-profile/local-network-profile-coordination/local-network-coordination-add-edit/local-network-coordination-add-edit.component';
+import { LocalNetworkAdministrationAgenciesComponent } from './local-network-admin/local-network-administration/local-network-administration-agencies/local-network-administration-agencies.component';
+import { LocalNetworkAdministrationSettingsComponent } from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-administration-settings.component';
+import { LocalNetworkAdministrationMessagesComponent } from './local-network-admin/local-network-administration/local-network-administration-messages/local-network-administration-messages.component';
+import { LocalInviteAgenciesComponent } from './local-network-admin/local-network-administration/local-network-administration-agencies/local-invite-agencies/local-invite-agencies.component';
+
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -431,7 +448,23 @@ const firebaseAuthConfig = {
     NetworkCreateEditMpaComponent,
     NetworkAddGenericActionComponent,
     NetworkCreateEditMessageComponent,
-    LocalNetworkAdminCreatePasswordComponent
+    LocalNetworkAdminDashboardComponent,
+    LocalNetworkHeaderComponent,
+    LocalNetworkMenuComponent,
+    LocalNetworkProfileProgrammeComponent,
+    LocalNetworkProfileOfficeCapacityComponent,
+    LocalNetworkProfilePartnersComponent,
+    LocalNetworkProfileEquipmentComponent,
+    LocalNetworkProfileCoordinationComponent,
+    LocalNetworkProfileStockCapacityComponent,
+    LocalNetworkProfileContactsComponent,
+    LocalNetworkProfileDocumentsComponent,
+    LocalNetworkProfileMenuComponent,
+    LocalNetworkCoordinationAddEditComponent,
+    LocalNetworkAdministrationAgenciesComponent,
+    LocalNetworkAdministrationSettingsComponent,
+    LocalNetworkAdministrationMessagesComponent,
+    LocalInviteAgenciesComponent
   ],
   imports: [
     BrowserModule,
