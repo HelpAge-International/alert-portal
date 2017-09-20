@@ -9,24 +9,27 @@
 <div class="Page-top__wrap no-padding">
   <div class="Full-page__wrap--inner">
     <div class="row col-sm-12 Spaced-above">
-      <div class="Back--button row col-sm-9 margin-top-none" routerLink="/network/network-mpa">Mandated preparedness
-        actions
+      <div class="Back--button row col-sm-9 margin-top-none" routerLink="/network/network-mpa">
+        {{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}
       </div> <!-- Back button-->
-      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" (click)="resetSelections()">Cancel</a></div>
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" (click)="resetSelections()">{{"GLOBAL.CANCEL" |
+        translate}}</a></div>
       <div class="col-sm-2">
-        <button class="btn btn-primary text-uppercase" (click)="addActions()">add new action(s)</button>
+        <button class="btn btn-primary text-uppercase" (click)="addActions()">
+          {{"AGENCY_ADMIN.MANDATED_PA.ADD_NEW_ACTIONS" | translate}}
+        </button>
       </div>
     </div>
     <div class="row col-sm-12">
-      <h1 class="col-sm-12">Add generic preparedness actions</h1><br>
+      <h1 class="col-sm-12">{{"ADD_GENERIC_PREPARED" | translate}}</h1><br>
     </div>
 
     <div class="row col-sm-9 Spaced-above">
-      <div class="padding-one col-sm-1"><p>Filter:</p></div>
+      <div class="padding-one col-sm-1"><p>{{"FILTER" | translate}}:</p></div>
       <div class="col-sm-4"><select class="form-control" [(ngModel)]="selectedLevel" (change)="triggerFilter()">
-        <option class="" value="0">All Preparedness</option>
-        <option class="" value="1">Minimum Preparedness</option>
-        <option class="" value="2">Advanced Preparedness</option>
+        <option class="" value="0">{{"GLOBAL.PREPAREDNESS_LEVEL.ALL" | translate}}</option>
+        <option class="" value="1">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</option>
+        <option class="" value="2">{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</option>
       </select></div>
       <div class="col-sm-4"><select class="form-control" [(ngModel)]="selectedCategory" (change)="triggerFilter()">
         <option *ngFor="let category of CategorySelection" [value]="category">{{CategoryName[category] | translate}}
@@ -43,18 +46,19 @@
         </div>
         <div class="row col-sm-12">
           <div class="col-sm-1 max-width-contact"></div>
-          <div class="text-left col-sm-11 "><p>Category: <strong>{{CategoryName[action.category] | translate}}</strong>
+          <div class="text-left col-sm-11 "><p>{{"GLOBAL.CATEGORY" | translate}}<strong>{{CategoryName[action.category]
+            | translate}}</strong>
           </p></div>
         </div>
       </div>
       <div [hidden]="actions.length>0" class="bg-grey Spaced text-center">
-        <p class="font-weight-bold padding-two">No generic actions is available!</p>
+        <p class="font-weight-bold padding-two">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</p>
       </div>
     </div>
 
     <ng-template #empty>
       <div class="bg-grey Spaced text-center">
-        <p class="font-weight-bold padding-two">No generic actions is available!</p>
+        <p class="font-weight-bold padding-two">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</p>
       </div>
     </ng-template>
 

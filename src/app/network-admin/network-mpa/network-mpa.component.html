@@ -6,23 +6,22 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
-      <h1 class="col-sm-7">Mandated preparedness actions</h1><br>
+      <h1 class="col-sm-7">{{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}</h1><br>
       <div class="col-sm-3">
-        <button class="btn btn-outline-primary text-uppercase" routerLink="/network/network-mpa/network-add-generic-action">Lookup Generic Actions</button>
+        <button class="btn btn-outline-primary text-uppercase" routerLink="/network/network-mpa/network-add-generic-action">{{"AGENCY_ADMIN.MANDATED_PA.LOOK_UP_ACTIONS" | translate}}</button>
       </div>
       <div class="col-sm-2">
-        <button class="btn btn-primary text-uppercase" routerLink="/network/network-mpa/network-create-edit-mpa">Create
-          new action
+        <button class="btn btn-primary text-uppercase" routerLink="/network/network-mpa/network-create-edit-mpa"> {{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" | translate}}
         </button>
       </div>
     </div>
 
     <div class="row col-sm-9">
-      <div class="padding-one col-sm-1"><p>Filter:</p></div>
+      <div class="padding-one col-sm-1"><p>{{"FILTER" | translate}}:</p></div>
       <div class="col-sm-4"><select class="form-control" [(ngModel)]="initFilterSelection" (change)="filterActions()">
-        <option class="" value="0" >All Preparedness</option>
-        <option class="" value="1" >Minimum Preparedness</option>
-        <option class="" value="2" >Advanced Preparedness</option>
+        <option class="" value="0" >{{"GLOBAL.PREPAREDNESS_LEVEL.ALL" | translate}}</option>
+        <option class="" value="1" >{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</option>
+        <option class="" value="2" >{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</option>
       </select></div>
     </div>
 
@@ -31,19 +30,19 @@
         <div class="row col-sm-12">
           <p class="col-sm-10 text-left">{{action.task}}</p>
           <div class="col-sm-1">
-            <a class="btn btn-danger text-capitalize" data-toggle="modal" href="#delete-action" (click)="getActionIdToDelete(action.id)">delete</a>
+            <a class="btn btn-danger text-capitalize" data-toggle="modal" href="#delete-action" (click)="getActionIdToDelete(action.id)">{{"DELETE" | translate}}</a>
           </div>
           <div class="col-sm-1">
-            <button class="btn btn-primary text-capitalize" (click)="editAction(action.id)">edit</button>
+            <button class="btn btn-primary text-capitalize" (click)="editAction(action.id)">{{"EDIT" | translate}}</button>
           </div>
         </div>
-        <div class="text-left col-sm-12"><p>Type: <strong>Mandated</strong></p></div>
+        <div class="text-left col-sm-12"><p>{{"GLOBAL.TYPE" | translate}}: <strong>{{"GLOBAL.ACTION_TYPE.MANDATED" | translate}}</strong></p></div>
       </div>
     </div>
 
     <ng-template #empty>
       <div class="bg-grey Spaced text-center">
-        <p class="font-weight-bold padding-two">No mandated prepardness actions have been added to your network</p>
+        <p class="font-weight-bold padding-two">{{"NETWORK.NO_MPA" | translate}}</p>
       </div>
     </ng-template>
 

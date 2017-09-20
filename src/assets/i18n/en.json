@@ -29,8 +29,11 @@
     "SEND_INVITES":"Send invites",
     "SELECT_AGENCIES_SUBTITLE":"Select the agencies you wish to be invited to the network, they will not be able to access the network page until their administrator accepts the invitation",
     "NO_AGENCIES_AVAILABLE":"No agencies available",
-    "INVITE_AGENCY_CONTENT":"You are about to invite the following agencies to be a part of your network"
+    "INVITE_AGENCY_CONTENT":"You are about to invite the following agencies to be a part of your network",
+    "NO_MPA":"No mandated prepardness actions have been added to your network",
+    "CLOCK_SETTINGS_SUBTITLE":"These are the default settings for your network however countries have the ability to make these more frequent if they wish"
   },
+  "UPDATE_ACTION":"update action",
   "RESEND":"Resend",
   "ARE_YOU_SURE_TO_CONTINUE":"Are you sure you want to continue",
   "PORTAL_UNDER_MAINTENANCE":"ALERT portal is under maintenance and will be live shortly.",

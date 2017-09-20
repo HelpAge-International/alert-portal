@@ -9,7 +9,7 @@
     <app-network-setting-menus></app-network-setting-menus>
 
     <div class="Sub-header-title__wrap">
-      <h2>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.TITLE_TEXT" | translate}}</h2>
+      <h2>{{"DOCUMENTS_TEXT" | translate}}</h2>
       <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="exporting" (click)="exportSelectedDocuments($event)">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.EXPORT_DOCS" | translate | uppercase}}</button>
       <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable"  *ngIf="exporting" (click)="cancelExportDocuments($event)">{{"GLOBAL.CANCEL" | translate}}</button>
       <button type="button" class="btn btn-outline-primary Inline-editable--enable" *ngIf="!exporting" (click)="selectDocuments($event)">{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.SELECT_DOCS" | translate | uppercase}}</button>
