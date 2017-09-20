@@ -1,4 +1,5 @@
 {
+  "DELETE_LEAD_AGENCY_ERROR":"Lead agency can not be deleted!",
   "DELETE_ACTION_DIALOG":{
     "CONTENT":  "Are you sure you want to delete this action?"
   },

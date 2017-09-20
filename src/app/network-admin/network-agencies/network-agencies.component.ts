@@ -33,7 +33,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
   private leadAgency: FirebaseObjectObservable<any>;
   private networkAgencies: NetworkAgencyModel[] = [];
   private removeAgencyObj: FirebaseObjectObservable<any>;
-  private showLoader:boolean;
+  private showLoader: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -83,9 +83,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
             })
             .takeUntil(this.ngUnsubscribe)
             .subscribe((agencies: NetworkAgencyModel[]) => {
-              if (agencies) {
-                this.networkAgencies = agencies;
-              }
+              this.networkAgencies = agencies;
               this.showLoader = false;
             });
 
@@ -93,10 +91,8 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
           this.networkService.getLeadAgencyId(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(id => {
-              if (id) {
-                this.leadAgencyId = id;
-                this.leadAgency = this.agencyService.getAgency(this.leadAgencyId);
-              }
+              this.leadAgencyId = id;
+              this.leadAgency = this.agencyService.getAgency(this.leadAgencyId);
             });
 
         })
@@ -120,10 +116,14 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
 
   confirmRemove(agencyId) {
     console.log(agencyId);
-    let path = "/network/" + this.networkId + "/agencies/" + agencyId;
-    let validationPath = "/networkAgencyValidation/" + agencyId;
-    this.networkService.deleteNetworkField(path);
-    this.networkService.deleteNetworkField(validationPath);
+    if (this.leadAgencyId == agencyId) {
+      this.alertMessage = new AlertMessageModel("DELETE_LEAD_AGENCY_ERROR");
+    } else {
+      let path = "/network/" + this.networkId + "/agencies/" + agencyId;
+      let validationPath = "/networkAgencyValidation/" + agencyId;
+      this.networkService.deleteNetworkField(path);
+      this.networkService.deleteNetworkField(validationPath);
+    }
   }
 
   resendEmail(agencyId) {
