@@ -893,6 +893,11 @@ export class Constants {
     '#9012FE'
   ];
 
+  static NETWORK_USER_PATHS = [
+    "administratorNetwork",
+    "administratorNetworkCountry"
+  ];
+
   static USER_PATHS = [
     ,
     'globalDirector',

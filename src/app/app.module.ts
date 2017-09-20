@@ -219,6 +219,7 @@ import {NetworkCountryService} from "./services/network-country.service";
 import { NetworkCreateEditMpaComponent } from './network-admin/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component';
 import { NetworkAddGenericActionComponent } from './network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component';
 import { NetworkCreateEditMessageComponent } from './network-admin/network-message/network-create-edit-message/network-create-edit-message.component';
+import { NetworkNotificationsComponent } from './network-admin/network-notifications/network-notifications.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -429,7 +430,8 @@ const firebaseAuthConfig = {
     NetworkAgencyValidationComponent,
     NetworkCreateEditMpaComponent,
     NetworkAddGenericActionComponent,
-    NetworkCreateEditMessageComponent
+    NetworkCreateEditMessageComponent,
+    NetworkNotificationsComponent
   ],
   imports: [
     BrowserModule,

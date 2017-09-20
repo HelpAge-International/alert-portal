@@ -26,6 +26,18 @@ export class NotificationService {
     return notificationSettingsSubscription;
   }
 
+  deleteNetworkAdminNotification(userId, networkId, messageId): firebase.Promise<any>{
+    let deleteData = {};
+
+    let nodesAdministratorNetwork = this.getNetworkAdministratorNodes(networkId, userId);
+
+    for (let node of nodesAdministratorNetwork) {
+      deleteData[node + '/' + messageId] = null;
+    }
+
+    return this.deleteNotification(deleteData);
+  }
+
  deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
    let deleteData = {};
 
@@ -312,6 +324,13 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
         return message;
       });
   }
+  getNetworkAdministratorNodes(networkId: string, userId: string)
+  {
+    return [
+      "/messageRef/network/" + networkId + "/networkallusersgroup/" + userId,
+      "/messageRef/systemadmin/allusersgroup/" + userId,
+      "/messageRef/systemadmin/allnetworkadminsgroup/" + userId];
+  }
 
   getAgencyAdministratorNodes(agencyId: string)
   {
@@ -376,7 +395,6 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
-            "/messageRef/agency/" + agencyId + "/ertleads/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/ertleads/" + userId]
   }
@@ -386,7 +404,6 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
-            "/messageRef/agency/" + agencyId + "/erts/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/erts/" + userId]
   }
@@ -396,7 +413,6 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
-            "/messageRef/agency/" + agencyId + "/donor/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/donor/" + userId]
   }
@@ -406,7 +422,6 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
     return [
             "/messageRef/systemadmin/allusersgroup/" + userId,
             "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId,
-            "/messageRef/agency/" + agencyId + "/partner/" + userId,
             "/messageRef/country/" + countryId + "/countryallusersgroup/" + userId,
             "/messageRef/country/" + countryId + "/partner/" + userId]
   }

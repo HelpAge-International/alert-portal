@@ -341,6 +341,19 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     });
 
     /**
+   * Group node referencing
+   **/
+
+    let groupData = {};
+    groupData["/group/systemadmin/allnetworkadminsgroup/" + networkAdminId] = true;
+    groupData["/group/systemadmin/allusersgroup/" + networkAdminId] = true;
+    this.af.database.object(Constants.APP_STATUS).update(groupData).then(() => {
+      console.log("Group node updated successfully");
+    }).catch(error => {
+      console.log("Group node update failed --> " + error.message);
+    });
+
+    /**
      * Other referencing
      **/
 
