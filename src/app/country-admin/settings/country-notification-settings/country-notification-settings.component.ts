@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router} from '@angular/router';
-import { UserService } from "../../../services/user.service";
-import { Constants } from '../../../utils/Constants';
-import { AlertMessageType, NotificationSettingEvents, UserType } from '../../../utils/Enums';
-import { SettingsService } from "../../../services/settings.service";
-import { AlertMessageModel } from "../../../model/alert-message.model";
-import { DisplayError } from "../../../errors/display.error";
-import { NotificationSettingsModel } from "../../../model/notification-settings.model";
-import { ExternalRecipientModel } from "../../../model/external-recipient.model";
-import { MessageService } from "../../../services/message.service";
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {ActivatedRoute, Params, Router} from '@angular/router';
+import {UserService} from "../../../services/user.service";
+import {Constants} from '../../../utils/Constants';
+import {AlertMessageType, NotificationSettingEvents, UserType} from '../../../utils/Enums';
+import {SettingsService} from "../../../services/settings.service";
+import {AlertMessageModel} from "../../../model/alert-message.model";
+import {DisplayError} from "../../../errors/display.error";
+import {NotificationSettingsModel} from "../../../model/notification-settings.model";
+import {ExternalRecipientModel} from "../../../model/external-recipient.model";
+import {MessageService} from "../../../services/message.service";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 
@@ -30,7 +30,7 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
   NOTIFICATION_SETTINGS_SELECTION = Constants.NOTIFICATION_SETTINGS;
   USER_TYPE = Constants.USER_TYPE;
   USER_TYPE_SELECTION =
-    Constants.USER_TYPE_SELECTION.filter( x => x != UserType.All && x != UserType.NonAlert && x != UserType.GlobalUser);
+    Constants.USER_TYPE_SELECTION.filter(x => x != UserType.All && x != UserType.NonAlert && x != UserType.GlobalUser);
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -50,34 +50,26 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
               private _settingsService: SettingsService,
               private _messageService: MessageService,
               private router: Router,
-              private route: ActivatedRoute){
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.countryId = countryId;
+      this.agencyId = agencyId;
 
-      this._userService.getCountryAdminUser(this.uid)
+      this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryAdminUser => {
-        if(countryAdminUser)
-        {
-          this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-          this.countryId = countryAdminUser.countryId;
+        .subscribe(notificationSettings => {
+          this.notificationSettings = notificationSettings;
+        });
 
-          this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(notificationSettings => {
-            this.notificationSettings = notificationSettings;
-          });
-
-          this._messageService.getCountryExternalRecipients(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(externalRecipients => {
-            this.externalRecipients = externalRecipients;
-          })
-        }
-      });
+      this._messageService.getCountryExternalRecipients(this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(externalRecipients => {
+          this.externalRecipients = externalRecipients;
+        });
     });
   }
 
@@ -90,41 +82,41 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
   validateForm(): boolean {
     this.notificationSettings.forEach(notification => {
       this.alertMessage = notification.validate();
-      if(this.alertMessage) { return; }
+      if (this.alertMessage) {
+        return;
+      }
     });
 
     return !this.alertMessage;
   }
 
   submit() {
-      this._settingsService.saveCountryNotificationSettings(this.agencyId, this.countryId, this.notificationSettings)
-            .then(() => {
-              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SAVED_SUCCESS', AlertMessageType.Success);
-            })
-            .catch(err => {
-              if(err instanceof DisplayError) {
-                this.alertMessage = new AlertMessageModel(err.message);
-              }else{
-                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-              }
-            });
+    this._settingsService.saveCountryNotificationSettings(this.agencyId, this.countryId, this.notificationSettings)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.NOTIFICATIONS.SAVED_SUCCESS', AlertMessageType.Success);
+      })
+      .catch(err => {
+        if (err instanceof DisplayError) {
+          this.alertMessage = new AlertMessageModel(err.message);
+        } else {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+        }
+      });
   }
 
-  selectUserType(activeNotification: NotificationSettingsModel, action, notificationName)
-  {
-        this.activeNotification = action;
-        this.activeNotificationSetting = activeNotification as NotificationSettingsModel;
-        //this.activeNotificationSetting.mapFromObject(activeNotification);
+  selectUserType(activeNotification: NotificationSettingsModel, action, notificationName) {
+    this.activeNotification = action;
+    this.activeNotificationSetting = activeNotification as NotificationSettingsModel;
+    //this.activeNotificationSetting.mapFromObject(activeNotification);
 
-        this.notificationName = notificationName;
+    this.notificationName = notificationName;
 
-        jQuery("#select-user-type").modal("show");
+    jQuery("#select-user-type").modal("show");
   }
 
-  saveUserType(){
+  saveUserType() {
     this.notificationSettings.forEach(notification => {
-      if(notification == this.activeNotification)
-      {
+      if (notification == this.activeNotification) {
         console.log(notification);
         notification = this.activeNotificationSetting;
       }
@@ -136,14 +128,14 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
   }
 
   closeModal() {
-        jQuery("#select-user-type").modal("hide");
+    jQuery("#select-user-type").modal("hide");
   }
 
   goBack() {
     this.router.navigateByUrl('/dashboard');
   }
 
-  addRecipient(){
+  addRecipient() {
     this.router.navigateByUrl('/country-admin/settings/country-notification-settings/country-add-external-recipient');
   }
 

@@ -6,6 +6,7 @@ import {Constants} from "../../utils/Constants";
 import {ModelSeason} from "../../model/season.model";
 import {ColourSelector} from "../../utils/ColourSelector";
 import {PageControlService} from "../../services/pagecontrol.service";
+
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
 
@@ -49,11 +50,10 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.getCountryId().then(() => {
-          this.getAllSeasonsForCountryId(this.countryId);
-        });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.countryId = countryId;
+      this.getAllSeasonsForCountryId(this.countryId);
     });
   }
 
@@ -114,28 +114,13 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the country Id
-   */
-  private getCountryId() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId", {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryId) => {
-          this.countryId = countryId.val();
-          res(true);
-        });
-    });
-    return promise;
-  }
-
-  /**
    * Model Chronoline item. Chronoline only shows span of max and min items, so blank item is shown which spans +/- RANGE_SPAN_DAYS
    */
   public static spanModelCalendar() {
     // Blank calendar object which will allow the full span to load properly of the calendar
     let daysPlusMinus = DashboardSeasonalCalendarComponent.RANGE_SPAN_DAYS;
     let d = new Date();
-    return new ModelSeason("#00131D50", "Name", d.getTime() - (daysPlusMinus * (1000 * 60 * 60 * 24)),  d.getTime() + (daysPlusMinus * (1000 * 60 * 60 * 24)))
+    return new ModelSeason("#00131D50", "Name", d.getTime() - (daysPlusMinus * (1000 * 60 * 60 * 24)), d.getTime() + (daysPlusMinus * (1000 * 60 * 60 * 24)))
   }
 
   /**
@@ -247,7 +232,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   }
 
   public static convertUTCToYYYYMMDD(date: number) {
-    return  new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
+    return new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
   }
 
   public selectStartDate(date) {
@@ -279,7 +264,7 @@ export class ChronolineEvent {
   private title: string;
   private eventHeight: number;
   private section: 1;
-  private attrs: {fill: string, stroke: string};
+  private attrs: { fill: string, stroke: string };
   private click;
 
   constructor() {
@@ -303,7 +288,7 @@ export class ChronolineEvent {
     event.section = 1;
     event.attrs.fill = season.colorCode;
     event.attrs.stroke = season.colorCode;
-    event.click = function() {
+    event.click = function () {
       component.addSeasonName = season.name;
       component.addSeasonStart = season.startTime;
       component.addSeasonEnd = season.endTime;

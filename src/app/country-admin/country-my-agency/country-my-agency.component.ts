@@ -65,16 +65,13 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.UserType = userType;
-      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-          this.countryId = countryId;
-          this._loadData();
-        });
-
+      this.countryId = countryId;
+      this.agencyID = agencyId;
+      this.systemAdminID = systemId;
+      this._loadData();
     });
   }
 
@@ -84,30 +81,11 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   }
 
   _loadData() {
-    this._getAgencyID().then(() => {
-      this._getCountryList().then(() => {
-        this._getSystemAdminID().then(() => {
-
-        })
-      });
-    });
-  }
-
-  _getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIDs: any) => {
-          this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-          this.getAgencyName();
-          res(true);
-        });
-    });
-    return promise;
+    this.getAgencyName();
+    this._getCountryList();
   }
 
   private getAgencyName() {
-
     if (this.agencyID) {
       this.agencyService.getAgency(this.agencyID)
         .takeUntil(this.ngUnsubscribe)
@@ -118,30 +96,12 @@ export class CountryMyAgencyComponent implements OnInit, OnDestroy {
   }
 
   _getCountryList() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countries: any) => {
-          this.countryOfficeData = [];
-          this.countryOfficeData = countries.filter(country => country.$key != this.countryId);
-
-          res(true);
-        });
-    });
-    return promise;
-  }
-
-
-  _getSystemAdminID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/systemAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIDs: any) => {
-          this.systemAdminID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-          res(true);
-        });
-    });
-    return promise;
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((countries: any) => {
+        this.countryOfficeData = [];
+        this.countryOfficeData = countries.filter(country => country.$key != this.countryId);
+      });
   }
 
   private navigateToLogin() {

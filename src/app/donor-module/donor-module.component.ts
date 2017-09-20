@@ -65,7 +65,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
     this.department = new SDepHolder("Something");
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userTypePath = Constants.USER_PATHS[userType];
     });

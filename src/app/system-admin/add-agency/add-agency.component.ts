@@ -62,8 +62,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.systemAdminUid = user.uid;
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.systemAdminUid = systemId;
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.inactive = true;
       this.route.params

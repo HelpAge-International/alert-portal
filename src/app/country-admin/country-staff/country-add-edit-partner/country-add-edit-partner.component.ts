@@ -15,6 +15,7 @@ import {DisplayError} from "../../../errors/display.error";
 import {SessionService} from "../../../services/session.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+
 declare var jQuery: any;
 
 @Component({
@@ -69,60 +70,53 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
       this.uid = user.uid;
       this.userType = userType;
+      this.systemId = systemId;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
 
       try {
-        this._userService.getSystemAdminId(Constants.USER_PATHS[this.userType], this.uid)
+
+        this._partnerOrganisationService.getApprovedCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe(systemId => {
-            this.systemId = systemId;
-
-            this._userService.getCountryAdminUser(this.uid).takeUntil(this.ngUnsubscribe).subscribe(countryAdminUser => {
-              this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-              this.countryId = countryAdminUser.countryId;
-
-              this._partnerOrganisationService.getApprovedCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(partnerOrganisations => {
-                  this.partnerOrganisations = partnerOrganisations;
-                });
-
-              this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
-                if (params['id']) {
-                  this.isEdit = true;
-
-                  this._userService.getUser(params['id'])
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(user => {
-                      if (user) {
-                        if (user) {
-                          this.userPublic = user;
-                        }
-                      }
-                    });
-
-                  this._userService.getPartnerUser(params['id'])
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(partner => {
-                      if (partner) {
-                        if (partner) {
-                          this.partner = partner;
-                        }
-                      }
-                    });
-                } else {
-                  this._notificationSettingsService.getNotificationSettings(this.agencyId)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(notificationSettings => {
-                      this.partner.notificationSettings = notificationSettings
-                    });
-                }
-              })
-            });
+          .subscribe(partnerOrganisations => {
+            this.partnerOrganisations = partnerOrganisations;
           });
+
+        this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+          if (params['id']) {
+            this.isEdit = true;
+
+            this._userService.getUser(params['id'])
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(user => {
+                if (user) {
+                  if (user) {
+                    this.userPublic = user;
+                  }
+                }
+              });
+
+            this._userService.getPartnerUser(params['id'])
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(partner => {
+                if (partner) {
+                  if (partner) {
+                    this.partner = partner;
+                  }
+                }
+              });
+          } else {
+            this._notificationSettingsService.getNotificationSettings(this.agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(notificationSettings => {
+                this.partner.notificationSettings = notificationSettings
+              });
+          }
+        })
 
       }
       catch (err) {

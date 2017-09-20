@@ -39,23 +39,16 @@ export class CountryMessagesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
 
-      this._userService.getCountryAdminUser(this.uid)
+      this._messageService.getCountrySentMessages(this.countryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryAdminUser => {
-          if (countryAdminUser) {
-            this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-            this.countryId = countryAdminUser.countryId;
-
-            this._messageService.getCountrySentMessages(this.countryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(sentMessages => {
-                if (sentMessages) {
-                  this.sentMessages = sentMessages;
-                }
-              });
+        .subscribe(sentMessages => {
+          if (sentMessages) {
+            this.sentMessages = sentMessages;
           }
         });
     });

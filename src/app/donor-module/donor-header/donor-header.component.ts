@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {UserService} from "../../services/user.service";
@@ -6,7 +6,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
-import { MessageModel } from "../../model/message.model";
+import {MessageModel} from "../../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
@@ -33,28 +33,19 @@ export class DonorHeaderComponent implements OnInit {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService, private translate : TranslateService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService, private translate: TranslateService) {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
       this.USER_TYPE = this.userPaths[userType];
+
       if (this.USER_TYPE) {
         this.getAgencyName();
       }
-
-      this.userService.getAgencyId(this.USER_TYPE, this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(agencyId => {
-            this.agencyId = agencyId;
-      });
-
-      this.userService.getCountryId(this.USER_TYPE, this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-        this.countryId = countryId;
-      });
 
       this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
@@ -84,23 +75,13 @@ export class DonorHeaderComponent implements OnInit {
    */
 
   private getAgencyName() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+    if (this.agencyId) {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIds: any) => {
-          this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";
-          res(true);
-          if (this.agencyId) {
-            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((agencyName) => {
-                this.agencyName = agencyName ? agencyName.$value : this.translate.instant("AGENCY");
-                res(true);
-              });
-          }
+        .subscribe((agencyName) => {
+          this.agencyName = agencyName ? agencyName.$value : this.translate.instant("AGENCY");
         });
-    });
-    return promise;
+    }
   }
 
 }

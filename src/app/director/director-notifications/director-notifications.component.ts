@@ -8,10 +8,11 @@ import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {UserService} from "../../services/user.service";
-import { AlertMessageModel } from '../../model/alert-message.model';
-import { AlertMessageType } from '../../utils/Enums';
+import {AlertMessageModel} from '../../model/alert-message.model';
+import {AlertMessageType} from '../../utils/Enums';
 
 declare var jQuery: any;
+
 @Component({
   selector: 'app-director-notifications',
   templateUrl: './director-notifications.component.html',
@@ -19,7 +20,7 @@ declare var jQuery: any;
 })
 export class DirectorNotificationsComponent implements OnInit, OnDestroy {
   private loaderInactive: boolean;
-  
+
   private uid: string;
   private agencyId: string;
   private countryId: string;
@@ -35,22 +36,11 @@ export class DirectorNotificationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-          
-        this._userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(userType => {
-          
-          this.USER_TYPE = Constants.USER_PATHS[userType];
-          
-          this._userService.getAgencyId(this.USER_TYPE, this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(agencyId => {
-              this.agencyId = agencyId;
-              this.loaderInactive = true;
-          });
-      });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.USER_TYPE = Constants.USER_PATHS[userType];
+      this.agencyId = agencyId;
+      this.loaderInactive = true;
     });
   }
 

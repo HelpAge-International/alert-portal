@@ -6,6 +6,7 @@ import {Currency} from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {ModelAgency} from "../../model/agency.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -56,15 +57,10 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(id => {
-          this.agencyId = id.$value;
-          console.log("Agency admin uid: " + this.agencyId);
-          this.loadAgencyData(this.agencyId);
-        });
+      this.agencyId = agencyId;
+      this.loadAgencyData(this.agencyId);
     });
   }
 
@@ -204,25 +200,25 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((agency: ModelAgency) => {
 
-      this.modalAgency = agency;
-      this.agencyLogo = agency.logoPath;
-      this.agencyAddressLine1 = agency.addressLine1;
-      this.agencyAddressLine2 = agency.addressLine2;
-      this.agencyAddressLine3 = agency.addressLine3;
-      this.agencyCity = agency.city;
-      this.agencyPostCode = agency.postCode;
-      this.agencyPhone = agency.phone;
-      this.agencyWebAddress = agency.website;
-      this.agencyCountry = agency.country;
-      this.agencyCurrency = agency.currency;
+        this.modalAgency = agency;
+        this.agencyLogo = agency.logoPath;
+        this.agencyAddressLine1 = agency.addressLine1;
+        this.agencyAddressLine2 = agency.addressLine2;
+        this.agencyAddressLine3 = agency.addressLine3;
+        this.agencyCity = agency.city;
+        this.agencyPostCode = agency.postCode;
+        this.agencyPhone = agency.phone;
+        this.agencyWebAddress = agency.website;
+        this.agencyCountry = agency.country;
+        this.agencyCurrency = agency.currency;
 
-      // Loading default settings values
-      this.clockSettings = agency.clockSettings;
-      this.notificationSettings = agency.notificationSetting;
-      this.responsePlanSettings = agency.responsePlanSettings;
+        // Loading default settings values
+        this.clockSettings = agency.clockSettings;
+        this.notificationSettings = agency.notificationSetting;
+        this.responsePlanSettings = agency.responsePlanSettings;
 
-      this.showReplaceRemoveLinks = !!this.agencyLogo;
-    });
+        this.showReplaceRemoveLinks = !!this.agencyLogo;
+      });
   }
 
   private setLogoPreview(logoImage: string) {

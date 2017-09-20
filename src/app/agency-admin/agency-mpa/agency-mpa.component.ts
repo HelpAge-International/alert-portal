@@ -7,6 +7,7 @@ import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
 import {UserService} from "../../services/user.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -38,16 +39,11 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyAdmin) => {
-          console.log(agencyAdmin);
-          this.agencyId = agencyAdmin.agencyId;
-          this.getDepartments();
-          this.getMandatedPrepActions();
-        });
+      this.agencyId = agencyId;
+      this.getDepartments();
+      this.getMandatedPrepActions();
     });
   }
 

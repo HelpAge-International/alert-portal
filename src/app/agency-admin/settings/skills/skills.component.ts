@@ -37,33 +37,30 @@ export class SkillsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) =>  {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(id => {
-          this.agencyId = id.$value;
-          this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/skills')
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(_ => {
-              _.filter(skill => skill.$value).map(skill => {
-                this.af.database.list(Constants.APP_STATUS + '/skill/', {
-                  query: {
-                    orderByKey: true,
-                    equalTo: skill.$key
-                  }
-                })
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_skill => {
-                    if (_skill[0] != undefined)
-                      this.skills[_skill[0].$key] = _skill[0];
-                    else
-                      delete this.skills[skill.$key];
+      this.agencyId = agencyId;
 
-                    this.skillKeys = Object.keys(this.skills);
-                  });
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/skills')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(_ => {
+          _.filter(skill => skill.$value).map(skill => {
+            this.af.database.list(Constants.APP_STATUS + '/skill/', {
+              query: {
+                orderByKey: true,
+                equalTo: skill.$key
+              }
+            })
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_skill => {
+                if (_skill[0] != undefined)
+                  this.skills[_skill[0].$key] = _skill[0];
+                else
+                  delete this.skills[skill.$key];
+
+                this.skillKeys = Object.keys(this.skills);
               });
-            });
+          });
         });
     });
   }

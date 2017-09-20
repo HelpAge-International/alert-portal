@@ -32,27 +32,11 @@ export class CountryNotificationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-
-      this._userService.getUserType(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(userType => {
-
-          this.USER_TYPE = Constants.USER_PATHS[userType];
-
-          this._userService.getAgencyId(this.USER_TYPE, this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(agencyId => {
-              this.agencyId = agencyId;
-            });
-
-          this._userService.getCountryId(this.USER_TYPE, this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(countryId => {
-              this.countryId = countryId;
-            });
-        });
+      this.USER_TYPE = Constants.USER_PATHS[userType];
+      this.agencyId = agencyId;
+      this.countryId = countryId;
     });
   }
 
