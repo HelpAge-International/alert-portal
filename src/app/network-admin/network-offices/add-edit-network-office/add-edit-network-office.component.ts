@@ -120,7 +120,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
           .subscribe(user => {
             this.networkCountryUser = user;
             this.showLoader = false;
-          })
+          });
 
       });
 
@@ -151,18 +151,17 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
           console.log(user);
           if (user) {
             this.existingUser = user;
-
-            let data = this.isEditing ? this.updateNetworkOffice(user) : this.createNetworkOffice(user);
-            console.log(data);
-
-            //actual database update
-            this.networkService.updateNetworkField(data).then(() => {
-              this.back();
-            }).catch(error => {
-              console.log(error.message);
-              this.alertMessage = new AlertMessageModel(error.message);
-            });
           }
+          let data = this.isEditing ? this.updateNetworkOffice(user) : this.createNetworkOffice(user);
+          console.log(data);
+
+          //actual database update
+          this.networkService.updateNetworkField(data).then(() => {
+            this.back();
+          }).catch(error => {
+            console.log(error.message);
+            this.alertMessage = new AlertMessageModel(error.message);
+          });
         });
     }
   }
@@ -179,7 +178,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     this.networkOffice.clockSettings = this.network.clockSettings;
 
     //set network office admin data
-    existingUser ? this.networkCountryAdmin.firstLogin = true : this.networkCountryAdmin.firstLogin = false;
+    existingUser ? this.networkCountryAdmin.firstLogin = false : this.networkCountryAdmin.firstLogin = true;
     let networkCountryIds = {};
     networkCountryIds[keyNetworkCountry] = true;
     this.networkCountryAdmin.networkCountryIds = networkCountryIds;
@@ -194,13 +193,9 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     data["/administratorNetworkCountry/" + keyUser + "/firstLogin"] = this.networkCountryAdmin.firstLogin;
     data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
     data["/administratorNetworkCountry/" + keyUser + "/networkId"] = this.networkCountryAdmin.networkId;
-    //update group
-
-
     //create gourp node
     data["/group/network/" + this.networkId + "/networkallusersgroup/" + keyUser] = true;
     data["/group/network/" + this.networkId + "/networkcountryadmins/" + keyUser] = true;
-
     console.log(data);
 
     return data;
