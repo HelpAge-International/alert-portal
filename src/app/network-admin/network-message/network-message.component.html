@@ -15,7 +15,6 @@
 
     <div *ngIf="(sentMessages)?.length == 0" class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>
 
-    <div>
       <div class="Data--ribbon" *ngFor="let sentMessage of sentMessages">
         <div class="row col-lg-9 col-sm-10">
           <div class="Info--ribbon--wrap">
@@ -30,7 +29,6 @@
           <div class="btn btn-danger" (click)="deleteMessage(sentMessage)">{{"GLOBAL.DELETE" | translate}}</div>
         </div>
       </div>
-    </div>
 
   </div>
 </div>

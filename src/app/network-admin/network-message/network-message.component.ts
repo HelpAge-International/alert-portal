@@ -1,11 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
-import {AlertMessageModel} from "../../model/alert-message.model";
-import {AlertMessageType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {UserService} from "../../services/user.service";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {Observable} from "rxjs/Observable";
@@ -22,12 +19,6 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
 
   //constants and enums
 
-
-  // Models
-  private alertMessage: AlertMessageModel = null;
-  private alertMessageType = AlertMessageType;
-
-
   //logic
   private uid : string;
   private networkId: string;
@@ -35,11 +26,9 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
   private sentMessages: FirebaseObjectObservable<any>[] = [];
   private messageToDelete;
 
-
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
-              private userService: UserService,
               private router: Router,
               private af: AngularFire) {
   }
@@ -55,7 +44,7 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           this.showLoader = false;
-          this.downloadSentMessages();
+          this.fetchSentMessages();
         })
     });
   }
@@ -72,7 +61,7 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
 
   deleteFromFirebase(){
     let msgData = {};
-    let groups = [
+    let agencyGroups = [
       'agencyallusersgroup',
       'globaldirector',
       'globaluser',
@@ -95,7 +84,7 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
             let agencyGroupPath: string = Constants.APP_STATUS + '/group/agency/' + agencyId + '/';
             let agencyMessageRefPath: string = '/messageRef/agency/' + agencyId + '/';
 
-            for (let group of groups) {
+            for (let group of agencyGroups) {
               let groupPath = agencyGroupPath + group;
               let msgRefPath = agencyMessageRefPath + group;
 
@@ -105,11 +94,9 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
                   list.forEach(item => {
                     msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
                   });
-                  if ((agencyIds.indexOf(agencyId) == agencyIds.length - 1) && (groups.indexOf(group) == groups.length - 1)) {
+                  if ((agencyIds.indexOf(agencyId) == agencyIds.length - 1) && (agencyGroups.indexOf(group) == agencyGroups.length - 1)) {
                     this.af.database.object(Constants.APP_STATUS).update(msgData).then(() => {
-                      this.downloadSentMessages();
-                      console.log("Message Ref successfully deleted from all nodes");
-                      jQuery("#delete-message").modal("hide");
+                      this.deleteMessageForNetworkCountryAdmin();
                     }).catch(error => {
                       console.log("Message deletion unsuccessful" + error);
                     });
@@ -117,17 +104,48 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
                 });
             }
           }
+        }else{
+          this.deleteMessageForNetworkCountryAdmin();
         }
       });
+  }
 
-    //TODO delete message for all the network country admins
+  private deleteMessageForNetworkCountryAdmin(){
+    let msgData = {};
+    let networkGroups = [
+      'networkallusersgroup',
+      'networkcountryadmins'
+    ];
+    let networkGroupPath: string = Constants.APP_STATUS + '/group/network/' + this.networkId + '/';
+    let networkMessageRefPath: string = '/messageRef/network/' + this.networkId + '/';
 
+    for (let group of networkGroups) {
+      let groupPath = networkGroupPath + group;
+      let msgRefPath = networkMessageRefPath + group;
+
+      this.af.database.list(groupPath)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(list => {
+          list.forEach(item => {
+            msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
+          });
+          if ((networkGroups.indexOf(group) == networkGroups.length - 1)) {
+            this.af.database.object(Constants.APP_STATUS).update(msgData).then(() => {
+              console.log("Message Ref successfully deleted from all nodes");
+              jQuery("#delete-message").modal("hide");
+            }).catch(error => {
+              console.log("Message deletion unsuccessful" + error);
+            });
+          }
+        });
+    }
   }
 
   closeModal() {
     jQuery("#delete-message").modal("hide");
   }
-  private downloadSentMessages(){
+
+  private fetchSentMessages(){
     this.af.database.list(Constants.APP_STATUS + '/administratorNetwork/' + this.uid + '/sentmessages')
       .flatMap(list => {
         this.sentMessages = [];
@@ -143,7 +161,9 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
       .subscribe(x => {
-        this.sentMessages.push(x);
+        if (x != null && x.$value === undefined) {
+          this.sentMessages.push(x);
+        }
       });
   }
 }
