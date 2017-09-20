@@ -119,6 +119,9 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
     let networkGroupPath: string = Constants.APP_STATUS + '/group/network/' + this.networkId + '/';
     let networkMessageRefPath: string = '/messageRef/network/' + this.networkId + '/';
 
+    msgData['/administratorNetwork/' + this.uid + '/sentmessages/' + this.messageToDelete] = null;
+    msgData['/message/' + this.messageToDelete] = null;
+
     for (let group of networkGroups) {
       let groupPath = networkGroupPath + group;
       let msgRefPath = networkMessageRefPath + group;

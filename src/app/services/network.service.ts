@@ -144,6 +144,20 @@ export class NetworkService {
       })
   }
 
+  getApprovedAgencyIdsForNetwork(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies", {preserveSnapshot: true})
+      .map(snap => {
+        let agencyIds = [];
+        if (snap && snap.val()) {
+          snap.forEach(agencySnap => {
+            if(agencySnap.val().isApproved){
+              agencyIds.push(Object.keys(agencySnap));
+            }
+          });
+          return agencyIds;
+        }
+      })
+  }
   updateNetworkField(data) {
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
@@ -326,12 +340,16 @@ export class NetworkService {
     return this.updateNetworkField(update);
   }
 
-  networkGroupNodeHasUsers(networkId : string) : Observable<boolean> {
+  hasNetworkLevelUsers(networkId : string) : Observable<boolean> {
     let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
     return this.af.database.list(networkGroupPath)
-      .map(users => {
-        return (users != null && users.length > 0);
+      .map(userGroups => {
+        return (userGroups != null && userGroups.length > 0);
       });
+  }
+
+  hasAgencyLevelUsers(agencyIds: string[]){
+    return agencyIds != null && agencyIds.length != 0;
   }
 
   createMessage(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, callback: any) {

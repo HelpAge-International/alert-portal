@@ -54,8 +54,7 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           if (this.networkId){
-            //prepare for message save
-            this.networkService.getAgencyIdsForNetwork(this.networkId)
+            this.networkService.getApprovedAgencyIdsForNetwork(this.networkId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agencyIds =>{
                 this.agencyIds = agencyIds;
@@ -80,17 +79,40 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
   }
 
   private createMessage(){
-    if (this.agencyIds == null || this.agencyIds.length == 0){
-      this.networkService.networkGroupNodeHasUsers(this.networkId)
-        .takeUntil(this.ngUnsubscribe).subscribe (hasUsers => {
-        if (hasUsers){
+    if (this.recipients.allUsers){
+      if(this.networkService.hasAgencyLevelUsers(this.agencyIds)){
+        this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
+      }else{
+        this.networkService.hasNetworkLevelUsers(this.networkId)
+          .takeUntil(this.ngUnsubscribe).subscribe (hasUsers => {
+          if (hasUsers){
+            this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
+          }else{
+            this.alertMessage = new AlertMessageModel("MESSAGES.NO_USERS_IN_GROUP");
+          }
+        });
+      }
+    }else{
+      if(this.recipients.networkCountryAdmins){
+        this.networkService.hasNetworkLevelUsers(this.networkId)
+          .takeUntil(this.ngUnsubscribe).subscribe (hasUsers => {
+          if (hasUsers){
+            this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
+          }else{
+            if(this.networkService.hasAgencyLevelUsers(this.agencyIds)){
+              this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
+            }else{
+              this.alertMessage = new AlertMessageModel("MESSAGES.NO_USERS_IN_GROUP");
+            }
+          }
+        });
+      }else{
+        if(this.networkService.hasAgencyLevelUsers(this.agencyIds)){
           this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
         }else{
           this.alertMessage = new AlertMessageModel("MESSAGES.NO_USERS_IN_GROUP");
         }
-      });
-    }else{
-      this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
+      }
     }
   }
   /**
