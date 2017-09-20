@@ -70,7 +70,7 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
           this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
             if(consNetworkAdmin == nodesAdministratorNetwork.length){
               this.unreadMessages = [];
-              this.router.navigateByUrl("network/network-notifications");
+              this.router.navigateByUrl("network-admin/network-notifications");
             }else{
               consNetworkAdmin++;
             }

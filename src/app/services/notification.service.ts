@@ -26,6 +26,18 @@ export class NotificationService {
     return notificationSettingsSubscription;
   }
 
+  deleteNetworkAdminNotification(userId, networkId, messageId): firebase.Promise<any>{
+    let deleteData = {};
+
+    let nodesAdministratorNetwork = this.getNetworkAdministratorNodes(networkId, userId);
+
+    for (let node of nodesAdministratorNetwork) {
+      deleteData[node + '/' + messageId] = null;
+    }
+
+    return this.deleteNotification(deleteData);
+  }
+
  deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
    let deleteData = {};
 
