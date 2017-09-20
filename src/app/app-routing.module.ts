@@ -404,7 +404,7 @@ const routes: Routes = [
   {path: 'network/network-mpa/network-create-edit-mpa', component: NetworkCreateEditMpaComponent},
   {path: 'network/network-mpa/network-add-generic-action', component: NetworkAddGenericActionComponent},
   {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent},
-  {path: 'network-admin/network-notifications', component: NetworkNotificationsComponent}
+  {path: 'network-admin/network-notifications', component: NetworkNotificationsComponent},
 
   /**
    * Maintanace page
