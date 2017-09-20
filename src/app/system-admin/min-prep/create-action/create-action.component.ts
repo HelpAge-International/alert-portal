@@ -45,6 +45,7 @@ export class CreateActionComponent implements OnInit, OnDestroy {
         }
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.systemUid = systemId;
+          console.log(systemId);
           if (this.chsUid !== "") {
             this.initialEditLoad();
           }

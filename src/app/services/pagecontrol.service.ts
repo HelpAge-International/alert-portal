@@ -435,6 +435,9 @@ export class PageControlService {
                 systemId = x;
               }
             }
+            else if (userType == UserType.SystemAdmin) {
+              systemId = auth.auth.uid;
+            }
             if (userObj.hasOwnProperty('agencyAdmin')) {
               for (let x in userObj.agencyAdmin) {
                 agencyId = x;
