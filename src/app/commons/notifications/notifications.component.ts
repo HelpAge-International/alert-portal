@@ -81,7 +81,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   deleteAllMessages() {
-    console.log("Delete all messages");
     this.doDeleteAll = true;
     jQuery("#delete-message").modal("show");
     this.deleteMessageContent = 'DELETE_MESSAGE_DIALOG.ALL_MSG_CONTENT';
