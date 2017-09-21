@@ -38,6 +38,11 @@
         </div>
         <div class="text-left col-sm-12"><p>{{"GLOBAL.TYPE" | translate}}: <strong>{{"GLOBAL.ACTION_TYPE.MANDATED" | translate}}</strong></p></div>
       </div>
+
+      <div *ngIf="mpaActions.length == 0" class="bg-grey Spaced text-center">
+        <p class="font-weight-bold padding-two">{{"NETWORK.NO_MPA" | translate}}</p>
+      </div>
+
     </div>
 
     <ng-template #empty>

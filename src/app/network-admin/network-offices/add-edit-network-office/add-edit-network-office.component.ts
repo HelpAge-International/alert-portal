@@ -23,24 +23,24 @@ import {NetworkCountryService} from "../../../services/network-country.service";
   styleUrls: ['./add-edit-network-office.component.css']
 })
 export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   //constants and enums
   private COUNTRIES = Constants.COUNTRIES;
+
   private COUNTRY_SELECTION = Constants.COUNTRY_SELECTION;
   private PERSON_TITLE = Constants.PERSON_TITLE;
   private PERSON_TITLE_SELECTION = Constants.PERSON_TITLE_SELECTION;
-
   //models
   private alertMessage: AlertMessageModel = null;
+
   private alertMessageType = AlertMessageType;
   private networkOffice = new NetworkOfficeModel();
   private networkCountryUser = new ModelUserPublic("", "", undefined, "");
   private networkCountryAdmin = new NetworkOfficeAdminModel();
-
   //logic info
   private uid: string;
+
   private networkId: string;
   private network: any;
   private networkModuleSetting: ModuleSettingsModel[];
@@ -48,6 +48,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
   private existingUser: ModelUserPublic;
   private networkCountryId: string;
   private showLoader: boolean;
+  private networkAdmin: any;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -62,6 +63,9 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user,) => {
       this.uid = user.uid;
+      this.networkService.getNetworkAdmin(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(networkAdmin => this.networkAdmin = networkAdmin);
 
       this.route.params
         .takeUntil(this.ngUnsubscribe)
@@ -179,20 +183,24 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
 
     //set network office admin data
     existingUser ? this.networkCountryAdmin.firstLogin = false : this.networkCountryAdmin.firstLogin = true;
-    let networkCountryIds = {};
-    networkCountryIds[keyNetworkCountry] = true;
-    this.networkCountryAdmin.networkCountryIds = networkCountryIds;
+    // let networkCountryIds = {};
+    // networkCountryIds[keyNetworkCountry] = true;
+    // let withNetworkId = {};
+    // withNetworkId[this.networkId] = networkCountryIds;
+    // this.networkCountryAdmin.networkCountryIds = withNetworkId;
     this.networkCountryAdmin.networkId = this.networkId;
+    this.networkCountryAdmin.systemAdmin = this.networkAdmin.systemAdmin;
 
     //root update data
     let data = {};
     data["/networkCountry/" + this.networkId + "/" + keyNetworkCountry] = this.networkOffice;
     data["/module/" + keyNetworkCountry] = this.networkModuleSetting;
     data["/userPublic/" + keyUser] = this.networkCountryUser;
-    // data["/networkCountryAdmin/" + keyUser] = this.networkCountryAdmin;
+    // data["/administratorNetworkCountry/" + keyUser] = this.networkCountryAdmin;
     data["/administratorNetworkCountry/" + keyUser + "/firstLogin"] = this.networkCountryAdmin.firstLogin;
-    data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
-    data["/administratorNetworkCountry/" + keyUser + "/networkId"] = this.networkCountryAdmin.networkId;
+    data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + this.networkId + "/" + keyNetworkCountry] = true;
+    // data["/administratorNetworkCountry/" + keyUser + "/networkId"] = this.networkCountryAdmin.networkId;
+    data["/administratorNetworkCountry/" + keyUser + "/systemAdmin"] = this.networkAdmin.systemAdmin;
     //create gourp node
     data["/group/network/" + this.networkId + "/networkallusersgroup/" + keyUser] = true;
     data["/group/network/" + this.networkId + "/networkcountryadmins/" + keyUser] = true;

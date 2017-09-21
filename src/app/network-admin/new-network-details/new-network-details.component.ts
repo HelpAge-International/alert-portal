@@ -6,6 +6,7 @@ import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkService} from "../../services/network.service";
+import {NetworkUserAccountType} from "../../utils/Enums";
 
 declare var jQuery: any;
 
@@ -68,12 +69,12 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
           this.networkAdminName = user.firstName;
         });
 
-      this.networkService.checkNetworkUserSelection(this.uid)
+      this.networkService.getSelectedIdObj(this.uid)
         .flatMap(data => {
           console.log(data);
-          if (data.isNetworkAdmin) {
-            this.networkId = data.networkId;
-            return this.networkService.getNetworkDetail(data.networkId);
+          if (data["userType"] == NetworkUserAccountType.NetworkAdmin) {
+            this.networkId = data["id"];
+            return this.networkService.getNetworkDetail(this.networkId);
           } else {
             //TODO GET NETWORK COUNTRY DETAIL
           }

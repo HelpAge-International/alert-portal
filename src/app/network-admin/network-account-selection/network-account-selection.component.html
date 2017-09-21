@@ -24,6 +24,14 @@
           <p>{{"NETWORK.NETWORK_ADMINISTRATOR" | translate}} {{"GLOBAL.OF" | translate}} {{network.name}}</p>
           <input type="radio" name="Action-type" (click)="onSelectedNetworkAdminAccount(network.$key)">
         </label>
+
+        <label *ngFor="let networkCountry of networkCountries"
+               class="Checkbox--agency col-lg-3 col-md-4 col-sm-5 font-weight-bold">
+          <img src="{{networkCountry.logoPath ? networkCountry.logoPath : 'assets/images/alert_logo--grey.svg'}}" alt="">
+          <p>{{"NETWORK.NETWORK_COUNTRY_ADMINISTRATOR" | translate}} {{"GLOBAL.OF" | translate}} {{Countries[networkCountry.location] | translate}}</p>
+          <input type="radio" name="Action-type" (click)="onSelectedNetworkCountryAdminAccount(networkCountry.$key, networkIdMap.get(networkCountry.$key))">
+        </label>
+
         <label *ngIf="agencyDetail" class="Checkbox--agency col-lg-3 col-md-4 col-sm-5 font-weight-bold">
           <img src="{{agencyDetail?.logoPath ? agencyDetail.logoPath : 'assets/images/alert_logo--grey.svg'}}">
           <p>{{UserType[userType]}} {{"GLOBAL.OF" | translate}} {{agencyDetail?.name}}</p>

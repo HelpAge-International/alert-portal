@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from "angularfire2";
+import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {ActionLevel, NetworkMessageRecipientType, NetworkUserAccountType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
@@ -36,25 +36,25 @@ export class NetworkService {
     }
   }
 
-  checkNetworkUserSelection(uid: string): Observable<any> {
-    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/selectedNetwork")
-      .flatMap(networkId => {
-        if (networkId.$value) {
-          let data = {};
-          data["isNetworkAdmin"] = true;
-          data["networkId"] = networkId.$value;
-          return Observable.of(data);
-        } else {
-          return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/selectedNetwork")
-            .map(networkCountryId => {
-              let data = {};
-              data["isNetworkAdmin"] = false;
-              data["networkCountryId"] = networkCountryId.$value;
-              return Observable.of(data);
-            })
-        }
-      })
-  }
+  // checkNetworkUserSelection(uid: string): Observable<any> {
+  //   return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/selectedNetwork")
+  //     .flatMap(networkId => {
+  //       if (networkId.$value) {
+  //         let data = {};
+  //         data["isNetworkAdmin"] = true;
+  //         data["networkId"] = networkId.$value;
+  //         return Observable.of(data);
+  //       } else {
+  //         return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/selectedNetwork")
+  //           .map(networkCountryId => {
+  //             let data = {};
+  //             data["isNetworkAdmin"] = false;
+  //             data["networkCountryId"] = networkCountryId.$value;
+  //             return Observable.of(data);
+  //           })
+  //       }
+  //     })
+  // }
 
   getNetworkUserType(uid) {
     return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid, {preserveSnapshot: true})
@@ -73,13 +73,17 @@ export class NetworkService {
       });
   }
 
-  //TODO ADD FOR NETWORK COUNTRY
-  getNetworkDetailByUid(uid) {
-    return this.checkNetworkUserSelection(uid)
-      .flatMap(data => {
-        return data.isNetworkAdmin ? this.getNetworkDetail(data.networkId) : null;
-      })
+  getNetworkAdmin(uid) {
+    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid)
   }
+
+  //TODO ADD FOR NETWORK COUNTRY
+  // getNetworkDetailByUid(uid) {
+  //   return this.checkNetworkUserSelection(uid)
+  //     .flatMap(data => {
+  //       return data.isNetworkAdmin ? this.getNetworkDetail(data.networkId) : null;
+  //     })
+  // }
 
   getSelectedIdObj(uid: string) {
     return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
@@ -150,7 +154,7 @@ export class NetworkService {
         let agencyIds = [];
         if (snap && snap.val()) {
           snap.forEach(agencySnap => {
-            if(agencySnap.val().isApproved){
+            if (agencySnap.val().isApproved) {
               agencyIds.push(Object.keys(agencySnap));
             }
           });
@@ -158,6 +162,7 @@ export class NetworkService {
         }
       })
   }
+
   updateNetworkField(data) {
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
@@ -340,7 +345,7 @@ export class NetworkService {
     return this.updateNetworkField(update);
   }
 
-  hasNetworkLevelUsers(networkId : string) : Observable<boolean> {
+  hasNetworkLevelUsers(networkId: string): Observable<boolean> {
     let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
     return this.af.database.list(networkGroupPath)
       .map(userGroups => {
@@ -348,11 +353,11 @@ export class NetworkService {
       });
   }
 
-  hasAgencyLevelUsers(agencyIds: string[]){
+  hasAgencyLevelUsers(agencyIds: string[]) {
     return agencyIds != null && agencyIds.length != 0;
   }
 
-  createMessage(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], message : NetworkMessageModel, callback: any) {
+  createMessage(context: any, uid: string, networkId: string, agencyIds: string[], recipientTypes: NetworkMessageRecipientType[], message: NetworkMessageModel, callback: any) {
     let messagePath = Constants.APP_STATUS + '/message';
     message.senderId = uid;
     message.time = NetworkService.getUnixTimestampMilliseconds();
@@ -362,12 +367,12 @@ export class NetworkService {
         console.log("Message created successfully");
         this.createMessageReferences(context, uid, networkId, agencyIds, recipientTypes, msg.key, callback);
       })
-      .catch( error => {
+      .catch(error => {
         callback(error, context);
       });
   }
 
-  private createMessageReferences(context: any, uid : string, networkId : string, agencyIds : string[], recipientTypes: NetworkMessageRecipientType[], msgId : string, callback: any) {
+  private createMessageReferences(context: any, uid: string, networkId: string, agencyIds: string[], recipientTypes: NetworkMessageRecipientType[], msgId: string, callback: any) {
 
     let msgRefData = {};
     let agencyGroupPath = Constants.APP_STATUS + '/group/agency/';
@@ -377,8 +382,8 @@ export class NetworkService {
 
     msgRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId] = true;
 
-    if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.AllUsers, recipientTypes)){
-      if(agencyIds != null) {
+    if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.AllUsers, recipientTypes)) {
+      if (agencyIds != null) {
         agencyIds.forEach(agencyId => {
           let groupPathName = 'agencyallusersgroup';
           let agencyAllUsersSelected: string = agencyGroupPath + agencyId + '/' + groupPathName;
@@ -408,20 +413,20 @@ export class NetworkService {
             callback(error, context);
           });
         });
-    }else{
-      if(agencyIds != null){
+    } else {
+      if (agencyIds != null) {
         agencyIds.forEach(agencyId => {
           recipientTypes.forEach(recipient => {
-            if (recipient != NetworkMessageRecipientType.NetworkCountryAdmins){
+            if (recipient != NetworkMessageRecipientType.NetworkCountryAdmins) {
               let groupPathName = NetworkService.getGroupPathNameForRecipientType(recipient);
-              if (groupPathName == null){
+              if (groupPathName == null) {
                 return;
               }
-              let usersSelected: string = agencyGroupPath + agencyId +'/'+groupPathName;
+              let usersSelected: string = agencyGroupPath + agencyId + '/' + groupPathName;
               this.af.database.list(usersSelected, {preserveSnapshot: true})
                 .subscribe((snapshots) => {
                   snapshots.forEach(snapshot => {
-                    msgRefData[agencyMessageRefPath + agencyId + '/'+groupPathName+'/' + snapshot.key + '/' + msgId] = true;
+                    msgRefData[agencyMessageRefPath + agencyId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
                   });
                   this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
                     callback(null, context);
@@ -434,7 +439,7 @@ export class NetworkService {
         });
       }
 
-      if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.NetworkCountryAdmins, recipientTypes)){
+      if (NetworkService.recipientTypeExists(NetworkMessageRecipientType.NetworkCountryAdmins, recipientTypes)) {
         let groupPathName = NetworkService.getGroupPathNameForRecipientType(NetworkMessageRecipientType.NetworkCountryAdmins);
         let networkCountryAdmins: string = networkGroupPath + networkId + '/' + groupPathName;
 
@@ -453,22 +458,22 @@ export class NetworkService {
     }
   }
 
-  private static getUnixTimestampMilliseconds(){
+  private static getUnixTimestampMilliseconds() {
     return new Date().getTime();
   }
 
-  private static recipientTypeExists(recipientType : NetworkMessageRecipientType, recipientTypes: NetworkMessageRecipientType[]) : boolean{
-    let exists : boolean = false;
+  private static recipientTypeExists(recipientType: NetworkMessageRecipientType, recipientTypes: NetworkMessageRecipientType[]): boolean {
+    let exists: boolean = false;
     recipientTypes.forEach(recipient => {
-      if (recipient == recipientType){
-        exists =  true;
+      if (recipient == recipientType) {
+        exists = true;
       }
     });
     return exists;
   }
 
-  private static getGroupPathNameForRecipientType(recipientType : NetworkMessageRecipientType) : string{
-    switch (recipientType){
+  private static getGroupPathNameForRecipientType(recipientType: NetworkMessageRecipientType): string {
+    switch (recipientType) {
       case NetworkMessageRecipientType.NetworkCountryAdmins:
         return 'networkcountryadmins';
       case NetworkMessageRecipientType.Donors:
@@ -490,8 +495,34 @@ export class NetworkService {
       case NetworkMessageRecipientType.GlobalDirectors:
         return 'globaldirector';
       default:
-        console.log("No group name available for this type of user: "+recipientType);
+        console.log("No group name available for this type of user: " + recipientType);
         return null;
     }
+  }
+
+
+  /**
+   * NETWORK COUNTRY OFFICE ADMIN
+   */
+  getNetworkCountryAdminDetail(uid): FirebaseObjectObservable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid)
+  }
+
+  getAllNetworkCountries(uid) {
+    return this.af.database.list(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/networkCountryIds", {preserveSnapshot: true})
+      .map(snaps => {
+        console.log(snaps)
+        return snaps.map(snap => {
+          let officeObj = {};
+          officeObj["networkId"] = snap.key;
+          officeObj["networkCountryIds"] = snap.val() ? Object.keys(snap.val()) : [];
+          console.log(officeObj);
+          return officeObj;
+        })
+      })
+  }
+
+  getNetworkCountry(networkId, networkCountryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId)
   }
 }
