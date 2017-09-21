@@ -108,7 +108,6 @@ export class AgencyService {
       });
     return displayList;
   }
-
   public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
     if (!agencyId || !countryId || !countryOfficeAddress) {
       return Promise.reject('Missing agencyId, countryId or countryOfficeAddress');

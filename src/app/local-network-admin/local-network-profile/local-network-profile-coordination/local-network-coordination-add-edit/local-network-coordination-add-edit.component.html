@@ -1,0 +1,107 @@
+<app-local-network-header></app-local-network-header>
+<app-local-network-menu></app-local-network-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Back--button row" (click)="goBack()">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.GO_BACK_TITLE' | translate }}</div> <!-- Back button-->
+    <div class="Header-title__wrap">
+      <h1 *ngIf="!coordinationArrangement.id">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.ADD_TITLE' | translate }}</h1>
+      <div class="col-sm-11" *ngIf="coordinationArrangement.id"><h1>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EDIT_TITLE' | translate }}</h1></div>
+      <div class="col-sm-1 Right-aligned" *ngIf="coordinationArrangement.id">
+        <button class="btn btn-danger text-uppercase" (click)="deleteCoordinationArrangement()">{{ 'DELETE' | translate }}</button>
+      </div>
+    </div><br>
+
+    <form (ngSubmit)="submit()">
+      <div class="row">
+        <p class="col-sm-12"><strong>{{ 'ADD_PARTNER.SECTOR' | translate }}</strong></p>
+        <div class="col-sm-4">
+          <select class="form-control" id="sector"  name="sector"
+                  [(ngModel)] = "coordinationArrangement.sector">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let responsePlanSector of responsePlansSectors | enumKeyValues"
+                    [value]="responsePlanSector.key">{{ responsePlansSectorsSelection[responsePlanSector.key] | translate}}</option>
+          </select>
+        </div>
+      </div><br>
+
+      <div class="row form-group margin-bottom-none">
+        <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD' | translate }}</strong></p></div>
+        <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate }}</strong></p></div>
+        <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL' | translate }}</strong></p></div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <input class="col-sm-12 form-control" type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="sectorLead"
+                 [(ngModel)]="coordinationArrangement.sectorLead">
+        </div>
+        <div class="col-sm-4">
+          <input class="col-sm-12 form-control" type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="contactName"
+                 [(ngModel)]="coordinationArrangement.contactName"></div>
+        <div class="col-sm-4">
+          <input class="col-sm-12 form-control" type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="contactEmail"
+                 [(ngModel)]="coordinationArrangement.contactEmail">
+        </div>
+      </div> <br>
+
+      <div class="row">
+        <div class="col-sm-12"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE' | translate }}</strong></p></div>
+        <div class="col-sm-4 form-group margin-bottom-none">
+          <input class="col-sm-12 form-control" type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="contactPhone"
+                 [(ngModel)]="coordinationArrangement.contactPhone">
+        </div>
+      </div><br>
+
+      <div class="row Spaced-above">
+        <div class="col-sm-4 margin-bottom-none"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.IS_AGENCY_MEMBER' | translate: { value: agency?.name} }}</strong></p></div>
+      </div>
+
+
+
+      <div class="row">
+        <p class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.STAFF_MEMBER' | translate: { value: agency?.name} }}</strong></p>
+        <div class="dropdown col-sm-4">
+          <select class="form-control" id="sector"  name="staffMember"
+                  [(ngModel)] = "coordinationArrangement.staffMember">
+            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let staff of staffList"
+                    [value]="staff.id">{{ staffNamesList && staffNamesList[staff.id] }}</option>
+          </select>
+        </div>
+      </div><br>
+
+      <!--Save and cancel-->
+      <div class="row Spaced">
+        <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
+        <div class="col-sm-1 margin-top-one">
+          <a href="javascript:void(0)" (click)="goBack()">
+            {{ 'GLOBAL.CANCEL' | translate }}
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

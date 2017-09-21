@@ -1,0 +1,25 @@
+<app-local-network-header></app-local-network-header>
+<app-local-network-menu></app-local-network-menu>
+
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap padding-top-none">
+  <div class="Full-page__wrap--inner">
+    <div class="row Spaced col-sm-12">
+      <div class="col-sm-10">
+        <h2>Network Agencies</h2>
+      </div>
+      <div class="col-sm-2">
+        <button data-toggle="modal" class="btn btn-primary text-uppercase"
+                (click)="navigateToAddAgency()">Invite agencies
+        </button>
+      </div>
+    </div>
+
+    <div class="row col-sm-12 Spaced no-agencies">
+      <p><strong>You have not selected any agencies to be part of your network</strong></p>
+    </div>
+
+  </div>
+</div>
