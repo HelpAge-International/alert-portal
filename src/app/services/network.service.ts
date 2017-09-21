@@ -144,20 +144,6 @@ export class NetworkService {
       })
   }
 
-  getApprovedAgencyIdsForNetwork(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies", {preserveSnapshot: true})
-      .map(snap => {
-        let agencyIds = [];
-        if (snap && snap.val()) {
-          snap.forEach(agencySnap => {
-            if(agencySnap.val().isApproved){
-              agencyIds.push(Object.keys(agencySnap));
-            }
-          });
-          return agencyIds;
-        }
-      })
-  }
   updateNetworkField(data) {
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
@@ -382,6 +368,8 @@ export class NetworkService {
         agencyIds.forEach(agencyId => {
           let groupPathName = 'agencyallusersgroup';
           let agencyAllUsersSelected: string = agencyGroupPath + agencyId + '/' + groupPathName;
+          console.log(agencyAllUsersSelected);
+
           this.af.database.list(agencyAllUsersSelected, {preserveSnapshot: true})
             .subscribe((snapshots) => {
               snapshots.forEach(snapshot => {
@@ -418,6 +406,8 @@ export class NetworkService {
                 return;
               }
               let usersSelected: string = agencyGroupPath + agencyId +'/'+groupPathName;
+              console.log(usersSelected);
+
               this.af.database.list(usersSelected, {preserveSnapshot: true})
                 .subscribe((snapshots) => {
                   snapshots.forEach(snapshot => {

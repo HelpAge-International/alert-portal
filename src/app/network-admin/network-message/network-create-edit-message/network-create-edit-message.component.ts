@@ -54,7 +54,7 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           if (this.networkId){
-            this.networkService.getApprovedAgencyIdsForNetwork(this.networkId)
+            this.networkService.getAgencyIdsForNetwork(this.networkId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agencyIds =>{
                 this.agencyIds = agencyIds;
