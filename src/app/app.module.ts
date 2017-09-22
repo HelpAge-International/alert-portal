@@ -220,6 +220,10 @@ import { NetworkCreateEditMpaComponent } from './network-admin/network-mpa/netwo
 import { NetworkAddGenericActionComponent } from './network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component';
 import { NetworkCreateEditMessageComponent } from './network-admin/network-message/network-create-edit-message/network-create-edit-message.component';
 import { NetworkNotificationsComponent } from './network-admin/network-notifications/network-notifications.component';
+import { NetworkDashboardComponent } from './network-country-admin/network-dashboard/network-dashboard.component';
+import { NetworkRiskMinitoringComponent } from './network-country-admin/network-risk-minitoring/network-risk-minitoring.component';
+import { NetworkPlansComponent } from './network-country-admin/network-plans/network-plans.component';
+import { NetworkGlobalMapComponent } from './network-country-admin/network-global-map/network-global-map.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -431,7 +435,11 @@ const firebaseAuthConfig = {
     NetworkCreateEditMpaComponent,
     NetworkAddGenericActionComponent,
     NetworkCreateEditMessageComponent,
-    NetworkNotificationsComponent
+    NetworkNotificationsComponent,
+    NetworkDashboardComponent,
+    NetworkRiskMinitoringComponent,
+    NetworkPlansComponent,
+    NetworkGlobalMapComponent
   ],
   imports: [
     BrowserModule,

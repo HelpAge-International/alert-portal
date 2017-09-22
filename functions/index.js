@@ -3010,7 +3010,7 @@ exports.sendNetworkAgencyValidationEmail_UAT_2 = functions.database.ref('/uat-2/
 
 /***********************************************************************************************************************/
 //for sand
-exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -3040,7 +3040,7 @@ exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/networkCou
     }
   });
 
-exports.createUserNetworkCountry_TEST = functions.database.ref('/test/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_TEST = functions.database.ref('/test/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -3070,7 +3070,7 @@ exports.createUserNetworkCountry_TEST = functions.database.ref('/test/networkCou
     }
   });
 
-exports.createUserNetworkCountry_UAT = functions.database.ref('/uat/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_UAT = functions.database.ref('/uat/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -3100,7 +3100,7 @@ exports.createUserNetworkCountry_UAT = functions.database.ref('/uat/networkCount
     }
   });
 
-exports.createUserNetworkCountry_UAT_2 = functions.database.ref('/uat-2/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_UAT_2 = functions.database.ref('/uat-2/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
