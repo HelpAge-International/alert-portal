@@ -88,7 +88,7 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
         Observable.timer(Constants.ALERT_REDIRECT_DURATION)
           .takeUntil(this.ngUnsubscribe).subscribe(() => {
           this.successInactive = true;
-          this.router.navigateByUrl('network/new-network-details');
+          this.networkUserType == NetworkUserAccountType.NetworkAdmin ? this.router.navigateByUrl('network/new-network-details') : this.router.navigateByUrl('network-country/network-dashboard');
         });
       }, error => {
         console.log(error.message);

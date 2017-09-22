@@ -3130,3 +3130,112 @@ exports.createUserNetworkCountry_UAT_2 = functions.database.ref('/uat-2/administ
     }
   });
 /***********************************************************************************************************************/
+
+/***********************************************************************************************************************/
+//for sand
+exports.updateUserEmail_SAND = functions.database.ref('/sand/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+      // admin.database().ref("/uat-2/userPublic/" + adminId)
+      //   .once("value", data => {
+      //     let userDb = data.val();
+      //     console.log(userDb);
+      //
+      //     admin.auth().createUser({
+      //       uid: adminId,
+      //       email: userDb.email,
+      //       password: TEMP_PASS
+      //     })
+      //       .then(user => {
+      //         console.log("Successfully created new user: " + user.uid)
+      //       })
+      //       .catch(error => {
+      //         console.log("Error creating new user:", error)
+      //       })
+      //
+      //   });
+    }
+  });
+
+exports.updateUserEmail_TEST = functions.database.ref('/test/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+    }
+  });
+
+exports.updateUserEmail_UAT = functions.database.ref('/uat/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+    }
+  });
+
+exports.updateUserEmail_UAT_2 = functions.database.ref('/uat-2/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+    }
+  });
+/***********************************************************************************************************************/

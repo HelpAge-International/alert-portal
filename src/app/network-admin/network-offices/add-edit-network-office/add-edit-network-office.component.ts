@@ -214,7 +214,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     console.log("update");
     //generate all keys
     const keyNetworkCountry = this.networkCountryId;
-    const keyUser = existingUser ? existingUser.id : this.networkService.generateKeyUserPublic();
+    // const keyUser = existingUser ? existingUser.id : this.networkService.generateKeyUserPublic();
+    const keyUser = this.networkCountryUser.id;
 
     //set network office data
     this.networkOffice.adminId = keyUser;

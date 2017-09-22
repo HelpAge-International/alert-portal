@@ -140,6 +140,16 @@ import {NetworkCreateEditMpaComponent} from "./network-admin/network-mpa/network
 import {NetworkAddGenericActionComponent} from "./network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component";
 import {NetworkCreateEditMessageComponent} from "./network-admin/network-message/network-create-edit-message/network-create-edit-message.component";
 import {NetworkNotificationsComponent} from "./network-admin/network-notifications/network-notifications.component";
+import {NetworkDashboardComponent} from "./network-country-admin/network-dashboard/network-dashboard.component";
+import {NetworkRiskMinitoringComponent} from "./network-country-admin/network-risk-minitoring/network-risk-minitoring.component";
+import {NetworkPlansComponent} from "./network-country-admin/network-plans/network-plans.component";
+import {NetworkGlobalMapComponent} from "./network-country-admin/network-global-map/network-global-map.component";
+import {NetworkCountryAgenciesComponent} from "./network-country-admin/network-administration/network-country-agencies/network-country-agencies.component";
+import {NetworkCountrySettingsComponent} from "./network-country-admin/network-administration/network-country-settings/network-country-settings.component";
+import {NetworkCountryMessagesComponent} from "./network-country-admin/network-administration/network-country-messages/network-country-messages.component";
+import {NetworkCountryMpaComponent} from "./network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component";
+import {NetworkCountryApaComponent} from "./network-country-admin/network-preparedness/network-country-apa/network-country-apa.component";
+import {NetworkCountryBudgetComponent} from "./network-country-admin/network-preparedness/network-country-budget/network-country-budget.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -405,6 +415,20 @@ const routes: Routes = [
   {path: 'network/network-mpa/network-add-generic-action', component: NetworkAddGenericActionComponent},
   {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent},
   {path: 'network-admin/network-notifications', component: NetworkNotificationsComponent},
+
+  /**
+   * Network Country Admin
+   */
+  {path: 'network-country/network-dashboard', component: NetworkDashboardComponent},
+  {path: 'network-country/network-risk-monitoring', component: NetworkRiskMinitoringComponent},
+  {path: 'network-country/network-plans', component: NetworkPlansComponent},
+  {path: 'network-country/network-global-map', component: NetworkGlobalMapComponent},
+  {path: 'network-country/network-country-agencies', component: NetworkCountryAgenciesComponent},
+  {path: 'network-country/network-country-settings', component: NetworkCountrySettingsComponent},
+  {path: 'network-country/network-country-messages', component: NetworkCountryMessagesComponent},
+  {path: 'network-country/network-country-mpa', component: NetworkCountryMpaComponent},
+  {path: 'network-country/network-country-apa', component: NetworkCountryApaComponent},
+  {path: 'network-country/network-country-budget', component: NetworkCountryBudgetComponent},
 
   /**
    * Maintanace page

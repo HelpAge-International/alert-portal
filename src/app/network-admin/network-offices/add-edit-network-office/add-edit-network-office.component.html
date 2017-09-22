@@ -9,7 +9,8 @@
 <div class="Page-top__wrap padding-top-none">
   <div class="Full-page__wrap--inner">
     <!--<div class="Back&#45;&#45;button row">Country Offices</div> &lt;!&ndash; Back button&ndash;&gt;-->
-    <h1 class="col-sm-12 margin-top-one">{{"NETWORK.ADD_NEW_NETWORK_OFFICE" | translate}}</h1><br>
+    <h1 *ngIf="!isEditing" class="col-sm-12 margin-top-one">{{"NETWORK.ADD_NEW_NETWORK_OFFICE" | translate}}</h1><br>
+    <h1 *ngIf="isEditing" class="col-sm-12 margin-top-one">{{"EDIT_NETWORK_OFFICE" | translate}}</h1><br>
     <h6 class="col-sm-12 font-weight-bold">{{"NETWORK.OFFICE_DETAIL" | translate}}</h6>
     <div class="Line-row"></div>
 
@@ -32,7 +33,7 @@
       </div>
       <br>
 
-      <h6 class="col-sm-12 font-weight-bold Spaced-above">{{"NETWORK.OFFICE_DETAIL" | translate}}</h6>
+      <h6 class="col-sm-12 font-weight-bold Spaced-above">{{"NETWORK.OFFICE_ADMIN_DETAIL" | translate}}</h6>
       <div class="Line-row"></div>
 
       <div class="row col-sm-12">

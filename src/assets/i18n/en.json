@@ -1,4 +1,10 @@
 {
+  "EDIT_NETWORK_OFFICE":"Edit Network Office",
+  "NETWORK_OFFICE_MESSAGES":"Network Office messages",
+  "NETWORK_OFFICE_SETTINGS":"Network Office settings",
+  "NETWORK_AGENCIES_IN_THIS_COUNTRY":"Network agencies in this country",
+  "ADMINISTRATION":"Administration",
+  "NETWORK_OFFICE_PROFILE":"Network Office",
   "PLEASE_SELECT_ACCOUNT_TO_CONTINUE":"Please select an account to continue",
   "DELETE_LEAD_AGENCY_ERROR":"Lead agency can not be deleted!",
   "DELETE_ACTION_DIALOG":{

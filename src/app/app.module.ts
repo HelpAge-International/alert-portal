@@ -224,6 +224,14 @@ import { NetworkDashboardComponent } from './network-country-admin/network-dashb
 import { NetworkRiskMinitoringComponent } from './network-country-admin/network-risk-minitoring/network-risk-minitoring.component';
 import { NetworkPlansComponent } from './network-country-admin/network-plans/network-plans.component';
 import { NetworkGlobalMapComponent } from './network-country-admin/network-global-map/network-global-map.component';
+import { NetworkCountryHeaderComponent } from './network-country-admin/network-country-header/network-country-header.component';
+import { NetworkCountryMenuComponent } from './network-country-admin/network-country-menu/network-country-menu.component';
+import { NetworkCountryAgenciesComponent } from './network-country-admin/network-administration/network-country-agencies/network-country-agencies.component';
+import { NetworkCountrySettingsComponent } from './network-country-admin/network-administration/network-country-settings/network-country-settings.component';
+import { NetworkCountryMessagesComponent } from './network-country-admin/network-administration/network-country-messages/network-country-messages.component';
+import { NetworkCountryMpaComponent } from './network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component';
+import { NetworkCountryApaComponent } from './network-country-admin/network-preparedness/network-country-apa/network-country-apa.component';
+import { NetworkCountryBudgetComponent } from './network-country-admin/network-preparedness/network-country-budget/network-country-budget.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -439,7 +447,15 @@ const firebaseAuthConfig = {
     NetworkDashboardComponent,
     NetworkRiskMinitoringComponent,
     NetworkPlansComponent,
-    NetworkGlobalMapComponent
+    NetworkGlobalMapComponent,
+    NetworkCountryHeaderComponent,
+    NetworkCountryMenuComponent,
+    NetworkCountryAgenciesComponent,
+    NetworkCountrySettingsComponent,
+    NetworkCountryMessagesComponent,
+    NetworkCountryMpaComponent,
+    NetworkCountryApaComponent,
+    NetworkCountryBudgetComponent
   ],
   imports: [
     BrowserModule,

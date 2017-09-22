@@ -8,6 +8,7 @@ import {Constants} from "../../utils/Constants";
 import {NetworkUserAccountType, UserType} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {NetworkService} from "../../services/network.service";
+import {NetworkCountryModel} from "../../network-country-admin/network-country.model";
 
 declare var jQuery: any;
 
@@ -37,7 +38,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   private agencyDetail: any;
   private UserType = UserType;
   private userType: UserType;
-  private networkCountries = [];
+  private networkCountries:NetworkCountryModel[] = [];
   private networkIdMap = new Map<string, string>();
 
   constructor(private pageControl: PageControlService,
@@ -250,7 +251,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
               } else {
                 //TODO NAVIGATTE TO NETWORK ADMIN DASHBOARD
                 console.log("navigate to network admin page!!!");
-                // this.router.navigateByUrl('/network/network-offices');
+                this.router.navigateByUrl('/network-country/network-dashboard');
               }
             }
           });
@@ -263,7 +264,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
             } else {
               console.log("to main page");
               //TODO NAVIGATE TO ADMIN PAGE
-              // this.router.navigateByUrl('/network/network-offices');
+              this.router.navigateByUrl('/network-country/network-dashboard');
             }
           })
       }

@@ -15,6 +15,7 @@ import {NetworkMessageModel} from "../network-admin/network-message/network-crea
 import {Subject} from "rxjs/Subject";
 import {NetworkMessageRecipientModel} from "../network-admin/network-message/network-create-edit-message/network-message-recipient.model";
 import {Router} from "@angular/router";
+import {NetworkCountryModel} from "../network-country-admin/network-country.model";
 
 @Injectable()
 export class NetworkService {
@@ -91,12 +92,13 @@ export class NetworkService {
         if (snap.val()) {
           let selection = snap.val();
           let selectData = {};
-          if (selection.selectedNetwork) {
+          if (!selection.selectedNetworkCountry) {
             selectData["userType"] = NetworkUserAccountType.NetworkAdmin;
             selectData["id"] = selection.selectedNetwork;
           } else {
             selectData["userType"] = NetworkUserAccountType.NetworkCountryAdmin;
-            selectData["id"] = selection.selectedNetworkCountry;
+            selectData["id"] = selection.selectedNetwork;
+            selectData["networkCountryId"] = selection.selectedNetworkCountry;
           }
           return Observable.of(selectData);
         } else {
@@ -522,7 +524,13 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountry(networkId, networkCountryId) {
+  getNetworkCountry(networkId, networkCountryId) : Observable<NetworkCountryModel> {
     return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId)
+      .map(networkCountry =>{
+        let model = new NetworkCountryModel();
+        model.mapFromObject(networkCountry);
+        model.id = networkCountry.$key;
+        return model;
+      })
   }
 }
