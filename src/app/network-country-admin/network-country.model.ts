@@ -8,6 +8,7 @@ export class NetworkCountryModel extends BaseModel {
   public isActive: boolean;
   public location: number;
   public clockSettings: any;
+  public agencyCountries: any;
 
   validate(excludedFields): AlertMessageModel {
     return undefined;

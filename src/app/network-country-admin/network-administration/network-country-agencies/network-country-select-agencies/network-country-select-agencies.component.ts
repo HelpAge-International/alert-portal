@@ -1,22 +1,21 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
-import {AlertMessageModel} from "../../../model/alert-message.model";
-import {AlertMessageType, NetworkUserAccountType} from "../../../utils/Enums";
-import {PageControlService} from "../../../services/pagecontrol.service";
-import {NetworkService} from "../../../services/network.service";
+import {AlertMessageModel} from "../../../../model/alert-message.model";
+import {AlertMessageType} from "../../../../utils/Enums";
+import {PageControlService} from "../../../../services/pagecontrol.service";
+import {NetworkService} from "../../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {AgencyService} from "../../../services/agency-service.service";
-import {ModelAgency} from "../../../model/agency.model";
-import {Observable} from "rxjs/Observable";
+import {AgencyService} from "../../../../services/agency-service.service";
+import {ModelAgency} from "../../../../model/agency.model";
 
 declare const jQuery: any;
 
 @Component({
-  selector: 'app-invite-agencies',
-  templateUrl: './invite-agencies.component.html',
-  styleUrls: ['./invite-agencies.component.css']
+  selector: 'app-network-country-select-agencies',
+  templateUrl: './network-country-select-agencies.component.html',
+  styleUrls: ['./network-country-select-agencies.component.css']
 })
-export class InviteAgenciesComponent implements OnInit, OnDestroy {
+export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
@@ -31,13 +30,14 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
   //logic
   private networkId: string;
   private networkCountryId: string;
-  private agencies: Observable<ModelAgency[]>;
+  private agencies: ModelAgency[] = [];
   private agencySelectionMap = new Map<string, boolean>();
   private agencyNameMap = new Map<string, string>();
   private selectedAgencies: string[];
   private leadAgencyId: string;
   private existingAgencyIds: string[];
   private showLoader: boolean;
+  private countryAgencyMap = new Map<string, string>();
 
 
   constructor(private pageControl: PageControlService,
@@ -51,18 +51,46 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
 
-      //get network id
+      //get network id and network country id
       this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
+          this.networkCountryId = selection["networkCountryId"];
           this.showLoader = false;
 
-          //fetch all agencies
-          this.agencies = this.agencyService.getAllAgencyFromPlatform();
+          //get network country object
+          this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(networkCountry => {
+
+              //get all approved agencies
+              this.agencyService.getApprovedAgenciesByNetwork(this.networkId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(approvedAgencies => {
+                  this.agencies = [];
+                  approvedAgencies.forEach(agency => {
+                    agency.takeUntil(this.ngUnsubscribe).subscribe(agencyObj => {
+
+                      //filter agencies only with same country stay
+                      this.agencyService.countryExistInAgency(networkCountry.location, agencyObj.id)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(country => {
+                          if (country) {
+                            this.agencies.push(agencyObj);
+                            console.log(this.agencies);
+                            console.log(country);
+                            this.countryAgencyMap.set(country.id, agencyObj.id);
+                          }
+                        })
+                    })
+                  })
+                })
+
+            });
 
           //fetch already added agency ids
-          this.networkService.getAgencyIdsForNetwork(this.networkId)
+          this.networkService.getAgencyIdsForNetworkCountryOffice(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(ids => {
               if (ids) {
@@ -71,7 +99,7 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
             });
 
           //fetch lead agency id
-          this.networkService.getLeadAgencyId(this.networkId)
+          this.networkService.getLeadAgencyIdForNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(id => {
               if (id) {
@@ -86,7 +114,6 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    this.agencyService.unSubscribeNow();
   }
 
   toggleAgencySelection(agency, value) {
@@ -118,8 +145,8 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
 
   saveAgenciesAndLead() {
     console.log("save agencies and lead agency");
-    this.networkService.updateAgenciesForNetwork(this.networkId, this.leadAgencyId, this.selectedAgencies).then(() => {
-      this.router.navigateByUrl("/network/network-agencies");
+    this.networkService.updateAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.leadAgencyId, this.countryAgencyMap).then(() => {
+      this.router.navigateByUrl("/network-country/network-country-agencies");
     }).catch(rej => {
       this.alertMessage = new AlertMessageModel(rej.message);
     });

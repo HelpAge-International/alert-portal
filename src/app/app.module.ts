@@ -232,6 +232,7 @@ import { NetworkCountryMessagesComponent } from './network-country-admin/network
 import { NetworkCountryMpaComponent } from './network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component';
 import { NetworkCountryApaComponent } from './network-country-admin/network-preparedness/network-country-apa/network-country-apa.component';
 import { NetworkCountryBudgetComponent } from './network-country-admin/network-preparedness/network-country-budget/network-country-budget.component';
+import { NetworkCountrySelectAgenciesComponent } from './network-country-admin/network-administration/network-country-agencies/network-country-select-agencies/network-country-select-agencies.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -455,7 +456,8 @@ const firebaseAuthConfig = {
     NetworkCountryMessagesComponent,
     NetworkCountryMpaComponent,
     NetworkCountryApaComponent,
-    NetworkCountryBudgetComponent
+    NetworkCountryBudgetComponent,
+    NetworkCountrySelectAgenciesComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,6 @@
 {
+  "INVITE_AGENCY_CONTENT_NETWORK_COUNTRY":"You are about to invite the following agencies to become active members in this country:",
+  "NO_AGENCIES_ACTIVE_IN_THIS_COUNTRY":"You have not selected any agencies to be active in this country",
   "EDIT_NETWORK_OFFICE":"Edit Network Office",
   "NETWORK_OFFICE_MESSAGES":"Network Office messages",
   "NETWORK_OFFICE_SETTINGS":"Network Office settings",

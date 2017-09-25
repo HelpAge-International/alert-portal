@@ -150,6 +150,7 @@ import {NetworkCountryMessagesComponent} from "./network-country-admin/network-a
 import {NetworkCountryMpaComponent} from "./network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component";
 import {NetworkCountryApaComponent} from "./network-country-admin/network-preparedness/network-country-apa/network-country-apa.component";
 import {NetworkCountryBudgetComponent} from "./network-country-admin/network-preparedness/network-country-budget/network-country-budget.component";
+import {NetworkCountrySelectAgenciesComponent} from "./network-country-admin/network-administration/network-country-agencies/network-country-select-agencies/network-country-select-agencies.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -424,6 +425,7 @@ const routes: Routes = [
   {path: 'network-country/network-plans', component: NetworkPlansComponent},
   {path: 'network-country/network-global-map', component: NetworkGlobalMapComponent},
   {path: 'network-country/network-country-agencies', component: NetworkCountryAgenciesComponent},
+  {path: 'network-country/network-country-agencies/select-agencies', component: NetworkCountrySelectAgenciesComponent},
   {path: 'network-country/network-country-settings', component: NetworkCountrySettingsComponent},
   {path: 'network-country/network-country-messages', component: NetworkCountryMessagesComponent},
   {path: 'network-country/network-country-mpa', component: NetworkCountryMpaComponent},

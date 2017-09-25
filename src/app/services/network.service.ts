@@ -524,13 +524,84 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountry(networkId, networkCountryId) : Observable<NetworkCountryModel> {
+  getNetworkCountry(networkId, networkCountryId): Observable<NetworkCountryModel> {
     return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId)
-      .map(networkCountry =>{
+      .map(networkCountry => {
         let model = new NetworkCountryModel();
         model.mapFromObject(networkCountry);
         model.id = networkCountry.$key;
         return model;
       })
   }
+
+  getAgencyIdsForNetworkCountryOffice(networkId, networkCountryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries", {preserveSnapshot: true})
+      .map(snap => {
+        if (snap && snap.val()) {
+          return Object.keys(snap.val());
+        }
+      })
+  }
+
+  updateAgenciesForNetworkCountry(networkId: string, networkCountryId: string, leadAgencyId: string, selectedAgencyCountryMap: Map<string, string>) {
+    let data = {};
+    data["/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId"] = leadAgencyId;
+    selectedAgencyCountryMap.forEach((v, k) => {
+      data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + v + "/" + k + "/isApproved"] = false;
+    });
+    return this.af.database.object(Constants.APP_STATUS).update(data);
+  }
+
+  getLeadAgencyIdForNetworkCountry(networkId, networkCountryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId")
+      .map(data => {
+        return data.$value;
+      });
+  }
+
+  getAgenciesForNetworkCountry(networkId, networkCountryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries")
+      .map(agencies => {
+        if (agencies) {
+          let agencyIds = Object.keys(agencies);
+          let agencyModels = [];
+          agencies.forEach(agency => {
+            let model = new NetworkAgencyModel();
+            model.id = agency.$key;
+            model.isApproved = agency.isApproved;
+            agencyModels.push(model);
+          });
+          return agencyModels;
+        }
+      });
+  }
+
+  resendEmailNetworkCountry(networkId, networkCountryId, agencyId, countryId) {
+    let data = {};
+    data["isApproved"] = false;
+    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + countryId).set(null).then(() => {
+      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + countryId).set(data);
+    });
+  }
+
+  mapAgencyCountryForNetworkCountry(networkId, networkCountryId) {
+    return this.getNetworkCountry(networkId, networkCountryId)
+      .map(networkCountry => {
+        if (networkCountry.agencyCountries) {
+          let agencyCountries = networkCountry.agencyCountries;
+          let agencyCountryList = Object.keys(agencyCountries).map(key => {
+            let obj = {};
+            obj["agencyId"] = key;
+            obj["countryId"] = Object.keys(agencyCountries[key])[0];
+            return obj;
+          });
+          let agencyCountryMap = new Map<string, string>();
+          agencyCountryList.forEach(item => {
+            agencyCountryMap.set(item["agencyId"], item["countryId"]);
+          });
+          return agencyCountryMap;
+        }
+      });
+  }
+
 }
