@@ -10,7 +10,8 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap">
       <h1>{{"NETWORK_AGENCIES_IN_THIS_COUNTRY" | translate}}</h1>
-      <button type="button" class="btn btn-primary uppercase" routerLink="/network-country/network-country-agencies/select-agencies">
+      <button type="button" class="btn btn-primary uppercase"
+              routerLink="/network-country/network-country-agencies/select-agencies">
         {{"NETWORK.SELECT_AGENCIES" | translate}}
       </button>
     </div>
@@ -20,7 +21,8 @@
     <div *ngIf="leadAgencyId">
       <div class="row col-sm-12 Spaced-above" *ngIf="leadAgency | async as lead">
         <div class="row col-sm-8">
-          <p class="col-sm-5 margin-left-two-half"><strong>{{"NETWORK.LEAD_AGENCY" | translate}}:</strong> {{lead.name}}</p>
+          <p class="col-sm-6 margin-left-two-half"><strong>{{"NETWORK_OFFICE_LEAD_AGENCY" | translate}}:</strong>
+            {{lead.name}}</p>
           <a href="#leadAgencySelection" data-toggle="modal" class="col-sm-1">edit</a>
         </div>
       </div>
@@ -37,9 +39,12 @@
           </div>
           <p class="col-sm-4 margin-top-two">{{agency.name}}</p>
           <a href="#agencyAdminTooltipOne{{i}}" data-toggle="collapse" class="col-sm-4 margin-top-two"><img
-            class="margin-right-one" src="assets/images/icons/contact.svg" alt="">{{"NETWORK.VIEW_AGENCY_ADMIN_CONTACT_INFO" | translate}}</a>
-          <p class="col-sm-2 margin-top-two">{{agency.isApproved ? ('GLOBAL.ACTIVE' | translate) : ('NETWORK.INVITATION_SENT' | translate)}}
-            <a *ngIf="!agency.isApproved" href="javascript:void(0)" (click)="resendEmail(agency.id)">&nbsp;{{"RESEND" | translate}}</a></p>
+            class="margin-right-one" src="assets/images/icons/contact.svg" alt="">{{"VIEW_COUNTRY_ADMIN_CONTACT_INFO" |
+            translate}}</a>
+          <p class="col-sm-2 margin-top-two">{{agency.isApproved ? ('GLOBAL.ACTIVE' | translate) :
+            ('NETWORK.INVITATION_SENT' | translate)}}
+            <a *ngIf="!agency.isApproved" href="javascript:void(0)" (click)="resendEmail(agency.id)">&nbsp;{{"RESEND" |
+              translate}}</a></p>
           <div class="col-sm-1 margin-top-one">
             <button href="#leadAgencyRemove" data-toggle="modal" class="btn btn-danger"
                     (click)="removeAgency(agency.id)">{{"GLOBAL.REMOVE" | translate}}
@@ -52,19 +57,23 @@
         <div class="Tooltip__bubble container-fluid network-agency info collapse" id="agencyAdminTooltipOne{{i}}"
              data-parent="#agencyAdminTooltipOne" aria-controls="agencyAdminTooltipOne">
           <div class="log_left p-3 row col-sm-12">
-            <h3 class="font-weight-bold">{{"NETWORK.AGENCY_ADMIN_CONTACT_INFO" | translate}}</h3>
-            <a href="#agencyAdminTooltipOne{{i}}" class="margin-left-five text-right col-sm-12" data-toggle="collapse">{{"GLOBAL.CLOSE" | translate}}</a>
+            <h3 class="font-weight-bold">{{"COUNTRY_ADMIN_CONTACT_INFO" | translate}}</h3>
+            <a href="#agencyAdminTooltipOne{{i}}" class="margin-left-five text-right col-sm-12" data-toggle="collapse">{{"GLOBAL.CLOSE"
+              | translate}}</a>
           </div>
           <div class="row col-sm-10 no-padding">
-            <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" | translate}}</strong></p></div>
+            <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" |
+              translate}}</strong></p></div>
             <div class="col-sm-4"><p>{{agency.adminName}}</p></div>
           </div>
           <div class="row col-sm-10 no-padding">
-            <div class="col-sm-2 no-padding-right min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" | translate}}</strong></p></div>
+            <div class="col-sm-2 no-padding-right min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE"
+              | translate}}</strong></p></div>
             <div class="col-sm-4"><p>{{agency.adminPhone}}</p></div>
           </div>
           <div class="row col-sm-10 no-padding">
-            <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" | translate}}</strong></p></div>
+            <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" |
+              translate}}</strong></p></div>
             <div class="col-sm-4"><p>{{agency.adminEmail}}</p></div>
           </div>
         </div>
@@ -77,7 +86,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h6 class="modal-title" class="Spaced-above">{{"NETWORK.LEAD_AGENCY_SELECTION" | translate}}</h6>
+              <h6 class="modal-title Spaced-above">{{"NETWORK.LEAD_AGENCY_SELECTION" | translate}}</h6>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -93,7 +102,8 @@
             <div class="row Right-aligned Spaced col-sm-12">
               <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
               <button href="#notification-success" data-toggle="collapse" data-dismiss="modal"
-                      class="btn btn-primary col-sm-3 text-uppercase" (click)="confirmLeadAgencyChange()">{{"SAVE" | translate}}
+                      class="btn btn-primary col-sm-3 text-uppercase" (click)="confirmLeadAgencyChange()">{{"SAVE" |
+                translate}}
               </button>
             </div>
           </div>
@@ -106,7 +116,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content" *ngIf="removeAgencyObj|async as agency">
             <div class="modal-header">
-              <h6 class="modal-title" class="Spaced-above">{{"GLOBAL.REMOVE" | translate}} <span
+              <h6 class="modal-title Spaced-above">{{"GLOBAL.REMOVE" | translate}} <span
                 class="font-weight-bold">{{agency.name}}</span></h6>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>

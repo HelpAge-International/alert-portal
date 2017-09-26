@@ -1,0 +1,33 @@
+<div id="wrap"><!-- start #wrap -->
+  <div class="Header_bar">
+
+    <div class="Header_bar__wrap--inner">
+      <div class="logo"></div>
+    </div>
+  </div>
+
+
+  <!--Start Put page data-->
+  <div class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+      <div class="Header-title__wrap">
+        <h1>Agency Invitation</h1>
+      </div>
+
+      <div *ngIf="!isValidated" class="Text-center margin-top-five">
+        <p>This link was expired, please request validation email again!</p>
+      </div>
+
+      <div *ngIf="isValidated" class="margin-top-eight">
+
+        <p>{{network?.name}} invited you to join this network, please confirm:</p>
+
+        <button class="btn-success" (click)="acceptJoin()">Accept</button>
+        <button class="btn-danger" (click)="rejectJoin()">Reject</button>
+
+      </div>
+
+
+    </div>
+  </div>
+</div><!-- end #wrap -->

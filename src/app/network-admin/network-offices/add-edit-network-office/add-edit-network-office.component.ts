@@ -109,6 +109,10 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((networkModuleSetting: ModuleSettingsModel[]) => {
         this.networkModuleSetting = networkModuleSetting;
+        let conflictSetting = new ModuleSettingsModel();
+        conflictSetting.privacy = 0;
+        conflictSetting.status = true;
+        this.networkModuleSetting.push(conflictSetting);
       });
   }
 

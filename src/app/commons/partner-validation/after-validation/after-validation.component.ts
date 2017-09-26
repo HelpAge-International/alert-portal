@@ -24,7 +24,7 @@ export class AfterValidationComponent implements OnInit, OnDestroy {
         if (params["plan"]) {
           this.msg = this._translate.instant("AFTER_ACCEPT_RES_PLAN_VALIDATION");
         }
-        if (params["invite-network-agency"]) {
+        if (params["invite-network-agency"] || params["invite-network-country"]) {
           this.msg = this._translate.instant("AFTER_ACCEPT_NETWORK_INVITATION");
         }
       })

@@ -62,40 +62,43 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
             .subscribe(agencyMap => {
               this.agencyCountryMap = agencyMap;
               console.log(this.agencyCountryMap);
-            });
 
-          //fetch network agencies
-          this.networkService.getAgenciesForNetworkCountry(this.networkId, this.networkCountryId)
-          //extra fetching works
-            .do((agencies: NetworkAgencyModel[]) => {
-              if (agencies) {
-                agencies.forEach(model => {
+              //fetch network agencies
+              this.networkService.getAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.agencyCountryMap)
+              //extra fetching works
+                .do((agencies: NetworkAgencyModel[]) => {
+                  if (agencies) {
+                    agencies.forEach(model => {
 
-                  //get agency detail
-                  this.agencyService.getAgency(model.id)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(agency => {
-                      model.name = agency.name;
-                      model.logoPath = agency.logoPath;
-                      model.adminId = agency.adminId;
+                      //get agency detail
+                      this.agencyService.getAgency(model.id)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(agency => {
+                          model.name = agency.name;
+                          model.logoPath = agency.logoPath;
+                        });
 
-                      //get agency admin detail
-                      this.userService.getUser(model.adminId)
+                      this.agencyService.getCountryOffice(this.agencyCountryMap.get(model.id), model.id)
+                        .flatMap(country => {
+                          return this.userService.getUser(country.adminId);
+                        })
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(user => {
                           model.adminEmail = user.email;
                           model.adminName = user.firstName + " " + user.lastName;
                           model.adminPhone = user.phone;
-                        })
-                    })
+                        });
+                    });
+                  }
+                })
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((agencies: NetworkAgencyModel[]) => {
+                  this.networkAgencies = agencies;
+                  this.showLoader = false;
                 });
-              }
-            })
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((agencies: NetworkAgencyModel[]) => {
-              this.networkAgencies = agencies;
-              this.showLoader = false;
+
             });
+
 
           //fetch lead agency id
           this.networkService.getLeadAgencyIdForNetworkCountry(this.networkId, this.networkCountryId)

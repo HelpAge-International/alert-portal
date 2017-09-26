@@ -3239,3 +3239,61 @@ exports.updateUserEmail_UAT_2 = functions.database.ref('/uat-2/userPublic/{uid}/
     }
   });
 /***********************************************************************************************************************/
+
+/***********************************************************************************************************************/
+exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/sand/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (!preData && currData) {
+      console.log("network country office agency country added");
+
+      let networkId = event.params['networkId'];
+      let networkCountryId = event.params['networkCountryId'];
+      let agencyId = event.params['agencyId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
+        let adminId = data.val();
+        console.log("admin id: " + adminId);
+
+        admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
+          let email = user.val().email;
+          console.log("admin email: " + email);
+
+          admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
+            let network = networkSnap.val();
+
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            admin.database().ref('sand/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT Network" <noreply@firebase.com>',
+                to: email
+              };
+
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://localhost:4200/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
+                          \n Thanks
+                          \n Your ALERT team `;
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+
+          });
+
+        });
+      });
+    }
+  });
+/***********************************************************************************************************************/

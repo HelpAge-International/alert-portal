@@ -1,4 +1,9 @@
 {
+  "NETWORK_OFFICE_PROFILE":"Network office profile",
+  "CONFLICT_INDICATORS":"Conflict Indicators",
+  "NETWORK_OFFICE_LEAD_AGENCY":"Network Office Lead Agency",
+  "COUNTRY_ADMIN_CONTACT_INFO":"Country Admin Contact Information",
+  "VIEW_COUNTRY_ADMIN_CONTACT_INFO":"View country admin contact info",
   "INVITE_AGENCY_CONTENT_NETWORK_COUNTRY":"You are about to invite the following agencies to become active members in this country:",
   "NO_AGENCIES_ACTIVE_IN_THIS_COUNTRY":"You have not selected any agencies to be active in this country",
   "EDIT_NETWORK_OFFICE":"Edit Network Office",
@@ -6,7 +11,7 @@
   "NETWORK_OFFICE_SETTINGS":"Network Office settings",
   "NETWORK_AGENCIES_IN_THIS_COUNTRY":"Network agencies in this country",
   "ADMINISTRATION":"Administration",
-  "NETWORK_OFFICE_PROFILE":"Network Office",
+  "NETWORK_OFFICE":"Network Office",
   "PLEASE_SELECT_ACCOUNT_TO_CONTINUE":"Please select an account to continue",
   "DELETE_LEAD_AGENCY_ERROR":"Lead agency can not be deleted!",
   "DELETE_ACTION_DIALOG":{

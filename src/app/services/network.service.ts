@@ -559,16 +559,16 @@ export class NetworkService {
       });
   }
 
-  getAgenciesForNetworkCountry(networkId, networkCountryId) {
+  getAgenciesForNetworkCountry(networkId, networkCountryId, agencyCountryMap) {
     return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries")
       .map(agencies => {
         if (agencies) {
-          let agencyIds = Object.keys(agencies);
           let agencyModels = [];
           agencies.forEach(agency => {
+            console.log(agency);
             let model = new NetworkAgencyModel();
             model.id = agency.$key;
-            model.isApproved = agency.isApproved;
+            model.isApproved = agencyCountryMap.get(agency.$key) && agency[agencyCountryMap.get(agency.$key)] ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : false;
             agencyModels.push(model);
           });
           return agencyModels;
@@ -602,6 +602,22 @@ export class NetworkService {
           return agencyCountryMap;
         }
       });
+  }
+
+  validateNetworkCountryToken(countryId, token) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkCountryValidation/" + countryId + "/validationToken")
+      .map(tokenObj => {
+        if (tokenObj) {
+          if (token === tokenObj.token) {
+            let expiry = tokenObj.expiry;
+            let currentTime = moment.utc();
+            let tokenExpiryTime = moment.utc(expiry);
+            return !currentTime.isAfter(tokenExpiryTime);
+          }
+        } else {
+          return false;
+        }
+      })
   }
 
 }

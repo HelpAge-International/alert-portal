@@ -223,6 +223,21 @@ export class SettingsService {
       });
   }
 
+  getNetworkCountryClockSettings(networkId: string, networkCountryId:string): Observable<ClockSettingsModel> {
+    if (!networkId || !networkCountryId) {
+      throw new Error("No network id / network country id");
+    }
+    return this.af.database.object(Constants.APP_STATUS + '/networkCountry/' + networkId +'/'+ networkCountryId + '/clockSettings')
+      .map(items => {
+        if (items.$key) {
+          const clockSettings = new ClockSettingsModel();
+          clockSettings.mapFromObject(items);
+          return clockSettings;
+        }
+        return null;
+      });
+  }
+
   saveNetworkClockSettings(networkId: string, clockSettings: ClockSettingsModel): firebase.Promise<any> {
     if (!networkId) {
       return null;
@@ -230,6 +245,17 @@ export class SettingsService {
 
     const clockSettingsData = {};
     clockSettingsData['/network/' + networkId + '/clockSettings'] = clockSettings;
+
+    return this.af.database.object(Constants.APP_STATUS).update(clockSettingsData);
+  }
+
+  saveNetworkCountryClockSettings(networkId: string, networkCountryId:string, clockSettings: ClockSettingsModel): firebase.Promise<any> {
+    if (!networkId || !networkCountryId) {
+      return null;
+    }
+
+    const clockSettingsData = {};
+    clockSettingsData['/networkCountry/' + networkId + '/' + networkCountryId + '/clockSettings'] = clockSettings;
 
     return this.af.database.object(Constants.APP_STATUS).update(clockSettingsData);
   }

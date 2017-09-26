@@ -227,12 +227,16 @@ import { NetworkGlobalMapComponent } from './network-country-admin/network-globa
 import { NetworkCountryHeaderComponent } from './network-country-admin/network-country-header/network-country-header.component';
 import { NetworkCountryMenuComponent } from './network-country-admin/network-country-menu/network-country-menu.component';
 import { NetworkCountryAgenciesComponent } from './network-country-admin/network-administration/network-country-agencies/network-country-agencies.component';
-import { NetworkCountrySettingsComponent } from './network-country-admin/network-administration/network-country-settings/network-country-settings.component';
 import { NetworkCountryMessagesComponent } from './network-country-admin/network-administration/network-country-messages/network-country-messages.component';
 import { NetworkCountryMpaComponent } from './network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component';
 import { NetworkCountryApaComponent } from './network-country-admin/network-preparedness/network-country-apa/network-country-apa.component';
 import { NetworkCountryBudgetComponent } from './network-country-admin/network-preparedness/network-country-budget/network-country-budget.component';
 import { NetworkCountrySelectAgenciesComponent } from './network-country-admin/network-administration/network-country-agencies/network-country-select-agencies/network-country-select-agencies.component';
+import { NetworkCountryValidationComponent } from './commons/network-country-validation/network-country-validation.component';
+import { NetworkCountryModuleSettingsComponent } from './network-country-admin/network-administration/network-country-settings/network-country-module-settings/network-country-module-settings.component';
+import { NetworkCountryClockSettingsComponent } from './network-country-admin/network-administration/network-country-settings/network-country-clock-settings/network-country-clock-settings.component';
+import { NetworkCountrySettingsMenuComponent } from './network-country-admin/network-administration/network-country-settings/network-country-settings-menu/network-country-settings-menu.component';
+import { CreateEditNetworkPlanComponent } from './network-country-admin/network-plans/create-edit-network-plan/create-edit-network-plan.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -452,12 +456,16 @@ const firebaseAuthConfig = {
     NetworkCountryHeaderComponent,
     NetworkCountryMenuComponent,
     NetworkCountryAgenciesComponent,
-    NetworkCountrySettingsComponent,
     NetworkCountryMessagesComponent,
     NetworkCountryMpaComponent,
     NetworkCountryApaComponent,
     NetworkCountryBudgetComponent,
-    NetworkCountrySelectAgenciesComponent
+    NetworkCountrySelectAgenciesComponent,
+    NetworkCountryValidationComponent,
+    NetworkCountryModuleSettingsComponent,
+    NetworkCountryClockSettingsComponent,
+    NetworkCountrySettingsMenuComponent,
+    CreateEditNetworkPlanComponent
   ],
   imports: [
     BrowserModule,
