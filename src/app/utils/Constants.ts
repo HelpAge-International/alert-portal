@@ -3,7 +3,7 @@
  */
 import {
   Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType,
-  AlertLevels, GenericActionCategory
+  AlertLevels, GenericActionCategory, HazardScenario
 } from "./Enums";
 
 export class Constants {
@@ -245,6 +245,36 @@ export class Constants {
     "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO24",
     "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO25",
     "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO26"
+  ];
+
+  static HAZARD_SCENARIO_ENUM_LIST = [
+    HazardScenario.HazardScenario0,
+    HazardScenario.HazardScenario1,
+    HazardScenario.HazardScenario2,
+    HazardScenario.HazardScenario3,
+    HazardScenario.HazardScenario4,
+    HazardScenario.HazardScenario5,
+    HazardScenario.HazardScenario6,
+    HazardScenario.HazardScenario7,
+    HazardScenario.HazardScenario8,
+    HazardScenario.HazardScenario9,
+    HazardScenario.HazardScenario10,
+    HazardScenario.HazardScenario11,
+    HazardScenario.HazardScenario12,
+    HazardScenario.HazardScenario13,
+    HazardScenario.HazardScenario14,
+    HazardScenario.HazardScenario15,
+    HazardScenario.HazardScenario16,
+    HazardScenario.HazardScenario17,
+    HazardScenario.HazardScenario18,
+    HazardScenario.HazardScenario19,
+    HazardScenario.HazardScenario20,
+    HazardScenario.HazardScenario21,
+    HazardScenario.HazardScenario22,
+    HazardScenario.HazardScenario23,
+    HazardScenario.HazardScenario24,
+    HazardScenario.HazardScenario25,
+    HazardScenario.HazardScenario26,
   ];
 
 
@@ -801,12 +831,6 @@ export class Constants {
     "GLOBAL.COUNTRIES.YE",
     "GLOBAL.COUNTRIES.ZM",
     "GLOBAL.COUNTRIES.ZW"
-  ];
-
-  static HAZARD_CATEGORY = [
-    "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO4",
-    "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO24",
-    "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO3"
   ];
 
   static HAZARD_CATEGORY_ICON_CLASS = [

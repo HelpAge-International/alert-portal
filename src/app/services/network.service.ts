@@ -16,6 +16,7 @@ import {Subject} from "rxjs/Subject";
 import {NetworkMessageRecipientModel} from "../network-admin/network-message/network-create-edit-message/network-message-recipient.model";
 import {Router} from "@angular/router";
 import {NetworkCountryModel} from "../network-country-admin/network-country.model";
+import {NetworkModulesEnabledModel} from "./pagecontrol.service";
 
 @Injectable()
 export class NetworkService {
@@ -105,6 +106,10 @@ export class NetworkService {
           return Observable.empty();
         }
       })
+  }
+
+  getSystemIdForNetwork(uid: string, userType: NetworkUserAccountType) {
+    return userType == NetworkUserAccountType.NetworkAdmin ? this.getSystemIdForNetworkAdmin(uid) : this.getSystemIdForNetworkCountryAdmin(uid);
   }
 
   getLeadAgencyId(networkId) {
@@ -333,6 +338,13 @@ export class NetworkService {
       })
   }
 
+  getSystemIdForNetworkCountryAdmin(uid): Observable<string> {
+    return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/systemAdmin")
+      .map(obj => {
+        return Object.keys(obj).shift();
+      })
+  }
+
   addGenericActionsToNetwork(networkId: string, actionMap: Map<string, GenericActionModel>, actionSelectionMap: Map<string, boolean>) {
     const idsToPush = Array.from(actionSelectionMap.keys()).filter(key => actionSelectionMap.get(key));
     let update = {};
@@ -500,6 +512,21 @@ export class NetworkService {
         console.log("No group name available for this type of user: " + recipientType);
         return null;
     }
+  }
+
+  getNetworkModuleMatrix(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + "/module/"+networkId)
+      .map(matrix =>{
+        let model = new NetworkModulesEnabledModel();
+        model.minimumPreparedness = matrix[0].status;
+        model.advancedPreparedness = matrix[1].status;
+        model.chsPreparedness = matrix[2].status;
+        model.riskMonitoring = matrix[3].status;
+        model.conflictIndicator = matrix[4].status;
+        model.networkOffice = matrix[5].status;
+        model.responsePlan = matrix[6].status;
+        return model;
+      });
   }
 
 

@@ -341,8 +341,8 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
     });
 
     /**
-   * Group node referencing
-   **/
+     * Group node referencing
+     **/
 
     let groupData = {};
     groupData["/group/systemadmin/allnetworkadminsgroup/" + networkAdminId] = true;
@@ -468,7 +468,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
       //init module settings in different node
       let moduleList: ModuleSettingsModel[] = [];
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 7; i++) {
         let setting = new ModuleSettingsModel();
         setting.privacy = Privacy.Public;
         setting.status = true;

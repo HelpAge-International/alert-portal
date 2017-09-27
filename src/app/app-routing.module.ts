@@ -153,6 +153,7 @@ import {NetworkCountrySelectAgenciesComponent} from "./network-country-admin/net
 import {NetworkCountryValidationComponent} from "./commons/network-country-validation/network-country-validation.component";
 import {NetworkCountryModuleSettingsComponent} from "./network-country-admin/network-administration/network-country-settings/network-country-module-settings/network-country-module-settings.component";
 import {NetworkCountryClockSettingsComponent} from "./network-country-admin/network-administration/network-country-settings/network-country-clock-settings/network-country-clock-settings.component";
+import {CreateEditNetworkPlanComponent} from "./network-country-admin/network-plans/create-edit-network-plan/create-edit-network-plan.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -425,6 +426,7 @@ const routes: Routes = [
   {path: 'network-country/network-dashboard', component: NetworkDashboardComponent},
   {path: 'network-country/network-risk-monitoring', component: NetworkRiskMinitoringComponent},
   {path: 'network-country/network-plans', component: NetworkPlansComponent},
+  {path: 'network-country/network-plans/create-edit-network-plan', component: CreateEditNetworkPlanComponent},
   {path: 'network-country/network-global-map', component: NetworkGlobalMapComponent},
   {path: 'network-country/network-country-agencies', component: NetworkCountryAgenciesComponent},
   {path: 'network-country/network-country-agencies/select-agencies', component: NetworkCountrySelectAgenciesComponent},

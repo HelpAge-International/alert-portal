@@ -175,7 +175,7 @@ export class ResponsePlanService {
                 this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector, hasToken);
               } else {
                 if (hasToken) {
-                  this.router.navigate(["/after-validation", {"plan":true}], {skipLocationChange:true});
+                  this.router.navigate(["/after-validation", {"plan": true}], {skipLocationChange: true});
                 } else {
                   isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
                 }
@@ -264,6 +264,42 @@ export class ResponsePlanService {
   serviceDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  /**
+   * network response plan methods here
+   */
+  getNetworkPlanSetting(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + '/network/' + networkId + '/responsePlanSettings/sections')
+      .map(sections => {
+        let obj = {};
+        let totalSections = 0;
+        let responsePlanSettings = {};
+        sections.forEach(section => {
+          responsePlanSettings[section.$key] = section.$value;
+          if (section.$value) {
+            totalSections++;
+          }
+        });
+        obj["totalSections"] = totalSections;
+        obj["responsePlanSettings"] = responsePlanSettings;
+        return obj;
+      });
+  }
+
+  getSystemGroups(systemId) {
+    return this.af.database.list(Constants.APP_STATUS + "/system/" + systemId + '/groups')
+      .map(groupList => {
+        let groups = [];
+        groupList.forEach(group => {
+          groups.push(group);
+        });
+        return groups;
+      });
+  }
+
+  pushNewResponsePlan(networkCountryId, newResponsePlan) {
+    return this.af.database.list(Constants.APP_STATUS + '/responsePlan/' + networkCountryId).push(newResponsePlan)
   }
 
 }

@@ -31,6 +31,16 @@ export class AgencyService {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
   }
 
+  getAgencyModel(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
+      .map(agency =>{
+        let model = new ModelAgency(agency.name);
+        model.mapFromObject(agency);
+        model.id = agency.$key;
+        return model;
+      });
+  }
+
   getAgencyResponsePlanClockSettingsDuration(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/responsePlans")
       .map(settings => {
