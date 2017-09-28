@@ -4,6 +4,9 @@
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
 <div class="Page-top__wrap padding-top-none">
   <div class="Full-page__wrap--inner">
     <div class="row Spaced col-sm-12">
@@ -11,15 +14,125 @@
         <h2>Network Agencies</h2>
       </div>
       <div class="col-sm-2">
-        <button data-toggle="modal" class="btn btn-primary text-uppercase"
+        <button class="btn btn-primary text-uppercase"
                 (click)="navigateToAddAgency()">Invite agencies
         </button>
       </div>
     </div>
 
-    <div class="row col-sm-12 Spaced no-agencies">
-      <p><strong>You have not selected any agencies to be part of your network</strong></p>
+    <div *ngIf="!leadAgencyId" class="Empty--ribbon">{{"NETWORK.NO_AGENCIES" | translate}}</div>
+
+    <div *ngIf="leadAgencyId">
+      <div class="row col-sm-12 Spaced-above" *ngIf="leadAgency | async as lead">
+        <div class="row col-sm-8">
+          <p class="col-sm-5 margin-left-two-half"><strong>{{"NETWORK.LEAD_AGENCY" | translate}}:</strong> {{lead.name}}</p>
+          <a href="#leadAgencySelection" data-toggle="modal" class="col-sm-1">edit</a>
+        </div>
+      </div>
+
+      <div class="row col-sm-12">
+        <p class="font-weight-bold col-sm-9">{{"AGENCY" | translate}}</p>
+        <p class="font-weight-bold col-sm-3">{{"GLOBAL.STATUS" | translate}}</p>
+      </div>
+      <div class="Line-row"></div>
+
+      <div *ngFor="let agency of networkAgencies; index as i">
+        <div class="row col-sm-12">
+          <div class="col-sm-1 "><img class="circle-image" src="{{agency.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}">
+          </div>
+          <p class="col-sm-4 margin-top-three">{{agency.name}}</p>
+          <a href="#agencyAdminTooltipOne{{i}}" data-toggle="collapse" class="col-sm-4 margin-top-three"><img
+            class="margin-right-one" src="assets/images/icons/contact.svg" alt="">{{"NETWORK.VIEW_AGENCY_ADMIN_CONTACT_INFO" | translate}}</a>
+          <p class="col-sm-2 margin-top-three">{{agency.isApproved ? ('GLOBAL.ACTIVE' | translate) : ('NETWORK.INVITATION_SENT' | translate)}}
+            <a *ngIf="!agency.isApproved" href="javascript:void(0)" (click)="resendEmail(agency.id)">&nbsp;{{"RESEND" | translate}}</a></p>
+          <div class="col-sm-1 margin-top-two">
+            <button href="#leadAgencyRemove" data-toggle="modal" class="btn btn-danger"
+                    (click)="removeAgency(agency.id)">{{"GLOBAL.REMOVE" | translate}}
+            </button>
+          </div>
+        </div>
+        <div class="Line-row"></div>
+
+        <!--Agency Admin Contact information Tooltip-->
+        <div class="Tooltip__bubble container-fluid network-agency info collapse" id="agencyAdminTooltipOne{{i}}"
+             data-parent="#agencyAdminTooltipOne" aria-controls="agencyAdminTooltipOne">
+          <div class="log_left p-3 row col-sm-12">
+            <h3 class="font-weight-bold">{{"NETWORK.AGENCY_ADMIN_CONTACT_INFO" | translate}}</h3>
+            <a href="#agencyAdminTooltipOne{{i}}" class="margin-left-five text-right col-sm-12" data-toggle="collapse">{{"GLOBAL.CLOSE" | translate}}</a>
+          </div>
+          <div class="row col-sm-10 no-padding">
+            <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" | translate}}</strong></p></div>
+            <div class="col-sm-4"><p>{{agency.adminName}}</p></div>
+          </div>
+          <div class="row col-sm-10 no-padding">
+            <div class="col-sm-2 no-padding-right min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" | translate}}</strong></p></div>
+            <div class="col-sm-4"><p>{{agency.adminPhone}}</p></div>
+          </div>
+          <div class="row col-sm-10 no-padding">
+            <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" | translate}}</strong></p></div>
+            <div class="col-sm-4"><p>{{agency.adminEmail}}</p></div>
+          </div>
+        </div>
+        <!--Agency Admin Contact information Tooltip End-->
+      </div>
+
+      <!--Lead Agency Selection Modal (first time agency is invited)-->
+      <div class="modal fade" id="leadAgencySelection" tabindex="-1" role="dialog" aria-labelledby="leadAgencySelection"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h6 class="modal-title" class="Spaced-above">{{"NETWORK.LEAD_AGENCY_SELECTION" | translate}}</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p class="col-sm-12"><strong>{{"NETWORK.LEAD_AGENCY" | translate}}</strong></p>
+              <div class="col-sm-12 ">
+                <select name="" id="" class="form-control" [(ngModel)]="leadAgencyId">
+                  <option *ngFor="let agency of networkAgencies" [value]="agency.id">{{agency.name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row Right-aligned Spaced col-sm-12">
+              <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+              <button href="#notification-success" data-toggle="collapse" data-dismiss="modal"
+                      class="btn btn-primary col-sm-3 text-uppercase" (click)="confirmLeadAgencyChange()">{{"SAVE" | translate}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--Remove Agency Modal-->
+      <div class="modal fade" id="leadAgencyRemove" tabindex="-1" role="dialog" aria-labelledby="leadAgencyRemove"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content" *ngIf="removeAgencyObj|async as agency">
+            <div class="modal-header">
+              <h6 class="modal-title" class="Spaced-above">{{"GLOBAL.REMOVE" | translate}} <span
+                class="font-weight-bold">{{agency.name}}</span></h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body Text-center">
+              <div>
+                <p>{{"NETWORK.REMOVE_AGENCY_CONTENT" | translate}}</p>
+              </div>
+            </div>
+            <div class="row Right-aligned Spaced col-sm-12">
+              <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+              <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                      (click)="confirmRemove(agency.$key)">{{"GLOBAL.CONFIRM" | translate}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
 
   </div>
 </div>

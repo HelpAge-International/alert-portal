@@ -1,10 +1,9 @@
-<div *ngIf="!isViewing">
+
   <app-local-network-header></app-local-network-header>
   <app-local-network-menu></app-local-network-menu>
-</div>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
-                  [show]="alertMessage"></app-status-alert>
+
+
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
@@ -12,7 +11,7 @@
     <app-local-network-profile-menu></app-local-network-profile-menu>
 
     <div class="Header-title__wrap Spaced row">
-      <h2 class="col-sm-6">Network office profile</h2>
+      <h2 class="col-sm-6">Coordination Arrangements</h2>
       <div *ngIf="!isViewing" class="col-sm-6 Right-aligned">
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="canEdit && !isEdit"
@@ -65,11 +64,13 @@
           </div>
         </div>
 
-        <!--Is < agency > a member?-->
-        <div class="col-sm-2" *ngIf="coordinationArrangement.isAMember">{{ 'YES' | translate }}</div>
-        <div class="col-sm-2" *ngIf="!coordinationArrangement.isAMember">{{ 'GLOBAL.NO' | translate }}</div>
 
-        <div class="col-sm-2"><p>{{ getStaffName(coordinationArrangement.staffMember)}}</p></div>
+        <div class="col-sm-2">
+          <p *ngFor="let name of coordinationAgenciesNames[i]">
+            {{name}}
+          </p>
+        </div>
+
         <!--Staff member representing < agency >-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
           <button class="btn btn-outline-primary text-uppercase"

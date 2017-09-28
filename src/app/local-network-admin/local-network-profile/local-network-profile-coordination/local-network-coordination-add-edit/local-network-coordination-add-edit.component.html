@@ -55,27 +55,29 @@
         </div>
       </div><br>
 
-      <div class="row Spaced-above">
-        <div class="col-sm-4 margin-bottom-none"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.IS_AGENCY_MEMBER' | translate: { value: agency?.name} }}</strong></p></div>
+
+
+      <div class="row Spaced" *ngIf="agencies">
+        <div class="col-sm-12"><p><strong>Network Members Attending</strong></p></div>
+        <label *ngFor="let agency of agencies; index as i" for="item{{i}}"
+               class="Checkbox--agency-lnetwork col-lg-4 col-md-4 col-sm-5 margin-left-one"
+               [hidden]="existingAgencyIds && existingAgencyIds.indexOf(agency.id) !=-1">
+
+          <input *ngIf="coordinationArrangement.agencies" type="checkbox" name="Action-type" id="item{{i}}" #selection
+                 (change)="toggleAgencySelection(agency)"
+                 [attr.checked]="coordinationArrangement.agencies.hasOwnProperty(agency.$key) ? 'checked' : null">
+          <input *ngIf="!coordinationArrangement.agencies" type="checkbox" name="Action-type" id="item{{i}}" #selection
+                 (change)="toggleAgencySelection(agency)">
+          <img
+          class="margin-bottom-none circle-image"
+          src="{{agency.logoPath ? agency.logoPath : 'assets/images/donor/agency-preview.svg'}}">
+          <p>{{agency.name}}</p></label>
       </div>
 
 
-
-      <div class="row">
-        <p class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.STAFF_MEMBER' | translate: { value: agency?.name} }}</strong></p>
-        <div class="dropdown col-sm-4">
-          <select class="form-control" id="sector"  name="staffMember"
-                  [(ngModel)] = "coordinationArrangement.staffMember">
-            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let staff of staffList"
-                    [value]="staff.id">{{ staffNamesList && staffNamesList[staff.id] }}</option>
-          </select>
-        </div>
-      </div><br>
-
       <!--Save and cancel-->
       <div class="row Spaced">
-        <button class="btn btn-primary text-uppercase col-sm-1" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
+        <button class="btn btn-primary text-uppercase col-sm-1 margin-left-two" type="submit" (click)="validateForm()">{{ 'SAVE' | translate }}</button>
         <div class="col-sm-1 margin-top-one">
           <a href="javascript:void(0)" (click)="goBack()">
             {{ 'GLOBAL.CANCEL' | translate }}

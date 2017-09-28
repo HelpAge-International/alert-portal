@@ -108,6 +108,45 @@ export class AgencyService {
       });
     return displayList;
   }
+
+  getAllAgencyByNetworkCountry( countryCode, agencyId) {
+
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/"+agencyId, {
+      query:{
+        orderByChild: "location",
+        equalTo: countryCode
+      }
+    })
+
+    // return this.af.database.list(Constants.APP_STATUS + "/agency")
+    //   .map(agencies => {
+    //     let models: ModelAgency[] = [];
+    //     agencies.forEach(item => {
+    //       console.log(item)
+    //       this.af.database.list(Constants.APP_STATUS + "/countryOffice", {
+    //         query:{
+    //           orderByChild: "location",
+    //           equalTo:
+    //         }
+    //       })
+    //         .takeUntil(this.ngUnsubscribe)
+    //         .subscribe(office => {
+    //           office.forEach(office => {
+    //             console.log(office);
+    //           })
+    //
+    //           let modelAgency = new ModelAgency(item.name);
+    //           modelAgency.mapFromObject(item);
+    //           modelAgency.id = item.$key;
+    //           models.push(modelAgency);
+    //         });
+    //     });
+    //     return models;
+    //   })
+
+  }
+
+
   public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
     if (!agencyId || !countryId || !countryOfficeAddress) {
       return Promise.reject('Missing agencyId, countryId or countryOfficeAddress');

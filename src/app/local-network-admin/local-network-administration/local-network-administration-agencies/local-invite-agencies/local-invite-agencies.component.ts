@@ -8,6 +8,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../../services/agency-service.service";
 import {ModelAgency} from "../../../../model/agency.model";
 import {Observable} from "rxjs/Observable";
+import {ModelNetwork} from "../../../../model/network.model";
+import {takeUntil} from "rxjs/operator/takeUntil";
 
 declare const jQuery: any;
 
@@ -30,7 +32,8 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
 
   //logic
   private networkId: string;
-  private agencies: Observable<ModelAgency[]>;
+  private agencies = [];
+  private countryCodes = {};
   private agencySelectionMap = new Map<string, boolean>();
   private agencyNameMap = new Map<string, string>();
   private selectedAgencies: string[];
@@ -58,7 +61,37 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
           this.showLoader = false;
 
           //fetch all agencies
-          this.agencies = this.agencyService.getAllAgencyFromPlatform();
+          this.networkService.getNetworkDetail(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network =>{
+
+              this.agencyService.getAllAgencyFromPlatform()
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agencies =>{
+                  console.log(agencies)
+                  agencies.forEach(agency =>{
+
+                    this.agencyService.getAllAgencyByNetworkCountry(network.countryCode, agency.id)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(x => {
+                        if (x.length > 0) {
+                          this.agencyService.getAgency(agency.id)
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe( agency => {
+                              this.agencies.push(agency)
+
+                            })
+                        }
+                      })
+                  })
+
+                })
+
+            })
+
+
+
+          // this.agencies = this.agencyService.getAllAgencyByNetworkCountry();
 
           //fetch already added agency ids
           this.networkService.getAgencyIdsForNetwork(this.networkId)
@@ -89,8 +122,10 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
   }
 
   toggleAgencySelection(agency, value) {
-    this.agencySelectionMap.set(agency.id, value);
-    this.agencyNameMap.set(agency.id, agency.name);
+    this.agencySelectionMap.set(agency.$key, value);
+    this.agencyNameMap.set(agency.$key, agency.name);
+    console.log(this.agencySelectionMap)
+    console.log(this.agencyNameMap)
   }
 
   showSelectedAgencies() {
@@ -116,12 +151,25 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
   }
 
   saveAgenciesAndLead() {
-    console.log("save agencies and lead agency");
-    this.networkService.updateAgenciesForNetwork(this.networkId, this.leadAgencyId, this.selectedAgencies).then(() => {
-      this.router.navigateByUrl("/network/network-agencies");
-    }).catch(rej => {
-      this.alertMessage = new AlertMessageModel(rej.message);
-    });
+    this.selectedAgencies.forEach( agency =>{
+      this.networkService.getNetworkDetail(this.networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe( network => {
+          this.networkService.getCountryCodeForAgency(agency, network.countryCode)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe( countryCodes => {
+              this.countryCodes = countryCodes
+              this.networkService.updateAgenciesForLocalNetwork(this.networkId, this.leadAgencyId, this.selectedAgencies, this.countryCodes).then(() => {
+                this.router.navigateByUrl("/network/local-network-administration/agencies");
+              }).catch(rej => {
+                this.alertMessage = new AlertMessageModel(rej.message);
+              });
+
+            })
+
+        })
+    })
+
 
   }
 

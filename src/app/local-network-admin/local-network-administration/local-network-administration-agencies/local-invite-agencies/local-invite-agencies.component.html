@@ -8,10 +8,10 @@
 
 <div class="Page-top__wrap padding-top-none">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/network/network-agencies">Network Agencies</div> <!-- Back button-->
+    <div class="Back--button" routerLink="/network/local-network-administration/agencies">Network Agencies</div> <!-- Back button-->
     <div class="row col-sm-12">
       <h1 class="col-sm-9">Select Agencies</h1><br>
-      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" routerLink="/network/network-agencies">Cancel</a></div>
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" routerLink="/network/local-network-administration/agencies">Cancel</a></div>
       <div class="col-sm-2">
         <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase"
                 (click)="showSelectedAgencies()">Send invites
@@ -25,8 +25,8 @@
     </div>
 
     <!-- Remember to use unique identifiers for the labels -->
-    <div *ngIf="agencies | async as agencyList; else empty" class="row Spaced">
-      <label *ngFor="let agency of agencyList; index as i" for="item{{i}}"
+    <div class="row Spaced">
+      <label *ngFor="let agency of agencies; index as i" for="item{{i}}"
              class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"
              [hidden]="existingAgencyIds && existingAgencyIds.indexOf(agency.id) !=-1"><img
         class="margin-bottom-none"

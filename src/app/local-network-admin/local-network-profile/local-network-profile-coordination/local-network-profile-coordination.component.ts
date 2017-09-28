@@ -5,9 +5,10 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {UserService} from "../../../services/user.service";
 import {AgencyService} from "../../../services/agency-service.service";
+import {NetworkService} from "../../../services/network.service";
 import {ModelAgency} from "../../../model/agency.model";
 import {CoordinationArrangementService} from "../../../services/coordination-arrangement.service";
-import {CoordinationArrangementModel} from "../../../model/coordination-arrangement.model";
+import {CoordinationArrangementNetworkModel} from "../../../model/coordination-arrangement-network.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 declare var jQuery: any;
@@ -21,28 +22,25 @@ declare var jQuery: any;
 export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestroy {
 
   private isEdit = false;
-  private canEdit = true; // TODO check the user type and see if he has editing permission
+  private canEdit = true;
   private uid: string;
-  private countryId: string;
-  private agencyId: string;
-  private isViewing: boolean;
-  private agency: ModelAgency;
+  private networkId: string;
+  private coordinationAgenciesNames = [];
+
 
   // Constants and enums
-  private alertMessageType = AlertMessageType;
   responsePlansSectors = ResponsePlanSectors;
   responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
 
   // Models
-  private alertMessage: AlertMessageModel = null;
-  private coordinationArrangements: CoordinationArrangementModel[];
+  private coordinationArrangements: CoordinationArrangementNetworkModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  private userType: UserType;
+
 
   // Helpers
-  constructor(private pageControl: PageControlService, private _userService: UserService,
-              private _agencyService: AgencyService,
+  constructor(private pageControl: PageControlService, private _agencyService: AgencyService,
+              private networkService: NetworkService,
               private _coordinationArrangementService: CoordinationArrangementService,
               private router: Router,
               private route: ActivatedRoute) {
@@ -55,72 +53,39 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((params: Params) => {
-        if (params["countryId"]) {
-          this.countryId = params["countryId"];
-        }
-        if (params["isViewing"]) {
-          this.isViewing = params["isViewing"];
-        }
-        if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
-        }
+        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.networkService.getSelectedIdObj(user.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(selection => {
+              this.networkId = selection["id"];
+              this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId)
+                .subscribe(coordinationArrangements => {
 
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.userType = userType;
+                  coordinationArrangements.forEach(coordinationArrangement => {
+                    let tempArray = []
+                    for( var key in coordinationArrangement.agencies){
 
-          if (this.countryId && this.agencyId && this.isViewing) {
-            this._agencyService.getAgency(this.agencyId)
-              .map(agency => {
-                return agency as ModelAgency;
-              })
-              .subscribe(agency => {
-                this.agency = agency;
+                      this._agencyService.getAgency(key)
+                        .subscribe(agency => {
 
-                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-                  .subscribe(coordinationArrangements => {
-                    this.coordinationArrangements = coordinationArrangements;
-                  });
-              });
-          } else {
-            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-            //   .takeUntil(this.ngUnsubscribe)
-            //   .subscribe(agencyId => {
-            //     this.agencyId = agencyId;
-            //
-            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-            //       .takeUntil(this.ngUnsubscribe)
-            //       .subscribe(countryId => {
-            //         this.countryId = countryId;
-            this.countryId = countryId;
-            this.agencyId = agencyId;
-            this._agencyService.getAgency(this.agencyId)
-              .map(agency => {
-                return agency as ModelAgency;
-              })
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(agency => {
-                this.agency = agency;
+                          tempArray.push(agency.name)
+                        })
 
-                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(coordinationArrangements => {
-                    this.coordinationArrangements = coordinationArrangements;
-                  });
-              });
-            //     });
-            // });
-          }
+
+                    }
+                    this.coordinationAgenciesNames.push(tempArray);
+                    console.log(this.coordinationAgenciesNames)
+                  })
+                  this.coordinationArrangements = coordinationArrangements
+                  console.log(this.coordinationArrangements)
+
+                });
+            });
         });
-      });
   }
 
-  goBack() {
-    this.router.navigateByUrl('/country-admin/country-staff');
-  }
+
 
   editCoordinationArrangement() {
     this.isEdit = true;
@@ -130,24 +95,10 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
     this.isEdit = false;
   }
 
-  getStaffName(id) {
-    let staffName = '';
-
-    if (!id) {
-      return staffName;
-    }
-
-    this._userService.getUser(id).subscribe(user => {
-      if (user) {
-        staffName = user.firstName + ' ' + user.lastName;
-      }
-    });
-
-    return staffName;
-  }
 
   addEditCoordinationArrangement(coordinationArrangementId?: string) {
     if (coordinationArrangementId) {
+      console.log('test')
       this.router.navigate(['/network/local-network-office-profile/coordination/add-edit',
         {id: coordinationArrangementId}], {skipLocationChange: true});
     } else {
