@@ -152,7 +152,7 @@
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
-                <span class="input-group-addon">{{bulletPoint}}</span>
+                <span class="input-group-addon">{{summarizeScenarioBulletPoints.indexOf(bulletPoint)+1}}</span>
                 <input type="text" class="form-control" placeholder="{{'GLOBAL.SUMMARY' | translate}}"
                        aria-describedby="basic-addon1"
                        [value]="loadResponsePlan&&scenarioCrisisObject[bulletPoint]?scenarioCrisisObject[bulletPoint]:''"
@@ -544,7 +544,7 @@
           <div class="row Spaced">
             <div class="col-lg-8 col-md-10 col-sm-12">
               <div class="form-group">
-                <label for="n-Done">{{"WHICH_VULNERABLE_GROUP_TARGETING" |
+                <label>{{"WHICH_VULNERABLE_GROUP_TARGETING" |
                   translate}}
                   <tooltip
                     [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
@@ -722,7 +722,7 @@
                         </div>
                         <div class="row col-lg-12">
                           <div class="col-lg-12 form-group">
-                            <label for="P-activity">{{"WHAT_IS_PLANNED_ACTIVITY"
+                            <label>{{"WHAT_IS_PLANNED_ACTIVITY"
                               | translate}}</label>
                             <!-- TOOLTIP 2.17 -->
                             <tooltip
@@ -735,7 +735,7 @@
 
                         <div class="row col-lg-12">
                           <div class="col-lg-12 form-group">
-                            <label for="P-activity">{{"PLANNED_OUTPUTS_FOR_ACTIVITY"
+                            <label>{{"PLANNED_OUTPUTS_FOR_ACTIVITY"
                               | translate}}</label>
                             <input type="text" class="form-control" [(ngModel)]="activity.output" #output>
                           </div>
@@ -743,7 +743,7 @@
 
                         <div class="row col-lg-12">
                           <div class="col-lg-12 form-group">
-                            <label for="P-activity">{{"PROVIDE_ONE_INDICATOR" |
+                            <label>{{"PROVIDE_ONE_INDICATOR" |
                               translate}}</label>
                             <input type="text" class="form-control" [(ngModel)]="activity.indicator" #indicator>
                           </div>
@@ -1315,26 +1315,26 @@
 </div>
 
 <!--Navigate back confirmation modal-->
-<div class="modal fade" id="navigate-back" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"GLOBAL.WARNING" | translate}}</strong></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"YES" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"|
-          translate}}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+<!--<div class="modal fade" id="navigate-back" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
+     <!--aria-hidden="true">-->
+  <!--<div class="modal-dialog" role="document">-->
+    <!--<div class="modal-content">-->
+      <!--<div class="modal-header">-->
+        <!--<h5 class="modal-title" id="exampleModalLabel"><strong>{{"GLOBAL.WARNING" | translate}}</strong></h5>-->
+        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+          <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+      <!--</div>-->
+      <!--<div class="modal-body">-->
+        <!--<div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="modal-footer">-->
+        <!--<button type="button" class="btn btn-primary" (click)="onSubmit()">{{"YES" | translate}}</button>-->
+        <!--<button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"|-->
+          <!--translate}}-->
+        <!--</button>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->

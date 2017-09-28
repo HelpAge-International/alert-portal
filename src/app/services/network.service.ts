@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
-import {ActionLevel, NetworkMessageRecipientType, NetworkUserAccountType} from "../utils/Enums";
+import {ActionLevel, DurationType, NetworkMessageRecipientType, NetworkUserAccountType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network-admin/network-agencies/network-agency.model";
@@ -172,6 +172,10 @@ export class NetworkService {
 
   updateNetworkField(data) {
     return this.af.database.object(Constants.APP_STATUS).update(data);
+  }
+
+  setNetworkField(path, value) {
+    this.af.database.object(Constants.APP_STATUS + "/" + path).set(value)
   }
 
   deleteNetworkField(path) {
@@ -529,6 +533,25 @@ export class NetworkService {
       });
   }
 
+  getNetworkResponsePlanClockSettingsDuration(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/clockSettings/responsePlans")
+      .map(settings => {
+        console.log(settings);
+        let duration = 0;
+        let oneDay = 24 * 60 * 60 * 1000;
+        let durationType = Number(settings.durationType);
+        let value = Number(settings.value);
+        if (durationType === DurationType.Week) {
+          duration = value * 7 * oneDay;
+        } else if (durationType === DurationType.Month) {
+          duration = value * 30 * oneDay;
+        } else if (durationType === DurationType.Year) {
+          duration = value * 365 * oneDay;
+        }
+        return duration;
+      });
+  }
+
 
   /**
    * NETWORK COUNTRY OFFICE ADMIN
@@ -646,5 +669,7 @@ export class NetworkService {
         }
       })
   }
+
+
 
 }

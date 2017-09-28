@@ -9,6 +9,9 @@ import {
 
 export class ResponsePlan {
 
+  //Section 0 for network only
+  public participatingAgencies: any;
+
   // Section 1/10
   public name: string;
   public location: string;

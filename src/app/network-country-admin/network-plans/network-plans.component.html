@@ -23,6 +23,7 @@
     <div class="Empty--ribbon" [hidden]="activePlans?.length!=0">{{"RESPONSE_PLANS.HOME.EMPTY_LIST" | translate}}
     </div>
 
+    <!--active plans-->
     <div class="Ribbon__section__wrap Spaced">
 
       <div *ngFor="let plan of activePlans" class="Accordion Plans-list">
@@ -311,6 +312,7 @@
 
     </div>
 
+    <!--archived plans-->
     <div class="Ribbon__section__wrap Spaced">
       <div class="Accordion--b-white Accordion__hide-links">
         <div class="row align-items-center no-gutters">

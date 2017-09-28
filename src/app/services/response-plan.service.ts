@@ -302,4 +302,29 @@ export class ResponsePlanService {
     return this.af.database.list(Constants.APP_STATUS + '/responsePlan/' + networkCountryId).push(newResponsePlan)
   }
 
+  getPlans(countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId);
+  }
+
+  getArchivedPlans(countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, {
+      query: {
+        orderByChild: "isActive",
+        equalTo: false
+      }
+    })
+  }
+
+  getNotesForPlan(planId) {
+    return this.af.database.list(Constants.APP_STATUS + "/note/" + planId)
+  }
+
+  expirePlan(networkCountryId, planId) {
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + networkCountryId + "/" + planId + "/isActive").set(false);
+  }
+
+  getPlanApprovalData(countryId, planId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + planId + "/approval");
+  }
+
 }

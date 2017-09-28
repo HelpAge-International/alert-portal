@@ -17,7 +17,6 @@ import {NetworkModulesEnabledModel, PageControlService} from "../../../services/
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../services/agency-service.service";
-import {UserService} from "../../../services/user.service";
 import {ResponsePlan} from "../../../model/responsePlan";
 import {Constants} from "../../../utils/Constants";
 import {ResponsePlanService} from "../../../services/response-plan.service";
@@ -25,6 +24,7 @@ import {ModelAgency} from "../../../model/agency.model";
 import {ModelPlanActivity} from "../../../model/plan-activity.model";
 import {ModelBudgetItem} from "../../../model/budget-item.model";
 import * as moment from "moment";
+import {CommonUtils} from "../../../utils/CommonUtils";
 
 declare const jQuery: any;
 
@@ -60,12 +60,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   //copied
   private uid: string;
-  private countryId: string;
-  private agencyAdminUid: string;
   private systemAdminUid: string;
   private idOfResponsePlanToEdit: string;
   private forEditing: boolean = false;
-  private isCountryAdmin: boolean = false;
   private didOpenInitialSection: boolean = false;
   private pageTitle: string = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TITLE_TEXT";
   private responsePlanSettings = {};
@@ -226,7 +223,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private planService: ResponsePlanService,
               private agencyService: AgencyService,
-              private userService: UserService,
               private router: Router) {
   }
 
@@ -269,7 +265,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.getSettings();
     // this.getPartners();
     this.getGroups();
-    // this.calculateCurrency();
   }
 
   // private setupForEdit() {
@@ -299,19 +294,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         this.responsePlanSettings = settingObj["responsePlanSettings"];
         this.storeAvailableSettingSections();
       })
-    // this.planService.getNetworkPlanSetting(this.networkId)
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(list => {
-    //     this.totalSections = 0;
-    //     list.forEach(item => {
-    //       this.responsePlanSettings[item.$key] = item.$value;
-    //
-    //       if (item.$value) {
-    //         this.totalSections++;
-    //       }
-    //     });
-    //     this.storeAvailableSettingSections();
-    //   });
   }
 
   private storeAvailableSettingSections() {
@@ -381,7 +363,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   //       this.partnerOrganisations.push(x);
   //     });
   // }
-  //
+
   private getGroups() {
     this.planService.getSystemGroups(this.systemAdminUid)
       .takeUntil(this.ngUnsubscribe)
@@ -389,14 +371,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         this.groups = groups;
       });
   }
-
-  // public calculateCurrency() {
-  //   this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyAdminUid + "/currency", {preserveSnapshot: true})
-  //     .takeUntil(this.ngUnsubscribe)
-  //     .subscribe((snap) => {
-  //       this.currency = snap.val();
-  //     });
-  // }
 
   private getParticipatingAgencies() {
     this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
@@ -516,30 +490,30 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  private convertTolist(object) {
-
-    let keys = Object.keys(object);
-    let tempList = [];
-    for (let key of keys) {
-      tempList.push(object[key]);
-    }
-    return tempList;
-  }
-
   /**
    * submit
    */
   onSubmit() {
 
-    // Closing confirmation pop up
-    if (jQuery("#navigate-back").modal) {
-      jQuery("#navigate-back").modal("hide");
+    if (!this.checkSection0()) {
+      this.alertMessage = new AlertMessageModel("Non participating agency was selected!");
+      return;
     }
+
+    // // Closing confirmation pop up
+    // if (jQuery("#navigate-back").modal) {
+    //   jQuery("#navigate-back").modal("hide");
+    // }
 
     console.log("Finish button pressed");
     this.checkAllSections();
 
     let newResponsePlan: ResponsePlan = new ResponsePlan;
+
+    //section 0
+    let agencyIdObj = CommonUtils.convertMapToObjectOnlyWithTrueValue(this.agencySelectionMap);
+    newResponsePlan.participatingAgencies = CommonUtils.updateObjectByMap(agencyIdObj, this.agencyCountryMap);
+    console.log(newResponsePlan.participatingAgencies);
 
     //section 1
     newResponsePlan.name = this.planName;
@@ -552,9 +526,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     }
 
     //section 2
-    newResponsePlan.scenarioCrisisList = this.convertTolist(this.scenarioCrisisObject);
-    newResponsePlan.impactOfCrisisList = this.convertTolist(this.impactOfCrisisObject);
-    newResponsePlan.availabilityOfFundsList = this.convertTolist(this.availabilityOfFundsObject);
+    newResponsePlan.scenarioCrisisList = CommonUtils.convertObjectToList(this.scenarioCrisisObject);
+    newResponsePlan.impactOfCrisisList = CommonUtils.convertObjectToList(this.impactOfCrisisObject);
+    newResponsePlan.availabilityOfFundsList = CommonUtils.convertObjectToList(this.availabilityOfFundsObject);
 
     //section 3
     newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
@@ -569,7 +543,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
         this.isWorkingWithPartners ? newResponsePlan.methodOfImplementation = MethodOfImplementation.withPartner : newResponsePlan.methodOfImplementation = MethodOfImplementation.both;
 
-        newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
+        newResponsePlan.partnerOrganisations = CommonUtils.convertObjectToList(this.partnerOrganisationsSelected);
       } else {
         newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
       }
@@ -590,7 +564,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
     newResponsePlan.vulnerableGroups = this.selectedVulnerableGroups;
     newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
-    newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
+    newResponsePlan.targetPopulationInvolvementList = CommonUtils.convertObjectToList(this.targetPopulationInvolvementObject);
 
     //section 6
     newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
@@ -687,15 +661,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
     let diff = [];
     this.sectorsRelatedTo.forEach(item => {
-
-      console.log("*****************");
-      console.log(this.sectorBudget);
-      console.log("*****************");
-      console.log(item);
       if (!this.sectorBudget.get(item)) {
         diff.push(item);
-        console.log("*****************");
-        console.log(item);
       }
     });
 
@@ -777,14 +744,14 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       newResponsePlan.updatedBy = this.uid;
     }
 
-    // this.saveToFirebase(newResponsePlan);
-    console.log(newResponsePlan);
+    this.saveToFirebase(newResponsePlan);
+    // console.log(newResponsePlan);
   }
 
   private saveToFirebase(newResponsePlan: ResponsePlan) {
 
     let numOfSectionsCompleted: number = 0;
-    this.sectionsCompleted.forEach((v, k) => {
+    this.sectionsCompleted.forEach((v,) => {
       if (v) {
         numOfSectionsCompleted++;
       }
@@ -1443,38 +1410,36 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   doublerCounting() {
     //reset count
-    if (true) {
-      this.numberFemaleLessThan18 = 0;
-      this.numberFemale18To50 = 0;
-      this.numberFemalegreaterThan50 = 0;
-      this.numberMaleLessThan18 = 0;
-      this.numberMale18To50 = 0;
-      this.numberMalegreaterThan50 = 0;
+    this.numberFemaleLessThan18 = 0;
+    this.numberFemale18To50 = 0;
+    this.numberFemalegreaterThan50 = 0;
+    this.numberMaleLessThan18 = 0;
+    this.numberMale18To50 = 0;
+    this.numberMalegreaterThan50 = 0;
 
-      let modelPlanList: ModelPlanActivity [] = [];
-      this.activityMap.forEach((v,) => {
-        modelPlanList = modelPlanList.concat(v);
-      });
-      let beneficiaryList = [];
-      modelPlanList.forEach(modelPlan => {
-        beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
-      });
-      beneficiaryList.forEach(item => {
-        if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
-          this.numberFemaleLessThan18 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
-          this.numberFemale18To50 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
-          this.numberFemalegreaterThan50 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
-          this.numberMaleLessThan18 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
-          this.numberMale18To50 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
-          this.numberMalegreaterThan50 += Number(item["value"]);
-        }
-      });
-    }
+    let modelPlanList: ModelPlanActivity [] = [];
+    this.activityMap.forEach((v,) => {
+      modelPlanList = modelPlanList.concat(v);
+    });
+    let beneficiaryList = [];
+    modelPlanList.forEach(modelPlan => {
+      beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
+    });
+    beneficiaryList.forEach(item => {
+      if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+        this.numberFemaleLessThan18 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+        this.numberFemale18To50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+        this.numberFemalegreaterThan50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+        this.numberMaleLessThan18 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+        this.numberMale18To50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+        this.numberMalegreaterThan50 += Number(item["value"]);
+      }
+    });
 
     if (this.forEditing && !this.isDoubleCountingDone) {
       this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
@@ -1590,5 +1555,15 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       this.section10Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[9], false);
     }
+  }
+
+  private checkSection0(): boolean {
+    let temp = false;
+    this.agencySelectionMap.forEach((v,) => {
+      if (v) {
+        temp = v;
+      }
+    });
+    return temp;
   }
 }
