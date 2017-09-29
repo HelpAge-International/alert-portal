@@ -13,6 +13,7 @@ import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {isEmptyObject} from "angularfire2/utils";
 
+
 declare var jQuery: any;
 
 @Component({
@@ -27,6 +28,13 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   private agenciesIds = [];
   private agencies = [];
   private networkMembers = {};
+  private nonAlertMembers = [];
+  private customAgencyFields = [];
+  private customAgencyFieldsCount = 0;
+  private nonAlertMembersExisting: object[];
+  private memberCheckMap = new Map<string, boolean>();
+  private customAgency = false;
+
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -72,7 +80,26 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
               this._coordinationArrangementService.getCoordinationArrangementNetwork(this.networkId, params['id'])
                 .subscribe(coordinationArrangement => {
                   this.coordinationArrangement = coordinationArrangement;
-                  this.networkMembers = coordinationArrangement.agencies
+                  if(coordinationArrangement.agencies){
+                    this.networkMembers = coordinationArrangement.agencies
+                  }
+
+                });
+
+              this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, params['id'])
+                .subscribe(coordinationArrangement => {
+                  if(coordinationArrangement.nonAlertMembers){
+                    this.nonAlertMembersExisting = Object.keys(coordinationArrangement.nonAlertMembers)
+                      .map( key => {
+                        let obj = coordinationArrangement.nonAlertMembers[key];
+                        obj["id"] = key;
+                        return obj;
+                      })
+
+
+                    // this.nonAlertMembersExisting = coordinationArrangement.nonAlertMembers
+                    console.log(this.nonAlertMembersExisting)
+                  }
                 });
             }
           });
@@ -104,11 +131,12 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
   submit() {
 
-    if(isEmptyObject(this.coordinationArrangement)){
+    if(!isEmptyObject(this.coordinationArrangement)){
       this.coordinationArrangement["agencies"] = this.networkMembers
     }
-    this._coordinationArrangementService.saveCoordinationArrangementNetwork(this.networkId, this.coordinationArrangement)
-      .then(() => {
+    this._coordinationArrangementService.saveCoordinationArrangementNetwork(this.networkId, this.coordinationArrangement, this.nonAlertMembers)
+      .then(( ) => {
+
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_SAVED', AlertMessageType.Success);
           setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
         },
@@ -127,15 +155,31 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   toggleAgencySelection(agency){
-    if (this.networkMembers[agency.$key]) {
+    console.log(this.nonAlertMembers)
+    if (this.networkMembers && this.networkMembers[agency.$key]) {
       delete this.networkMembers[agency.$key]
     } else {
       this.networkMembers[agency.$key] = true
     }
-    console.log(this.networkMembers)
-    console.log(this.coordinationArrangement)
   }
 
+  toggleCustomAgency(){
+    if (this.customAgency) {
+      this.customAgency = false
+      this.nonAlertMembers = []
+    } else {
+      this.customAgency = true
+    }
+  }
+
+  addCustomAgencyField(){
+    this.customAgencyFields[this.customAgencyFieldsCount] = this.customAgencyFieldsCount + 1
+    this.customAgencyFieldsCount++
+  }
+
+  toggleNonAlertMemberSelection(member){
+
+  }
 
 
 

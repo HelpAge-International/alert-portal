@@ -236,6 +236,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
     this.activeNote = note;
   }
 
+
   editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
     this.closeEditModal();
 
@@ -248,17 +249,19 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
     }
   }
 
-  editActionAgency(stockCapacity: StockCapacityModel, note: NoteModel) {
-    this.closeEditModal();
+  editActionAgency(stockCapacity: any, note: NoteModel) {
+    this.closeEditModalAgency();
 
     if (this.validateNote(note)) {
-      const stockCapacityNode = "/countryOfficeProfile/capacity/stockCapacity/" + this.activeAgency + "/" +  stockCapacity.id + "/notes"
+      const stockCapacityNode = "/countryOfficeProfile/capacity/stockCapacity/" + this.activeAgency + "/" +  stockCapacity.$key + "/notes"
       this._noteService.saveNote(stockCapacityNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
         .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
   }
+
+
 
   closeEditModal() {
     jQuery('#edit-action').modal('hide');

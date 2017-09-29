@@ -65,7 +65,7 @@
       <br>
 
       <div *ngFor="let stockCapacity of stockCapacitiesIN; let i = index">
-        <div class="row Spaced-above">
+        <div class="row margin-bottom-one">
           <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
           <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
           <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
@@ -171,7 +171,7 @@
       <div class="row Line-row"></div>
 
       <div *ngFor="let stockCapacity of stockCapacitiesOUT; let i = index">
-        <div class="row Spaced-above">
+        <div class="row margin-bottom-one">
           <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
           <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
           <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
@@ -275,7 +275,7 @@
     <div class="row Line-row"></div>
     <div *ngIf="showAgency">
       <div *ngFor="let agency of agencies">
-        <div class="Ribbon__response grey">
+        <div class="Ribbon__response grey margin-bottom-one">
           <div class="Ribbon__header__wrap lnetwork">
             <div class="Ribbon__leftwrap">
               <img src="{{agency.logoPath}}" class="circle-image" alt="">
@@ -308,7 +308,7 @@
             <br>
 
             <div *ngFor="let stockCapacity of countryInMap.get(agencyCountryMap.get(agency.$key)); let i = index">
-              <div class="row Spaced-above">
+              <div class="row margin-bottom-one">
                 <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
                 <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
                 <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
@@ -322,12 +322,6 @@
                     {{ 'GLOBAL.NOTES' | translate }}
                   </a>
                 </div> <!--Notes-->
-                <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                  <button class="btn btn-outline-primary text-uppercase"
-                          (click)="addEditStockCapacity(STOCK_TYPE.Network, stockCapacity.id)">
-                    {{ 'EDIT' | translate }}
-                  </button>
-                </div>
               </div>
               <div class="row Line-row"></div>
               <br>
@@ -358,7 +352,7 @@
 
                             href="javascript:void(0)"
                             class="col-sm-0 margin-right-none"
-                            (click)="editNoteAgency(stockCapacity, note)">{{ 'EDIT' | translate }}</a>
+                            (click)="editNoteAgency(stockCapacity, note, agency)">{{ 'EDIT' | translate }}</a>
                           <p
 
                             href="javascript:void(0)" class="padding-left-one">|</p>
@@ -411,7 +405,7 @@
             <br>
 
             <div *ngFor="let stockCapacity of countryExtMap.get(agencyCountryMap.get(agency.$key)); let i = index">
-              <div class="row Spaced-above">
+              <div class="row margin-bottom-one">
                 <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
                 <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
                 <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
@@ -425,12 +419,6 @@
                     {{ 'GLOBAL.NOTES' | translate }}
                   </a>
                 </div> <!--Notes-->
-                <div class="col-sm-1" *ngIf="canEdit && isEdit">
-                  <button class="btn btn-outline-primary text-uppercase"
-                          (click)="addEditStockCapacity(STOCK_TYPE.Network, stockCapacity.id)">
-                    {{ 'EDIT' | translate }}
-                  </button>
-                </div>
               </div>
               <div class="row Line-row"></div>
               <br>
@@ -461,7 +449,7 @@
 
                             href="javascript:void(0)"
                             class="col-sm-0 margin-right-none"
-                            (click)="editNoteAgency(stockCapacity, note)">{{ 'EDIT' | translate }}</a>
+                            (click)="editNoteAgency(stockCapacity, note, agency)">{{ 'EDIT' | translate }}</a>
                           <p
 
                             href="javascript:void(0)" class="padding-left-one">|</p>
@@ -469,7 +457,7 @@
 
                             href="javascript:void(0)"
                             class="padding-left-one col-sm-0 text-danger"
-                            (click)="deleteNoteAgency(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
+                            (click)="deleteNoteAgency(stockCapacity, note, agency)">{{ 'DELETE' | translate }}</a>
                         </div>
                       </div>
                     </div>

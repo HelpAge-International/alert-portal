@@ -72,8 +72,6 @@ export class CoordinationArrangementService {
       return;
     }
 
-    console.log('ting')
-
     const getCoordinationArrangementSubscription =
       this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangementId)
         .map(item => {
@@ -84,6 +82,15 @@ export class CoordinationArrangementService {
         });
 
     return getCoordinationArrangementSubscription;
+  }
+
+  public getCoordinationArrangementNonAlertMembers(networkId: string, coordinationArrangementId: string){
+    if (!networkId || !coordinationArrangementId) {
+      return;
+    }
+    return this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangementId )
+
+
   }
 
   public saveCoordinationArrangement(countryId: string, coordinationArrangement: CoordinationArrangementModel): firebase.Promise<any>{
@@ -105,7 +112,7 @@ export class CoordinationArrangementService {
     }
   }
 
-  public saveCoordinationArrangementNetwork(networkId: string, coordinationArrangement: CoordinationArrangementNetworkModel): firebase.Promise<any>{
+  public saveCoordinationArrangementNetwork(networkId: string, coordinationArrangement: CoordinationArrangementNetworkModel, nonAlertMembers: string[]): firebase.Promise<any>{
     if(!networkId || !coordinationArrangement)
     {
       return Promise.reject('Missing networkId or coordinationArrangement');
@@ -114,13 +121,56 @@ export class CoordinationArrangementService {
     // Update the timestamp
     coordinationArrangement.updatedAt = new Date().getTime();
 
+
     if(coordinationArrangement.id)
     {
       const equipmentData = {};
       equipmentData['/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id] = coordinationArrangement;
-      return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+      return this.af.database.object(Constants.APP_STATUS).update(equipmentData)
+        .then(( ) => {
+          if(nonAlertMembers){
+              nonAlertMembers.forEach( member => {
+                if(member){
+                  console.log('uyyyt')
+                  this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push({"name": member});
+                }
+              })
+            }
+        })
+
+
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId).push(coordinationArrangement);
+      return this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId).push(coordinationArrangement)
+        .then((newCoordination => {
+          if(nonAlertMembers){
+              nonAlertMembers.forEach( member => {
+                if(member){
+                  console.log('uyyyt')
+                  this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + newCoordination.key + "/nonAlertMembers").push({"name": member});
+                }
+              })
+            }
+        }))
+
+    }
+  }
+
+  public addNonAlertMembers(networkId: string, coordinationArrangement: CoordinationArrangementNetworkModel, nonAlertMembers: string[]){
+    if(coordinationArrangement.id) {
+      if (nonAlertMembers) {
+        nonAlertMembers.forEach(member => {
+          if (member) {
+            this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push(member);
+          }
+        })
+      }
+    } else {
+      nonAlertMembers.forEach( member => {
+        if(member){
+          console.log('uyyyt')
+          this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push(member);
+        }
+      })
     }
   }
 
