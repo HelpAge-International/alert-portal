@@ -341,7 +341,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // console.log('Count ---- ' + this.responseType.length)
       });
 
-    //TODO change temp id to actual uid
+    //TODO update here to get all plan to approval from network
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);

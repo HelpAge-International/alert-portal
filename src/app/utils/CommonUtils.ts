@@ -22,14 +22,30 @@ export class CommonUtils {
     return obj;
   }
 
-  static updateObjectByMap(object,map) {
+  static convertMapToKeysInArray(map) {
+    let keys = [];
+    map.forEach((v, k) => keys.push(k));
+    return keys;
+  }
+
+  static updateObjectByMap(object, map) {
     if (!object) {
       throw new Error("Object can not be empty!");
     }
-    Object.keys(object).forEach(key =>{
+    Object.keys(object).forEach(key => {
       object[key] = map.get(key);
     });
     return object;
+  }
+
+  static trueValueExistInMap(map): boolean {
+    let objOnlyTrueValue = CommonUtils.convertMapToObjectOnlyWithTrueValue(map);
+    return Object.keys(objOnlyTrueValue).length > 0;
+  }
+
+  static trueValueFromMapAsKeys(map) {
+    let objOnlyTrueValue = CommonUtils.convertMapToObjectOnlyWithTrueValue(map);
+    return Object.keys(objOnlyTrueValue);
   }
 
 }

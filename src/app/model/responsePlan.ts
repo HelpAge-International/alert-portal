@@ -6,8 +6,10 @@ import {
   HazardScenario, ResponsePlanSectors, PresenceInTheCountry, MethodOfImplementation,
   ApprovalStatus
 } from "../utils/Enums";
+import {BaseModel} from "./base.model";
+import {AlertMessageModel} from "./alert-message.model";
 
-export class ResponsePlan {
+export class ResponsePlan extends BaseModel {
 
   //Section 0 for network only
   public participatingAgencies: any;
@@ -69,4 +71,8 @@ export class ResponsePlan {
   public updatedBy: string;
   public isEditing: boolean;
   public editingUserId: string;
+
+  validate(excludedFields: any): AlertMessageModel {
+    throw new Error("Method not implemented.");
+  }
 }

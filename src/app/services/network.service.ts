@@ -174,8 +174,12 @@ export class NetworkService {
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
 
+  updateNetworkFieldByObject(path, model) {
+    return this.af.database.object(Constants.APP_STATUS + path).update(model);
+  }
+
   setNetworkField(path, value) {
-    this.af.database.object(Constants.APP_STATUS + "/" + path).set(value)
+    this.af.database.object(Constants.APP_STATUS + path).set(value)
   }
 
   deleteNetworkField(path) {
@@ -519,8 +523,8 @@ export class NetworkService {
   }
 
   getNetworkModuleMatrix(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + "/module/"+networkId)
-      .map(matrix =>{
+    return this.af.database.list(Constants.APP_STATUS + "/module/" + networkId)
+      .map(matrix => {
         let model = new NetworkModulesEnabledModel();
         model.minimumPreparedness = matrix[0].status;
         model.advancedPreparedness = matrix[1].status;
@@ -669,7 +673,6 @@ export class NetworkService {
         }
       })
   }
-
 
 
 }

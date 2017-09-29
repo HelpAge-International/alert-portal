@@ -46,6 +46,8 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private userPath: string;
   private systemAdminUid: string;
 
+  // private networkCountryId: string;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
@@ -54,6 +56,12 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
+    // this.route.params.subscribe((params: Params) => {
+    //   if (params["id"] && params["networkCountryId"]) {
+    //     this.responsePlanId = params["id"];
+    //     this.networkCountryId = params["networkCountryId"];
+    //   }
+    // });
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.userPath = Constants.USER_PATHS[userType];
@@ -125,12 +133,12 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
       });
   }
 
-  private downloadAgencyData(userType){
+  private downloadAgencyData(userType) {
     this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((agencyId) => {
-        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
-          if(name != null){
+        this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+          if (name != null) {
             this.memberAgencyName = name.$value;
           }
         });
@@ -147,8 +155,8 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
 
-          this.af.database.object(Constants.APP_STATUS+ "/staff/"+this.countryId+"/"+user.id+"/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
-            if(position != null){
+          this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
+            if (position != null) {
               this.planLeadPosition = position.$value;
             }
           });
