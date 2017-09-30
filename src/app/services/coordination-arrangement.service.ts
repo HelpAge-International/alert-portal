@@ -128,15 +128,18 @@ export class CoordinationArrangementService {
       equipmentData['/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id] = coordinationArrangement;
       return this.af.database.object(Constants.APP_STATUS).update(equipmentData)
         .then(( ) => {
-          if(nonAlertMembers){
-              nonAlertMembers.forEach( member => {
-                if(member){
-                  console.log('uyyyt')
-                  this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push({"name": member});
-                }
-              })
-            }
-        })
+
+            
+              this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").remove()
+              if(nonAlertMembers){
+                nonAlertMembers.forEach( member => {
+                  if(member){
+                    this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push({"name": member});
+                  }
+                })
+              }
+           
+        });
 
 
     }else{

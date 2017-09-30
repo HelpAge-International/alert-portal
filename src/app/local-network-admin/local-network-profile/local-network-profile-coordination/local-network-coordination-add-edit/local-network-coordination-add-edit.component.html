@@ -80,7 +80,6 @@
 
           <input type="checkbox" name="Action-type" id="item-nonalert-{{i}}" #selection
                  (change)="toggleNonAlertMemberSelection(member)"
-
                  checked>
           <p>{{member.name}}</p></label>
       </div>
@@ -103,10 +102,10 @@
             id="customAgency"
             [(ngModel)]="nonAlertMembers[0]"/>
           <button type="button" (click)="addCustomAgencyField()">+ Add another non-alert member to this coordination arrangement</button>
-          <span *ngFor=" let field of customAgencyFields"><input
+          <div *ngFor=" let field of customAgencyFields"><input
             name="custom"
             type="text"
-            [(ngModel)]="nonAlertMembers[field]"/></span>
+            [(ngModel)]="nonAlertMembers[field]"/></div>
         </div>
       </div>
 

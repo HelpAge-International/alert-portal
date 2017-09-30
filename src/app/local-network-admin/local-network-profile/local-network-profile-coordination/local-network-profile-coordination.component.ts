@@ -10,8 +10,8 @@ import {ModelAgency} from "../../../model/agency.model";
 import {CoordinationArrangementService} from "../../../services/coordination-arrangement.service";
 import {CoordinationArrangementNetworkModel} from "../../../model/coordination-arrangement-network.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
-declare var jQuery: any;
+import {Subject} from "rxjs/Subject"; 
+declare var jQuery: any; 
 
 @Component({
   selector: 'app-local-network-profile-coordination',
@@ -74,6 +74,20 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
 
                     }
+                    this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
+                    .subscribe( coordinationArrangementNonAlert => {
+                      if(coordinationArrangementNonAlert.nonAlertMembers){
+                        Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
+                          .map( key => {
+                            
+                            tempArray.push(coordinationArrangementNonAlert.nonAlertMembers[key].name)
+                           
+                          })
+    
+    
+                      }
+                    })
+                   
                     this.coordinationAgenciesNames.push(tempArray);
                     console.log(this.coordinationAgenciesNames)
                   })

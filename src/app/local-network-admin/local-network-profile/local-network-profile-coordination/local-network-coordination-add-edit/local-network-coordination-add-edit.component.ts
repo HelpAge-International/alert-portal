@@ -93,6 +93,7 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
                       .map( key => {
                         let obj = coordinationArrangement.nonAlertMembers[key];
                         obj["id"] = key;
+                        obj["checked"] = true;
                         return obj;
                       })
 
@@ -129,7 +130,21 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
     return !this.alertMessage;
   }
 
-  submit() {
+  submit() { 
+
+
+    if (this.nonAlertMembersExisting){
+      this.nonAlertMembersExisting.forEach( member => {
+        if(member["checked"] == true){
+          this.nonAlertMembers.push(member["name"])
+        }
+      })
+
+    }
+
+    //check if existing members array is empty
+    //if not loop through each object and check if checked is true
+    //for each checked == true push to network members array
 
     if(!isEmptyObject(this.coordinationArrangement)){
       this.coordinationArrangement["agencies"] = this.networkMembers
@@ -179,7 +194,24 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
   toggleNonAlertMemberSelection(member){
 
-  }
+
+      this.nonAlertMembersExisting.find((o, i) => {
+        if (o['id'] === member.id) {
+
+          if(o['checked'] == true){
+            o['checked'] = false
+            return true; 
+          } else{
+            o['checked'] = true
+            return true; 
+          }
+            
+        }
+      })
+
+      console.log(this.nonAlertMembersExisting)
+    } 
+  
 
 
 
