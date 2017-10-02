@@ -213,6 +213,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       if (plan.partnerOrganisations) {
         let partnerOrgIds = Object.keys(plan.partnerOrganisations).map(key => plan.partnerOrganisations[key]);
         partnerOrgIds.forEach(partnerOrgId => {
+          console.log(partnerOrgId);
           //check has user or not first
           this.partnerService.getPartnerOrganisation(partnerOrgId)
             .takeUntil(this.ngUnsubscribe)
@@ -221,10 +222,12 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
                 this.planService.getPartnerBasedOnOrgId(partnerOrgId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(partnerId => {
-                    this.partnersApprovalMap.set(partnerOrgId, partnerId);
+                    this.partnersApprovalMap.set(org.id, partnerId);
+                    console.log(this.partnersApprovalMap);
                   });
               } else {
                 this.partnersApprovalMap.set(org.id, org.id);
+                console.log(this.partnersApprovalMap);
               }
             });
         })
