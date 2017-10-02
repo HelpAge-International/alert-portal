@@ -31,6 +31,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   //constants and enums
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
+  private ApprovalStatus = ApprovalStatus;
 
 
   // Models
@@ -218,7 +219,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           this.partnerService.getPartnerOrganisation(partnerOrgId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(org => {
-              if (org.partners) {
+              console.log(org);
+              if (org.partners.length != 0) {
                 this.planService.getPartnerBasedOnOrgId(partnerOrgId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(partnerId => {
