@@ -93,6 +93,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
   acceptJoin() {
     let update = {};
     update["/network/" + this.networkId + "/agencies/" + this.agencyId + "/isApproved"] = true;
+    update["/agency/" + this.agencyId + "/networks/" + this.networkId] = true;
     update["/networkAgencyValidation/" + this.agencyId + "/validationToken/expiry"] = moment.utc().valueOf();
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();

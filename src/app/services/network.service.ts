@@ -17,6 +17,8 @@ import {NetworkMessageRecipientModel} from "../network-admin/network-message/net
 import {Router} from "@angular/router";
 import {NetworkCountryModel} from "../network-country-admin/network-country.model";
 import {NetworkModulesEnabledModel} from "./pagecontrol.service";
+import {isEmptyObject} from "angularfire2/utils";
+import {count} from "rxjs/operator/count";
 
 @Injectable()
 export class NetworkService {
@@ -130,6 +132,38 @@ export class NetworkService {
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
 
+  updateAgenciesForLocalNetwork(networkId: string, leadAgencyId: string, selectedAgencies: string[], countryCode: object) {
+    let data = {};
+    data["/network/" + networkId + "/leadAgencyId"] = leadAgencyId;
+    selectedAgencies.forEach(agencyId => {
+
+      let item = {};
+      if(!isEmptyObject(countryCode)) {
+        item["countryCode"] = countryCode
+      }
+      item["isApproved"] = false;
+      data["/network/" + networkId + "/agencies/" + agencyId] = item;
+
+    });
+    return this.af.database.object(Constants.APP_STATUS).update(data);
+  }
+
+
+
+  getCountryCodeForAgency(agencyId: string, networkId: number){
+    let data = ''
+    console.log(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(countryOffices => {
+        countryOffices.forEach( office => {
+          if(office.location == networkId){
+            data = office.$key;
+          }
+        })
+        return data;
+      })
+  }
+
   getAgenciesForNetwork(networkId) {
     return this.af.database.list(Constants.APP_STATUS + "/network/" + networkId + "/agencies")
       .map(agencies => {
@@ -145,6 +179,7 @@ export class NetworkService {
         }
       });
   }
+
 
   getAgencyIdsForNetwork(networkId) {
     return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies", {preserveSnapshot: true})

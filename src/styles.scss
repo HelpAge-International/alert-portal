@@ -1,0 +1,109 @@
+/* You can add global styles to this file, and also import other style files */
+.Header-title{
+  &__wrap{
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}
+
+.Spaced-sm{
+  margin: 2rem 0;
+}
+
+.Spaced-above-large{
+  margin-top: 4.5rem;
+}
+
+.circle-image{
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  border: 1px solid #EEEEEE;
+  margin-bottom: 1em;
+}
+
+.circle-image.placeholder{
+
+  width: 85px;
+  height: 50px;
+
+}
+
+
+.Checkbox--agency-lnetwork {
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-flex-direction: row;
+  -moz-box-orient: horizontal;
+  -moz-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  padding: 1em 0.2em;
+  background: #EEEEEE;
+  border: 5px solid #fff;
+  margin: 0;
+  width: 420px;
+  padding: 0.5rem;
+  justify-content: baseline;
+  img {
+    width: 50px;
+    height: 50px;
+    margin-left: 1.5rem;
+    margin-right: 1rem;
+
+  }
+}
+
+.grey{
+  background-color: #F9F9F9;
+}
+
+
+.Ribbon__header__wrap.lnetwork {
+  .Ribbon__leftwrap {
+    align-self: center;
+    img {
+      display: inline-block;
+      width: 45px;
+      height: 45px;
+      margin-bottom: 0;
+      margin: 0 1.5rem;
+    }
+    h4 {
+      display: inline-block;
+      font-size: 1.3rem;
+      margin-bottom: 0;
+      vertical-align: middle;
+    }
+  }
+}
+
+Response__content.lnetwork {
+
+}
+
+.spaced-top-bottom{
+  margin: 1rem 0;
+}
+
+
+.margin-bottom-one{
+  margin-bottom: 1rem;
+}
+
+.margin-bottom-two{
+  margin-bottom: 2rem;
+}
+
+
+

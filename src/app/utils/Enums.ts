@@ -1507,6 +1507,7 @@ export enum Month {
 
 export enum StockType {
   Country = 0,
-  External = 1
+  External = 1,
+  Network = 2
 }
 

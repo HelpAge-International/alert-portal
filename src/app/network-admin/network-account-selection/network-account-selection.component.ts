@@ -34,6 +34,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   private selectedAccountId: string;
   private selectedNetworkCountryId: string;
   private selectedUserAccountType: any;
+  private isGlobal: boolean;
 
   private agencyDetail: any;
   private UserType = UserType;
@@ -160,6 +161,8 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     console.log(networkId);
     this.selectedAccountId = networkId;
     this.selectedUserAccountType = NetworkUserAccountType.NetworkAdmin;
+    this.setGlobalStatus();
+
   }
 
   onSelectedNetworkCountryAdminAccount(networkCountryId: string, networkId: string) {
@@ -180,7 +183,11 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
       console.log("submit");
       switch (this.selectedUserAccountType) {
         case NetworkUserAccountType.NetworkAdmin:
-          this.goToNetworkAdmin();
+          if (this.isGlobal) {
+            this.goToNetworkAdmin();
+          } else {
+            this.goToLocalNetworkAdmin();
+          }
           break;
         case NetworkUserAccountType.NetworkCountryAdmin:
           //TODO
@@ -271,6 +278,19 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     });
   }
 
+  private goToLocalNetworkAdmin(){
+    this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
+      .first()
+      .subscribe(firstLogin => {
+        if (firstLogin) {
+          this.router.navigateByUrl("network/network-create-password");
+        } else {
+          this.router.navigateByUrl('/network/local-network-dashboard');
+        }
+      })
+
+  }
+
   private validate() {
     console.log(this.selectedAccountId);
     if (!this.selectedAccountId) {
@@ -288,5 +308,11 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.alertMessage = "";
   }
 
+  private setGlobalStatus(){
+    this.af.database.object(Constants.APP_STATUS + "/network/" + this.selectedAccountId ).takeUntil(this.ngUnsubscribe).subscribe(obj => this.isGlobal = obj.isGlobal)
+  }
+
 
 }
+
+
