@@ -8,11 +8,15 @@
 
 <div class="Page-top__wrap padding-top-none">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/network/network-agencies">{{"NETWORK.NETWORK_AGENCIES" | translate}}</div>
+    <div class="Back--button"
+         routerLink="/network/network-agencies">
+      {{ "NETWORK.NETWORK_AGENCIES" | translate}}
+    </div>
     <!-- Back button-->
     <div class="row col-sm-12">
       <h1 class="col-sm-9">{{"NETWORK.SELECT_AGENCIES" | translate}}</h1><br>
-      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" routerLink="/network/network-agencies">{{"GLOBAL.CANCEL"
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)"
+                                              routerLink="/network/network-agencies">{{"GLOBAL.CANCEL"
         | translate}}</a></div>
       <div class="col-sm-2">
         <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase"

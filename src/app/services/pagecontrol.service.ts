@@ -50,6 +50,30 @@ export class AgencyModulesEnabled {
   }
 }
 
+export class NetworkModulesEnabledModel {
+  public minimumPreparedness: boolean;
+  public advancedPreparedness: boolean;
+  public chsPreparedness: boolean;
+  public riskMonitoring: boolean;
+  public conflictIndicator: boolean;
+  public responsePlan: boolean;
+  public networkOffice: boolean;
+
+  constructor() {
+    this.all(false);
+  }
+
+  all(type: boolean) {
+    this.minimumPreparedness = type;
+    this.advancedPreparedness = type;
+    this.chsPreparedness = type;
+    this.riskMonitoring = type;
+    this.conflictIndicator = type;
+    this.responsePlan = type;
+    this.networkOffice = type;
+  }
+}
+
 export class AgencyPermissionObject {
   public permission: PermissionsAgency;
   public urls: string[];
@@ -499,7 +523,7 @@ export class PageControlService {
     // });
   }
 
-  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, oldUserType: UserType, networkIds: string[], networkCountryIds: string[]) => void) {
+  public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, oldUserType: UserType, networkId: string, networkCountryId: string) => void) {
     // TODO: Implement this functionality
     this.af.auth
       .takeUntil(ngUnsubscribe)
@@ -507,7 +531,7 @@ export class PageControlService {
         if (!auth || !auth.uid) {
           router.navigateByUrl(Constants.LOGIN_PATH);
         } else {
-          func(auth.auth, null, [], []);
+          func(auth.auth, null, null, null);
         }
       });
   }

@@ -8,6 +8,7 @@ import {Constants} from "../../utils/Constants";
 import {NetworkUserAccountType, UserType} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {NetworkService} from "../../services/network.service";
+import {NetworkCountryModel} from "../../network-country-admin/network-country.model";
 
 declare var jQuery: any;
 
@@ -20,6 +21,9 @@ declare var jQuery: any;
 
 export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
+
+  private Countries = Constants.COUNTRIES;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   firebase: any;
   private uid: string;
@@ -28,11 +32,14 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   private alertShow: boolean = false;
   private networkAdminAccount: NetworkAdminAccount;
   private selectedAccountId: string;
+  private selectedNetworkCountryId: string;
   private selectedUserAccountType: any;
 
   private agencyDetail: any;
   private UserType = UserType;
   private userType: UserType;
+  private networkCountries:NetworkCountryModel[] = [];
+  private networkIdMap = new Map<string, string>();
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -125,6 +132,28 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
   private downloadAllNetworkCountryAdminAccounts() {
 
+    this.networkService.getAllNetworkCountries(this.uid)
+      .map(officeObjs => {
+        console.log(officeObjs)
+        return officeObjs.map(obj => {
+          return obj["networkCountryIds"].map(id => {
+            this.networkIdMap.set(id, obj["networkId"]);
+            return this.networkService.getNetworkCountry(obj["networkId"], id)
+          })
+        })
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networks => {
+        networks.forEach(networkCountries => {
+          networkCountries.forEach(networkCountry => {
+            networkCountry
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(office => {
+                this.networkCountries.push(office);
+              })
+          })
+        })
+      })
   }
 
   onSelectedNetworkAdminAccount(networkId: string) {
@@ -133,9 +162,12 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.selectedUserAccountType = NetworkUserAccountType.NetworkAdmin;
   }
 
-  onSelectedNetworkCountryAdminAccount(networkCountryId: string) {
+  onSelectedNetworkCountryAdminAccount(networkCountryId: string, networkId: string) {
     this.selectedUserAccountType = NetworkUserAccountType.NetworkCountryAdmin;
-
+    console.log(networkCountryId);
+    console.log(networkId);
+    this.selectedAccountId = networkId;
+    this.selectedNetworkCountryId = networkCountryId;
   }
 
   onSelectedRegularAccount(agencyId) {
@@ -152,53 +184,19 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
           break;
         case NetworkUserAccountType.NetworkCountryAdmin:
           //TODO
+          this.goToNetworkCountryAdmin();
           break;
         default:
           this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           });
           break;
-        // case UserType.AgencyAdmin:
-        //   console.log("agency admin")
-        //   break;
-        // case UserType.CountryAdmin:
-        //   break;
-        // case UserType.CountryDirector:
-        //   break;
-        // case UserType.CountryUser:
-        //   break;
-        // case UserType.Donor:
-        //   break;
-        // case UserType.Ert:
-        //   break;
-        // case UserType.ErtLeader:
-        //   break;
-        // case UserType.GlobalDirector:
-        //   break;
-        // case UserType.GlobalUser:
-        //   break;
-        // case UserType.RegionalDirector:
-        //   break;
       }
     }
   }
 
   private goToNetworkAdmin() {
-    // this.router.navigate(['/network/new-network-details', {networkId: this.selectedAccountId}]);
-    // this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(firstLogin => {
-    //     if (firstLogin) {
-    //
-    //       this.router.navigateByUrl("network/network-create-password");
-    //     } else {
-    //
-    //     }
-    //   })
-
     //TODO DOUBLE CHECK
     let selectionUpdate = {};
-    selectionUpdate["/administratorNetwork/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
-    selectionUpdate["/administratorNetwork/" + this.uid + "/selectedNetworkCountry"] = null;
     selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
     selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetworkCountry"] = null;
     this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(() => {
@@ -226,16 +224,51 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
             if (firstLogin) {
               this.router.navigateByUrl("network/network-create-password");
             } else {
-              console.log("to main page")
+              console.log("to main page");
               //TODO NAVIGATE TO ADMIN PAGE
               this.router.navigateByUrl('/network/network-offices');
             }
           })
       }
-
     });
+  }
 
+  private goToNetworkCountryAdmin() {
+    let selectionUpdate = {};
+    selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
+    selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetworkCountry"] = this.selectedNetworkCountryId;
+    this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(() => {
 
+      let firstLoginCheck = [];
+      if (this.userType) {
+        Observable.merge(this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType), this.userSerivce.checkFirstLoginRegular(this.uid, this.userType))
+          .take(2)
+          .subscribe(firstLogin => {
+            firstLoginCheck.push(firstLogin);
+            if (firstLoginCheck.length == 2) {
+              if (firstLoginCheck[0] != null && firstLoginCheck[0] == true && firstLoginCheck[1] != null && firstLoginCheck[1] == true) {
+                this.router.navigateByUrl("network/network-create-password");
+              } else {
+                //TODO NAVIGATTE TO NETWORK ADMIN DASHBOARD
+                console.log("navigate to network admin page!!!");
+                this.router.navigateByUrl('/network-country/network-dashboard');
+              }
+            }
+          });
+      } else {
+        this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
+          .first()
+          .subscribe(firstLogin => {
+            if (firstLogin) {
+              this.router.navigateByUrl("network/network-create-password");
+            } else {
+              console.log("to main page");
+              //TODO NAVIGATE TO ADMIN PAGE
+              this.router.navigateByUrl('/network-country/network-dashboard');
+            }
+          })
+      }
+    });
   }
 
   private validate() {
@@ -243,7 +276,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     if (!this.selectedAccountId) {
       this.alertSuccess = false;
       this.alertShow = true;
-      this.alertMessage = "NETWORK_ADMIN.PLEASE_SELECT_ACCOUNT_TO_CONTINUE";
+      this.alertMessage = "PLEASE_SELECT_ACCOUNT_TO_CONTINUE";
       return false;
     }
     return true;
@@ -254,4 +287,6 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.alertSuccess = true;
     this.alertMessage = "";
   }
+
+
 }

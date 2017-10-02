@@ -1,0 +1,148 @@
+<app-network-country-header></app-network-country-header>
+<app-network-country-menu></app-network-country-menu>
+<app-network-country-settings-menu></app-network-country-settings-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Sub-header-title__wrap">
+      <h2>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.TITLE_TEXT" | translate}}</h2>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">
+        {{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.SAVE_SETTINGS" | translate | uppercase}}
+      </button>
+      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">
+        {{"GLOBAL.CANCEL" | translate}}
+      </button>
+    </div>
+
+    <p>{{"NETWORK.CLOCK_SETTINGS_SUBTITLE" | translate}}</p>
+    <h4 class="System-admin--form-wrap">{{"RISK_MONITORING_TEXT" | translate}}</h4>
+
+    <div class="form-group">
+      <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING_SHOW_LOGS" | translate}}</label>
+      <div class="row">
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="riskMonitorShowLogForFreq.value"
+                  [(ngModel)]="clockSettings.riskMonitoring.showLogsFrom.value" name="riskMonitorShowLogForFreq.value"
+                  required>
+            <option
+              *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.riskMonitoring.showLogsFrom.durationType))"
+              [value]="duration">{{duration}}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="riskMonitorShowLogForFreq.type"
+                  [(ngModel)]="clockSettings.riskMonitoring.showLogsFrom.durationType"
+                  name="riskMonitorShowLogForFreq.type"
+                  (change)="validateShowLogsFromValue()" required>
+            <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
+            </option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RISK_MONITORING_HAZARD_VALID" | translate}}</label>
+      <!--tooltip
+      <tooltip
+      [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT9.LEVEL1'">
+      </tooltip>-->
+      <div class="row">
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="riskMonitorHazardFreq.value"
+                  [(ngModel)]="clockSettings.riskMonitoring.hazardsValidFor.value"
+                  name="riskMonitorHazardFreq.value" required>
+            <option
+              *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.riskMonitoring.hazardsValidFor.durationType))"
+              [value]="duration">{{duration}}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="riskMonitorHazardFreq.type"
+                  [(ngModel)]="clockSettings.riskMonitoring.hazardsValidFor.durationType"
+                  name="riskMonitorHazardFreq.type"
+                  (change)="validateHazardsValidForValue()" required>
+            <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
+            </option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <h4 class="System-admin--form-wrap">{{"PREPAREDNESS_TEXT" | translate}}</h4>
+    <div class="form-group">
+      <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.PREPAREDNESS_MPA" | translate}}</label>
+      <!--tooltip
+      <tooltip
+      [level1]="'TOOLTIPS.COUNTRY_ADMIN.TT10.LEVEL1'">
+      </tooltip>-->
+      <div class="row">
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="preparednessFreq.value"
+                  [(ngModel)]="clockSettings.preparedness.value"
+                  name="preparednessFreq.value" required>
+            <option *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.preparedness.durationType))"
+                    [value]="duration">
+              {{duration}}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="preparednessFreq.type"
+                  [(ngModel)]="clockSettings.preparedness.durationType"
+                  name="preparednessFreq.type"
+                  (change)="validatePreparednessValue()" required>
+            <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
+            </option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <h4 class="System-admin--form-wrap">{{"RESPONSE_PLAN" | translate}}</h4>
+    <div class="form-group">
+      <label>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.RESPONSE_PLANS_STATE" | translate}}</label>
+      <div class="row">
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="responsePlansFreq.value"
+                  [(ngModel)]="clockSettings.responsePlans.value"
+                  name="responsePlansFreq.value" required>
+            <option *ngFor="let duration of durationMap.get(convertToNumber(clockSettings.responsePlans.durationType))"
+                    [value]="duration">{{duration}}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-lg-2 col-md-3">
+          <select *ngIf="clockSettings" class="form-control" id="responsePlansFreq.type"
+                  [(ngModel)]="clockSettings.responsePlans.durationType"
+                  name="responsePlansFreq.type"
+                  (change)="validateResponsePlansValue()" required>
+            <option *ngFor="let type of DURATION_TYPE_SELECTION" [value]="type">{{DURATION_TYPE[type] | translate}}
+            </option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

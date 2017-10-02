@@ -42,10 +42,10 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
         });
 
       //get network info
-      this.networkService.checkNetworkUserSelection(this.uid)
+      this.networkService.getSelectedIdObj(this.uid)
         .flatMap(data =>{
-          this.networkId = data.networkId;
-          return this.networkService.getNetworkDetail(data.networkId)
+          this.networkId = data["id"];
+          return this.networkService.getNetworkDetail(data["id"])
         })
         .takeUntil(this.ngUnsubscribe)
         .subscribe(network =>{

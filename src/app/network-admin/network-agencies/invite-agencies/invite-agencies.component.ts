@@ -1,7 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../../model/alert-message.model";
-import {AlertMessageType} from "../../../utils/Enums";
+import {AlertMessageType, NetworkUserAccountType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -30,13 +30,14 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
 
   //logic
   private networkId: string;
+  private networkCountryId: string;
   private agencies: Observable<ModelAgency[]>;
   private agencySelectionMap = new Map<string, boolean>();
   private agencyNameMap = new Map<string, string>();
   private selectedAgencies: string[];
   private leadAgencyId: string;
   private existingAgencyIds: string[];
-  private showLoader:boolean;
+  private showLoader: boolean;
 
 
   constructor(private pageControl: PageControlService,

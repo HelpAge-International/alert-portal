@@ -1,0 +1,68 @@
+<app-network-country-header></app-network-country-header>
+<app-network-country-menu></app-network-country-menu>
+
+<div class="Page-top__wrap--w_sub_header">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS" | translate}}</h1>
+      <a href="javascript:void(0)" (click)="goToListView()">{{"MAPS.SEE_COUNTRIES_LIST" | translate}}</a>
+    </div>
+    <div class="Ribbon__section__wrap Spaced">
+      <div id="global-map" style="height: 500px;"></div>
+    </div>
+    <div *ngIf="(countries != null)">
+      <div *ngFor="let x of countries" class="modal fade" id="minimum-prep-modal-{{getCountryCode(x.location)}}"
+           tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="info-window container-fluid Spaced" (change)="openMinimumPreparednessModal()">
+              <div class="info-window__heading row">
+                <div class="col-sm-2 logo"><img class="agency-logo-scale" src="{{agencyLogo}}"></div>
+                <div *ngIf="x.location == -1" class="col-sm-8"><h5>Loading...</h5></div>
+                <div *ngIf="(x != null && x.location != -1)" class="col-sm-8"><h5>{{"GLOBAL.COUNTRIES." +
+                  getCountryCode(x.location).toUpperCase() | translate}} ({{getCountryCode(x.location)}})</h5>
+                </div>
+                <div class="col-sm-2"></div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="info-window__subheading row">
+                <div class="col">{{"MAPS.MPA" | translate}}</div>
+              </div>
+              <table class="table">
+                <thead>
+                <tr>
+                  <th class="col-10 text-left">{{"MAPS.DEPARTMENTS" | translate}}</th>
+                  <th class="col-2 text-center">{{"MAPS.READINESS" | translate}}</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="(x != null && x.location != -1)">
+                <tr *ngFor="let y of x.departments">
+                  <td>{{DEPARTMENT_MAP.get(y.id)}}</td>
+                  <td *ngIf="y.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                                                               aria-hidden="true"></i></td>
+                  <td *ngIf="y.overall() >= minThreshYellow && !(y.overall() >= minThreshGreen)"><i
+                    class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                  <td *ngIf="!(y.overall() >= minThreshYellow) && !(y.overall() >= minThreshGreen)"><i
+                    class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                </tr>
+                <tr>
+                  <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
+                  <td *ngIf="x.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"
+                                                               aria-hidden="true"></i></td>
+                  <td *ngIf="x.overall() >= minThreshYellow && !(x.overall() >= minThreshGreen)"><i
+                    class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                  <td *ngIf="!(x.overall() >= minThreshYellow) && !(x.overall() >= minThreshGreen)"><i
+                    class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

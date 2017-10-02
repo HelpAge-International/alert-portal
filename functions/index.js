@@ -3010,7 +3010,7 @@ exports.sendNetworkAgencyValidationEmail_UAT_2 = functions.database.ref('/uat-2/
 
 /***********************************************************************************************************************/
 //for sand
-exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -3040,7 +3040,7 @@ exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/networkCou
     }
   });
 
-exports.createUserNetworkCountry_TEST = functions.database.ref('/test/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_TEST = functions.database.ref('/test/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -3070,7 +3070,7 @@ exports.createUserNetworkCountry_TEST = functions.database.ref('/test/networkCou
     }
   });
 
-exports.createUserNetworkCountry_UAT = functions.database.ref('/uat/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_UAT = functions.database.ref('/uat/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -3100,7 +3100,7 @@ exports.createUserNetworkCountry_UAT = functions.database.ref('/uat/networkCount
     }
   });
 
-exports.createUserNetworkCountry_UAT_2 = functions.database.ref('/uat-2/networkCountryAdmin/{adminId}')
+exports.createUserNetworkCountry_UAT_2 = functions.database.ref('/uat-2/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -3127,6 +3127,173 @@ exports.createUserNetworkCountry_UAT_2 = functions.database.ref('/uat-2/networkC
             })
 
         });
+    }
+  });
+/***********************************************************************************************************************/
+
+/***********************************************************************************************************************/
+//for sand
+exports.updateUserEmail_SAND = functions.database.ref('/sand/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+      // admin.database().ref("/uat-2/userPublic/" + adminId)
+      //   .once("value", data => {
+      //     let userDb = data.val();
+      //     console.log(userDb);
+      //
+      //     admin.auth().createUser({
+      //       uid: adminId,
+      //       email: userDb.email,
+      //       password: TEMP_PASS
+      //     })
+      //       .then(user => {
+      //         console.log("Successfully created new user: " + user.uid)
+      //       })
+      //       .catch(error => {
+      //         console.log("Error creating new user:", error)
+      //       })
+      //
+      //   });
+    }
+  });
+
+exports.updateUserEmail_TEST = functions.database.ref('/test/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+    }
+  });
+
+exports.updateUserEmail_UAT = functions.database.ref('/uat/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+    }
+  });
+
+exports.updateUserEmail_UAT_2 = functions.database.ref('/uat-2/userPublic/{uid}/email')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData && preData !== currData) {
+      console.log("email updated");
+      let uid = event.params['uid'];
+      console.log("user id email updated: " + uid);
+      admin.auth().updateUser(uid, {
+        email: currData
+      })
+        .then(function (userRecord) {
+          // See the UserRecord reference doc for the contents of userRecord.
+          console.log("Successfully updated user", userRecord.toJSON());
+        })
+        .catch(function (error) {
+          console.log("Error updating user:", error);
+        });
+    }
+  });
+/***********************************************************************************************************************/
+
+/***********************************************************************************************************************/
+exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/sand/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (!preData && currData) {
+      console.log("network country office agency country added");
+
+      let networkId = event.params['networkId'];
+      let networkCountryId = event.params['networkCountryId'];
+      let agencyId = event.params['agencyId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
+        let adminId = data.val();
+        console.log("admin id: " + adminId);
+
+        admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
+          let email = user.val().email;
+          console.log("admin email: " + email);
+
+          admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
+            let network = networkSnap.val();
+
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            admin.database().ref('sand/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT Network" <noreply@firebase.com>',
+                to: email
+              };
+
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://localhost:4200/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
+                          \n Thanks
+                          \n Your ALERT team `;
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+
+          });
+
+        });
+      });
     }
   });
 /***********************************************************************************************************************/

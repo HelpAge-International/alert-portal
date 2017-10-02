@@ -9,12 +9,11 @@ import {Observable} from "rxjs/Observable";
 import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "./notification.service";
 import {MessageModel} from "../model/message.model";
-import {User} from "firebase/app";
 import * as moment from "moment";
+import {ResponsePlan} from "../model/responsePlan";
 
 @Injectable()
 export class ResponsePlanService {
-  private responsePlan: any;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private validPartnerMap = new Map<string, boolean>();
@@ -32,15 +31,12 @@ export class ResponsePlanService {
     this.updatePartnerValidation(plan, countryId);
   }
 
-  needShowWaringBypassValidation(plan) {
-    console.log(plan);
+  needShowWaringBypassValidation(plan): boolean {
     if (!plan.partnerOrganisations) {
       return false;
     }
-    if (plan.partnerOrganisations && plan.approval && plan.approval["partner"]) {
-      return false;
-    }
-    return true;
+    return !(plan.partnerOrganisations && plan.approval && plan.approval["partner"]);
+
   }
 
   private updatePartnerValidation(plan: any, passedCountryId: string) {
@@ -94,7 +90,7 @@ export class ResponsePlanService {
             console.log(error.message);
           });
         } else {
-          console.log("no partner user found!!!!!!!")
+          console.log("no partner user found!!!!!!!");
           console.log(noPartnerUserOrg);
           console.log(orgUserMap);
           let updateData = {};
@@ -175,7 +171,7 @@ export class ResponsePlanService {
                 this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector, hasToken);
               } else {
                 if (hasToken) {
-                  this.router.navigate(["/after-validation", {"plan":true}], {skipLocationChange:true});
+                  this.router.navigate(["/after-validation", {"plan": true}], {skipLocationChange: true}).then();
                 } else {
                   isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
                 }
@@ -199,7 +195,7 @@ export class ResponsePlanService {
     note["uploadBy"] = uid;
     this.af.database.list(Constants.APP_STATUS + "/note/" + responsePlanId).push(note).then(() => {
       if (hasToken) {
-        this.router.navigateByUrl(Constants.LOGIN_PATH);
+        this.router.navigateByUrl(Constants.LOGIN_PATH).then();
       } else {
         isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
       }
@@ -264,6 +260,77 @@ export class ResponsePlanService {
   serviceDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  /**
+   * network response plan methods here
+   */
+  getNetworkPlanSetting(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + '/network/' + networkId + '/responsePlanSettings/sections')
+      .map(sections => {
+        let obj = {};
+        let totalSections = 0;
+        let responsePlanSettings = {};
+        sections.forEach(section => {
+          responsePlanSettings[section.$key] = section.$value;
+          if (section.$value) {
+            totalSections++;
+          }
+        });
+        obj["totalSections"] = totalSections;
+        obj["responsePlanSettings"] = responsePlanSettings;
+        return obj;
+      });
+  }
+
+  getSystemGroups(systemId) {
+    return this.af.database.list(Constants.APP_STATUS + "/system/" + systemId + '/groups')
+      .map(groupList => {
+        let groups = [];
+        groupList.forEach(group => {
+          groups.push(group);
+        });
+        return groups;
+      });
+  }
+
+  pushNewResponsePlan(networkCountryId, newResponsePlan) {
+    return this.af.database.list(Constants.APP_STATUS + '/responsePlan/' + networkCountryId).push(newResponsePlan)
+  }
+
+  getPlans(countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId);
+  }
+
+  getArchivedPlans(countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, {
+      query: {
+        orderByChild: "isActive",
+        equalTo: false
+      }
+    })
+  }
+
+  getNotesForPlan(planId) {
+    return this.af.database.list(Constants.APP_STATUS + "/note/" + planId)
+  }
+
+  expirePlan(networkCountryId, planId) {
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + networkCountryId + "/" + planId + "/isActive").set(false);
+  }
+
+  getPlanApprovalData(countryId, planId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + planId + "/approval");
+  }
+
+  getPlanById(countryId, planId) {
+    return this.af.database.object(Constants.APP_STATUS + '/responsePlan/' + countryId + '/' + planId)
+      .map(plan => {
+        let model = new ResponsePlan();
+        model.mapFromObject(plan);
+        model.id = plan.$key;
+        return model;
+      });
   }
 
 }

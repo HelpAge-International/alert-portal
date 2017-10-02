@@ -8,6 +8,7 @@ import {Observable} from "rxjs/Observable";
 import {DurationType} from "../utils/Enums";
 import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
 import {ModelAgency} from "../model/agency.model";
+import {ModelCountryOffice} from "../model/countryoffice.model";
 
 @Injectable()
 export class AgencyService {
@@ -28,6 +29,16 @@ export class AgencyService {
 
   getAgency(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
+  getAgencyModel(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
+      .map(agency =>{
+        let model = new ModelAgency(agency.name);
+        model.mapFromObject(agency);
+        model.id = agency.$key;
+        return model;
+      });
   }
 
   getAgencyResponsePlanClockSettingsDuration(agencyId) {
@@ -145,6 +156,43 @@ export class AgencyService {
         });
         return models;
       })
+  }
+
+  public getApprovedAgenciesByNetwork(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + "/network/" + networkId + "/agencies")
+      .map(agencies => {
+        return agencies.filter(agency => agency.isApproved);
+      })
+      .map(filteredAgencies => {
+        return filteredAgencies.map(agency => {
+          return this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key)
+            .map(agency => {
+              let modelAgency = new ModelAgency(agency.name);
+              modelAgency.mapFromObject(agency);
+              modelAgency.id = agency.$key;
+              return modelAgency;
+            })
+        });
+      })
+  }
+
+  public countryExistInAgency(countryLocation, agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId, {
+      query: {
+        orderByChild: "location",
+        equalTo: Number(countryLocation)
+      }
+    })
+      .map(list => {
+        if (list.length > 0) {
+          let model = new ModelCountryOffice();
+          model.mapFromObject(list[0]);
+          model.id = list[0].$key;
+          return model;
+        } else {
+          return null;
+        }
+      });
   }
 
   unSubscribeNow() {

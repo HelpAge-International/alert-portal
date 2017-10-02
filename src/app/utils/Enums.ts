@@ -229,6 +229,20 @@ export enum ResponsePlanSectionSettings {
   Budget = 9
 }
 
+export enum NetworkResponsePlanSectionSettings {
+  ParticipatingAgencies = 0,
+  PlanDetails = 1,
+  PlanContext = 2,
+  BasicInformation = 3,
+  ResponseObjectives = 4,
+  TargetPopulation = 5,
+  ExpectedResults = 6,
+  Activities = 7,
+  MonitoringAccLearning = 8,
+  DoubleCounting = 9,
+  Budget = 10
+}
+
 export enum ResponsePlanSectors {
   wash = 0,
   health = 1,

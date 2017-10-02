@@ -4,5 +4,5 @@ export class NetworkOfficeAdminModel {
   public networkCountryIds: any;
   public networkId:string;
   public selectedNetworkCountry: string;
-
+  public systemAdmin: any;
 }
