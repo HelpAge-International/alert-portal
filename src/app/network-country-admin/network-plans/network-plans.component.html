@@ -32,7 +32,9 @@
             translate}}
           </div>
           <div class="col-md-3 col-sm-3">{{plan.name}}</div>
-          <div *ngIf="plan.status==0" class="col-md-3 col-sm-2 Plans-list__item--status">
+
+          <!--in progress status-->
+          <div *ngIf="plan.status==ApprovalStatus.InProgress" class="col-md-3 col-sm-2 Plans-list__item--status">
             <a href="#" class=" text-warning" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
                aria-expanded="false"
                aria-controls="popover_content">
@@ -44,7 +46,8 @@
             </a>
           </div>
 
-          <div *ngIf="plan?.status==1" class="col-md-3 col-sm-2 Plans-list__item--status">
+          <!--waiting fro approval status-->
+          <div *ngIf="plan?.status==ApprovalStatus.WaitingApproval" class="col-md-3 col-sm-2 Plans-list__item--status">
             <a href="#" class=" text-muted" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
                aria-expanded="false"
                aria-controls="popover_content">
@@ -66,6 +69,8 @@
                 </div>
               </div>
               <div class="row">
+
+                <!--partner tags-->
                 <div class="col-md-6">
                   <strong>{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</strong>
                   <div *ngFor="let partnerOrg of plan?.partnerOrganisations; index as i"
@@ -93,86 +98,99 @@
                   </div>
                 </div>
 
+                <!--directors tags-->
                 <div class="col-md-6">
-                  <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
+                  <strong>{{"SYSTEM_ADMIN.MENU.AGENCIES" | translate}}</strong>
                   <!--not submit yet-->
-                  <div *ngIf="plan?.approval && plan?.approval['partner'] && !plan?.approval['countryDirector']">
-                    <div *ngIf="directorSubmissionRequireMap.get(1)" class="row no-gutters Small-spaced">
-                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" | translate}}</div>
-                      <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
-                        translate}}
-                        <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
-                      </div>
-                    </div>
-                    <div *ngIf="directorSubmissionRequireMap.get(2)" class="row no-gutters Small-spaced">
-                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" | translate}}</div>
-                      <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
-                        translate}}
-                        <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
-                      </div>
-                    </div>
-                    <div *ngIf="directorSubmissionRequireMap.get(3)" class="row no-gutters Small-spaced">
-                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" | translate}}</div>
-                      <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
-                        translate}}
-                        <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
-                      </div>
+                  <!--<div *ngIf="plan?.approval && plan?.approval['partner'] && !plan?.approval['countryDirector']">-->
+                  <div class="Small-spaced" *ngFor="let agency of agenciesNeedToApprove">
+                    <div class="col-12 text-left">{{agency.name}}</div>
+                    <div class="col-md-12 text-left"
+                         [class.text-success]="shouldShowSuccess(plan, agency.id)"
+                         [class.text-muted]="plan?.approval && plan?.approval['partner'] && plan?.approval['countryDirector'] && plan?.approval['countryDirector'][agencyCountryMap.get(agency.id)] == ApprovalStatus.WaitingApproval"
+                         [class.text-warning]="plan?.approval && plan?.approval['partner'] && !plan?.approval['countryDirector']">
+                      {{approvalText(plan, agency.id) | translate}}
+                      <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
                     </div>
                   </div>
+                  <!--</div>-->
+                  <!--<div *ngIf="plan?.approval && plan?.approval['partner'] && !plan?.approval['countryDirector']">-->
+                  <!--<div *ngIf="directorSubmissionRequireMap.get(1)" class="row no-gutters Small-spaced">-->
+                  <!--<div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" | translate}}</div>-->
+                  <!--<div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |-->
+                  <!--translate}}-->
+                  <!--<i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>-->
+                  <!--</div>-->
+                  <!--</div>-->
+                  <!--<div *ngIf="directorSubmissionRequireMap.get(2)" class="row no-gutters Small-spaced">-->
+                  <!--<div class="col-12 text-left">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" | translate}}</div>-->
+                  <!--<div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |-->
+                  <!--translate}}-->
+                  <!--<i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>-->
+                  <!--</div>-->
+                  <!--</div>-->
+                  <!--<div *ngIf="directorSubmissionRequireMap.get(3)" class="row no-gutters Small-spaced">-->
+                  <!--<div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" | translate}}</div>-->
+                  <!--<div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |-->
+                  <!--translate}}-->
+                  <!--<i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>-->
+                  <!--</div>-->
+                  <!--</div>-->
+                  <!--</div>-->
 
                   <!--after submit for approval-->
-                  <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
+                  <!--<div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">-->
 
-                    <div *ngIf="idx==0">
-                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
-                        translate}}
-                      </div>
+                  <!--<div *ngIf="idx==0">-->
+                  <!--<div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |-->
+                  <!--translate}}-->
+                  <!--</div>-->
 
-                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[0])"
-                           [class.text-muted]="!getApproveStatus(getApproves(plan)[0])">
-                        {{getApproveStatus(getApproves(plan)[0]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
-                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
-                        <i class="fa fa-check-circle" aria-hidden="true"></i>
-                      </div>
-                    </div>
+                  <!--<div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[0])"-->
+                  <!--[class.text-muted]="!getApproveStatus(getApproves(plan)[0])">-->
+                  <!--{{getApproveStatus(getApproves(plan)[0]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :-->
+                  <!--('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}-->
+                  <!--<i class="fa fa-check-circle" aria-hidden="true"></i>-->
+                  <!--</div>-->
+                  <!--</div>-->
 
-                    <div *ngIf="idx==1">
-                      <div class="col-12 text-left">
-                        {{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key)
-                        ?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
-                        translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
-                        translate)}}
-                      </div>
-                      <div *ngIf="isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key)"
-                           class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[2])"
-                           [class.text-muted]="!getApproveStatus(getApproves(plan)[2])">
-                        {{getApproveStatus(getApproves(plan)[2]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
-                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
-                        <i class="fa fa-check-circle" aria-hidden="true"></i>
-                      </div>
-                      <div *ngIf="(isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key))
-                           || (!isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key))"
-                           class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])"
-                           [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
-                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
-                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
-                        <i class="fa fa-check-circle" aria-hidden="true"></i>
-                      </div>
-                    </div>
+                  <!--<div *ngIf="idx==1">-->
+                  <!--<div class="col-12 text-left">-->
+                  <!--{{isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key)-->
+                  <!--?("GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |-->
+                  <!--translate):("GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |-->
+                  <!--translate)}}-->
+                  <!--</div>-->
+                  <!--<div *ngIf="isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key)"-->
+                  <!--class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[2])"-->
+                  <!--[class.text-muted]="!getApproveStatus(getApproves(plan)[2])">-->
+                  <!--{{getApproveStatus(getApproves(plan)[2]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :-->
+                  <!--('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}-->
+                  <!--<i class="fa fa-check-circle" aria-hidden="true"></i>-->
+                  <!--</div>-->
+                  <!--<div *ngIf="(isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key))-->
+                  <!--|| (!isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key))"-->
+                  <!--class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])"-->
+                  <!--[class.text-muted]="!getApproveStatus(getApproves(plan)[1])">-->
+                  <!--{{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :-->
+                  <!--('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}-->
+                  <!--<i class="fa fa-check-circle" aria-hidden="true"></i>-->
+                  <!--</div>-->
+                  <!--</div>-->
 
-                    <div *ngIf="idx==2">
-                      <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
-                        translate}}
-                      </div>
-                      <div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])"
-                           [class.text-muted]="!getApproveStatus(getApproves(plan)[1])">
-                        {{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :
-                        ('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}
-                        <i class="fa fa-check-circle" aria-hidden="true"></i>
-                      </div>
-                    </div>
+                  <!--<div *ngIf="idx==2">-->
+                  <!--<div class="col-12 text-left">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |-->
+                  <!--translate}}-->
+                  <!--</div>-->
+                  <!--<div class="col-md-12 text-left" [class.text-success]="getApproveStatus(getApproves(plan)[1])"-->
+                  <!--[class.text-muted]="!getApproveStatus(getApproves(plan)[1])">-->
+                  <!--{{getApproveStatus(getApproves(plan)[1]) ? ('RESPONSE_PLANS.HOME.APPROVED' | translate) :-->
+                  <!--('RESPONSE_PLANS.HOME.WAITING_APPROVAL' | translate)}}-->
+                  <!--<i class="fa fa-check-circle" aria-hidden="true"></i>-->
+                  <!--</div>-->
+                  <!--</div>-->
 
-                  </div>
+                  <!--</div>-->
 
                 </div>
               </div>
@@ -180,7 +198,8 @@
             </div>
           </div>
 
-          <div *ngIf="plan?.status==2" class="col-md-3 col-sm-2 Plans-list__item--status">
+          <!--approved status-->
+          <div *ngIf="plan?.status==ApprovalStatus.Approved" class="col-md-3 col-sm-2 Plans-list__item--status">
             <a href="#" class=" text-success" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
                aria-expanded="false"
                aria-controls="popover_content">
@@ -225,7 +244,8 @@
             <!--</div>-->
           </div>
 
-          <div *ngIf="plan?.status==3" class="col-md-3 col-sm-2 Plans-list__item--status">
+          <!--needs review status-->
+          <div *ngIf="plan?.status==ApprovalStatus.NeedsReviewing" class="col-md-3 col-sm-2 Plans-list__item--status">
             <a href="#" class=" text-danger" data-toggle="collapse" [attr.data-target]="'#'+plan.$key"
                aria-expanded="false"
                aria-controls="popover_content">
@@ -295,10 +315,12 @@
                   translate}}</a>
                 <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_START_FUND" |
                   translate}}<br/>(.xls, 78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan, true)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                <a class="dropdown-item" (click)="exportProposal(plan, true)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL"
+                  |
                   translate}} <br/> Excel (.xls,
                   78Kb)</a>
-                <a class="dropdown-item" (click)="exportProposal(plan, false)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL" |
+                <a class="dropdown-item" (click)="exportProposal(plan, false)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL"
+                  |
                   translate}} <br/> Word (.doc,
                   78Kb)</a>
                 <a class="dropdown-item"

@@ -9,7 +9,6 @@ import {ApprovalStatus, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import * as firebase from "firebase";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare const jQuery: any;
 
@@ -42,6 +41,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private userType: number;
   private rejectToggleMap = new Map();
   private rejectComment: string = "";
+  private networkCountryId: string;
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private responsePlanService: ResponsePlanService) {
   }
@@ -143,6 +143,9 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
                 if (params["countryId"]) {
                   this.countryId = params["countryId"];
                 }
+                if (params["networkCountryId"]) {
+                  this.networkCountryId = params["networkCountryId"];
+                }
                 if (params["id"]) {
                   this.responsePlanId = params["id"];
                   this.loadResponsePlan(this.responsePlanId);
@@ -156,10 +159,12 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlan(responsePlanId: string) {
     console.log(this.countryId);
-    this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    this.responsePlanService.getResponsePlan(id, responsePlanId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(responsePlan => {
         this.loadedResponseplan = responsePlan;
+        console.log(this.loadedResponseplan);
         this.handlePlanApproval(this.loadedResponseplan);
       });
   }
@@ -241,7 +246,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
     } else {
       let approvalUid = this.getRightUidForApproval();
-      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
     }
   }
 
@@ -279,7 +285,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
     } else {
       let approvalUid = this.getRightUidForApproval();
-      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
     }
   }
 

@@ -25,7 +25,8 @@
                  class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
               <div>
                 <span>{{"ALERT.RISK" | translate}}:</span>
-                {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
+                {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) :
+                (alert.otherName)}}
               </div>
             </div>
             <div class="col-md-2 Alert-Widget__item">
@@ -126,7 +127,8 @@
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
-                  {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
+                  {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) :
+                  (alert.otherName)}}
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
@@ -209,10 +211,13 @@
             <br>
             <div *ngIf="alert.alertLevel == AlertLevels.Red">
               <div class="Centered row Spaced-above">
-                <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong> {{"HAS_REQ_ALERT_LEVEL_TO_GO_FROM_AMBER_TO_RED_ON_THE" | translate}} <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated | date:"dd/MM/yyyy"}}</strong></h6>
+                <h6 class="col-sm-7 text-gray-dark text-center"><strong>{{alert.createdByName}}</strong>
+                  {{"HAS_REQ_ALERT_LEVEL_TO_GO_FROM_AMBER_TO_RED_ON_THE" | translate}} <strong>{{alert.timeUpdated ?
+                    alert.timeUpdated : alert.timeCreated | date:"dd/MM/yyyy"}}</strong></h6>
               </div>
               <div class="Centered row Spaced-above">
-                <p class="text-gray-dark text-left col-sm-7"><strong>{{"REASONS_FOR_RAISING_ALERT_LEVEL" | translate}}:</strong>
+                <p class="text-gray-dark text-left col-sm-7"><strong>{{"REASONS_FOR_RAISING_ALERT_LEVEL" |
+                  translate}}:</strong>
                   "{{alert?.reasonForRedAlert}}" - {{alert?.createdByName.split(" ")[0]}}</p>
               </div>
               <div class="Centered row Spaced">
@@ -220,7 +225,8 @@
                         (click)="approveRedAlert(alert.id)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
-              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">{{"OR_REJECT_THIS_REQUEST" | translate}}</a></div>
+              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">{{"OR_REJECT_THIS_REQUEST"
+                | translate}}</a></div>
             </div>
             <br>
           </div>
@@ -241,7 +247,8 @@
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
-                  {{alert.hazardScenario!=-1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
+                  {{alert.hazardScenario!=-1 ? (HazardScenariosList[alert.hazardScenario] | translate) :
+                  (alert.otherName)}}
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
@@ -303,7 +310,8 @@
                   class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
-                  {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : (alert.otherName)}}
+                  {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) :
+                  (alert.otherName)}}
                 </div>
               </div>
               <div class="col-md-2 Alert-Widget__item">
@@ -416,7 +424,7 @@
     <!--empty rubber for default dashboard only partner user-->
     <div *ngIf="userType==UserType.PartnerUser">
       <div
-        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default && approvalPlans.length == 0"
+        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default && approvalPlans.length == 0 && approvalPlansNetwork.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
         <div class="My-Tasks container-fluid">
@@ -443,7 +451,7 @@
 
     <!--my tasks-->
     <div class="Widget"
-         *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
+         *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0">
       <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
       <br>
       <!--director-->
@@ -471,6 +479,25 @@
       <!--partner users-->
       <div *ngIf="userType == UserType.PartnerUser">
         <div *ngIf="responsePlansForApproval | async as plans">
+          <div *ngFor="let plan of plans" class="row Spaced">
+            <div class="col-sm-9" col-md-1>
+              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                {{plan.timeUpdated ?
+                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+            </div>
+            <div class="col-md-3">
+              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+              <!--</button>-->
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="responsePlansForApprovalNetwork | async as plans">
           <div *ngFor="let plan of plans" class="row Spaced">
             <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>

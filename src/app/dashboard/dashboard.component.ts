@@ -15,6 +15,7 @@ import {
   DashboardSeasonalCalendarComponent
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
+import {NetworkService} from "../services/network.service";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -66,7 +67,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private chronoline;
   private approveMap = new Map();
   private responsePlansForApproval: Observable<any[]>;
+  private responsePlansForApprovalNetwork: Observable<any[]>;
   private approvalPlans = [];
+  private approvalPlansNetwork = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
   private isRedAlert: boolean;
@@ -80,12 +83,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private networkCountryId: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private route: ActivatedRoute,
               private router: Router,
               private userService: UserService,
+              private networkService: NetworkService,
               private actionService: ActionsService) {
   }
 
@@ -98,20 +103,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.systemId = systemId;
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
 
-      if (userType == UserType.CountryDirector) {
-        this.DashboardTypeUsed = DashboardType.director;
-      } else {
-        this.DashboardTypeUsed = DashboardType.default;
-      }
-      if (this.userType == UserType.PartnerUser) {
-        console.log("partner user")
-        this.agencyId = agencyId;
-        this.countryId = countryId;
-        this.loadDataForPartnerUser(agencyId, countryId);
-      } else {
-        this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-        this.loadData();
-      }
+      //get networks for country
+      this.networkService.getNetworksForCountry(this.agencyId, this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(networkCountryId => {
+          this.networkCountryId = networkCountryId[0];
+
+          if (userType == UserType.CountryDirector) {
+            this.DashboardTypeUsed = DashboardType.director;
+          } else {
+            this.DashboardTypeUsed = DashboardType.default;
+          }
+          if (this.userType == UserType.PartnerUser) {
+            console.log("partner user")
+            this.agencyId = agencyId;
+            this.countryId = countryId;
+            this.loadDataForPartnerUser(agencyId, countryId);
+          } else {
+            this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+            this.loadData();
+          }
+        });
+
 
       PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
         this.moduleSettings = isEnabled;
@@ -121,6 +134,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled => {
         this.countryPermissionMatrix = isEnabled;
       }));
+
     });
   }
 
@@ -345,6 +359,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
+      if (this.networkCountryId) {
+        console.log(this.networkCountryId);
+        this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
+        this.responsePlansForApprovalNetwork
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(plans => {
+            this.approvalPlansNetwork = plans
+          });
+      }
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
     }
@@ -352,7 +375,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApproval
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
-          this.approvalPlans = plans
+          this.approvalPlans = plans;
         });
     }
   }
@@ -454,7 +477,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .distinctUntilChanged()
       .takeUntil(this.ngUnsubscribe)
       .subscribe(object => {
-        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key =>!key.includes("$")).length;
+        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
       });
   }
 
@@ -514,7 +537,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   planReview(planId) {
-    this.router.navigate(["/dashboard/review-response-plan", {"id": planId}]);
+    this.router.navigate(["/dashboard/review-response-plan", this.networkCountryId ? {
+      "id": planId,
+      "networkCountryId": this.networkCountryId
+    } : {"id": planId}]);
   }
 
   goToAgenciesInMyCountry() {

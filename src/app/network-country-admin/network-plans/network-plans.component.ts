@@ -16,6 +16,7 @@ import * as moment from "moment";
 import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
 import {CommonUtils} from "../../utils/CommonUtils";
+import {ModelAgency} from "../../model/agency.model";
 
 declare const jQuery: any;
 
@@ -43,6 +44,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private networkId: string;
   private networkCountryId: string;
   private agencyCountryMap: Map<string, string>;
+  private agenciesNeedToApprove: ModelAgency[];
+  private planApprovalObjMap = new Map<string, object>();
+  private agencyRegionMap = new Map<string, string>();
 
 
   //copy over from response plan
@@ -105,6 +109,15 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(map => {
               this.agencyCountryMap = map;
+              this.agenciesNeedToApprove = [];
+              CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
+                this.userService.getAgencyModel(agencyId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(model => {
+                    console.log(model);
+                    this.agenciesNeedToApprove.push(model);
+                  })
+              });
             });
         });
     });
@@ -124,6 +137,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         plans.forEach(plan => {
           if (plan.isActive) {
             this.activePlans.push(plan);
+            console.log(plan.approval);
+            this.planApprovalObjMap.set(plan.$key, plan.approval);
+            console.log(this.planApprovalObjMap);
             this.getNotes(plan);
 
             if (this.networkPlanExpireDuration && plan.timeUpdated && plan.status === ApprovalStatus.Approved) {
@@ -442,6 +458,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .subscribe(snap => {
         if (snap.val()) {
           approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + snap.val()] = ApprovalStatus.WaitingApproval;
+          this.agencyRegionMap.set(agencyId, snap.val());
         }
         this.updatePartnerValidation(this.networkCountryId, approvalData);
       });
@@ -528,6 +545,34 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     }
     let list = Object.keys(approve).map(key => approve[key]);
     return list[0] == ApprovalStatus.Approved;
+  }
+
+  shouldShowSuccess(plan, agencyId): boolean {
+    let success = true;
+    if (plan.approval && plan.approval['countryDirector'] && plan.approval['countryDirector'][this.agencyCountryMap.get(agencyId)] != ApprovalStatus.Approved) {
+      success = false;
+    }
+    if (plan.approval && plan.approval['regionDirector'] && plan.approval['regionDirector'][this.agencyRegionMap.get(agencyId)] && plan.approval['regionDirector'][this.agencyRegionMap.get(agencyId)] != ApprovalStatus.Approved) {
+      success = false;
+    }
+    if (plan.approval && plan.approval['globalDirector'] && plan.approval['globalDirector'][agencyId] && plan.approval['globalDirector'][agencyId] != ApprovalStatus.Approved) {
+      success = false;
+    }
+    return success;
+  }
+
+  approvalText(plan, agencyId) : string {
+    let text = "";
+    if (plan.approval && !plan.approval['countryDirector']) {
+      text = "RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION";
+    }
+    if (plan.approval && plan.approval['countryDirector'] && plan.approval['countryDirector'][this.agencyCountryMap.get(agencyId)] == ApprovalStatus.WaitingApproval) {
+      text = "RESPONSE_PLANS.HOME.WAITING_APPROVAL";
+    }
+    if (this.shouldShowSuccess(plan, agencyId)) {
+      text = "RESPONSE_PLANS.HOME.APPROVED";
+    }
+    return text;
   }
 
 }

@@ -17,6 +17,7 @@ import {ChangePasswordModel} from "../model/change-password.model";
 import {recognize} from "@angular/router/src/recognize";
 import {ModelStaff} from "../model/staff.model";
 import {subscribeOn} from "rxjs/operator/subscribeOn";
+import {ModelAgency} from "../model/agency.model";
 
 @Injectable()
 export class UserService {
@@ -593,6 +594,16 @@ export class UserService {
 
   getAgencyDetail(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
+  getAgencyModel(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
+      .map(agency =>{
+        let model = new ModelAgency(null);
+        model.mapFromObject(agency);
+        model.id = agency.$key;
+        return model;
+      });
   }
 
   checkFirstLoginRegular(uid, type) {

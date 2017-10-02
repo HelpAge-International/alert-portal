@@ -43,6 +43,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryId: string;
+  private networkCountryId: string;
   private agencyId: string;
   private isViewing: boolean;
 
@@ -132,6 +133,9 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         }
         if (params["partnerOrganisationId"]) {
           this.partnerOrganisationId = params["partnerOrganisationId"];
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
         }
 
         if (this.accessToken) {
@@ -344,7 +348,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
