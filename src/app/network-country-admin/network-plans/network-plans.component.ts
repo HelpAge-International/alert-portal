@@ -47,6 +47,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private agenciesNeedToApprove: ModelAgency[];
   private planApprovalObjMap = new Map<string, object>();
   private agencyRegionMap = new Map<string, string>();
+  private showLoader: boolean;
 
 
   //copy over from response plan
@@ -61,18 +62,12 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private activePlans: any[] = [];
   private archivedPlans: FirebaseListObservable<any[]>;
   private planToApproval: any;
-  private userType: number = -1;
-  private hideWarning: boolean = true;
   private waringMessage: string;
-  private countryId: string;
-  private agencyId: string;
   private notesMap = new Map();
   private needShowDialog: boolean;
   private partnersMap = new Map();
   private partnersApprovalMap = new Map<string, string>();
   private responsePlanToEdit: any;
-  private approvalsList: any[] = [];
-  private directorSubmissionRequireMap = new Map<number, boolean>();
   private networkPlanExpireDuration: number;
 
 
@@ -91,7 +86,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      // this.showLoader = true;
+      this.showLoader = true;
       this.uid = user.uid;
 
       //get network id
@@ -103,11 +98,11 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         })
         .subscribe(duration => {
           this.networkPlanExpireDuration = duration;
-          // this.handleRequireSubmissionTagForDirectors();
           this.getResponsePlans(this.networkCountryId);
           this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(map => {
+              this.showLoader = false;
               this.agencyCountryMap = map;
               this.agenciesNeedToApprove = [];
               CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
@@ -116,7 +111,13 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
                   .subscribe(model => {
                     console.log(model);
                     this.agenciesNeedToApprove.push(model);
-                  })
+                  });
+                //prepare agency region map
+                this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(regionId => {
+                    this.agencyRegionMap.set(agencyId, regionId);
+                  });
               });
             });
         });
@@ -408,18 +409,18 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           if (approvalSettings[0] == false && approvalSettings[1] == false) {
             approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
             approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
-            this.updatePartnerValidation(this.networkCountryId, approvalData);
+            this.updatePartnerValidation(approvalData);
 
           } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
             console.log("regional enabled");
             this.updateWithRegionalApproval(agencyId, countryId, approvalData);
           } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
             console.log("global enabled");
-            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
+            this.updateWithGlobalApproval(agencyId, countryId, approvalData);
           } else {
             console.log("both directors enabled");
-            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
-            this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
+            this.updateWithGlobalApproval(agencyId, countryId, approvalData);
+            this.updateWithRegionalApproval(agencyId, countryId, approvalData);
           }
         });
     });
@@ -427,7 +428,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     // }
   }
 
-  private updatePartnerValidation(countryId: string, approvalData: {}) {
+  private updatePartnerValidation(approvalData: {}) {
     this.af.database.object(Constants.APP_STATUS).update(approvalData).then(() => {
       console.log(approvalData);
       console.log("success");
@@ -441,8 +442,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .flatMap(id => {
-        console.log(id);
         if (id && id.$value && id.$value != "null") {
+          console.log(id);
           // Send notification to regional director
           let notification = new MessageModel();
           notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
@@ -458,9 +459,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .subscribe(snap => {
         if (snap.val()) {
           approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + snap.val()] = ApprovalStatus.WaitingApproval;
-          this.agencyRegionMap.set(agencyId, snap.val());
         }
-        this.updatePartnerValidation(this.networkCountryId, approvalData);
+        this.updatePartnerValidation(approvalData);
       });
   }
 
@@ -486,7 +486,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => {
           });
         }
-        this.updatePartnerValidation(this.networkCountryId, approvalData);
+        this.updatePartnerValidation(approvalData);
       });
   }
 
@@ -532,21 +532,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     return parseInt(value);
   }
 
-  getApproves(plan) {
-    if (!plan.approval) {
-      return [];
-    }
-    return Object.keys(plan.approval).filter(key => key != "partner").map(key => plan.approval[key]);
-  }
-
-  getApproveStatus(approve) {
-    if (!approve) {
-      return -1;
-    }
-    let list = Object.keys(approve).map(key => approve[key]);
-    return list[0] == ApprovalStatus.Approved;
-  }
-
   shouldShowSuccess(plan, agencyId): boolean {
     let success = true;
     if (plan.approval && plan.approval['countryDirector'] && plan.approval['countryDirector'][this.agencyCountryMap.get(agencyId)] != ApprovalStatus.Approved) {
@@ -561,18 +546,55 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     return success;
   }
 
-  approvalText(plan, agencyId) : string {
+  approvalText(plan, agencyId): string {
     let text = "";
     if (plan.approval && !plan.approval['countryDirector']) {
       text = "RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION";
     }
-    if (plan.approval && plan.approval['countryDirector'] && plan.approval['countryDirector'][this.agencyCountryMap.get(agencyId)] == ApprovalStatus.WaitingApproval) {
+    if (plan.approval && plan.approval['countryDirector'] && plan.approval['countryDirector'][this.agencyCountryMap.get(agencyId)] == ApprovalStatus.WaitingApproval ||
+      plan.approval && plan.approval['regionDirector'] && plan.approval['regionDirector'][this.agencyRegionMap.get(agencyId)] == ApprovalStatus.WaitingApproval ||
+      plan.approval && plan.approval['globalDirector'] && plan.approval['globalDirector'][agencyId] == ApprovalStatus.WaitingApproval) {
       text = "RESPONSE_PLANS.HOME.WAITING_APPROVAL";
     }
     if (this.shouldShowSuccess(plan, agencyId)) {
       text = "RESPONSE_PLANS.HOME.APPROVED";
     }
     return text;
+  }
+
+  viewResponsePlan(plan, isViewing) {
+    // if (isViewing) {
+    //   let headers = {"id": plan.$key, "isViewing": isViewing, "countryId": this.countryIdForViewing, "agencyId": this.agencyId};
+    //   if (this.agencyOverview) {
+    //     headers["agencyOverview"] = this.agencyOverview;
+    //     // this.router.navigate(["/response-plans/view-plan", {
+    //     //   "id": plan.$key,
+    //     //   "isViewing": isViewing,
+    //     //   "countryId": this.countryIdForViewing,
+    //     //   "agencyId": this.agencyId,
+    //     //   "canCopy": this.canCopy,
+    //     //   "agencyOverview": this.agencyOverview
+    //     // }]);
+    //   }
+    //   if (this.canCopy) {
+    //     headers["canCopy"] = this.canCopy;
+    //   }
+    //   // else {
+    //   //   this.router.navigate(["/response-plans/view-plan", {
+    //   //     "id": plan.$key,
+    //   //     "isViewing": isViewing,
+    //   //     "countryId": this.countryIdForViewing,
+    //   //     "agencyId": this.agencyId,
+    //   //     "canCopy": this.canCopy
+    //   //   }]);
+    //   // }
+    //   this.router.navigate(["/response-plans/view-plan", headers]);
+    // } else {
+    this.router.navigate(["/network-country/network-plans/view-network-plan", {
+      "id": plan.$key,
+      "networkCountryId": this.networkCountryId
+    }]).then();
+    // }
   }
 
 }

@@ -9,6 +9,7 @@ import {
   MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
 } from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NetworkService} from "../../services/network.service";
 
 @Component({
   selector: 'app-export-start-fund-project-narrative',
@@ -46,9 +47,14 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private userPath: string;
   private systemAdminUid: string;
 
-  // private networkCountryId: string;
+  private networkCountryId: string;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute) {
   }
 
   /**
@@ -56,16 +62,22 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-    // this.route.params.subscribe((params: Params) => {
-    //   if (params["id"] && params["networkCountryId"]) {
-    //     this.responsePlanId = params["id"];
-    //     this.networkCountryId = params["networkCountryId"];
-    //   }
-    // });
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.userPath = Constants.USER_PATHS[userType];
-      this.downloadData();
+    this.route.params.subscribe((params: Params) => {
+      if (params["id"] && params["networkCountryId"]) {
+        this.responsePlanId = params["id"];
+        this.networkCountryId = params["networkCountryId"];
+        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+          this.uid = user.uid;
+          this.downloadResponsePlanData();
+          this.downloadAgencyData(null);
+        });
+      } else {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.userPath = Constants.USER_PATHS[userType];
+          this.downloadData();
+        });
+      }
     });
   }
 
@@ -112,7 +124,8 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           }
         });
     }
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
@@ -134,15 +147,27 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   }
 
   private downloadAgencyData(userType) {
-    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((agencyId) => {
-        this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
-          if (name != null) {
-            this.memberAgencyName = name.$value;
-          }
+    const normalUser = () => {
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyId) => {
+          this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+            if (name != null) {
+              this.memberAgencyName = name.$value;
+            }
+          });
         });
+    };
+
+    const networkUser = () => {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.responsePlan.planLead + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+        if (name != null) {
+          this.memberAgencyName = name.$value;
+        }
       });
+    };
+    this.networkCountryId ? networkUser() : normalUser();
+
   }
 
   private bindProjectLeadData(responsePlan: ResponsePlan) {
@@ -192,12 +217,23 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   }
 
   private configGroups(responsePlan: ResponsePlan) {
-    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((systemAdminIds) => {
-        this.systemAdminUid = systemAdminIds[0].$key;
-        this.downloadGroups(responsePlan);
-      });
+    const normalUser = () => {
+      this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((systemAdminIds) => {
+          this.systemAdminUid = systemAdminIds[0].$key;
+          this.downloadGroups(responsePlan);
+        });
+    };
+    const networkUser = () => {
+      this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(systemId => {
+          this.systemAdminUid = systemId;
+          this.downloadGroups(responsePlan);
+        });
+    };
+    this.networkCountryId ? networkUser() : normalUser();
   }
 
   /**

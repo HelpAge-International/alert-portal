@@ -42,6 +42,8 @@ export class GuidanceReportComponent implements OnInit, OnDestroy {
 
   private sectorsRelatedToMap = new Map<number, boolean>();
 
+  private networkCountryId: string;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
   }
 
@@ -50,9 +52,20 @@ export class GuidanceReportComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.downloadData();
+    this.route.params.subscribe((params: Params) => {
+      if (params["id"] && params["networkCountryId"]) {
+        this.responsePlanId = params["id"];
+        this.networkCountryId = params["networkCountryId"];
+        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+          this.uid = user.uid;
+          this.downloadResponsePlanData();
+        });
+      } else {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.downloadData();
+        });
+      }
     });
   }
 
@@ -97,7 +110,8 @@ export class GuidanceReportComponent implements OnInit, OnDestroy {
           }
         });
     }
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {

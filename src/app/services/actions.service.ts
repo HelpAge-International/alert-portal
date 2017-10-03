@@ -661,6 +661,26 @@ export class ActionsService {
       });
   }
 
+  getResponsePlanForCountryDirectorToApprovalNetwork(countryId, networkCountryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + networkCountryId, ({
+      query: {
+        orderByChild: "/approval/countryDirector/" + countryId,
+        equalTo: ApprovalStatus.WaitingApproval
+      }
+    }))
+      .map(plans => {
+        plans.forEach(plan => {
+          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              plan["displayName"] = user.firstName + " " + user.lastName;
+            });
+        });
+        return plans;
+      });
+  }
+
   getResponsePlanFoGlobalDirectorToApproval(countryId, uid, agencyId) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {

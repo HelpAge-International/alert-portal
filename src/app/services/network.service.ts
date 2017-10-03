@@ -704,12 +704,30 @@ export class NetworkService {
   }
 
   getNetworksForCountry(agencyId, countryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks", {preserveSnapshot:true})
-      .map(snap =>{
+    return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks", {preserveSnapshot: true})
+      .map(snap => {
+        let ids = [];
         if (snap.val()) {
-          return Object.keys(snap.val()).map(key=>snap.val()[key]);
+          return Object.keys(snap.val()).map(key => snap.val()[key]);
+        }
+        return ids;
+      })
+  }
+
+  getRegionIdForCountry(countryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
+      .flatMap(id => {
+        if (id && id.$value && id.$value != "null") {
+          return this.af.database.object(Constants.APP_STATUS + "/regionDirector/" + id.$value + "/regionId", {preserveSnapshot: true});
+        } else {
+          return Observable.of(null);
         }
       })
+      .map(snap => {
+        if (snap && snap.val()) {
+          return snap.val();
+        }
+      });
   }
 
 

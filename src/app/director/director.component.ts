@@ -11,6 +11,7 @@ import {AgencyService} from "../services/agency-service.service";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
 import {TranslateService} from "@ngx-translate/core";
+import {NetworkService} from "../services/network.service";
 
 declare const jQuery: any;
 
@@ -38,6 +39,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private indicatorsToday = [];
   private indicatorsThisWeek = [];
   private approvalPlans = [];
+  private approvalPlansNetwork = [];
   private mapHelper: SuperMapComponents;
   private regions: RegionHolder[];
   private countries: SDepHolder[];
@@ -66,7 +68,9 @@ export class DirectorComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private actionService: ActionsService,
-              private userService: UserService, private translate: TranslateService) {
+              private userService: UserService,
+              private networkService: NetworkService,
+              private translate: TranslateService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
     this.regions = [];
     this.countries = [];
@@ -81,6 +85,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.indicatorsToday = [];
     this.indicatorsThisWeek = [];
     this.approvalPlans = [];
+    this.approvalPlansNetwork = [];
 
     //set initial loader status
     this.loaderInactive = false;
@@ -181,12 +186,29 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
       if (this.userType != UserType.RegionalDirector) {
         this.countryOffices.forEach(countryOffice => {
+          //normal
           this.actionService.getResponsePlanFoGlobalDirectorToApproval(countryOffice.$key, this.uid, this.agencyId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(plans => {
               this.approvalPlans = this.approvalPlans.concat(plans);
             });
+
+          //for network
+          this.networkService.getNetworksForCountry(this.agencyId, countryOffice.$key)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(networks => {
+              console.log(networks);
+              networks.forEach(id => {
+                this.actionService.getResponsePlanFoGlobalDirectorToApproval(id, this.uid, this.agencyId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(plans => {
+                    this.approvalPlansNetwork = this.approvalPlansNetwork.concat(plans);
+                  });
+              });
+            });
         });
+
+
       }
 
       this.regions.forEach(region => {
@@ -209,6 +231,20 @@ export class DirectorComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(plans => {
               this.approvalPlans = this.approvalPlans.concat(plans);
+            });
+
+          //for network
+          this.networkService.getNetworksForCountry(this.agencyId, countryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(networks => {
+              console.log(networks);
+              networks.forEach(id => {
+                this.actionService.getResponsePlanFoRegionalDirectorToApproval(id, this.uid, this.regionId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(plans => {
+                    this.approvalPlansNetwork = this.approvalPlansNetwork.concat(plans);
+                  });
+              });
             });
         });
 
@@ -257,7 +293,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     let promise = new Promise((res, rej) => {
       this.otherRegion = new RegionHolder();
       this.otherRegion.regionId = "Unassigned";
-      this.otherRegion.regionName =  this.translate.instant("AGENCY_ADMIN.COUNTRY_OFFICES.OTHER_COUNTRIES");
+      this.otherRegion.regionName = this.translate.instant("AGENCY_ADMIN.COUNTRY_OFFICES.OTHER_COUNTRIES");
       this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[this.userType], (key, obj) => {
         let hRegion = new RegionHolder();
         hRegion.regionName = obj.name;

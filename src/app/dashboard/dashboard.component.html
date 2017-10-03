@@ -410,7 +410,7 @@
     <!--empty rubber for default dashboard not partner-->
     <div *ngIf="userType!=UserType.PartnerUser">
       <div
-        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default"
+        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default && approvalPlans.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
         <div class="My-Tasks container-fluid">
@@ -438,7 +438,7 @@
     <!--empty ribbon for director dashboard-->
     <div *ngIf="approvalPlans.length == 0">
       <div
-        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.director"
+        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.director && approvalPlansNetwork.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
         <div class="My-Tasks container-fluid">
@@ -457,6 +457,25 @@
       <!--director-->
       <div *ngIf="DashboardTypeUsed == DashboardType.director">
         <div *ngIf="responsePlansForApproval | async as plans">
+          <div *ngFor="let plan of plans" class="row Spaced">
+            <div class="col-sm-9" col-md-1>
+              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                {{plan.timeUpdated ?
+                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+            </div>
+            <div class="col-md-3">
+              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+              <!--</button>-->
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="responsePlansForApprovalNetwork | async as plans">
           <div *ngFor="let plan of plans" class="row Spaced">
             <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>

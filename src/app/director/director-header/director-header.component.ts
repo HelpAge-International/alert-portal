@@ -47,7 +47,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
         this.getAgencyName();
       }
 
-      this.userService.getAgencyId(this.USER_TYPE, this.uid).subscribe(agencyId => {
+      this.userService.getAgencyId(this.USER_TYPE, this.uid).takeUntil(this.ngUnsubscribe).subscribe(agencyId => {
         this.agencyId = agencyId;
       });
 
@@ -67,11 +67,11 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     console.log("logout");
-    this.af.auth.logout();
+    this.af.auth.logout().then(()=>{this.router.navigateByUrl(Constants.LOGIN_PATH).then()});
   }
 
   goToHome() {
-    this.router.navigateByUrl("/director");
+    this.router.navigateByUrl("/director").then();
   }
 
   /**

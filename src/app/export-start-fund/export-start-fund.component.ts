@@ -1,5 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Subject} from "rxjs";
+import {ActivatedRoute, Params} from "@angular/router";
 
 @Component({
   selector: 'app-export-start-fund',
@@ -10,8 +11,9 @@ import {Subject} from "rxjs";
 export class ExportStartFundComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private networkCountryId: string;
 
-  constructor() {
+  constructor(private route:ActivatedRoute) {
   }
 
   /**
@@ -19,7 +21,12 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-
+    this.route.params
+      .subscribe((params:Params) =>{
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
+        }
+      })
   }
 
   ngOnDestroy() {

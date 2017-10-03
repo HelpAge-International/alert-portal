@@ -255,6 +255,7 @@ import { LocalNetworkAdministrationSettingsComponent } from './local-network-adm
 import { LocalNetworkAdministrationMessagesComponent } from './local-network-admin/local-network-administration/local-network-administration-messages/local-network-administration-messages.component';
 import { LocalInviteAgenciesComponent } from './local-network-admin/local-network-administration/local-network-administration-agencies/local-invite-agencies/local-invite-agencies.component';
 import { LocalNetworkProfileStockCapacityAddEditComponent } from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity-add-edit/local-network-profile-stock-capacity-add-edit.component';
+import { ViewNetworkPlanComponent } from './network-country-admin/network-plans/view-network-plan/view-network-plan.component';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -504,7 +505,8 @@ const firebaseAuthConfig = {
     LocalInviteAgenciesComponent,
     NetworkCreateEditMessageComponent,
     NetworkNotificationsComponent,
-    LocalNetworkProfileStockCapacityAddEditComponent
+    LocalNetworkProfileStockCapacityAddEditComponent,
+    ViewNetworkPlanComponent
   ],
   imports: [
     BrowserModule,

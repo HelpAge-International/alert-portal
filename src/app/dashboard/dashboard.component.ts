@@ -362,20 +362,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.networkCountryId) {
         console.log(this.networkCountryId);
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
-        this.responsePlansForApprovalNetwork
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(plans => {
-            this.approvalPlansNetwork = plans
-          });
       }
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
+      if (this.networkCountryId) {
+        this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkCountryId);
+      }
     }
     if (this.responsePlansForApproval) {
       this.responsePlansForApproval
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlans = plans;
+        });
+    }
+    if (this.responsePlansForApprovalNetwork) {
+      this.responsePlansForApprovalNetwork
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(plans => {
+          console.log(this.approvalPlansNetwork);
+          this.approvalPlansNetwork = plans
         });
     }
   }
