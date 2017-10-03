@@ -1,0 +1,26 @@
+<app-network-country-header></app-network-country-header>
+<app-network-country-menu></app-network-country-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Back--button" routerLink="/network-country/network-plans">{{"RESPONSE_PLANS.TITLE_TEXT" |
+      translate}}
+    </div>
+    <!--<div *ngIf="userType != UserType.Donor">-->
+      <!--<div *ngIf="!isViewing" class="Back&#45;&#45;button" routerLink="/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" |-->
+        <!--translate}}-->
+      <!--</div>-->
+      <!--<div *ngIf="isViewing" class="Back&#45;&#45;button" (click)="backToViewingPlan()">{{countryName |-->
+        <!--translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}-->
+      <!--</div>-->
+    <!--</div>-->
+    <!--<div *ngIf="userType == UserType.Donor" class="Back&#45;&#45;button" (click)="backForDonor()">{{countryName |-->
+      <!--translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}-->
+    <!--</div>-->
+
+
+    <app-view-response-plan></app-view-response-plan>
+  </div>
+</div>
