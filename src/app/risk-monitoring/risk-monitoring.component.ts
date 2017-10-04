@@ -689,9 +689,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         });
     } else {
       //Obtaining the country admin data
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((data: any) => {
         if (data.adminId) {
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
             var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
             this.usersForAssign.push(userToPush);
           });
@@ -699,10 +699,10 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       });
 
       //Obtaining other staff data
-      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((data: {}) => {
         for (let userID in data) {
           if (!userID.startsWith('$')) {
-            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
               var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
               this.usersForAssign.push(userToPush);
             });

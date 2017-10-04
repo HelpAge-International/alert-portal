@@ -13,6 +13,7 @@ import {
   UserType
 } from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NetworkService} from "../../services/network.service";
 
 @Component({
   selector: 'app-export-start-fund-reporting-datasheet',
@@ -52,7 +53,12 @@ export class ReportingDatasheetComponent implements OnInit, OnDestroy {
 
   private networkCountryId: string;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute) {
   }
 
   /**
@@ -213,12 +219,23 @@ export class ReportingDatasheetComponent implements OnInit, OnDestroy {
   }
 
   private configGroups(responsePlan: ResponsePlan) {
-    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((systemAdminIds) => {
-        this.systemAdminUid = systemAdminIds[0].$key;
-        this.downloadGroups(responsePlan);
-      });
+    const normalUser = () => {
+      this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((systemAdminIds) => {
+          this.systemAdminUid = systemAdminIds[0].$key;
+          this.downloadGroups(responsePlan);
+        });
+    };
+    const networkUser = () => {
+      this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(systemId => {
+          this.systemAdminUid = systemId;
+          this.downloadGroups(responsePlan);
+        });
+    };
+    this.networkCountryId ? networkUser() : normalUser();
   }
 
   /**

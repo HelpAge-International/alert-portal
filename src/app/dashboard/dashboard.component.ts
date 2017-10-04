@@ -432,6 +432,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
     }
     this.actionService.getRedAlerts(this.countryId)
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(alerts => {
         alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         this.isRedAlert = alerts.length > 0;
@@ -509,6 +510,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getCHSActionTask(action) {
     if (action.type == ActionType.chs) {
       this.actionService.getCHSActionTask(action, this.systemId)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(task => {
           action.task = task;
         })

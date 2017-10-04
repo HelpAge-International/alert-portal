@@ -172,6 +172,8 @@ import { LocalNetworkAdministrationMessagesComponent } from './local-network-adm
 import { LocalInviteAgenciesComponent } from './local-network-admin/local-network-administration/local-network-administration-agencies/local-invite-agencies/local-invite-agencies.component';
 import { LocalNetworkProfileStockCapacityAddEditComponent } from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity-add-edit/local-network-profile-stock-capacity-add-edit.component';
 import {ViewNetworkPlanComponent} from "./network-country-admin/network-plans/view-network-plan/view-network-plan.component";
+import {NetworkCountryCreateEditActionComponent} from "./network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
+import {NetworkCountryActionSelectComponent} from "./network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component";
 
 
 const routes: Routes = [
@@ -478,6 +480,8 @@ const routes: Routes = [
   {path: 'network-country/network-country-messages', component: NetworkCountryMessagesComponent},
   {path: 'network-country/network-country-mpa', component: NetworkCountryMpaComponent},
   {path: 'network-country/network-country-apa', component: NetworkCountryApaComponent},
+  {path: 'network-country/network-country-create-edit-action', component: NetworkCountryCreateEditActionComponent},
+  {path: 'network-country/network-country-select-action', component: NetworkCountryActionSelectComponent},
   {path: 'network-country/network-country-budget', component: NetworkCountryBudgetComponent},
   {path: 'network-country-validation', component: NetworkCountryValidationComponent},
 

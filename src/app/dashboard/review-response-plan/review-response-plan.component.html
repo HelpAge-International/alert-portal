@@ -44,7 +44,8 @@
         </div>
 
         <div class="col-lg-1"></div>
-        <div class="col-lg-5">
+        <!--normal review-->
+        <div *ngIf="!networkCountryId" class="col-lg-5">
           <div class="row Small-spaced">
             <div class="col-lg-5">
               <p><b>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</b></p>
@@ -94,6 +95,27 @@
             </div>
           </div>
         </div>
+
+        <!--review with network country id-->
+        <div *ngIf="networkCountryId" class="col-lg-5">
+          <div class="row Small-spaced">
+            <div class="col-lg-5">
+              <p><b>{{"SYSTEM_ADMIN.MENU.AGENCIES" | translate}}</b></p>
+            </div>
+          </div>
+
+          <div class="Small-spaced" *ngFor="let agency of agenciesNeedToApprove">
+            <div class="col-12 text-left">{{agency.name}}</div>
+            <div class="col-md-12 text-left"
+                 [class.text-success]="shouldShowSuccess(loadedResponseplan, agency.id)"
+                 [class.text-muted]="loadedResponseplan?.approval && loadedResponseplan?.approval['partner'] && loadedResponseplan?.approval['countryDirector'] && loadedResponseplan?.approval['countryDirector'][agencyCountryMap.get(agency.id)] == ApprovalStatus.WaitingApproval || loadedResponseplan?.approval && loadedResponseplan?.approval['partner'] && loadedResponseplan?.approval['regionDirector'] && loadedResponseplan?.approval['regionDirector'][agencyRegionMap.get(agency.id)] == ApprovalStatus.WaitingApproval || loadedResponseplan?.approval && loadedResponseplan?.approval['partner'] && loadedResponseplan?.approval['globalDirector'] && loadedResponseplan?.approval['globalDirector'][agency.id] == ApprovalStatus.WaitingApproval"
+                 [class.text-warning]="loadedResponseplan?.approval && loadedResponseplan?.approval['partner'] && !loadedResponseplan?.approval['countryDirector']">
+              {{approvalText(loadedResponseplan, agency.id) | translate}}
+              <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+
         <div class="col-lg-1"></div>
       </div>
       <div class="Form-submit__wrapper" [hidden]="hideApproveButton()">

@@ -8,10 +8,15 @@ import {UserService} from "../services/user.service";
 import {Constants} from "../utils/Constants";
 import {
   BudgetCategory,
-  HazardScenario,
-  MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
+  MediaFormat,
+  MethodOfImplementation,
+  PresenceInTheCountry,
+  ResponsePlanSectors,
+  SourcePlan,
+  UserType
 } from "../utils/Enums";
 import {ModelPlanActivity} from "../model/plan-activity.model";
+import {NetworkService} from "../services/network.service";
 
 @Component({
   selector: 'app-export-proposal',
@@ -69,13 +74,21 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   private managementSupportNarrative: string;
   private activityMap = new Map();
   private sectors: any[];
-  private totalFemaleUnder18 : number;
-  private totalFemale18To50 : number;
-  private totalFemaleOver50 : number;
-  private totalMaleUnder18 : number;
-  private totalMale18To50 : number;
-  private totalMaleOver50 : number;
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  private totalFemaleUnder18: number;
+  private totalFemale18To50: number;
+  private totalFemaleOver50: number;
+  private totalMaleUnder18: number;
+  private totalMale18To50: number;
+  private totalMaleOver50: number;
+
+  private networkCountryId: string;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute) {
   }
 
   /**
@@ -83,24 +96,50 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.userPath = Constants.USER_PATHS[userType];
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["excel"]) {
-            this.isExcel = params["excel"];
-            if(this.isExcel == 1){
-              this.docType = "Excel";
-            }else{
-              this.docType = "Word";
-            }
-          }
+    this.route.params.subscribe((params: Params) => {
+      if (params["excel"]) {
+        this.isExcel = params["excel"];
+        if (this.isExcel == 1) {
+          this.docType = "Excel";
+        } else {
+          this.docType = "Word";
+        }
+      }
+      if (params["id"] && params["networkCountryId"]) {
+        this.responsePlanId = params["id"];
+        this.networkCountryId = params["networkCountryId"];
+        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+          this.uid = user.uid;
+          this.downloadResponsePlanData();
+          this.downloadAgencyData(null);
         });
-
-      this.downloadData();
+      } else {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.userPath = Constants.USER_PATHS[userType];
+          this.downloadData();
+        });
+      }
     });
+
+    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    //   this.uid = user.uid;
+    //   this.userPath = Constants.USER_PATHS[userType];
+    //   this.route.params
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe((params: Params) => {
+    //       if (params["excel"]) {
+    //         this.isExcel = params["excel"];
+    //         if(this.isExcel == 1){
+    //           this.docType = "Excel";
+    //         }else{
+    //           this.docType = "Word";
+    //         }
+    //       }
+    //     });
+    //
+    //   this.downloadData();
+    // });
   }
 
   ngOnDestroy() {
@@ -146,7 +185,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
           }
         });
     }
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
@@ -168,16 +208,27 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
       });
   }
 
-  private downloadAgencyData(userType){
-    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((agencyId) => {
-        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
-          if(name != null){
-            this.memberAgencyName = name.$value;
-          }
+  private downloadAgencyData(userType) {
+    const normalUser = () => {
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyId) => {
+          this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+            if (name != null) {
+              this.memberAgencyName = name.$value;
+            }
+          });
         });
+    };
+
+    const networkUser = () => {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.responsePlan.planLead + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+        if (name != null) {
+          this.memberAgencyName = name.$value;
+        }
       });
+    };
+    this.networkCountryId ? networkUser() : normalUser();
   }
 
   private bindProjectLeadData(responsePlan: ResponsePlan) {
@@ -190,8 +241,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
 
-          this.af.database.object(Constants.APP_STATUS+ "/staff/"+this.countryId+"/"+user.id+"/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
-            if(position != null){
+          this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
+            if (position != null) {
               this.planLeadPosition = position.$value;
             }
           });
@@ -227,12 +278,23 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   }
 
   private configGroups(responsePlan: ResponsePlan) {
-    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((systemAdminIds) => {
-        this.systemAdminUid = systemAdminIds[0].$key;
-        this.downloadGroups(responsePlan);
-      });
+    const normalUser = () => {
+      this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((systemAdminIds) => {
+          this.systemAdminUid = systemAdminIds[0].$key;
+          this.downloadGroups(responsePlan);
+        });
+    };
+    const networkUser = () => {
+      this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(systemId => {
+          this.systemAdminUid = systemId;
+          this.downloadGroups(responsePlan);
+        });
+    };
+    this.networkCountryId ? networkUser() : normalUser();
   }
 
   private bindProjectBudgetData(responsePlan: ResponsePlan) {
@@ -266,7 +328,7 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   }
 
 
-  private bindProjectActivitiesData(responsePlan: ResponsePlan){
+  private bindProjectActivitiesData(responsePlan: ResponsePlan) {
     if (responsePlan.sectors) {
       this.sectors = Object.keys(responsePlan.sectors).map(key => {
         let sector = responsePlan.sectors[key];
@@ -279,8 +341,7 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
       Object.keys(responsePlan.sectors).forEach(sectorKey => {
 
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-        if(activitiesData)
-        {
+        if (activitiesData) {
           let moreData: {}[] = [];
           Object.keys(activitiesData).forEach(key => {
             let beneficiary = [];
@@ -305,16 +366,16 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   /**
    * Utility Functions
    */
 
-  private getTotalFemaleUnder18(activityMap){
+  private getTotalFemaleUnder18(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0);
         });
       }
@@ -323,12 +384,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private getTotalFemaleUnder18To50(activityMap){
+  private getTotalFemaleUnder18To50(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0);
         });
       }
@@ -337,12 +397,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private getTotalFemaleOver50(activityMap){
+  private getTotalFemaleOver50(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
         });
       }
@@ -351,12 +410,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private getTotalMaleUnder18(activityMap){
+  private getTotalMaleUnder18(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0);
         });
       }
@@ -365,12 +423,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private getTotalMaleUnder18To50(activityMap){
+  private getTotalMaleUnder18To50(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0);
         });
       }
@@ -379,12 +436,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private getTotalMaleOver50(activityMap){
+  private getTotalMaleOver50(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
         });
       }
@@ -393,12 +449,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private getOverallFemaleTotal(activityMap){
+  private getOverallFemaleTotal(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
             + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
             + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
@@ -409,21 +464,21 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private getOverallMaleTotal(activityMap){
+  private getOverallMaleTotal(activityMap) {
     var total = 0;
-    this.sectors.forEach(function (sector){
-      if(activityMap.get(sector.id))
-      {
-        activityMap.get(sector.id).forEach(function(activity) {
+    this.sectors.forEach(function (sector) {
+      if (activityMap.get(sector.id)) {
+        activityMap.get(sector.id).forEach(function (activity) {
           total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
-            +(activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
-            +(activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+            + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+            + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
         });
       }
     });
 
     return total;
   }
+
   private downloadGroups(responsePlan: ResponsePlan) {
     if (this.systemAdminUid) {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this.systemAdminUid + '/groups')

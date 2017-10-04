@@ -96,6 +96,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           this.networkCountryId = selection["networkCountryId"];
           return this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId);
         })
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(duration => {
           this.networkPlanExpireDuration = duration;
           this.getResponsePlans(this.networkCountryId);
