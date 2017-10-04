@@ -164,7 +164,7 @@
         </div>
 
         <!-- Notes Drop Down -->
-        <div id="notes_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
           <div class="log_left p-3">
             <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
             <hr class="d-inline-flex">
@@ -187,9 +187,9 @@
                     <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                     </p>
                     <a
-                      *ngIf="uid==note.uploadedBy"
+                      *ngIf="uid==note.uploadedBy" 
                       href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('staff', staff.id, note)">{{ 'EDIT' | translate }}</a>
+                      (click)="editNote('staff', staff.id, note, agency)">{{ 'EDIT' | translate }}</a>
                     <p
                       *ngIf="uid==note.uploadedBy"
                       href="javascript:void(0)" class="padding-left-one">|</p>
@@ -197,7 +197,7 @@
                       *ngIf="uid==note.uploadedBy"
                       href="javascript:void(0)"
                       class="padding-left-one col-sm-0 text-danger"
-                      (click)="deleteNote('staff', staff.id, note)">{{ 'DELETE' | translate }}</a>
+                      (click)="deleteNote('staff', staff.id, note, agency)">{{ 'DELETE' | translate }}</a>
                   </div>
                 </div>
               </div>
@@ -209,7 +209,7 @@
                         class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
                 </button>
                 <br>
-                <br><a href="#notes_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+                <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
                 translate
                 }}</a>
               </div>
@@ -242,7 +242,7 @@
           <div class="col-sm-2 margin-top-one">{{surge.position}}</div> <!--Position-->
           <div class="col-sm-2 margin-top-one"><img
             src="assets/images/select_icon/{{sectorImgPathMap.get(surge.$key)}}" alt="Health"><span
-            *ngIf="surge.sectors" class="padding-left-one">{{ResponsePlanSectors[surge.sectors[0]] | translate}}</span>
+             class="padding-left-one"></span>{{ResponsePlanSectors[surge.sectors[0]] | translate}}
           </div> <!--Sector of expertise-->
           <div class="col-sm-1 margin-top-one">{{surge.location}}</div> <!--Location-->
           <div class="col-sm-1 "><p class="margin-top-one margin-top-one">{{surge.arrivalTimeValue}}
@@ -306,7 +306,7 @@
         </div>
 
         <!-- Notes Drop Down -->
-        <div id="notes_surge_{{agency.$key}}_{{surge.$key}}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div id="notes_surge_{{surge.$key}}" class="Tooltip__bubble container-fluid notes log collapse">
           <div class="log_left p-3">
             <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
             <hr class="d-inline-flex">
@@ -331,7 +331,7 @@
                     <a
                       *ngIf="uid==note.uploadedBy"
                       href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('surge', surge.$key, note)">{{ 'EDIT' | translate }}</a>
+                      (click)="editNote('surge', surge.$key, note, agency)">{{ 'EDIT' | translate }}</a>
                     <p
                       *ngIf="uid==note.uploadedBy"
                       href="javascript:void(0)" class="padding-left-one">|</p>
@@ -339,7 +339,7 @@
                       *ngIf="uid==note.uploadedBy"
                       href="javascript:void(0)"
                       class="padding-left-one col-sm-0 text-danger"
-                      (click)="deleteNote('surge', surge.$key, note)">{{ 'DELETE' | translate }}</a>
+                      (click)="deleteNote('surge', surge.$key, note, agency)">{{ 'DELETE' | translate }}</a>
                   </div>
                 </div>
               </div>
@@ -365,7 +365,7 @@
 
       </div>
       <!-- Delete note modal -->
-      <div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      <div class="modal fade" id="delete-action-{{agency.$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
            aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -377,7 +377,7 @@
               <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
+              <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal(agency)">{{"GLOBAL.CANCEL"|
                 translate}}
               </button>
               <button type="button" class="btn btn-primary" (click)="deleteAction(activeType, activeId, activeNote, agency)">
@@ -389,7 +389,7 @@
       </div>
 
       <!--Edit Note Modal-->
-      <div class="modal fade" id="edit-action" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+      <div class="modal fade" id="edit-action-{{agency.$key}}" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -403,7 +403,7 @@
                   [(ngModel)]="activeNote && activeNote.content"></textarea>
             </div>
             <div class="row Right-aligned Spaced col-sm-12">
-              <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal()">{{"GLOBAL.CANCEL"
+              <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal(agency)">{{"GLOBAL.CANCEL"
                 |
                 translate}}</a>
               <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"

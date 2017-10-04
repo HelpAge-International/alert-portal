@@ -157,6 +157,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
         .subscribe(surgeCapacities => {
           this.surgeCapacities.set(key, surgeCapacities);
           this.surgeCapacities.get(key).forEach(surge => {
+            console.log(surge.sectors[0])
             surge.updatedAt = this.convertToLocal(surge.updatedAt);
             this.handleSectorImgPath(surge, surge.sectors[0]);
             surge["notes"] = this.handleNotes(surge);
@@ -488,15 +489,15 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
     return !this.alertMessage;
   }
 
-  deleteNote(type: string, id: string, note: NoteModel) {
-    jQuery('#delete-action').modal('show');
+  deleteNote(type: string, id: string, note: NoteModel, agency) {
+    jQuery('#delete-action-' + agency.$key).modal('show');
     this.activeType = type;
     this.activeId = id;
     this.activeNote = note;
   }
 
   deleteAction(type: string, id: string, note: NoteModel, agency) {
-    this.closeDeleteModal();
+    this.closeDeleteModal(agency);
 
     let node = '';
 
@@ -513,15 +514,15 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
       .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
   }
 
-  editNote(type: string, id: string, note: NoteModel) {
-    jQuery('#edit-action').modal('show');
+  editNote(type: string, id: string, note: NoteModel, agency) {
+    jQuery('#edit-action-' + agency.$key).modal('show');
     this.activeId = id;
     this.activeNote = note;
     this.activeType = type;
   }
 
   editAction(type: string, id: string, note: NoteModel, agency) {
-    this.closeEditModal();
+    this.closeEditModal(agency);
     console.log(agency)
 
     if (this.validateNote(note)) {
@@ -540,12 +541,12 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
     }
   }
 
-  closeDeleteModal() {
-    jQuery('#delete-action').modal('hide');
+  closeDeleteModal(agency) {
+    jQuery('#delete-action-' + agency.$key).modal('hide');
   }
 
-  closeEditModal() {
-    jQuery('#edit-action').modal('hide');
+  closeEditModal(agency) {
+    jQuery('#edit-action-' + agency.$key).modal('hide');
   }
 
   convertToLocal(timestamp): number {
