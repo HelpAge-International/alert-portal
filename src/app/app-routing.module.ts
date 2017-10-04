@@ -172,7 +172,6 @@ import { LocalNetworkAdministrationMessagesComponent } from './local-network-adm
 import { LocalInviteAgenciesComponent } from './local-network-admin/local-network-administration/local-network-administration-agencies/local-invite-agencies/local-invite-agencies.component';
 import { LocalNetworkProfileStockCapacityAddEditComponent } from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity-add-edit/local-network-profile-stock-capacity-add-edit.component';
 
-
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
 
@@ -459,6 +458,7 @@ const routes: Routes = [
   {path: 'network/local-network-administration/settings', component: LocalNetworkAdministrationSettingsComponent},
   {path: 'network/local-network-administration/messages', component: LocalNetworkAdministrationMessagesComponent},
   {path: 'network/local-network-office-profile/stock-capacity/add-edit', component: LocalNetworkProfileStockCapacityAddEditComponent},
+
 
 
   /**

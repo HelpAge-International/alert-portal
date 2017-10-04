@@ -251,7 +251,7 @@ export enum ResponsePlanSectors {
   foodSecurityAndLivelihoods = 4,
   protection = 5,
   education = 6,
-  campManagement = 7,
+  campmanagement = 7,
   other = 8
 }
 

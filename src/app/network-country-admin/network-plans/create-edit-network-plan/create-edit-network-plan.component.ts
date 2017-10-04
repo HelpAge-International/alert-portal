@@ -988,7 +988,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   isCampManagementSectorSelected() {
     this.campManagementSectorSelected = !this.campManagementSectorSelected;
-    this.updateSectorsList(this.campManagementSectorSelected, ResponsePlanSectors.campManagement);
+    this.updateSectorsList(this.campManagementSectorSelected, ResponsePlanSectors.campmanagement);
   }
 
   isOtherSectorSelected() {
@@ -1685,7 +1685,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         this.protectionSectorSelected = true;
       } else if (Number(key) == ResponsePlanSectors.education) {
         this.educationSectorSelected = true;
-      } else if (Number(key) == ResponsePlanSectors.campManagement) {
+      } else if (Number(key) == ResponsePlanSectors.campmanagement) {
         this.campManagementSectorSelected = true;
       } else if (Number(key) == ResponsePlanSectors.other) {
         this.otherSectorSelected = true;

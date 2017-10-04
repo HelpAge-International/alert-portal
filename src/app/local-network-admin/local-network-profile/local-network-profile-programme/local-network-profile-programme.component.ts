@@ -82,8 +82,6 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
             .takeUntil(this.ngUnsubscribe)
             .subscribe( officeAgencyMap => {
               this.agencies = []
-              this.testMap = officeAgencyMap
-              this.testMap = officeAgencyMap
 
               officeAgencyMap.forEach((value: string, key: string) => {
                 this.agencyService.getAgency(key)

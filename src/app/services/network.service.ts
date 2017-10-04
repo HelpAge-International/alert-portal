@@ -709,5 +709,18 @@ export class NetworkService {
       })
   }
 
+  getAgencyCountryOfficesByNetwork(networkId: string){
+    var countryOfficeAgencyMap = new Map<string,string>()
+    return this.af.database.list( Constants.APP_STATUS + '/network/' + networkId + '/agencies')
+      .map( agencies => {
+        agencies.forEach( agency => {
+          if(agency.countryCode && agency.isApproved){
+            countryOfficeAgencyMap.set(agency.$key, agency.countryCode)
+          }
+        })
+        return countryOfficeAgencyMap;
+      })
+  }
+
 
 }

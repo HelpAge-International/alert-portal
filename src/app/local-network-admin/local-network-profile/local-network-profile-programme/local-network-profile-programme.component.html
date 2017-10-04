@@ -123,11 +123,11 @@
               <br>
               <div class="row">
                 <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
-                <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote"
+                <a *ngIf="note.uploadBy == uid" href="#editNote-{{agency.$key}}" data-toggle="modal" data-target="#editNote-{{agency.$key}}"
                    class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"EDIT" |
                   translate}}</a>
                 <p *ngIf="note.uploadBy == uid" href="#" class="padding-left-one">|</p>
-                <a *ngIf="note.uploadBy == uid" href="#deleteNote" data-toggle="modal" data-target="#deleteNote"
+                <a *ngIf="note.uploadBy == uid" href="#deleteNote-{{agency.$key}}" data-toggle="modal" data-target="#deleteNote-{{agency.$key}}"
                    class="padding-left-one col-sm-0 text-danger" (click)="setTmpNote(m.key, note)">{{"DELETE" |
                   translate}}</a>
               </div>
@@ -151,7 +151,7 @@
 
 
     <!--Edit Note Modal-->
-    <div class="modal fade" id="editNote" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+    <div class="modal fade" id="editNote-{{agency.$key}}" tabindex="-1" role="dialog" attr.aria-labelledby="editNote-{{agency.$key}}" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -175,7 +175,7 @@
     </div>
 
     <!--Delete Note Modal-->
-    <div class="modal fade" id="deleteNote" tabindex="-1" role="dialog" aria-labelledby="deleteNote" aria-hidden="true">
+    <div class="modal fade" id="deleteNote-{{agency.$key}}" tabindex="-1" role="dialog" attr.aria-labelledby="deleteNote-{{agency.$key}}" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
