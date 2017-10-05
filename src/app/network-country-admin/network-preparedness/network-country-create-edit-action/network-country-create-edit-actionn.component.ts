@@ -17,7 +17,7 @@ import {AngularFire} from "angularfire2";
 import {NetworkService} from "../../../services/network.service";
 import {NotificationService} from "../../../services/notification.service";
 import {UserService} from "../../../services/user.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {CreateEditPrepActionHolder} from "../../../preparedness/create-edit/create-edit.component";
 import {PrepActionService, PreparednessUser} from "../../../services/prepactions.service";
@@ -119,47 +119,124 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   ngOnInit() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.showLoader = true;
+    this.route.params.subscribe((params:Params) =>{
+      if (params['id']) {
+        this.action.id = params['id'];
+        this.editDisableLoading = true;
+      }
 
-      //get network id
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.showLoader = false;
-          this.networkId = selection["id"];
-          this.networkCountryId = selection["networkCountryId"];
-          this.networkService.getNetworkModuleMatrix(this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(modules => this.moduleAccess = modules);
-          // return this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId);
-        });
-      // .takeUntil(this.ngUnsubscribe)
-      // .subscribe(duration => {
-      // this.networkPlanExpireDuration = duration;
-      // this.getResponsePlans(this.networkCountryId);
-      // this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(map => {
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.showLoader = true;
 
-      // this.agencyCountryMap = map;
-      // this.agenciesNeedToApprove = [];
-      // CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
-      //   this.userService.getAgencyModel(agencyId)
-      //     .takeUntil(this.ngUnsubscribe)
-      //     .subscribe(model => {
-      //       console.log(model);
-      //       this.agenciesNeedToApprove.push(model);
-      //     });
-      // });
-      // });
-      // });
+        //get network id
+        this.networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.showLoader = false;
+            this.networkId = selection["id"];
+            this.networkCountryId = selection["networkCountryId"];
+
+            this.networkService.getNetworkModuleMatrix(this.networkCountryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(modules => this.moduleAccess = modules);
+
+            this.getHazards();
+            this.initStaff();
+            this.calculateCurrency();
+
+            if (this.action.id != null) {
+              this.showDueDate = true;
+              this.initFromExistingActionId(true, true);
+            }
+            else {
+              this.action.isAllHazards = true;
+            }
+            // return this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId);
+          });
+        // .takeUntil(this.ngUnsubscribe)
+        // .subscribe(duration => {
+        // this.networkPlanExpireDuration = duration;
+        // this.getResponsePlans(this.networkCountryId);
+        // this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+        //   .takeUntil(this.ngUnsubscribe)
+        //   .subscribe(map => {
+
+        // this.agencyCountryMap = map;
+        // this.agenciesNeedToApprove = [];
+        // CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
+        //   this.userService.getAgencyModel(agencyId)
+        //     .takeUntil(this.ngUnsubscribe)
+        //     .subscribe(model => {
+        //       console.log(model);
+        //       this.agenciesNeedToApprove.push(model);
+        //     });
+        // });
+        // });
+        // });
+      });
+
     });
+
   }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  /**
+   * Initialisation
+   */
+  public initFromExistingActionId(canEditMPA: boolean, canEditAPA: boolean) {
+    this.prepActionService.initOneAction(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+      if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/preparedness/minimum");
+        }
+        else {
+          this.router.navigateByUrl("/preparedness/advanced");
+        }
+      }
+      if (action.type == ActionLevel.MPA) {
+        this.showDueDate = true;
+        this.editDisableLoading = false;
+      }
+      else {
+        this.initialiseListOfHazardsHazards();
+      }
+
+      this.action.id = action.id;
+      this.action.type = action.type;
+      this.action.level = action.level;
+      this.action.task = action.task;
+      this.action.requireDoc = action.requireDoc;
+      this.action.dueDate = action.dueDate;
+      if (action.assignedHazards != null) {
+        for (let x of action.assignedHazards) {
+          this.action.hazards.set((+x), true);
+        }
+      }
+      this.action.asignee = action.asignee;
+      this.action.department = action.department;
+      this.action.budget = action.budget;
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isComplete = action.isComplete;
+      this.action.isCompleteAt = action.isCompleteAt;
+      if (action.frequencyValue != null && action.frequencyBase != null) {
+        console.log("Frequency Values are here!");
+        this.action.isFrequencyActive = true;
+        this.action.frequencyType = action.frequencyBase;
+        this.action.frequencyQuantity = action.frequencyValue;
+      }
+      this.action.computedClockSetting = action.computedClockSetting;
+
+      if (!this.oldAction) {
+        this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
+      }
+
+      console.log(action);
+      console.log(this.action);
+    });
   }
 
   /**
@@ -222,7 +299,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    * Initialising hazards
    */
   private getHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.hazards = [];
@@ -357,7 +434,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
       if (this.action.id != null) {
         // Updating
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(() => {
 
           if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
             // Send notification to the assignee
@@ -428,7 +505,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     else {
       this.action.isAllHazards = false;
       this.action.hazards.set(hazardKey, event.target.checked ? event.target.checked : false);
-      this.action.hazards.forEach((value, key) => {
+      this.action.hazards.forEach((value, ) => {
         if (value) {
           this.action.allHazardsEnabled = true;
         }
@@ -458,6 +535,71 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    */
   public getHazardImage(key) {
     return HazardImages.init().getCSS(key);
+  }
+
+  /**
+   * Initialising Staff
+   */
+
+  private initCountryAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
+
+  private initStaff() {
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          this.getStaffDetails(snapshot.key, false);
+        });
+      });
+  }
+
+  /**
+   * Get staff member public user data (names, etc.)
+   */
+
+  public getStaffDetails(uid: string, isMe: boolean) {
+    if (!this.CURRENT_USERS.get(uid)) {
+      this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          let prepUser: PreparednessUser = new PreparednessUser(uid, this.uid == uid);
+          prepUser.firstName = snap.firstName;
+          prepUser.lastName = snap.lastName;
+          this.CURRENT_USERS.set(uid, prepUser);
+          this.updateUser(prepUser);
+          if (isMe) {
+            this.myFirstName = snap.firstName;
+            this.myLastName = snap.lastName;
+          }
+        });
+    }
+  }
+
+  /**
+   * Update method for the user. This will check if it already exists, so as to not cause duplicates in the list
+   */
+  public updateUser(user: PreparednessUser) {
+    let ran: boolean = false;
+    for (let x of this.ASSIGNED_TOO) {
+      if (x.id == user.id) {
+        x = user;
+        ran = true;
+      }
+      x.isMe = (x.id == this.uid);
+    }
+    if (!ran) {
+      user.isMe = (user.id == this.uid);
+      this.ASSIGNED_TOO.push(user);
+    }
   }
 
 
