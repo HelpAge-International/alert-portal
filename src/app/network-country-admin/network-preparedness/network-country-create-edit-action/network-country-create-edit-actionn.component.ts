@@ -47,6 +47,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   private networkId: string;
   private networkCountryId: string;
   private showLoader: boolean;
+  private systemId: string;
 
 
   //copy over
@@ -116,10 +117,30 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               private route: ActivatedRoute,
               private translate: TranslateService,
               private router: Router) {
+
+    /* if selected generic action */
+    this.actionSelected = this.storage.get('selectedAction');
+    if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
+      this.action.task = (typeof (this.actionSelected.task) != 'undefined') ? this.actionSelected.task : '';
+      this.action.level = (typeof (this.actionSelected.level) != 'undefined') ? parseInt(this.actionSelected.level) : 0;
+      this.action.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
+      this.action.budget = (typeof (this.actionSelected.budget) != 'undefined') ? this.actionSelected.budget : 0;
+      this.copyDepartmentId = (typeof (this.actionSelected.department) != 'undefined') ? this.actionSelected.department : 0;
+      console.log(this.actionSelected);
+      // TODO: Check if this is being used anywhere else and potentially remove it?
+      // TODO: This causes a bug with going back and forth on the page
+      this.storage.remove('selectedAction');
+      this.actionSelected = {};
+    }
+
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params:Params) =>{
+    this.initNetworkAccess();
+  }
+
+  private initNetworkAccess() {
+    this.route.params.subscribe((params: Params) => {
       if (params['id']) {
         this.action.id = params['id'];
         this.editDisableLoading = true;
@@ -127,6 +148,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.showLoader = true;
+        this.uid = user.uid;
+        this.getStaffDetails(this.uid, true);
 
         //get network id
         this.networkService.getSelectedIdObj(user.uid)
@@ -141,42 +164,25 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               .subscribe(modules => this.moduleAccess = modules);
 
             this.getHazards();
-            this.initStaff();
+            // this.initStaff();
             this.calculateCurrency();
 
-            if (this.action.id != null) {
-              this.showDueDate = true;
-              this.initFromExistingActionId(true, true);
-            }
-            else {
-              this.action.isAllHazards = true;
-            }
-            // return this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId);
+            this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(systemId => {
+                this.systemId = systemId;
+
+                if (this.action.id != null) {
+                  this.showDueDate = true;
+                  this.initFromExistingActionId(true, true);
+                }
+                else {
+                  this.action.isAllHazards = true;
+                }
+              });
           });
-        // .takeUntil(this.ngUnsubscribe)
-        // .subscribe(duration => {
-        // this.networkPlanExpireDuration = duration;
-        // this.getResponsePlans(this.networkCountryId);
-        // this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-        //   .takeUntil(this.ngUnsubscribe)
-        //   .subscribe(map => {
-
-        // this.agencyCountryMap = map;
-        // this.agenciesNeedToApprove = [];
-        // CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
-        //   this.userService.getAgencyModel(agencyId)
-        //     .takeUntil(this.ngUnsubscribe)
-        //     .subscribe(model => {
-        //       console.log(model);
-        //       this.agenciesNeedToApprove.push(model);
-        //     });
-        // });
-        // });
-        // });
       });
-
     });
-
   }
 
   ngOnDestroy() {
@@ -188,7 +194,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    * Initialisation
    */
   public initFromExistingActionId(canEditMPA: boolean, canEditAPA: boolean) {
-    this.prepActionService.initOneAction(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+    this.prepActionService.initOneActionNetwork(this.af, this.ngUnsubscribe, this.networkCountryId, this.networkId, null, this.action.id, (action) => {
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
           this.router.navigateByUrl("/preparedness/minimum");
@@ -265,7 +271,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private initialiseListOfHazardsHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + this.networkCountryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
@@ -434,7 +440,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
       if (this.action.id != null) {
         // Updating
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(() => {
+        this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.action.id).update(updateObj).then(() => {
 
           if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
             // Send notification to the assignee
@@ -457,23 +463,23 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         // Saving
         updateObj.createdAt = new Date().getTime();
         console.log(updateObj);
-        // this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
-        //
-        //   if (updateObj.asignee) {
-        //     // Send notification to the assignee
-        //     let notification = new MessageModel();
-        //     notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-        //       : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-        //     notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-        //       : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
-        //
-        //     notification.time = new Date().getTime();
-        //     this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
-        //     });
-        //   }
-        //
-        //   this._location.back();
-        // });
+        this.af.database.list(Constants.APP_STATUS + "/action/" + this.networkCountryId).push(updateObj).then(_ => {
+
+          if (updateObj.asignee) {
+            // Send notification to the assignee
+            let notification = new MessageModel();
+            notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+
+            notification.time = new Date().getTime();
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            });
+          }
+
+          this._location.back();
+        });
       }
     }
   }
@@ -505,7 +511,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     else {
       this.action.isAllHazards = false;
       this.action.hazards.set(hazardKey, event.target.checked ? event.target.checked : false);
-      this.action.hazards.forEach((value, ) => {
+      this.action.hazards.forEach((value,) => {
         if (value) {
           this.action.allHazardsEnabled = true;
         }

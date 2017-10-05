@@ -481,6 +481,7 @@ const routes: Routes = [
   {path: 'network-country/network-country-mpa', component: NetworkCountryMpaComponent},
   {path: 'network-country/network-country-apa', component: NetworkCountryApaComponent},
   {path: 'network-country/network-country-create-edit-action', component: NetworkCountryCreateEditActionComponent},
+  {path: 'network-country/network-country-create-edit-action/:id', component: NetworkCountryCreateEditActionComponent},
   {path: 'network-country/network-country-select-action', component: NetworkCountryActionSelectComponent},
   {path: 'network-country/network-country-budget', component: NetworkCountryBudgetComponent},
   {path: 'network-country-validation', component: NetworkCountryValidationComponent},

@@ -114,13 +114,18 @@
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
           <label for="n-AssignTo">{{"ASSIGN_TO" | translate}}</label>
-          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"
+          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader"
                   [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA))
                                     || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA))">
             <option selected value="">{{"UNASSIGNED" | translate}}</option>
             <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}} {{userAssign.lastName}}</option>
           </select>
           <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
+          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="!userType" [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA))
+                                    || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA))">
+            <option selected value="">{{"UNASSIGNED" | translate}}</option>
+            <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
+          </select>
           <!--<select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert || userType == userTypes.PartnerUser" [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA))-->
                                     <!--|| ((action.type == actionType.chs && action.level == actionLevelEnum.MPA))-->
                                     <!--|| ((action.level == actionLevelEnum.MPA))">-->
