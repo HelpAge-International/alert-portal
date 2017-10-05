@@ -175,7 +175,6 @@ import {ViewNetworkPlanComponent} from "./network-country-admin/network-plans/vi
 import {NetworkCountryCreateEditActionComponent} from "./network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
 import {NetworkCountryActionSelectComponent} from "./network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component";
 
-
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
 
@@ -462,6 +461,7 @@ const routes: Routes = [
   {path: 'network/local-network-administration/settings', component: LocalNetworkAdministrationSettingsComponent},
   {path: 'network/local-network-administration/messages', component: LocalNetworkAdministrationMessagesComponent},
   {path: 'network/local-network-office-profile/stock-capacity/add-edit', component: LocalNetworkProfileStockCapacityAddEditComponent},
+
 
 
   /**

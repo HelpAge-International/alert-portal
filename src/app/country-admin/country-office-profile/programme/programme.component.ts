@@ -51,7 +51,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.foodSecurityAndLivelihoods,
     ResponsePlanSectors.protection,
     ResponsePlanSectors.education,
-    ResponsePlanSectors.campManagement
+    ResponsePlanSectors.campmanagement
   ];
 
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
