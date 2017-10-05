@@ -3296,4 +3296,172 @@ exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/
       });
     }
   });
+
+exports.sendNetworkCountryAgencyValidationEmail_TEST = functions.database.ref('/test/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (!preData && currData) {
+      console.log("network country office agency country added");
+
+      let networkId = event.params['networkId'];
+      let networkCountryId = event.params['networkCountryId'];
+      let agencyId = event.params['agencyId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/test/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
+        let adminId = data.val();
+        console.log("admin id: " + adminId);
+
+        admin.database().ref('/test/userPublic/' + adminId).once("value", (user) => {
+          let email = user.val().email;
+          console.log("admin email: " + email);
+
+          admin.database().ref('/test/network/' + networkId).once("value", networkSnap => {
+            let network = networkSnap.val();
+
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            admin.database().ref('test/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT Network" <noreply@firebase.com>',
+                to: email
+              };
+
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://test.portal.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
+                          \n Thanks
+                          \n Your ALERT team `;
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+
+          });
+
+        });
+      });
+    }
+  });
+
+exports.sendNetworkCountryAgencyValidationEmail_UAT_1 = functions.database.ref('/uat/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (!preData && currData) {
+      console.log("network country office agency country added");
+
+      let networkId = event.params['networkId'];
+      let networkCountryId = event.params['networkCountryId'];
+      let agencyId = event.params['agencyId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/uat/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
+        let adminId = data.val();
+        console.log("admin id: " + adminId);
+
+        admin.database().ref('/uat/userPublic/' + adminId).once("value", (user) => {
+          let email = user.val().email;
+          console.log("admin email: " + email);
+
+          admin.database().ref('/uat/network/' + networkId).once("value", networkSnap => {
+            let network = networkSnap.val();
+
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            admin.database().ref('uat/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT Network" <noreply@firebase.com>',
+                to: email
+              };
+
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://uat.portal.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
+                          \n Thanks
+                          \n Your ALERT team `;
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+
+          });
+
+        });
+      });
+    }
+  });
+
+exports.sendNetworkCountryAgencyValidationEmail_UAT_2 = functions.database.ref('/uat-2/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (!preData && currData) {
+      console.log("network country office agency country added");
+
+      let networkId = event.params['networkId'];
+      let networkCountryId = event.params['networkCountryId'];
+      let agencyId = event.params['agencyId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/uat-2/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
+        let adminId = data.val();
+        console.log("admin id: " + adminId);
+
+        admin.database().ref('/uat-2/userPublic/' + adminId).once("value", (user) => {
+          let email = user.val().email;
+          console.log("admin email: " + email);
+
+          admin.database().ref('/uat-2/network/' + networkId).once("value", networkSnap => {
+            let network = networkSnap.val();
+
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            admin.database().ref('uat-2/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT Network" <noreply@firebase.com>',
+                to: email
+              };
+
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://uat-2.portal.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
+                          \n Thanks
+                          \n Your ALERT team `;
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+
+          });
+
+        });
+      });
+    }
+  });
 /***********************************************************************************************************************/
