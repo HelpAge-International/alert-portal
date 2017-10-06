@@ -59,8 +59,9 @@
 
       <div class="row" *ngIf="agencies">
         <div class="col-sm-12"><p><strong>Network Members Attending</strong></p></div>
-        <label *ngFor="let agency of agencies; index as i" for="item{{i}}"
-               class="Checkbox--agency-lnetwork col-lg-4 col-md-4 col-sm-5 margin-left-one"
+        <span style="width: 100%;" *ngFor="let agency of agencies; index as i">
+        <label for="item{{i}}"
+               class="Checkbox--agency-lnetwork col-lg-10 col-md-4 col-sm-5 margin-left-one"
                [hidden]="existingAgencyIds && existingAgencyIds.indexOf(agency.id) !=-1">
 
           <input *ngIf="coordinationArrangement.agencies" type="checkbox" name="Action-type" id="item{{i}}" #selection
@@ -72,25 +73,31 @@
           class="margin-bottom-none circle-image"
           src="{{agency.logoPath ? agency.logoPath : 'assets/images/donor/agency-preview.svg'}}">
           <p>{{agency.name}}</p></label>
+        </span>
       </div>
 
       <div class="row" *ngIf="nonAlertMembersExisting">
-        <label *ngFor="let member of nonAlertMembersExisting; index as i" for="item-nonalert-{{i}}"
-               class="Checkbox--agency-lnetwork col-lg-4 col-md-4 col-sm-5 margin-left-one">
+        <span style="width: 100%;" *ngFor="let member of nonAlertMembersExisting; index as i">
+        <label for="item-nonalert-{{i}}"
+               class="Checkbox--agency-lnetwork col-lg-10 col-md-4 col-sm-5 margin-left-one">
 
           <input type="checkbox" name="Action-type" id="item-nonalert-{{i}}" #selection
                  (change)="toggleNonAlertMemberSelection(member)"
                  checked>
+          <div class="margin-bottom-none circle-image placeholder"></div>
           <p>{{member.name}}</p></label>
+        </span>
       </div>
 
       <div class="row" *ngIf="agencies">
+        <span style="width: 100%;">
         <label for="item-custom"
-               class="Checkbox--agency-lnetwork col-lg-4 col-md-4 col-sm-5 margin-left-one">
+               class="Checkbox--agency-lnetwork col-lg-10 col-md-4 col-sm-5 margin-left-one">
           <input type="checkbox" name="Action-type" id="item-custom"
                  (change)="toggleCustomAgency()">
           <div class="margin-bottom-none circle-image placeholder"></div>
           <p>Non-alert members</p></label>
+        </span>
       </div>
 
       <div id="customAgencyContainer">
@@ -99,12 +106,14 @@
           <input
             name="custom"
             type="text"
+            class="col-sm-4 form-control"
             id="customAgency"
-            [(ngModel)]="nonAlertMembers[0]"/>
-          <button type="button" (click)="addCustomAgencyField()">+ Add another non-alert member to this coordination arrangement</button>
+            [(ngModel)]="nonAlertMembers[0]"/><br>
+          <button type="button" class="btn-ghost btn-primary margin-bottom-one" (click)="addCustomAgencyField()">+ Add another non-alert member to this coordination arrangement</button>
           <div *ngFor=" let field of customAgencyFields"><input
             name="custom"
             type="text"
+            class="col-sm-4 margin-bottom-one form-control"
             [(ngModel)]="nonAlertMembers[field]"/></div>
         </div>
       </div>

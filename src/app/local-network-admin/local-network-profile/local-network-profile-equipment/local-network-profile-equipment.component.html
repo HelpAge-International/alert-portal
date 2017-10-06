@@ -1,3 +1,320 @@
 <app-local-network-header></app-local-network-header>
 <app-local-network-menu></app-local-network-menu>
-<app-local-network-profile-menu></app-local-network-profile-menu>
+
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <app-local-network-profile-menu></app-local-network-profile-menu>
+
+    <div class="Header-title__wrap Spaced row">
+      <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT' | translate }}</h2>
+    </div>
+
+    <div *ngFor="let agency of agencies">
+
+      <div class="Ribbon__response grey margin-bottom-one">
+        <div class="Ribbon__header__wrap lnetwork">
+          <div class="Ribbon__leftwrap">
+            <img src="{{agency.logoPath}}" class="circle-image" alt="">
+            <h4>{{agency.name}}</h4>
+          </div>
+          <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+        </div>
+      </div>
+
+      <div class="Response__content spaced-top-bottom lnetwork">
+
+    <h3 class="Spaced-above">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT' | translate }}</h3>
+
+    <div class="row">
+      <p class="text-gray-v-light col-sm-9" *ngIf="!equipments.get(agency.$key)">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EMPTY_LIST' |
+        translate }}</p>
+    </div>
+
+    <div class="row Spaced-above" *ngIf="equipments.get(agency.$key)">
+      <div class="col-sm-1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' | translate }}</strong></div>
+      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT' | translate }}</strong></div>
+      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></div>
+      <div class="col-sm-2"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></div>
+      <div class="col-sm-5"><strong>{{ 'GLOBAL.STATUS' | translate }}</strong></div>
+    </div>
+    <div class="row Line-row Spaced-above"></div>
+
+    <div *ngFor="let equipment of equipments.get(agency.$key); let i = index">
+      <!--4x4 Van-->
+      <div class="row Spaced-above">
+        <div class="col-sm-1">{{ equipment.updatedAt | date: 'MM/yy'}}</div> <!--Updated-->
+        <div class="col-sm-2">{{ equipment.name }}</div> <!--Equipment-->
+        <div class="col-sm-2">{{ equipment.location }}</div> <!--Location-->
+        <div class="col-sm-2">{{ equipment.quantity }}</div> <!--Quantity-->
+        <div class="col-sm-4">{{ equipment.status }}</div> <!--Status-->
+        <div class="col-sm-1" *ngIf="!isEdit">
+          <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+          <p class="notes-number__components--country-office-profile">{{ equipment.notes.length }}</p>
+          <a href="#notes_{{agency.$key}}_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+            {{ 'GLOBAL.NOTES' | translate }}
+          </a>
+        </div> <!--Notes-->
+        <div class="col-sm-1" *ngIf="canEdit && isEdit">
+          <button class="btn btn-outline-primary text-uppercase"
+                  (click)="addEditEquipment(equipment.id)">
+            {{ 'EDIT' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="row Line-row Spaced-above"></div>
+
+
+      <!-- Notes Drop Down -->
+      <div id="notes_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div class="log_left p-3">
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
+          <hr class="d-inline-flex">
+          <form (ngSubmit)="addNote('equipment', equipment.id, newNote[equipment.id], agency)">
+            <input
+                   name="new_note"
+                   placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[equipment.id] && newNote[equipment.id].content">
+
+            <!--Note post-->
+            <div class="row Spaced log-post__wrap--risk"
+                 *ngFor="let note of equipment.notes">
+              <div class="log-date__wrap--risk col-lg-1">
+                <p>{{ note.time | date: 'dd MMM y' }}</p>
+              </div>
+              <div class="col-lg-6">
+                <p>{{ note.content }}</p>
+                <br>
+                <div class="row">
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  </p>
+                  <a
+                    *ngIf="note.uploadedBy == uid"
+                    href="javascript:void(0)"
+                    class="col-sm-0 margin-right-none"
+                    (click)="editNote('equipment', equipment.id, note, agency)">{{ 'EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy == uid"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy == uid"
+                    href="javascript:void(0)"
+                    class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote('equipment', equipment.id, note, agency)">{{ 'DELETE' | translate }}</a>
+                </div>
+              </div>
+            </div>
+            <hr>
+
+            <!--add Note button-->
+            <div class="add_log mt-auto p-2 text-right float-right">
+              <button type="submit"
+                      class="btn btn-primary text-uppercase">{{
+                'NOTES.ADD' | translate }}
+              </button>
+              <br>
+              <br><a href="#notes_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
+              }}</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!--Notes Drop Down End-->
+    </div>
+
+    <!--Surge Equipment-->
+    <!--Equipment subheaders-->
+    <h3 class="Spaced-above">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.SURGE_TITLE" | translate}}</h3><br>
+
+    <div class="row">
+      <p class="text-gray-v-light col-sm-9" *ngIf="!surgeEquipments.get(agency.$key)">{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.EMPTY_LIST' |
+        translate }}</p>
+    </div>
+
+    <div class="row Spaced-above" *ngIf="surgeEquipments.get(agency.$key)">
+      <div class="col-sm-1"><strong>{{ "COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
+      <div class="col-sm-2"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUPPLIER" | translate}}</strong></div>
+      <div class="col-sm-2"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.RELATIONSHIP" | translate}}</strong></div>
+      <div class="col-sm-7"><strong>{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.EQUIPMENT_PROVIDED" | translate}}</strong></div>
+    </div>
+    <div class="row Line-row Spaced-above"></div>
+
+    <div *ngFor="let surgeEquipment of surgeEquipments.get(agency.$key); let i = index;">
+      <!--4x4 Van-->
+      <div class="row Spaced-above">
+        <div class="col-sm-1">{{ surgeEquipment.updatedAt | date: 'MM/yy'}}</div> <!--Updated-->
+        <div class="col-sm-2">{{ surgeEquipment.supplier }}</div> <!--Supplier-->
+        <div class="col-sm-2">{{ surgeEquipment.relationship }}</div> <!--Relationship-->
+        <div class="col-sm-5">{{ surgeEquipment.equipmentProvided }}</div> <!--Equipment provided-->
+        <div class="col-sm-1">
+          <div class="row">
+            <div><img src="assets/images/icons/contact.svg" class="margin-left-three" alt="Contact Info"></div>
+            <div>
+              <a class="Centered" href="#contact_{{agency.$key}}_{{ i }}" data-toggle="collapse" data-target="contact_{{agency.$key}}_{{ i }}">
+                {{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.CONTACT_INFO" | translate}}
+              </a>
+            </div>
+          </div>
+        </div> <!--Contact Info-->
+        <div class="col-sm-1" *ngIf="!isEdit">
+          <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+          <p class="notes-number__components--country-office-profile">{{ surgeEquipment.notes.length }}</p>
+          <a href="#notes_surge_{{agency.$key}}_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+            {{ 'GLOBAL.NOTES' | translate }}
+          </a>
+        </div> <!--Notes-->
+        <div class="col-sm-1" *ngIf="canEdit && isEdit">
+          <button class="btn btn-outline-primary text-uppercase"
+                  (click)="addEditSurgeEquipment(surgeEquipment.id)">
+            {{ 'EDIT' | translate }}
+          </button>
+        </div>
+      </div>
+      <div class="row Line-row Spaced-above"></div>
+
+      <!--Contact info tooltip-->
+      <div class="Tooltip__bubble contact collapse" data-toggle="collapse" id="contact_{{agency.$key}}_{{ i }}">
+        <div class="row">
+          <h3 class="font-weight-bold col-sm-10">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUPPLIER_CONTACT_INFO" |
+            translate}}</h3>
+          <div class="col-sm-2"><a data-toggle="collapse" href="#contact_{{agency.$key}}_{{ i }}">{{ "GLOBAL.CLOSE" | translate}}</a>
+          </div>
+        </div>
+
+        <div class="row Spaced-above"> <!--Name-->
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" |
+            translate}}</strong></p>
+          <p class="col-sm-5 margin-left-five">{{ surgeEquipment.contactName }}</p>
+        </div>
+
+        <div class="row"> <!--Telephone-->
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" |
+            translate}}</strong></p>
+          <p class="col-sm-2">{{ surgeEquipment.contactPhone }}</p>
+        </div>
+
+        <div class="row"> <!--Email-->
+          <p class="col-sm-0 margin-left-three"><strong>{{ "COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" |
+            translate}}</strong></p>
+          <p class="col-sm-5 margin-left-five"><a href="mailto:{{ surgeEquipment.contactEmail }}">{{
+            surgeEquipment.contactEmail }}</a></p>
+        </div>
+      </div>
+
+      <!-- Notes Drop Down -->
+      <div id="notes_surge_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div class="log_left p-3">
+          <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
+          <hr class="d-inline-flex">
+          <form (ngSubmit)="addNote('surgeEquipment', surgeEquipment.id, newNote[surgeEquipment.id], agency)">
+            <input type="text"
+                   name="new_note"
+                   placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[surgeEquipment.id] && newNote[surgeEquipment.id].content">
+
+            <!--Note post-->
+            <div class="row Spaced log-post__wrap--risk"
+                 *ngFor="let note of surgeEquipment.notes">
+              <div class="log-date__wrap--risk col-lg-1">
+                <p>{{ note.time | date: 'dd MMM y' }}</p>
+              </div>
+              <div class="col-lg-6">
+                <p>{{ note.content }}</p>
+                <br>
+                <div class="row">
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  </p>
+                  <a
+                    *ngIf="note.uploadedBy==uid"
+                    href="javascript:void(0)"
+                    class="col-sm-0 margin-right-none"
+                    (click)="editNote('surgeEquipment', surgeEquipment.id, note, agency)">{{ 'EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy==uid"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy==uid"
+                    href="javascript:void(0)"
+                    class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote('surgeEquipment', surgeEquipment.id, note, agency)">{{ 'DELETE' | translate
+                    }}</a>
+                </div>
+              </div>
+            </div>
+            <hr>
+
+            <!--add Note button-->
+            <div class="add_log mt-auto p-2 text-right float-right">
+              <button type="submit"
+                      class="btn btn-primary text-uppercase">{{
+                'NOTES.ADD' | translate }}
+              </button>
+              <br>
+              <br><a href="#notes_surge_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+              translate }}</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!--Notes Drop Down End-->
+
+    </div>
+  </div>
+
+<!-- Delete note modal -->
+<div class="modal fade" id="delete-action-{{agency.$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal(agency)">{{"GLOBAL.CANCEL"|
+          translate}}
+        </button>
+        <button type="button" class="btn btn-primary"
+                (click)="deleteAction(activeEquipmentType, activeEquipmentId, activeNote, agency)">{{"GLOBAL.CONFIRM" |
+          translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Edit Note Modal-->
+<div class="modal fade" id="edit-action-{{agency.$key}}" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center form-group input-lg">
+        <textarea type="text" rows="6" class="form-text form-control"
+                  [(ngModel)]="activeNote && activeNote.content"></textarea>
+      </div>
+      <div class="row Right-aligned Spaced col-sm-12">
+        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal(agency)">{{"GLOBAL.CANCEL" |
+          translate}}</a>
+        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                (click)="editAction(activeEquipmentType, activeEquipmentId, activeNote, agency)">{{"SAVE" | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+</div>

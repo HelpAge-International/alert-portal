@@ -1,3 +1,123 @@
 <app-local-network-header></app-local-network-header>
 <app-local-network-menu></app-local-network-menu>
-<app-local-network-profile-menu></app-local-network-profile-menu>
+
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <app-local-network-profile-menu></app-local-network-profile-menu>
+
+    <div class="Header-title__wrap Spaced row">
+      <h2 class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT' | translate }}</h2>
+    </div>
+
+    <div *ngFor="let agency of agencies">
+
+      <div class="Ribbon__response grey margin-bottom-one">
+        <div class="Ribbon__header__wrap lnetwork">
+          <div class="Ribbon__leftwrap">
+            <img src="{{agency.logoPath}}" class="circle-image" alt="">
+            <h4>{{agency.name}}</h4>
+          </div>
+          <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+        </div>
+      </div>
+
+      <div class="Response__content spaced-top-bottom lnetwork">
+
+    <div class="row">
+      <h5 class="Spaced-above col-sm-12 font-weight-bold">
+        {{ agency?.name }} {{ COUNTRIES[countryOfficeAddress.get(agency.$key)?.location] | translate }} {{
+        'COUNTRY_ADMIN.PROFILE.CONTACTS.OFFICE_DETAILS' | translate }}
+      </h5>
+    </div>
+
+    <div class="bg-grey col-sm-6">
+      <div class="row">
+        <div class="col-sm-6 Spaced-above">
+          <div class="margin-left-three">
+            <div>{{ countryOfficeAddress.get(agency.$key)?.addressLine1 }}</div>
+            <div *ngIf="countryOfficeAddress.get(agency.$key)?.addressLine2">{{ countryOfficeAddress.get(agency.$key).addressLine2 }}</div>
+            <div *ngIf="countryOfficeAddress.get(agency.$key)?.addressLine3">{{ countryOfficeAddress.get(agency.$key).addressLine3 }}</div>
+            <div>{{ COUNTRIES[countryOfficeAddress.get(agency.$key)?.location] | translate }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6 Spaced-above">
+          <p>
+            <i class="fa fa-envelope" aria-hidden="true"></i> {{ countryOfficeAddress.get(agency.$key)?.email || '-' }} <br>
+            <i class="fa fa-phone" aria-hidden="true"></i> {{ countryOfficeAddress.get(agency.$key)?.phone || '-' }}
+          </p>
+        </div>
+        <div class="col-sm-12" *ngIf="canEdit && isEdit">
+          <div class="col-sm-12 Spaced Right-aligned">
+            <button class="editContactButton btn btn-outline-primary text-uppercase" style="display: inline-block;"
+                    (click)="editOfficeDetails()">
+              {{ 'EDIT' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br>
+
+    <div class="row">
+      <h5 class="Spaced-above col-sm-12 font-weight-bold">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.POINT_OF_CONTACT' |
+        translate }}</h5>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6 Small-spaced" *ngFor="let pointOfContact of pointsOfContact.get(agency.$key)">
+        <div class="bg-grey col-sm-12">
+          <div class="row">
+            <h6 class="font-weight-bold col-sm-12 margin-top-three margin-left-one-half">
+              {{ getPointOfContactName(pointOfContact.staffMember) }}
+            </h6>
+            <p class="col-sm-12 margin-left-one-half">{{ getPointOfContactPosition(pointOfContact.staffMember) |
+              translate}}</p>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 Spaced-above">
+              <p>
+                <i class="fa fa-envelope" aria-hidden="true"></i> {{ getPointOfContactEmail(pointOfContact.staffMember)
+                }} <br>
+                <i class="fa fa-phone" aria-hidden="true"></i> {{ pointOfContact.phone }}
+              </p>
+            </div>
+            <div class="col-sm-6 Spaced-above">
+              <p>
+                <i class="fa fa-skype" aria-hidden="true"></i> {{ pointOfContact.skypeName }} <br>
+                <i class="fa fa-mobile" aria-hidden="true"></i> {{ getPointOfContactMobile(pointOfContact.staffMember)
+                || '-' }}
+              </p>
+            </div>
+            <div class="col-sm-12" *ngIf="canEdit && isEdit">
+              <div class="col-sm-12 Spaced Right-aligned">
+                <button class="editContactButton btn btn-outline-primary text-uppercase" style="display: inline-block;"
+                        (click)="addEditPointOfContact(pointOfContact.id)">
+                  {{ 'EDIT' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--<div class="col-sm-1 max-width-contact"></div>-->
+      </div>
+
+    </div>
+
+
+    <button class="btn btn-outline-primary text-uppercase"
+            *ngIf="canEdit && !isViewing && countryPermissionsMatrix.countryContacts.New"
+            (click)="addEditPointOfContact()">{{ 'GLOBAL.ADD' | translate }}
+    </button>
+
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -10,8 +10,8 @@ import {ModelAgency} from "../../../model/agency.model";
 import {CoordinationArrangementService} from "../../../services/coordination-arrangement.service";
 import {CoordinationArrangementNetworkModel} from "../../../model/coordination-arrangement-network.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject"; 
-declare var jQuery: any; 
+import {Subject} from "rxjs/Subject";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-local-network-profile-coordination',
@@ -54,7 +54,6 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
   ngOnInit() {
 
         this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-            this.uid = user.uid;
             this.networkService.getSelectedIdObj(user.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(selection => {
@@ -79,15 +78,15 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
                       if(coordinationArrangementNonAlert.nonAlertMembers){
                         Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
                           .map( key => {
-                            
+
                             tempArray.push(coordinationArrangementNonAlert.nonAlertMembers[key].name)
-                           
+
                           })
-    
-    
+
+
                       }
                     })
-                   
+
                     this.coordinationAgenciesNames.push(tempArray);
                     console.log(this.coordinationAgenciesNames)
                   })
