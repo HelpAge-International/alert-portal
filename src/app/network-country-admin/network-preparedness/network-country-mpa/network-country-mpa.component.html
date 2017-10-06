@@ -3057,9 +3057,8 @@
                             | translate}}</a>
 
                           <a
-                            *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
                             [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
-                            class="btn btn-block">{{"EDIT_ACTION" | translate}}:</a>
+                            class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
                         <!--<div class="col-md-3 col-sm-4 btn-block"-->
                              <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->

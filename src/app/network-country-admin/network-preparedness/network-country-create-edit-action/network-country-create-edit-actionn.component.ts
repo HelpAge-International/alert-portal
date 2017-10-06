@@ -27,6 +27,8 @@ import {Location} from "@angular/common";
 import {LocalStorageService} from "angular-2-local-storage";
 import {HazardImages} from "../../../utils/HazardImages";
 
+declare var jQuery: any;
+
 @Component({
   selector: 'app-network-country-create-edit-actionn',
   templateUrl: './network-country-create-edit-actionn.component.html',
@@ -194,13 +196,13 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    * Initialisation
    */
   public initFromExistingActionId(canEditMPA: boolean, canEditAPA: boolean) {
-    this.prepActionService.initOneActionNetwork(this.af, this.ngUnsubscribe, this.networkCountryId, this.networkId, null, this.action.id, (action) => {
+    this.prepActionService.initOneActionNetwork(this.af, this.ngUnsubscribe, this.networkCountryId, this.networkId, this.systemId, this.action.id, (action) => {
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
-          this.router.navigateByUrl("/preparedness/minimum");
+          this.router.navigateByUrl("/network-country/network-country-mpa");
         }
         else {
-          this.router.navigateByUrl("/preparedness/advanced");
+          this.router.navigateByUrl("/network-country/network-country-apa");
         }
       }
       if (action.type == ActionLevel.MPA) {
@@ -440,6 +442,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
       if (this.action.id != null) {
         // Updating
+        console.log(updateObj);
         this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.action.id).update(updateObj).then(() => {
 
           if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
@@ -452,12 +455,12 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
             console.log(notification.content);
 
             notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
             });
           }
 
           this._location.back();
-        })
+        });
       }
       else {
         // Saving
@@ -608,9 +611,39 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     }
   }
 
+  /**
+   * Archive an action
+   */
+  public archiveAction() {
+    // Updating
+    let updateObj = {
+      isArchived: true
+    };
+    // this.closeActionCancel('archive-action');
+    jQuery("#archive-action").modal('hide');
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.action.id).update(updateObj).then(() => {
+      this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa").then();
+    });
+  }
+
+  /**
+   * Delete an action
+   */
+  public deleteAction() {
+    // this.closeActionCancel('delete-action');
+    jQuery("#delete-action").modal('hide');
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.action.id).set(null).then(() => {
+      this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa").then();
+    });
+  }
+
 
   protected backButtonAction() {
     this._location.back();
+  }
+
+  protected showActionConfirm(modal: string) {
+    jQuery("#" + modal).modal('show');
   }
 
 }
