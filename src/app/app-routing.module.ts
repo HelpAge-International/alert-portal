@@ -174,6 +174,7 @@ import { LocalNetworkProfileStockCapacityAddEditComponent } from './local-networ
 import {ViewNetworkPlanComponent} from "./network-country-admin/network-plans/view-network-plan/view-network-plan.component";
 import {NetworkCountryCreateEditActionComponent} from "./network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
 import {NetworkCountryActionSelectComponent} from "./network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component";
+import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -473,6 +474,7 @@ const routes: Routes = [
   {path: 'network-country/network-plans/view-network-plan', component: ViewNetworkPlanComponent},
   {path: 'network-country/network-plans/create-edit-network-plan', component: CreateEditNetworkPlanComponent},
   {path: 'network-country/network-global-map', component: NetworkGlobalMapComponent},
+  {path: 'network-country/network-global-map-list', component: NetworkGlobalMapListComponent},
   {path: 'network-country/network-country-agencies', component: NetworkCountryAgenciesComponent},
   {path: 'network-country/network-country-agencies/select-agencies', component: NetworkCountrySelectAgenciesComponent},
   {path: 'network-country/network-country-settings/network-country-modules', component: NetworkCountryModuleSettingsComponent},

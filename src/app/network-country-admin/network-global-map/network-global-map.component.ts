@@ -1,12 +1,14 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {MapService} from "../../services/map.service";
-import {PageControlService} from "../../services/pagecontrol.service";
-import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
-import {UserService} from "../../services/user.service";
-import {TranslateService} from "@ngx-translate/core";
-import {Constants} from "../../utils/Constants";
-import {Subject} from "rxjs/Subject";
+import {MapService} from '../../services/map.service';
+import {PageControlService} from '../../services/pagecontrol.service';
+import {AngularFire} from 'angularfire2';
+import {ActivatedRoute, Router} from '@angular/router';
+import {UserService} from '../../services/user.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Constants} from '../../utils/Constants';
+import {Subject} from 'rxjs/Subject';
+import {NetworkService} from '../../services/network.service';
+import {NetworkMapService} from "../../services/networkmap.service";
 
 @Component({
   selector: 'app-network-global-map',
@@ -20,17 +22,32 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   public mapService: MapService;
 
   public uid: string;
+  public networkId: string;
+  public networkCountryId: string;
+  private countryHasAgenciesMap: Map<string, Set<string>>;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private translate: TranslateService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              public networkMapService: NetworkMapService,
+              private networkService: NetworkService) {
+    this.countryHasAgenciesMap = new Map<string, Set<string>>();
   }
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
-      console.log("Authed!");
+      this.networkService.getSelectedIdObj(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection['id'];
+          this.networkCountryId = selection['networkCountryId'];
+          this.networkMapService.init(this.af, this.ngUnsubscribe, this.networkId, this.networkCountryId);
+        });
 
       this.mapService = MapService.init(this.af, this.ngUnsubscribe);
-      this.mapService.initBlankMap("global-map");
+      this.mapService.initBlankMap('global-map');
     });
   }
 
@@ -39,4 +56,7 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+  gotoMapList(): void {
+    this.router.navigateByUrl('network-country/network-global-map-list');
+  }
 }

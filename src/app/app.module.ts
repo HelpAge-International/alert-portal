@@ -258,6 +258,8 @@ import { LocalNetworkProfileStockCapacityAddEditComponent } from './local-networ
 import { ViewNetworkPlanComponent } from './network-country-admin/network-plans/view-network-plan/view-network-plan.component';
 import { NetworkCountryCreateEditActionComponent } from './network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component';
 import { NetworkCountryActionSelectComponent } from './network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component';
+import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
+import {NetworkMapService} from "./services/networkmap.service";
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -475,6 +477,7 @@ const firebaseAuthConfig = {
     NetworkRiskMinitoringComponent,
     NetworkPlansComponent,
     NetworkGlobalMapComponent,
+    NetworkGlobalMapListComponent,
     NetworkCountryHeaderComponent,
     NetworkCountryMenuComponent,
     NetworkCountryAgenciesComponent,
@@ -555,6 +558,7 @@ const firebaseAuthConfig = {
     ContactService,
     WindowRefService,
     NetworkService,
+    NetworkMapService,
     NetworkCountryService,
     ActionsService],
   bootstrap: [AppComponent]
