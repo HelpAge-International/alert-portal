@@ -307,7 +307,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    * Initialising hazards
    */
   private getHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId, {preserveSnapshot: true})
+    let id = this.countryId ? this.countryId : this.networkCountryId;
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + id, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.hazards = [];
@@ -332,7 +333,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                 this.hazards.push(x);
               })
           }
-
         });
       });
   }

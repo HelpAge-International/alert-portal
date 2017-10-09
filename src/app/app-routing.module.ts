@@ -148,7 +148,6 @@ import {NetworkCountryAgenciesComponent} from "./network-country-admin/network-a
 import {NetworkCountryMessagesComponent} from "./network-country-admin/network-administration/network-country-messages/network-country-messages.component";
 import {NetworkCountryMpaComponent} from "./network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component";
 import {NetworkCountryApaComponent} from "./network-country-admin/network-preparedness/network-country-apa/network-country-apa.component";
-import {NetworkCountryBudgetComponent} from "./network-country-admin/network-preparedness/network-country-budget/network-country-budget.component";
 import {NetworkCountrySelectAgenciesComponent} from "./network-country-admin/network-administration/network-country-agencies/network-country-select-agencies/network-country-select-agencies.component";
 import {NetworkCountryValidationComponent} from "./commons/network-country-validation/network-country-validation.component";
 import {NetworkCountryModuleSettingsComponent} from "./network-country-admin/network-administration/network-country-settings/network-country-module-settings/network-country-module-settings.component";
@@ -483,7 +482,6 @@ const routes: Routes = [
   {path: 'network-country/network-country-create-edit-action', component: NetworkCountryCreateEditActionComponent},
   {path: 'network-country/network-country-create-edit-action/:id', component: NetworkCountryCreateEditActionComponent},
   {path: 'network-country/network-country-select-action', component: NetworkCountryActionSelectComponent},
-  {path: 'network-country/network-country-budget', component: NetworkCountryBudgetComponent},
   {path: 'network-country-validation', component: NetworkCountryValidationComponent},
 
   /**

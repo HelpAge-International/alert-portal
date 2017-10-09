@@ -2622,16 +2622,14 @@
                             </a>
 
                           </div>
-                          <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
-                                                && ((action.type == ActionType.mandated))
-                                                && ((action.level == actionLevelEnum.MPA) || (action.level == actionLevelEnum.APA))">
+                          <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                                aria-expanded="false" aria-controls="popover_content"
                                class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION" | translate}}</a>
 
                             <a
                               *ngIf="((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                              [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
 

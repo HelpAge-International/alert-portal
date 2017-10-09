@@ -2,7 +2,8 @@ import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
 import {
-  CountryPermissionsMatrix, NetworkModulesEnabledModel,
+  CountryPermissionsMatrix,
+  NetworkModulesEnabledModel,
   PageControlService
 } from "../../../services/pagecontrol.service";
 import {AngularFire, FirebaseApp} from "angularfire2";
@@ -14,27 +15,39 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {WindowRefService} from "../../../services/window-ref.service";
 import {
-  AlertMessageType, UserType, Privacy, HazardScenario, FileExtensionsEnding,
-  ActionLevel, ActionStatus, ActionType, AlertLevels, Currency, SizeType, DocumentType
+  ActionLevel,
+  ActionStatus,
+  ActionType,
+  AlertLevels,
+  AlertMessageType,
+  Currency,
+  DocumentType,
+  FileExtensionsEnding,
+  HazardScenario,
+  Privacy,
+  SizeType,
+  UserType
 } from "../../../utils/Enums";
 import {
-  PrepActionService, PreparednessUser, PreparednessAction,
-  PreparednessNotes
+  PrepActionService,
+  PreparednessAction,
+  PreparednessNotes,
+  PreparednessUser
 } from "../../../services/prepactions.service";
-import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {ModelDepartment} from "../../../model/department.model";
 import {SettingsService} from "../../../services/settings.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import {MessageModel} from "../../../model/message.model";
-declare var jQuery: any;
+
+declare const jQuery: any;
 
 @Component({
   selector: 'app-network-country-apa',
   templateUrl: './network-country-apa.component.html',
   styleUrls: ['./network-country-apa.component.css']
 })
-export class NetworkCountryApaComponent implements OnInit,OnDestroy {
+export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
   //TODO TEST ONLY
   private test = true;
@@ -122,19 +135,14 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
   private privacy: NetworkModulesEnabledModel;
 
 
-
   constructor(private pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               private af: AngularFire,
               private networkService: NetworkService,
-              private storage: LocalStorageService,
               private notificationService: NotificationService,
-              private userService: UserService,
-              private agencyService: AgencyService,
-              private countryService: SettingsService,
               private route: ActivatedRoute,
               private translate: TranslateService,
-              private windowService:WindowRefService,
+              private windowService: WindowRefService,
               private router: Router) {
     this.firebase = firebaseApp;
   }
@@ -187,7 +195,7 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
    * Initialisation method for the alerts. Builds the map HazardScenario -> boolean if they're active or not
    */
   private initAlerts() {
-    let id = this.countryId ? this.countryId : this.networkCountryId
+    let id = this.countryId ? this.countryId : this.networkCountryId;
     this.af.database.list(Constants.APP_STATUS + "/alert/" + id, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
@@ -214,25 +222,6 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
       });
 
     // Populate actions
-  }
-
-  /**
-   * Initialisation method for the departments of the agency
-   */
-  private initDepartments() {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        this.DEPARTMENTS = [];
-        this.DEPARTMENT_MAP.clear();
-        snap.forEach((snapshot) => {
-          let mD: ModelDepartment = new ModelDepartment();
-          mD.id = snapshot.key;
-          mD.name = snapshot.val().name;
-          this.DEPARTMENTS.push(mD);
-          this.DEPARTMENT_MAP.set(mD.id, mD.name);
-        });
-      });
   }
 
   /**
@@ -281,6 +270,7 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -325,7 +315,7 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
   public assignActionDialogAdv(action: PreparednessAction) {
     if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
       // TODO: FIGURE OUT HOW THIS IS GOING TO BE EDITING
-      this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
+      this.router.navigateByUrl("/network-country/network-country-create-edit-action/" + action.id).then();
     } else {
       this.assignActionId = action.id;
     }
@@ -339,7 +329,8 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
     let id = this.countryId ? this.countryId : this.networkCountryId;
     this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task")
+          .takeUntil(this.ngUnsubscribe)
           .subscribe(task => {
             // Send notification to the assignee
             let notification = new MessageModel();
@@ -348,7 +339,7 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
             console.log(notification.content);
 
             notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
             });
           });
       });
@@ -560,15 +551,15 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
         doc[docKey] = true;
 
         this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id + '/documents').update(doc)
-          .then(_ => {
+          .then(() => {
             new Promise((res, rej) => {
-              var storageRef = this.firebase.storage().ref().child('documents/' + id + '/' + docKey + '/' + file.name);
-              var uploadTask = storageRef.put(file);
-              uploadTask.on('state_changed', function (snapshot) {
+              let storageRef = this.firebase.storage().ref().child('documents/' + id + '/' + docKey + '/' + file.name);
+              let uploadTask = storageRef.put(file);
+              uploadTask.on('state_changed', function () {
               }, function (error) {
                 rej(error);
               }, function () {
-                var downloadURL = uploadTask.snapshot.downloadURL;
+                let downloadURL = uploadTask.snapshot.downloadURL;
                 res(downloadURL);
               });
             })
@@ -601,10 +592,7 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
 
   protected removeAttachment(action, file) {
     action.attachments = action.attachments.filter(attachment => {
-      if (attachment.name == file.name && attachment.actionId == file.actionId)
-        return false;
-
-      return true;
+      return !(attachment.name == file.name && attachment.actionId == file.actionId);
     });
   }
 
@@ -658,7 +646,7 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
     let doc = action.documents[docId];
 
     let self = this;
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.responseType = 'blob';
     xhr.onload = function (event) {
       self.download(xhr.response, doc.fileName, xhr.getResponseHeader("Content-Type"));
@@ -679,11 +667,6 @@ export class NetworkCountryApaComponent implements OnInit,OnDestroy {
 
   protected closeDocumentsModal(elementId: string) {
     jQuery("#" + elementId).collapse('hide');
-  }
-
-  protected copyAction(action) {
-    this.storage.set('selectedAction', action);
-    this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
 
