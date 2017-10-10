@@ -1,5 +1,59 @@
 <app-network-country-header></app-network-country-header>
 <app-network-country-menu></app-network-country-menu>
-<p>
-  network-country-messages works!
-</p>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Header-title__wrap">
+      <h1>{{"NETWORK_OFFICE_MESSAGES" | translate}}</h1>
+      <a routerLink="/network-country/network-country-messages/create-edit-network-country-message" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE"
+        | translate | uppercase}}</a>
+    </div>
+
+    <div *ngIf="(sentMessages)?.length == 0" class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>
+
+    <div class="Data--ribbon" *ngFor="let sentMessage of sentMessages">
+      <div class="row col-lg-9 col-sm-10">
+        <div class="Info--ribbon--wrap">
+          <div class="col-sm-5">{{"GLOBAL.SENT_AT" | translate}}<b>{{sentMessage.time | date:"HH:mm dd/MM/yyyy"}}</b>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <h5>{{sentMessage.title}}</h5>
+          <p>{{sentMessage.content}}</p>
+        </div>
+      </div>
+      <div class="col-sm-2 col-lg-3 Right-aligned">
+        <div class="btn btn-danger" (click)="deleteMessage(sentMessage)">{{"DELETE" | translate}}</div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"MESSAGES.DELETE_DIALOG_TITLE" |
+          translate}}</strong></h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"MESSAGES.DELETE_DIALOG_CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

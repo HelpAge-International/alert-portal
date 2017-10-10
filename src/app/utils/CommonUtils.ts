@@ -28,6 +28,18 @@ export class CommonUtils {
     return keys;
   }
 
+  static convertMapToValuesInArray(map) {
+    let values = [];
+    map.forEach((v, k) => values.push(v));
+    return values;
+  }
+
+  static reverseMap(map) {
+    let reverseMap = new Map();
+    map.forEach((v, k) => reverseMap.set(v,k));
+    return reverseMap;
+  }
+
   static updateObjectByMap(object, map) {
     if (!object) {
       throw new Error("Object can not be empty!");

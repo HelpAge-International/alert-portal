@@ -34,7 +34,7 @@ declare var jQuery: any;
   templateUrl: './network-country-mpa.component.html',
   styleUrls: ['./network-country-mpa.component.css']
 })
-export class NetworkCountryMpaComponent implements OnInit,OnDestroy {
+export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
@@ -132,7 +132,7 @@ export class NetworkCountryMpaComponent implements OnInit,OnDestroy {
               private userService: UserService,
               private route: ActivatedRoute,
               private translate: TranslateService,
-              private windowService:WindowRefService,
+              private windowService: WindowRefService,
               private router: Router) {
     this.firebase = firebaseApp;
   }
@@ -155,13 +155,13 @@ export class NetworkCountryMpaComponent implements OnInit,OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
-          this.showLoader = false;
           this.getStaffDetails(this.uid, true);
 
           this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(systemId => {
               this.systemAdminId = systemId;
+              this.showLoader = false;
 
               this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, true,
                 this.networkCountryId, this.networkId, this.systemAdminId);
@@ -229,6 +229,7 @@ export class NetworkCountryMpaComponent implements OnInit,OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)

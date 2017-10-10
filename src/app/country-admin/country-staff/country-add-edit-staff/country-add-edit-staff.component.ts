@@ -352,6 +352,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     staffData['/group/systemadmin/allusersgroup/' + uid + '/'] = true;
     staffData['/group/agency/' + this.agencyAdminId + '/agencyallusersgroup/' + uid + '/'] = true;
     staffData['/group/agency/' + this.agencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1] + '/' + uid + '/'] = true;
+    staffData['/group/country/' + this.countryId + '/countryallusersgroup/' + uid + '/'] = true;
+    staffData['/group/country/' + this.countryId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1] + '/' + uid + '/'] = true;
 
     // staff extra info
     let staff = new ModelStaff();

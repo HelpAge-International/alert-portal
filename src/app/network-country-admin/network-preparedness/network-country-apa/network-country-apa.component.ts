@@ -165,12 +165,12 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
-          this.showLoader = false;
 
           this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(systemId => {
               this.systemAdminId = systemId;
+              this.showLoader = false;
 
               this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, false,
                 this.networkCountryId, this.networkId, this.systemAdminId);

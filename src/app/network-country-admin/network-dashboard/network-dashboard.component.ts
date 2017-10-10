@@ -1,9 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {
-  CountryPermissionsMatrix,
-  NetworkModulesEnabledModel,
-  PageControlService
-} from "../../services/pagecontrol.service";
+import {NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
 import {NetworkService} from "../../services/network.service";
 import {NotificationService} from "../../services/notification.service";
@@ -139,7 +135,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
-          this.showLoader = false;
 
           this.loadData();
 
@@ -176,7 +171,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.getCountryContextIndicators(id);
     this.getHazards(id);
     this.initData(id);
-    this.getCountryData(agencyId, id);
+    this.getCountryDataNetwork(agencyId, id);
   }
 
   private loadDataForPartnerUser(agencyId, countryId) {
@@ -378,15 +373,21 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private getCountryData(agencyId, countryId) {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + '/' + countryId + "/location")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((location: any) => {
-          this.countryLocation = location.$value;
-          res(true);
-        });
-    });
-    return promise;
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + '/' + countryId + "/location")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((location: any) => {
+        this.countryLocation = location.$value;
+        this.showLoader = false;
+      });
+  }
+
+  private getCountryDataNetwork(agencyId, countryId) {
+    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + agencyId + '/' + countryId + "/location")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((location: any) => {
+        this.countryLocation = location.$value;
+        this.showLoader = false;
+      });
   }
 
   private getAlerts(id) {

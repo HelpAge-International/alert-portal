@@ -175,6 +175,7 @@ import {NetworkCountryCreateEditActionComponent} from "./network-country-admin/n
 import {NetworkCountryActionSelectComponent} from "./network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component";
 import { AddIndicatorNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-indicator-network-country/add-indicator-network-country.component';
 import { AddHazardNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
+import {NetworkCountryCreateEditMessageComponent} from "./network-country-admin/network-administration/network-country-messages/network-country-create-edit-message/network-country-create-edit-message.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -474,7 +475,6 @@ const routes: Routes = [
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-hazard', component: AddHazardNetworkCountryComponent},
-
   {path: 'network-country/network-plans', component: NetworkPlansComponent},
   {path: 'network-country/network-plans/view-network-plan', component: ViewNetworkPlanComponent},
   {path: 'network-country/network-plans/create-edit-network-plan', component: CreateEditNetworkPlanComponent},
@@ -484,6 +484,7 @@ const routes: Routes = [
   {path: 'network-country/network-country-settings/network-country-modules', component: NetworkCountryModuleSettingsComponent},
   {path: 'network-country/network-country-settings/network-country-clocks', component: NetworkCountryClockSettingsComponent},
   {path: 'network-country/network-country-messages', component: NetworkCountryMessagesComponent},
+  {path: 'network-country/network-country-messages/create-edit-network-country-message', component: NetworkCountryCreateEditMessageComponent},
   {path: 'network-country/network-country-mpa', component: NetworkCountryMpaComponent},
   {path: 'network-country/network-country-apa', component: NetworkCountryApaComponent},
   {path: 'network-country/network-country-create-edit-action', component: NetworkCountryCreateEditActionComponent},
