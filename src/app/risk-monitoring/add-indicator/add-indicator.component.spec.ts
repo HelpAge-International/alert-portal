@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RiskMonitoringComponent } from './risk-monitoring.component';
+import { RiskMonitoringComponent } from '../risk-monitoring.component';
 
 describe('RiskMonitoringComponent', () => {
   let component: RiskMonitoringComponent;

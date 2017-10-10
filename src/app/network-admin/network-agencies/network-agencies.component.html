@@ -32,8 +32,8 @@
       <div class="Line-row"></div>
 
       <div *ngFor="let agency of networkAgencies; index as i">
-        <div class="row col-sm-12">
-          <div class="col-sm-1"><img src="{{agency.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}" width="60" height="30">
+        <div class="row col-sm-13">
+          <div class="col-sm-1"><img class="Agency-details__logo__preview" id="AgencyStyling" src="{{agency.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}" width="60" height="30">
           </div>
           <p class="col-sm-4 margin-top-two">{{agency.name}}</p>
           <a href="#agencyAdminTooltipOne{{i}}" data-toggle="collapse" class="col-sm-4 margin-top-two"><img
