@@ -8940,6 +8940,8 @@ h3, h4 {
 .Agency-details__logo__preview {
   position: relative;
   cursor: pointer;
+
+
 }
 
 .Agency-details__logo__preview:after {
