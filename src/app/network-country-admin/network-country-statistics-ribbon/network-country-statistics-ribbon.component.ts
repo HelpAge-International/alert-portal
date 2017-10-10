@@ -109,9 +109,10 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
             .takeUntil(this.ngUnsubscribe)
             .subscribe(systemId => {
               this.systemId = systemId;
+              console.log(`system id: ${systemId}`);
 
               this.downloadThreshold(() => {
-                this.downloadDefaultClockSettings(this.networkId, () => {
+                this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
                   this.initAlerts(this.networkCountryId, () => {
                     this.getCountryNumberNetwork(this.networkId, this.networkCountryId);
                     this.getApprovedResponsePlansCount(this.networkCountryId);
@@ -195,6 +196,24 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
     }
     else {
       this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          if (snap.val() != null) {
+            this.defaultClockValue = snap.val().value;
+            this.defaultClockType = snap.val().durationType;
+            this.ranClock = true;
+            fun();
+          }
+        });
+    }
+  }
+
+  private downloadDefaultClockSettingsNetwork(agencyId, fun: () => void) {
+    if (this.ranClock) {
+      fun();
+    }
+    else {
+      this.af.database.object(Constants.APP_STATUS + "/network/" + agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
           if (snap.val() != null) {
@@ -383,7 +402,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
   goToCHS() {
     if (this.userPermissions.minimumPreparedness) {
-      this.router.navigate(["/preparedness/minimum", {"isCHS": true}]);
+      this.router.navigate(["/network-country/network-country-mpa", {"isCHS": true}]).then();
     }
   }
 

@@ -275,8 +275,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         }
         for (let x of this.actionsThisWeek) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
-            x.task = action.task;
-            x.level = action.level;
+            if (action) {
+              x.task = action.task;
+              x.level = action.level;
+            }
           });
         }
       });
