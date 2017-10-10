@@ -259,6 +259,7 @@ import { ViewNetworkPlanComponent } from './network-country-admin/network-plans/
 import { NetworkCountryCreateEditActionComponent } from './network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component';
 import { NetworkCountryActionSelectComponent } from './network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component';
 import { AddIndicatorNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-indicator-network-country/add-indicator-network-country.component';
+import { AddHazardNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -512,7 +513,8 @@ const firebaseAuthConfig = {
     ViewNetworkPlanComponent,
     NetworkCountryCreateEditActionComponent,
     NetworkCountryActionSelectComponent,
-    AddIndicatorNetworkCountryComponent
+    AddIndicatorNetworkCountryComponent,
+    AddHazardNetworkCountryComponent
   ],
   imports: [
     BrowserModule,

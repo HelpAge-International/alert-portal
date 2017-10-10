@@ -8,6 +8,7 @@ import {LogModel} from "../../model/log.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../../services/user.service";
+import {NetworkService} from "../../services/network.service";
 import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
@@ -26,6 +27,7 @@ declare var jQuery: any;
   styleUrls: ['./network-risk-minitoring.component.css']
 })
 export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
+  networkCountryId: any;
 
   private USER_TYPE = UserType;
   private UserType: number;
@@ -116,6 +118,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               private storage: LocalStorageService,
               private translate: TranslateService,
               private userService: UserService,
+              private networkService: NetworkService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
@@ -158,26 +161,24 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
           this.agencyOverview = params["agencyOverview"];
         }
 
-        if (this.agencyId && this.countryID) {
-          this._getHazards();
-          this.getCountryLocation();
-          this._getCountryContextIndicators();
-        } else {
-          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-            this.uid = user.uid;
-            this.UserType = userType;
-            this.agencyId = agencyId;
-            this.countryID = countryId;
-            this.systemId = systemId;
-            this._getHazards();
-            this.getCountryLocation();
-            this._getCountryContextIndicators();
-            this.getUsersForAssign();
-            PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
-              this.countryPermissionsMatrix = isEnabled;
-            }));
-          });
-        }
+
+        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+          this.uid = user.uid;
+
+          //get network id
+          this.networkService.getSelectedIdObj(user.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(selection => {
+              this.networkCountryId = selection["networkCountryId"];
+              this.UserType = selection["userType"];
+
+              this._getHazards();
+              this.getCountryLocation();
+              this._getCountryContextIndicators();
+              this.getUsersForAssign();
+
+            });
+        })
       })
   }
 
@@ -227,7 +228,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   _getCountryContextIndicators() {
-    this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
+    this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.networkCountryId).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
       indicators.forEach((indicator, key) => {
         this.getLogs(indicator.$key).subscribe((logs: any) => {
           logs.forEach((log, key) => {
@@ -244,10 +245,13 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
+    console.log('--------')
+    console.log(this.networkCountryId)
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
         this.activeHazards = [];
         this.archivedHazards = [];
+        console.log(hazards)
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
           if (hazard.hazardScenario != -1) {
@@ -256,6 +260,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
           this.getIndicators(hazard.id).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
+              console.log(indicator)
               this.getLogs(indicator.$key).subscribe((logs: any) => {
                 logs.forEach((log, key) => {
                   this.getUsers(log.addedBy).subscribe((user: any) => {

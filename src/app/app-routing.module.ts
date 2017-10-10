@@ -175,6 +175,7 @@ import {ViewNetworkPlanComponent} from "./network-country-admin/network-plans/vi
 import {NetworkCountryCreateEditActionComponent} from "./network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
 import {NetworkCountryActionSelectComponent} from "./network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component";
 import { AddIndicatorNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-indicator-network-country/add-indicator-network-country.component';
+import { AddHazardNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -473,6 +474,7 @@ const routes: Routes = [
   {path: 'network-country/network-risk-monitoring', component: NetworkRiskMinitoringComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorNetworkCountryComponent},
+  {path: 'network-country/network-risk-monitoring/add-hazard', component: AddHazardNetworkCountryComponent},
 
   {path: 'network-country/network-plans', component: NetworkPlansComponent},
   {path: 'network-country/network-plans/view-network-plan', component: ViewNetworkPlanComponent},

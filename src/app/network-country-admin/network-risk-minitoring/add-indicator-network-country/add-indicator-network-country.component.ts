@@ -234,16 +234,6 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           this.hazardID = params['hazardID'];
           this.indicatorID = params['indicatorID'];
           console.log(params['indicatorID'])
-          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-            if (user) {
-              this.uid = user.uid;
-              this.UserType = userType;
-              this.countryID = countryId;
-              this._getIndicator(this.hazardID, this.indicatorID);
-            } else {
-              this.navigateToLogin();
-            }
-          });
         } else {
           this.addAnotherSource();
           // this.addAnotherLocation();
