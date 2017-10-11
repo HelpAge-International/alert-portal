@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../model/alert-message.model";
-import {AlertMessageType, Countries} from "../../utils/Enums";
+import {AlertMessageType, Countries, NetworkUserAccountType} from "../../utils/Enums";
 import {Observable} from "rxjs/Observable";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
@@ -18,6 +18,7 @@ import {Constants} from "../../utils/Constants";
   styleUrls: ['./network-country-header.component.css']
 })
 export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
+  private uid: string;
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
@@ -33,6 +34,7 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
   private user: Observable<ModelUserPublic>;
   private networkCountry: Observable<NetworkCountryModel>;
   private alertLevel: number = 0;
+  private USER_TYPE: string;
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -43,6 +45,8 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+      this.USER_TYPE = Constants.NETWORK_USER_PATHS[NetworkUserAccountType.NetworkCountryAdmin];
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)

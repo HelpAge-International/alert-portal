@@ -1,3 +1,5 @@
+import {MessageModel} from "../model/message.model";
+
 export class CommonUtils {
 
   static convertObjectToList(object): Array<any> {
@@ -36,7 +38,7 @@ export class CommonUtils {
 
   static reverseMap(map) {
     let reverseMap = new Map();
-    map.forEach((v, k) => reverseMap.set(v,k));
+    map.forEach((v, k) => reverseMap.set(v, k));
     return reverseMap;
   }
 
@@ -58,6 +60,10 @@ export class CommonUtils {
   static trueValueFromMapAsKeys(map) {
     let objOnlyTrueValue = CommonUtils.convertMapToObjectOnlyWithTrueValue(map);
     return Object.keys(objOnlyTrueValue);
+  }
+
+  static messageExistInList(messageId: string, messageList: MessageModel[]) {
+    return messageList.map(msg => msg.id).indexOf(messageId) != -1;
   }
 
 }

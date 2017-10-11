@@ -32,6 +32,8 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
   private networkId: string;
   private showLoader: boolean;
   private networkCountryId: string;
+  private uid: string;
+  private agencyCountryMap: Map<string, string>;
 
 
   constructor(private pageControl: PageControlService,
@@ -44,6 +46,7 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
+      this.uid = user.uid;
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -60,6 +63,10 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
                 this.sentMessages = sentMessages;
               }
             });
+
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(map => this.agencyCountryMap = map);
 
         });
     });
@@ -78,13 +85,13 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
   deleteAction() {
     this.closeModal();
     console.log('delete called');
-    // this._messageService.deleteCountryMessageNetwork(this.countryId, this.agencyId, this.deleteMessageModel)
-    //   .then(() => {
-    //     this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-    //   })
-    //   .catch(err => {
-    //     this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR')
-    //   });
+    this._messageService.deleteCountryMessageNetwork(this.uid, this.agencyCountryMap, this.deleteMessageModel)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => {
+        this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR')
+      });
   }
 
   closeModal() {

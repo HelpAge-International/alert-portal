@@ -38,6 +38,18 @@ export class NotificationService {
     return this.deleteNotification(deleteData);
   }
 
+  deleteNetworkCountryAdminNotification(userId, networkId, networkCountryId, messageId): firebase.Promise<any>{
+    let deleteData = {};
+
+    let nodesAdministratorNetworkCountry = this.getNetworkCountryAdministratorNodes(networkId, networkCountryId, userId);
+
+    for (let node of nodesAdministratorNetworkCountry) {
+      deleteData[node + '/' + messageId] = null;
+    }
+
+    return this.deleteNotification(deleteData);
+  }
+
  deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
    let deleteData = {};
 
@@ -330,6 +342,14 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
       "/messageRef/network/" + networkId + "/networkallusersgroup/" + userId,
       "/messageRef/systemadmin/allusersgroup/" + userId,
       "/messageRef/systemadmin/allnetworkadminsgroup/" + userId];
+  }
+  getNetworkCountryAdministratorNodes(networkId: string, networkCountryId: string, userId: string)
+  {
+    return [
+      "/messageRef/network/" + networkId + "/networkallusersgroup/" + userId,
+      "/messageRef/network/" + networkId + "/networkcountryadmins/" + userId,
+      "/messageRef/systemadmin/allnetworkcountryadminsgroup/" + userId,
+      "/messageRef/systemadmin/allusersgroup/" + userId];
   }
 
   getAgencyAdministratorNodes(agencyId: string)

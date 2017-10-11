@@ -176,6 +176,7 @@ import {NetworkCountryActionSelectComponent} from "./network-country-admin/netwo
 import { AddIndicatorNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-indicator-network-country/add-indicator-network-country.component';
 import { AddHazardNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
 import {NetworkCountryCreateEditMessageComponent} from "./network-country-admin/network-administration/network-country-messages/network-country-create-edit-message/network-country-create-edit-message.component";
+import {NetworkCountryNotificationsComponent} from "./network-country-admin/network-country-notifications/network-country-notifications.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -485,6 +486,7 @@ const routes: Routes = [
   {path: 'network-country/network-country-settings/network-country-clocks', component: NetworkCountryClockSettingsComponent},
   {path: 'network-country/network-country-messages', component: NetworkCountryMessagesComponent},
   {path: 'network-country/network-country-messages/create-edit-network-country-message', component: NetworkCountryCreateEditMessageComponent},
+  {path: 'network-country/network-country-notifications', component: NetworkCountryNotificationsComponent},
   {path: 'network-country/network-country-mpa', component: NetworkCountryMpaComponent},
   {path: 'network-country/network-country-apa', component: NetworkCountryApaComponent},
   {path: 'network-country/network-country-create-edit-action', component: NetworkCountryCreateEditActionComponent},

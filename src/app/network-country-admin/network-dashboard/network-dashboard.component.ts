@@ -167,7 +167,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     let id = this.countryId ? this.countryId : this.networkCountryId;
     let agencyId = this.agencyId ? this.agencyId : this.networkId;
     this.getAllSeasonsForCountryId(id);
-    this.getAlerts(id);
+    this.getAlertsNetwork(id);
     this.getCountryContextIndicators(id);
     this.getHazards(id);
     this.initData(id);
@@ -257,15 +257,19 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
-            x.task = action.task;
-            x.level = action.level;
+            if (action) {
+              x.task = action.task;
+              x.level = action.level;
+            }
           });
         }
 
         for (let x of this.actionsToday) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
-            x.task = action.task;
-            x.level = action.level;
+            if (action) {
+              x.task = action.task;
+              x.level = action.level;
+            }
           });
         }
         for (let x of this.actionsThisWeek) {
@@ -405,6 +409,17 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         });
     }
+    this.actionService.getRedAlerts(id)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(alerts => {
+        alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
+        this.isRedAlert = alerts.length > 0;
+      });
+  }
+
+  private getAlertsNetwork(id) {
+    this.alerts = this.actionService.getAlerts(id);
+
     this.actionService.getRedAlerts(id)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(alerts => {

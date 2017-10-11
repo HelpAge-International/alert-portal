@@ -26,8 +26,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private _agencyId: string;
   private _userId: string;
   private _networkId: string;
+  private _networkCountryId: string;
 
-  private messages: MessageModel[] = []
+  private messages: MessageModel[] = [];
   private messageToDeleteID;
   private deleteMessageContent: string;
   private doDeleteAll: boolean = false;
@@ -59,6 +60,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @Input()
   set networkId(networkId: string) {
     this._networkId = networkId;
+    this.getNotifications();
+  }
+
+  @Input()
+  set networkCountryId(networkCountryId: string) {
+    this._networkCountryId = networkCountryId;
     this.getNotifications();
   }
 
@@ -113,6 +120,16 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   private deleteSingleMsg() {
     switch (this._USER_TYPE) {
+      case 'administratorNetworkCountry':
+        this._notificationService.deleteNetworkCountryAdminNotification(this._userId, this._networkId, this._networkCountryId, this.messageToDeleteID)
+          .then(() => {
+            if (!this.doDeleteAll) {
+              this.messages = this.messages.filter(x => x.id != this.messageToDeleteID);
+              this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+            }
+          })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+        break;
       case 'administratorNetwork':
         this._notificationService.deleteNetworkAdminNotification(this._userId, this._networkId, this.messageToDeleteID)
           .then(() => {
@@ -231,8 +248,29 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   private getNotifications() {
-    if (this._USER_TYPE && this._userId && (this._countryId || this._agencyId || this._networkId)) {
+    if (this._USER_TYPE && this._userId && (this._countryId || this._agencyId || this._networkId || this._networkCountryId)) {
       switch (this._USER_TYPE) {
+        case 'administratorNetworkCountry':
+          console.log('administratorNetworkCountry')
+          let nodesAdministratorNetworkCountry = this._notificationService.getNetworkCountryAdministratorNodes(this._networkId, this._networkCountryId, this._userId);
+          for (let node of nodesAdministratorNetworkCountry) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+              list.forEach((x) => {
+                this._notificationService.getNotificationMessage(x.$key)
+                  .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                  if (!this.messages.find(x => x.id === message.id)) // if the message does not exist in the list
+                  {
+                    this.messages.push(message);
+                    this.messages.sort(function (a, b) {
+                      return b.time - a.time;
+                    });
+                  }
+                });
+              });
+            });
+          }
+          break;
         case 'administratorNetwork':
           let nodesAdministratorNetwork = this._notificationService.getNetworkAdministratorNodes(this._networkId, this._userId);
           for (let node of nodesAdministratorNetwork) {
