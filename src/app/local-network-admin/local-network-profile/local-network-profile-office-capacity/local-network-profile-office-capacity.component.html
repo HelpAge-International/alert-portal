@@ -1,5 +1,12 @@
-<app-local-network-header></app-local-network-header>
-<app-local-network-menu></app-local-network-menu>
+<ng-container *ngIf="!isNetworkCountry; else networkCountry">
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-container>
+
+<ng-template #networkCountry>
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-template>
 
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
@@ -8,7 +15,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <app-local-network-profile-menu></app-local-network-profile-menu>
+    <app-local-network-profile-menu [isNetworkCountry]="isNetworkCountry"></app-local-network-profile-menu>
 
     <div *ngIf="!isViewing" class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TITLE_TEXT" | translate}}</h2>
@@ -120,7 +127,7 @@
             <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
             <p class="notes-number__components--country-office-profile">{{getNotesNumber(staff)}}</p>
             <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
-            <a href="#notes_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+            <a href="#notes_{{agency.$key}}_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
               {{ 'GLOBAL.NOTES' | translate }}
             </a>
           </div>
@@ -164,7 +171,7 @@
         </div>
 
         <!-- Notes Drop Down -->
-        <div id="notes_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div id="notes_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
           <div class="log_left p-3">
             <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
             <hr class="d-inline-flex">
@@ -187,7 +194,7 @@
                     <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
                     </p>
                     <a
-                      *ngIf="uid==note.uploadedBy" 
+                      *ngIf="uid==note.uploadedBy"
                       href="javascript:void(0)" class="col-sm-0 margin-right-none"
                       (click)="editNote('staff', staff.id, note, agency)">{{ 'EDIT' | translate }}</a>
                     <p
@@ -209,7 +216,7 @@
                         class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
                 </button>
                 <br>
-                <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+                <br><a href="#notes_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
                 translate
                 }}</a>
               </div>
@@ -256,7 +263,7 @@
           <div *ngIf="!isEditingCapacity" class="margin-left-five col-sm-0">
             <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
             <p class="notes-number__components--country-office-profile">{{getSurgeNotesNumber(surge)}}</p>
-            <a href="#notes_surge_{{surge.$key}}" data-toggle="collapse" class="row margin-left-one-half">
+            <a href="#notes_surge_{{agency.$key}}_{{surge.$key}}" data-toggle="collapse" class="row margin-left-one-half">
               {{"GLOBAL.NOTES" | translate}}</a>
           </div>
           <button type="button" class="btn btn-outline-primary text-uppercase"
@@ -306,7 +313,7 @@
         </div>
 
         <!-- Notes Drop Down -->
-        <div id="notes_surge_{{surge.$key}}" class="Tooltip__bubble container-fluid notes log collapse">
+        <div id="notes_surge_{{agency.$key}}_{{surge.$key}}" class="Tooltip__bubble container-fluid notes log collapse">
           <div class="log_left p-3">
             <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
             <hr class="d-inline-flex">

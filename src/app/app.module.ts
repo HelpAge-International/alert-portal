@@ -265,6 +265,14 @@ import { NetworkCountryNotificationsComponent } from './network-country-admin/ne
 import { NetworkCountryAccountSettingsComponent } from './network-country-admin/network-country-account-settings/network-country-account-settings.component';
 import { AccountChangePasswordComponent } from './commons/account-change-password/account-change-password.component';
 import { NetworkCountryChangePasswordComponent } from './network-country-admin/network-country-account-settings/network-country-change-password/network-country-change-password.component';
+import { NetworkCountryProfileProgrammeComponent } from './network-country-admin/network-country-office-profile/network-country-profile-programme/network-country-profile-programme.component';
+import { NetworkCountryProfileOfficeCapacityComponent } from './network-country-admin/network-country-office-profile/network-country-profile-office-capacity/network-country-profile-office-capacity.component';
+import { NetworkCountryProfilePartnersComponent } from './network-country-admin/network-country-office-profile/network-country-profile-partners/network-country-profile-partners.component';
+import { NetworkCountryProfileEquipmentComponent } from './network-country-admin/network-country-office-profile/network-country-profile-equipment/network-country-profile-equipment.component';
+import { NetworkCountryProfileCoordinationComponent } from './network-country-admin/network-country-office-profile/network-country-profile-coordination/network-country-profile-coordination.component';
+import { NetworkCountryProfileStockCapacityComponent } from './network-country-admin/network-country-office-profile/network-country-profile-stock-capacity/network-country-profile-stock-capacity.component';
+import { NetworkCountryProfileDocumentsComponent } from './network-country-admin/network-country-office-profile/network-country-profile-documents/network-country-profile-documents.component';
+import { NetworkCountryProfileContactsComponent } from './network-country-admin/network-country-office-profile/network-country-profile-contacts/network-country-profile-contacts.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -523,7 +531,15 @@ const firebaseAuthConfig = {
     NetworkCountryNotificationsComponent,
     NetworkCountryAccountSettingsComponent,
     AccountChangePasswordComponent,
-    NetworkCountryChangePasswordComponent
+    NetworkCountryChangePasswordComponent,
+    NetworkCountryProfileProgrammeComponent,
+    NetworkCountryProfileOfficeCapacityComponent,
+    NetworkCountryProfilePartnersComponent,
+    NetworkCountryProfileEquipmentComponent,
+    NetworkCountryProfileCoordinationComponent,
+    NetworkCountryProfileStockCapacityComponent,
+    NetworkCountryProfileDocumentsComponent,
+    NetworkCountryProfileContactsComponent
   ],
   imports: [
     BrowserModule,

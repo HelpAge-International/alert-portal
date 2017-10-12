@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {NetworkService} from "../../../services/network.service";
@@ -13,6 +13,7 @@ import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import * as moment from "moment";
+
 declare var jQuery: any;
 
 @Component({
@@ -29,8 +30,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private officeFilter: any = 0;
   private USER_TYPE = UserType;
 
-  private responseStaffs = new Map<string,any[]>();
-  private responseStaffsOrigin = new Map<string,any[]>();
+  private responseStaffs = new Map<string, any[]>();
+  private responseStaffsOrigin = new Map<string, any[]>();
   private isViewing: boolean;
   private userMap = new Map<string, string>();
   private skillTechMap = new Map<string, string[]>();
@@ -76,17 +77,22 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
   private filter: any[] = [];
 
-  private countryOfficeCapacity = new Map<string,any[]>();
+  private countryOfficeCapacity = new Map<string, any[]>();
 
-  private origCountryOfficeCapacity = new Map<string,any[]>();
-  private totalStaff = new Map<string,number>();
-  private totalResponseStaff = new Map<string,number>();
+  private origCountryOfficeCapacity = new Map<string, any[]>();
+  private totalStaff = new Map<string, number>();
+  private totalResponseStaff = new Map<string, number>();
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   private activeType: string;
   private activeId: string;
   private activeNote: NoteModel;
-  private surgeCapacities = new Map<string,any[]>();
+  private surgeCapacities = new Map<string, any[]>();
+
+  //network country re-use
+  @Input() isNetworkCountry: boolean;
+  private networkId: string;
+  private networkCountryId: string;
 
 
   constructor(private pageControl: PageControlService,
@@ -97,6 +103,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               private _userService: UserService,
               private _networkService: NetworkService,
               private _agencyService: AgencyService,
+              private networkService: NetworkService,
               private af: AngularFire) {
 
   }
@@ -108,6 +115,46 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
   ngOnInit() {
 
+    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+
+  }
+
+  private networkCountryAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      this.networkService.getSelectedIdObj(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this.networkCountryId = selection["networkCountryId"];
+
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(map => {
+              console.log(map);
+              this.officeAgencyMap = map;
+
+              map.forEach((value: string, key: string) => {
+                this._agencyService.getAgency(key)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(agency => {
+                    this.agencies.push(agency)
+                  })
+              });
+
+              this._getTotalStaff(map);
+              this.getStaff(map);
+              this.getSurgeCapacity(map);
+              this._getCountryOfficeCapacity(map).then();
+              this._getSkills();
+
+            });
+        });
+    });
+  }
+
+  private localNetworkAdminAccess() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
       this._networkService.getSelectedIdObj(user.uid)
@@ -117,13 +164,13 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
           this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe( officeAgencyMap => {
+            .subscribe(officeAgencyMap => {
               this.officeAgencyMap = officeAgencyMap
 
               officeAgencyMap.forEach((value: string, key: string) => {
                 this._agencyService.getAgency(key)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe( agency => {
+                  .subscribe(agency => {
                     this.agencies.push(agency)
                   })
               })
@@ -147,7 +194,6 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
         });
 
     })
-
   }
 
   private getSurgeCapacity(officeAgencyMap) {
@@ -214,6 +260,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
         break;
     }
   }
+
   //
   // ngAfterViewInit() {
   //   this.initPopover();
@@ -309,8 +356,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   }
 
   _getCountryOfficeCapacity(officeAgencyMap) {
-      let promise = new Promise((res, rej) => {
-        officeAgencyMap.forEach((value: string, key: string) => {
+    let promise = new Promise((res, rej) => {
+      officeAgencyMap.forEach((value: string, key: string) => {
         this.af.database.object(Constants.APP_STATUS + '/staff/' + value)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((CountryOfficeStaff: any) => {
@@ -350,6 +397,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
     })
     return promise;
   }
+
   //
   filterData(event: any, filterType: any, agency) {
     var filterVal = event.target.value;
@@ -416,32 +464,36 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
     this.responseStaffs.set(agency.$key, result)
 
   }
+
   //
   _getUserName(userID: string) {
     return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userID);
   }
+
   //
   _getSkill(skillID: string) {
     return this.af.database.object(Constants.APP_STATUS + '/skill/' + skillID);
   }
+
   //
   _getSkills() {
 
-      this.af.database.object(Constants.APP_STATUS + '/skill/').takeUntil(this.ngUnsubscribe)
-        .subscribe((skills: any) => {
-          for (let skill in skills) {
-            if (skill.indexOf("$") < 0) {
-              var objSkill = {key: skill, name: skills[skill].name};
-              if (!skills[skill].type) {
-                this.suportedSkills.push(objSkill);
-              } else {
-                this.techSkills.push(objSkill);
-              }
+    this.af.database.object(Constants.APP_STATUS + '/skill/').takeUntil(this.ngUnsubscribe)
+      .subscribe((skills: any) => {
+        for (let skill in skills) {
+          if (skill.indexOf("$") < 0) {
+            var objSkill = {key: skill, name: skills[skill].name};
+            if (!skills[skill].type) {
+              this.suportedSkills.push(objSkill);
+            } else {
+              this.techSkills.push(objSkill);
             }
           }
-        });
+        }
+      });
 
   }
+
   //
   _convertObjectToArray(obj: any) {
     var arr = Object.keys(obj).map(function (key) {
@@ -449,10 +501,12 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
     });
     return arr;
   }
+
   //
   getNotesNumber(staff): number {
     return staff.notes ? Object.keys(staff.notes).length : 0;
   }
+
   //
   getUserName(userId) {
     let userName = "";
@@ -465,6 +519,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
     return userName;
   }
+
   //
   addNote(type: string, id: string, note: NoteModel, agency) {
     if (this.validateNote(note)) {
@@ -552,10 +607,10 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   convertToLocal(timestamp): number {
     return (moment().utcOffset() * 60 * 1000 + timestamp);
   }
+
   //
   getSurgeNotesNumber(surge): number {
     return surge.notes ? Object.keys(surge.notes).length : 0;
   }
-
 
 }

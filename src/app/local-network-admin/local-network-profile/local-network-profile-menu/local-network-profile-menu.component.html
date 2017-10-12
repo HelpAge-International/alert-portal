@@ -11,7 +11,8 @@
   <ul class="subnav_country-office-profile">
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/programme">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-programme' : '/network/local-network-office-profile/programme'}}">{{
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('programme')">
@@ -20,7 +21,8 @@
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/office-capacity">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-office-capacity' : '/network/local-network-office-profile/office-capacity'}}">{{
         "COUNTRY_ADMIN.PROFILE.MENU.OFFICE_CAPACITY" | translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('officeCapacity')">
@@ -29,7 +31,8 @@
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/partners">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-partners' : '/network/local-network-office-profile/partners'}}">{{
         "GLOBAL.USER_TYPE.PARTNER" |
         translate}}</a>
     </li>
@@ -39,7 +42,8 @@
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/equipment">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-equipment' : '/network/local-network-office-profile/equipment'}}">{{
         "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT" |
         translate}}</a>
     </li>
@@ -49,7 +53,8 @@
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/coordination">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-coordination' : '/network/local-network-office-profile/coordination'}}">{{
         "COUNTRY_ADMIN.PROFILE.MENU.COORDINATION" | translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('coordination')">
@@ -58,7 +63,8 @@
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/stock-capacity">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-stock-capacity' : '/network/local-network-office-profile/stock-capacity'}}">{{
         "COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT" | translate}}</a>
     </li>
     <li *ngIf="isViewing" [class.active]="activeMap.get('stockCapacity')">
@@ -67,7 +73,8 @@
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/documents">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-documents' : '/network/local-network-office-profile/documents'}}">{{
         "DOCUMENTS_TEXT" |
         translate}}</a>
     </li>
@@ -77,7 +84,8 @@
     </li>
 
     <li *ngIf="!isViewing" routerLinkActive="active">
-      <a routerLink="/network/local-network-office-profile/contacts">{{
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-contacts' : '/network/local-network-office-profile/contacts'}}">{{
         "COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT" |
         translate}}</a>
     </li>

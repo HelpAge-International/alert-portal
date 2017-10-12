@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-local-network-profile-menu',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./local-network-profile-menu.component.css']
 })
 export class LocalNetworkProfileMenuComponent implements OnInit {
+
+  @Input() isNetworkCountry : boolean;
 
   constructor() { }
 

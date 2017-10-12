@@ -25,7 +25,34 @@
       <a routerLink="/network-country/network-plans">{{"HEADERS.PLANS" | translate}}</a>
     </li>
     <li class="" [hidden]="permCountryOffice" routerLinkActive="active">
-      <a>{{"NETWORK_OFFICE" | translate}}</a>
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE" | translate}}</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-programme">
+          Programme
+        </a>
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-office-capacity">
+          Office Capacity
+        </a>
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-partners">
+          Partners
+        </a>
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-equipment">
+          Equipment
+        </a>
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-coordination">
+          Coordination
+        </a>
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-stock-capacity">
+          Stock Capacity
+        </a>
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-documents">
+          Documents
+        </a>
+        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-contacts">
+          Contacts
+        </a>
+      </div>
+      <!--<a routerLink="/network-country/network-country-office-profile-programme">{{"NETWORK_OFFICE" | translate}}</a>-->
     </li>
     <li class="" routerLinkActive="active">
       <a routerLink="/network-country/network-global-map">{{"HEADERS.GLOBAL_MAP" | translate}}</a>

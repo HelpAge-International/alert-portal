@@ -179,6 +179,14 @@ import {NetworkCountryCreateEditMessageComponent} from "./network-country-admin/
 import {NetworkCountryNotificationsComponent} from "./network-country-admin/network-country-notifications/network-country-notifications.component";
 import {NetworkCountryAccountSettingsComponent} from "./network-country-admin/network-country-account-settings/network-country-account-settings.component";
 import {NetworkCountryChangePasswordComponent} from "./network-country-admin/network-country-account-settings/network-country-change-password/network-country-change-password.component";
+import {NetworkCountryProfileProgrammeComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-programme/network-country-profile-programme.component";
+import {NetworkCountryProfileOfficeCapacityComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-office-capacity/network-country-profile-office-capacity.component";
+import {NetworkCountryProfilePartnersComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-partners/network-country-profile-partners.component";
+import {NetworkCountryProfileEquipmentComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-equipment/network-country-profile-equipment.component";
+import {NetworkCountryProfileCoordinationComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-coordination/network-country-profile-coordination.component";
+import {NetworkCountryProfileStockCapacityComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-stock-capacity/network-country-profile-stock-capacity.component";
+import {NetworkCountryProfileDocumentsComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-documents/network-country-profile-documents.component";
+import {NetworkCountryProfileContactsComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-contacts/network-country-profile-contacts.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -496,6 +504,14 @@ const routes: Routes = [
   {path: 'network-country/network-country-create-edit-action/:id', component: NetworkCountryCreateEditActionComponent},
   {path: 'network-country/network-country-select-action', component: NetworkCountryActionSelectComponent},
   {path: 'network-country-validation', component: NetworkCountryValidationComponent},
+  {path: 'network-country/network-country-office-profile-programme', component: NetworkCountryProfileProgrammeComponent},
+  {path: 'network-country/network-country-office-profile-office-capacity', component: NetworkCountryProfileOfficeCapacityComponent},
+  {path: 'network-country/network-country-office-profile-partners', component: NetworkCountryProfilePartnersComponent},
+  {path: 'network-country/network-country-office-profile-equipment', component: NetworkCountryProfileEquipmentComponent},
+  {path: 'network-country/network-country-office-profile-coordination', component: NetworkCountryProfileCoordinationComponent},
+  {path: 'network-country/network-country-office-profile-stock-capacity', component: NetworkCountryProfileStockCapacityComponent},
+  {path: 'network-country/network-country-office-profile-documents', component: NetworkCountryProfileDocumentsComponent},
+  {path: 'network-country/network-country-office-profile-contacts', component: NetworkCountryProfileContactsComponent},
 
   /**
    * Maintanace page

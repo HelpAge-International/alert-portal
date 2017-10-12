@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {NetworkService} from "../../../services/network.service";
 import {AgencyService} from "../../../services/agency-service.service";
@@ -16,7 +16,8 @@ declare var jQuery: any;
   templateUrl: './local-network-profile-programme.component.html',
   styleUrls: ['./local-network-profile-programme.component.css']
 })
-export class LocalNetworkProfileProgrammeComponent implements OnInit {
+export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy {
+
   testMap: Map<string, string>;
 
   private isEdit = false;
@@ -35,8 +36,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
   private ResponsePlanSectorsIcons = Constants.RESPONSE_PLANS_SECTORS_ICONS;
 
-  private mapping = new Map<string,any[]>()
-  private sectorExpertise = new Map<string,any[]>()
+  private mapping = new Map<string, any[]>()
+  private sectorExpertise = new Map<string, any[]>()
   private logContent: any[] = [];
   private noteTmp: any[] = [];
 
@@ -56,6 +57,12 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
     ResponsePlanSectors.campmanagement
   ];
 
+  //network country re-use
+  @Input() isNetworkCountry: boolean;
+  private networkCountryId: string;
+  private networkId: string;
+  private agencyCountryMap: Map<string, string>;
+
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -72,6 +79,38 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
 
   ngOnInit() {
 
+    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+
+  }
+
+  private networkCountryAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      this.networkService.getSelectedIdObj(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this.networkCountryId = selection["networkCountryId"];
+
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(map => {
+              console.log(map);
+              this.agencies = [];
+              this.agencyCountryMap = map;
+              map.forEach((v, k) => {
+                this.agencyService.getAgency(k)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(agency => this.agencies.push(agency));
+              });
+              this._getProgramme(map);
+            });
+        });
+    });
+  }
+
+  private localNetworkAdminAccess() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
       this.networkService.getSelectedIdObj(user.uid)
@@ -80,14 +119,14 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
           this.networkID = selection["id"];
           this.networkService.getAgencyCountryOfficesByNetwork(this.networkID)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe( officeAgencyMap => {
+            .subscribe(officeAgencyMap => {
               this.agencies = []
 
               officeAgencyMap.forEach((value: string, key: string) => {
                 this.agencyService.getAgency(key)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe( agency => {
-                      this.agencies.push(agency)
+                  .subscribe(agency => {
+                    this.agencies.push(agency)
                   })
               })
 
@@ -96,17 +135,42 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
             })
         })
     })
-
   }
 
   saveNote(programmeID: any, agency: any) {
 
-    this.af.database.object( Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key)
+    this.isNetworkCountry ? this.networkCountrySveNote(programmeID, agency.$key) : this.localNetworkAdminSaveNote(agency, programmeID);
+  }
+
+  private networkCountrySveNote(programmeID, agencyId) {
+    if (!this.logContent[programmeID]) {
+      this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_NOTE', AlertMessageType.Error);
+      return false;
+    }
+
+    var logData: any = {};
+    logData.content = this.logContent[programmeID];
+    logData.uploadBy = this.uid;
+    logData.time = this._getCurrentTimestamp();
+
+    this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.agencyCountryMap.get(agencyId) + '/4WMapping/' + programmeID + '/programmeNotes')
+      .push(logData)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_NOTE', AlertMessageType.Success);
+        this.logContent[programmeID] = '';
+      }).catch((error: any) => {
+      console.log(error, 'You do not have access!')
+    });
+  }
+
+  private localNetworkAdminSaveNote(agency: any, programmeID: any) {
+    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe( netAgency => {
+      .subscribe(netAgency => {
 
         console.log(programmeID)
         console.log(agency)
+        console.log(netAgency)
         if (!this.logContent[programmeID]) {
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_NOTE', AlertMessageType.Error);
           return false;
@@ -129,16 +193,16 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
       })
   }
 
-
   _getProgramme(officeAgencyMap) {
     officeAgencyMap.forEach((value: string, key: string) => {
       this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + value)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((programms: any) => {
+          console.log(programms)
           this.mapping.set(key, []);
           this.sectorExpertise.set(key, []);
-        console.log('------------')
-        console.log(programms)
+          console.log('------------')
+          console.log(programms)
           var mapping = programms['4WMapping'];
           for (let m in mapping) {
             console.log('%$£@£$%')
@@ -146,6 +210,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
             mapping[m].key = m;
             mapping[m].notes = [];
             var notes = mapping[m].programmeNotes;
+            console.log(notes);
             var arrayNotes = [];
 
             for (let n in notes) {
@@ -189,10 +254,26 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
   }
 
   saveLog(agency) {
+    this.isNetworkCountry ? this.networkCountryUpdateNote(agency) : this.localAdminUpdateNote(agency);
+  }
+
+  private networkCountryUpdateNote(agency) {
+    let dataToUpdate = {content: this.noteTmp['content']};
+    this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.agencyCountryMap.get(agency.$key) + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID'])
+      .update(dataToUpdate)
+      .then(_ => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_NOTE', AlertMessageType.Success);
+        this.noteTmp = [];
+      }).catch(error => {
+      console.log("Message creation unsuccessful" + error);
+    });
+  }
+
+  private localAdminUpdateNote(agency) {
     var dataToUpdate = {content: this.noteTmp['content']};
-    this.af.database.object( Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key )
+    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe( netAgency => {
+      .subscribe(netAgency => {
         console.log(netAgency)
         this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + netAgency.countryCode + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID'])
           .update(dataToUpdate)
@@ -207,9 +288,20 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit {
 
   deleteLog(agency) {
 
-    this.af.database.object( Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key )
+    this.isNetworkCountry ? this.networkCountryDeleteNote(agency) : this.localAdminDeleteNote(agency);
+  }
+
+  private networkCountryDeleteNote(agency) {
+    this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.agencyCountryMap.get(agency.$key) + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID']).remove().then(() => {
+      this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_DELETE_NOTE', AlertMessageType.Success);
+      this.noteTmp = [];
+    });
+  }
+
+  private localAdminDeleteNote(agency) {
+    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe( netAgency => {
+      .subscribe(netAgency => {
         this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + netAgency.countryCode + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID']).remove().then(() => {
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_DELETE_NOTE', AlertMessageType.Success);
           this.noteTmp = [];

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -18,6 +18,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {OperationAreaModel} from "../../../model/operation-area.model";
+
 declare var jQuery: any;
 
 
@@ -54,7 +55,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   // Models
   private alertMessage: AlertMessageModel = null;
   private partners: PartnerModel[];
-  private partnerOrganisations = new Map<string, PartnerOrganisationModel[]>()
+  private partnerOrganisations = new Map<string, PartnerOrganisationModel[]>();
   private countryAdmin: CountryAdminModel;
   private areasOfOperation: string[];
   private countryLevelsValues: any;
@@ -67,6 +68,10 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
+  //network country re-use
+  @Input() isNetworkCountry: boolean;
+  private networkCountryId: string;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
@@ -74,6 +79,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
               private _sessionService: SessionService,
               private _agencyService: AgencyService,
               private _networkService: NetworkService,
+              private networkService: NetworkService,
               private af: AngularFire,
               private router: Router) {
     this.areasOfOperation = [];
@@ -89,6 +95,67 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+  }
+
+  private networkCountryAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      this.networkService.getSelectedIdObj(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this.networkCountryId = selection["networkCountryId"];
+
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(map => {
+              console.log(map);
+              this.officeAgencyMap = map;
+
+              map.forEach((value: string, key: string) => {
+                this._agencyService.getAgency(key)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(agency => {
+                    this.agencies.push(agency);
+
+                    this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(partnerOrganisations => {
+                        this.partnerOrganisations.set(key, partnerOrganisations);
+
+                        this.assignProjectsToDisplayPerPartnerOrg(key, value);
+
+                        // Get the partner organisation notes
+                        this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
+                          const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                          this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                            partnerOrganisation.notes = notes;
+                          });
+
+                          // Create the new note model for partner organisation
+                          this.newNote[partnerOrganisation.id] = new NoteModel();
+                          this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                        });
+                      });
+
+                    // get the country levels values
+                    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(content => {
+                        this.countryLevelsValues = content;
+                      });
+                  })
+              });
+
+
+            });
+        });
+    });
+  }
+
+  private localNetworkAdminAccess() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
       this._networkService.getSelectedIdObj(user.uid)
@@ -108,6 +175,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                     this.agencies.push(agency)
 
                     this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
+                      .takeUntil(this.ngUnsubscribe)
                       .subscribe(partnerOrganisations => {
                         this.partnerOrganisations.set(key, partnerOrganisations)
 
@@ -128,19 +196,15 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
 
                     // get the country levels values
                     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                      .takeUntil(this.ngUnsubscribe)
                       .subscribe(content => {
                         this.countryLevelsValues = content;
-                        err => console.log(err);
                       });
                   })
               })
             });
         })
-    })
-  }
-
-  goBack() {
-    this.router.navigateByUrl('/country-admin/country-staff');
+    });
   }
 
   private assignProjectsToDisplayPerPartnerOrg(key, value) {
