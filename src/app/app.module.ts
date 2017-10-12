@@ -262,6 +262,9 @@ import { AddIndicatorNetworkCountryComponent } from './network-country-admin/net
 import { AddHazardNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
 import { NetworkCountryCreateEditMessageComponent } from './network-country-admin/network-administration/network-country-messages/network-country-create-edit-message/network-country-create-edit-message.component';
 import { NetworkCountryNotificationsComponent } from './network-country-admin/network-country-notifications/network-country-notifications.component';
+import { NetworkCountryAccountSettingsComponent } from './network-country-admin/network-country-account-settings/network-country-account-settings.component';
+import { AccountChangePasswordComponent } from './commons/account-change-password/account-change-password.component';
+import { NetworkCountryChangePasswordComponent } from './network-country-admin/network-country-account-settings/network-country-change-password/network-country-change-password.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -517,7 +520,10 @@ const firebaseAuthConfig = {
     AddIndicatorNetworkCountryComponent,
     AddHazardNetworkCountryComponent,
     NetworkCountryCreateEditMessageComponent,
-    NetworkCountryNotificationsComponent
+    NetworkCountryNotificationsComponent,
+    NetworkCountryAccountSettingsComponent,
+    AccountChangePasswordComponent,
+    NetworkCountryChangePasswordComponent
   ],
   imports: [
     BrowserModule,

@@ -177,6 +177,8 @@ import { AddIndicatorNetworkCountryComponent } from './network-country-admin/net
 import { AddHazardNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
 import {NetworkCountryCreateEditMessageComponent} from "./network-country-admin/network-administration/network-country-messages/network-country-create-edit-message/network-country-create-edit-message.component";
 import {NetworkCountryNotificationsComponent} from "./network-country-admin/network-country-notifications/network-country-notifications.component";
+import {NetworkCountryAccountSettingsComponent} from "./network-country-admin/network-country-account-settings/network-country-account-settings.component";
+import {NetworkCountryChangePasswordComponent} from "./network-country-admin/network-country-account-settings/network-country-change-password/network-country-change-password.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -471,7 +473,8 @@ const routes: Routes = [
    * Network Country Admin
    */
   {path: 'network-country/network-dashboard', component: NetworkDashboardComponent},
-
+  {path: 'network-country/network-country-account-settings', component: NetworkCountryAccountSettingsComponent},
+  {path: 'network-country/network-country-change-password', component: NetworkCountryChangePasswordComponent},
   {path: 'network-country/network-risk-monitoring', component: NetworkRiskMinitoringComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorNetworkCountryComponent},

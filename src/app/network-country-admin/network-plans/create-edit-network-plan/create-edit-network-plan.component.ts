@@ -496,15 +496,23 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSectorInfo() {
+    let isValid = true;
     if (!this.activityInfoMap) {
-      return false;
+      isValid = false;
     }
     Object.keys(this.activityMap).forEach(key => {
       if (!this.activityInfoMap.get(key)) {
-        return false;
+        isValid = false;
       }
     });
-    return true;
+    this.activityMap.forEach((v) => {
+      v.forEach(activity => {
+        if (!activity.output || !activity.name || !activity.indicator) {
+          isValid = false;
+        }
+      })
+    });
+    return isValid;
   }
 
   private checkInputsBudget() {
@@ -1378,7 +1386,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
-      this.doublerCounting();
+      // this.doublerCounting();
       this.continueButtonPressedOnSection9();
     } else {
       this.section7Status = "GLOBAL.INCOMPLETE";
