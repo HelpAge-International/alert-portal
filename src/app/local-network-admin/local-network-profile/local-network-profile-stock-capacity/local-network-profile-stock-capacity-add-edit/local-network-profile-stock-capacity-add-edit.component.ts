@@ -10,6 +10,7 @@ import {StockCapacityModel} from "../../../../model/stock-capacity.model";
 import {StockService} from "../../../../services/stock.service";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+
 declare var jQuery: any;
 
 @Component({
@@ -32,6 +33,9 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   private stockCapacity: StockCapacityModel;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  //network country re-use
+  private isNetworkCountry: boolean;
+  private networkCountryId: string;
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService, private networkService: NetworkService,
@@ -48,29 +52,49 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   }
 
   ngOnInit() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
+    this.route.params.subscribe((params: Params) => {
+      if (params['isNetworkCountry']) {
+        this.isNetworkCountry = params['isNetworkCountry'];
+      }
 
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
 
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
-          this.route.params.subscribe((params: Params) => {
+        this.networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
+            if (this.isNetworkCountry) {
+              this.networkCountryId = selection["networkCountryId"];
+            }
             if (params['id']) {
-              this._stockService.getStockCapacityLocalNetwork(this.networkId, params['id'])
-                .subscribe(stockCapacity => {
-                  this.stockCapacity = stockCapacity;
-                });
+              this.isNetworkCountry ? this.getStockCapacityForNetworkCountry(params) : this.getStockCapacityForLocalNetworkAdmin(params);
             }
             if (params['stockType']) {
               this.stockCapacity.stockType = Number(params['stockType']);
             }
-          });
 
-        })
+          })
 
+      });
     });
+
+  }
+
+  private getStockCapacityForNetworkCountry(params: Params) {
+    this._stockService.getStockCapacityLocalNetworkCountry(this.networkCountryId, params['id'])
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(stockCapacity => {
+        this.stockCapacity = stockCapacity;
+      });
+  }
+
+  private getStockCapacityForLocalNetworkAdmin(params: Params) {
+    this._stockService.getStockCapacityLocalNetwork(this.networkId, params['id'])
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(stockCapacity => {
+        this.stockCapacity = stockCapacity;
+      });
   }
 
   validateForm(): boolean {
@@ -81,6 +105,25 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
 
   submit() {
     console.log(this.stockCapacity)
+    this.isNetworkCountry ? this.saveStockCapacityForNetworkCountry() : this.saveStockCapacityForLocalNetworkAdmin();
+  }
+
+  private saveStockCapacityForNetworkCountry() {
+    this._stockService.saveStockCapacityNetworkCountry(this.networkCountryId, this.stockCapacity)
+      .then(() => {
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
+        err => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
+  }
+
+  private saveStockCapacityForLocalNetworkAdmin() {
     this._stockService.saveStockCapacityLocalNetwork(this.networkId, this.stockCapacity)
       .then(() => {
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
@@ -96,7 +139,7 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   }
 
   goBack() {
-    this.router.navigateByUrl('/network/local-network-office-profile/stock-capacity');
+    this.router.navigateByUrl(this.isNetworkCountry ? '/network-country/network-country-office-profile-stock-capacity' : '/network/local-network-office-profile/stock-capacity');
   }
 
   deleteStockCapacity() {
@@ -105,7 +148,19 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
 
   deleteAction() {
     this.closeModal();
+    this.isNetworkCountry ? this.deleteStockForNetworkCountry() : this.deleteStockForLocalNetworkAdmin();
+  }
 
+  private deleteStockForNetworkCountry() {
+    this._stockService.deleteStockCapacityNetworkCountry(this.networkCountryId, this.stockCapacity)
+      .then(() => {
+        this.goBack();
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_DELETED', AlertMessageType.Success);
+      })
+      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+  }
+
+  private deleteStockForLocalNetworkAdmin() {
     this._stockService.deleteStockCapacityLocalNetwork(this.networkId, this.stockCapacity)
       .then(() => {
         this.goBack();

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -11,6 +11,7 @@ import {CoordinationArrangementService} from "../../../services/coordination-arr
 import {CoordinationArrangementNetworkModel} from "../../../model/coordination-arrangement-network.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+
 declare var jQuery: any;
 
 @Component({
@@ -37,6 +38,10 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  //network country re-use
+  @Input() isNetworkCountry: boolean;
+  private networkCountryId: string;
+
 
   // Helpers
   constructor(private pageControl: PageControlService, private _agencyService: AgencyService,
@@ -53,52 +58,106 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
   ngOnInit() {
 
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-            this.networkService.getSelectedIdObj(user.uid)
+    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+  }
+
+  private networkCountryAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      this.networkService.getSelectedIdObj(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this.networkCountryId = selection["networkCountryId"];
+
+          this._coordinationArrangementService.getCoordinationArrangementsNetworkCountry(this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(selection => {
-              this.networkId = selection["id"];
-              this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId)
-                .subscribe(coordinationArrangements => {
+            .subscribe(coordinationArrangements => {
 
-                  coordinationArrangements.forEach(coordinationArrangement => {
-                    let tempArray = []
-                    for( var key in coordinationArrangement.agencies){
+              coordinationArrangements.forEach(coordinationArrangement => {
+                let tempArray = []
+                for (var key in coordinationArrangement.agencies) {
 
-                      this._agencyService.getAgency(key)
-                        .subscribe(agency => {
+                  this._agencyService.getAgency(key)
+                    .subscribe(agency => {
 
-                          tempArray.push(agency.name)
+                      tempArray.push(agency.name)
+                    })
+
+
+                }
+                this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
+                  .subscribe(coordinationArrangementNonAlert => {
+                    if (coordinationArrangementNonAlert.nonAlertMembers) {
+                      Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
+                        .map(key => {
+
+                          tempArray.push(coordinationArrangementNonAlert.nonAlertMembers[key].name)
+
                         })
 
 
                     }
-                    this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
-                    .subscribe( coordinationArrangementNonAlert => {
-                      if(coordinationArrangementNonAlert.nonAlertMembers){
-                        Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
-                          .map( key => {
-
-                            tempArray.push(coordinationArrangementNonAlert.nonAlertMembers[key].name)
-
-                          })
-
-
-                      }
-                    })
-
-                    this.coordinationAgenciesNames.push(tempArray);
-                    console.log(this.coordinationAgenciesNames)
                   })
-                  this.coordinationArrangements = coordinationArrangements
-                  console.log(this.coordinationArrangements)
 
-                });
+                this.coordinationAgenciesNames.push(tempArray);
+                console.log(this.coordinationAgenciesNames)
+              })
+              this.coordinationArrangements = coordinationArrangements
+              console.log(this.coordinationArrangements)
+
             });
+
         });
+    });
   }
 
+  private localNetworkAdminAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId)
+            .subscribe(coordinationArrangements => {
 
+              coordinationArrangements.forEach(coordinationArrangement => {
+                let tempArray = []
+                for (var key in coordinationArrangement.agencies) {
+
+                  this._agencyService.getAgency(key)
+                    .subscribe(agency => {
+
+                      tempArray.push(agency.name)
+                    })
+
+
+                }
+                this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
+                  .subscribe(coordinationArrangementNonAlert => {
+                    if (coordinationArrangementNonAlert.nonAlertMembers) {
+                      Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
+                        .map(key => {
+
+                          tempArray.push(coordinationArrangementNonAlert.nonAlertMembers[key].name)
+
+                        })
+
+
+                    }
+                  })
+
+                this.coordinationAgenciesNames.push(tempArray);
+                console.log(this.coordinationAgenciesNames)
+              })
+              this.coordinationArrangements = coordinationArrangements
+              console.log(this.coordinationArrangements)
+
+            });
+        });
+    });
+  }
 
   editCoordinationArrangement() {
     this.isEdit = true;
@@ -113,9 +172,12 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
     if (coordinationArrangementId) {
       console.log('test')
       this.router.navigate(['/network/local-network-office-profile/coordination/add-edit',
-        {id: coordinationArrangementId}], {skipLocationChange: true});
+        this.isNetworkCountry ? {
+          id: coordinationArrangementId,
+          isNetworkCountry: true
+        } : {id: coordinationArrangementId}], {skipLocationChange: true});
     } else {
-      this.router.navigateByUrl('/network/local-network-office-profile/coordination/add-edit');
+      this.router.navigate(['/network/local-network-office-profile/coordination/add-edit', this.isNetworkCountry ? {isNetworkCountry: true} : null]);
     }
   }
 

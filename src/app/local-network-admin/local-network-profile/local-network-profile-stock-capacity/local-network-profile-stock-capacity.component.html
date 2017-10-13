@@ -1,6 +1,13 @@
 <div *ngIf="!isViewing">
-<app-local-network-header></app-local-network-header>
-<app-local-network-menu></app-local-network-menu>
+  <ng-container *ngIf="!isNetworkCountry; else networkCountry">
+    <app-local-network-header></app-local-network-header>
+    <app-local-network-menu></app-local-network-menu>
+  </ng-container>
+
+  <ng-template #networkCountry>
+    <app-network-country-header></app-network-country-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-template>
 </div>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
@@ -9,7 +16,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <app-local-network-profile-menu></app-local-network-profile-menu>
+    <app-local-network-profile-menu [isNetworkCountry]="isNetworkCountry"></app-local-network-profile-menu>
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT' | translate }}</h2>

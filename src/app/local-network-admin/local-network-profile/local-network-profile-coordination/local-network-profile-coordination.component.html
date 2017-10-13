@@ -1,14 +1,19 @@
 
+<ng-container *ngIf="!isNetworkCountry; else networkCountry">
   <app-local-network-header></app-local-network-header>
   <app-local-network-menu></app-local-network-menu>
+</ng-container>
 
-
+<ng-template #networkCountry>
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-template>
 
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <app-local-network-profile-menu></app-local-network-profile-menu>
+    <app-local-network-profile-menu [isNetworkCountry]="isNetworkCountry"></app-local-network-profile-menu>
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">Coordination Arrangements</h2>
@@ -60,7 +65,7 @@
                                        alt="{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW_LEAD_AGENCY' | translate }}">
             </div>
             <div class="col-sm-6"><a class="col-sm-0" href="#contact_{{ i }}" data-toggle="collapse">{{
-              'COUNTRY_ADMIN.PROFILE.COORDINATION.VIEW_LEAD_AGENCY' | translate }}</a></div>
+              'VIEW_SECTOR_LEAD_CONTACT_INFO' | translate }}</a></div>
           </div>
         </div>
 

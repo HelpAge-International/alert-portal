@@ -46,9 +46,11 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   private coordinationArrangement: CoordinationArrangementNetworkModel;
 
 
-
-
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  //network country re-use
+  private isNetworkCountry: boolean;
+  private networkCountryId: string;
 
   constructor(private pageControl: PageControlService, private networkService: NetworkService,
               private _coordinationArrangementService: CoordinationArrangementService,
@@ -65,63 +67,127 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
   ngOnInit() {
 
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
+    this.route.params.subscribe((params: Params) => {
+      if (params["isNetworkCountry"]) {
+        this.isNetworkCountry = true;
+      }
 
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
 
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
+        this.networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
 
-          this.route.params.subscribe((params: Params) => {
-            if (params['id']) {
-              console.log(this.networkId, params['id'])
-              this._coordinationArrangementService.getCoordinationArrangementNetwork(this.networkId, params['id'])
-                .subscribe(coordinationArrangement => {
-                  this.coordinationArrangement = coordinationArrangement;
-                  if(coordinationArrangement.agencies){
-                    this.networkMembers = coordinationArrangement.agencies
-                  }
-
-                });
-
-              this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, params['id'])
-                .subscribe(coordinationArrangement => {
-                  if(coordinationArrangement.nonAlertMembers){
-                    this.nonAlertMembersExisting = Object.keys(coordinationArrangement.nonAlertMembers)
-                      .map( key => {
-                        let obj = coordinationArrangement.nonAlertMembers[key];
-                        obj["id"] = key;
-                        obj["checked"] = true;
-                        return obj;
-                      })
-
-
-                    // this.nonAlertMembersExisting = coordinationArrangement.nonAlertMembers
-                    console.log(this.nonAlertMembersExisting)
-                  }
-                });
+            if (this.isNetworkCountry) {
+              this.networkCountryId = selection["networkCountryId"];
             }
-          });
 
-          this.networkService.getNetworkDetail(this.networkId)
+            if (params['id']) {
+              this.isNetworkCountry ? this.getCoordinationForNetworkCountry(params) : this.getCoordinationForLocalNetworkAdmin(params);
+              this.isNetworkCountry ? this.getCoordinationNonAlertMemberForNetworkCountry(params) : this.getCoordinationNonAlertMemberForLocalNetworkAdmin(params);
+            }
+
+            this.isNetworkCountry ? this.getAgenciesForNetworkCountry() : this.getAgenciesForLocalNetworkAdmin();
+          })
+      })
+    });
+  }
+
+  private getCoordinationNonAlertMemberForLocalNetworkAdmin(params: Params) {
+    this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, params['id'])
+      .subscribe(coordinationArrangement => {
+        if (coordinationArrangement.nonAlertMembers) {
+          this.nonAlertMembersExisting = Object.keys(coordinationArrangement.nonAlertMembers)
+            .map(key => {
+              let obj = coordinationArrangement.nonAlertMembers[key];
+              obj["id"] = key;
+              obj["checked"] = true;
+              return obj;
+            })
+
+
+          // this.nonAlertMembersExisting = coordinationArrangement.nonAlertMembers
+          console.log(this.nonAlertMembersExisting)
+        }
+      });
+  }
+
+  private getCoordinationNonAlertMemberForNetworkCountry(params: Params) {
+    this._coordinationArrangementService.getCoordinationArrangementNonAlertMembersNetworkCountry(this.networkCountryId, params['id'])
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(coordinationArrangement => {
+        if (coordinationArrangement.nonAlertMembers) {
+          this.nonAlertMembersExisting = Object.keys(coordinationArrangement.nonAlertMembers)
+            .map(key => {
+              let obj = coordinationArrangement.nonAlertMembers[key];
+              obj["id"] = key;
+              obj["checked"] = true;
+              return obj;
+            })
+
+
+          // this.nonAlertMembersExisting = coordinationArrangement.nonAlertMembers
+          console.log(this.nonAlertMembersExisting)
+        }
+      });
+  }
+
+  private getCoordinationForLocalNetworkAdmin(params: Params) {
+    this._coordinationArrangementService.getCoordinationArrangementNetwork(this.networkId, params['id'])
+      .subscribe(coordinationArrangement => {
+        this.coordinationArrangement = coordinationArrangement;
+        if (coordinationArrangement.agencies) {
+          this.networkMembers = coordinationArrangement.agencies
+        }
+
+      });
+  }
+
+  private getCoordinationForNetworkCountry(params: Params) {
+    this._coordinationArrangementService.getCoordinationArrangementNetworkCountry(this.networkCountryId, params['id'])
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(coordinationArrangement => {
+        this.coordinationArrangement = coordinationArrangement;
+        if (coordinationArrangement.agencies) {
+          this.networkMembers = coordinationArrangement.agencies
+        }
+
+      });
+  }
+
+  private getAgenciesForLocalNetworkAdmin() {
+    this.networkService.getNetworkDetail(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(network => {
+        Object.keys(network.agencies).forEach(agencyId => {
+          this.agenciesIds.push(agencyId)
+          this._agencyService.getAgency(agencyId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe( network => {
-              Object.keys(network.agencies).forEach( agencyId => {
-                this.agenciesIds.push(agencyId)
-                this._agencyService.getAgency(agencyId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe( agency => {
-                    this.agencies.push(agency)
-                    console.log(this.agenciesIds)
-                    console.log(this.agencies)
-                  })
-              })
-
+            .subscribe(agency => {
+              this.agencies.push(agency)
+              console.log(this.agenciesIds)
+              console.log(this.agencies)
             })
         })
-    })
+
+      })
+  }
+
+  private getAgenciesForNetworkCountry() {
+    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountryMap => {
+        agencyCountryMap.forEach((v, k) => {
+          this.agenciesIds.push(k)
+          this._agencyService.getAgency(k)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agency => {
+              this.agencies.push(agency)
+            })
+        });
+      });
   }
 
   validateForm(): boolean {
@@ -130,12 +196,12 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
     return !this.alertMessage;
   }
 
-  submit() { 
+  submit() {
 
 
-    if (this.nonAlertMembersExisting){
-      this.nonAlertMembersExisting.forEach( member => {
-        if(member["checked"] == true){
+    if (this.nonAlertMembersExisting) {
+      this.nonAlertMembersExisting.forEach(member => {
+        if (member["checked"] == true) {
           this.nonAlertMembers.push(member["name"])
         }
       })
@@ -146,11 +212,16 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
     //if not loop through each object and check if checked is true
     //for each checked == true push to network members array
 
-    if(!isEmptyObject(this.coordinationArrangement)){
+    if (!isEmptyObject(this.coordinationArrangement)) {
       this.coordinationArrangement["agencies"] = this.networkMembers
     }
-    this._coordinationArrangementService.saveCoordinationArrangementNetwork(this.networkId, this.coordinationArrangement, this.nonAlertMembers)
-      .then(( ) => {
+
+    this.isNetworkCountry ? this.saveForNetworkCountry() : this.saveForLocalNetworkAdmin();
+  }
+
+  private saveForNetworkCountry() {
+    this._coordinationArrangementService.saveCoordinationArrangementNetworkCountry(this.networkCountryId, this.coordinationArrangement, this.nonAlertMembers)
+      .then(() => {
 
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_SAVED', AlertMessageType.Success);
           setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
@@ -164,12 +235,27 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
         });
   }
 
+  private saveForLocalNetworkAdmin() {
+    this._coordinationArrangementService.saveCoordinationArrangementNetwork(this.networkId, this.coordinationArrangement, this.nonAlertMembers)
+      .then(() => {
 
-  goBack() {
-    this.router.navigateByUrl('/network/local-network-office-profile/coordination');
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
+        err => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
   }
 
-  toggleAgencySelection(agency){
+  goBack() {
+    this.router.navigateByUrl(this.isNetworkCountry ? '/network-country/network-country-office-profile-coordination' : '/network/local-network-office-profile/coordination');
+  }
+
+  toggleAgencySelection(agency) {
     console.log(this.nonAlertMembers)
     if (this.networkMembers && this.networkMembers[agency.$key]) {
       delete this.networkMembers[agency.$key]
@@ -178,7 +264,7 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
     }
   }
 
-  toggleCustomAgency(){
+  toggleCustomAgency() {
     if (this.customAgency) {
       this.customAgency = false
       this.nonAlertMembers = []
@@ -187,32 +273,30 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
     }
   }
 
-  addCustomAgencyField(){
+  addCustomAgencyField() {
     this.customAgencyFields[this.customAgencyFieldsCount] = this.customAgencyFieldsCount + 1
     this.customAgencyFieldsCount++
   }
 
-  toggleNonAlertMemberSelection(member){
+  toggleNonAlertMemberSelection(member) {
 
 
-      this.nonAlertMembersExisting.find((o, i) => {
-        if (o['id'] === member.id) {
+    this.nonAlertMembersExisting.find((o, i) => {
+      if (o['id'] === member.id) {
 
-          if(o['checked'] == true){
-            o['checked'] = false
-            return true; 
-          } else{
-            o['checked'] = true
-            return true; 
-          }
-            
+        if (o['checked'] == true) {
+          o['checked'] = false
+          return true;
+        } else {
+          o['checked'] = true
+          return true;
         }
-      })
 
-      console.log(this.nonAlertMembersExisting)
-    } 
-  
+      }
+    })
 
+    console.log(this.nonAlertMembersExisting)
+  }
 
 
   deleteCoordinationArrangement() {
