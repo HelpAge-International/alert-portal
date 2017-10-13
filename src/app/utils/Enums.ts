@@ -1345,7 +1345,8 @@ export class Countries3ISO {
   }
 
   public get(code: Countries): string {
-    return this.map.get(code);
+    console.log(code)
+    return this.map.get(Number(code));
   }
 }
 

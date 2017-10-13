@@ -136,7 +136,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-
+        console.log(params)
         if (params["countryId"]) {
           this.copyCountryId = params["countryId"];
         }

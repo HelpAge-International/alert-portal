@@ -36,6 +36,7 @@ declare var jQuery: any;
   providers: [CommonService]
 })
 export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
+  copyCountryOfficeCode: any;
   networkCountryId: any;
 
   private UserType: number;
@@ -139,11 +140,16 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
 
-        if (params["indicatorId"]) {
+      console.log(params)
+
+        if (params["indicatorID"]) {
           this.copyIndicatorId = params["indicatorId"];
         }
+        if (params["countryOfficeCode"]) {
+          this.copyCountryOfficeCode = params["countryOfficeCode"];
+        }
 
-        if (params["hazardId"]) {
+        if (params["hazardID"]) {
           this.copyHazardId = params["hazardId"];
         }
 
@@ -154,14 +160,17 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
           this.uid = user.uid;
 
+          console.log(user.uid)
+
           //get network id
           this.networkService.getSelectedIdObj(user.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(selection => {
+              console.log(selection)
               this.networkCountryId = selection["networkCountryId"];
               this.UserType = selection["userType"];
 
-              console.log(this.networkCountryId)
+
 
               this._getHazards();
               this.getUsersForAssign();
@@ -222,7 +231,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         this.indicatorData = new Indicator();
         if (!params['hazardID']) {
           console.log('hazardID cannot be empty');
-          this.router.navigate(["/network-country/network-risk-monitoring"]);
+          this.router.navigate(["/risk-monitoring"]);
           return false;
         }
 
@@ -233,11 +242,26 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           this.isEdit = true;
           this.hazardID = params['hazardID'];
           this.indicatorID = params['indicatorID'];
-          console.log(params['indicatorID'])
+
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                console.log(selection)
+                this.networkCountryId = selection["networkCountryId"];
+                this.UserType = selection["userType"];
+                if (user) {
+                  this.uid = user.uid;
+                  this._getIndicator(this.hazardID, this.indicatorID);
+                } else {
+                  console.log('user is fals')
+                  this.navigateToLogin();
+                }
+              })
+          });
         } else {
           this.addAnotherSource();
           // this.addAnotherLocation();
-
           this.addIndicatorTrigger();
         }
       });
@@ -527,9 +551,10 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   _getIndicator(hazardID: string, indicatorID: string) {
 
     //this.indicatorData = new Indicator();
-
-    if (this.hazardID == 'countryContext') {
-      this.url = Constants.APP_STATUS + "/indicator/" + this.countryID + '/' + indicatorID;
+    if(this.copyCountryOfficeCode && this.hazardID == 'countryContext'){
+      this.url = Constants.APP_STATUS + "/indicator/" + this.copyCountryOfficeCode + '/' + indicatorID;
+    } else if (this.hazardID == 'countryContext') {
+      this.url = Constants.APP_STATUS + "/indicator/" + this.networkCountryId + '/' + indicatorID;
     } else {
       this.url = Constants.APP_STATUS + "/indicator/" + hazardID + "/" + indicatorID;
     }

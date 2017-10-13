@@ -44,6 +44,7 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   private equipments = new Map<string, EquipmentModel[]>()
   private surgeEquipments= new Map<string, SurgeEquipmentModel[]>()
 
+
   // Helpers
   private newNote: NoteModel[];
   private activeNote: NoteModel;

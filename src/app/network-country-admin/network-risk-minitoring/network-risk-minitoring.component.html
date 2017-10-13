@@ -76,10 +76,14 @@
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a *ngIf="!isViewing"
-                       [routerLink]="['/network-country/network-risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" | translate}}
+                    <a *ngIf="!isViewing && indicatorC.fromAgency"
+                       [routerLink]="['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode]">{{"EDIT" | translate}}
+                    </a>
+                    <a *ngIf="!isViewing && !indicatorC.fromAgency"
+                       [routerLink]="['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key]">{{"EDIT" | translate}}
                     </a>
                   </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['agency']">Monitoring Agency: {{indicatorC['agency'].name}}</div>
                 </div>
                 <div
                   class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
@@ -190,7 +194,7 @@
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="Update__button">
-                      <div *ngIf="!isViewing && indicatorC?.assignee" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="!isViewing && indicatorC?.assignee && uid == indicatorC.assignee" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"GLOBAL.UPDATE" | translate}}
                       </div>
@@ -209,7 +213,7 @@
                         yyyy'}}</strong></p></div>
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
-                       *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
+                       *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey] && uid == indicatorC.assignee">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                          (click)="updateIndicatorStatus('countryContext', indicatorC, indicatorKey)">
                       {{"ACCOUNT_SETTINGS.SAVE" | translate}}
@@ -330,8 +334,8 @@
 
       <div class="Ribbon__section__wrap--risk align-items-right"
            *ngFor="let hazard of activeHazards; let hazardIndex = index;">
-        <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}"
-             aria-expanded="true" attr.aria-controls="{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}">
+        <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse-active-' + hazard.$key}}"
+             aria-expanded="true" attr.aria-controls="{{'collapse-active-' + hazard.$key}}">
           <div class="row">
             <div class="col-sm-4">
               <div class="Icon">
@@ -357,7 +361,7 @@
           </div>
         </div>
 
-        <div class="Accordion__Content collapse" id="collapse{{(hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}" role="tab">
+        <div class="Accordion__Content collapse" id="collapse-active-{{hazard.$key}}" role="tab">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -368,7 +372,9 @@
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#deleteHazardModal"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
-                <a [routerLink]="['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                <a *ngIf="hazard.existsOnNetwork" [routerLink]="['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                  | translate}}</a>
+                <a *ngIf="!hazard.existsOnNetwork" (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -376,13 +382,18 @@
               <div class="indicators-to-hazards" *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
                    id="indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}">
                 <div class="edit__wrap--risk row Small-spaced align-items-center Header">
-                  <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
+                  <div class="col-md-4 col-sm-7 margin-left-four">{{indicator.name}} | <span
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a *ngIf="!isViewing"
+                    <a *ngIf="!isViewing && indicator.fromAgency"
+                       [routerLink]="['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
+                    </a>
+                    <a *ngIf="!isViewing && !indicator.fromAgency"
                        [routerLink]="['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
                     </a>
+
                   </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                 </div>
                 <div
                   class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
@@ -432,6 +443,7 @@
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                       {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                   </div>
+
 
                   <!--Info sources & log-->
                   <div class="mid-col__wrap--risk row col-sm-2 margin-top-three">
@@ -499,7 +511,7 @@
                     </p>
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
-                       *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
+                       *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey] ">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                          (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
                       {{"GLOBAL.SAVE_CHANGES" | translate}}
@@ -630,8 +642,8 @@
         <div class="Ribbon__section__wrap--risk align-items-right"
              *ngFor="let hazard of archivedHazards; let archivedHazardIndex = index">
           <div class="Accordion--risk Map-list" data-toggle="collapse"
-               attr.href="#{{'collapse' + hazard.hazardScenario}}" aria-expanded="true"
-               attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
+               attr.href="#{{'collapse-archived-' + hazard.$key}}" aria-expanded="true"
+               attr.aria-controls="{{'collapse-archived-' + hazard.$key}}">
             <div class="row">
               <div class="col-sm-4">
                 <div class="Icon">
@@ -658,7 +670,7 @@
             </div>
           </div>
 
-          <div class="Accordion__Content collapse" id="collapse{{hazard.hazardScenario}}" role="tab">
+          <div class="Accordion__Content collapse" id="collapse-archived-{{hazard.$key}}" role="tab">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -682,10 +694,14 @@
                     <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
                       *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                       *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                      <a *ngIf="!isViewing"
+                      <a *ngIf="!isViewing && indicator.fromAgency"
+                         [routerLink]="['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
+                      </a>
+                      <a *ngIf="!isViewing && !indicator.fromAgency"
                          [routerLink]="['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
                       </a>
                     </div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                   </div>
                   <div
                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
@@ -800,7 +816,7 @@
 
                     <div class="end-col__wrap--risk col-md-3 col-sm-6"
                          *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                      <div *ngIf="!isViewing" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="!isViewing && uid == indicator.assignee" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                         {{"GLOBAL.UPDATE" | translate}}
                       </div>
@@ -808,7 +824,7 @@
                       <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong>
                     </div>
                     <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
-                         *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
+                         *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey] && uid == indicator.assignee">
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                            (click)="updateIndicatorStatus(hazard.id, indicator, indicatorKey)">
                         {{"GLOBAL.SAVE_CHANGES" | translate}}
@@ -828,7 +844,7 @@
                         <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
                         <hr class="d-inline-flex">
                         <form>
-                          <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
+                          <input
                                  type="text" placeholder="Add log entry" name="log_{{indicator.$key}}"
                                  [(ngModel)]="logContent[indicator.$key]">
                         </form>
@@ -847,13 +863,13 @@
                                 <p><strong>{{"BY" | translate}} {{log.addedByFullName}}</strong></p>
                                 <div class="edit_delete_log_tooltip__wrap--risk">
                                   <a
-                                    *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
+                                    *ngIf="uid == log.addedBy"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
                                     (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}}</a>
                                   <a
-                                    *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
+                                    *ngIf="uid == log.addedBy">|</a>
                                   <a
-                                    *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
+                                    *ngIf="uid == log.addedBy"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
                                     (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
                                 </div>

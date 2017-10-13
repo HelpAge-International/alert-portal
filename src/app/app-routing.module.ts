@@ -471,6 +471,7 @@ const routes: Routes = [
   {path: 'network-country/network-dashboard', component: NetworkDashboardComponent},
 
   {path: 'network-country/network-risk-monitoring', component: NetworkRiskMinitoringComponent},
+  {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID/:countryOfficeCode', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-hazard', component: AddHazardNetworkCountryComponent},

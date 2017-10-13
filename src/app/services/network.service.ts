@@ -750,4 +750,20 @@ export class NetworkService {
   }
 
 
+  getAgencyCountryOfficesByNetworkCountry(networkCountryId: string, networkId: string){
+    var countryOfficeAgencyMap = new Map<string,string>()
+    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+      .map( agencies => {
+        agencies.forEach( agency => {
+          Object.keys(agency).forEach(function(key) {
+            if(agency[key].isApproved == true){
+              countryOfficeAgencyMap.set(agency.$key, key)
+            }
+          });
+        })
+        return countryOfficeAgencyMap;
+      })
+  }
+
+
 }

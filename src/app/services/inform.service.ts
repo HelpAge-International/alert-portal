@@ -16,21 +16,27 @@ export class InformService {
   }
 
   public getTopResultsCC(countryCode: Countries, numberOfItems: number, fun: (list: InformHolder[]) => void) {
+    console.log('here')
+    console.log(countryCode)
     this.sendForTopHazards3digit(this.info.get(countryCode), numberOfItems, fun);
   }
   public getTopResults(countryCode: string, numberOfItems: number, fun: (list: InformHolder[]) => void,) {
     this.sendForTopHazards3digit(countryCode, numberOfItems, fun);
   }
   private sendForTopHazards3digit(countryCode: string, numberOfItems: number, fun: (list: InformHolder[]) => void) {
+    console.log(countryCode)
     let headers = new Headers();
     headers.append('content-type', 'application/json');
     headers.append('accept', '*/*');
     let options = new RequestOptions({ headers: headers });
+    console.log('here2')
     this.http.get(this.buildUrl(countryCode), options)
       .map((res: Response) => {
+        console.log(res)
         return res.json();
       })
       .subscribe(response => {
+        console.log('here4')
         let holder: InformHolder[] = [];
         for (let x of this.informInfo.list) {
           let val = this.getFromResponse(response, x);
