@@ -12,6 +12,7 @@ import {
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
+import {AgencyService} from "../../../services/agency-service.service";
 import {CommonService} from "../../../services/common.service";
 import {OperationAreaModel} from "../../../model/operation-area.model";
 import {IndicatorSourceModel} from "../../../model/indicator-source.model";
@@ -36,6 +37,7 @@ declare var jQuery: any;
   providers: [CommonService]
 })
 export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
+  networkId: any;
   copyCountryOfficeCode: any;
   networkCountryId: any;
 
@@ -130,7 +132,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
               private networkService: NetworkService,
               private _location: Location,
               private _translate: TranslateService,
-              private _notificationService: NotificationService) {
+              private _notificationService: NotificationService,
+              private _agencyService: AgencyService) {
     this.initIndicatorData();
   }
 
@@ -168,6 +171,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
             .subscribe(selection => {
               console.log(selection)
               this.networkCountryId = selection["networkCountryId"];
+              this.networkId = selection["id"]
               this.UserType = selection["userType"];
 
 
@@ -302,47 +306,69 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   getUsersForAssign() {
-    if (this.UserType == UserType.GlobalDirector) {
-      this.userService.getUser(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe( (user: ModelUserPublic) => {
-          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
-          this.usersForAssign.push(userToPush);
-        })
-    } else if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
-      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(staff => {
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((user: ModelUserPublic) => {
-              let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
-              this.usersForAssign.push(userToPush);
-            });
-        });
-    } else {
-      //Obtaining the country admin data
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
-        if (data.adminId) {
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
-            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-            this.usersForAssign.push(userToPush);
-          });
-        }
-      });
+    // if (this.UserType == UserType.GlobalDirector) {
+    //   console.log('globalDirector')
+    //   this.userService.getUser(this.uid)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe( (user: ModelUserPublic) => {
+    //       let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+    //       this.usersForAssign.push(userToPush);
+    //     })
+    // } else if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
+    //   console.log('ert/ partner')
+    //   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe(staff => {
+    //       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+    //         .takeUntil(this.ngUnsubscribe)
+    //         .subscribe((user: ModelUserPublic) => {
+    //           let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
+    //           this.usersForAssign.push(userToPush);
+    //         });
+    //     });
+    // } else {
 
-      //Obtaining other staff data
-      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
-        for (let userID in data) {
-          if (!userID.startsWith('$')) {
-            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-              this.usersForAssign.push(userToPush);
-            });
-          }
-        }
+     this._agencyService.getAllCountryOffices()
+     .takeUntil(this.ngUnsubscribe)
+     .subscribe(agencies => {
+       console.log(this.uid)
+      agencies.forEach(agency => {
+        this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agency.$key)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryOffices => {
+          countryOffices.filter( countryOffice => {
+            if(this.copyCountryOfficeCode == countryOffice.$key){
+              this.agencyId = agency.$key
+              console.log(this.agencyId)
+            }
+          })
+        })
       });
-    }
+     })
+   
+      // console.log('other')
+      // //Obtaining the country admin data
+      // this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+      //   if (data.adminId) {
+      //     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+      //       var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+      //       this.usersForAssign.push(userToPush);
+      //     });
+      //   }
+      // });
+
+      // //Obtaining other staff data
+      // this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+      //   for (let userID in data) {
+      //     if (!userID.startsWith('$')) {
+      //       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+      //         var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+      //         this.usersForAssign.push(userToPush);
+      //       });
+      //     }
+      //   }
+      // });
+    // }
   }
 
   showDeleteDialog(modalId) {

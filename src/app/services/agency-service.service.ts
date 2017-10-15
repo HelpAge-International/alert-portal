@@ -79,6 +79,7 @@ export class AgencyService {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/");
   }
 
+
   getCountryDirector(countryId) {
     return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId)
       .flatMap(directorId => {
