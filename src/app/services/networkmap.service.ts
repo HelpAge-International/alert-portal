@@ -3,6 +3,33 @@ import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {AngularFire} from 'angularfire2';
 
+/**
+ * Network map service
+ *
+ * This will build up a data structure to handle showing the agency and country information
+ *   on a map.
+ *
+ * Read the `countries` variable directly! It was made public intentionally for this! There's too much going on
+ *   to attempt to figure this notify a component + needs to be reused in the list
+ *
+ * >> EXPLANATION OF THE DATA STRUCTURE IS IN A BLOCK COMMENT BELOW! PLEASE READ
+ *
+ * Responsibilities of this service are:
+ *
+ * GET all the countries their respective agencies of a given network
+ * FOR (all countries in network)
+ *     GET countryOffice and agency details
+ * FOR (all countries in network)
+ *     GET all hazards related to these items
+ *     SAVE all hazards under the country
+ *
+ * READ system settings for MPA values
+ * GET all actions in related countries
+ * FOR (all actions)
+ *     SAVE to agency under country (countries.get(agencyX))
+ *     CALCULATE their average MPA value
+ */
+
 @Injectable()
 export class NetworkMapService {
 
@@ -14,6 +41,7 @@ export class NetworkMapService {
 
   // Holding variable for mapping country ids to locations
   private countryIdToLocation: Map<string, number> = new Map<string, number>();
+  private mCountryOfficeCounter: number = 0;
 
   constructor() {
   }
@@ -21,17 +49,33 @@ export class NetworkMapService {
   public init(af: AngularFire, ngUnsubscribe: Subject<void>, networkId: string, networkCountryId: string) {
     this.af = af;
     this.ngUnsubscribe = ngUnsubscribe;
+    // Get the agencies of a network
     this.getAgencyCountriesOfNetwork(networkId, networkCountryId,
       (agencyHasCountriesMap => {
-        // Iterate through every agency and every country
         agencyHasCountriesMap.forEach((value, key) => {
           value.forEach(item => {
-
-            // Fire off a request to get the countryOffice
-            console.log(item);
+            // Fire off a request to get the countryOffice for every country
+            this.getCountryOffice(key, item, () => {
+              /* ALL COUNTRY OFFICES FINISHED PULLING */
+              this.initHazards();
+            });
           });
         });
       }));
+  }
+  private initHazards() {
+    for (const country of this.countries) {
+      country.agencies.forEach((value, key) => {
+        this.af.database.list(Constants.APP_STATUS + '/alert/' + value.countryId, {preserveSnapshot: true})
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((snap) => {
+            for (let element of snap) {
+              console.log(element.key);
+              console.log(element.val());
+            }
+          });
+      });
+    }
   }
 
   /**
@@ -43,13 +87,14 @@ export class NetworkMapService {
    */
   private getAgencyCountriesOfNetwork(networkId: string, networkCountryId: string,
                                       done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
+    console.log('Accessing ' + Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId);
     this.af.database.object(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId,
       {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         // snap.val() contains object under networkCountry/<networkId>/<networkCountryId>
         if (snap.val() == null) {
-          // TODO: Show error
+          console.log('TODO: Show an error here. No network countries found');
         }
         else {
           const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
@@ -90,23 +135,35 @@ export class NetworkMapService {
   }
 
   /**
-   * Get the country office of a given country id
+   * Get the country office of a given country id.
+   *  This will build the country -> agency portion of the data structure, populating any data required
+   *  from the agency (logo, name, id);
+   *
+   * done() is only called once, counter is maintained so done() is only fired when all requests come back
    */
-  private getCountryOffice(agencyId: string, countryId: string) {
+  private getCountryOffice(agencyId: string, countryId: string, done: () => void) {
+    this.mCountryOfficeCounter++;
     this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId,
         {preserveSnapshot: true})
-      .map((snap) => {
+      .flatMap((snap) => {
         this.countryIdToLocation.set(snap.key, snap.val().location);
         // Ensure a country object for this country office is created
-        let mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
-        mapCountry.agencies.set(agencyId, NetworkMapAgency())
+        const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
+        mapCountry.agencies.set(agencyId, new NetworkMapAgency(agencyId, countryId));
         return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId, {preserveSnapshot: true});
-      })
-      .map((snap) => {
-        let mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry()
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
+        let mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(this.countryIdToLocation.get(countryId));
+        let agency: NetworkMapAgency = mapCountry.agencies.get(snap.key);
+        if (agency != null) {
+          agency.name = snap.val().name;
+          agency.image = snap.val().logoPath;
+        }
+        this.mCountryOfficeCounter--;
+        if (this.mCountryOfficeCounter == 0) {
+          done();
+        }
       });
   }
 
@@ -115,7 +172,7 @@ export class NetworkMapService {
    */
   public findOrCreateNetworkMapCountry(location: number): NetworkMapCountry {
     for (const x of this.countries) {
-      if (x.location == location) {
+      if (x.location === location) {
         return x;
       }
     }
@@ -138,6 +195,9 @@ export class NetworkMapService {
  *  - location
  *  - agencies: Map of agencyId => NetworkMapAgency
  *                                  - name
+ *                                  - agencyId
+ *                                  - countryId          << stored here because in this object we're relating to a
+ *                                                          specific object, NetworkMapCountry is generic as a 'country'
  *                                  - image
  *                                  - mpaValue
  *  - hazards: List of NetworkMapHazard
@@ -168,12 +228,23 @@ export class NetworkMapCountry {
   public location: number;
   public agencies: Map<string, NetworkMapAgency>;
   public hazards: NetworkMapHazard[] = [];
+
+  constructor() {
+    this.agencies = new Map<string, NetworkMapAgency>();
+  }
 }
 
 export class NetworkMapAgency {
+  public id: string;
   public name: string;
   public image: string;
+  public countryId: string;
   public mpaValue: number;
+
+  constructor(id: string, countryId: string) {
+    this.countryId = countryId;
+    this.id = id;
+  }
 }
 
 export class NetworkMapHazard {
