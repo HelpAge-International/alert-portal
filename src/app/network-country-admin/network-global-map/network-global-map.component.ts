@@ -8,13 +8,16 @@ import {TranslateService} from '@ngx-translate/core';
 import {Constants} from '../../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {NetworkService} from '../../services/network.service';
-import {NetworkMapService} from "../../services/networkmap.service";
+import {NetworkMapService} from '../../services/networkmap.service';
+
+declare var jQuery: any;
 
 @Component({
   selector: 'app-network-global-map',
   templateUrl: './network-global-map.component.html',
   styleUrls: ['./network-global-map.component.css']
 })
+
 export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -58,5 +61,12 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
 
   gotoMapList(): void {
     this.router.navigateByUrl('network-country/network-global-map-list');
+  }
+
+  /**
+   * Show the popup dialog
+   */
+  public showDialog(location: number) {
+    jQuery('#minimum-prep-modal-' + location).modal('show');
   }
 }

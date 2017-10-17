@@ -10,5 +10,56 @@
     <div class="Ribbon__section__wrap Spaced">
       <div id="global-map" style="height: 500px;"></div>
     </div>
+    <div *ngFor="let country of networkMapService.countries" class="modal fade"  id="minimum-prep-modal-{{country.location}}"
+         tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="info-window container-fluid Spaced" (change)="openMinimumPreparednessModal()">
+            <div class="info-window__heading row">
+              <div class="col-sm-2 logo"><img class="agency-logo-scale" src=""></div>
+              <div class="col-sm-8"><h5>Loading...</h5></div>
+              <div class="col-sm-8"><h5>Header</h5>
+              </div>
+              <div class="col-sm-2"></div>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="info-window__subheading row">
+              <div class="col">{{"MAPS.MPA" | translate}}</div>
+            </div>
+            <table class="table">
+              <thead>
+              <tr>
+                <th class="col-10 text-left">{{"MAPS.DEPARTMENTS" | translate}}</th>
+                <th class="col-2 text-center">{{"MAPS.READINESS" | translate}}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <!--<tr *ngFor="let y of x.departments">-->
+                <!--<td>{{DEPARTMENT_MAP.get(y.id)}}</td>-->
+                <!--<td *ngIf="y.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"-->
+                                                             <!--aria-hidden="true"></i></td>-->
+                <!--<td *ngIf="y.overall() >= minThreshYellow && !(y.overall() >= minThreshGreen)"><i-->
+                  <!--class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>-->
+                <!--<td *ngIf="!(y.overall() >= minThreshYellow) && !(y.overall() >= minThreshGreen)"><i-->
+                  <!--class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>-->
+              <!--</tr>-->
+              <!--<tr>-->
+                <!--<td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>-->
+                <!--<td *ngIf="x.overall() >= minThreshGreen"><i class="fa fa-check-circle fa-2x text-success"-->
+                                                             <!--aria-hidden="true"></i></td>-->
+                <!--<td *ngIf="x.overall() >= minThreshYellow && !(x.overall() >= minThreshGreen)"><i-->
+                  <!--class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>-->
+                <!--<td *ngIf="!(x.overall() >= minThreshYellow) && !(x.overall() >= minThreshGreen)"><i-->
+                  <!--class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>-->
+              <!--</tr>-->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
