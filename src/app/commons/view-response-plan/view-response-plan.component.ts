@@ -109,6 +109,10 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private showingSections: number[] = [];
 
+  private isLocalNetworkAdmin: boolean;
+  private planLocalNetworkId:string;
+  private planNetworkCountryId:string;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -143,6 +147,15 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         }
         if (params["networkCountryId"]) {
           this.networkCountryId = params["networkCountryId"];
+        }
+        if (params["isLocalNetworkAdmin"]) {
+          this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+        }
+        if (params["planLocalNetworkId"]) {
+          this.planLocalNetworkId = params["planLocalNetworkId"];
+        }
+        if (params["planNetworkCountryId"]) {
+          this.planNetworkCountryId = params["planNetworkCountryId"];
         }
 
         if (this.accessToken) {
@@ -335,16 +348,27 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((systemAdminIds) => {
           this.systemAdminUid = systemAdminIds[0].$key;
+          console.log(this.systemAdminUid);
           this.getGroups(responsePlan);
         });
     };
     const networkUser = () => {
-      this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(systemId => {
-          this.systemAdminUid = systemId;
-          this.getGroups(responsePlan);
-        });
+      if (this.isLocalNetworkAdmin) {
+        this.networkService.getSystemIdForNetworkAdmin(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            console.log(systemId)
+            this.systemAdminUid = systemId;
+            this.getGroups(responsePlan);
+          });
+      } else {
+        this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            this.systemAdminUid = systemId;
+            this.getGroups(responsePlan);
+          });
+      }
     };
     this.networkCountryId ? networkUser() : normalUser();
   }

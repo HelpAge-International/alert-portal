@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType, ApprovalStatus, UserType} from "../../utils/Enums";
@@ -49,6 +49,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private agencyRegionMap = new Map<string, string>();
   private showLoader: boolean;
 
+  //for local network admin
+  @Input() isLocalNetworkAdmin: boolean;
+
 
   //copy over from response plan
   private isViewing: boolean;
@@ -85,6 +88,50 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
+  }
+
+  private localNetworkAdminAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .flatMap(selection => {
+          this.networkId = selection["id"];
+          return this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId);
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(duration => {
+          this.networkPlanExpireDuration = duration;
+          this.getResponsePlans(this.networkId);
+          this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(map => {
+              this.showLoader = false;
+              this.agencyCountryMap = map;
+              this.agenciesNeedToApprove = [];
+              CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
+                this.userService.getAgencyModel(agencyId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(model => {
+                    console.log(model);
+                    this.agenciesNeedToApprove.push(model);
+                  });
+                //prepare agency region map
+                this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(regionId => {
+                    this.agencyRegionMap.set(agencyId, regionId);
+                  });
+              });
+            });
+        });
+    });
+  }
+
+  private networkCountryAccess() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -256,33 +303,48 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   exportStartFund(responsePlan) {
-    this.router.navigate(['/export-start-fund', {
+    this.router.navigate(['/export-start-fund', this.isLocalNetworkAdmin ? {
+      id: responsePlan.$key,
+      "networkCountryId": this.networkId,
+      "isLocalNetworkAdmin" : true
+    } : {
       id: responsePlan.$key,
       "networkCountryId": this.networkCountryId
-    }]).then();
+    }]);
   }
 
   exportProposal(responsePlan, isExcel: boolean) {
     if (isExcel) {
-      this.router.navigate(['/export-proposal', {
+      this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
+        id: responsePlan.$key,
+        excel: 1,
+        "networkCountryId": this.networkId,
+        "isLocalNetworkAdmin" : true
+      } : {
         id: responsePlan.$key,
         excel: 1,
         "networkCountryId": this.networkCountryId
-      }]).then();
+      }]);
     } else {
-      this.router.navigate(['/export-proposal', {
+      this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
+        id: responsePlan.$key,
+        excel: 0,
+        "networkCountryId": this.networkId,
+        "isLocalNetworkAdmin" : true
+      } : {
         id: responsePlan.$key,
         excel: 0,
         "networkCountryId": this.networkCountryId
-      }]).then();
+      }]);
     }
   }
 
   archivePlan(plan) {
     //same as edit, need to reset approval status and validation process
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     let updateData = {};
-    updateData["/responsePlan/" + this.networkCountryId + "/" + plan.$key + "/approval"] = null;
-    updateData["/responsePlan/" + this.networkCountryId + "/" + plan.$key + "/isActive"] = false;
+    updateData["/responsePlan/" + id + "/" + plan.$key + "/approval"] = null;
+    updateData["/responsePlan/" + id + "/" + plan.$key + "/isActive"] = false;
     updateData["/responsePlanValidation/" + plan.$key] = null;
     this.networkService.updateNetworkField(updateData);
     // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
@@ -290,9 +352,10 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   activatePlan(plan) {
     console.log("activate plan");
-    this.networkService.setNetworkField("/responsePlan/" + this.networkCountryId + "/" + plan.$key + "/isActive", true);
-    this.networkService.setNetworkField("/responsePlan/" + this.networkCountryId + "/" + plan.$key + "/status", ApprovalStatus.NeedsReviewing);
-    this.planService.getPlanApprovalData(this.networkCountryId, plan.$key)
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.networkService.setNetworkField("/responsePlan/" + id + "/" + plan.$key + "/isActive", true);
+    this.networkService.setNetworkField("/responsePlan/" + id + "/" + plan.$key + "/status", ApprovalStatus.NeedsReviewing);
+    this.planService.getPlanApprovalData(id, plan.$key)
       .map(list => {
         let newList = [];
         list.forEach(item => {
@@ -305,15 +368,16 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .first()
       .takeUntil(this.ngUnsubscribe)
       .subscribe(approvalList => {
+        let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
         for (let approval of approvalList) {
           if (approval["countryDirector"]) {
-            this.networkService.setNetworkField("/responsePlan/" + this.networkCountryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"], ApprovalStatus.NeedsReviewing);
+            this.networkService.setNetworkField("/responsePlan/" + id + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"], ApprovalStatus.NeedsReviewing);
           }
           if (approval["regionDirector"]) {
-            this.networkService.setNetworkField("/responsePlan/" + this.networkCountryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"], ApprovalStatus.NeedsReviewing);
+            this.networkService.setNetworkField("/responsePlan/" + id + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"], ApprovalStatus.NeedsReviewing);
           }
           if (approval["globalDirector"]) {
-            this.networkService.setNetworkField("/responsePlan/" + this.networkCountryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"], ApprovalStatus.NeedsReviewing);
+            this.networkService.setNetworkField("/responsePlan/" + id + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"], ApprovalStatus.NeedsReviewing);
           }
         }
       });
@@ -348,7 +412,10 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           this.dialogEditingUserEmail = editingUser.email;
         });
     } else {
-      this.router.navigate(['network-country/network-plans/create-edit-network-plan', {id: this.responsePlanToEdit.$key}]).then();
+      this.router.navigate(['network-country/network-plans/create-edit-network-plan', this.isLocalNetworkAdmin ? {
+        id: this.responsePlanToEdit.$key,
+        "isLocalNetworkAdmin": this.isLocalNetworkAdmin
+      } : {id: this.responsePlanToEdit.$key}]);
     }
   }
 
@@ -377,9 +444,10 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId)
         .do(director => {
           if (director && director.$value) {
+            let id = this.isLocalNetworkAdmin?this.networkId : this.networkCountryId;
             // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
-            approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + countryId] = ApprovalStatus.WaitingApproval;
-            approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/countryDirector/" + countryId] = ApprovalStatus.WaitingApproval;
+            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
 
             // Send notification to country director
             let notification = new MessageModel();
@@ -408,8 +476,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(approvalSettings => {
           if (approvalSettings[0] == false && approvalSettings[1] == false) {
-            approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
-            approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
+            let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
+            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
             this.updatePartnerValidation(approvalData);
 
           } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
@@ -459,7 +528,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snap => {
         if (snap.val()) {
-          approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + snap.val()] = ApprovalStatus.WaitingApproval;
+          let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+          approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/regionDirector/" + snap.val()] = ApprovalStatus.WaitingApproval;
         }
         this.updatePartnerValidation(approvalData);
       });
@@ -475,8 +545,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(globalDirector => {
         if (globalDirector.length > 0 && globalDirector[0].$key) {
+          let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
           // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
-          approvalData["/responsePlan/" + this.networkCountryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + agencyId] = ApprovalStatus.WaitingApproval;
+          approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/globalDirector/" + agencyId] = ApprovalStatus.WaitingApproval;
 
           // Send notification to global director
           let notification = new MessageModel();
@@ -492,7 +563,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   submitForPartnerValidation(plan) {
-    this.planService.submitForPartnerValidation(plan, this.networkCountryId);
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.planService.submitForPartnerValidation(plan, id);
 
     // //sort out require submission tag
     // this.handleRequireSubmissionTagForDirectors();
@@ -591,10 +663,11 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     //   // }
     //   this.router.navigate(["/response-plans/view-plan", headers]);
     // } else {
-    this.router.navigate(["/network-country/network-plans/view-network-plan", {
+    this.router.navigate(["/network-country/network-plans/view-network-plan", this.isLocalNetworkAdmin ? {
       "id": plan.$key,
-      "networkCountryId": this.networkCountryId
-    }]).then();
+      "networkCountryId": this.networkId,
+      "isLocalNetworkAdmin": true
+    } : {"id": plan.$key, "networkCountryId": this.networkCountryId}]);
     // }
   }
 

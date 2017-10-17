@@ -3,7 +3,6 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
 import {ChangePasswordModel} from "../../model/change-password.model";
 import {Subject} from "rxjs/Subject";
-import {FirebaseAuthState} from "angularfire2";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
@@ -21,8 +20,8 @@ export class AccountChangePasswordComponent implements OnInit, OnDestroy {
   private changePassword: ChangePasswordModel;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  @Input() authState: FirebaseAuthState;
-  @Input() user: firebase.User;
+  @Input() authState;
+  @Input() user;
   @Output() cancelClicked = new EventEmitter();
 
   constructor(private pageControl: PageControlService,

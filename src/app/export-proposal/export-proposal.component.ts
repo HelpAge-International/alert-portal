@@ -9,7 +9,7 @@ import {Constants} from "../utils/Constants";
 import {
   BudgetCategory,
   MediaFormat,
-  MethodOfImplementation,
+  MethodOfImplementation, NetworkUserAccountType,
   PresenceInTheCountry,
   ResponsePlanSectors,
   SourcePlan,
@@ -82,6 +82,7 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   private totalMaleOver50: number;
 
   private networkCountryId: string;
+  private isLocalNetworkAdmin: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -97,6 +98,9 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
       if (params["excel"]) {
         this.isExcel = params["excel"];
         if (this.isExcel == 1) {
@@ -287,7 +291,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
         });
     };
     const networkUser = () => {
-      this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+      let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
+      this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(systemId => {
           this.systemAdminUid = systemId;

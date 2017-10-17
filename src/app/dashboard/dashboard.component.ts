@@ -68,8 +68,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private approveMap = new Map();
   private responsePlansForApproval: Observable<any[]>;
   private responsePlansForApprovalNetwork: Observable<any[]>;
+  private responsePlansForApprovalNetworkLocal: Observable<any[]>;
   private approvalPlans = [];
   private approvalPlansNetwork = [];
+  private approvalPlansNetworkLocal = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
   private isRedAlert: boolean;
@@ -84,6 +86,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private networkCountryId: string;
+  private networkId: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -107,22 +110,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.networkService.getNetworksForCountry(this.agencyId, this.countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(networkCountryId => {
-          this.networkCountryId = networkCountryId[0];
+          if (networkCountryId) {
+            this.networkCountryId = networkCountryId[0];
+            console.log(this.networkCountryId)
+          }
 
-          if (userType == UserType.CountryDirector) {
-            this.DashboardTypeUsed = DashboardType.director;
-          } else {
-            this.DashboardTypeUsed = DashboardType.default;
-          }
-          if (this.userType == UserType.PartnerUser) {
-            console.log("partner user")
-            this.agencyId = agencyId;
-            this.countryId = countryId;
-            this.loadDataForPartnerUser(agencyId, countryId);
-          } else {
-            this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-            this.loadData();
-          }
+          this.networkService.getNetworksForAgency(this.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(networkIds => {
+              if (networkIds) {
+                this.networkId = networkIds[0];
+                console.log(this.networkId);
+              }
+
+              if (userType == UserType.CountryDirector) {
+                this.DashboardTypeUsed = DashboardType.director;
+              } else {
+                this.DashboardTypeUsed = DashboardType.default;
+              }
+              if (this.userType == UserType.PartnerUser) {
+                console.log("partner user")
+                this.agencyId = agencyId;
+                this.countryId = countryId;
+                this.loadDataForPartnerUser(agencyId, countryId);
+              } else {
+                this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+                this.loadData();
+              }
+
+            })
+
+
         });
 
 
@@ -360,13 +378,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
       if (this.networkCountryId) {
-        console.log(this.networkCountryId);
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
+      }
+      if (this.networkId) {
+        this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkId, this.uid, true);
       }
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
       if (this.networkCountryId) {
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkCountryId);
+      }
+      if (this.networkId) {
+        this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
       }
     }
     if (this.responsePlansForApproval) {
@@ -380,8 +403,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApprovalNetwork
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
-          console.log(this.approvalPlansNetwork);
           this.approvalPlansNetwork = plans
+        });
+    }
+    if (this.responsePlansForApprovalNetworkLocal) {
+      this.responsePlansForApprovalNetworkLocal
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(plans => {
+          this.approvalPlansNetworkLocal = plans
         });
     }
   }
@@ -544,10 +573,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.rejectRedAlert(this.countryId, alertId, this.uid);
   }
 
-  planReview(planId) {
-    this.router.navigate(["/dashboard/review-response-plan", this.networkCountryId ? {
+  planReview(planId, isLocal) {
+    this.router.navigate(["/dashboard/review-response-plan", isLocal ? {
       "id": planId,
-      "networkCountryId": this.networkCountryId
+      "planLocalNetworkId": this.networkId
+    } : this.networkCountryId ? {
+      "id": planId,
+      "planNetworkCountryId": this.networkCountryId
     } : {"id": planId}]);
   }
 

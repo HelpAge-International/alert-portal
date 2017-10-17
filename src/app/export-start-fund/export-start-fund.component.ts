@@ -12,6 +12,7 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private networkCountryId: string;
+  private isLocalNetworkAdmin: boolean;
 
   constructor(private route:ActivatedRoute) {
   }
@@ -25,6 +26,9 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
       .subscribe((params:Params) =>{
         if (params["networkCountryId"]) {
           this.networkCountryId = params["networkCountryId"];
+        }
+        if (params["isLocalNetworkAdmin"]) {
+          this.isLocalNetworkAdmin = params["networkCountryId"];
         }
       })
   }

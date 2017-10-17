@@ -6,7 +6,8 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
-  MediaFormat, MethodOfImplementation, PresenceInTheCountry, ResponsePlanSectors, SourcePlan, UserType
+  MediaFormat, MethodOfImplementation, NetworkUserAccountType, PresenceInTheCountry, ResponsePlanSectors, SourcePlan,
+  UserType
 } from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
@@ -48,6 +49,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
 
   private networkCountryId: string;
+  private isLocalNetworkAdmin: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -63,6 +65,9 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
       if (params["id"] && params["networkCountryId"]) {
         this.responsePlanId = params["id"];
         this.networkCountryId = params["networkCountryId"];
@@ -226,7 +231,8 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
         });
     };
     const networkUser = () => {
-      this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+      let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
+      this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(systemId => {
           this.systemAdminUid = systemId;

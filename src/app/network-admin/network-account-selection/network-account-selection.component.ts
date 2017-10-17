@@ -279,16 +279,20 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   }
 
   private goToLocalNetworkAdmin(){
-    this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
-      .first()
-      .subscribe(firstLogin => {
-        if (firstLogin) {
-          this.router.navigateByUrl("network/network-create-password");
-        } else {
-          this.router.navigateByUrl('/network/local-network-dashboard');
-        }
-      })
-
+    let selectionUpdate = {};
+    selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
+    selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetworkCountry"] = null;
+    this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(()=>{
+      this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
+        .first()
+        .subscribe(firstLogin => {
+          if (firstLogin) {
+            this.router.navigateByUrl("network/network-create-password");
+          } else {
+            this.router.navigateByUrl('/network/local-network-dashboard');
+          }
+        })
+    })
   }
 
   private validate() {

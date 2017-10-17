@@ -7,7 +7,7 @@ import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
   MediaFormat,
-  MethodOfImplementation,
+  MethodOfImplementation, NetworkUserAccountType,
   PresenceInTheCountry,
   ResponsePlanSectors, SourcePlan,
   UserType
@@ -52,6 +52,7 @@ export class ReportingDatasheetComponent implements OnInit, OnDestroy {
   private sectorsRelatedToMap = new Map<number, boolean>();
 
   private networkCountryId: string;
+  private isLocalNetworkAdmin: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -67,6 +68,9 @@ export class ReportingDatasheetComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
       if (params["id"] && params["networkCountryId"]) {
         this.responsePlanId = params["id"];
         this.networkCountryId = params["networkCountryId"];
@@ -228,7 +232,8 @@ export class ReportingDatasheetComponent implements OnInit, OnDestroy {
         });
     };
     const networkUser = () => {
-      this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+      let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
+      this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(systemId => {
           this.systemAdminUid = systemId;

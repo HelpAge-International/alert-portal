@@ -11,7 +11,10 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="">
-      <div class="Back--button" routerLink="{{networkCountryId ? '/network-country/network-plans' : '/response-plans'}}">{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</div>
+      <div class="Back--button"
+           routerLink="{{isLocalNetworkAdmin ? '/network/local-network-plans' : networkCountryId ? '/network-country/network-plans' : '/response-plans'}}">
+        {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
+      </div>
 
       <div align="center">
         <h1>Export for Proposal ({{docType}})</h1>
@@ -41,7 +44,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;">
-                <h2 style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_1_TITLE" | translate}}</h2>
+                <h2 style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_1_TITLE" |
+                  translate}}</h2>
               </td>
             </tr>
             <tr>
@@ -76,7 +80,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_2_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_2_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <tr>
@@ -127,12 +132,14 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_3_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_3_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <tr>
               <td class="tg" colspan="9" style="background-color: lightgrey; text-align: left;">
-                <p><strong>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}</strong></p></td>
+                <p><strong>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}</strong></p>
+              </td>
             </tr>
 
             <tr style="text-align: center;">
@@ -173,9 +180,12 @@
             </tr>
             <tr>
               <td colspan="9" style="text-align: left;">
-                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">{{"CURRENT_PROGRAMMES" | translate}}</p>
-                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">{{"PRE_EXISITING_PARTNER" | translate}}</p>
-                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">{{"EXISTING_PRESENCE" | translate}}</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.currentProgrammes">
+                  {{"CURRENT_PROGRAMMES" | translate}}</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.preExistingPartner">
+                  {{"PRE_EXISITING_PARTNER" | translate}}</p>
+                <p *ngIf="responsePlan.presenceInTheCountry == PresenceInTheCountry.noPreExistingPresence">
+                  {{"EXISTING_PRESENCE" | translate}}</p>
               </td>
             </tr>
 
@@ -186,8 +196,10 @@
             </tr>
             <tr>
               <td colspan="9">
-                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">{{"DIRECTLY_THROUGH_STAFF" | translate}}</p>
-                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">{{"WORKING_WITH_PARTNERS" | translate}}</p>
+                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.fieldStaff">
+                  {{"DIRECTLY_THROUGH_STAFF" | translate}}</p>
+                <p *ngIf="responsePlan.methodOfImplementation == MethodOfImplementation.withPartner">
+                  {{"WORKING_WITH_PARTNERS" | translate}}</p>
               </td>
             </tr>
 
@@ -195,7 +207,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_4_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_4_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <tr>
@@ -237,7 +250,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_5_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_5_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <tr>
@@ -284,7 +298,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_6_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_6_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <tr>
@@ -301,7 +316,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_7_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_7_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <ng-container *ngFor="let sector of sectors">
@@ -424,23 +440,28 @@
               <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>{{"YES" | translate}}</p></td>
               <td colspan="2" style="text-align: center;"><p>{{responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
               </td>
-              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>{{"GLOBAL.NO" | translate}}</p></td>
+              <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>{{"GLOBAL.NO" |
+                translate}}</p></td>
               <td colspan="1" style="text-align: center;"><p>{{!responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
               </td>
             </tr>
             <tr>
-              <td colspan="9" style="background: lightgrey;"><p><strong>{{"WILL_THIS_BE_PHOTO_VIDEO_BOTH" | translate}}<span
+              <td colspan="9" style="background: lightgrey;"><p><strong>{{"WILL_THIS_BE_PHOTO_VIDEO_BOTH" |
+                translate}}<span
                   style="font-style: italic;">{{"PLEASE_MARK" | translate}}</span></strong>
               </p></td>
             </tr>
             <tr>
-              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"PHOTOGRAPHIC" | translate}}</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"PHOTOGRAPHIC" |
+                translate}}</p></td>
               <td colspan="1" style="text-align: center;"><p
                 *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
-              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"VIDEO" | translate}}</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"VIDEO" | translate}}</p>
+              </td>
               <td colspan="1" style="text-align: center;"><p
                 *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
-              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"BOTH" | translate}}</p></td>
+              <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"BOTH" | translate}}</p>
+              </td>
               <td colspan="1" style="text-align: center;"><p
                 *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
             </tr>
@@ -449,7 +470,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_9_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_9_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <tr>
@@ -480,7 +502,8 @@
             <tr>
               <td class="tg" colspan="9"
                   style="text-align: center; color: white; border: 1px solid #222; background: darkred;"><h2
-                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_10_TITLE" | translate}}</h2></td>
+                style="margin: 0; padding: 0; font-weight: normal;">{{"EXPORT_PROPOSAL_SEC_10_TITLE" | translate}}</h2>
+              </td>
             </tr>
 
             <tr>

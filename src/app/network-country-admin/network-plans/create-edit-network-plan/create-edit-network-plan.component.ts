@@ -61,6 +61,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   private networkId: string;
   private networkCountryId: string;
 
+  //local network admin
+  private isLocalNetworkAdmin: boolean;
+
   //copied
   private uid: string;
   private systemAdminUid: string;
@@ -231,6 +234,38 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.route.params.subscribe((params: Params) => {
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
+      this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
+    })
+
+  }
+
+  private localNetworkAdminAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      // this.showLoader = true;
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .flatMap(selection => {
+          this.networkId = selection["id"];
+          return this.networkService.getSystemIdForNetwork(this.uid, selection["userType"]);
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(systemId => {
+          this.systemAdminUid = systemId;
+          this.initData();
+          this.networkService.getNetworkModuleMatrix(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(matrix => this.moduleAccess = matrix);
+        })
+    });
+  }
+
+  private networkCountryAccess() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       // this.showLoader = true;
       this.uid = user.uid;
@@ -257,9 +292,10 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     if (this.forEditing) {
-      this.networkService.setNetworkField("/responsePlan/" + this.networkCountryId + "/" + this.idOfResponsePlanToEdit + "/isEditing", false);
-      this.networkService.setNetworkField("/responsePlan/" + this.networkCountryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId", null);
+      this.networkService.setNetworkField("/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/isEditing", false);
+      this.networkService.setNetworkField("/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/editingUserId", null);
     }
   }
 
@@ -271,6 +307,26 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private setupForEdit() {
+    this.isLocalNetworkAdmin ? this.setupEditForLocalNetwork() : this.setupEditForNetworkCountry();
+  }
+
+  private setupEditForLocalNetwork() {
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["id"]) {
+          this.forEditing = true;
+          this.pageTitle = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.EDIT_RESPONSE_PLAN";
+          this.idOfResponsePlanToEdit = params["id"];
+          this.networkService.setNetworkField("/responsePlan/" + this.networkId + "/" + this.idOfResponsePlanToEdit + "/isEditing", true);
+          this.networkService.setNetworkField("/responsePlan/" + this.networkId + "/" + this.idOfResponsePlanToEdit + "/editingUserId", this.uid);
+
+          this.loadResponsePlanInfo(this.networkId, this.idOfResponsePlanToEdit);
+        }
+      });
+  }
+
+  private setupEditForNetworkCountry() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -400,6 +456,24 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private getParticipatingAgencies() {
+    this.isLocalNetworkAdmin ? this.getAgenciesForLocalNetwork() : this.getAgenciesForNetworkCountry();
+  }
+
+  private getAgenciesForLocalNetwork() {
+    this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountryMap => {
+        this.agencyCountryMap = agencyCountryMap;
+        this.participatedAgencies = [];
+        this.agencyCountryMap.forEach((v, k) => {
+          this.agencyService.getAgencyModel(k)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agency => this.participatedAgencies.push(agency));
+        })
+      })
+  }
+
+  private getAgenciesForNetworkCountry() {
     this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyCountryMap => {
@@ -435,7 +509,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     //   console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
     //   jQuery("#navigate-back").modal("show");
     // } else {
-    this.router.navigateByUrl('network-country/network-plans').then();
+    this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
     // }
   }
 
@@ -787,7 +861,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private saveToFirebase(newResponsePlan: ResponsePlan) {
-
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     let numOfSectionsCompleted: number = 0;
     this.sectionsCompleted.forEach((v,) => {
       if (v) {
@@ -799,14 +873,14 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       if (this.forEditing) {
         newResponsePlan.isEditing = false;
         newResponsePlan.editingUserId = null;
-        this.networkService.updateNetworkFieldByObject('/responsePlan/' + this.networkCountryId + '/' + this.idOfResponsePlanToEdit, newResponsePlan).then(() => {
+        this.networkService.updateNetworkFieldByObject('/responsePlan/' + id + '/' + this.idOfResponsePlanToEdit, newResponsePlan).then(() => {
           console.log("Response plan successfully updated");
           //if edit, delete approval data and any validation token
           let resetData = {};
-          resetData["/responsePlan/" + this.networkCountryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+          resetData["/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
           resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
           this.networkService.updateNetworkField(resetData).then(() => {
-            this.router.navigateByUrl('network-country/network-plans').then();
+            this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
           }, error => {
             console.log(error.message);
           });
@@ -815,9 +889,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         });
 
       } else {
-        this.planService.pushNewResponsePlan(this.networkCountryId, newResponsePlan).then(() => {
+        this.planService.pushNewResponsePlan(id, newResponsePlan).then(() => {
           console.log("Response plan creation successful");
-          this.router.navigateByUrl('network-country/network-plans').then();
+          this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
         }).catch(error => {
           console.log("Response plan creation unsuccessful with error --> " + error.message);
         });

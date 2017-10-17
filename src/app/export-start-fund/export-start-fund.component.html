@@ -12,7 +12,7 @@
   <div class="Full-page__wrap--inner">
     <div class="">
       <div class="Back--button"
-           routerLink="{{networkCountryId ? '/network-country/network-plans' : '/response-plans'}}">
+           routerLink="{{isLocalNetworkAdmin ? '/network/local-network-plans' : networkCountryId ? '/network-country/network-plans' : '/response-plans'}}">
         {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
       </div>
 

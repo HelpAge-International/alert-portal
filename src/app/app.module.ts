@@ -273,6 +273,7 @@ import { NetworkCountryProfileCoordinationComponent } from './network-country-ad
 import { NetworkCountryProfileStockCapacityComponent } from './network-country-admin/network-country-office-profile/network-country-profile-stock-capacity/network-country-profile-stock-capacity.component';
 import { NetworkCountryProfileDocumentsComponent } from './network-country-admin/network-country-office-profile/network-country-profile-documents/network-country-profile-documents.component';
 import { NetworkCountryProfileContactsComponent } from './network-country-admin/network-country-office-profile/network-country-profile-contacts/network-country-profile-contacts.component';
+import { LocalNetworkPlansComponent } from './local-network-admin/local-network-plans/local-network-plans.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -539,7 +540,8 @@ const firebaseAuthConfig = {
     NetworkCountryProfileCoordinationComponent,
     NetworkCountryProfileStockCapacityComponent,
     NetworkCountryProfileDocumentsComponent,
-    NetworkCountryProfileContactsComponent
+    NetworkCountryProfileContactsComponent,
+    LocalNetworkPlansComponent
   ],
   imports: [
     BrowserModule,

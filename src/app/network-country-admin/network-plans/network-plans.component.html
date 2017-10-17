@@ -1,5 +1,11 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
@@ -16,7 +22,7 @@
         [level1]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL1'"
         [level2]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL2'">
       </tooltip>
-      <button class="btn btn-primary" routerLink="/network-country/network-plans/create-edit-network-plan">
+      <button class="btn btn-primary" [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-plans/create-edit-network-plan', {'isLocalNetworkAdmin':isLocalNetworkAdmin}]:['/network-country/network-plans/create-edit-network-plan']">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
       </button>
     </div>

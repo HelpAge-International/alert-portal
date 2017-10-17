@@ -720,6 +720,17 @@ export class NetworkService {
       })
   }
 
+  getNetworksForAgency(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/networks", {preserveSnapshot: true})
+      .map(snap => {
+        let ids = [];
+        if (snap.val()) {
+          return Object.keys(snap.val());
+        }
+        return ids;
+      })
+  }
+
   getRegionIdForCountry(countryId) {
     return this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .flatMap(id => {
