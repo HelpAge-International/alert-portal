@@ -163,7 +163,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
           this.uid = user.uid;
 
-          console.log(user.uid)
+
+
 
           //get network id
           this.networkService.getSelectedIdObj(user.uid)
@@ -179,15 +180,15 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
               this._getHazards();
               this.getUsersForAssign();
               this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
-              //
-              // // get the country levels values
-              // this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              //   .takeUntil(this.ngUnsubscribe)
-              //   .subscribe(content => {
-              //     this.countryLevelsValues = content;
-              //     err => console.log(err);
-              //   });
-              //
+
+              // get the country levels values
+              this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(content => {
+                  this.countryLevelsValues = content;
+                  err => console.log(err);
+                });
+
               // //get country location enum
               // this.userService.getCountryDetail(this.countryID, this.agencyId)
               //   .first()
@@ -316,7 +317,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
     //     })
     // } else if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
     //   console.log('ert/ partner')
-    //   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
+    //   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode + "/" + this.uid)
     //     .takeUntil(this.ngUnsubscribe)
     //     .subscribe(staff => {
     //       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
@@ -339,35 +340,33 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           countryOffices.filter( countryOffice => {
             if(this.copyCountryOfficeCode == countryOffice.$key){
               this.agencyId = agency.$key
-              console.log(this.agencyId)
+
+              // Obtaining the country admin data
+              this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
+                if (data.adminId) {
+                  this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                    var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                    this.usersForAssign.push(userToPush);
+                  });
+                }
+              });
+              //Obtaining other staff data
+              this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
+                for (let userID in data) {
+                  if (!userID.startsWith('$')) {
+                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                      var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                      this.usersForAssign.push(userToPush);
+                    });
+                  }
+                }
+              });
             }
           })
         })
       });
      })
-   
-      // console.log('other')
-      // //Obtaining the country admin data
-      // this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
-      //   if (data.adminId) {
-      //     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
-      //       var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-      //       this.usersForAssign.push(userToPush);
-      //     });
-      //   }
-      // });
 
-      // //Obtaining other staff data
-      // this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
-      //   for (let userID in data) {
-      //     if (!userID.startsWith('$')) {
-      //       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-      //         var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-      //         this.usersForAssign.push(userToPush);
-      //       });
-      //     }
-      //   }
-      // });
     // }
   }
 
@@ -422,7 +421,12 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         var urlToPush;
         var urlToEdit;
 
-        if (this.hazardID == 'countryContext') {
+
+
+        if(this.copyCountryOfficeCode && this.hazardID == 'countryContext'){
+          urlToPush = Constants.APP_STATUS + "/indicator/" + this.networkCountryId;
+          urlToEdit = Constants.APP_STATUS + '/indicator/' + this.copyCountryOfficeCode + '/' + this.indicatorID;
+        } else if (this.hazardID == 'countryContext') {
           urlToPush = Constants.APP_STATUS + '/indicator/' + this.networkCountryId;
           urlToEdit = Constants.APP_STATUS + '/indicator/' + this.networkCountryId + '/' + this.indicatorID;
         } else {
@@ -526,44 +530,81 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
-    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((hazards: any) => {
-        this.hazards = [];
-        this.hazardsObject = {};
+    if(this.copyCountryOfficeCode){
 
-        hazards["countryContext"] = {key: "countryContext"};
-        this.hazards.push(hazards["countryContext"]);
-        this.hazardsObject["countryContext"] = hazards["countryContext"];
-        for (let hazard in hazards) {
-          if (!hazard.includes("$") && hazard != "countryContext") {
-            hazards[hazard].key = hazard;
+      this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.copyCountryOfficeCode)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((hazards: any) => {
+          this.hazards = [];
+          this.hazardsObject = {};
 
-            if (hazards[hazard].hazardScenario != -1) {
-              this.hazards.push(hazards[hazard]);
-              this.hazardsObject[hazard] = hazards[hazard];
-            } else {
-              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
-                .first()
-                .subscribe(nameObj => {
-                  hazards[hazard].displayName = nameObj.name;
-                  this.hazards.push(hazards[hazard]);
-                  this.hazardsObject[hazard] = hazards[hazard];
-                });
+          hazards["countryContext"] = {key: "countryContext"};
+          this.hazards.push(hazards["countryContext"]);
+          this.hazardsObject["countryContext"] = hazards["countryContext"];
+          for (let hazard in hazards) {
+            if (!hazard.includes("$") && hazard != "countryContext") {
+              hazards[hazard].key = hazard;
+
+              if (hazards[hazard].hazardScenario != -1) {
+                this.hazards.push(hazards[hazard]);
+                this.hazardsObject[hazard] = hazards[hazard];
+              } else {
+                this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
+                  .first()
+                  .subscribe(nameObj => {
+                    hazards[hazard].displayName = nameObj.name;
+                    this.hazards.push(hazards[hazard]);
+                    this.hazardsObject[hazard] = hazards[hazard];
+                  });
+              }
             }
           }
-        }
-      });
+        });
+
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((hazards: any) => {
+          this.hazards = [];
+          this.hazardsObject = {};
+
+          hazards["countryContext"] = {key: "countryContext"};
+          this.hazards.push(hazards["countryContext"]);
+          this.hazardsObject["countryContext"] = hazards["countryContext"];
+          for (let hazard in hazards) {
+            if (!hazard.includes("$") && hazard != "countryContext") {
+              hazards[hazard].key = hazard;
+
+              if (hazards[hazard].hazardScenario != -1) {
+                this.hazards.push(hazards[hazard]);
+                this.hazardsObject[hazard] = hazards[hazard];
+              } else {
+                this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
+                  .first()
+                  .subscribe(nameObj => {
+                    hazards[hazard].displayName = nameObj.name;
+                    this.hazards.push(hazards[hazard]);
+                    this.hazardsObject[hazard] = hazards[hazard];
+                  });
+              }
+            }
+          }
+        });
+    }
   }
 
   _deleteIndicator() {
     jQuery("#delete-indicator").modal("hide");
     let path = "";
-    if (this.hazardID == "countryContext") {
-      path = Constants.APP_STATUS + "/indicator/" + this.countryID + "/" + this.indicatorID;
+
+    if(this.copyCountryOfficeCode && this.hazardID == 'countryContext'){
+      path = Constants.APP_STATUS + "/indicator/" + this.copyCountryOfficeCode + '/' + this.indicatorID;
+    } else if (this.hazardID == 'countryContext') {
+      path = Constants.APP_STATUS + "/indicator/" + this.networkCountryId + '/' + this.indicatorID;
     } else {
       path = Constants.APP_STATUS + "/indicator/" + this.hazardID + "/" + this.indicatorID;
     }
+
     this.af.database.object(path).set(null)
       .then(() => {
         this.router.navigateByUrl("/network-country/network-risk-monitoring");
@@ -573,6 +614,10 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
       });
   }
 
+  print(location){
+
+    console.log(location)
+  }
 
   _getIndicator(hazardID: string, indicatorID: string) {
 
@@ -594,6 +639,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         return false;
       }
       indicator.id = indicatorID;
+      console.log(indicator)
       this.indicatorData.setData(indicator);
     });
   }

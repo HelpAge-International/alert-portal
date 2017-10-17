@@ -8,6 +8,7 @@ import {LogModel} from "../../model/log.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../../services/user.service";
+import {CommonService} from "../../services/common.service";
 import {NetworkService} from "../../services/network.service";
 import {AgencyService} from "../../services/agency-service.service";
 import {Subject} from "rxjs/Subject";
@@ -112,6 +113,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   private assignedHazard: any;
   private assignedUser: string;
   private networkId: any;
+  private countryLevelsValues: any;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -120,6 +122,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               private storage: LocalStorageService,
               private translate: TranslateService,
               private userService: UserService,
+              private commonService: CommonService,
               private agencyService: AgencyService,
               private networkService: NetworkService,
               private windowService: WindowRefService) {
@@ -178,9 +181,21 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               this.UserType = selection["userType"];
 
               this._getHazards();
-              this.getCountryLocation();
+              this.getCountryLocation()
+                .then(_ => {
+                  // get the country levels values
+                  this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(content => {
+
+                      this.countryLevelsValues = content[this.countryLocation];
+                      console.log(this.countryLevelsValues)
+                      err => console.log(err);
+                    });
+                })
               this._getCountryContextIndicators();
               this.getUsersForAssign();
+
 
             });
         })
@@ -283,8 +298,6 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
-    console.log('--------')
-    console.log(this.networkCountryId)
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
         this.activeHazards = [];
@@ -332,11 +345,11 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         this.networkService.getAgencyCountryOfficesByNetworkCountry(this.networkCountryId, this.networkId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe( officeAgencyMap => {
-            console.log(officeAgencyMap)
+
             officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
 
-              console.log('test')
+
               this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
                 hazards.forEach((hazard: any, key) => {
                   hazard.id = hazard.$key;
@@ -402,8 +415,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
 
                           hazard.indicators.forEach(indicator => {
-                            console.log('pushing1')
-                            console.log(indicator)
+
                             if(this.activeHazards[activeHazardIndex].indicators.map(item=>item.$key).indexOf(indicator.$key) == -1){
                               this.activeHazards[activeHazardIndex].indicators.push(indicator)
                             } else {
@@ -411,12 +423,12 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                               this.activeHazards[activeHazardIndex].indicators.push(indicator)
                             }
 
-                            console.log(this.activeHazards[activeHazardIndex].indicators)
+
                           })
                         } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
                           hazard.indicators = []
                           hazard.indicators.forEach(indicator => {
-                            console.log('pushing2')
+
                             this.activeHazards[activeHazardIndex].indicators.push(indicator)
                           })
                         }
@@ -464,13 +476,13 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
 
                           hazard.indicators.forEach(indicator => {
-                            console.log('pushing1')
+
                             this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
                           })
                         } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
                           hazard.indicators = []
                           hazard.indicators.forEach(indicator => {
-                            console.log('pushing2')
+
                             this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
                           })
                         }
@@ -544,7 +556,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
-    console.log(this.activeHazards)
+
     var key = hazardID + '_' + indicatorKey;
     if (state) {
       this.isIndicatorUpdate[key] = true;
@@ -575,7 +587,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
     const indicatorID = indicator.$key;
 
-    console.log(this.activeHazards)
+
 
     if (!hazardID || !indicatorID) {
       console.log('hazardID or indicatorID cannot be empty');
@@ -597,7 +609,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     } else {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + indicator.hazardScenario.key + '/' + indicatorID;
     }
-    console.log(this.activeHazards) // == 2
+
 
     this.af.database.object(urlToUpdate)
       .update(dataToSave)
@@ -634,7 +646,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   setTmpHazard(hazardID: string, activeStatus: boolean, hazardScenario: number) {
+    console.log('enter set')
     if (!hazardID) {
+      console.log('enter false if')
       return false;
     }
 
