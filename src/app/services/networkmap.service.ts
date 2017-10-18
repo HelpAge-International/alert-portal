@@ -3,7 +3,11 @@ import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {AngularFire} from 'angularfire2';
 import {MapService} from "./map.service";
-import {Countries} from "../utils/Enums";
+import {Countries, CountriesMapsSearchInterface} from "../utils/Enums";
+import {CommonService} from "./common.service";
+import GeocoderResult = google.maps.GeocoderResult;
+import GeocoderStatus = google.maps.GeocoderStatus;
+import {HazardImages} from "../utils/HazardImages";
 
 /**
  * Network map service
@@ -49,10 +53,15 @@ export class NetworkMapService {
   private countryIdToLocation: Map<string, number> = new Map<string, number>();
   private mCountryOfficeCounter: number = 0;
 
+  // AgencyId -> Name map. Used for the list of hazards in the UI
+  public AGENCY_ID_NAME_MAP: Map<string, string> = new Map<string, string>();
+
   public map: google.maps.Map;
   private geocoder: google.maps.Geocoder;
 
-  constructor() {
+  constructor(private jsonService: CommonService) {
+    this.AGENCY_ID_NAME_MAP = new Map<string, string>();
+    this.geocoder = new google.maps.Geocoder;
   }
 
   public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
@@ -70,49 +79,21 @@ export class NetworkMapService {
             value.forEach(item => {
               // Fire off a request to get the countryOffice for every country
               this.getCountryOffice(key, item, () => {
-                /* ALL COUNTRY OFFICES FINISHED PULLING */
+                /* ALL COUNTRY OFFICES FINISHED PULLING
+                 *   Even though we're in a forEach, counter is maintained so this method fires when
+                 *   they are all done */
                 this.initHazards();
-
-                /**
-                 * SAMPLE DATA
-                 */
-                this.countries = [];
-                let mapNetwork = new NetworkMapCountry();
-                mapNetwork.location = 0;
-
-                let hazard1 = new NetworkMapHazard();
-                hazard1.hazardScenario = 11;
-                let hazard1i1 = new NetworkMapHazardRaised();
-                hazard1i1.affectedAreas.push("China", "Taiwan");
-                hazard1i1.agencyId = "3HtfeBm0c3WZoWgzATKNtLmDcWS2";
-                hazard1i1.population = 1000;
-                hazard1.instancesOfHazard.push(hazard1i1);
-                let hazard1i2 = new NetworkMapHazardRaised();
-                hazard1i2.affectedAreas.push("Tereneze", "Bangladesh");
-                hazard1i2.agencyId = "3HtfeBm0c3WZoWgzATKNtLmDcWS2";
-                hazard1i2.population = 43434;
-                hazard1.instancesOfHazard.push(hazard1i2);
-                mapNetwork.hazards.push(hazard1);
-
-
-                let hazard2 = new NetworkMapHazard();
-                hazard2.hazardScenario = 11;
-                let hazard2i1 = new NetworkMapHazardRaised();
-                hazard2i1.affectedAreas.push("AnotherTest", "Test");
-                hazard2i1.agencyId = "3HtfeBm0c3WZoWgzATKNtLmDcWS2";
-                hazard2i1.population = 2434234;
-                hazard2.instancesOfHazard.push(hazard2i1);
-                mapNetwork.hazards.push(hazard2);
-
-                let agency = new NetworkMapAgency("3HtfeBm0c3WZoWgzATKNtLmDcWS2", "sgtbi94dm6dWLUbn2RtCbs9sm492addclose");
-                agency.name = "Test Agency";
-                agency.mpaComplete = 2;
-                agency.mpaTotal = 3;
-                mapNetwork.setAgency("3HtfeBm0c3WZoWgzATKNtLmDcWS2", agency);
-
-                this.countries.push(mapNetwork);
-                this.loadColoredLayers(countryClicked);
-                done();
+                for (let x of this.countries) {
+                  for (let agencyX of x.agencies) {
+                    this.getAllMPAValuesToCountries(agencyX.countryId, agencyX.id, systemAdminId, () => {
+                      /* ALL MPA VALUES FOUND FOR ALL COUNTRY OFFICES
+                       *   Even though we're in a two for loops, counter is maintained inside getAllMPAValuesToCountries
+                       *   so this method fires when they are all done */
+                      this.loadColoredLayers(countryClicked);
+                      done();
+                    });
+                  }
+                }
               });
             });
           });
@@ -121,21 +102,105 @@ export class NetworkMapService {
   }
 
   /**
+   * Find all the MPA values of a given country office.
+   * - Use the id (agency) and countryId (country) inside the NetworkMapAgency object
+   *   to query the actions nodes and figure out how many are completed
+   */
+  private mpaCounter: number = 0;
+  private getAllMPAValuesToCountries(countryId: string, agencyId: string, systemId: string, done: () => void) {
+    // this.mpaCounter++;
+    //
+    // this.mpaCounter--;
+    // if (this.mpaCounter == 0) {
+    //   done();
+    // }
+  }
+
+  /**
    * Find all the hazards for a given country and store them in relation to the country
    */
   private initHazards() {
     for (const country of this.countries) {
-      country.agencies.forEach((value, key) => {
-        this.af.database.list(Constants.APP_STATUS + '/alert/' + value.countryId, {preserveSnapshot: true})
+      for (const agency of country.agencies) {
+        this.af.database.list(Constants.APP_STATUS + '/alert/' + agency.countryId, {preserveSnapshot: true})
           .takeUntil(this.ngUnsubscribe)
           .subscribe((snap) => {
             for (let element of snap) {
-              console.log(element.key);
-              console.log(element.val());
+              let res: boolean = false;
+              // let lock: boolean = false;
+              for (const userTypes in element.val().approval) {
+                for (const thisUid in element.val().approval[userTypes]) {
+                  if (element.val().approval[userTypes][thisUid] != 0) {
+                    res = true;
+                  }
+                  else {
+                    // lock = true;
+                    res = false;
+                  }
+                }
+              }
+              // if (!lock && res) {
+              if (res) {
+                // Everyone on the approval list has approved it. Uncomment the three 'lock' comments if you require ALL
+                //   on the approval list to approve
+                let networkMapHazard: NetworkMapHazard = country.getHazard(element.val().hazardScenario, element.val().customHazard);
+                let raised: NetworkMapHazardRaised = new NetworkMapHazardRaised();
+                raised.population = element.val().estimatedPopulation;
+                raised.agencyName = agency.name;
+                this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+                  for (let x of element.val().affectedAreas) {
+                    let obj = {
+                      country: "",
+                      areas: ""
+                    };
+                    if (x.affectedCountry > -1) {
+                      obj.country = this.getCountryNameById(x.country);
+                    }
+                    if (x.level1 > -1) {
+                      obj.areas = ", " + value[x.country].levelOneValues[x.level1].value
+                    }
+                    if (x.level2 > -1) {
+                      obj.areas = obj.areas + ", " + value[x.country].levelOneValues[x.level1].levelTwoValues[x.level2].value;
+                    }
+                    raised.affectedAreas.push(obj.country + obj.areas);
+                  }
+
+                  networkMapHazard.instancesOfHazard.push(raised);
+
+                  this.placeMarker(country.location, networkMapHazard.hazardScenario);
+                });
+              }
             }
           });
-      });
+      }
     }
+  }
+  private getCountryNameById(countryId: number) {
+    return Constants.COUNTRIES[countryId];
+  }
+  private placeMarker(location: number, hazardScenario: number) {
+    let position: number = 0;
+    let count: number = 0;
+    this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+      if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+        let pos = {
+          lng: geoResult[0].geometry.location.lng() + position,
+          lat: geoResult[0].geometry.location.lat()
+        };
+        let marker = new google.maps.Marker({
+          position: pos,
+          icon: HazardImages.init().get(hazardScenario)
+        });
+        marker.setMap(this.map);
+        count++;
+        if (count % 2 == 0) {
+          position *= -1;
+        }
+        else {
+          position += 1.2;
+        }
+      }
+    });
   }
 
   /**
@@ -219,6 +284,8 @@ export class NetworkMapService {
         if (agency != null) {
           agency.name = snap.val().name;
           agency.image = snap.val().logoPath;
+          // Save this relationship to the map as well for the potential hazards!
+          this.AGENCY_ID_NAME_MAP.set(snap.key, agency.name);
         }
         this.mCountryOfficeCounter--;
         if (this.mCountryOfficeCounter == 0) {
@@ -237,6 +304,8 @@ export class NetworkMapService {
         results(snap.val()[0], snap.val()[1]);
       });
   }
+
+  //region Map initialisation and fusion layer logic
 
   /**
    * Load the coloured layers onto the map based on this.countries
@@ -707,6 +776,8 @@ export class NetworkMapService {
     });
   }
 
+  //engregion
+
   /**
    * Utility methods to interact with the below datastructure
    */
@@ -786,6 +857,17 @@ export class NetworkMapCountry {
     }
   }
 
+  public getHazard(hazardScenario: number, otherHazard: string) {
+    for (const hz of this.hazards) {
+      if (hz.hazardScenario == hazardScenario && hazardScenario != -1) {
+        return hz;
+      }
+    }
+    let hz: NetworkMapHazard = new NetworkMapHazard(hazardScenario, otherHazard);
+    this.hazards.push(hz);
+    return hz;
+  }
+
   public getAgency(key: string): NetworkMapAgency {
     for (let agency of this.agencies) {
       if (agency.id == key) {
@@ -834,11 +916,16 @@ export class NetworkMapHazard {
   public hazardScenario: number;
   public customHazard: string;
   public instancesOfHazard: NetworkMapHazardRaised[] = [];
+
+  constructor(hS: number, cH: string) {
+    this.hazardScenario = hS;
+    this.customHazard = cH;
+  }
 }
 
 export class NetworkMapHazardRaised {
   public population: number;
-  public agencyId: string;
+  public agencyName: string;
   public affectedAreas: string[] = [];
 }
 

@@ -6,7 +6,6 @@
     <div class="Header-title__wrap">
       <h1>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS" | translate}}</h1>
       <a href="javascript:void(0)" (click)="gotoMapList()">{{"MAPS.SEE_COUNTRIES_LIST" | translate}}</a>
-      <a href="javascript:void(0)" (click)="showDialog(0)">Show Dialog</a>
     </div>
     <div class="Ribbon__section__wrap Spaced">
       <div id="global-map" style="height: 500px;"></div>
@@ -37,7 +36,7 @@
                     <p *ngFor="let y of x.instancesOfHazard">{{y.population}}</p>
                   </td>
                   <td class="text-left"><strong>Raised By:</strong><br/>
-                    <p *ngFor="let y of x.instancesOfHazard">{{y.agencyId}}</p>
+                    <p *ngFor="let y of x.instancesOfHazard">{{y.agencyName}}</p>
                   </td>
                 </tr>
               </div>
