@@ -29,6 +29,12 @@ declare var jQuery: any;
   styleUrls: ['./network-risk-minitoring.component.css']
 })
 export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
+  public agencies = []
+  public eventFilter = -1;
+  public locationFilter = -1;
+  public agencyFilter = -1;
+  public indicatorLevelFilter = -1;
+
   networkCountryId: any;
 
   private USER_TYPE = UserType;
@@ -180,7 +186,21 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               this.networkCountryId = selection["networkCountryId"];
               this.UserType = selection["userType"];
 
-              this._getHazards();
+
+              this.networkService.getNetworkCountryAgencies(this.networkId, this.networkCountryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe( agencies => {
+                  agencies.forEach( agency => {
+                    this.agencyService.getAgency(agency.$key)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(agency => {
+                        this.agencies.push(agency)
+                      })
+                  })
+                })
+
+
+              this._getHazards()
               this.getCountryLocation()
                 .then(_ => {
                   // get the country levels values
@@ -205,6 +225,50 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  changeLocationFilter(location){
+    console.log(location)
+    if(location){
+      if(location == 'location'){
+        this.locationFilter = -1;
+      } else {
+        this.locationFilter = location;
+      }
+    } else {
+      return
+    }
+  }
+
+  changeEventFilter(event){
+    console.log(event)
+    if(event){
+      if(event == 'event'){
+        this.eventFilter = -1;
+      } else {
+        this.eventFilter = event;
+      }
+    } else {
+      return
+    }
+  }
+
+  changeAgencyFilter(agency){
+    console.log(agency)
+      if(agency == 'agency'){
+        this.agencyFilter = -1;
+      } else {
+        this.agencyFilter = agency;
+      }
+  }
+
+  changeIndicatorLevelFilter(indicatorLevel){
+    console.log(indicatorLevel)
+      if(indicatorLevel == 'indicator'){
+        this.indicatorLevelFilter = -1;
+      } else {
+        this.indicatorLevelFilter = indicatorLevel;
+      }
   }
 
   private getCountryLocation() {

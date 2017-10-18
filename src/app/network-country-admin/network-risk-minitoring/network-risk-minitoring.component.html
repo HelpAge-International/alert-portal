@@ -19,12 +19,43 @@
     </div>
 
 
-    <div>
-      <select name="locations" id="riskLocations">
+    <div class="row align-items-center Filter-form margin-top-one">
+      <div class="col-lg-1 col-md-1 col-sm-6">
+        Filter:
+      </div>
+      <div class="col-lg-2 col-md-1 col-sm-6">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="events" (change)="changeEventFilter($event.target.value)" id="riskEvents">
+          <option value="event">Event</option>
+          <option data-value="countryContext">Country Context</option>
+          <option *ngFor="let scenario of hazardScenariosList" data-value="{{scenario}}">{{hazardScenario[scenario] | translate}}</option>
 
-        <option *ngFor="let location of countryLevelsValues.levelOneValues" ngValue="location.id">{{location.value}}</option>
+        </select>
+      </div>
 
-      </select>
+      <div class="col-lg-2 col-md-1 col-sm-6">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="locations" (change)="changeLocationFilter($event.target.value)" id="riskLocations">
+          <option value="location">Location</option>
+          <option *ngFor="let location of countryLevelsValues?.levelOneValues" data-value="{{location.id}}">{{location.value}}</option>
+
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-1 col-sm-6">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="agency" (change)="changeAgencyFilter($event.target.value)" id="riskAgencies">
+          <option value="agency">Monitoring Agency</option>
+          <option *ngFor="let agency of agencies" data-value="{{agency.name}}">{{agency.name}}</option>
+
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-1 col-sm-6">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="indicator" (change)="changeIndicatorLevelFilter($event.target.value)" id="riskIndicatorLevel">
+          <option value="indicator">Indicator Level</option>
+          <option value="0">Green</option>
+          <option value="1">Amber</option>
+          <option value="2">Red</option>
+        </select>
+      </div>
 
     </div>
 
@@ -45,6 +76,7 @@
     <div class="Ribbon__section__wrap--risk align-items-right" role="tablist" aria-multiselectable="true">
       <div class="card">
         <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+             *ngIf="eventFilter == -1 || eventFilter == 'countryContext'"
              aria-controls="collapseOne">
           <div class="row">
             <div class="col-lg-4 col-sm-4">
@@ -67,7 +99,8 @@
         </div>
 
         <!-- collapsible content Country Context Start -->
-        <div class="Accordion__Content collapse" id="collapseOne" role="tab">
+        <div class="Accordion__Content collapse" id="collapseOne" role="tab"
+             *ngIf="eventFilter == -1 || eventFilter == 'countryContext'">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -82,7 +115,10 @@
             <div *ngIf="indicatorsCC && indicatorsCC.length > 0">
               <div class="indicators-to-hazards" *ngFor="let indicatorC of indicatorsCC; let indicatorKey = index;"
                    id="indicators-to-hazards_CC_{{indicatorKey}}">
-                <div class="edit__wrap--risk row Small-spaced align-items-center Header">
+                <div class="edit__wrap--risk row Small-spaced align-items-center Header"
+                     *ngIf="(locationFilter == -1 || (indicatorC.affectedLocation && indicatorC.affectedLocation['0'].level1 == locationFilter))
+                     && (agencyFilter == -1 || (indicatorC.fromAgency && indicatorC.agency.name == agencyFilter))
+                     && (indicatorLevelFilter == -1 || indicatorC.triggerSelected == indicatorLevelFilter)">
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
@@ -95,8 +131,10 @@
                   </div>
                   <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['agency']">Monitoring Agency: {{indicatorC['agency'].name}}</div>
                 </div>
-                <div
-                  class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                <div *ngIf="(locationFilter == -1 || (indicatorC.affectedLocation && indicatorC.affectedLocation['0'].level1 == locationFilter))
+                            && (agencyFilter == -1 || (indicatorC.fromAgency && indicatorC.agency.name == agencyFilter))
+                            && (indicatorLevelFilter == -1 || indicatorC.triggerSelected == indicatorLevelFilter)"
+                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
 
                   <div class="" *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div [ngClass]="setClassForIndicator(0, indicatorC.triggerSelected)">
@@ -345,7 +383,8 @@
       <div class="Ribbon__section__wrap--risk align-items-right"
            *ngFor="let hazard of activeHazards; let hazardIndex = index;">
         <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse-active-' + hazard.$key}}"
-             aria-expanded="true" attr.aria-controls="{{'collapse-active-' + hazard.$key}}">
+             aria-expanded="true" attr.aria-controls="{{'collapse-active-' + hazard.$key}}"
+             *ngIf="eventFilter == -1 || eventFilter == hazard.hazardScenario">
           <div class="row">
             <div class="col-sm-4">
               <div class="Icon">
@@ -371,7 +410,8 @@
           </div>
         </div>
 
-        <div class="Accordion__Content collapse" id="collapse-active-{{hazard.$key}}" role="tab">
+        <div class="Accordion__Content collapse" id="collapse-active-{{hazard.$key}}" role="tab"
+             *ngIf="eventFilter == -1 || eventFilter == hazard.hazardScenario">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -395,7 +435,10 @@
             <div *ngIf="hazard.indicators && hazard.indicators.length > 0">
               <div class="indicators-to-hazards" *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
                    id="indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}">
-                <div class="edit__wrap--risk row Small-spaced align-items-center Header">
+                <div class="edit__wrap--risk row Small-spaced align-items-center Header"
+                     *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
+                     && (agencyFilter == -1 || (indicator.fromAgency && indicator.agency.name == agencyFilter))
+                     && (indicatorLevelFilter == -1 || indicator.triggerSelected == indicatorLevelFilter)">
                   <div class="col-md-4 col-sm-7 margin-left-four">{{indicator.name}} | <span
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
@@ -409,8 +452,10 @@
                   </div>
                   <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                 </div>
-                <div
-                  class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                <div *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
+                            && (agencyFilter == -1 || (indicator.fromAgency && indicator.agency.name == agencyFilter))
+                            && (indicatorLevelFilter == -1 || indicator.triggerSelected == indicatorLevelFilter)"
+                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                   <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                     <div [ngClass]="setClassForIndicator(0, indicator.triggerSelected)">
                       {{indicator.trigger[0].triggerValue}}
@@ -657,7 +702,8 @@
              *ngFor="let hazard of archivedHazards; let archivedHazardIndex = index">
           <div class="Accordion--risk Map-list" data-toggle="collapse"
                attr.href="#{{'collapse-archived-' + hazard.$key}}" aria-expanded="true"
-               attr.aria-controls="{{'collapse-archived-' + hazard.$key}}">
+               attr.aria-controls="{{'collapse-archived-' + hazard.$key}}"
+               *ngIf="eventFilter == -1 || eventFilter == hazard.hazardScenario">
             <div class="row">
               <div class="col-sm-4">
                 <div class="Icon">
@@ -684,7 +730,8 @@
             </div>
           </div>
 
-          <div class="Accordion__Content collapse" id="collapse-archived-{{hazard.$key}}" role="tab">
+          <div class="Accordion__Content collapse" id="collapse-archived-{{hazard.$key}}" role="tab"
+               *ngIf="eventFilter == -1 || eventFilter == hazard.hazardScenario">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -708,7 +755,10 @@
                 <div class="indicators-to-hazards"
                      *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
                      id="archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}">
-                  <div class="edit__wrap--risk row Small-spaced align-items-center Header">
+                  <div class="edit__wrap--risk row Small-spaced align-items-center Header"
+                       *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
+                            && (agencyFilter == -1 || (indicator.fromAgency && indicator.agency.name == agencyFilter))
+                            && (indicatorLevelFilter == -1 || indicator.triggerSelected == indicatorLevelFilter)">
                     <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
                       *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                       *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
@@ -722,7 +772,10 @@
                     <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                   </div>
                   <div
-                    class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                    class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one"
+                    *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
+                            && (agencyFilter == -1 || (indicator.fromAgency && indicator.agency.name == agencyFilter))
+                            && (indicatorLevelFilter == -1 || indicator.triggerSelected == indicatorLevelFilter)">
                     <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div [ngClass]="setClassForIndicator(0, indicator.triggerSelected)">
                         {{indicator.trigger[0].triggerValue}}

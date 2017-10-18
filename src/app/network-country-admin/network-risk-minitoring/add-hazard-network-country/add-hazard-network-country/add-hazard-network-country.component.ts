@@ -118,7 +118,7 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.UserType = selection["userType"];
 
-          this._loadData();
+          this._loadData(); 
 
         })
     })
