@@ -10,15 +10,10 @@ import {NetworkOfficeModel} from "../network-admin/network-offices/add-edit-netw
 import {ModelNetwork} from "../model/network.model";
 import {NetworkActionModel} from "../network-admin/network-mpa/network-create-edit-mpa/network-mpa.model";
 import {GenericActionModel} from "../network-admin/network-mpa/network-add-generic-action/generic-action.model";
-import {NetworkAdminAccount} from "../network-admin/network-account-selection/models/network-admin-account";
 import {NetworkMessageModel} from "../network-admin/network-message/network-create-edit-message/network-message.model";
-import {Subject} from "rxjs/Subject";
-import {NetworkMessageRecipientModel} from "../network-admin/network-message/network-create-edit-message/network-message-recipient.model";
-import {Router} from "@angular/router";
 import {NetworkCountryModel} from "../network-country-admin/network-country.model";
 import {NetworkModulesEnabledModel} from "./pagecontrol.service";
 import {isEmptyObject} from "angularfire2/utils";
-import {count} from "rxjs/operator/count";
 
 @Injectable()
 export class NetworkService {
@@ -138,7 +133,7 @@ export class NetworkService {
     selectedAgencies.forEach(agencyId => {
 
       let item = {};
-      if(!isEmptyObject(countryCode)) {
+      if (!isEmptyObject(countryCode)) {
         item["countryCode"] = countryCode
       }
       item["isApproved"] = false;
@@ -149,14 +144,13 @@ export class NetworkService {
   }
 
 
-
-  getCountryCodeForAgency(agencyId: string, networkId: number){
+  getCountryCodeForAgency(agencyId: string, networkId: number) {
     let data = ''
     console.log(Constants.APP_STATUS + "/countryOffice/" + agencyId)
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
       .map(countryOffices => {
-        countryOffices.forEach( office => {
-          if(office.location == networkId){
+        countryOffices.forEach(office => {
+          if (office.location == networkId) {
             data = office.$key;
           }
         })
@@ -449,7 +443,7 @@ export class NetworkService {
               snapshots.forEach(snapshot => {
                 msgRefData[agencyMessageRefPath + agencyId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
               });
-              this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+              this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
                 callback(null, context);
               }).catch(error => {
                 callback(error, context);
@@ -464,7 +458,7 @@ export class NetworkService {
           snapshots.forEach(snapshot => {
             msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
           });
-          this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+          this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
             callback(null, context);
           }).catch(error => {
             callback(error, context);
@@ -485,7 +479,7 @@ export class NetworkService {
                   snapshots.forEach(snapshot => {
                     msgRefData[agencyMessageRefPath + agencyId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
                   });
-                  this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+                  this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
                     callback(null, context);
                   }).catch(error => {
                     callback(error, context);
@@ -505,7 +499,7 @@ export class NetworkService {
             snapshots.forEach(snapshot => {
               msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
             });
-            this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(_ => {
+            this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
               callback(null, context);
             }).catch(error => {
               callback(error, context);
@@ -747,12 +741,12 @@ export class NetworkService {
       });
   }
 
-  getAgencyCountryOfficesByNetwork(networkId: string){
-    var countryOfficeAgencyMap = new Map<string,string>()
-    return this.af.database.list( Constants.APP_STATUS + '/network/' + networkId + '/agencies')
-      .map( agencies => {
-        agencies.forEach( agency => {
-          if(agency.countryCode && agency.isApproved){
+  getAgencyCountryOfficesByNetwork(networkId: string) {
+    let countryOfficeAgencyMap = new Map<string, string>()
+    return this.af.database.list(Constants.APP_STATUS + '/network/' + networkId + '/agencies')
+      .map(agencies => {
+        agencies.forEach(agency => {
+          if (agency.countryCode && agency.isApproved) {
             countryOfficeAgencyMap.set(agency.$key, agency.countryCode)
           }
         })

@@ -576,10 +576,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   planReview(planId, isLocal) {
     this.router.navigate(["/dashboard/review-response-plan", isLocal ? {
       "id": planId,
-      "planLocalNetworkId": this.networkId
+      "networkCountryId": this.networkId,
+      "systemId":this.systemId
     } : this.networkCountryId ? {
       "id": planId,
-      "planNetworkCountryId": this.networkCountryId
+      "networkCountryId": this.networkCountryId,
+      "systemId":this.systemId
     } : {"id": planId}]);
   }
 

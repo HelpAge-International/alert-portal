@@ -1,12 +1,18 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
   <div class="Full-page__wrap--inner">
 
-    <app-network-country-statistics-ribbon></app-network-country-statistics-ribbon>
+    <app-network-country-statistics-ribbon [isLocalNetworkAdmin]="isLocalNetworkAdmin"></app-network-country-statistics-ribbon>
 
     <!--alert screen-->
     <div *ngIf="moduleSettings.riskMonitoring">

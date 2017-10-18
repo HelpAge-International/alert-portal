@@ -40,6 +40,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private indicatorsThisWeek = [];
   private approvalPlans = [];
   private approvalPlansNetwork = [];
+  private approvalPlansNetworkLocal = [];
   private mapHelper: SuperMapComponents;
   private regions: RegionHolder[];
   private countries: SDepHolder[];
@@ -86,6 +87,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
     this.indicatorsThisWeek = [];
     this.approvalPlans = [];
     this.approvalPlansNetwork = [];
+    this.approvalPlansNetworkLocal = [];
 
     //set initial loader status
     this.loaderInactive = false;
@@ -208,6 +210,19 @@ export class DirectorComponent implements OnInit, OnDestroy {
             });
         });
 
+        //for local network
+        this.networkService.getNetworksForAgency(this.agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(networks => {
+            console.log(networks);
+            networks.forEach(id => {
+              this.actionService.getResponsePlanFoGlobalDirectorToApproval(id, this.uid, this.agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(plans => {
+                  this.approvalPlansNetworkLocal = this.approvalPlansNetworkLocal.concat(plans);
+                });
+            });
+          });
 
       }
 
@@ -247,6 +262,20 @@ export class DirectorComponent implements OnInit, OnDestroy {
               });
             });
         });
+
+        //for local network
+        this.networkService.getNetworksForAgency(this.agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(networks => {
+            console.log(networks);
+            networks.forEach(id => {
+              this.actionService.getResponsePlanFoRegionalDirectorToApproval(id, this.uid, this.regionId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(plans => {
+                  this.approvalPlansNetworkLocal = this.approvalPlansNetworkLocal.concat(plans);
+                });
+            });
+          });
 
         this.regionCountryOffice = this.countryOffices.filter(x => this.idsOfCountriesInRegion.includes(x.$key));
 

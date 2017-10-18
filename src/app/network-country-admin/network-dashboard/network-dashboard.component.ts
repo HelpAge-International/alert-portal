@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
 import {NetworkService} from "../../services/network.service";
@@ -57,6 +57,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private showLoader: boolean;
   private uid: string;
 
+  //for local network admin
+  @Input() isLocalNetworkAdmin: boolean;
 
   //copy over from response plan
   private alertList: ModelAlert[];
@@ -121,7 +123,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.initNetworkAccess();
+    this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
   }
 
   private initNetworkAccess() {
@@ -135,6 +137,27 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
+
+          this.loadData();
+
+          this.networkService.getNetworkModuleMatrix(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(matrix => this.moduleSettings = matrix);
+
+        });
+    });
+  }
+
+  private initLocalNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
 
           this.loadData();
 
@@ -164,14 +187,14 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
    */
 
   private loadData() {
-    let id = this.countryId ? this.countryId : this.networkCountryId;
+    let id = this.countryId ? this.countryId : this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     let agencyId = this.agencyId ? this.agencyId : this.networkId;
     this.getAllSeasonsForCountryId(id);
     this.getAlertsNetwork(id);
     this.getCountryContextIndicators(id);
     this.getHazards(id);
     this.initData(id);
-    this.getCountryDataNetwork(agencyId, id);
+    this.getCountryDataNetwork(agencyId, id, this.isLocalNetworkAdmin);
   }
 
   private loadDataForPartnerUser(agencyId, countryId) {
@@ -191,7 +214,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private prepareData() {
-    let id = this.countryId ? this.countryId : this.networkCountryId;
+    let id = this.countryId ? this.countryId : this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     let agencyId = this.agencyId ? this.agencyId : this.networkId;
     this.getAllSeasonsForCountryId(id);
     this.getAlerts(id);
@@ -385,13 +408,19 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getCountryDataNetwork(agencyId, countryId) {
-    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + agencyId + '/' + countryId + "/location")
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((location: any) => {
-        this.countryLocation = location.$value;
-        this.showLoader = false;
-      });
+  private getCountryDataNetwork(agencyId, countryId, isLocalNetworkAdmin) {
+    isLocalNetworkAdmin ? this.af.database.object(Constants.APP_STATUS + "/network/" + agencyId + "/countryCode")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((location: any) => {
+          this.countryLocation = location.$value;
+          this.showLoader = false;
+        }) :
+      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + agencyId + '/' + countryId + "/location")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((location: any) => {
+          this.countryLocation = location.$value;
+          this.showLoader = false;
+        });
   }
 
   private getAlerts(id) {

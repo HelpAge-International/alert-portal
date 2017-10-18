@@ -110,8 +110,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private showingSections: number[] = [];
 
   private isLocalNetworkAdmin: boolean;
-  private planLocalNetworkId:string;
-  private planNetworkCountryId:string;
+  private planLocalNetworkId: string;
+  private planNetworkCountryId: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -151,11 +151,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         if (params["isLocalNetworkAdmin"]) {
           this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
         }
-        if (params["planLocalNetworkId"]) {
-          this.planLocalNetworkId = params["planLocalNetworkId"];
-        }
-        if (params["planNetworkCountryId"]) {
-          this.planNetworkCountryId = params["planNetworkCountryId"];
+        if (params["systemId"]) {
+          this.systemAdminUid = params["systemId"];
         }
 
         if (this.accessToken) {
@@ -370,7 +367,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
           });
       }
     };
-    this.networkCountryId ? networkUser() : normalUser();
+    this.systemAdminUid ? this.getGroups(responsePlan) : this.networkCountryId ? networkUser() : normalUser();
   }
 
   private getGroups(responsePlan: ResponsePlan) {

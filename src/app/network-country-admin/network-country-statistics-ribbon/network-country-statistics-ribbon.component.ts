@@ -1,12 +1,17 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
-  ActionLevel, ActionType, AlertLevels, AlertMessageType, ApprovalStatus, Countries,
+  ActionLevel,
+  ActionType,
+  AlertLevels,
+  AlertMessageType,
+  ApprovalStatus,
+  Countries,
   HazardScenario
 } from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
 import {Subject} from "rxjs/Subject";
-import {AgencyModulesEnabled, NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
+import {NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {UserService} from "../../services/user.service";
@@ -78,6 +83,9 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   private userPermissions: any;
   private hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
 
+  //for local network admin
+  @Input() isLocalNetworkAdmin: boolean;
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private networkService: NetworkService,
@@ -89,7 +97,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
   ngOnInit() {
     // this.normalAccess();
-    this.initNetworkAccess();
+    this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
   }
 
   private initNetworkAccess() {
@@ -120,6 +128,48 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
                       this.recalculateAll();
                     });
                     this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, null, this.networkCountryId, this.networkId, this.systemId)
+                  });
+                });
+              });
+
+            });
+
+
+          this.networkService.getNetworkModuleMatrix(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(matrix => this.userPermissions = matrix);
+
+        });
+    });
+  }
+
+  private initLocalNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this.showLoader = false;
+
+          this.networkService.getSystemIdForNetworkAdmin(this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(systemId => {
+              this.systemId = systemId;
+              console.log(`system id: ${systemId}`);
+
+              this.downloadThreshold(() => {
+                this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
+                  this.initAlerts(this.networkId, () => {
+                    this.getCountryNumberNetworkLocal(this.networkId);
+                    this.getApprovedResponsePlansCount(this.networkId);
+                    this.prepActionService.addUpdater(() => {
+                      this.recalculateAll();
+                    });
+                    this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid, null, this.networkId, this.systemId)
                   });
                 });
               });
@@ -245,6 +295,16 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
       .subscribe((snap) => {
         if (snap.val() != null) {
           this.countryLocation = snap.val().location;
+        }
+      });
+  }
+
+  private getCountryNumberNetworkLocal(agencyId) {
+    this.af.database.object(Constants.APP_STATUS + "/network/" + agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.countryLocation = snap.val().countryCode;
         }
       });
   }

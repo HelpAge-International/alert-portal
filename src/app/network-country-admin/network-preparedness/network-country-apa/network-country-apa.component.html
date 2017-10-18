@@ -1,5 +1,11 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
@@ -18,11 +24,17 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"YOU_ARE_ABOUT_TO_EXPORT" | translate}} <strong>{{documents.length}} {{"DOCUMENT_S" | translate}} </strong>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.WITH_SIZE" | translate}} <strong>{{docsSize | number:'1.0-2'}}MB</strong> {{"ARE_YOU_SURE_YOU_WISH_TO_CONTINUE" | translate}}</p></div>
+        <div class="text-center"><p>{{"YOU_ARE_ABOUT_TO_EXPORT" | translate}} <strong>{{documents.length}}
+          {{"DOCUMENT_S" | translate}} </strong>{{"AGENCY_ADMIN.SETTINGS.DOCUMENTS.WITH_SIZE" | translate}} <strong>{{docsSize
+          | number:'1.0-2'}}MB</strong> {{"ARE_YOU_SURE_YOU_WISH_TO_CONTINUE" | translate}}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">{{"GLOBAL.CANCEL" | translate}}</button>
-        <button type="button" class="btn btn-primary" (click)="exportAllDocsFromModal(documentActionId)">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeExportModal()">{{"GLOBAL.CANCEL" |
+          translate}}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="exportAllDocsFromModal(documentActionId)">
+          {{"GLOBAL.CONFIRM" | translate}}
+        </button>
       </div>
     </div>
   </div>
@@ -59,8 +71,10 @@
           <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
         </button>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/network-country/network-country-create-edit-action">{{"CREATE_CUSTOM_ACTIONS" | translate}}</a>
-          <a class="dropdown-item" routerLink="/network-country/network-country-select-action">{{"SELECT_FROM_GENERIC_ACTIONS" | translate}}</a>
+          <a class="dropdown-item" routerLink="/network-country/network-country-create-edit-action">{{"CREATE_CUSTOM_ACTIONS"
+            | translate}}</a>
+          <a class="dropdown-item" routerLink="/network-country/network-country-select-action">{{"SELECT_FROM_GENERIC_ACTIONS"
+            | translate}}</a>
         </div>
       </div>
     </div>
@@ -136,9 +150,10 @@
 
             <div class="Accordion Preparedness-list">
               <div class="row Preparedness-list__item">
-                <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                  != null ? (action.dueDate
-                  | date:"d MMM ''yy") : '-'}}</strong></div>
+                <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                  <strong>{{action.dueDate
+                    != null ? (action.dueDate
+                    | date:"d MMM ''yy") : '-'}}</strong></div>
                 <div class="col-md-10 col-sm-10">
                   <div class="row">
                     <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -174,11 +189,13 @@
                       </a>
 
                     </div>
-                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">{{"INACTIVE_UNTIL_RED_ALERT_LEVEL" | translate}}
+                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">{{"INACTIVE_UNTIL_RED_ALERT_LEVEL"
+                      | translate}}
 
                       <a
                         *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
-                        [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                        [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">{{"EDIT_ACTION"
+                        | translate}}</a>
                     </div>
                     <div class="col-md-3 col-sm-4 btn-block"
                          *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
@@ -187,11 +204,14 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                    <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                    <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                      translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                    <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                      translate}}</strong></div>
                     <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>
                     </div>
-                    <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                    <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                      != null ?
                       CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName :
                       ("UNASSIGNED" | translate)}}</strong></div>
 
@@ -258,10 +278,12 @@
                       <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                          href="javascript:void(0)" class="btn btn-primary btn-block"
-                         (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                         (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                        translate) :
                         ("ADD_NOTE" | translate)}}</a>
                       <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                         onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                         onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                        translate}}</a>
                       <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                          *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                     </div>
@@ -292,7 +314,8 @@
                           <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
                             <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                             *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin) || permissionsAreEnabled.other.DownloadDocuments"
-                            href="javascript:void(0);" (click)="exportDocument(action, i)">{{"DOWNLOAD" | translate}}</a> |
+                            href="javascript:void(0);"
+                            (click)="exportDocument(action, i)">{{"DOWNLOAD" | translate}}</a> |
                                 <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin"
                                    href="javascript:void(0);" class="text-danger"
                                    (click)="deleteDocument(action, doc.documentId)">{{"DELETE" | translate}}</a></span>
@@ -324,11 +347,13 @@
                   </div>
                   <div class="row">
                     <div class="col-12">
-                      <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ? '(required)' : ''}}</p>
+                      <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ?
+                        '(required)' : ''}}</p>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-12"><label for="docUpload" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" | translate}}</label>
+                    <div class="col-12"><label for="docUpload" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" |
+                      translate}}</label>
                     </div>
                     <input type='file' id="docUpload" (change)="fileChange($event, action)" class="Input-form--hidden"/>
                   </div>
@@ -337,7 +362,8 @@
                       <p *ngIf="action.documents && action.documents.length > 0">{{"ATTACHMENTS" | translate}}</p>
                       <p *ngFor="let attachment of action.documents">
                         <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)" class="text-danger"
-                                                                           (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE" | translate}}</a>
+                                                                           (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE"
+                        | translate}}</a>
                       </p>
                     </div>
                   </div>
@@ -404,21 +430,25 @@
                       <!-- Logic for the clock settings -->
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) >= getNow())">
-                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
+                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy")
+                        : '-'}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) >= getNow())">
-                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
 
@@ -480,7 +510,8 @@
                           </div>
                           <div class="col-md-3 col-sm-4 btn-block"
                                *ngIf="!countrySelected">
-                            <div *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
+                            <div
+                              *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
                               <a href="javascript:void(0)" data-toggle="collapse"
                                  [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
                                  aria-controls="popover_content"
@@ -499,11 +530,14 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
                           <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
                             <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -571,10 +605,12 @@
                             <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                                href="javascript:void(0)" class="btn btn-primary btn-block"
-                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                              translate) :
                               ("ADD_NOTE" | translate)}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                              translate}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                                *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                           </div>
@@ -637,11 +673,13 @@
                         </div>
                         <div class="row">
                           <div class="col-12">
-                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ? '(required)' : ''}}</p>
+                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span>
+                              {{action.requireDoc ? '(required)' : ''}}</p>
                           </div>
                         </div>
                         <div class="row">
-                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" | translate}}</label>
+                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS"
+                            | translate}}</label>
                           </div>
                           <input type='file' id="docUpload{{action.id}}" name="file"
                                  (change)="fileChange($event, action, action.id)"
@@ -654,7 +692,8 @@
                             <p *ngFor="let attachment of action.attachments">
                               <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)"
                                                                                  class="text-danger"
-                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE" | translate}}</a>
+                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE"
+                              | translate}}</a>
                             </p>
                           </div>
                         </div>
@@ -663,7 +702,8 @@
                         <a href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                         <a href="javascript:void(0)" class="btn btn-block"
-                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                          translate}}</a>
                       </div>
                     </div>
                   </div>
@@ -714,21 +754,25 @@
                       <!-- Logic for the clock settings -->
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) >= getNow())">
-                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
+                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy")
+                        : '-'}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) >= getNow())">
-                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
 
@@ -810,11 +854,14 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
                           <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
                             <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -882,10 +929,12 @@
                             <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                                href="javascript:void(0)" class="btn btn-primary btn-block"
-                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                              translate) :
                               ("ADD_NOTE" | translate)}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                              translate}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                                *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                           </div>
@@ -948,11 +997,13 @@
                         </div>
                         <div class="row">
                           <div class="col-12">
-                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ? '(required)' : ''}}</p>
+                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span>
+                              {{action.requireDoc ? '(required)' : ''}}</p>
                           </div>
                         </div>
                         <div class="row">
-                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" | translate}}</label>
+                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS"
+                            | translate}}</label>
                           </div>
                           <input type='file' id="docUpload{{action.id}}" name="file"
                                  (change)="fileChange($event, action, action.id)"
@@ -965,7 +1016,8 @@
                             <p *ngFor="let attachment of action.attachments">
                               <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)"
                                                                                  class="text-danger"
-                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE" | translate}}</a>
+                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE"
+                              | translate}}</a>
                             </p>
                           </div>
                         </div>
@@ -974,7 +1026,8 @@
                         <a href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                         <a href="javascript:void(0)" class="btn btn-block"
-                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                          translate}}</a>
                       </div>
                     </div>
                   </div>
@@ -997,9 +1050,11 @@
           <div class="col-sm-12">
             <h2>{{"UNASSIGNED_ACTIONS" | translate}}</h2>
             <a data-toggle="collapse" href="#collapseTwo" [attr.aria-expanded]="allUnassigned" class="Hide-all"
-               [ngStyle]="{'display': allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(false)">{{"HIDE_ALL" | translate}}</a>
+               [ngStyle]="{'display': allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(false)">{{"HIDE_ALL"
+              | translate}}</a>
             <a data-toggle="collapse" href="#collapseTwo" [attr.aria-expanded]="allUnassigned" class="Show-all"
-               [ngStyle]="{'display': !allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(true)">{{"SHOW_ALL" | translate}}</a>
+               [ngStyle]="{'display': !allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(true)">{{"SHOW_ALL"
+              | translate}}</a>
           </div>
         </div>
       </div>
@@ -1018,9 +1073,10 @@
                 <div class="Accordion Preparedness-list">
                   <div class="Accordion Preparedness-list">
                     <div class="row Preparedness-list__item">
-                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                        != null ? (action.dueDate
-                        | date:"d MMM ''yy") : '-'}}</strong></div>
+                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                        <strong>{{action.dueDate
+                          != null ? (action.dueDate
+                          | date:"d MMM ''yy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -1061,7 +1117,8 @@
                                                 && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Assign))">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                                aria-expanded="false" aria-controls="popover_content"
-                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION" | translate}}</a>
+                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                              | translate}}</a>
 
                             <a
                               *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
@@ -1075,12 +1132,15 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
                           <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
                             <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>
                           </div>
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -1149,10 +1209,12 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                            translate) :
                             ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                            translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                         </div>
@@ -1218,9 +1280,10 @@
                 <div class="Accordion Preparedness-list">
                   <div class="Accordion Preparedness-list">
                     <div class="row Preparedness-list__item">
-                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                        != null ? (action.dueDate
-                        | date:"d MMM ''yy") : '-'}}</strong></div>
+                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                        <strong>{{action.dueDate
+                          != null ? (action.dueDate
+                          | date:"d MMM ''yy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -1261,7 +1324,8 @@
                                                 && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Assign))">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                                aria-expanded="false" aria-controls="popover_content"
-                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION" | translate}}</a>
+                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                              | translate}}</a>
 
                             <a
                               *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
@@ -1275,12 +1339,15 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
                           <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
                             <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>
                           </div>
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -1349,10 +1416,12 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                            translate) :
                             ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                            translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                         </div>
@@ -1414,9 +1483,11 @@
           <div class="col-sm-12">
             <h2>Archived Actions</h2>
             <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Hide-all"
-               [ngStyle]="{'display': allArchived ? 'inline' : 'none'}" (click)="showAllArchived(false)">{{"HIDE_ALL" | translate}}</a>
+               [ngStyle]="{'display': allArchived ? 'inline' : 'none'}" (click)="showAllArchived(false)">{{"HIDE_ALL" |
+              translate}}</a>
             <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Show-all"
-               [ngStyle]="{'display': !allArchived ? 'inline' : 'none'}" (click)="showAllArchived(true)">{{"SHOW_ALL" | translate}}</a>
+               [ngStyle]="{'display': !allArchived ? 'inline' : 'none'}" (click)="showAllArchived(true)">{{"SHOW_ALL" |
+              translate}}</a>
           </div>
         </div>
       </div>
@@ -1433,9 +1504,10 @@
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                      != null ? (action.dueDate
-                      | date:"d MMM ''yy") : '-'}}</strong></div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                      <strong>{{action.dueDate
+                        != null ? (action.dueDate
+                        | date:"d MMM ''yy") : '-'}}</strong></div>
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -1476,7 +1548,8 @@
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                           <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
                              aria-expanded="false" aria-controls="popover_content" (click)="reactivate(action)"
-                             class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">{{"GLOBAL.RE_ACTIVATE" | translate}}</a>
+                             class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">{{"GLOBAL.RE_ACTIVATE"
+                            | translate}}</a>
 
                           <a
                             *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
@@ -1490,12 +1563,15 @@
                         </div>
                       </div>
                       <div class="row">
-                        <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                        <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong>
+                        <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                          translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                        <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                          translate}}</strong>
                         </div>
                         <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>
                         </div>
-                        <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                        <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                          != null ?
                           CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}</strong></div>
 
@@ -1562,10 +1638,12 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                            translate) :
                             ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                            translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                         </div>
@@ -1650,8 +1728,10 @@
           <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
         </button>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/network-country/network-country-create-edit-action">{{"CREATE_CUSTOM_ACTIONS" | translate}}</a>
-          <a class="dropdown-item" routerLink="/network-country/network-country-select-action">{{"SELECT_FROM_GENERIC_ACTIONS" | translate}}</a>
+          <a class="dropdown-item" routerLink="/network-country/network-country-create-edit-action">{{"CREATE_CUSTOM_ACTIONS"
+            | translate}}</a>
+          <a class="dropdown-item" routerLink="/network-country/network-country-select-action">{{"SELECT_FROM_GENERIC_ACTIONS"
+            | translate}}</a>
         </div>
       </div>
     </div>
@@ -1714,9 +1794,10 @@
 
             <div class="Accordion Preparedness-list">
               <div class="row Preparedness-list__item">
-                <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                  != null ? (action.dueDate
-                  | date:"d MMM ''yy") : '-'}}</strong></div>
+                <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                  <strong>{{action.dueDate
+                    != null ? (action.dueDate
+                    | date:"d MMM ''yy") : '-'}}</strong></div>
                 <div class="col-md-10 col-sm-10">
                   <div class="row">
                     <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -1752,17 +1833,22 @@
                       </a>
 
                     </div>
-                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">{{"INACTIVE_UNTIL_RED_ALERT_LEVEL" | translate}}
+                    <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">{{"INACTIVE_UNTIL_RED_ALERT_LEVEL"
+                      | translate}}
 
                       <a
                         *ngIf="((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                        [routerLink]="['/network-country/network-country-create-edit-action', action.id]" class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                        [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
+                        class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                    <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
-                    <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                    <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                      translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                    <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                      translate}}</strong></div>
+                    <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                      != null ?
                       CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName :
                       ("UNASSIGNED" | translate)}}</strong></div>
 
@@ -1829,10 +1915,12 @@
                       <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || (action.noteId != null && action.noteId != '')"
                          href="javascript:void(0)" class="btn btn-primary btn-block"
-                         (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                         (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                        translate) :
                         ("ADD_NOTE" | translate)}}</a>
                       <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                         onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                         onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                        translate}}</a>
                       <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                          *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                     </div>
@@ -1863,7 +1951,8 @@
                           <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
                             <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
                             *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin) || !userType"
-                            href="javascript:void(0);" (click)="exportDocument(action, i)">{{"DOWNLOAD" | translate}}</a> |
+                            href="javascript:void(0);"
+                            (click)="exportDocument(action, i)">{{"DOWNLOAD" | translate}}</a> |
                                 <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin || !userType"
                                    href="javascript:void(0);" class="text-danger"
                                    (click)="deleteDocument(action, doc.documentId)">{{"DELETE" | translate}}</a></span>
@@ -1895,11 +1984,13 @@
                   </div>
                   <div class="row">
                     <div class="col-12">
-                      <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ? '(required)' : ''}}</p>
+                      <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ?
+                        '(required)' : ''}}</p>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-12"><label for="docUpload" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" | translate}}</label>
+                    <div class="col-12"><label for="docUpload" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" |
+                      translate}}</label>
                     </div>
                     <input type='file' id="docUpload" (change)="fileChange($event, action)" class="Input-form--hidden"/>
                   </div>
@@ -1908,7 +1999,8 @@
                       <p *ngIf="action.documents && action.documents.length > 0">{{"ATTACHMENTS" | translate}}</p>
                       <p *ngFor="let attachment of action.documents">
                         <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)" class="text-danger"
-                                                                           (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE" | translate}}</a>
+                                                                           (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE"
+                        | translate}}</a>
                       </p>
                     </div>
                   </div>
@@ -1975,21 +2067,25 @@
                       <!-- Logic for the clock settings -->
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) >= getNow())">
-                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
+                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy")
+                        : '-'}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) >= getNow())">
-                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
 
@@ -2051,7 +2147,8 @@
                           </div>
                           <div class="col-md-3 col-sm-4 btn-block"
                                *ngIf="!countrySelected">
-                            <div *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
+                            <div
+                              *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
                               <a href="javascript:void(0)" data-toggle="collapse"
                                  [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
                                  aria-controls="popover_content"
@@ -2060,16 +2157,19 @@
 
                             <a
                               *ngIf="((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                              [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
+                              [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
 
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
 
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -2137,10 +2237,12 @@
                             <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || (action.noteId != null && action.noteId != '')"
                                href="javascript:void(0)" class="btn btn-primary btn-block"
-                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                              translate) :
                               ("ADD_NOTE" | translate)}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                              translate}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                                *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                           </div>
@@ -2203,11 +2305,13 @@
                         </div>
                         <div class="row">
                           <div class="col-12">
-                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ? '(required)' : ''}}</p>
+                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span>
+                              {{action.requireDoc ? '(required)' : ''}}</p>
                           </div>
                         </div>
                         <div class="row">
-                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" | translate}}</label>
+                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS"
+                            | translate}}</label>
                           </div>
                           <input type='file' id="docUpload{{action.id}}" name="file"
                                  (change)="fileChange($event, action, action.id)"
@@ -2220,7 +2324,8 @@
                             <p *ngFor="let attachment of action.attachments">
                               <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)"
                                                                                  class="text-danger"
-                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE" | translate}}</a>
+                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE"
+                              | translate}}</a>
                             </p>
                           </div>
                         </div>
@@ -2229,7 +2334,8 @@
                         <a href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                         <a href="javascript:void(0)" class="btn btn-block"
-                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                          translate}}</a>
                       </div>
                     </div>
                   </div>
@@ -2280,21 +2386,25 @@
                       <!-- Logic for the clock settings -->
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) >= getNow())">
-                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy") : '-'}}</strong>
+                        {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy")
+                        : '-'}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && ((action.updatedAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && ((action.isCompleteAt + action.computedClockSetting) >= getNow())">
-                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM
+                        {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                        date:"d MMM
                         ''yy"}}</strong>
                       </div>
 
@@ -2376,11 +2486,14 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
                           <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
                             <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -2448,10 +2561,12 @@
                             <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                                href="javascript:void(0)" class="btn btn-primary btn-block"
-                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                              translate) :
                               ("ADD_NOTE" | translate)}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                               onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                              translate}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                                *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                           </div>
@@ -2514,11 +2629,13 @@
                         </div>
                         <div class="row">
                           <div class="col-12">
-                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span> {{action.requireDoc ? '(required)' : ''}}</p>
+                            <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span>
+                              {{action.requireDoc ? '(required)' : ''}}</p>
                           </div>
                         </div>
                         <div class="row">
-                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS" | translate}}</label>
+                          <div class="col-12"><label for="docUpload{{action.id}}" class="btn btn-outline-primary">{{"UPLOAD_DOCUMENTS"
+                            | translate}}</label>
                           </div>
                           <input type='file' id="docUpload{{action.id}}" name="file"
                                  (change)="fileChange($event, action, action.id)"
@@ -2531,7 +2648,8 @@
                             <p *ngFor="let attachment of action.attachments">
                               <strong>{{attachment.name}}</strong>&nbsp;&nbsp;<a href="javascript:void(0)"
                                                                                  class="text-danger"
-                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE" | translate}}</a>
+                                                                                 (click)="removeAttachment(action, attachment)">{{"GLOBAL.REMOVE"
+                              | translate}}</a>
                             </p>
                           </div>
                         </div>
@@ -2540,7 +2658,8 @@
                         <a href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                         <a href="javascript:void(0)" class="btn btn-block"
-                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                           onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                          translate}}</a>
                       </div>
                     </div>
                   </div>
@@ -2563,9 +2682,11 @@
           <div class="col-sm-12">
             <h2>{{"UNASSIGNED_ACTIONS" | translate}}</h2>
             <a data-toggle="collapse" href="#collapseTwo" [attr.aria-expanded]="allUnassigned" class="Hide-all"
-               [ngStyle]="{'display': allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(false)">{{"HIDE_ALL" | translate}}</a>
+               [ngStyle]="{'display': allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(false)">{{"HIDE_ALL"
+              | translate}}</a>
             <a data-toggle="collapse" href="#collapseTwo" [attr.aria-expanded]="allUnassigned" class="Show-all"
-               [ngStyle]="{'display': !allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(true)">{{"SHOW_ALL" | translate}}</a>
+               [ngStyle]="{'display': !allUnassigned ? 'inline' : 'none'}" (click)="showAllUnassigned(true)">{{"SHOW_ALL"
+              | translate}}</a>
           </div>
         </div>
       </div>
@@ -2584,9 +2705,10 @@
                 <div class="Accordion Preparedness-list">
                   <div class="Accordion Preparedness-list">
                     <div class="row Preparedness-list__item">
-                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                        != null ? (action.dueDate
-                        | date:"d MMM ''yy") : '-'}}</strong></div>
+                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                        <strong>{{action.dueDate
+                          != null ? (action.dueDate
+                          | date:"d MMM ''yy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -2625,19 +2747,23 @@
                           <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                                aria-expanded="false" aria-controls="popover_content"
-                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION" | translate}}</a>
+                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                              | translate}}</a>
 
                             <a
                               *ngIf="((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                              [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
+                              [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
 
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -2706,10 +2832,12 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                            translate) :
                             ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                            translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                         </div>
@@ -2775,9 +2903,10 @@
                 <div class="Accordion Preparedness-list">
                   <div class="Accordion Preparedness-list">
                     <div class="row Preparedness-list__item">
-                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                        != null ? (action.dueDate
-                        | date:"d MMM ''yy") : '-'}}</strong></div>
+                      <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                        <strong>{{action.dueDate
+                          != null ? (action.dueDate
+                          | date:"d MMM ''yy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -2818,7 +2947,8 @@
                                                 && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Assign))">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                                aria-expanded="false" aria-controls="popover_content"
-                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION" | translate}}</a>
+                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                              | translate}}</a>
 
                             <a
                               *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
@@ -2832,12 +2962,15 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong></div>
+                          <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                            translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                          <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                            translate}}</strong></div>
                           <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
                             <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>
                           </div>
-                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                          <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                            != null ?
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
@@ -2906,10 +3039,12 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                            translate) :
                             ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                            translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                         </div>
@@ -2971,9 +3106,11 @@
           <div class="col-sm-12">
             <h2>Archived Actions</h2>
             <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Hide-all"
-               [ngStyle]="{'display': allArchived ? 'inline' : 'none'}" (click)="showAllArchived(false)">{{"HIDE_ALL" | translate}}</a>
+               [ngStyle]="{'display': allArchived ? 'inline' : 'none'}" (click)="showAllArchived(false)">{{"HIDE_ALL" |
+              translate}}</a>
             <a data-toggle="collapse" href="#collapseThree" [attr.aria-expanded]="allArchived" class="Show-all"
-               [ngStyle]="{'display': !allArchived ? 'inline' : 'none'}" (click)="showAllArchived(true)">{{"SHOW_ALL" | translate}}</a>
+               [ngStyle]="{'display': !allArchived ? 'inline' : 'none'}" (click)="showAllArchived(true)">{{"SHOW_ALL" |
+              translate}}</a>
           </div>
         </div>
       </div>
@@ -2990,9 +3127,10 @@
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
                   <div class="row Preparedness-list__item">
-                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}} <strong>{{action.dueDate
-                      != null ? (action.dueDate
-                      | date:"d MMM ''yy") : '-'}}</strong></div>
+                    <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
+                      <strong>{{action.dueDate
+                        != null ? (action.dueDate
+                        | date:"d MMM ''yy") : '-'}}</strong></div>
                     <div class="col-md-10 col-sm-10">
                       <div class="row">
                         <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -3033,22 +3171,26 @@
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                           <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
                              aria-expanded="false" aria-controls="popover_content" (click)="reactivate(action)"
-                             class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">{{"GLOBAL.RE_ACTIVATE" | translate}}</a>
+                             class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">{{"GLOBAL.RE_ACTIVATE"
+                            | translate}}</a>
 
                           <a
                             *ngIf="((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                            [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
+                            [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
 
                       </div>
                       <div class="row">
-                        <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
-                        <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] | translate}}</strong>
+                        <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                          translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                        <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
+                          translate}}</strong>
                         </div>
                         <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}: <strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>
                         </div>
-                        <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee) != null ?
+                        <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                          != null ?
                           CURRENT_USERS.get(action.asignee).firstName + ' ' + CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}</strong></div>
 
@@ -3115,10 +3257,12 @@
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
-                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" | translate) :
+                             (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                            translate) :
                             ("ADD_NOTE" | translate)}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" | translate}}</a>
+                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                            translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
                         </div>

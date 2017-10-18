@@ -92,6 +92,23 @@ export class PrepActionService {
     });
   }
 
+  public initActionsWithInfoNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
+                                     agencyId: string, systemId: string) {
+    this.uid = uid;
+    this.ngUnsubscribe = ngUnsubscribe;
+    this.isMPA = isMPA;
+    this.agencyId = agencyId;
+    this.countryId = agencyId;
+    this.systemAdminId = systemId;
+    this.getDefaultClockSettingsNetworkLocal(af, this.agencyId, () => {
+      if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+      }
+      this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
+      this.init(af, "action", this.agencyId, isMPA, PrepSourceTypes.COUNTRY);
+    });
+  }
+
   public initOneAction(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, actionId: string, updated: (action: PreparednessAction) => void) {
     this.ngUnsubscribe = ngUnsubscribe;
     af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
@@ -123,6 +140,15 @@ export class PrepActionService {
     });
   }
 
+  public initOneActionNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, agencyId: string, systemId: string, actionId: string, updated: (action: PreparednessAction) => void) {
+    this.ngUnsubscribe = ngUnsubscribe;
+    this.getDefaultClockSettingsNetworkLocal(af, agencyId, () => {
+      this.initSpecific(af, "actionCHS", systemId, PrepSourceTypes.SYSTEM, actionId, updated);
+      this.initSpecific(af, "actionMandated", agencyId, PrepSourceTypes.AGENCY, actionId, updated);
+      this.initSpecific(af, "action", agencyId, PrepSourceTypes.COUNTRY, actionId, updated);
+    });
+  }
+
   /**
    * Load in the default clock settings from the countryOffice node.
    * We need these to do the bulk of the calculations with the preparedness actions in terms of the state
@@ -142,6 +168,19 @@ export class PrepActionService {
 
   private getDefaultClockSettingsNetwork(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
     af.database.object(Constants.APP_STATUS + "/networkCountry/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.defaultClockValue = (+(snap.val().preparedness.value));
+        this.defaultClockType = (+(snap.val().preparedness.durationType));
+        if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+          defaultClockSettingsAquired();
+          this.ranClockInitialiser = true;
+        }
+      });
+  }
+
+  private getDefaultClockSettingsNetworkLocal(af: AngularFire, agencyId: string, defaultClockSettingsAquired: () => void) {
+    af.database.object(Constants.APP_STATUS + "/network/" + agencyId + "/clockSettings", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.defaultClockValue = (+(snap.val().preparedness.value));

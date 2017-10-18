@@ -1,26 +1,33 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
 import {
-  ActionLevel, ActionStatusMin, ActionType, AlertMessageType, ApprovalStatus, Currency,
-  FileExtensionsEnding, Privacy, SizeType, UserType, DocumentType
+  ActionLevel,
+  ActionStatusMin,
+  ActionType,
+  AlertMessageType,
+  ApprovalStatus,
+  Currency,
+  DocumentType,
+  FileExtensionsEnding,
+  Privacy,
+  SizeType,
+  UserType
 } from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
-import {
-  AgencyModulesEnabled, CountryPermissionsMatrix, NetworkModulesEnabledModel,
-  PageControlService
-} from "../../../services/pagecontrol.service";
+import {NetworkModulesEnabledModel, PageControlService} from "../../../services/pagecontrol.service";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {NetworkService} from "../../../services/network.service";
 import {NotificationService} from "../../../services/notification.service";
 import {UserService} from "../../../services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
-import {CommonUtils} from "../../../utils/CommonUtils";
 import {ModelDepartment} from "../../../model/department.model";
 import {
-  PrepActionService, PreparednessUser, PreparednessAction,
-  PreparednessNotes
+  PrepActionService,
+  PreparednessAction,
+  PreparednessNotes,
+  PreparednessUser
 } from "../../../services/prepactions.service";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 import {MessageModel} from "../../../model/message.model";
@@ -54,6 +61,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private agencyCountryMap: Map<string, string>;
   private showLoader: boolean;
   private uid: string;
+
+  //local network
+  @Input() isLocalNetworkAdmin: boolean;
 
 
   //copy over from response plan
@@ -138,7 +148,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.initNetworkAccess();
+    this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
   }
 
   private initNetworkAccess() {
@@ -165,6 +175,41 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
               this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, true,
                 this.networkCountryId, this.networkId, this.systemAdminId);
+              this.initDocumentTypes();
+            });
+
+          this.networkService.getNetworkModuleMatrix(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(matrix => this.modulesAreEnabled = matrix);
+
+          // Currency
+          // this.calculateCurrency();
+        });
+    });
+  }
+
+  private initLocalNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+      this.assignActionAsignee = this.uid;
+      this.filterAssigned = "0";
+      this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this.getStaffDetails(this.uid, true);
+
+          this.networkService.getSystemIdForNetworkAdmin(this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(systemId => {
+              this.systemAdminId = systemId;
+              this.showLoader = false;
+
+              this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid, true, this.networkId, this.systemAdminId);
               this.initDocumentTypes();
             });
 
@@ -295,10 +340,11 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
       .then(() => {
 
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
           .subscribe(task => {
             // Send notification to the assignee
             let notification = new MessageModel();
@@ -364,11 +410,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     action.note = '';
     action.noteId = '';
 
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     if (noteId != null && noteId !== '') {
-      this.af.database.object(Constants.APP_STATUS + '/note/' + this.networkCountryId + '/' + action.id + '/' + noteId).set(note);
+      this.af.database.object(Constants.APP_STATUS + '/note/' + id + '/' + action.id + '/' + noteId).set(note);
     }
     else {
-      this.af.database.list(Constants.APP_STATUS + '/note/' + this.networkCountryId + '/' + action.id).push(note);
+      this.af.database.list(Constants.APP_STATUS + '/note/' + id + '/' + action.id).push(note);
     }
   }
 
@@ -379,7 +426,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   // Delete note
+
   protected deleteNote(note: PreparednessUser, action: PreparednessAction) {
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.af.database.list(Constants.APP_STATUS + '/note/' + this.networkCountryId + '/' + action.id + '/' + note.id).remove();
   }
 
@@ -445,6 +494,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -453,7 +503,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + action.id).update({
+          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
             isComplete: true,
             isCompleteAt: new Date().getTime()
           });
@@ -471,7 +521,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + action.id).update({
+        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
           isComplete: true,
           isCompleteAt: new Date().getTime()
         });
@@ -487,6 +537,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   // Uploading a file to Firebase
+  //TODO NEED TO FIGURE OUT WHERE TO PUSH FOR LOCAL NETWORK ADMIN
   protected uploadFile(action: PreparednessAction, file) {
     let document = {
       fileName: file.name,
@@ -499,16 +550,17 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       uploadedBy: this.uid
     };
 
-    this.af.database.list(Constants.APP_STATUS + '/document/' + this.networkCountryId).push(document)
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.list(Constants.APP_STATUS + '/document/' + id).push(document)
       .then(_ => {
         let docKey = _.key;
         let doc = {};
         doc[docKey] = true;
 
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + action.id + '/documents').update(doc)
+        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id + '/documents').update(doc)
           .then(() => {
             new Promise((res, rej) => {
-              var storageRef = this.firebase.storage().ref().child('documents/' + this.networkCountryId + '/' + docKey + '/' + file.name);
+              var storageRef = this.firebase.storage().ref().child('documents/' + id + '/' + docKey + '/' + file.name);
               var uploadTask = storageRef.put(file);
               uploadTask.on('state_changed', function (snapshot) {
               }, function (error) {
@@ -521,7 +573,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
               .then(result => {
                 document.filePath = "" + result;
 
-                this.af.database.object(Constants.APP_STATUS + '/document/' + this.networkCountryId + '/' + docKey).set(document);
+                this.af.database.object(Constants.APP_STATUS + '/document/' + id + '/' + docKey).set(document);
               })
               .catch(err => {
                 console.log(err, 'You do not have access!');
@@ -540,8 +592,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   // Remove document
   protected purgeDocumentReference(action: PreparednessAction, docKey) {
-    this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + action.id + '/documents/' + docKey).set(null);
-    this.af.database.object(Constants.APP_STATUS + '/document/' + this.networkCountryId + '/' + docKey).set(null);
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id + '/documents/' + docKey).set(null);
+    this.af.database.object(Constants.APP_STATUS + '/document/' + id + '/' + docKey).set(null);
   }
 
   protected removeAttachment(action, file) {
@@ -555,12 +608,13 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   // Delete document from firebase
   protected deleteDocument(action: PreparednessAction, docId: string) {
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     for (let x of action.documents) {
       if (x.documentId == docId) {
         // Deleting this one!
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + action.id + '/documents/' + x.documentId).set(null);
-        this.af.database.object(Constants.APP_STATUS + '/document/' + this.networkCountryId + '/' + x.documentId).set(null);
-        this.firebase.storage().ref().child('documents/' + this.networkCountryId + "/" + x.documentId + "/" + x.fileName).delete();
+        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id + '/documents/' + x.documentId).set(null);
+        this.af.database.object(Constants.APP_STATUS + '/document/' + id + '/' + x.documentId).set(null);
+        this.firebase.storage().ref().child('documents/' + id + "/" + x.documentId + "/" + x.fileName).delete();
       }
     }
     // if we make it here we can't find the document requesting to be deleted
@@ -639,7 +693,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     let update = {
       isArchived: false
     };
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + action.id).update(update);
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id).update(update);
   }
 
   /**

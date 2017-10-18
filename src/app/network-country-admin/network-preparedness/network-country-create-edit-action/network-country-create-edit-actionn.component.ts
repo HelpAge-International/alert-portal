@@ -108,6 +108,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
   private now: Date = new Date();
 
+  //for local network admin
+  private isLocalNetworkAdmin: boolean;
+
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -138,52 +141,93 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   ngOnInit() {
-    this.initNetworkAccess();
-  }
-
-  private initNetworkAccess() {
     this.route.params.subscribe((params: Params) => {
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
       if (params['id']) {
         this.action.id = params['id'];
         this.editDisableLoading = true;
       }
+      this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    })
 
-      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-        this.showLoader = true;
-        this.uid = user.uid;
-        this.getStaffDetails(this.uid, true);
+  }
 
-        //get network id
-        this.networkService.getSelectedIdObj(user.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(selection => {
-            this.showLoader = false;
-            this.networkId = selection["id"];
-            this.networkCountryId = selection["networkCountryId"];
+  private initNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+      this.getStaffDetails(this.uid, true);
 
-            this.networkService.getNetworkModuleMatrix(this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(modules => this.moduleAccess = modules);
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.showLoader = false;
+          this.networkId = selection["id"];
+          this.networkCountryId = selection["networkCountryId"];
 
-            this.getHazards();
-            // this.initStaff();
-            this.calculateCurrency();
+          this.networkService.getNetworkModuleMatrix(this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => this.moduleAccess = modules);
 
-            this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(systemId => {
-                this.systemId = systemId;
+          this.getHazards();
+          // this.initStaff();
+          this.calculateCurrency();
 
-                if (this.action.id != null) {
-                  this.showDueDate = true;
-                  this.initFromExistingActionId(true, true);
-                }
-                else {
-                  this.action.isAllHazards = true;
-                }
-              });
-          });
-      });
+          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(systemId => {
+              this.systemId = systemId;
+
+              if (this.action.id != null) {
+                this.showDueDate = true;
+                this.initFromExistingActionId(true, true);
+              }
+              else {
+                this.action.isAllHazards = true;
+              }
+            });
+        });
+    });
+  }
+
+  private initLocalNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+      this.getStaffDetails(this.uid, true);
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.showLoader = false;
+          this.networkId = selection["id"];
+
+          this.networkService.getNetworkModuleMatrix(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => this.moduleAccess = modules);
+
+          this.getHazards();
+          // this.initStaff();
+          this.calculateCurrency();
+
+          this.networkService.getSystemIdForNetworkAdmin(this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(systemId => {
+              this.systemId = systemId;
+
+              if (this.action.id != null) {
+                this.showDueDate = true;
+                this.initFromExistingActionId(true, true);
+              }
+              else {
+                this.action.isAllHazards = true;
+              }
+            });
+        });
     });
   }
 
@@ -196,6 +240,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    * Initialisation
    */
   public initFromExistingActionId(canEditMPA: boolean, canEditAPA: boolean) {
+    this.isLocalNetworkAdmin ? this.loadForLocalNetworkAdmin(canEditMPA, canEditAPA) : this.loadForNetworkCountry(canEditMPA, canEditAPA);
+  }
+
+  private loadForNetworkCountry(canEditMPA: boolean, canEditAPA: boolean) {
     this.prepActionService.initOneActionNetwork(this.af, this.ngUnsubscribe, this.networkCountryId, this.networkId, this.systemId, this.action.id, (action) => {
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
@@ -203,6 +251,58 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         }
         else {
           this.router.navigateByUrl("/network-country/network-country-apa");
+        }
+      }
+      if (action.type == ActionLevel.MPA) {
+        this.showDueDate = true;
+        this.editDisableLoading = false;
+      }
+      else {
+        this.initialiseListOfHazardsHazards();
+      }
+
+      this.action.id = action.id;
+      this.action.type = action.type;
+      this.action.level = action.level;
+      this.action.task = action.task;
+      this.action.requireDoc = action.requireDoc;
+      this.action.dueDate = action.dueDate;
+      if (action.assignedHazards != null) {
+        for (let x of action.assignedHazards) {
+          this.action.hazards.set((+x), true);
+        }
+      }
+      this.action.asignee = action.asignee;
+      this.action.department = action.department;
+      this.action.budget = action.budget;
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isComplete = action.isComplete;
+      this.action.isCompleteAt = action.isCompleteAt;
+      if (action.frequencyValue != null && action.frequencyBase != null) {
+        console.log("Frequency Values are here!");
+        this.action.isFrequencyActive = true;
+        this.action.frequencyType = action.frequencyBase;
+        this.action.frequencyQuantity = action.frequencyValue;
+      }
+      this.action.computedClockSetting = action.computedClockSetting;
+
+      if (!this.oldAction) {
+        this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
+      }
+
+      console.log(action);
+      console.log(this.action);
+    });
+  }
+
+  private loadForLocalNetworkAdmin(canEditMPA: boolean, canEditAPA: boolean) {
+    this.prepActionService.initOneActionNetworkLocal(this.af, this.ngUnsubscribe, this.networkId, this.systemId, this.action.id, (action) => {
+      if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/network/local-network-preparedness-mpa");
+        }
+        else {
+          this.router.navigateByUrl("/network/local-network-preparedness-apa");
         }
       }
       if (action.type == ActionLevel.MPA) {
@@ -273,7 +373,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private initialiseListOfHazardsHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/alert/" + this.networkCountryId, {preserveSnapshot: true})
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + id, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
@@ -307,7 +408,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    * Initialising hazards
    */
   private getHazards() {
-    let id = this.countryId ? this.countryId : this.networkCountryId;
+    let id = this.countryId ? this.countryId : this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.af.database.list(Constants.APP_STATUS + "/hazard/" + id, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
@@ -440,10 +541,11 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         updateObj.calculatedIsComplete = null;
       }
 
+      let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
       if (this.action.id != null) {
         // Updating
         console.log(updateObj);
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.action.id).update(updateObj).then(() => {
+        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
 
           if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
             // Send notification to the assignee
@@ -466,7 +568,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         // Saving
         updateObj.createdAt = new Date().getTime();
         console.log(updateObj);
-        this.af.database.list(Constants.APP_STATUS + "/action/" + this.networkCountryId).push(updateObj).then(_ => {
+        this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
 
           if (updateObj.asignee) {
             // Send notification to the assignee
@@ -621,8 +723,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     };
     // this.closeActionCancel('archive-action');
     jQuery("#archive-action").modal('hide');
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.action.id).update(updateObj).then(() => {
-      this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa").then();
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+      this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
     });
   }
 
@@ -632,8 +735,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   public deleteAction() {
     // this.closeActionCancel('delete-action');
     jQuery("#delete-action").modal('hide');
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.networkCountryId + "/" + this.action.id).set(null).then(() => {
-      this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa").then();
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).set(null).then(() => {
+      this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
     });
   }
 

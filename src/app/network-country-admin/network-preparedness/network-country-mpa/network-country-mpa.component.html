@@ -1,5 +1,11 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
@@ -67,7 +73,7 @@
           <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
         </button>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/network-country/network-country-create-edit-action">{{"CREATE_CUSTOM_ACTIONS"
+          <a class="dropdown-item" [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action',{'isLocalNetworkAdmin':true}] :['/network-country/network-country-create-edit-action']">{{"CREATE_CUSTOM_ACTIONS"
             | translate}}</a>
           <a class="dropdown-item" routerLink="/network-country/network-country-select-action">{{"SELECT_FROM_GENERIC_ACTIONS"
             | translate}}</a>
@@ -252,13 +258,13 @@
 
                             <a
                               *ngIf="action.asignee == uid"
-                              [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
+                              [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
                           <!--<div class="col-md-3 col-sm-4 btn-block"-->
-                               <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
-                            <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                               <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>-->
+                          <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
+                          <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                          <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>-->
                           <!--</div>-->
                         </div>
                         <div class="row">
@@ -2609,13 +2615,13 @@
 
                             <a
                               *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                              [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
+                              [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
                           <!--<div class="col-md-3 col-sm-4 btn-block"-->
-                               <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
-                            <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                               <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>-->
+                          <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
+                          <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                          <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>-->
                           <!--</div>-->
                         </div>
                         <div class="row">
@@ -2624,7 +2630,7 @@
                           <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
                             translate}}</strong></div>
                           <!--<div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:-->
-                            <!--<strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>-->
+                          <!--<strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>-->
                           <!--</div>-->
                           <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
                             != null ?
@@ -3057,13 +3063,13 @@
                             | translate}}</a>
 
                           <a
-                            [routerLink]="['/network-country/network-country-create-edit-action', action.id]"
+                            [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
                         <!--<div class="col-md-3 col-sm-4 btn-block"-->
-                             <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
-                          <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                             <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}:</a>-->
+                        <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
+                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
+                        <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}:</a>-->
                         <!--</div>-->
                       </div>
                       <div class="row">

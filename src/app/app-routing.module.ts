@@ -188,6 +188,8 @@ import {NetworkCountryProfileStockCapacityComponent} from "./network-country-adm
 import {NetworkCountryProfileDocumentsComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-documents/network-country-profile-documents.component";
 import {NetworkCountryProfileContactsComponent} from "./network-country-admin/network-country-office-profile/network-country-profile-contacts/network-country-profile-contacts.component";
 import {LocalNetworkPlansComponent} from "./local-network-admin/local-network-plans/local-network-plans.component";
+import {LocalNetworkPreparednessComponent} from "./local-network-admin/local-network-preparedness/local-network-preparedness.component";
+import {LocalNetworkApaComponent} from "./local-network-admin/local-network-preparedness/local-network-apa/local-network-apa.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -476,7 +478,8 @@ const routes: Routes = [
   {path: 'network/local-network-administration/messages', component: LocalNetworkAdministrationMessagesComponent},
   {path: 'network/local-network-office-profile/stock-capacity/add-edit', component: LocalNetworkProfileStockCapacityAddEditComponent},
   {path: 'network/local-network-plans', component: LocalNetworkPlansComponent},
-
+  {path: 'network/local-network-preparedness-mpa', component: LocalNetworkPreparednessComponent},
+  {path: 'network/local-network-preparedness-apa', component: LocalNetworkApaComponent},
 
 
   /**

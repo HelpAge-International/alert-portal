@@ -46,7 +46,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
 
   @Input() notFirstLogin: boolean = false;
   private loadedNetwork: ModelNetwork;
-  private showLoader:boolean;
+  private showLoader: boolean;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -58,7 +58,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user, prevUserType, networkIds, networkCountryIds) => {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
       console.log("Network admin uid: " + this.uid);
       this.showLoader = true;
@@ -153,7 +153,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
 
                   //TODO: navigation to next page
                   if (!this.notFirstLogin) {
-                    this.router.navigateByUrl('/network/network-offices');
+                    this.router.navigateByUrl(this.loadedNetwork.isGlobal ? '/network/network-offices' : '/network/local-network-dashboard');
                   }
                 });
             }, error => {
@@ -179,7 +179,7 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
 
               //TODO: navigation to next page
               if (!this.notFirstLogin) {
-                this.router.navigateByUrl('/network/network-offices');
+                this.router.navigateByUrl(this.loadedNetwork.isGlobal ? '/network/network-offices' : '/network/local-network-dashboard');
               }
             });
         }, error => {
