@@ -127,6 +127,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initNetworkAccess() {
+    this.DashboardTypeUsed = DashboardType.default;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -190,7 +191,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     let id = this.countryId ? this.countryId : this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     let agencyId = this.agencyId ? this.agencyId : this.networkId;
     this.getAllSeasonsForCountryId(id);
-    this.getAlertsNetwork(id);
+    this.getAlerts(id);
     this.getCountryContextIndicators(id);
     this.getHazards(id);
     this.initData(id);
@@ -217,7 +218,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     let id = this.countryId ? this.countryId : this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     let agencyId = this.agencyId ? this.agencyId : this.networkId;
     this.getAllSeasonsForCountryId(id);
-    this.getAlerts(id);
+    this.getAlerts(id)
     this.getCountryContextIndicators(id);
     this.getHazards(id);
     this.initData(id);
@@ -446,17 +447,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getAlertsNetwork(id) {
-    this.alerts = this.actionService.getAlerts(id);
-
-    this.actionService.getRedAlerts(id)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(alerts => {
-        alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
-        this.isRedAlert = alerts.length > 0;
-      });
-  }
-
   showAffectedAreasForAlert(affectedAreas) {
     this.affectedAreasToShow = affectedAreas;
     jQuery("#view-areas").modal("show");
@@ -541,11 +531,11 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   updateAlert(alertId, isDirectorAmber) {
     if (this.DashboardTypeUsed == DashboardType.default) {
-      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
+      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
     } else if (isDirectorAmber) {
-      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {
+      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
         id: alertId,
-        countryId: this.countryId,
+        networkCountryId: this.networkCountryId,
         isDirector: true
       }]);
     } else {

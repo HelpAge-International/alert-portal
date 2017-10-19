@@ -24,6 +24,7 @@ declare var jQuery: any;
   styleUrls: ['./add-hazard-network-country.component.scss']
 })
 export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
+  networkId: any;
   networkCountryId: any;
 
   private UserType: number;
@@ -114,9 +115,10 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkCountryId = selection["networkCountryId"];
+          this.networkId = selection["id"];
           this.UserType = selection["userType"];
 
-          this._loadData();
+          this._loadData(); 
 
         })
     })
@@ -139,6 +141,8 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
 
   _getTopResults() {
     this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
+      console.log('p[[p[p[pp[p[')
+      console.log(list)
       this.showInformUnavailable = (list.length == 0);
       this.hazardScenariosListTop = list;
       this.loaderInactive = true;
@@ -156,10 +160,12 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
 
   _getCountryLocation() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID)
+      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + this.networkId + "/" + this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((country) => {
+        console.log(country)
           this.locationID = country.location;
+        console.log(this.locationID)
           this._getTopResults();
           res(true);
         });
@@ -193,7 +199,7 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
 
   _getCustomHazards() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/otherHazardScenario/" + this.countryID)
+      this.af.database.list(Constants.APP_STATUS + "/otherHazardScenario/" + this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((customHazards: any) => {
           this.customHazards = customHazards;
@@ -205,7 +211,7 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
 
   _getAllSeasons() {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((AllSeasons: any) => {
           this.AllSeasons = AllSeasons;
@@ -246,7 +252,7 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
 
   _checkHazard(hazard) {
     let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID)
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((hazardFb: any) => {
           for (let index = 0; index < hazardFb.length; index++) {
@@ -430,7 +436,7 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
     dataToSave.colorCode = this.addSeasonColour;
     console.log(dataToSave);
     this.closeModal();
-    this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+    this.af.database.list(Constants.APP_STATUS + "/season/" + this.networkCountryId)
       .push(dataToSave)
       .then(() => {
         console.log('success save data');

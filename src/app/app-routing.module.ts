@@ -493,6 +493,7 @@ const routes: Routes = [
   {path: 'network-country/network-country-account-settings', component: NetworkCountryAccountSettingsComponent},
   {path: 'network-country/network-country-change-password', component: NetworkCountryChangePasswordComponent},
   {path: 'network-country/network-risk-monitoring', component: NetworkRiskMinitoringComponent},
+  {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID/:countryOfficeCode', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-hazard', component: AddHazardNetworkCountryComponent},

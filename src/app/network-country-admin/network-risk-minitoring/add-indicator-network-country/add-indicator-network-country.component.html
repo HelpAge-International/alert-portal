@@ -166,7 +166,7 @@
         <div class="col-sm-3" *ngIf="checkTypeof(location.country)">
           <div class="form-group-risk-frequency ">
             <select class="form-control" name="CountryAreaLevelOne"
-                    [(ngModel)]="location.level1">
+                    [(ngModel)]="location.level1" (click)="print(location)">
               <option value="undefined" disabled selected hidden>
                 {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
                 countryLevels[location.country]?.levels[0].value | translate }}

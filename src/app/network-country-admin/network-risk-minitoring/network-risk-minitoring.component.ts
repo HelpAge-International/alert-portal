@@ -8,7 +8,9 @@ import {LogModel} from "../../model/log.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../../services/user.service";
+import {CommonService} from "../../services/common.service";
 import {NetworkService} from "../../services/network.service";
+import {AgencyService} from "../../services/agency-service.service";
 import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
@@ -27,6 +29,12 @@ declare var jQuery: any;
   styleUrls: ['./network-risk-minitoring.component.css']
 })
 export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
+  public agencies = []
+  public eventFilter = -1;
+  public locationFilter = -1;
+  public agencyFilter = -1;
+  public indicatorLevelFilter = -1;
+
   networkCountryId: any;
 
   private USER_TYPE = UserType;
@@ -110,6 +118,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   private assignedIndicator: any;
   private assignedHazard: any;
   private assignedUser: string;
+  private networkId: any;
+  private countryLevelsValues: any;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -118,6 +128,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               private storage: LocalStorageService,
               private translate: TranslateService,
               private userService: UserService,
+              private commonService: CommonService,
+              private agencyService: AgencyService,
               private networkService: NetworkService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
@@ -169,13 +181,41 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
           this.networkService.getSelectedIdObj(user.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(selection => {
+              console.log(selection)
+              this.networkId = selection["id"];
               this.networkCountryId = selection["networkCountryId"];
               this.UserType = selection["userType"];
 
-              this._getHazards();
-              this.getCountryLocation();
+
+              this.networkService.getNetworkCountryAgencies(this.networkId, this.networkCountryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe( agencies => {
+                  agencies.forEach( agency => {
+                    this.agencyService.getAgency(agency.$key)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(agency => {
+                        this.agencies.push(agency)
+                      })
+                  })
+                })
+
+
+              this._getHazards()
+              this.getCountryLocation()
+                .then(_ => {
+                  // get the country levels values
+                  this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(content => {
+
+                      this.countryLevelsValues = content[this.countryLocation];
+                      console.log(this.countryLevelsValues)
+                      err => console.log(err);
+                    });
+                })
               this._getCountryContextIndicators();
               this.getUsersForAssign();
+
 
             });
         })
@@ -185,6 +225,50 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  changeLocationFilter(location){
+    console.log(location)
+    if(location){
+      if(location == 'location'){
+        this.locationFilter = -1;
+      } else {
+        this.locationFilter = location;
+      }
+    } else {
+      return
+    }
+  }
+
+  changeEventFilter(event){
+    console.log(event)
+    if(event){
+      if(event == 'event'){
+        this.eventFilter = -1;
+      } else {
+        this.eventFilter = event;
+      }
+    } else {
+      return
+    }
+  }
+
+  changeAgencyFilter(agency){
+    console.log(agency)
+      if(agency == 'agency'){
+        this.agencyFilter = -1;
+      } else {
+        this.agencyFilter = agency;
+      }
+  }
+
+  changeIndicatorLevelFilter(indicatorLevel){
+    console.log(indicatorLevel)
+      if(indicatorLevel == 'indicator'){
+        this.indicatorLevelFilter = -1;
+      } else {
+        this.indicatorLevelFilter = indicatorLevel;
+      }
   }
 
   private getCountryLocation() {
@@ -230,6 +314,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   _getCountryContextIndicators() {
     this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.networkCountryId).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
       indicators.forEach((indicator, key) => {
+        console.log(indicator)
+        indicator.fromAgency = false;
         this.getLogs(indicator.$key).subscribe((logs: any) => {
           logs.forEach((log, key) => {
             this.getUsers(log.addedBy).subscribe((user: any) => {
@@ -241,12 +327,41 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       });
 
       this.indicatorsCC = indicators;
+
+      //gets all relevant country office indicator data from country context
+      this.networkService.getAgencyCountryOfficesByNetworkCountry(this.networkCountryId, this.networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe( officeAgencyMap => {
+          console.log(officeAgencyMap)
+          officeAgencyMap.forEach((value: string, agencyKey: string) => {
+
+            this.af.database.list(Constants.APP_STATUS + "/indicator/" + value).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
+              indicators.forEach( indicator => {
+                  indicator.fromAgency = true;
+                  indicator.countryOfficeCode = value
+                  this.agencyService.getAgency(agencyKey)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe( agency => {
+                      indicator.agency = agency;
+
+                    })
+                  this.getLogs(indicator.$key).subscribe((logs: any) => {
+                    logs.forEach((log, key) => {
+                      this.getUsers(log.addedBy).subscribe((user: any) => {
+                        log.addedByFullName = user.firstName + ' ' + user.lastName;
+                      })
+                    });
+                    indicator.logs = this._sortLogsByDate(logs);
+                    this.indicatorsCC.push(indicator)
+                  });
+                });
+            });
+          })
+        })
     });
   }
 
   _getHazards() {
-    console.log('--------')
-    console.log(this.networkCountryId)
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
         this.activeHazards = [];
@@ -261,6 +376,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
           this.getIndicators(hazard.id).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
               console.log(indicator)
+              indicator.fromAgency = false;
               this.getLogs(indicator.$key).subscribe((logs: any) => {
                 logs.forEach((log, key) => {
                   this.getUsers(log.addedBy).subscribe((user: any) => {
@@ -271,6 +387,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               });
             });
             hazard.indicators = indicators;
+            hazard.existsOnNetwork = true;
           });
 
           if (hazard.isActive) {
@@ -286,7 +403,180 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
             this.archivedHazards.push(hazard);
           }
 
+
         });
+        //gets all relevant country office hazard and indicator data from non-country context hazards
+        this.networkService.getAgencyCountryOfficesByNetworkCountry(this.networkCountryId, this.networkId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe( officeAgencyMap => {
+
+            officeAgencyMap.forEach((value: string, agencyKey: string) => {
+
+
+
+              this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
+                hazards.forEach((hazard: any, key) => {
+                  hazard.id = hazard.$key;
+                  if (hazard.hazardScenario != -1) {
+                    hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+                  }
+                  this.getIndicators(hazard.id).subscribe((indicators: any) => {indicators.forEach((indicator, key) => {
+
+
+                    indicator.fromAgency = true;
+                    indicator.countryOfficeCode = value
+                    this.agencyService.getAgency(agencyKey)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe( agency => {
+                        indicator.agency = agency;
+                      })
+                    this.getLogs(indicator.$key).subscribe((logs: any) => {
+                      logs.forEach((log, key) => {
+                        this.getUsers(log.addedBy).subscribe((user: any) => {
+                          log.addedByFullName = user.firstName + ' ' + user.lastName;
+                        })
+                      });
+                      indicator.logs = this._sortLogsByDate(logs);
+                    });
+                  });
+                    hazard.indicators = indicators;
+                    hazard.existsOnNetwork = false;
+
+
+
+                    if(hazard.isActive) {
+
+                      var containsHazard = false;
+                      var hasIndicators = false;
+                      var activeHazardIndex = null;
+                      this.activeHazards.forEach((activeHazard, index) => {
+                        if (activeHazard.hazardScenario == hazard.hazardScenario) {
+                          if (hazard.hasOwnProperty('indicators') && activeHazard.hasOwnProperty('indicators')) {
+                            containsHazard = true;
+                            hasIndicators = true;
+                            activeHazardIndex = index
+                          } else if (hazard.hasOwnProperty('indicators') && !activeHazard.hasOwnProperty('indicators')) {
+                            containsHazard = true;
+                            activeHazardIndex = index
+                          }
+                        }
+
+                      })
+                      if(hazard.isSeasonal){
+                        if (hazard.isActive) {
+                          this.activeHazards.push(hazard);
+                          if (hazard.hazardScenario == -1) {
+                            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe((snap) => {
+                                hazard.hazardName = snap.val().name;
+                              });
+                          }
+                        }
+
+                      } else if (containsHazard) {
+                        if (hazard.hasOwnProperty('indicators') && hasIndicators) {
+
+
+                          hazard.indicators.forEach(indicator => {
+
+                            if(this.activeHazards[activeHazardIndex].indicators.map(item=>item.$key).indexOf(indicator.$key) == -1){
+                              this.activeHazards[activeHazardIndex].indicators.push(indicator)
+                            } else {
+                              this.activeHazards[activeHazardIndex].indicators.splice(this.activeHazards[activeHazardIndex].indicators.map(item=>item.$key).indexOf(indicator.$key), 1)
+                              this.activeHazards[activeHazardIndex].indicators.push(indicator)
+                            }
+
+
+                          })
+                        } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
+                          hazard.indicators = []
+                          hazard.indicators.forEach(indicator => {
+
+                            this.activeHazards[activeHazardIndex].indicators.push(indicator)
+                          })
+                        }
+                        containsHazard = false;
+                        hasIndicators = false;
+                        activeHazardIndex = null;
+
+                      } else {
+                          this.activeHazards.push(hazard);
+                          if (hazard.hazardScenario == -1) {
+                            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe((snap) => {
+                                hazard.hazardName = snap.val().name;
+                              });
+                          }
+                        containsHazard = false;
+                        hasIndicators = false;
+                        activeHazardIndex = null;
+                      }
+                    } else {
+
+                      var containsHazard = false;
+                      var hasIndicators = false;
+                      var archivedHazardIndex = null;
+                      this.archivedHazards.forEach((archivedHazard, index) => {
+                        if (archivedHazard.hazardScenario == hazard.hazardScenario) {
+                          if (hazard.hasOwnProperty('indicators') && archivedHazard.hasOwnProperty('indicators')) {
+                            containsHazard = true;
+                            hasIndicators = true;
+                            archivedHazardIndex = index
+                          } else if (hazard.hasOwnProperty('indicators') && !archivedHazard.hasOwnProperty('indicators')) {
+                            containsHazard = true;
+                            archivedHazardIndex = index
+                          }
+                        }
+
+                      })
+                      if(hazard.isSeasonal){
+                        if (hazard.isActive) {
+                          this.archivedHazards.push(hazard);
+                        }
+                      } else if (containsHazard) {
+                        if (hazard.hasOwnProperty('indicators') && hasIndicators) {
+
+
+                          hazard.indicators.forEach(indicator => {
+
+                            this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
+                          })
+                        } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
+                          hazard.indicators = []
+                          hazard.indicators.forEach(indicator => {
+
+                            this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
+                          })
+                        }
+                        containsHazard = false;
+                        hasIndicators = false;
+                        archivedHazardIndex = null;
+
+                      } else {
+                        if (hazard.isActive) {
+                          this.archivedHazards.push(hazard);
+                          if (hazard.hazardScenario == -1) {
+                            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe((snap) => {
+                                hazard.hazardName = snap.val().name;
+                              });
+                          }
+                        } else {
+                          this.archivedHazards.push(hazard);
+                        }
+                        containsHazard = false;
+                        hasIndicators = false;
+                        activeHazardIndex = null;
+                      }
+                    }
+                  });
+                });
+              });
+            })
+          })
         res(true);
       });
     });
@@ -314,7 +604,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       console.log('hazardID cannot be empty');
       return false;
     }
-    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID']).remove().then(() => {
+    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + this.tmpHazardData['ID']).remove().then(() => {
       this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCCESS_DELETE_HAZARD', AlertMessageType.Success);
       this.removeTmpHazardID();
     });
@@ -330,6 +620,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
+
     var key = hazardID + '_' + indicatorKey;
     if (state) {
       this.isIndicatorUpdate[key] = true;
@@ -360,26 +651,34 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
     const indicatorID = indicator.$key;
 
+
+
     if (!hazardID || !indicatorID) {
       console.log('hazardID or indicatorID cannot be empty');
       return false;
     }
 
     var triggerSelected = this.indicatorTrigger[indicatorID];
+    console.log(triggerSelected)
     var dataToSave = {triggerSelected: triggerSelected, updatedAt: new Date().getTime()};
     dataToSave['dueDate'] = this._getIndicatorFutureTimestamp(indicator); // update the due date
 
     var urlToUpdate;
 
-    if (hazardID == 'countryContext') {
-      urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + indicatorID;
+
+    if(indicator.countryOfficeCode && hazardID == 'countryContext'){
+      urlToUpdate = Constants.APP_STATUS + "/indicator/" + indicator.countryOfficeCode + '/' + indicatorID;
+    } else if (hazardID == 'countryContext') {
+      urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.networkCountryId + '/' + indicatorID;
     } else {
-      urlToUpdate = Constants.APP_STATUS + '/indicator/' + hazardID + '/' + indicatorID;
+      urlToUpdate = Constants.APP_STATUS + '/indicator/' + indicator.hazardScenario.key + '/' + indicatorID;
     }
+
 
     this.af.database.object(urlToUpdate)
       .update(dataToSave)
       .then(_ => {
+
         this.changeIndicatorState(false, hazardID, indicatorKey);
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
@@ -411,7 +710,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   setTmpHazard(hazardID: string, activeStatus: boolean, hazardScenario: number) {
+    console.log('enter set')
     if (!hazardID) {
+      console.log('enter false if')
       return false;
     }
 
@@ -474,7 +775,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     }
 
     var dataToUpdate = {isActive: this.tmpHazardData['activeStatus']};
-    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
+    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + this.tmpHazardData['ID'])
       .update(dataToUpdate)
       .then(_ => {
         this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCESS_UPDATE_HAZARD', AlertMessageType.Success);
@@ -727,6 +1028,25 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       this.assignedIndicator = null;
       this.assignedUser = "undefined";
     });
+  }
+
+  createNewHazardFromCountry(hazard){
+    var newHazard = {}
+    newHazard['timeCreated'] = this._getCurrentTimestamp()
+    newHazard['existsOnNetwork'] = hazard.existsOnNetwork
+    newHazard['hazardScenario'] = hazard.hazardScenario
+    newHazard['isActive'] = hazard.isActive
+    newHazard['isSeasonal'] = hazard.isSeasonal
+    newHazard['risk'] = hazard.risk
+    console.log(newHazard)
+
+    console.log(hazard)
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId)
+      .push(newHazard)
+      .then((hazard) => {
+
+        this.router.navigate(['/network-country/network-risk-monitoring/add-indicator/' + hazard.key])
+      })
   }
 
 }
