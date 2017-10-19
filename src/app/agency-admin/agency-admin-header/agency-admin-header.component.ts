@@ -8,6 +8,8 @@ import {Message} from "../../model/message";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
+import {Http, Response} from '@angular/http';
+declare var jQuery: any;
 
 @Component({
   selector: 'app-agency-admin-header',
@@ -23,6 +25,14 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private agencyName: string = "";
   private counter: number = 0;
 
+  // Dan's switch language
+  private languageSelectPath: string = '';
+  private languageMap = new Map();
+  private userLang = [];
+  private language: string;
+  private browserLang: string = "";
+  // End
+
   private USER_TYPE: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -32,13 +42,50 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private af: AngularFire,
               private router: Router,
+              private http: Http,
               private translate: TranslateService) {
+
+
+    translate.setDefaultLang("en");
+
+    this.browserLang = translate.getBrowserLang();
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.USER_TYPE = Constants.USER_PATHS[UserType.AgencyAdmin];
+      this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
+
+
+      this.loadJSON().subscribe(data => {
+
+        for (var key in data){
+
+          this.userLang.push(key);
+          this.languageMap.set(key, data[key]);
+        }
+
+      });
+
+      // Check chosen user language
+
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          if(user.language) {
+            this.language = user.language;
+            this.translate.use(this.language.toLowerCase());
+          } else {
+            this.language = "en"
+
+          }
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(this.language.toLowerCase());
+
+
+          this.translate.use(this.language.toLowerCase());
+
+        });
 
       this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
         .takeUntil(this.ngUnsubscribe)
@@ -70,6 +117,38 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   logout() {
     console.log("logout");
     this.af.auth.logout();
+  }
+
+  // Dan's Modal functions
+
+  loadJSON(){
+
+    return this.http.get(this.languageSelectPath)
+      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+
+  }
+
+  openLanguageModal()
+  {
+
+    console.log('Open language modal');
+    jQuery("#language-selection").modal("show");
+
+  };
+
+
+  changeLanguage(language: string){
+    this.language = language;
+    console.log(this.uid);
+
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
+
+    if (language.toLowerCase()) {
+      this.translate.use(language.toLowerCase());
+      jQuery("#language-selection").modal("hide");
+
+
+    }
   }
 
   goToHome() {

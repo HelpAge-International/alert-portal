@@ -64,6 +64,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    console.log('logging in ....')
     this.loaderInactive = false;
     this.successInactive = true;
     if (this.validate()) {

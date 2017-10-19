@@ -275,6 +275,17 @@
   "OTHER":"Other",
   "SUCCESSFULLY_VALIDATE_PARTNERSHIP":"Successfully validate partnership!",
   "GLOBAL":{
+    "LANGUAGES":{
+      "EN": "English",
+      "FR": "French",
+      "ES": "Spanish",
+      "PT": "Portuguese",
+      "AR": "Arabic",
+      "UR": "Urdu",
+      "BN": "Bengali"
+    },
+    "SWITCH": "Switch language",
+    "MODAL_HEADER":"Select a language",
     "WELCOME":"Welcome",
     "HOME":"Home",
     "NAME":"Name",
@@ -2026,10 +2037,10 @@
       },
       "TT19":{
         "LEVEL1":"If the plan is activated then the targeting (who receives), effectiveness (do they get what they need when they need it) and success (does it have the desired impact) should be monitored.  This will allow the ERT to demonstrate accountability to both donors and beneficiaries.",
-        "LEVEL2":"Additionaly, key phases and activities in the response should be critically reviewed with a view to identifying lessons that need to be learned and to improve the preparedness process (e.g. the risk assessment, disaster scenarios and plans and the aligned preparedness activities including SOPs and procedures).  In addition, the response activities should be reviewed to ensure that standards were met and good practice observed. The development and review of your agencies monitoring and evaluation process and mechanism for identifying and learning lessons are likely to be MPAs."
+        "LEVEL2":"Additionally, key phases and activities in the response should be critically reviewed with a view to identifying lessons that need to be learned and to improve the preparedness process (e.g. the risk assessment, disaster scenarios and plans and the aligned preparedness activities including SOPs and procedures).  In addition, the response activities should be reviewed to ensure that standards were met and good practice observed. The development and review of your agencies monitoring and evaluation process and mechanism for identifying and learning lessons are likely to be MPAs."
       },
       "TT20":{
-        "LEVEL1":"",
+        "LEVEL1":"The total beneficiaries are calculated by adding up all the beneficiaries from each of your activities, if any of your activities are aimed at the same group you should adjust this calculation to account for double counting",
         "LEVEL2":""
       },
       "TT21":{
