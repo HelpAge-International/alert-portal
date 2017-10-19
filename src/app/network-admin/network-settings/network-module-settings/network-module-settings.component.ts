@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
 import {SettingsService} from "../../../services/settings.service";
@@ -18,6 +18,9 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
+  //local network admin
+  @Input() isLocalNetworkAdmin: boolean;
+
   //constants adn enums
   private MODULE_NAME = Constants.MODULE_NAME;
   private Privacy = Privacy;
@@ -29,7 +32,9 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
 
   //logic info
   private modules: ModuleSettingsModel[];
-  private showLoader:boolean;
+  private showLoader: boolean;
+
+
 
 
   constructor(private pageControl: PageControlService,
@@ -40,8 +45,9 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showLoader = true;
+    this.MODULE_NAME = this.isLocalNetworkAdmin ? Constants.MODULE_NAME_NETWORK_COUNTRY : Constants.MODULE_NAME;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user,) => {
-      this.showLoader = true;
       this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];
@@ -74,9 +80,9 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
 
   saveChanges() {
     console.log("save changes");
-    this.settingService.saveCountryModuleSettings(this.networkId, this.modules).then(()=>{
+    this.settingService.saveCountryModuleSettings(this.networkId, this.modules).then(() => {
       this.alertMessage = new AlertMessageModel("Module Settings successfully saved!", AlertMessageType.Success);
-    }, error =>{
+    }, error => {
       this.alertMessage = new AlertMessageModel(error.message);
     });
   }

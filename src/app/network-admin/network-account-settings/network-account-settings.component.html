@@ -1,5 +1,11 @@
-<app-network-header></app-network-header>
-<app-network-menu></app-network-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-header></app-network-header>
+  <app-network-menu></app-network-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
 
@@ -10,9 +16,9 @@
     </div>
 
     <ul class="section-nav">
-      <li class="section-nav__item active"><a [routerLink]="['/network/network-account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
+      <li class="section-nav__item active"><a [routerLink]="isLocalNetworkAdmin ? ['/network/network-account-settings', {'isLocalNetworkAdmin':true}] : ['/network/network-account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
         | translate}}</a></li>
-      <li class="section-nav__item"><a [routerLink]="['/network/network-account-settings/network-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
+      <li class="section-nav__item"><a [routerLink]="isLocalNetworkAdmin ? ['/network/network-account-settings/network-change-password', {'isLocalNetworkAdmin':true}] : ['/network/network-account-settings/network-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
         | translate}}</a></li>
     </ul>
 
@@ -108,7 +114,7 @@
       </div>
       <div class="Form-submit__wrapper">
         <button type="submit" class="btn btn-primary">{{"SAVE" | translate | uppercase}}</button>
-        <button class="btn btn-outline-secondary" routerLink="/network/network-offices">{{"GLOBAL.CANCEL" | translate}}</button>
+        <button class="btn btn-outline-secondary" [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-dashboard'] : ['/network/network-offices']">{{"GLOBAL.CANCEL" | translate}}</button>
       </div>
     </form>
   </div>

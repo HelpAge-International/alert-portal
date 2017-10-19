@@ -140,6 +140,35 @@ export class MessageService {
     return countrySentMessagesSubsciption;
   }
 
+  getSentMessagesLocalNetwork(uid: string): Observable<MessageModel[]> {
+    if (!uid) {
+      throw new Error('No id');
+    }
+
+    const countrySentMessagesSubsciption = this.af.database.list(Constants.APP_STATUS + '/administratorNetwork/' + uid + '/sentmessages')
+      .map(items => {
+        let sentMessages = [];
+        if (items) {
+          items.forEach(item => {
+            this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
+              .subscribe(message => {
+                  if (message.content) {
+                    let sentMessage = new MessageModel();
+                    sentMessage.mapFromObject(message);
+                    sentMessage.id = message.$key;
+                    sentMessages.push(sentMessage);
+                  }
+
+                  return sentMessages;
+                },
+                err => console.log('Could not find message'))
+          })
+        }
+        return sentMessages;
+      });
+    return countrySentMessagesSubsciption;
+  }
+
   saveCountryMessage(countryId: string, agencyId: string, message: MessageModel): firebase.Promise<any> {
     return this.af.database.list(Constants.APP_STATUS + '/message').push(message)
       .then(msgId => {
@@ -281,6 +310,81 @@ export class MessageService {
 
   }
 
+  saveMessageLocalNetwork(uid: string, agencyCountryMap: Map<string, string>, message: MessageModel): firebase.Promise<any> {
+    let countryAgencyMap = CommonUtils.reverseMap(agencyCountryMap);
+    return this.af.database.list(Constants.APP_STATUS + '/message').push(message)
+      .then(msgId => {
+        let messageRefData = {};
+
+        messageRefData['/administratorNetwork/' + uid + '/sentmessages/' + msgId.key] = true;
+
+        if (message.userType[UserType.All]) {
+          CommonUtils.convertMapToValuesInArray(agencyCountryMap).forEach(countryId => {
+            this.af.database.list(Constants.APP_STATUS + '/group/country/' + countryId + '/countryallusersgroup')
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryAllUsersIds => {
+                countryAllUsersIds.forEach(countryAllUsersId => {
+                  messageRefData['/messageRef/country/' + countryId + '/countryallusersgroup/' + countryAllUsersId.$key + '/' + msgId.key] = true;
+                });
+
+                if (message.userType[UserType.CountryAdmin]) {
+                  const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryAdmin);
+                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(refData => {
+                      this.af.database.object(Constants.APP_STATUS).update(refData);
+                    });
+                }
+
+                if (message.userType[UserType.CountryDirector]) {
+                  const countryDirectorUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryDirector);
+                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(refData => {
+                      this.af.database.object(Constants.APP_STATUS).update(refData);
+                    });
+                }
+
+                this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+
+              });
+          });
+
+        } else {
+          CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
+            // let i = 1;
+            for (let value in message.userType) {
+              if (value) {
+                const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(Number(value));
+                if (Number(value) === UserType.CountryAdmin || Number(value) === UserType.CountryDirector) {
+                  this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(refData => {
+                      this.af.database.object(Constants.APP_STATUS).update(refData);
+                    });
+                } else {
+                  this.saveCountryUserTypeMessage(agencyCountryMap.get(agencyId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(refData => {
+                      this.af.database.object(Constants.APP_STATUS).update(refData);
+                    });
+                }
+
+                // if (i == Object.keys(message.userType).length) {
+                //   return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+                // }
+                //
+                // i++;
+                this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+              }
+            }
+          });
+
+        }
+      });
+
+  }
+
   deleteCountryMessage(countryId: string, agencyId: string, message: MessageModel): firebase.Promise<any> {
 
     let messageRefData = {};
@@ -321,6 +425,45 @@ export class MessageService {
 
     messageRefData['/message/' + message.id] = null;
     messageRefData['/administratorNetworkCountry/' + uid + '/sentmessages/' + message.id] = null;
+
+    CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
+      // let i = 1;
+      for (let value in message.userType) {
+        if (value) {
+          const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(Number(value));
+
+          if (Number(value) === UserType.CountryAdmin || Number(value) === UserType.CountryDirector) {
+            this.deleteAgencyUserTypeMessage(agencyId, message.id, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(refData => {
+                this.af.database.object(Constants.APP_STATUS).update(refData);
+              });
+          } else {
+            this.deleteCountryUserTypeMessage(agencyCountryMap.get(agencyId), message.id, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(refData => {
+                this.af.database.object(Constants.APP_STATUS).update(refData);
+              });
+          }
+
+          // if (i == Object.keys(message.userType).length) {
+          // return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+          // }
+
+          // i++;
+        }
+      }
+    });
+
+    return this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+
+  }
+
+  deleteMessageLocalNetwork(uid: string, agencyCountryMap: Map<string, string>, message: MessageModel): firebase.Promise<any> {
+    let messageRefData = {};
+
+    messageRefData['/message/' + message.id] = null;
+    messageRefData['/administratorNetwork/' + uid + '/sentmessages/' + message.id] = null;
 
     CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
       // let i = 1;

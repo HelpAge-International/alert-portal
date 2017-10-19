@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-network-setting-menus',
@@ -7,7 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NetworkSettingMenusComponent implements OnInit {
 
-  constructor() { }
+  @Input() isLocalNetworkAdmin: boolean;
+
+  constructor() {
+  }
 
   ngOnInit() {
   }

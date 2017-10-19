@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageModel} from "../../../model/alert-message.model";
@@ -29,6 +29,8 @@ export class NetworkPlanSettingsComponent implements OnInit, OnDestroy {
   private sections: [boolean];
   private showLoader: boolean;
 
+  @Input() isLocalNetworkAdmin: boolean;
+
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
@@ -37,8 +39,8 @@ export class NetworkPlanSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showLoader = true;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.showLoader = true;
       this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];

@@ -7,10 +7,10 @@
       <li class="Header_bar__country">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{network?.name}}</a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/network/network-account-details">
+          <a class="dropdown-item" [routerLink]="['/network/network-account-details', {'isLocalNetworkAdmin':true}]">
             Network Details
           </a>
-          <a class="dropdown-item" routerLink="/network/network-account-settings">
+          <a class="dropdown-item" [routerLink]="['/network/network-account-settings', {'isLocalNetworkAdmin':true}]">
             {{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}
           </a>
           <a class="dropdown-item" routerLink="/network/network-account-selection">
@@ -21,7 +21,7 @@
           </a>
         </div>
       </li>
-      <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="uid"></app-notification-badge>
+      <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [networkId]="networkId"></app-notification-badge>
     </ul>
   </div>
 </div>

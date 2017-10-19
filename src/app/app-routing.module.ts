@@ -190,6 +190,8 @@ import {NetworkCountryProfileContactsComponent} from "./network-country-admin/ne
 import {LocalNetworkPlansComponent} from "./local-network-admin/local-network-plans/local-network-plans.component";
 import {LocalNetworkPreparednessComponent} from "./local-network-admin/local-network-preparedness/local-network-preparedness.component";
 import {LocalNetworkApaComponent} from "./local-network-admin/local-network-preparedness/local-network-apa/local-network-apa.component";
+import {LocalNetworkClockComponent} from "./local-network-admin/local-network-administration/local-network-administration-settings/local-network-clock/local-network-clock.component";
+import {LocalNetworkPlanComponent} from "./local-network-admin/local-network-administration/local-network-administration-settings/local-network-plan/local-network-plan.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -475,6 +477,8 @@ const routes: Routes = [
   {path: 'network/local-network-administration/agencies', component: LocalNetworkAdministrationAgenciesComponent},
   {path: 'network/local-network-administration/agencies/invite', component: LocalInviteAgenciesComponent},
   {path: 'network/local-network-administration/settings', component: LocalNetworkAdministrationSettingsComponent},
+  {path: 'network/local-network-administration/clock-settings', component: LocalNetworkClockComponent},
+  {path: 'network/local-network-administration/plan-settings', component: LocalNetworkPlanComponent},
   {path: 'network/local-network-administration/messages', component: LocalNetworkAdministrationMessagesComponent},
   {path: 'network/local-network-office-profile/stock-capacity/add-edit', component: LocalNetworkProfileStockCapacityAddEditComponent},
   {path: 'network/local-network-plans', component: LocalNetworkPlansComponent},

@@ -1,5 +1,11 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
@@ -12,7 +18,9 @@
 
     <div class="Header-title__wrap">
       <h1>{{"NETWORK_OFFICE_MESSAGES" | translate}}</h1>
-      <a routerLink="/network-country/network-country-messages/create-edit-network-country-message" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE"
+      <a
+        [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-messages/create-edit-network-country-message', {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-messages/create-edit-network-country-message']"
+        class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE"
         | translate | uppercase}}</a>
     </div>
 

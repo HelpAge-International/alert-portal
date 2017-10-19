@@ -1,25 +1,21 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageModel} from "../../../model/alert-message.model";
-import {ActionLevel, AlertMessageType, GenericActionCategory} from "../../../utils/Enums";
+import {ActionLevel, GenericActionCategory} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {AngularFire, FirebaseApp} from "angularfire2";
+import {AngularFire} from "angularfire2";
 import {NetworkService} from "../../../services/network.service";
 import {LocalStorageService} from "angular-2-local-storage";
-import {NotificationService} from "../../../services/notification.service";
-import {UserService} from "../../../services/user.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {TranslateService} from "@ngx-translate/core";
-import {WindowRefService} from "../../../services/window-ref.service";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {GenericToCustomListModel} from "../../../preparedness/select/select.component";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-network-country-action-select',
   templateUrl: './network-country-action-select.component.html',
   styleUrls: ['./network-country-action-select.component.scss']
 })
-export class NetworkCountryActionSelectComponent implements OnInit,OnDestroy {
+export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
@@ -50,21 +46,30 @@ export class NetworkCountryActionSelectComponent implements OnInit,OnDestroy {
   private actionLevelList: number[] = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
 
   private category = Constants.CATEGORY;
-  private categoriesList = [GenericActionCategory.All,GenericActionCategory.OfficeAdministration, GenericActionCategory.Finance, GenericActionCategory.ITFieldCommunications,
+  private categoriesList = [GenericActionCategory.All, GenericActionCategory.OfficeAdministration, GenericActionCategory.Finance, GenericActionCategory.ITFieldCommunications,
     GenericActionCategory.Logistics, GenericActionCategory.CommunicationsMedia, GenericActionCategory.HumanResources, GenericActionCategory.DonorFundingReporting,
-    GenericActionCategory.Accountability, GenericActionCategory.Security, GenericActionCategory.Programmes,  GenericActionCategory.EmergencyResponseTeamManagement];
+    GenericActionCategory.Accountability, GenericActionCategory.Security, GenericActionCategory.Programmes, GenericActionCategory.EmergencyResponseTeamManagement];
+
+  //for local network
+  private isLocalNetworkAdmin: boolean;
 
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private networkService: NetworkService,
               private storage: LocalStorageService,
+              private location: Location,
               private route: ActivatedRoute,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.initNetworkAccess();
+    this.route.params.subscribe((params: Params) => {
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
+      this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    })
   }
 
   private initNetworkAccess() {
@@ -81,6 +86,29 @@ export class NetworkCountryActionSelectComponent implements OnInit,OnDestroy {
           this.showLoader = false;
 
           this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(systemId => {
+              this.systemAdminUid = systemId;
+              this.initGenericActions();
+            });
+
+        });
+    });
+  }
+
+  private initLocalNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+          this.showLoader = false;
+
+          this.networkService.getSystemIdForNetworkAdmin(this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(systemId => {
               this.systemAdminUid = systemId;
@@ -114,11 +142,15 @@ export class NetworkCountryActionSelectComponent implements OnInit,OnDestroy {
 
   continueEvent() {
     this.storage.set('selectedAction', this.actionSelected);
-    this.router.navigate(["/network-country/network-country-create-edit-action"]).then();
+    this.router.navigate(this.isLocalNetworkAdmin ? ["/network-country/network-country-create-edit-action", {"isLocalNetworkAdmin": true}] : ["/network-country/network-country-create-edit-action"]);
   }
 
   selectAction(action: GenericToCustomListModel) {
     this.actionSelected = action;
+  }
+
+  back() {
+    this.location.back();
   }
 
 }

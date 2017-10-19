@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
@@ -35,6 +35,9 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyCountryMap: Map<string, string>;
 
+  //for local network admin
+  @Input() isLocalNetworkAdmin: boolean
+
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -44,6 +47,10 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkCountryAccess();
+  }
+
+  private initNetworkCountryAccess() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -54,17 +61,45 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
-          this.showLoader = false;
 
           this._messageService.getCountrySentMessagesNetwork(user.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(sentMessages => {
+              this.showLoader = false;
               if (sentMessages) {
                 this.sentMessages = sentMessages;
               }
             });
 
           this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(map => this.agencyCountryMap = map);
+
+        });
+    });
+  }
+
+  private initLocalNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.showLoader = true;
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkId = selection["id"];
+
+          this._messageService.getSentMessagesLocalNetwork(user.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(sentMessages => {
+              this.showLoader = false;
+              if (sentMessages) {
+                this.sentMessages = sentMessages;
+              }
+            });
+
+          this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(map => this.agencyCountryMap = map);
 
@@ -85,13 +120,22 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
   deleteAction() {
     this.closeModal();
     console.log('delete called');
-    this._messageService.deleteCountryMessageNetwork(this.uid, this.agencyCountryMap, this.deleteMessageModel)
-      .then(() => {
-        this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
-      })
-      .catch(err => {
-        this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR')
-      });
+    this.isLocalNetworkAdmin ?
+      this._messageService.deleteMessageLocalNetwork(this.uid, this.agencyCountryMap, this.deleteMessageModel)
+        .then(() => {
+          this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(() => {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR')
+        })
+      :
+      this._messageService.deleteCountryMessageNetwork(this.uid, this.agencyCountryMap, this.deleteMessageModel)
+        .then(() => {
+          this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.MESSAGES.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(() => {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR')
+        });
   }
 
   closeModal() {

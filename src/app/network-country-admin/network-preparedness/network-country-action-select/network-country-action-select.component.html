@@ -6,17 +6,17 @@
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/network-country/network-country-mpa">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
+    <div class="Back--button" (click)="back()">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
     <div class="Header-title__wrap">
       <h1>{{"PREPAREDNESS.SELECT_GENERIC_ACTION" | translate}}</h1>
       <tooltip
         [level1]="'TOOLTIPS.PREPAREDNESS.TT13.LEVEL1'">
       </tooltip>
 
-      <button type="button" class="btn btn-primary" [disabled]="!actionSelectedID ? true : false"
+      <button type="button" class="btn btn-primary" [disabled]="!actionSelectedID"
               (click)="continueEvent()">{{"GLOBAL.CONTINUE" | translate}}
       </button>
-      <button type="button" class="btn btn-ghost" routerLink="/network-country/network-country-mpa">{{"GLOBAL.CANCEL" | translate}}</button>
+      <button type="button" class="btn btn-ghost" (click)="back()">{{"GLOBAL.CANCEL" | translate}}</button>
 
     </div>
     <div class="row align-items-center Filter-form System-admin--form-wrap">
@@ -25,14 +25,14 @@
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5">
         <select class="form-control" id="Actions" [(ngModel)]="actionLevelSelected">
-          <option *ngFor="let levelKey of actionLevelList" [selected]="levelKey == actionLevelSelected ? true : false"
+          <option *ngFor="let levelKey of actionLevelList" [selected]="levelKey == actionLevelSelected"
                   [value]="levelKey">{{actionLevel[levelKey] | translate}}
           </option>
         </select>
       </div>
       <div class="col-lg-3 col-md-4 col-sm-5 ">
         <select class="form-control" id="Category" [(ngModel)]="categorySelected">
-          <option *ngFor="let categoryKey of categoriesList" [selected]="categoryKey == categorySelected ? true : false"
+          <option *ngFor="let categoryKey of categoriesList" [selected]="categoryKey == categorySelected"
                   [value]="categoryKey">{{category[categoryKey] | translate}}
           </option>
         </select>

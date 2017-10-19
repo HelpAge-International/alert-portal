@@ -458,7 +458,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       networkModel.clockSettings = clockSetting;
 
       //init response plan settings
-      let sections: boolean[] = [true, true, true, true, true, true, true, true, true, true];
+      let sections: boolean[] = networkModel.isGlobal ? [true, true, true, true, true, true, true, true, true, true, true] : [true, true, true, true, true, true, true, true, true, true];
       let responseSetting = {};
       responseSetting["sections"] = sections;
       networkModel.responsePlanSettings = responseSetting;

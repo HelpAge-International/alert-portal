@@ -73,9 +73,11 @@
           <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
         </button>
         <div class="dropdown-menu">
-          <a class="dropdown-item" [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action',{'isLocalNetworkAdmin':true}] :['/network-country/network-country-create-edit-action']">{{"CREATE_CUSTOM_ACTIONS"
+          <a class="dropdown-item"
+             [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action',{'isLocalNetworkAdmin':true}] :['/network-country/network-country-create-edit-action']">{{"CREATE_CUSTOM_ACTIONS"
             | translate}}</a>
-          <a class="dropdown-item" routerLink="/network-country/network-country-select-action">{{"SELECT_FROM_GENERIC_ACTIONS"
+          <a class="dropdown-item"
+             [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-select-action', {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-select-action']">{{"SELECT_FROM_GENERIC_ACTIONS"
             | translate}}</a>
         </div>
       </div>

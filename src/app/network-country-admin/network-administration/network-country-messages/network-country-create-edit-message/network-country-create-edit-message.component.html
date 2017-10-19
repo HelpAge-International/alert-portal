@@ -20,7 +20,7 @@
         <div class="col-lg-4 col-md-6 col-sm-12">
           <div class="form-group">
             <label for="title">{{"GLOBAL.TITLE" | translate}}</label>
-            <input type="text" class="form-control" name="title" id="title" [(ngModel)] = "userMessage.title">
+            <input type="text" class="form-control" name="title" id="title" [(ngModel)]="userMessage.title">
           </div>
         </div>
       </div>
@@ -36,17 +36,23 @@
 
       <label>{{"MESSAGES.RECIPIENTS" | translate}}</label>
       <div class="row">
-        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5" *ngFor = "let userType of USER_TYPE_SELECTION | keyValues;">
+        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"
+               *ngFor="let userType of USER_TYPE_SELECTION | keyValues;">
           <input type="checkbox" name="f-Format_{{ i }}"
                  [(ngModel)]="userMessage.userType[userType.value]"
-                 (click) = "recipientSelected(userType.value)">{{USER_TYPE[userType.value] | translate}}
+                 (click)="recipientSelected(userType.value)">{{USER_TYPE[userType.value] | translate}}
         </label>
       </div>
 
       <div class="Form-submit__wrapper">
-        <button type="submit" class="btn btn-primary" (click)="validateForm()">{{"MESSAGES.SEND_MESSAGE" | translate | uppercase}}</button>
-        <button class="btn btn-outline-secondary" routerLink="/network-country/network-country-messages">{{"GLOBAL.CANCEL" |
-          translate}}</button>
+        <button type="submit" class="btn btn-primary" (click)="validateForm()">{{"MESSAGES.SEND_MESSAGE" | translate |
+          uppercase}}
+        </button>
+        <button class="btn btn-outline-secondary"
+                [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-messages'] : ['/network-country/network-country-messages']">
+          {{"GLOBAL.CANCEL" |
+          translate}}
+        </button>
       </div>
 
     </form>

@@ -5,7 +5,7 @@ import {ChangePasswordModel} from "../../../model/change-password.model";
 import {AlertMessageType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {DisplayError} from "../../../errors/display.error";
 
@@ -25,16 +25,24 @@ export class NetworkChangePasswordComponent implements OnInit,OnDestroy {
   authState: FirebaseAuthState;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private isLocalNetworkAdmin: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router, private _userService: UserService,) {
     this.changePassword = new ChangePasswordModel();
   }
 
   ngOnInit() {
-    this.pageControl.networkAuthState(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
-      this.authState = auth;
-      this.user = auth.auth;
-    });
+    this.route.params.subscribe((params:Params) =>{
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
+
+      this.pageControl.networkAuthState(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
+        this.authState = auth;
+        this.user = auth.auth;
+      });
+    })
+
   }
 
   ngOnDestroy() {

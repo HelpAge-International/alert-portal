@@ -1,8 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PageControlService} from "../../services/pagecontrol.service";
-import {NetworkService} from "../../services/network.service";
 import {Subject} from "rxjs/Subject";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {Constants} from "../../utils/Constants";
@@ -10,7 +9,6 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
 import {FirebaseAuthState} from "angularfire2";
 import {DisplayError} from "../../errors/display.error";
-import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-network-account-settings',
@@ -36,6 +34,7 @@ export class NetworkAccountSettingsComponent implements OnInit, OnDestroy {
   //user info
   private uid: string;
   private userPublic: ModelUserPublic = new ModelUserPublic("", "", -1, "");
+  private isLocalNetworkAdmin: boolean;
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -44,6 +43,11 @@ export class NetworkAccountSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.route.params.subscribe((params: Params) => {
+      if (params["isLocalNetworkAdmin"]) {
+        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+      }
+    })
     this.pageControl.networkAuthState(this.ngUnsubscribe, this.route, this.router, (authState,) => {
       this.authState = authState;
       this.uid = authState.auth.uid;

@@ -610,7 +610,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       this.alertMessage = new AlertMessageModel("Non participating agency was selected!");
       return;
     }
-    this.sectionsCompleted.set(this.sections[10], true);
+    // this.sectionsCompleted.set(this.sections[10], true);
 
     // // Closing confirmation pop up
     // if (jQuery("#navigate-back").modal) {

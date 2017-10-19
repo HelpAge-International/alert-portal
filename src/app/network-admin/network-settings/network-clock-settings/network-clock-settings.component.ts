@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType, DurationType} from "../../../utils/Enums";
@@ -35,6 +35,9 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
   private networkId: string;
   private showLoader: boolean;
 
+  //for local network admin
+  @Input() isLocalNetworkAdmin: boolean;
+
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -48,8 +51,8 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showLoader = true;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.showLoader = true;
       this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];

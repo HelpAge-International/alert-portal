@@ -5,15 +5,15 @@
 
 <ul class="section-nav">
   <li class="section-nav__item" routerLinkActive="active">
-    <a routerLink="/network/network-settings/modules">{{"COUNTRY_ADMIN.SETTINGS.MENU.MODULES" | translate}}</a>
+    <a [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-administration/settings'] : ['/network/network-settings/modules']">{{"COUNTRY_ADMIN.SETTINGS.MENU.MODULES" | translate}}</a>
   </li>
   <li class="section-nav__item" routerLinkActive="active">
-    <a routerLink="/network/network-settings/clock-settings">{{"GLOBAL.CLOCK_SETTINGS" | translate}}</a>
+    <a [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-administration/clock-settings'] : ['/network/network-settings/clock-settings']">{{"GLOBAL.CLOCK_SETTINGS" | translate}}</a>
   </li>
   <li class="section-nav__item" routerLinkActive="active">
-    <a routerLink="/network/network-settings/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</a>
+    <a [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-administration/plan-settings'] : ['/network/network-settings/response-plans']">{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</a>
   </li>
-  <li class="section-nav__item" routerLinkActive="active">
+  <li *ngIf="!isLocalNetworkAdmin" class="section-nav__item" routerLinkActive="active">
     <a routerLink="/network/network-settings/documents">{{"DOCUMENTS_TEXT" | translate}}</a>
   </li>
 

@@ -1,5 +1,11 @@
-<app-network-header></app-network-header>
-<app-network-menu></app-network-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-header></app-network-header>
+  <app-network-menu></app-network-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
@@ -8,7 +14,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <app-network-setting-menus></app-network-setting-menus>
+    <app-network-setting-menus [isLocalNetworkAdmin]="isLocalNetworkAdmin"></app-network-setting-menus>
 
     <div class="Sub-header-title__wrap">
       <h2>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.TITLE_TEXT" | translate}}</h2>

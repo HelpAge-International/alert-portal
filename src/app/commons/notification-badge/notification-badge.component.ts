@@ -75,6 +75,7 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
   }
 
   goToNotifications() {
+    console.log(this._USER_TYPE);
     switch (this._USER_TYPE) {
       case 'administratorNetworkCountry':
         let nodesAdministratorNetworkCountry = this._notificationService.getNetworkCountryAdministratorNodes(this._networkId, this._networkCountryId, this._userId);
@@ -100,6 +101,20 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
               this.router.navigateByUrl("network-admin/network-notifications").then();
             } else {
               consNetworkAdmin++;
+            }
+          });
+        }
+        break;
+      case 'administratorNetworkLocal':
+        let nodesAdministratorNetworkLocal = this._notificationService.getNetworkAdministratorNodes(this._networkId, this._userId);
+        let consNetworkAdminLocal = 1;
+        for (let node of nodesAdministratorNetworkLocal) {
+          this._notificationService.setNotificationsAsRead(node).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            if (consNetworkAdminLocal == nodesAdministratorNetworkLocal.length) {
+              this.unreadMessages = [];
+              this.router.navigate(["network-admin/network-notifications", {"isLocalNetworkAdmin": true}]);
+            } else {
+              consNetworkAdminLocal++;
             }
           });
         }
@@ -284,6 +299,27 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
         case 'administratorNetwork':
           let nodesAdministratorNetwork = this._notificationService.getNetworkAdministratorNodes(this._networkId, this._userId);
           for (let node of nodesAdministratorNetwork) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+              list.forEach((x) => {
+                if (x.$value === true) { // only unread messages
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                    if (!CommonUtils.messageExistInList(message.id, this.unreadMessages)) {
+                      this.unreadMessages.push(message);
+                    }
+                    this.unreadMessages.sort(function (a, b) {
+                      return b.time - a.time;
+                    });
+                  });
+                }
+              });
+            });
+          }
+          break;
+        case 'administratorNetworkLocal':
+          let nodesAdministratorNetworkLocal = this._notificationService.getNetworkAdministratorNodes(this._networkId, this._userId);
+          for (let node of nodesAdministratorNetworkLocal) {
             this.af.database.list(Constants.APP_STATUS + node)
               .takeUntil(this.ngUnsubscribe).subscribe(list => {
               list.forEach((x) => {
