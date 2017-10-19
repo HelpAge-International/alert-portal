@@ -1,0 +1,160 @@
+<app-network-country-header></app-network-country-header>
+<app-network-country-menu></app-network-country-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+
+<!--Create an alert section start-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <!--<div class="Back&#45;&#45;button row" routerLink="/risk-monitoring">{{"RISK_MONITORING.TITLE" | translate}}</div> &lt;!&ndash; Back button&ndash;&gt;-->
+    <div class="Header-title__wrap--risk Spaced-above">
+      <h1>{{"RISK_MONITORING.ADD_ALERT.TITLE_PAGE" | translate}}</h1>
+      <tooltip
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT5.LEVEL1'"
+      ></tooltip>
+    </div>
+    <div class="Ribbon__section__wrap--risk Spaced"></div>
+    <div class="row Spaced-above"> <!-- Alert selection section start -->
+      <div></div>
+    </div>
+
+    <div class="row" style="width:100%" *ngFor="let hazard of hazards; let key = index">
+      <label for="hazard_{{hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName}}"
+             class="Checkbox--ribbon__alert Left col-sm-5">
+        <input type="radio" name="hazard"
+               id="hazard_{{hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName}}"
+               [(ngModel)]="alertData.hazardScenario"
+               [value]="hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName">
+        <div class="Icon" style="padding-left: 5px">
+          <div
+            class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
+        </div>
+        <p><b>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) :
+          hazard.hazardName}}</b></p>
+      </label>
+    </div>
+
+    <!--Select Alert level-->
+    <br>
+    <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.SELECT_ALERT" | translate}}</b>
+      <tooltip
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT6.LEVEL1'"
+      ></tooltip>
+    </h6>
+
+
+    <div class="Radio__button--warning--js row Spaced-above">
+      <!--amber alert-->
+      <label for="RT_yes"
+             class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
+        <input type="radio" name="alert1" id="RT_yes" [(ngModel)]="alertData.alertLevel" [value]="1">
+      </label>
+      <button class="btn btn-warning Left">{{alertLevels[1] | translate}}</button>
+      <!--red alert -->
+      <label for="RT_yes"
+             class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
+        <input type="radio" name="alert1" checked="uncheck" [(ngModel)]="alertData.alertLevel" [value]="2">
+      </label>
+      <button class="btn btn-danger Left">{{alertLevels[2] | translate}}</button>
+    </div>
+
+    <br>
+    <h6 class="Spaced-above" *ngIf="alertData.alertLevel && alertData.alertLevel == 2"><b>{{"REASONS_FOR_RED_ALERT_REQUEST" | translate}}</b></h6>
+    <div class="Spaced-above form-group col-sm-12 row" *ngIf="alertData.alertLevel && alertData.alertLevel == 2">
+      <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5"
+             id="smFormGroupInput" [(ngModel)]="alertData.reasonForRedAlert">
+    </div>
+
+    <!--Affected Areas-->
+    <br><br>
+    <h6 class="Spaced-above font-weight-bold">{{"ALERT.AFFECTED_AREAS" | translate}}</h6>
+    <div class="locations_affected__wrap--risk row text-left Spaced-above">
+      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
+      <div class="col-sm-12 row" *ngFor="let location of alertData.affectedAreas; let locationKey = index">
+        <div class="col-sm-3">
+          <div class="form-group-risk-frequency ">
+            <select class="form-control" name="CountryArea"
+                    [(ngModel)]="location.country">
+              <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+              <option *ngFor="let countryKey of countriesList" [ngValue]="countryKey">{{countries[countryKey] |
+                translate}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3" *ngIf="checkTypeof(location.country)">
+          <div class="form-group-risk-frequency ">
+            <select class="form-control" name="CountryAreaLevelOne"
+                    [(ngModel)]="location.level1">
+              <option value="undefined" disabled selected hidden>
+                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
+                countryLevels[location.country]?.levels[0].value | translate }}
+              </option>
+              <option
+                *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
+                [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3" *ngIf="checkTypeof(location.level1)">
+          <div class="form-group-risk-frequency ">
+            <select class="form-control" name="CountryAreaLevelTwo"
+                    [(ngModel)]="location.level2">
+              <option value="undefined" disabled selected hidden>
+                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
+                countryLevels[location.country]?.levels[1].value | translate }}
+              </option>
+              <option
+                *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1].levelTwoValues"
+                [ngValue]="countryLevel2Value.id">{{countryLevel2Value.value}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <a href="javascript:void(0)" class="text-danger" *ngIf="alertData.affectedAreas.length > 1"
+             (click)="removeAnotherArea(locationKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
+        </div>
+      </div>
+
+      <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherAreas()">+
+        {{"RISK_MONITORING.ADD_ALERT.INPUTS.ADD_ANOTHER_AREAS" | translate}}</a>
+    </div>
+
+    <!--Estimated Population Affected -->
+    <br>
+    <h6 class="Spaced-above"><b>{{"ALERT.POPULATION_AFFECTED" | translate}}</b>
+    </h6>
+    <div class="Spaced-above form-group col-sm-12 row">
+      <input type="text" class="form-control form-control-sm col-sm-5" (keypress)="_keyPress($event)"
+             [(ngModel)]="alertData.estimatedPopulation">
+    </div>
+
+    <!--Information sources and notes -->
+    <br>
+    <h6><b>{{"ALERT.INFO_AND_NOTES" | translate}}</b></h6>
+    <div class="Spaced-above form-group col-sm-12 row">
+      <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5"
+             [(ngModel)]="alertData.infoNotes">
+    </div>
+
+    <!--Confirm/cancel buttons-->
+    <br>
+    <div class="Form-submit__wrapper">
+      <div *ngIf="alertData.alertLevel != AlertLevels.Red" class="btn btn-primary" (click)="saveAlert()">
+        {{"ALERT.CONFIRM_ALERT_LEVEL" |
+        translate}}
+      </div>
+      <div *ngIf="alertData.alertLevel == AlertLevels.Red" class="btn btn-primary" (click)="saveAlert()">
+        Confirm Red Alert Request
+      </div>
+      <div class="btn btn-outline-secondary" routerLink="/risk-monitoring">{{"GLOBAL.CANCEL" | translate}}</div>
+    </div>
+
+  </div>
+</div>
+
+
