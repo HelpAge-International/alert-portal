@@ -815,7 +815,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         });
       }
     } else {
+
       this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
+
     }
   }
 

@@ -14,8 +14,9 @@
             {{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}
           </a>
           <a class="dropdown-item" routerLink="/network/network-account-selection">
-            Switch Accounts
+            Change Accounts
           </a>
+          <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>

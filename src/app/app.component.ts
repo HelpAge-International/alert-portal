@@ -15,16 +15,17 @@ export class AppComponent {
   constructor(public af: AngularFire,
               public angulartics2GoogleAnalytics: Angulartics2GoogleAnalytics,
               private translate: TranslateService) {
-    this.translate.addLangs(["en", "fr"]);
+
+
     translate.setDefaultLang("en");
 
-    let browserLang = translate.getBrowserLang();
-    translate.use(browserLang.match(/en|fr/) ? browserLang : "en");
   }
 
+
   login() {
+
     this.af.auth.login();
-  }
+    }
 
   logout() {
     this.af.auth.logout();

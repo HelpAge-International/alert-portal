@@ -150,6 +150,7 @@ export class Constants {
     Currency.PKR
   ];
 
+
   //agency add staff
   static USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.GLOBAL_DIRECTOR", "GLOBAL.USER_TYPE.REGIONAL_DIRECTOR",
     "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT", "GLOBAL.USER_TYPE.DONOR",
@@ -832,6 +833,8 @@ export class Constants {
     "GLOBAL.COUNTRIES.ZM",
     "GLOBAL.COUNTRIES.ZW"
   ];
+
+
 
   static HAZARD_CATEGORY_ICON_CLASS = [
     "Icon--earthquake",

@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, Pipe, PipeTransform, HostListener ,Output, EventEmitter} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -10,6 +10,17 @@ import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
+import {ajaxGetJSON} from "rxjs/observable/dom/AjaxObservable";
+import {Http, Response} from '@angular/http';
+import {Observable} from "rxjs/Observable";
+import {toBase64String} from "@angular/compiler/src/output/source_map";
+import {nodeValue} from "@angular/core/src/view";
+import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { TranslateService } from "@ngx-translate/core";
+
+declare var jQuery: any;
+
 
 @Component({
   selector: 'app-country-admin-header',
@@ -25,8 +36,17 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private partnerAgencies = [];
   private agenciesMap = new Map();
 
+  // Dan's switch language
+  private languageSelectPath: string = '';
+  private languageMap = new Map();
+  private userLang = [];
+  private language: string;
+  private browserLang: string = "";
+  // End
+
   private UserType = UserType;
   private userType: UserType;
+
 
   private alertLevel: AlertLevels;
   private alertTitle: string;
@@ -50,21 +70,45 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private isRed: boolean;
   private isAnonym: boolean = false;
 
+
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
               private route: ActivatedRoute,
               private af: AngularFire,
               private router: Router,
               private alertService: ActionsService,
-              private userService: UserService) {
+              private userService: UserService,
+              private http: Http,
+              private translate: TranslateService
+  ) {
+
+    //this.translate.addLangs(["en", "fr", "es", "pt"]);
+    translate.setDefaultLang("en");
+
+    this.browserLang = translate.getBrowserLang();
+    //translate.use(this.browserLang.match(/en|fr|es|pt/) ? this.browserLang : "en");
+
+
   }
 
   ngOnInit() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.agencyId = agencyId;
-      this.countryId = countryId;
-      this.userType = userType;
-      this.isAnonym = user && !user.anonymous ? false : true;
+    this.agencyId = agencyId;
+    this.countryId = countryId;
+    this.userType = userType;
+    this.isAnonym = user && !user.anonymous ? false : true;
+    this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
+
+    this.loadJSON().subscribe(data => {
+
+        for (var key in data){
+
+          this.userLang.push(key);
+          this.languageMap.set(key, data[key]);
+        }
+
+      });
+
 
       if (user) {
         if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
@@ -74,6 +118,25 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
         }
         if (!user.anonymous) {
           this.uid = user.auth.uid;
+
+          // Check chosen user language
+
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              if(user.language) {
+                this.language = user.language;
+                this.translate.use(this.language.toLowerCase());
+              } else {
+                this.language = "en"
+
+              }
+              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(this.language.toLowerCase());
+
+
+                this.translate.use(this.language.toLowerCase());
+
+            });
 
           if(userType == UserType.CountryAdmin){
             this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid+"/countryId")
@@ -114,6 +177,9 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
+
+
+
   }
 
   private initDataForPartnerUser(agencyId, countryId) {
@@ -226,9 +292,43 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Dan's Modal functions
+
+  loadJSON(){
+
+    return this.http.get(this.languageSelectPath)
+      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+
+  }
+
+  openLanguageModal()
+{
+
+  console.log('Open language modal');
+  jQuery("#language-selection").modal("show");
+
+};
+
+
+  changeLanguage(language: string){
+    this.language = language;
+    console.log(this.uid);
+
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
+
+    if (language.toLowerCase()) {
+      this.translate.use(language.toLowerCase());
+      jQuery("#language-selection").modal("hide");
+
+
+    }
+  }
+
+
   logout() {
     console.log("logout");
     this.af.auth.logout().then(()=>{this.router.navigateByUrl(Constants.LOGIN_PATH)}, error=>{console.log(error.message)});
+
   }
 
   goToHome() {

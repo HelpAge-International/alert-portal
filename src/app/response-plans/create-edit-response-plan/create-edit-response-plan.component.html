@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="col-sm-3">
-          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="onSubmit()">{{"SAVE" | translate}}</div></span>
+          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="onSave()">{{"SAVE" | translate}}</div></span>
       </div>
     </div>
 
@@ -362,7 +362,6 @@
                 | translate}}</a>
             </div>
           </div>
-
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="continueButtonPressedOnSection3()">{{"GLOBAL.CONTINUE" |
@@ -1259,6 +1258,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p></div>
       </div>
