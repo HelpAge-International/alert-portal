@@ -192,6 +192,8 @@ import {LocalNetworkPreparednessComponent} from "./local-network-admin/local-net
 import {LocalNetworkApaComponent} from "./local-network-admin/local-network-preparedness/local-network-apa/local-network-apa.component";
 import {LocalNetworkClockComponent} from "./local-network-admin/local-network-administration/local-network-administration-settings/local-network-clock/local-network-clock.component";
 import {LocalNetworkPlanComponent} from "./local-network-admin/local-network-administration/local-network-administration-settings/local-network-plan/local-network-plan.component";
+import { NetworkCreateAlertComponent } from './network-country-admin/network-risk-minitoring/network-create-alert/network-create-alert.component';
+import { NetworkDashboardUpdateAlertLevelComponent } from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -492,11 +494,16 @@ const routes: Routes = [
   {path: 'network-country/network-dashboard', component: NetworkDashboardComponent},
   {path: 'network-country/network-country-account-settings', component: NetworkCountryAccountSettingsComponent},
   {path: 'network-country/network-country-change-password', component: NetworkCountryChangePasswordComponent},
+  {path: 'network-country/network-dashboard/dashboard-update-alert-level', component: NetworkDashboardUpdateAlertLevelComponent},
+  {path: 'network-country/network-dashboard/dashboard-update-alert-level/:id/:networkCountryId', component: NetworkDashboardUpdateAlertLevelComponent},
+
   {path: 'network-country/network-risk-monitoring', component: NetworkRiskMinitoringComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID/:countryOfficeCode', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-hazard', component: AddHazardNetworkCountryComponent},
+  {path: 'network-country/network-risk-monitoring/create-alert', component: NetworkCreateAlertComponent},
+
   {path: 'network-country/network-plans', component: NetworkPlansComponent},
   {path: 'network-country/network-plans/view-network-plan', component: ViewNetworkPlanComponent},
   {path: 'network-country/network-plans/create-edit-network-plan', component: CreateEditNetworkPlanComponent},

@@ -279,6 +279,8 @@ import { LocalNetworkPreparednessComponent } from './local-network-admin/local-n
 import { LocalNetworkApaComponent } from './local-network-admin/local-network-preparedness/local-network-apa/local-network-apa.component';
 import { LocalNetworkClockComponent } from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-clock/local-network-clock.component';
 import { LocalNetworkPlanComponent } from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-plan/local-network-plan.component';
+import { NetworkCreateAlertComponent } from './network-country-admin/network-risk-minitoring/network-create-alert/network-create-alert.component';
+import { NetworkDashboardUpdateAlertLevelComponent } from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -550,7 +552,10 @@ const firebaseAuthConfig = {
     LocalNetworkPreparednessComponent,
     LocalNetworkApaComponent,
     LocalNetworkClockComponent,
-    LocalNetworkPlanComponent
+    LocalNetworkPlanComponent,
+    AddHazardNetworkCountryComponent,
+    NetworkCreateAlertComponent,
+    NetworkDashboardUpdateAlertLevelComponent
   ],
   imports: [
     BrowserModule,
