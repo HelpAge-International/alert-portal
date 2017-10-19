@@ -129,6 +129,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initNetworkAccess() {
+    this.DashboardTypeUsed = DashboardType.default;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -170,6 +171,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
     let id = this.countryId ? this.countryId : this.networkCountryId;
+    console.log(id)
     let agencyId = this.agencyId ? this.agencyId : this.networkId;
     this.getAllSeasonsForCountryId(id);
     this.getAlerts(id);
@@ -199,7 +201,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     let id = this.countryId ? this.countryId : this.networkCountryId;
     let agencyId = this.agencyId ? this.agencyId : this.networkId;
     this.getAllSeasonsForCountryId(id);
-    this.getAlerts(id);
+    this.getAlerts(id)
     this.getCountryContextIndicators(id);
     this.getHazards(id);
     this.initData(id);
@@ -390,10 +392,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private getAlerts(id) {
+    console.log(this.DashboardTypeUsed)
     if (this.DashboardTypeUsed == DashboardType.default) {
+      console.log('first')
       this.alerts = this.actionService.getAlerts(id);
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
+      console.log('second')
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id);
       this.amberAlerts = this.actionService.getAlerts(id)
         .map(alerts => {
@@ -407,6 +412,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.actionService.getRedAlerts(id)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(alerts => {
+        console.log(alerts)
         alerts = alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         this.isRedAlert = alerts.length > 0;
       });
@@ -496,11 +502,11 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   updateAlert(alertId, isDirectorAmber) {
     if (this.DashboardTypeUsed == DashboardType.default) {
-      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
+      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
     } else if (isDirectorAmber) {
-      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {
+      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
         id: alertId,
-        countryId: this.countryId,
+        networkCountryId: this.networkCountryId,
         isDirector: true
       }]);
     } else {
