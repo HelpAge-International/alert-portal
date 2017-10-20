@@ -3,11 +3,12 @@ import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {AngularFire} from 'angularfire2';
 import {MapService} from "./map.service";
-import {Countries, CountriesMapsSearchInterface} from "../utils/Enums";
+import {ActionLevel, ActionType, Countries, CountriesMapsSearchInterface} from "../utils/Enums";
 import {CommonService} from "./common.service";
 import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {HazardImages} from "../utils/HazardImages";
+import {PrepActionService} from "./prepactions.service";
 
 /**
  * Network map service
@@ -69,7 +70,9 @@ export class NetworkMapService {
     this.af = af;
     this.ngUnsubscribe = ngUnsubscribe;
     // Get the agencies of a network
-    this.initMap(elementId);
+    if (elementId != null) {
+      this.initMap(elementId);
+    }
     this.systemMpaGreenYellow(systemAdminId, (green, yellow) => {
       this.minGreen = green;
       this.minYellow = yellow;
@@ -89,6 +92,7 @@ export class NetworkMapService {
                       /* ALL MPA VALUES FOUND FOR ALL COUNTRY OFFICES
                        *   Even though we're in a two for loops, counter is maintained inside getAllMPAValuesToCountries
                        *   so this method fires when they are all done */
+                      console.log(this.countries);
                       this.loadColoredLayers(countryClicked);
                       done();
                     });
@@ -108,12 +112,94 @@ export class NetworkMapService {
    */
   private mpaCounter: number = 0;
   private getAllMPAValuesToCountries(countryId: string, agencyId: string, systemId: string, done: () => void) {
-    // this.mpaCounter++;
-    //
-    // this.mpaCounter--;
-    // if (this.mpaCounter == 0) {
-    //   done();
-    // }
+    for (let x of this.countries) {
+      this.mpaCounter++;
+
+      this.getActionsFor(countryId, agencyId, systemId, (holder) => {
+        let nMA: NetworkMapAgency = x.getAgency(agencyId);
+        console.log(holder);
+        nMA.mpaTotal = holder.mpaTotal.size;
+        nMA.mpaComplete = holder.mpaComplete.size;
+
+        this.mpaCounter--;
+        if (this.mpaCounter == 0) {
+          done();
+        }
+      });
+    }
+  }
+
+  /**
+   * Get all the action objects for a given country id and callback when done!
+   * - actionCHS. Import and store all data
+   *    - actionMandated. Import and store all data
+   *        - action. Import and merge all data with previous
+   *            - Callback with entire list to show it's done
+   */
+  private getActionsFor(countryId: string, agencyId: string, systemId: string, done: (holder: NetworkMapActionHolder) => void) {
+    let holder: NetworkMapActionHolder = new NetworkMapActionHolder();
+    this.downloadDefaultClockSettings(agencyId, (value, durationType) => {
+      this.af.database.list(Constants.APP_STATUS + "/actionCHS/" + systemId, {preserveSnapshot: true})
+        .flatMap((chsSnap) => {
+          for (let x of chsSnap) {
+            console.log("Adding " + x.key + " to total");
+            holder.mpaTotal.add(x.key);
+          }
+          console.log("Requesting " + Constants.APP_STATUS + "/actionMandated/" + agencyId);
+          return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + agencyId, {preserveSnapshot: true});
+        })
+        .flatMap((mandatedSnap) => {
+          for (let x of mandatedSnap) {
+            if (x.val().level == ActionLevel.MPA) {
+              console.log("Adding " + x.key + " to total");
+              holder.mpaTotal.add(x.key)
+            }
+          }
+          console.log("Requesting " + Constants.APP_STATUS + "/action/" + countryId);
+          return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {preserveSnapshot: true});
+        })
+        .map((actionSnap) => {
+          for (let x of actionSnap) {
+            if (x.val().level == ActionLevel.MPA || holder.mpaTotal.has(x.key)) {
+              let calculatedClock: number = new Date().getTime();
+              if (x.val().hasOwnProperty('frequencyBase') && x.val().hasOwnProperty('frequencyValue')) {
+                calculatedClock = PrepActionService.clockCalculation(x.val().frequencyValue, x.val().frequencyBase);
+              }
+              else {
+                calculatedClock = PrepActionService.clockCalculation(value, durationType);
+              }
+              console.log("Completion criteria!");
+              console.log(x.val().isComplete);
+              console.log(x.val().isCompleteAt);
+              console.log(x.val().isArchived + " :: " + (!x.val().isArchived));
+              console.log(calculatedClock);
+              console.log((new Date()).getTime());
+              if (x.val().isComplete && x.val().isCompleteAt != null &&                    // Has a completed date!
+                !x.val().isArchived &&                                                      // Isn't archived
+                x.val().isCompleteAt + calculatedClock > (new Date()).getTime()) {         // Hasn't expired
+                console.log("Adding " + x.key + " to completed");
+                holder.mpaComplete.add(x.key);
+              }
+              console.log("Adding " + x.key + " to total");
+              holder.mpaTotal.add(x.key);
+            }
+          }
+          return holder;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((holder) => {
+          done(holder);
+        });
+    });
+  }
+  private downloadDefaultClockSettings(agencyId: string, fun: (value: number, durationType: number) => void) {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          fun(snap.val().value, snap.val().durationType);
+        }
+      });
   }
 
   /**
@@ -178,6 +264,11 @@ export class NetworkMapService {
   private getCountryNameById(countryId: number) {
     return Constants.COUNTRIES[countryId];
   }
+
+  /**
+   * Place a marker at countryLocation (location) with the following hazardScenario!
+   * - Infers it from a GPS search
+   */
   private placeMarker(location: number, hazardScenario: number) {
     let position: number = 0;
     let count: number = 0;
@@ -929,3 +1020,15 @@ export class NetworkMapHazardRaised {
   public affectedAreas: string[] = [];
 }
 
+/**
+ * Network Map Action Holder
+ */
+export class NetworkMapActionHolder {
+  public mpaComplete: Set<string>;
+  public mpaTotal: Set<string>;
+
+  constructor() {
+    this.mpaTotal = new Set<string>();
+    this.mpaComplete = new Set<string>();
+  }
+}

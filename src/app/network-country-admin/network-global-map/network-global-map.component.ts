@@ -9,7 +9,7 @@ import {Constants} from '../../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {NetworkService} from '../../services/network.service';
 import {NetworkMapService} from '../../services/networkmap.service';
-import {Countries} from "../../utils/Enums";
+import {Countries, NetworkUserAccountType} from "../../utils/Enums";
 
 declare var jQuery: any;
 
@@ -42,21 +42,24 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
+      console.log(this.uid);
       this.networkService.getSelectedIdObj(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
-          // TODO: Work out the system admin ID
           this.networkId = selection['id'];
           this.networkCountryId = selection['networkCountryId'];
-          // TODO: Un-hard-code this system admin ID!
-          this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, "wFCEPYdAzCO2YLDKoYssas46t402",  this.networkId, this.networkCountryId,
-            () => {
-              // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
-              console.log("DONE!");
-            },
-            (country) => {
-              this.showDialog(country);
-            });
+          // TODO: Delete this method when page control does auth properly
+          this.getSystemAdmin(this.uid, (systemAdminId => {
+            console.log("System admin id: " + systemAdminId);
+            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
+              () => {
+                // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
+                console.log("DONE!");
+              },
+              (country) => {
+                this.showDialog(country);
+              });
+          }));
         });
 
       // this.mapService = MapService.init(this.af, this.ngUnsubscribe);
@@ -76,6 +79,41 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   public getCountryCode(location: number) {
     return Countries[location];
   }
+
+  /**
+   * Method to pull the system admin ID
+   * TODO: Remove this when pagecontrol does the user permissions and returns this value
+   */
+  private getSystemAdmin(uid: string, done: (systemAdminId: string) => void) {
+    this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          // We're a Network Admin
+          for (const key in snap.val().systemAdmin) {
+            done(key);
+          }
+        }
+        else {
+          this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid, {preserveSnapshot: true})
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((anSnap) => {
+              if (anSnap.val() != null) {
+                // We're a Network Country Admin
+                for (const key in anSnap.val().systemAdmin) {
+                  done(key);
+                }
+              }
+              else {
+                // Not found?
+                done(null);
+              }
+            });
+        }
+      });
+  }
+
+
 
   /**
    * Show the popup dialog

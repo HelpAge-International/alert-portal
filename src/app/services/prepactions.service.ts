@@ -59,7 +59,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfo(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
-                             countryId: string, agencyId: string, systemId: string) {
+                             countryId: string, agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -68,10 +68,10 @@ export class PrepActionService {
     this.systemAdminId = systemId;
     this.getDefaultClockSettings(af, this.agencyId, this.countryId, () => {
       if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM, updated);
       }
-      this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
-      this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
+      this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY, updated);
+      this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY, updated);
     });
   }
 
