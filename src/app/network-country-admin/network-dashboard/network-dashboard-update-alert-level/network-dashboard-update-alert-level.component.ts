@@ -21,6 +21,8 @@ import {HazardImages} from "../../../utils/HazardImages";
   providers: [ActionsService]
 })
 export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
+  leadAgencyCountryOffice: string;
+  leadAgencyId: any;
   networkCountryId: any;
   networkId: any;
 
@@ -88,9 +90,20 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
               if (param['id']) {
                 this.alertId = param['id'];
 
+
+
                 this.loadAlert(this.alertId, this.networkCountryId);
               }
             });
+
+          this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe( network => {
+              this.leadAgencyId = network.leadAgencyId
+              Object.keys( network.agencyCountries[this.leadAgencyId]).forEach( key => {
+                this.leadAgencyCountryOffice = key
+              })
+            })
         })
 
       // get the country levels values
@@ -202,7 +215,7 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
     console.log(this.loadedAlert);
 
-    this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.countryId, this.agencyId);
+    this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId);
   }
 
   ngOnDestroy() {

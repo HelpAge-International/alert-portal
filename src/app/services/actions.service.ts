@@ -469,7 +469,7 @@ export class ActionsService {
       });
   }
 
-  updateAlert(alert: ModelAlert, alertLevelBefore: number, countryId: string, agencyId: string) {
+  updateAlert(alert: ModelAlert, alertLevelBefore: number, countryId: string, agencyId: string, networkCountryId?) {
     console.log("update alert");
     let updateData = {};
     let areaData = {};
@@ -509,7 +509,7 @@ export class ActionsService {
     updateData["updatedBy"] = alert.updatedBy;
 
     console.log(updateData);
-    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alert.id).set(updateData).then(() => {
+    this.af.database.object(networkCountryId ? Constants.APP_STATUS + "/alert/" +  networkCountryId + "/" + alert.id : Constants.APP_STATUS + "/alert/" +  countryId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;
       let riskNameTranslated = "";
@@ -532,7 +532,7 @@ export class ActionsService {
 
       this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, alertChangedNotificationSetting, agencyId, countryId);
 
-      this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+      networkCountryId ? this.router.navigateByUrl('/network-country/network-dashboard') : this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
     }, error => {
       console.log(error.message);
     });
