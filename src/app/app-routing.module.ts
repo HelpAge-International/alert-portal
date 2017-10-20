@@ -194,6 +194,8 @@ import {LocalNetworkClockComponent} from "./local-network-admin/local-network-ad
 import {LocalNetworkPlanComponent} from "./local-network-admin/local-network-administration/local-network-administration-settings/local-network-plan/local-network-plan.component";
 import { NetworkCreateAlertComponent } from './network-country-admin/network-risk-minitoring/network-create-alert/network-create-alert.component';
 import { NetworkDashboardUpdateAlertLevelComponent } from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
+import {NetworkCalendarComponent} from "./network-country-admin/network-dashboard/network-calendar/network-calendar.component";
+import {LocalNetworkCalendarComponent} from "./local-network-admin/local-network-admin-dashboard/local-network-calendar/local-network-calendar.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -486,6 +488,7 @@ const routes: Routes = [
   {path: 'network/local-network-plans', component: LocalNetworkPlansComponent},
   {path: 'network/local-network-preparedness-mpa', component: LocalNetworkPreparednessComponent},
   {path: 'network/local-network-preparedness-apa', component: LocalNetworkApaComponent},
+  {path: 'network/local-network-calendar', component: LocalNetworkCalendarComponent},
 
 
   /**
@@ -529,6 +532,7 @@ const routes: Routes = [
   {path: 'network-country/network-country-office-profile-stock-capacity', component: NetworkCountryProfileStockCapacityComponent},
   {path: 'network-country/network-country-office-profile-documents', component: NetworkCountryProfileDocumentsComponent},
   {path: 'network-country/network-country-office-profile-contacts', component: NetworkCountryProfileContactsComponent},
+  {path: 'network-country/network-calendar', component: NetworkCalendarComponent},
 
   /**
    * Maintanace page

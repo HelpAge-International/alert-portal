@@ -3,7 +3,7 @@
     <div class="logo" routerLink="/network-country/network-dashboard"></div>
     <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0"
           [class.badge-warning]="alertLevel==1"
-          [class.badge-danger]="alertLevel==2">{{"alertTitle" | translate}}
+          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
     </span>
     <ul *ngIf="!isAnonym">
       <li *ngIf="network | async as networkObj">

@@ -450,6 +450,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     if (this.action.id == null) {
       this.showDueDate = this.action.level == ActionLevel.MPA;
     }
+    console.log(this.showDueDate)
   }
 
   protected removeFilterLockDepartment() {

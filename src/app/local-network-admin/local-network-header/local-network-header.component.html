@@ -1,11 +1,22 @@
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
     <div class="logo" (click)="goToHome()"></div>
+    <span class="badge badge-pill" [class.badge-success]="alertLevel==0"
+          [class.badge-warning]="alertLevel==1"
+          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
+    </span>
     <ul>
+      <li *ngIf="network">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{network.name}}</a>
+        <!--<div *ngIf="partnerAgencies.length>1" class="dropdown-menu">-->
+        <!--<a *ngFor="let agency of partnerAgencies" class="dropdown-item"-->
+        <!--(click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>-->
+        <!--</div>-->
+      </li>
       <li *ngIf="user?.firstName" class="Header_bar__username">{{user?.firstName+" "+user?.lastName}}</li>
       <!--<li class="Header_bar__username" (click)="test()">{{firstName+" "+lastName}}</li>-->
       <li class="Header_bar__country">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{network?.name}}</a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[network?.countryCode]}}</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" [routerLink]="['/network/network-account-details', {'isLocalNetworkAdmin':true}]">
             Network Details

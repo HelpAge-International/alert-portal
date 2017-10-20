@@ -66,4 +66,8 @@ export class CommonUtils {
     return messageList.map(msg => msg.id).indexOf(messageId) != -1;
   }
 
+  static itemExistInList(id: any, itemList: any[]) {
+    return itemList.map(item => item.id ? item.id : item.$key).indexOf(id) != -1;
+  }
+
 }

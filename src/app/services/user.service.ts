@@ -623,4 +623,21 @@ export class UserService {
   logout() {
     this.af.auth.logout();
   }
+
+  saveUserNetworkSelection(uid, userType, networkId) {
+    this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").set(networkId);
+  }
+
+  deleteUserNetworkSelection(uid, userType) {
+    this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").remove();
+  }
+
+  getUserNetworkSelection(uid, userType) {
+    return this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork")
+      .map(selectedObj =>{
+        if (selectedObj.$value) {
+          return selectedObj.$value;
+        }
+      })
+  }
 }
