@@ -1,4 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
+import {RegionHolder} from "../../map/map-countries-list/map-countries-list.component";
 /**
  * Created by jordan on 08/10/2017.
  */
@@ -11,9 +12,14 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
   styleUrls: ['./network-global-map-list.component.css']
 })
 export class NetworkGlobalMapListComponent implements OnInit, OnDestroy {
+
+  public otherRegion: RegionHolder = RegionHolder.create("Other", "unassigned");
+  public regions: RegionHolder[] = [];
+
   ngOnInit() {
   }
 
   ngOnDestroy() {
+
   }
 }

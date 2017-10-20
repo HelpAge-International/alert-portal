@@ -30,7 +30,9 @@
                 <tr>
                   <td class="text-left"><strong>Risks:</strong><br/><p>{{HazardScenario[x.hazardScenario] | translate}}</p></td>
                   <td class="text-left"><strong>Affected Areas:</strong><br/>
-                    <p *ngFor="let y of x.instancesOfHazard">{{y.affectedAreas}}</p>
+                    <div *ngFor="let y of x.instancesOfHazard">
+                      <p *ngFor="let obj of y.affectedAreas">{{obj.country | translate}}{{obj.areas}}</p>
+                    </div>
                   </td>
                   <td class="text-left"><strong>Population:</strong><br/>
                     <p *ngFor="let y of x.instancesOfHazard">{{y.population}}</p>

@@ -142,20 +142,16 @@ export class NetworkMapService {
       this.af.database.list(Constants.APP_STATUS + "/actionCHS/" + systemId, {preserveSnapshot: true})
         .flatMap((chsSnap) => {
           for (let x of chsSnap) {
-            console.log("Adding " + x.key + " to total");
             holder.mpaTotal.add(x.key);
           }
-          console.log("Requesting " + Constants.APP_STATUS + "/actionMandated/" + agencyId);
           return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + agencyId, {preserveSnapshot: true});
         })
         .flatMap((mandatedSnap) => {
           for (let x of mandatedSnap) {
             if (x.val().level == ActionLevel.MPA) {
-              console.log("Adding " + x.key + " to total");
               holder.mpaTotal.add(x.key)
             }
           }
-          console.log("Requesting " + Constants.APP_STATUS + "/action/" + countryId);
           return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {preserveSnapshot: true});
         })
         .map((actionSnap) => {
@@ -168,19 +164,11 @@ export class NetworkMapService {
               else {
                 calculatedClock = PrepActionService.clockCalculation(value, durationType);
               }
-              console.log("Completion criteria!");
-              console.log(x.val().isComplete);
-              console.log(x.val().isCompleteAt);
-              console.log(x.val().isArchived + " :: " + (!x.val().isArchived));
-              console.log(calculatedClock);
-              console.log((new Date()).getTime());
               if (x.val().isComplete && x.val().isCompleteAt != null &&                    // Has a completed date!
                 !x.val().isArchived &&                                                      // Isn't archived
                 x.val().isCompleteAt + calculatedClock > (new Date()).getTime()) {         // Hasn't expired
-                console.log("Adding " + x.key + " to completed");
                 holder.mpaComplete.add(x.key);
               }
-              console.log("Adding " + x.key + " to total");
               holder.mpaTotal.add(x.key);
             }
           }
@@ -239,7 +227,7 @@ export class NetworkMapService {
                       country: "",
                       areas: ""
                     };
-                    if (x.affectedCountry > -1) {
+                    if (x.country > -1) {
                       obj.country = this.getCountryNameById(x.country);
                     }
                     if (x.level1 > -1) {
@@ -248,7 +236,7 @@ export class NetworkMapService {
                     if (x.level2 > -1) {
                       obj.areas = obj.areas + ", " + value[x.country].levelOneValues[x.level1].levelTwoValues[x.level2].value;
                     }
-                    raised.affectedAreas.push(obj.country + obj.areas);
+                    raised.affectedAreas.push({country: obj.country, areas: obj.areas});
                   }
 
                   networkMapHazard.instancesOfHazard.push(raised);
@@ -1017,7 +1005,7 @@ export class NetworkMapHazard {
 export class NetworkMapHazardRaised {
   public population: number;
   public agencyName: string;
-  public affectedAreas: string[] = [];
+  public affectedAreas: any[] = [];
 }
 
 /**
