@@ -26,7 +26,6 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   public uid: string;
   public networkId: string;
   public networkCountryId: string;
-  private countryHasAgenciesMap: Map<string, Set<string>>;
 
   private HazardScenario = Constants.HAZARD_SCENARIOS;
 
@@ -36,7 +35,6 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               public networkMapService: NetworkMapService,
               private networkService: NetworkService) {
-    this.countryHasAgenciesMap = new Map<string, Set<string>>();
   }
 
   ngOnInit() {
@@ -50,11 +48,10 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           this.networkCountryId = selection['networkCountryId'];
           // TODO: Delete this method when page control does auth properly
           this.getSystemAdmin(this.uid, (systemAdminId => {
-            console.log("System admin id: " + systemAdminId);
             this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
               () => {
                 // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
-                console.log("DONE!");
+                console.log("Network map initialised");
               },
               (country) => {
                 this.showDialog(country);

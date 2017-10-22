@@ -1,0 +1,10 @@
+/*https://www.w3schools.com/css/tryit.asp?filename=trycss_table_padding*/
+
+.table_border {
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+td {
+  padding: 10px;
+}
