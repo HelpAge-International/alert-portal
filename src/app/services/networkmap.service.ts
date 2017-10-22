@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {AngularFire} from 'angularfire2';
-import {MapService} from "./map.service";
-import {ActionLevel, ActionType, Countries, CountriesMapsSearchInterface} from "../utils/Enums";
-import {CommonService} from "./common.service";
+import {MapService} from './map.service';
+import {ActionLevel, ActionType, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
+import {CommonService} from './common.service';
 import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
-import {HazardImages} from "../utils/HazardImages";
-import {PrepActionService} from "./prepactions.service";
+import {HazardImages} from '../utils/HazardImages';
+import {PrepActionService} from './prepactions.service';
 
 /**
  * Network map service
@@ -19,7 +19,7 @@ import {PrepActionService} from "./prepactions.service";
  * Read the `countries` variable directly! It was made public intentionally for this! There's too much going on
  *   to attempt to figure this notify a component + needs to be reused in the list
  *
- * >> EXPLANATION OF THE DATA STRUCTURE IS IN A BLOCK COMMENT BELOW! PLEASE READ
+ * >> EXPLANATION OF THE DATA STRUCTURE IS IN A BLOCK COMMENT BELOW (bottom of file)! PLEASE READ
  *
  * Responsibilities of this service are:
  *
@@ -86,8 +86,8 @@ export class NetworkMapService {
                  *   Even though we're in a forEach, counter is maintained so this method fires when
                  *   they are all done */
                 this.initHazards();
-                for (let x of this.countries) {
-                  for (let agencyX of x.agencies) {
+                for (const x of this.countries) {
+                  for (const agencyX of x.agencies) {
                     this.getAllMPAValuesToCountries(agencyX.countryId, agencyX.id, systemAdminId, () => {
                       /* ALL MPA VALUES FOUND FOR ALL COUNTRY OFFICES
                        *   Even though we're in a two for loops, counter is maintained inside getAllMPAValuesToCountries
@@ -112,11 +112,11 @@ export class NetworkMapService {
    */
   private mpaCounter: number = 0;
   private getAllMPAValuesToCountries(countryId: string, agencyId: string, systemId: string, done: () => void) {
-    for (let x of this.countries) {
+    for (const x of this.countries) {
       this.mpaCounter++;
 
       this.getActionsFor(countryId, agencyId, systemId, (holder) => {
-        let nMA: NetworkMapAgency = x.getAgency(agencyId);
+        const nMA: NetworkMapAgency = x.getAgency(agencyId);
         console.log(holder);
         nMA.mpaTotal = holder.mpaTotal.size;
         nMA.mpaComplete = holder.mpaComplete.size;
@@ -137,25 +137,25 @@ export class NetworkMapService {
    *            - Callback with entire list to show it's done
    */
   private getActionsFor(countryId: string, agencyId: string, systemId: string, done: (holder: NetworkMapActionHolder) => void) {
-    let holder: NetworkMapActionHolder = new NetworkMapActionHolder();
+    const holder: NetworkMapActionHolder = new NetworkMapActionHolder();
     this.downloadDefaultClockSettings(agencyId, (value, durationType) => {
-      this.af.database.list(Constants.APP_STATUS + "/actionCHS/" + systemId, {preserveSnapshot: true})
+      this.af.database.list(Constants.APP_STATUS + '/actionCHS/' + systemId, {preserveSnapshot: true})
         .flatMap((chsSnap) => {
-          for (let x of chsSnap) {
+          for (const x of chsSnap) {
             holder.mpaTotal.add(x.key);
           }
-          return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + agencyId, {preserveSnapshot: true});
+          return this.af.database.list(Constants.APP_STATUS + '/actionMandated/' + agencyId, {preserveSnapshot: true});
         })
         .flatMap((mandatedSnap) => {
-          for (let x of mandatedSnap) {
+          for (const x of mandatedSnap) {
             if (x.val().level == ActionLevel.MPA) {
-              holder.mpaTotal.add(x.key)
+              holder.mpaTotal.add(x.key);
             }
           }
-          return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {preserveSnapshot: true});
+          return this.af.database.list(Constants.APP_STATUS + '/action/' + countryId, {preserveSnapshot: true});
         })
         .map((actionSnap) => {
-          for (let x of actionSnap) {
+          for (const x of actionSnap) {
             if (x.val().level == ActionLevel.MPA || holder.mpaTotal.has(x.key)) {
               let calculatedClock: number = new Date().getTime();
               if (x.val().hasOwnProperty('frequencyBase') && x.val().hasOwnProperty('frequencyValue')) {
@@ -181,7 +181,7 @@ export class NetworkMapService {
     });
   }
   private downloadDefaultClockSettings(agencyId: string, fun: (value: number, durationType: number) => void) {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId + '/clockSettings/preparedness', {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
@@ -199,7 +199,7 @@ export class NetworkMapService {
         this.af.database.list(Constants.APP_STATUS + '/alert/' + agency.countryId, {preserveSnapshot: true})
           .takeUntil(this.ngUnsubscribe)
           .subscribe((snap) => {
-            for (let element of snap) {
+            for (const element of snap) {
               let res: boolean = false;
               // let lock: boolean = false;
               for (const userTypes in element.val().approval) {
@@ -217,24 +217,35 @@ export class NetworkMapService {
               if (res) {
                 // Everyone on the approval list has approved it. Uncomment the three 'lock' comments if you require ALL
                 //   on the approval list to approve
-                let networkMapHazard: NetworkMapHazard = country.getHazard(element.val().hazardScenario, element.val().customHazard);
-                let raised: NetworkMapHazardRaised = new NetworkMapHazardRaised();
+                const networkMapHazard: NetworkMapHazard = country.getHazard(element.val().hazardScenario, element.val().customHazard);
+                if (element.val().hazardScenario == -1) {
+                  // TODO: Check that the custom hazard fields are stored under customHazard!
+                  // Swap it out as the reference to it
+                  this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + element.val().customHazard, {preserveSnapshot: true})
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe((hazardSnap) => {
+                      if (hazardSnap.val() != null) {
+                        networkMapHazard.customHazard = hazardSnap.val().name;
+                      }
+                    });
+                }
+                const raised: NetworkMapHazardRaised = new NetworkMapHazardRaised();
                 raised.population = element.val().estimatedPopulation;
                 raised.agencyName = agency.name;
                 this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
-                  for (let x of element.val().affectedAreas) {
-                    let obj = {
-                      country: "",
-                      areas: ""
+                  for (const x of element.val().affectedAreas) {
+                    const obj = {
+                      country: '',
+                      areas: ''
                     };
                     if (x.country > -1) {
                       obj.country = this.getCountryNameById(x.country);
                     }
                     if (x.level1 > -1) {
-                      obj.areas = ", " + value[x.country].levelOneValues[x.level1].value
+                      obj.areas = ', ' + value[x.country].levelOneValues[x.level1].value;
                     }
                     if (x.level2 > -1) {
-                      obj.areas = obj.areas + ", " + value[x.country].levelOneValues[x.level1].levelTwoValues[x.level2].value;
+                      obj.areas = obj.areas + ', ' + value[x.country].levelOneValues[x.level1].levelTwoValues[x.level2].value;
                     }
                     raised.affectedAreas.push({country: obj.country, areas: obj.areas});
                   }
@@ -260,13 +271,13 @@ export class NetworkMapService {
   private placeMarker(location: number, hazardScenario: number) {
     let position: number = 0;
     let count: number = 0;
-    this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+    this.geocoder.geocode({'address': CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
       if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-        let pos = {
+        const pos = {
           lng: geoResult[0].geometry.location.lng() + position,
           lat: geoResult[0].geometry.location.lat()
         };
-        let marker = new google.maps.Marker({
+        const marker = new google.maps.Marker({
           position: pos,
           icon: HazardImages.init().get(hazardScenario)
         });
@@ -358,8 +369,8 @@ export class NetworkMapService {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        let mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(this.countryIdToLocation.get(countryId));
-        let agency: NetworkMapAgency = mapCountry.getAgency(snap.key);
+        const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(this.countryIdToLocation.get(countryId));
+        const agency: NetworkMapAgency = mapCountry.getAgency(snap.key);
         if (agency != null) {
           agency.name = snap.val().name;
           agency.image = snap.val().logoPath;
@@ -377,7 +388,7 @@ export class NetworkMapService {
    * Get the System level settings for mpa GREEN and YELLOW
    */
   systemMpaGreenYellow(systemAdminId: string, results: (green: number, yellow: number) => void) {
-    this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdminId + "/minThreshold", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + '/system/' + systemAdminId + '/minThreshold', {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         results(snap.val()[0], snap.val()[1]);
@@ -390,12 +401,12 @@ export class NetworkMapService {
    * Load the coloured layers onto the map based on this.countries
    */
   public loadColoredLayers(countryClicked: (country: string) => void) {
-    let blue: string[] = [];
-    let red: string[] = [];
-    let yellow: string[] = [];
-    let green: string[] = [];
+    const blue: string[] = [];
+    const red: string[] = [];
+    const yellow: string[] = [];
+    const green: string[] = [];
 
-    for (let x of this.countries) {
+    for (const x of this.countries) {
       if (x.overall(this.minGreen) == -1) {
         blue.push(Countries[x.location]);
       }
@@ -410,7 +421,7 @@ export class NetworkMapService {
       }
     }
 
-    let layer = new google.maps.FusionTablesLayer({
+    const layer = new google.maps.FusionTablesLayer({
       suppressInfoWindows: true,
       query: {
         select: '*',
@@ -430,10 +441,10 @@ export class NetworkMapService {
             fillColor: MapService.COLOUR_BLUE,
             fillOpacity: 1.0,
             strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
+            strokeColor: '#FFFFFF'
           },
           polylineOptions: {
-            strokeColor: "#FFFFFF",
+            strokeColor: '#FFFFFF',
             strokeOpacity: 1.0,
             strokeWeight: 1.0
           }
@@ -444,10 +455,10 @@ export class NetworkMapService {
             fillColor: MapService.COLOUR_RED,
             fillOpacity: 1.0,
             strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
+            strokeColor: '#FFFFFF'
           },
           polylineOptions: {
-            strokeColor: "#FFFFFF",
+            strokeColor: '#FFFFFF',
             strokeOpacity: 1.0,
             strokeWeight: 1.0
           }
@@ -458,10 +469,10 @@ export class NetworkMapService {
             fillColor: MapService.COLOUR_YELLOW,
             fillOpacity: 1.0,
             strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
+            strokeColor: '#FFFFFF'
           },
           polylineOptions: {
-            strokeColor: "#FFFFFF",
+            strokeColor: '#FFFFFF',
             strokeOpacity: 1.0,
             strokeWeight: 1.0
           }
@@ -472,10 +483,10 @@ export class NetworkMapService {
             fillColor: MapService.COLOUR_GREEN,
             fillOpacity: 1.0,
             strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
+            strokeColor: '#FFFFFF'
           },
           polylineOptions: {
-            strokeColor: "#FFFFFF",
+            strokeColor: '#FFFFFF',
             strokeOpacity: 1.0,
             strokeWeight: 1.0
           }
@@ -495,7 +506,7 @@ export class NetworkMapService {
    * Initialise a blank map
    */
   private initMap(elementId: string) {
-    let uluru = {lat: 20, lng: 0};
+    const uluru = {lat: 20, lng: 0};
     this.map = new google.maps.Map(document.getElementById(elementId), {
       zoom: 2,
       center: uluru,
@@ -505,349 +516,349 @@ export class NetworkMapService {
       streetViewControl: false,
       styles: [
         {
-          elementType: "geometry",
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#b0b1b3"
+              'color': '#b0b1b3'
             }
           ]
         },
         {
-          elementType: "labels",
+          elementType: 'labels',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          elementType: "labels.text.fill",
+          elementType: 'labels.text.fill',
           stylers: [
             {
-              "color": "#523735"
+              'color': '#523735'
             }
           ]
         },
         {
-          featureType: "administrative",
-          elementType: "geometry.stroke",
+          featureType: 'administrative',
+          elementType: 'geometry.stroke',
           stylers: [
             {
-              "color": "#c9b2a6"
+              'color': '#c9b2a6'
             }
           ]
         },
         {
-          featureType: "administrative.country",
-          elementType: "geometry.stroke",
+          featureType: 'administrative.country',
+          elementType: 'geometry.stroke',
           stylers: [
             {
-              "color": "#f0f0f1"
+              'color': '#f0f0f1'
             }
           ]
         },
         {
-          featureType: "administrative.country",
-          elementType: "labels",
+          featureType: 'administrative.country',
+          elementType: 'labels',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "administrative.land_parcel",
+          featureType: 'administrative.land_parcel',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "administrative.land_parcel",
-          elementType: "geometry.stroke",
+          featureType: 'administrative.land_parcel',
+          elementType: 'geometry.stroke',
           stylers: [
             {
-              "color": "#dcd2be"
+              'color': '#dcd2be'
             }
           ]
         },
         {
-          featureType: "administrative.land_parcel",
-          elementType: "labels.text.fill",
+          featureType: 'administrative.land_parcel',
+          elementType: 'labels.text.fill',
           stylers: [
             {
-              "color": "#ae9e90"
+              'color': '#ae9e90'
             }
           ]
         },
         {
-          featureType: "administrative.locality",
+          featureType: 'administrative.locality',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "administrative.neighborhood",
+          featureType: 'administrative.neighborhood',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "administrative.province",
+          featureType: 'administrative.province',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "landscape.man_made",
+          featureType: 'landscape.man_made',
           stylers: [
             {
-              "color": "#b0b1b3"
+              'color': '#b0b1b3'
             }
           ]
         },
         {
-          featureType: "landscape.natural",
-          elementType: "geometry.fill",
+          featureType: 'landscape.natural',
+          elementType: 'geometry.fill',
           stylers: [
             {
-              "color": "#b0b1b3"
+              'color': '#b0b1b3'
             }
           ]
         },
         {
-          featureType: "landscape.natural.terrain",
+          featureType: 'landscape.natural.terrain',
           stylers: [
             {
-              "color": "#b0b1b3"
+              'color': '#b0b1b3'
             }
           ]
         },
         {
-          featureType: "poi",
-          elementType: "geometry",
+          featureType: 'poi',
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#dfd2ae"
+              'color': '#dfd2ae'
             }
           ]
         },
         {
-          featureType: "poi",
-          elementType: "labels.text",
+          featureType: 'poi',
+          elementType: 'labels.text',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "poi",
-          elementType: "labels.text.fill",
+          featureType: 'poi',
+          elementType: 'labels.text.fill',
           stylers: [
             {
-              "color": "#93817c"
+              'color': '#93817c'
             }
           ]
         },
         {
-          featureType: "poi.park",
+          featureType: 'poi.park',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "poi.business",
+          featureType: 'poi.business',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "poi.park",
-          elementType: "geometry.fill",
+          featureType: 'poi.park',
+          elementType: 'geometry.fill',
           stylers: [
             {
-              "color": "#a5b076"
+              'color': '#a5b076'
             }
           ]
         },
         {
-          featureType: "poi.park",
-          elementType: "labels.text.fill",
+          featureType: 'poi.park',
+          elementType: 'labels.text.fill',
           stylers: [
             {
-              "color": "#447530"
+              'color': '#447530'
             }
           ]
         },
         {
-          featureType: "road",
+          featureType: 'road',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "road",
-          elementType: "geometry",
+          featureType: 'road',
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#f5f1e6"
+              'color': '#f5f1e6'
             }
           ]
         },
         {
-          featureType: "road",
-          elementType: "labels",
+          featureType: 'road',
+          elementType: 'labels',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "road",
-          elementType: "labels.icon",
+          featureType: 'road',
+          elementType: 'labels.icon',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "road.arterial",
-          elementType: "geometry",
+          featureType: 'road.arterial',
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#fdfcf8"
+              'color': '#fdfcf8'
             }
           ]
         },
         {
-          featureType: "road.highway",
-          elementType: "geometry",
+          featureType: 'road.highway',
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#f8c967"
+              'color': '#f8c967'
             }
           ]
         },
         {
-          featureType: "road.highway",
-          elementType: "geometry.stroke",
+          featureType: 'road.highway',
+          elementType: 'geometry.stroke',
           stylers: [
             {
-              "color": "#e9bc62"
+              'color': '#e9bc62'
             }
           ]
         },
         {
-          featureType: "road.highway.controlled_access",
-          elementType: "geometry",
+          featureType: 'road.highway.controlled_access',
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#e98d58"
+              'color': '#e98d58'
             }
           ]
         },
         {
-          featureType: "road.highway.controlled_access",
-          elementType: "geometry.stroke",
+          featureType: 'road.highway.controlled_access',
+          elementType: 'geometry.stroke',
           stylers: [
             {
-              "color": "#db8555"
+              'color': '#db8555'
             }
           ]
         },
         {
-          featureType: "road.local",
-          elementType: "labels.text.fill",
+          featureType: 'road.local',
+          elementType: 'labels.text.fill',
           stylers: [
             {
-              "color": "#806b63"
+              'color': '#806b63'
             }
           ]
         },
         {
-          featureType: "transit",
+          featureType: 'transit',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "transit.line",
-          elementType: "geometry",
+          featureType: 'transit.line',
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#dfd2ae"
+              'color': '#dfd2ae'
             }
           ]
         },
         {
-          featureType: "transit.line",
-          elementType: "labels.text.fill",
+          featureType: 'transit.line',
+          elementType: 'labels.text.fill',
           stylers: [
             {
-              "color": "#8f7d77"
+              'color': '#8f7d77'
             }
           ]
         },
         {
-          featureType: "transit.line",
-          elementType: "labels.text.stroke",
+          featureType: 'transit.line',
+          elementType: 'labels.text.stroke',
           stylers: [
             {
-              "color": "#ebe3cd"
+              'color': '#ebe3cd'
             }
           ]
         },
         {
-          featureType: "transit.station",
-          elementType: "geometry",
+          featureType: 'transit.station',
+          elementType: 'geometry',
           stylers: [
             {
-              "color": "#dfd2ae"
+              'color': '#dfd2ae'
             }
           ]
         },
         {
-          featureType: "water",
-          elementType: "geometry.fill",
+          featureType: 'water',
+          elementType: 'geometry.fill',
           stylers: [
             {
-              "color": "#e5eff7"
+              'color': '#e5eff7'
             }
           ]
         },
         {
-          featureType: "water",
-          elementType: "labels.text",
+          featureType: 'water',
+          elementType: 'labels.text',
           stylers: [
             {
-              "visibility": "off"
+              'visibility': 'off'
             }
           ]
         },
         {
-          featureType: "water",
-          elementType: "labels.text.fill",
+          featureType: 'water',
+          elementType: 'labels.text.fill',
           stylers: [
             {
-              "color": "#92998d"
+              'color': '#92998d'
             }
           ]
         }
@@ -923,7 +934,7 @@ export class NetworkMapCountry {
     if (this.agencies.length > 0) {
       let complete: number = 0;
       let total: number = 0;
-      for (let x of this.agencies) {
+      for (const x of this.agencies) {
         if (x.overall() >= minGreen) {
           complete++;
         }
@@ -942,13 +953,13 @@ export class NetworkMapCountry {
         return hz;
       }
     }
-    let hz: NetworkMapHazard = new NetworkMapHazard(hazardScenario, otherHazard);
+    const hz: NetworkMapHazard = new NetworkMapHazard(hazardScenario, otherHazard);
     this.hazards.push(hz);
     return hz;
   }
 
   public getAgency(key: string): NetworkMapAgency {
-    for (let agency of this.agencies) {
+    for (const agency of this.agencies) {
       if (agency.id == key) {
         return agency;
       }
@@ -956,7 +967,7 @@ export class NetworkMapCountry {
     return null;
   }
   public setAgency(key: string, agency: NetworkMapAgency) {
-    let ag: NetworkMapAgency = this.getAgency(key);
+    const ag: NetworkMapAgency = this.getAgency(key);
     if (ag == null) {
       this.agencies.push(agency);
     }
