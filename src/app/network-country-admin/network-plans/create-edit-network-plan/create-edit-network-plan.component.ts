@@ -12,7 +12,7 @@ import {
   NetworkResponsePlanSectionSettings,
   PresenceInTheCountry,
   ResponsePlanSectionSettings,
-  ResponsePlanSectors,
+  ResponsePlanSectors, UserType,
 } from "../../../utils/Enums";
 import {NetworkModulesEnabledModel, PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
@@ -28,6 +28,7 @@ import * as moment from "moment";
 import {CommonUtils} from "../../../utils/CommonUtils";
 import {Observable} from "rxjs/Observable";
 import {AngularFire} from "angularfire2";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare const jQuery: any;
 
@@ -63,6 +64,12 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   //local network admin
   private isLocalNetworkAdmin: boolean;
+
+  //for network view
+  private isViewing: boolean;
+  private agencyId: string
+  private countryId: string
+  private userType: UserType
 
   //copied
   private uid: string;
@@ -230,6 +237,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private planService: ResponsePlanService,
               private agencyService: AgencyService,
+              private storageService: LocalStorageService,
               private router: Router) {
   }
 
@@ -238,7 +246,17 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
       }
-      this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.systemAdminUid = params["systemId"];
+        this.agencyId = params["agencyId"];
+        this.countryId = params["countryId"];
+        this.userType = params["userType"];
+        this.networkId = params["networkId"];
+        this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"];
+      }
+      this.isViewing ? this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
     })
 
   }
@@ -287,6 +305,15 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
             .subscribe(matrix => this.moduleAccess = matrix);
         })
     });
+  }
+
+  private initNetworkViewAccess() {
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => {
+        this.moduleAccess = matrix
+        this.initData();
+      });
   }
 
   ngOnDestroy() {
@@ -348,6 +375,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
         this.loadResponsePlan = responsePlan;
+        console.log(this.loadResponsePlan)
         this.loadSection0(responsePlan);
         this.loadSection1(responsePlan);
         this.loadSection2(responsePlan);
@@ -509,13 +537,16 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     //   console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
     //   jQuery("#navigate-back").modal("show");
     // } else {
-    this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
+    this.isViewing ?
+      this.router.navigate(['/network-country/network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+      :
+      this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
     // }
   }
 
   closeModalAndNavigate() {
     jQuery("#navigate-back").modal("hide");
-    this.router.navigateByUrl('network-country/network-plans').then();
+    this.router.navigateByUrl('network-country/network-plans');
   }
 
   checkAllSections() {

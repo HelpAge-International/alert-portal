@@ -727,6 +727,17 @@ export class NetworkService {
       })
   }
 
+  mapNetworkWithCountryForCountry(agencyId, countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+      .map(networks => {
+       let map = new Map<string,string>();
+       networks.forEach(network =>{
+         map.set(network.$key, network.$value)
+       })
+        return map
+      })
+  }
+
   getNetworksForAgency(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/networks", {preserveSnapshot: true})
       .map(snap => {

@@ -4,7 +4,9 @@
   </div>
   <ul>
     <li class="" routerLinkActive="active">
-      <a routerLink="/network-country/network-dashboard">{{"GLOBAL.HOME" | translate}}</a>
+      <a
+        [routerLink]="networkViewValues ? ['/network-country/network-dashboard', networkViewValues] : ['/network-country/network-dashboard']">{{"GLOBAL.HOME"
+        | translate}}</a>
     </li>
     <li class="" [hidden]="permRiskMonitoring" routerLinkActive="active">
       <a routerLink="/network-country/network-risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</a>
@@ -15,17 +17,22 @@
         <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
            aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
         <div class="dropdown-menu">
-          <a [hidden]="permMinimumPreparedness" class="dropdown-item" routerLink="/network-country/network-country-mpa">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</a>
-          <a [hidden]="permAdvancedPreparedness" class="dropdown-item" routerLink="/network-country/network-country-apa">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
+          <a [hidden]="permMinimumPreparedness" class="dropdown-item" routerLink="/network-country/network-country-mpa">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA"
+            | translate}}</a>
+          <a [hidden]="permAdvancedPreparedness" class="dropdown-item"
+             routerLink="/network-country/network-country-apa">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
         </div>
       </div>
     </li>
 
     <li class="" [hidden]="permResponsePlanning" routerLinkActive="active">
-      <a routerLink="/network-country/network-plans">{{"HEADERS.PLANS" | translate}}</a>
+      <a
+        [routerLink]="networkViewValues ? ['/network-country/network-plans', networkViewValues] : ['/network-country/network-plans']">
+        {{"HEADERS.PLANS" | translate}}</a>
     </li>
     <li class="" [hidden]="permCountryOffice" routerLinkActive="active">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE" | translate}}</a>
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE"
+        | translate}}</a>
       <div class="dropdown-menu">
         <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-programme">
           Programme
@@ -62,7 +69,8 @@
         <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">{{"ADMINISTRATION" | translate}}</a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/network-country/network-country-agencies">{{"NETWORK_AGENCIES_IN_THIS_COUNTRY" |
+          <a class="dropdown-item" routerLink="/network-country/network-country-agencies">{{"NETWORK_AGENCIES_IN_THIS_COUNTRY"
+            |
             translate}}</a>
           <a class="dropdown-item" routerLink="/network-country/network-country-settings/network-country-modules">{{"NETWORK_OFFICE_SETTINGS"
             | translate}}</a>

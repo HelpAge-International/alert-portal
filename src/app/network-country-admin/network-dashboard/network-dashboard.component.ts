@@ -4,7 +4,7 @@ import {AngularFire} from "angularfire2";
 import {NetworkService} from "../../services/network.service";
 import {NotificationService} from "../../services/notification.service";
 import {UserService} from "../../services/user.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../utils/Constants";
 import {AlertMessageModel} from "../../model/alert-message.model";
@@ -59,6 +59,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   //for local network admin
   @Input() isLocalNetworkAdmin: boolean;
+
+  //for view
+  private isViewing: boolean;
 
   //copy over from response plan
   private alertList: ModelAlert[];
@@ -123,7 +126,19 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    this.route.params.subscribe((params: Params) => {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.systemId = params["systemId"];
+        this.agencyId = params["agencyId"];
+        this.countryId = params["countryId"];
+        this.userType = params["userType"];
+        this.networkId = params["networkId"];
+        this.networkCountryId = params["networkCountryId"];
+      }
+      this.isViewing ? this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    })
+
   }
 
   private initNetworkAccess() {
@@ -168,6 +183,15 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
         });
     });
+  }
+
+  private initViewAccess() {
+
+    this.loadData();
+
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => this.moduleSettings = matrix);
   }
 
   ngOnDestroy() {
@@ -531,7 +555,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   updateAlert(alertId, isDirectorAmber) {
     if (this.DashboardTypeUsed == DashboardType.default) {
-      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
+      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {
+        id: alertId,
+        networkCountryId: this.networkCountryId
+      }]);
     } else if (isDirectorAmber) {
       this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
         id: alertId,
