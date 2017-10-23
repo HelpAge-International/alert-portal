@@ -3,11 +3,12 @@
     <app-network-country-header></app-network-country-header>
     <app-network-country-menu></app-network-country-menu>
   </ng-container>
-  <ng-template #localNetworkAdmin>
-    <app-local-network-header></app-local-network-header>
-    <app-local-network-menu></app-local-network-menu>
-  </ng-template>
 </ng-container>
+
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
 
 <ng-template #country>
   <app-country-admin-header></app-country-admin-header>
@@ -276,11 +277,11 @@
               {{plan?.startDate | date:'d/MM/y'}}
             </div>
             <div class="col-sm-3">
-              <a *ngIf="!isViewing" class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
+              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
                 | translate}}</a>
-              <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
-                      (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
-              </button>
+              <!--<button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"-->
+                      <!--(click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}-->
+              <!--</button>-->
             </div>
           </div>
         </div>

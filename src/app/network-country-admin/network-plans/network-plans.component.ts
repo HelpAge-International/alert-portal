@@ -354,14 +354,18 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   exportStartFund(responsePlan) {
-    this.router.navigate(['/export-start-fund', this.isLocalNetworkAdmin ? {
-      id: responsePlan.$key,
-      "networkCountryId": this.networkId,
-      "isLocalNetworkAdmin": true
-    } : {
-      id: responsePlan.$key,
-      "networkCountryId": this.networkCountryId
-    }]);
+    let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key})
+    this.isViewing ?
+      this.router.navigate(['/export-start-fund', values])
+      :
+      this.router.navigate(['/export-start-fund', this.isLocalNetworkAdmin ? {
+        id: responsePlan.$key,
+        "networkCountryId": this.networkId,
+        "isLocalNetworkAdmin": true
+      } : {
+        id: responsePlan.$key,
+        "networkCountryId": this.networkCountryId
+      }]);
   }
 
   exportProposal(responsePlan, isExcel: boolean) {
