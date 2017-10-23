@@ -31,7 +31,7 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
 
   // End
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService, private http: Http,) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService, private http: Http) {
 
     translate.setDefaultLang("en");
 

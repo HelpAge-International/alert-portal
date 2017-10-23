@@ -57,7 +57,7 @@
 
         <div *ngFor="let language of userLang">
           <hr/>
-        <p><a class="hover-selection" (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></p>
+          <div class="hover-selection"> <a (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></div>
         </div>
 
       </div>

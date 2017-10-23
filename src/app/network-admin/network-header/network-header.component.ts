@@ -6,6 +6,11 @@ import {UserService} from "../../services/user.service";
 import {NetworkService} from "../../services/network.service";
 import {Constants} from "../../utils/Constants";
 import {NetworkUserAccountType, UserType} from "../../utils/Enums";
+import {TranslateService} from "@ngx-translate/core";
+import {Http, Response} from '@angular/http';
+import {AngularFire} from "angularfire2";
+declare var jQuery: any;
+
 
 @Component({
   selector: 'app-network-header',
@@ -14,6 +19,14 @@ import {NetworkUserAccountType, UserType} from "../../utils/Enums";
   providers: [NetworkService]
 })
 export class NetworkHeaderComponent implements OnInit, OnDestroy {
+
+  // Dan's switch language
+  private languageSelectPath: string = '';
+  private languageMap = new Map();
+  private userLang = [];
+  private language: string;
+  private browserLang: string = "";
+  // End
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
   private uid: string;
@@ -26,7 +39,15 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private networkService: NetworkService,
               private router: Router,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private translate: TranslateService,
+              private http: Http) {
+
+    translate.setDefaultLang("en");
+
+    this.browserLang = translate.getBrowserLang();
+
   }
 
   ngOnInit() {
@@ -52,12 +73,69 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
           this.network = network;
         })
 
+      this.loadJSON().subscribe(data => {
+
+        for (var key in data){
+
+          this.userLang.push(key);
+          this.languageMap.set(key, data[key]);
+        }
+
+      });
+
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          if(user.language) {
+            this.language = user.language;
+            this.translate.use(this.language.toLowerCase());
+          } else {
+            this.language = "en"
+
+          }
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(this.language.toLowerCase());
+
+
+          this.translate.use(this.language.toLowerCase());
+
+        });
+
     })
   }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  // Dan's Modal functions
+
+  loadJSON(){
+
+    return this.http.get(this.languageSelectPath)
+      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+
+  }
+
+  openLanguageModal()
+  {
+
+    console.log('Open language modal');
+    jQuery("#language-selection").modal("show");
+
+  };
+
+  changeLanguage(language: string) {
+    this.language = language;
+    console.log(this.uid);
+
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
+
+
+    this.translate.use(language.toLowerCase());
+    jQuery("#language-selection").modal("hide");
+
+
   }
 
   logout() {

@@ -327,6 +327,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
+
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
     var key = hazardID + '_' + indicatorKey;
     if (state) {

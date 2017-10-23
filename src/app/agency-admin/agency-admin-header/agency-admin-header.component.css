@@ -1,5 +1,7 @@
-.hover-selection {
-
+.hover-selection:hover
+{
   cursor: pointer;
+  background-color: #ffa;
+  opacity: 0.5;
 
 }
