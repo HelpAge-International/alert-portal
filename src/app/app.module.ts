@@ -283,6 +283,11 @@ import { NetworkCreateAlertComponent } from './network-country-admin/network-ris
 import { NetworkDashboardUpdateAlertLevelComponent } from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
 import { NetworkCalendarComponent } from './network-country-admin/network-dashboard/network-calendar/network-calendar.component';
 import { LocalNetworkCalendarComponent } from './local-network-admin/local-network-admin-dashboard/local-network-calendar/local-network-calendar.component';
+import { LocalNetworkRiskMonitoringComponent } from './local-network-admin/local-network-risk-monitoring/local-network-risk-monitoring.component';
+import { AddHazardLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-hazard-local-network/add-hazard-local-network.component';
+import { AddIndicatorLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-indicator-local-network/add-indicator-local-network.component';
+import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
+import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -559,7 +564,13 @@ const firebaseAuthConfig = {
     NetworkCreateAlertComponent,
     NetworkDashboardUpdateAlertLevelComponent,
     NetworkCalendarComponent,
-    LocalNetworkCalendarComponent
+    LocalNetworkCalendarComponent,
+    NetworkDashboardUpdateAlertLevelComponent,
+    LocalNetworkRiskMonitoringComponent,
+    AddHazardLocalNetworkComponent,
+    AddIndicatorLocalNetworkComponent,
+    LocalNetworkCreateAlertComponent,
+    LocalNetworkDashboardUpdateAlertLevelComponent
   ],
   imports: [
     BrowserModule,

@@ -13,14 +13,14 @@ import {OperationAreaModel} from "../../../model/operation-area.model";
 import {CommonService} from "../../../services/common.service";
 import {HazardImages} from "../../../utils/HazardImages";
 
-
 @Component({
-  selector: 'app-network-dashboard-update-alert-level',
-  templateUrl: './network-dashboard-update-alert-level.component.html',
-  styleUrls: ['./network-dashboard-update-alert-level.component.scss'],
+  selector: 'app-local-network-dashboard-update-alert-level',
+  templateUrl: './local-network-dashboard-update-alert-level.component.html',
+  styleUrls: ['./local-network-dashboard-update-alert-level.component.scss'],
   providers: [ActionsService]
 })
-export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
+export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
+
   leadAgencyCountryOffice: string;
   leadAgencyId: any;
   networkCountryId: any;
@@ -92,18 +92,22 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
 
 
-                this.loadAlert(this.alertId, this.networkCountryId);
+                this.loadAlert(this.alertId, this.networkId);
               }
             });
 
-          this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+          this.networkService.getNetworkDetail(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe( network => {
+              console.log(network)
               this.leadAgencyId = network.leadAgencyId
-              Object.keys( network.agencyCountries[this.leadAgencyId]).forEach( key => {
-                this.leadAgencyCountryOffice = key
-              })
+              this.af.database.list( Constants.APP_STATUS + '/countryOffice/' + this.leadAgencyId )
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe( offices => {
+                  this.leadAgencyCountryOffice = offices.filter( x => x.location == network.countryCode)[0].$key
+                })
             })
+
         })
 
       // get the country levels values
@@ -215,7 +219,15 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
     console.log(this.loadedAlert);
 
-    this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId);
+
+    if(this.networkCountryId){
+      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId);
+    } else if(this.networkId){
+      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, '', this.networkId );
+    } else {
+      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId);
+    }
+
   }
 
   ngOnDestroy() {

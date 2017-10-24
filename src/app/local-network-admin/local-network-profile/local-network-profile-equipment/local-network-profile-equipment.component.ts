@@ -90,6 +90,7 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
         .subscribe(selection => {
           this.networkID = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
+          console.log(selection)
 
           this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)

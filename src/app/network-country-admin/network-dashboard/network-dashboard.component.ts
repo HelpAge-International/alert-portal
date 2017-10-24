@@ -165,6 +165,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initLocalNetworkAccess() {
+    this.DashboardTypeUsed = DashboardType.default;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -554,21 +555,34 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   updateAlert(alertId, isDirectorAmber) {
-    if (this.DashboardTypeUsed == DashboardType.default) {
-      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {
-        id: alertId,
-        networkCountryId: this.networkCountryId
-      }]);
-    } else if (isDirectorAmber) {
-      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
-        id: alertId,
-        networkCountryId: this.networkCountryId,
-        isDirector: true
-      }]);
+    if(this.isLocalNetworkAdmin){
+      if (this.DashboardTypeUsed == DashboardType.default) {
+        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level/', {id: alertId, networkId: this.networkId}]);
+      } else if (isDirectorAmber) {
+        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level', {
+          id: alertId,
+          networkId: this.networkId,
+          isDirector: true
+        }]);
+      } else {
+        let selection = this.approveMap.get(alertId);
+        this.approveMap.set(alertId, !selection);
+      }
     } else {
-      let selection = this.approveMap.get(alertId);
-      this.approveMap.set(alertId, !selection);
+      if (this.DashboardTypeUsed == DashboardType.default) {
+        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
+      } else if (isDirectorAmber) {
+        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
+          id: alertId,
+          networkCountryId: this.networkCountryId,
+          isDirector: true
+        }]);
+      } else {
+        let selection = this.approveMap.get(alertId);
+        this.approveMap.set(alertId, !selection);
+      }
     }
+
   }
 
   approveRedAlert(alertId) {

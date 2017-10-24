@@ -196,6 +196,11 @@ import { NetworkCreateAlertComponent } from './network-country-admin/network-ris
 import { NetworkDashboardUpdateAlertLevelComponent } from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
 import {NetworkCalendarComponent} from "./network-country-admin/network-dashboard/network-calendar/network-calendar.component";
 import {LocalNetworkCalendarComponent} from "./local-network-admin/local-network-admin-dashboard/local-network-calendar/local-network-calendar.component";
+import { LocalNetworkRiskMonitoringComponent } from './local-network-admin/local-network-risk-monitoring/local-network-risk-monitoring.component';
+import { AddHazardLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-hazard-local-network/add-hazard-local-network.component';
+import { AddIndicatorLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-indicator-local-network/add-indicator-local-network.component';
+import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
+import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -489,7 +494,16 @@ const routes: Routes = [
   {path: 'network/local-network-preparedness-mpa', component: LocalNetworkPreparednessComponent},
   {path: 'network/local-network-preparedness-apa', component: LocalNetworkApaComponent},
   {path: 'network/local-network-calendar', component: LocalNetworkCalendarComponent},
+  {path: 'network/local-network-risk-monitoring', component: LocalNetworkRiskMonitoringComponent},
+  {path: 'network/local-network-risk-monitoring/add-indicator/:hazardID/:indicatorID/:countryOfficeCode', component: AddIndicatorLocalNetworkComponent},
+  {path: 'network/local-network-risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorLocalNetworkComponent},
+  {path: 'network/local-network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorLocalNetworkComponent},
+  {path: 'network/local-network-risk-monitoring/add-hazard', component: AddHazardLocalNetworkComponent},
+  {path: 'network/local-network-risk-monitoring/create-alert', component: LocalNetworkCreateAlertComponent},
 
+
+  {path: 'network/local-network-dashboard/dashboard-update-alert-level', component: LocalNetworkDashboardUpdateAlertLevelComponent},
+  {path: 'network/local-network-dashboard/dashboard-update-alert-level//:id/:networkId', component: LocalNetworkDashboardUpdateAlertLevelComponent},
 
   /**
    * Network Country Admin

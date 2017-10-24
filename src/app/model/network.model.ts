@@ -24,7 +24,8 @@ export class ModelNetwork extends BaseModel{
   public clockSettings:{} = {};
   public responsePlanSettings:{} = {};
   public id:string;
-  public agencies?: string[]
+  public agencies?: string[];
+  public leadAgencyId?: string;
 
   validate(excludedFields: any): AlertMessageModel {
     throw new Error("Method not implemented.");

@@ -39,8 +39,11 @@ export class InformService {
         console.log('here4')
         let holder: InformHolder[] = [];
         for (let x of this.informInfo.list) {
+          console.log('enter loop')
+          console.log(x)
           let val = this.getFromResponse(response, x);
           if (val != null) {
+            console.log('notnull')
             holder.push(InformHolder.create(this.informInfo.get(x), val));
           }
         }
@@ -64,13 +67,18 @@ export class InformService {
     return 'https://alert-190fa.appspot.com/inform/' + countryCode;
   }
   private validResponse(response) {
+    console.log(response)
+    console.log(response.data)
+    console.log(response.data.length)
     return response != null && response.data != null && response.data.length === 1;
   }
   private getFromResponse(response, code: string): number {
     if (this.validResponse(response)) {
+      console.log(response.data[0][code])
       return response.data[0][code];
     }
     else {
+      console.log('null')
       return null;
     }
   }
