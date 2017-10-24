@@ -281,6 +281,11 @@ import { LocalNetworkClockComponent } from './local-network-admin/local-network-
 import { LocalNetworkPlanComponent } from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-plan/local-network-plan.component';
 import { NetworkCreateAlertComponent } from './network-country-admin/network-risk-minitoring/network-create-alert/network-create-alert.component';
 import { NetworkDashboardUpdateAlertLevelComponent } from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
+import { LocalNetworkRiskMonitoringComponent } from './local-network-admin/local-network-risk-monitoring/local-network-risk-monitoring.component';
+import { AddHazardLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-hazard-local-network/add-hazard-local-network.component';
+import { AddIndicatorLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-indicator-local-network/add-indicator-local-network.component';
+import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
+import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -555,7 +560,12 @@ const firebaseAuthConfig = {
     LocalNetworkPlanComponent,
     AddHazardNetworkCountryComponent,
     NetworkCreateAlertComponent,
-    NetworkDashboardUpdateAlertLevelComponent
+    NetworkDashboardUpdateAlertLevelComponent,
+    LocalNetworkRiskMonitoringComponent,
+    AddHazardLocalNetworkComponent,
+    AddIndicatorLocalNetworkComponent,
+    LocalNetworkCreateAlertComponent,
+    LocalNetworkDashboardUpdateAlertLevelComponent
   ],
   imports: [
     BrowserModule,

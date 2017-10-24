@@ -1,5 +1,5 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<app-local-network-header></app-local-network-header>
+<app-local-network-menu></app-local-network-menu>
 <!--<app-alert-loader [hidden]="loaderInactive"></app-alert-loader>-->
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -8,7 +8,7 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng" [ngSwitch]="count">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row" routerLink="/network-country/network-risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
+    <div class="Back--button row" routerLink="/network/local-network-risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
     <div class="Header-title__wrap--risk Spaced-above">
       <h1>{{"RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" | translate}}</h1>
       <tooltip

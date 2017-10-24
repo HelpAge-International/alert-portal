@@ -150,6 +150,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initLocalNetworkAccess() {
+    this.DashboardTypeUsed = DashboardType.default;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -425,14 +426,19 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private getAlerts(id) {
+    console.log(id)
     if (this.DashboardTypeUsed == DashboardType.default) {
       this.alerts = this.actionService.getAlerts(id);
+      console.log(this.alerts)
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id);
+      console.log(this.alerts)
       this.amberAlerts = this.actionService.getAlerts(id)
         .map(alerts => {
+
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
+
         });
       this.redAlerts = this.actionService.getRedAlerts(id)
         .map(alerts => {
@@ -530,18 +536,34 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   updateAlert(alertId, isDirectorAmber) {
-    if (this.DashboardTypeUsed == DashboardType.default) {
-      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
-    } else if (isDirectorAmber) {
-      this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
-        id: alertId,
-        networkCountryId: this.networkCountryId,
-        isDirector: true
-      }]);
+    if(this.isLocalNetworkAdmin){
+      if (this.DashboardTypeUsed == DashboardType.default) {
+        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level/', {id: alertId, networkId: this.networkId}]);
+      } else if (isDirectorAmber) {
+        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level', {
+          id: alertId,
+          networkId: this.networkId,
+          isDirector: true
+        }]);
+      } else {
+        let selection = this.approveMap.get(alertId);
+        this.approveMap.set(alertId, !selection);
+      }
     } else {
-      let selection = this.approveMap.get(alertId);
-      this.approveMap.set(alertId, !selection);
+      if (this.DashboardTypeUsed == DashboardType.default) {
+        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
+      } else if (isDirectorAmber) {
+        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
+          id: alertId,
+          networkCountryId: this.networkCountryId,
+          isDirector: true
+        }]);
+      } else {
+        let selection = this.approveMap.get(alertId);
+        this.approveMap.set(alertId, !selection);
+      }
     }
+
   }
 
   approveRedAlert(alertId) {
