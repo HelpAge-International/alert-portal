@@ -26,7 +26,8 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
   private uid:string;
   private networkViewValues: {};
 
-  constructor(private route:ActivatedRoute, private storageService:LocalStorageService) {
+  constructor(private route:ActivatedRoute,
+              private storageService:LocalStorageService) {
   }
 
   /**

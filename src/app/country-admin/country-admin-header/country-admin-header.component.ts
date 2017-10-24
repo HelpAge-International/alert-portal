@@ -400,6 +400,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl("/dashboard");
   }
 
+  clearNetworkLocalStorage() {
+    this.isViewingNetwork = false;
+    this.selectedNetwork = null;
+    this.storageService.remove(Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_ID)
+  }
+
   /**
    * Private functions
    */
@@ -438,4 +444,5 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
       })
   }
+
 }

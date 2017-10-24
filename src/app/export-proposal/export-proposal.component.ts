@@ -17,6 +17,7 @@ import {
 } from "../utils/Enums";
 import {ModelPlanActivity} from "../model/plan-activity.model";
 import {NetworkService} from "../services/network.service";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-export-proposal',
@@ -83,12 +84,15 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private networkCountryId: string;
   private isLocalNetworkAdmin: boolean;
+  private isViewing: boolean;
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
               private userService: UserService,
               private networkService: NetworkService,
+              private storageService:LocalStorageService,
               private route: ActivatedRoute) {
   }
 
@@ -112,11 +116,20 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
       if (params["id"] && params["networkCountryId"]) {
         this.responsePlanId = params["id"];
         this.networkCountryId = params["networkCountryId"];
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-          this.uid = user.uid;
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"]
+          this.uid = params["uid"]
+          this.systemAdminUid = params["systemId"]
+          this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
           this.downloadResponsePlanData();
           this.downloadAgencyData(null);
-        });
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.downloadResponsePlanData();
+            this.downloadAgencyData(null);
+          });
+        }
       } else {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
@@ -291,13 +304,17 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
         });
     };
     const networkUser = () => {
-      let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
-      this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(systemId => {
-          this.systemAdminUid = systemId;
-          this.downloadGroups(responsePlan);
-        });
+      if (this.systemAdminUid) {
+        this.downloadGroups(responsePlan);
+      } else {
+        let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
+        this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            this.systemAdminUid = systemId;
+            this.downloadGroups(responsePlan);
+          });
+      }
     };
     this.networkCountryId ? networkUser() : normalUser();
   }

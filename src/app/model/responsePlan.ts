@@ -72,6 +72,10 @@ export class ResponsePlan extends BaseModel {
   public isEditing: boolean;
   public editingUserId: string;
 
+  //network
+  public createdByAgencyId: string;
+  public createdByCountryId: string;
+
   validate(excludedFields: any): AlertMessageModel {
     throw new Error("Method not implemented.");
   }

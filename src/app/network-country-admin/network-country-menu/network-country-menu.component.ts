@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LocalStorageService} from "angular-2-local-storage";
 import {Constants} from "../../utils/Constants";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
@@ -13,6 +13,7 @@ export class NetworkCountryMenuComponent implements OnInit {
 
   private networkViewModel: NetworkViewModel;
   private networkViewValues: {};
+  @Input() isViewing:boolean;
 
   constructor(private storageService: LocalStorageService) {
   }

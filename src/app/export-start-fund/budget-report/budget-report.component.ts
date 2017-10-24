@@ -51,11 +51,17 @@ export class BudgetReportComponent implements OnInit, OnDestroy {
       if (params["id"] && params["networkCountryId"]) {
         this.responsePlanId = params["id"];
         this.networkCountryId = params["networkCountryId"];
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-          this.uid = user.uid;
+        if (params["isViewing"]) {
+          this.uid = params["uid"]
           this.downloadResponsePlanData();
           this.downloadAgencyData(null);
-        });
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.downloadResponsePlanData();
+            this.downloadAgencyData(null);
+          });
+        }
       } else {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;

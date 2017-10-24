@@ -71,11 +71,18 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
       if (params["id"] && params["networkCountryId"]) {
         this.responsePlanId = params["id"];
         this.networkCountryId = params["networkCountryId"];
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-          this.uid = user.uid;
+        if (params["isViewing"]) {
+          this.uid = params["uid"]
+          this.systemAdminUid = params["systemId"]
           this.downloadResponsePlanData();
           this.downloadAgencyData(null);
-        });
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.downloadResponsePlanData();
+            this.downloadAgencyData(null);
+          });
+        }
       } else {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
@@ -231,13 +238,17 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
         });
     };
     const networkUser = () => {
-      let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
-      this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(systemId => {
-          this.systemAdminUid = systemId;
-          this.downloadGroups(responsePlan);
-        });
+      if (this.systemAdminUid) {
+        this.downloadGroups(responsePlan);
+      } else {
+        let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
+        this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            this.systemAdminUid = systemId;
+            this.downloadGroups(responsePlan);
+          });
+      }
     };
     this.networkCountryId ? networkUser() : normalUser();
   }

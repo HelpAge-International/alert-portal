@@ -370,27 +370,33 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   exportProposal(responsePlan, isExcel: boolean) {
     if (isExcel) {
-      this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
-        id: responsePlan.$key,
-        excel: 1,
-        "networkCountryId": this.networkId,
-        "isLocalNetworkAdmin": true
-      } : {
-        id: responsePlan.$key,
-        excel: 1,
-        "networkCountryId": this.networkCountryId
-      }]);
+      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key}, {excel: 1})
+      this.isViewing ? this.router.navigate(['/export-proposal', values])
+        :
+        this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
+          id: responsePlan.$key,
+          excel: 1,
+          "networkCountryId": this.networkId,
+          "isLocalNetworkAdmin": true
+        } : {
+          id: responsePlan.$key,
+          excel: 1,
+          "networkCountryId": this.networkCountryId
+        }]);
     } else {
-      this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
-        id: responsePlan.$key,
-        excel: 0,
-        "networkCountryId": this.networkId,
-        "isLocalNetworkAdmin": true
-      } : {
-        id: responsePlan.$key,
-        excel: 0,
-        "networkCountryId": this.networkCountryId
-      }]);
+      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key}, {excel: 0})
+      this.isViewing ? this.router.navigate(['/export-proposal', values])
+        :
+        this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
+          id: responsePlan.$key,
+          excel: 0,
+          "networkCountryId": this.networkId,
+          "isLocalNetworkAdmin": true
+        } : {
+          id: responsePlan.$key,
+          excel: 0,
+          "networkCountryId": this.networkCountryId
+        }]);
     }
   }
 

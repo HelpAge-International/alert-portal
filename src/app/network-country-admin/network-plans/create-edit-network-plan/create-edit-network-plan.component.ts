@@ -70,6 +70,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   private agencyId: string
   private countryId: string
   private userType: UserType
+  private networkViewValues: {};
 
   //copied
   private uid: string;
@@ -308,6 +309,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private initNetworkViewAccess() {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
     this.networkService.getNetworkModuleMatrix(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => {
@@ -579,7 +581,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         counter++;
       }
     });
-    return counter;
+    //because agency selection section is a must, so here we always return +1
+    return counter+1;
   }
 
   private updateSectorsList(sectorSelected, sectorEnum) {
@@ -886,6 +889,10 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       newResponsePlan.timeUpdated = moment.utc().valueOf();
       newResponsePlan.updatedBy = this.uid;
     }
+    if (!this.forEditing && this.isViewing && this.agencyId && this.countryId) {
+      newResponsePlan.createdByAgencyId = this.agencyId;
+      newResponsePlan.createdByCountryId = this.countryId;
+    }
 
     this.saveToFirebase(newResponsePlan);
     // console.log(newResponsePlan);
@@ -911,7 +918,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
           resetData["/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
           resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
           this.networkService.updateNetworkField(resetData).then(() => {
-            this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
+            this.router.navigate(this.isViewing ? ['network-country/network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
           }, error => {
             console.log(error.message);
           });
@@ -922,7 +929,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       } else {
         this.planService.pushNewResponsePlan(id, newResponsePlan).then(() => {
           console.log("Response plan creation successful");
-          this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
+          this.router.navigate(this.isViewing ? ['network-country/network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
         }).catch(error => {
           console.log("Response plan creation unsuccessful with error --> " + error.message);
         });

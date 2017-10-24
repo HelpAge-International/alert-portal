@@ -625,11 +625,11 @@ export class UserService {
   }
 
   saveUserNetworkSelection(uid, userType, networkId) {
-    this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").set(networkId);
+    return this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").set(networkId);
   }
 
   deleteUserNetworkSelection(uid, userType) {
-    this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").remove();
+    return this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").remove();
   }
 
   getUserNetworkSelection(uid, userType) {
