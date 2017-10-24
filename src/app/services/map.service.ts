@@ -12,6 +12,7 @@ import {ModelRegion} from "../model/region.model";
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {HazardImages} from "../utils/HazardImages";
 import GeocoderResult = google.maps.GeocoderResult;
+import {NetworkMapCountry} from "./networkmap.service";
 /**
  * Created by jordan on 09/07/2017.
  */
@@ -379,8 +380,11 @@ export class MapService {
    * Map initialisation stuff
    */
   public initBlankMap(elementId: string) {
+    this.initBlankMapObj(this.map, elementId);
+  }
+  public initBlankMapObj(map: google.maps.Map, elementId: string) {
     let uluru = {lat: 20, lng: 0};
-    this.map = new google.maps.Map(document.getElementById(elementId), {
+    map = new google.maps.Map(document.getElementById(elementId), {
       zoom: 2,
       center: uluru,
       mapTypeControlOptions: {
@@ -767,7 +771,7 @@ export class MapService {
       query: {
         select: '*',
         from: '1Y4YEcr06223cs93DmixwCGOsz4jzXW_p4UTWzPyi',
-        where: this.arrayToQuote(red.concat(yellow.concat(green.concat(blue))))
+        where: MapService.arrayToQuote(red.concat(yellow.concat(green.concat(blue))))
       },
       styles: [
         {
@@ -777,7 +781,7 @@ export class MapService {
           }
         },
         {
-          where: this.arrayToQuote(blue),
+          where: MapService.arrayToQuote(blue),
           polygonOptions: {
             fillColor: MapService.COLOUR_BLUE,
             fillOpacity: 1.0,
@@ -791,7 +795,7 @@ export class MapService {
           }
         },
         {
-          where: this.arrayToQuote(red),
+          where: MapService.arrayToQuote(red),
           polygonOptions: {
             fillColor: MapService.COLOUR_RED,
             fillOpacity: 1.0,
@@ -805,7 +809,7 @@ export class MapService {
           }
         },
         {
-          where: this.arrayToQuote(yellow),
+          where: MapService.arrayToQuote(yellow),
           polygonOptions: {
             fillColor: MapService.COLOUR_YELLOW,
             fillOpacity: 1.0,
@@ -819,7 +823,7 @@ export class MapService {
           }
         },
         {
-          where: this.arrayToQuote(green),
+          where: MapService.arrayToQuote(green),
           polygonOptions: {
             fillColor: MapService.COLOUR_GREEN,
             fillOpacity: 1.0,
@@ -844,7 +848,7 @@ export class MapService {
   }
 
   /** Convert array of countries to string list **/
-  private arrayToQuote(array) {
+  public static arrayToQuote(array) {
     if (array.length <= 1) {
       return "'ISO_2DIGIT' = '" + array[0] + "'";
     } else {

@@ -201,6 +201,7 @@ import { AddHazardLocalNetworkComponent } from './local-network-admin/local-netw
 import { AddIndicatorLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-indicator-local-network/add-indicator-local-network.component';
 import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
 import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
+import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -525,6 +526,7 @@ const routes: Routes = [
   {path: 'network-country/network-plans/view-network-plan', component: ViewNetworkPlanComponent},
   {path: 'network-country/network-plans/create-edit-network-plan', component: CreateEditNetworkPlanComponent},
   {path: 'network-country/network-global-map', component: NetworkGlobalMapComponent},
+  {path: 'network-country/network-global-map-list', component: NetworkGlobalMapListComponent},
   {path: 'network-country/network-country-agencies', component: NetworkCountryAgenciesComponent},
   {path: 'network-country/network-country-agencies/select-agencies', component: NetworkCountrySelectAgenciesComponent},
   {path: 'network-country/network-country-settings/network-country-modules', component: NetworkCountryModuleSettingsComponent},

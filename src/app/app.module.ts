@@ -288,6 +288,9 @@ import { AddHazardLocalNetworkComponent } from './local-network-admin/local-netw
 import { AddIndicatorLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-indicator-local-network/add-indicator-local-network.component';
 import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
 import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
+import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
+import {NetworkMapService} from "./services/networkmap.service";
+
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -504,6 +507,7 @@ const firebaseAuthConfig = {
     NetworkRiskMinitoringComponent,
     NetworkPlansComponent,
     NetworkGlobalMapComponent,
+    NetworkGlobalMapListComponent,
     NetworkCountryHeaderComponent,
     NetworkCountryMenuComponent,
     NetworkCountryAgenciesComponent,
@@ -615,6 +619,7 @@ const firebaseAuthConfig = {
     ContactService,
     WindowRefService,
     NetworkService,
+    NetworkMapService,
     NetworkCountryService,
     ActionsService],
   bootstrap: [AppComponent]

@@ -1,31 +1,29 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {MapService} from '../../services/map.service';
-import {PageControlService} from '../../services/pagecontrol.service';
-import {AngularFire} from 'angularfire2';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {NetworkMapService} from '../../services/networkmap.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {UserService} from '../../services/user.service';
-import {TranslateService} from '@ngx-translate/core';
+import {AngularFire} from 'angularfire2';
+import {PageControlService} from '../../services/pagecontrol.service';
+import {NetworkService} from '../../services/network.service';
+import {RegionHolder} from '../../map/map-countries-list/map-countries-list.component';
 import {Constants} from '../../utils/Constants';
 import {Subject} from 'rxjs/Subject';
-import {NetworkService} from '../../services/network.service';
-import {NetworkMapService} from '../../services/networkmap.service';
-import {Countries, NetworkUserAccountType} from "../../utils/Enums";
-
-declare var jQuery: any;
+import {Countries} from "../../utils/Enums";
+import {HazardImages} from "../../utils/HazardImages";
+/**
+ * Created by jordan on 08/10/2017.
+ */
 
 @Component({
-  selector: 'app-network-global-map',
-  templateUrl: './network-global-map.component.html',
-  styleUrls: ['./network-global-map.component.css']
+  selector: 'app-network-global-map-list',
+  templateUrl: './network-global-map-list.component.html',
+  styleUrls: ['./network-global-map-list.component.css']
 })
-
-export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
+export class NetworkGlobalMapListComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-
-  public uid: string;
-  public networkId: string;
-  public networkCountryId: string;
+  private uid: string;
+  private networkId: string;
+  private networkCountryId: string;
 
   private HazardScenario = Constants.HAZARD_SCENARIOS;
 
@@ -48,13 +46,13 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           this.networkCountryId = selection['networkCountryId'];
           // TODO: Delete this method when page control does auth properly
           this.getSystemAdmin(this.uid, (systemAdminId => {
-            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
+            this.networkMapService.init(null, this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
               () => {
                 // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
-                console.log("Network map initialised");
+                console.log('Network map initialised');
               },
               (country) => {
-                this.showDialog(country);
+                // Do nothing. First element is null so map isn't intialised
               });
           }));
         });
@@ -69,12 +67,24 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  gotoMapList(): void {
-    this.router.navigateByUrl('network-country/network-global-map-list');
+  public gotoListView() {
+    this.router.navigateByUrl('network-country/network-global-map');
   }
 
-  public getCountryCode(location: number) {
+
+  /**
+   * Utility methods for the UI, getting CountryCodes and some simple tests
+   */
+  public getCountryCodeFromLocation(location: number) {
     return Countries[location];
+  }
+
+  public getCSSHazard(hazard: number) {
+    return HazardImages.init().getCSS(hazard);
+  }
+
+  public isNumber(n) {
+    return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
   /**
@@ -82,7 +92,7 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
    * TODO: Remove this when pagecontrol does the user permissions and returns this value
    */
   private getSystemAdmin(uid: string, done: (systemAdminId: string) => void) {
-    this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid, {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + '/administratorNetwork/' + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
@@ -92,7 +102,7 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid, {preserveSnapshot: true})
+          this.af.database.object(Constants.APP_STATUS + '/administratorNetworkCountry/' + uid, {preserveSnapshot: true})
             .takeUntil(this.ngUnsubscribe)
             .subscribe((anSnap) => {
               if (anSnap.val() != null) {
@@ -108,14 +118,5 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
             });
         }
       });
-  }
-
-
-
-  /**
-   * Show the popup dialog
-   */
-  public showDialog(countryCode: string) {
-    jQuery('#minimum-prep-modal-' + countryCode).modal('show');
   }
 }

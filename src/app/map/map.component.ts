@@ -43,7 +43,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private translate : TranslateService) {
+    constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private translate : TranslateService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
   }
 
