@@ -4,7 +4,7 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType, ApprovalStatus, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ResponsePlanService} from "../../services/response-plan.service";
@@ -17,6 +17,7 @@ import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {ModelAgency} from "../../model/agency.model";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare const jQuery: any;
 
@@ -52,6 +53,13 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   //for local network admin
   @Input() isLocalNetworkAdmin: boolean;
 
+  //for network view
+  private systemId: string;
+  private agencyId: string;
+  private countryId: string;
+  private userType: UserType;
+  private networkViewValues: {};
+
 
   //copy over from response plan
   private isViewing: boolean;
@@ -84,11 +92,24 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private translate: TranslateService,
               private partnerService: PartnerOrganisationService,
+              private storageService: LocalStorageService,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
+    this.route.params.subscribe((params: Params) => {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.systemId = params["systemId"];
+        this.agencyId = params["agencyId"];
+        this.countryId = params["countryId"];
+        this.userType = params["userType"];
+        this.networkId = params["networkId"];
+        this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"];
+      }
+      this.isViewing ? this.initViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
+    })
   }
 
   private localNetworkAdminAccess() {
@@ -170,6 +191,36 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
             });
         });
     });
+  }
+
+  private initViewAccess() {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
+    this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(duration => {
+        this.networkPlanExpireDuration = duration;
+        this.getResponsePlans(this.networkCountryId);
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(map => {
+            this.agencyCountryMap = map;
+            this.agenciesNeedToApprove = [];
+            CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
+              this.userService.getAgencyModel(agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(model => {
+                  console.log(model);
+                  this.agenciesNeedToApprove.push(model);
+                });
+              //prepare agency region map
+              this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(regionId => {
+                  this.agencyRegionMap.set(agencyId, regionId);
+                });
+            });
+          });
+      });
   }
 
   ngOnDestroy() {
@@ -303,39 +354,49 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   exportStartFund(responsePlan) {
-    this.router.navigate(['/export-start-fund', this.isLocalNetworkAdmin ? {
-      id: responsePlan.$key,
-      "networkCountryId": this.networkId,
-      "isLocalNetworkAdmin" : true
-    } : {
-      id: responsePlan.$key,
-      "networkCountryId": this.networkCountryId
-    }]);
+    let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key})
+    this.isViewing ?
+      this.router.navigate(['/export-start-fund', values])
+      :
+      this.router.navigate(['/export-start-fund', this.isLocalNetworkAdmin ? {
+        id: responsePlan.$key,
+        "networkCountryId": this.networkId,
+        "isLocalNetworkAdmin": true
+      } : {
+        id: responsePlan.$key,
+        "networkCountryId": this.networkCountryId
+      }]);
   }
 
   exportProposal(responsePlan, isExcel: boolean) {
     if (isExcel) {
-      this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
-        id: responsePlan.$key,
-        excel: 1,
-        "networkCountryId": this.networkId,
-        "isLocalNetworkAdmin" : true
-      } : {
-        id: responsePlan.$key,
-        excel: 1,
-        "networkCountryId": this.networkCountryId
-      }]);
+      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key}, {excel: 1})
+      this.isViewing ? this.router.navigate(['/export-proposal', values])
+        :
+        this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
+          id: responsePlan.$key,
+          excel: 1,
+          "networkCountryId": this.networkId,
+          "isLocalNetworkAdmin": true
+        } : {
+          id: responsePlan.$key,
+          excel: 1,
+          "networkCountryId": this.networkCountryId
+        }]);
     } else {
-      this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
-        id: responsePlan.$key,
-        excel: 0,
-        "networkCountryId": this.networkId,
-        "isLocalNetworkAdmin" : true
-      } : {
-        id: responsePlan.$key,
-        excel: 0,
-        "networkCountryId": this.networkCountryId
-      }]);
+      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key}, {excel: 0})
+      this.isViewing ? this.router.navigate(['/export-proposal', values])
+        :
+        this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
+          id: responsePlan.$key,
+          excel: 0,
+          "networkCountryId": this.networkId,
+          "isLocalNetworkAdmin": true
+        } : {
+          id: responsePlan.$key,
+          excel: 0,
+          "networkCountryId": this.networkCountryId
+        }]);
     }
   }
 
@@ -412,7 +473,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           this.dialogEditingUserEmail = editingUser.email;
         });
     } else {
-      this.router.navigate(['network-country/network-plans/create-edit-network-plan', this.isLocalNetworkAdmin ? {
+      let networkViewObj = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      networkViewObj["id"] = this.responsePlanToEdit.$key
+      this.router.navigate(['network-country/network-plans/create-edit-network-plan', this.isViewing ? networkViewObj : this.isLocalNetworkAdmin ? {
         id: this.responsePlanToEdit.$key,
         "isLocalNetworkAdmin": this.isLocalNetworkAdmin
       } : {id: this.responsePlanToEdit.$key}]);
@@ -444,7 +507,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId)
         .do(director => {
           if (director && director.$value) {
-            let id = this.isLocalNetworkAdmin?this.networkId : this.networkCountryId;
+            let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
             // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/countryDirector/" + countryId] = ApprovalStatus.WaitingApproval;
             approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
@@ -635,40 +698,18 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     return text;
   }
 
-  viewResponsePlan(plan, isViewing) {
-    // if (isViewing) {
-    //   let headers = {"id": plan.$key, "isViewing": isViewing, "countryId": this.countryIdForViewing, "agencyId": this.agencyId};
-    //   if (this.agencyOverview) {
-    //     headers["agencyOverview"] = this.agencyOverview;
-    //     // this.router.navigate(["/response-plans/view-plan", {
-    //     //   "id": plan.$key,
-    //     //   "isViewing": isViewing,
-    //     //   "countryId": this.countryIdForViewing,
-    //     //   "agencyId": this.agencyId,
-    //     //   "canCopy": this.canCopy,
-    //     //   "agencyOverview": this.agencyOverview
-    //     // }]);
-    //   }
-    //   if (this.canCopy) {
-    //     headers["canCopy"] = this.canCopy;
-    //   }
-    //   // else {
-    //   //   this.router.navigate(["/response-plans/view-plan", {
-    //   //     "id": plan.$key,
-    //   //     "isViewing": isViewing,
-    //   //     "countryId": this.countryIdForViewing,
-    //   //     "agencyId": this.agencyId,
-    //   //     "canCopy": this.canCopy
-    //   //   }]);
-    //   // }
-    //   this.router.navigate(["/response-plans/view-plan", headers]);
-    // } else {
-    this.router.navigate(["/network-country/network-plans/view-network-plan", this.isLocalNetworkAdmin ? {
-      "id": plan.$key,
-      "networkCountryId": this.networkId,
-      "isLocalNetworkAdmin": true
-    } : {"id": plan.$key, "networkCountryId": this.networkCountryId}]);
-    // }
+  viewResponsePlan(plan) {
+    if (this.isViewing) {
+      let obj = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
+      obj["id"] = plan.$key
+      this.router.navigate(["/network-country/network-plans/view-network-plan", obj]);
+    } else {
+      this.router.navigate(["/network-country/network-plans/view-network-plan", this.isLocalNetworkAdmin ? {
+        "id": plan.$key,
+        "networkCountryId": this.networkId,
+        "isLocalNetworkAdmin": true
+      } : {"id": plan.$key, "networkCountryId": this.networkCountryId}]);
+    }
   }
 
 }

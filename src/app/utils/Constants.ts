@@ -988,6 +988,10 @@ export class Constants {
   static EMAIL_DUPLICATE_ERROR = "auth/email-already-in-use";
 
   static INDICATOR_STATUS = ["RISK_MONITORING.INDICATOR_STATUS.GREEN","RISK_MONITORING.INDICATOR_STATUS.AMBER","RISK_MONITORING.INDICATOR_STATUS.RED"];
+
+  //network view
+  static NETWORK_VIEW_VALUES = "network-view-values"
+  static NETWORK_VIEW_SELECTED_ID = "network-view-selected-id"
 }
 
 export enum FILE_SETTING {

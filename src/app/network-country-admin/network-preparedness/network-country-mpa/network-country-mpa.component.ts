@@ -20,7 +20,7 @@ import {AngularFire, FirebaseApp} from "angularfire2";
 import {NetworkService} from "../../../services/network.service";
 import {NotificationService} from "../../../services/notification.service";
 import {UserService} from "../../../services/user.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, Params} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {ModelDepartment} from "../../../model/department.model";
 import {
@@ -64,6 +64,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   //local network
   @Input() isLocalNetworkAdmin: boolean;
+  //network view
+  private networkViewValues: {};
 
 
   //copy over from response plan
@@ -148,7 +150,19 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    this.route.params.subscribe((params: Params) => {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.systemAdminId = params["systemId"];
+        this.agencyId = params["agencyId"];
+        this.countryId = params["countryId"];
+        this.userType = params["userType"];
+        this.networkId = params["networkId"];
+        this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"];
+      }
+      this.isViewing ? this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    })
   }
 
   private initNetworkAccess() {
@@ -221,6 +235,29 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           // this.calculateCurrency();
         });
     });
+  }
+
+  private initNetworkViewAccess() {
+    this.assignActionAsignee = this.uid;
+    this.filterAssigned = "0";
+    this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+
+    this.getStaffDetails(this.uid, true);
+
+    this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, true,
+      this.networkCountryId, this.networkId, this.systemAdminId);
+    this.initDocumentTypes();
+
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => this.modulesAreEnabled = matrix);
+
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+
+    this.initStaff();
+
+    // Currency
+    // this.calculateCurrency();
   }
 
   ngOnDestroy() {

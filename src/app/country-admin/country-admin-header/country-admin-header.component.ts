@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Input, Pipe, PipeTransform, HostListener ,Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -10,16 +10,15 @@ import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
-import {ajaxGetJSON} from "rxjs/observable/dom/AjaxObservable";
 import {Http, Response} from '@angular/http';
-import {Observable} from "rxjs/Observable";
-import {toBase64String} from "@angular/compiler/src/output/source_map";
-import {nodeValue} from "@angular/core/src/view";
-import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
-import { TranslateHttpLoader } from "@ngx-translate/http-loader";
-import { TranslateService } from "@ngx-translate/core";
+import {TranslateService} from "@ngx-translate/core";
+import {NetworkService} from "../../services/network.service";
+import {ModelNetwork} from "../../model/network.model";
+import {CommonUtils} from "../../utils/CommonUtils";
+import {NetworkViewModel} from "./network-view.model";
+import {LocalStorageService} from "angular-2-local-storage";
 
-declare var jQuery: any;
+declare const jQuery: any;
 
 
 @Component({
@@ -32,6 +31,7 @@ declare var jQuery: any;
 export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   @Output() partnerAgencyRequest = new EventEmitter();
+  // @Output() networkRequest = new EventEmitter();
 
   private partnerAgencies = [];
   private agenciesMap = new Map();
@@ -70,6 +70,13 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private isRed: boolean;
   private isAnonym: boolean = false;
 
+  private systemId: string;
+  private networks: ModelNetwork[] = [];
+  private selectedNetwork: ModelNetwork;
+  private isViewingNetwork: boolean;
+  private networkCountryMap: Map<string, string>;
+  private showLoader: boolean;
+
 
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
@@ -77,10 +84,11 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private alertService: ActionsService,
+              private networkService: NetworkService,
+              private storageService: LocalStorageService,
               private userService: UserService,
               private http: Http,
-              private translate: TranslateService
-  ) {
+              private translate: TranslateService) {
 
     //this.translate.addLangs(["en", "fr", "es", "pt"]);
     translate.setDefaultLang("en");
@@ -92,16 +100,18 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showLoader = true;
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-    this.agencyId = agencyId;
-    this.countryId = countryId;
-    this.userType = userType;
-    this.isAnonym = user && !user.anonymous ? false : true;
-    this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
+      this.systemId = systemId;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
+      this.userType = userType;
+      this.isAnonym = !(user && !user.anonymous);
+      this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
-    this.loadJSON().subscribe(data => {
+      this.loadJSON().subscribe(data => {
 
-        for (var key in data){
+        for (var key in data) {
 
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
@@ -119,12 +129,31 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
         if (!user.anonymous) {
           this.uid = user.auth.uid;
 
+          //load selected network if any
+          // this.userService.getUserNetworkSelection(this.uid, this.userType)
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe(networkId => {
+          //     if (networkId) {
+          //       this.isViewingNetwork = true;
+          //       this.networkService.getNetworkDetail(networkId)
+          //         .takeUntil(this.ngUnsubscribe)
+          //         .subscribe(network => this.selectedNetwork = network)
+          //     }
+          //   })
+          let networkId = this.storageService.get(Constants.NETWORK_VIEW_SELECTED_ID);
+          if (networkId) {
+            this.isViewingNetwork = true;
+            this.networkService.getNetworkDetail(networkId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(network => this.selectedNetwork = network)
+          }
+
           // Check chosen user language
 
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(user => {
-              if(user.language) {
+              if (user.language) {
                 this.language = user.language;
                 this.translate.use(this.language.toLowerCase());
               } else {
@@ -134,12 +163,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(this.language.toLowerCase());
 
 
-                this.translate.use(this.language.toLowerCase());
+              this.translate.use(this.language.toLowerCase());
 
             });
 
-          if(userType == UserType.CountryAdmin){
-            this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid+"/countryId")
+          if (userType == UserType.CountryAdmin) {
+            this.af.database.object(Constants.APP_STATUS + "/administratorCountry/" + this.uid + "/countryId")
               .takeUntil(this.ngUnsubscribe)
               .subscribe(countryId => {
                 if (countryId.$value == null) {
@@ -153,6 +182,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
             .subscribe(user => {
               this.firstName = user.firstName;
               this.lastName = user.lastName;
+              this.showLoader = false;
             });
 
           this.USER_TYPE = Constants.USER_PATHS[userType];
@@ -160,24 +190,22 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           if (this.userType == UserType.PartnerUser) {
             this.initDataForPartnerUser(agencyId, countryId);
           } else {
-            this.getCountryId().then(() => {
-              this.getAgencyID().then(() => {
-                this.getCountryData();
-                this.checkAlerts();
-                this.userService.getAgencyDetail(this.agencyId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agencyDetail => {
-                    this.agencyDetail = agencyDetail;
-                  });
+            this.getCountryData();
+            this.checkAlerts();
+            this.userService.getAgencyDetail(this.agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencyDetail => {
+                this.agencyDetail = agencyDetail;
               });
-            });
           }
+
+          //get networks
+          this.getNetworks(agencyId, countryId)
         }
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
       }
     });
-
 
 
   }
@@ -217,7 +245,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   getPartnerAgencies(agencies: Map<any, any>) {
     let data = [];
-    agencies.forEach((v, k) => {
+    agencies.forEach((v) => {
       data.push(v);
     });
     return data;
@@ -287,30 +315,62 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       }, error => {
         console.log(error.message);
       });
-
-
     }
+  }
+
+  selectNetwork(network: ModelNetwork) {
+    this.selectedNetwork = network;
+    this.isViewingNetwork = true;
+    // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
+    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
+    console.log(network)
+    //build emit value
+    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, this.networkCountryMap.get(this.selectedNetwork.id), true)
+    // this.networkRequest.emit(model)
+    this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
+    let values = this.buildNetworkViewValues();
+    this.router.navigate(["/network-country/network-dashboard", values])
+  }
+
+  private buildNetworkViewValues() {
+    let values = {};
+    values["systemId"] = this.systemId;
+    values["agencyId"] = this.agencyId;
+    values["countryId"] = this.countryId;
+    values["userType"] = this.userType;
+    values["uid"] = this.uid;
+    values["networkId"] = this.selectedNetwork.id;
+    values["networkCountryId"] = this.networkCountryMap.get(this.selectedNetwork.id);
+    values["isViewing"] = true;
+    return values;
+  }
+
+  selectAgency() {
+    this.isViewingNetwork = false;
+    this.selectedNetwork = null;
+    this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES)
+    this.router.navigateByUrl("/dashboard")
+    // this.userService.deleteUserNetworkSelection(this.uid, this.userType);
   }
 
   // Dan's Modal functions
 
-  loadJSON(){
+  loadJSON() {
 
     return this.http.get(this.languageSelectPath)
-      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
 
   }
 
-  openLanguageModal()
-{
+  openLanguageModal() {
 
-  console.log('Open language modal');
-  jQuery("#language-selection").modal("show");
+    console.log('Open language modal');
+    jQuery("#language-selection").modal("show");
 
-};
+  };
 
 
-  changeLanguage(language: string){
+  changeLanguage(language: string) {
     this.language = language;
     console.log(this.uid);
 
@@ -327,7 +387,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     console.log("logout");
-    this.af.auth.logout().then(()=>{this.router.navigateByUrl(Constants.LOGIN_PATH)}, error=>{console.log(error.message)});
+    this.af.auth.logout().then(() => {
+      this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES)
+      this.router.navigateByUrl(Constants.LOGIN_PATH)
+    }, error => {
+      console.log(error.message)
+    });
 
   }
 
@@ -335,43 +400,49 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl("/dashboard");
   }
 
+  clearNetworkLocalStorage() {
+    this.isViewingNetwork = false;
+    this.selectedNetwork = null;
+    this.storageService.remove(Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_ID)
+  }
+
   /**
    * Private functions
    */
 
-  private getCountryId() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryId: any) => {
-          this.countryId = countryId.$value;
-          res(true);
-        });
-    });
-    return promise;
-  }
-
-  private getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIds: any) => {
-          this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
   private getCountryData() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((location: any) => {
-          this.countryLocation = location.$value;
-          res(true);
-        });
-    });
-    return promise;
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((location: any) => {
+        this.countryLocation = location.$value;
+      });
   }
+
+  private getNetworks(agencyId: string, countryId: string) {
+
+    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(map => this.networkCountryMap = map)
+
+    this.networkService.getNetworkWithCountryModelsForCountry(agencyId, countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkModels => {
+        this.networks = [];
+        networkModels.map(model => {
+          return this.networkService.getNetworkDetail(model.networkId)
+        })
+          .forEach(item => {
+            item.takeUntil(this.ngUnsubscribe).subscribe(network => {
+              if (!CommonUtils.itemExistInList(network.id, this.networks)) {
+                if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
+                  this.networks.push(network);
+                  console.log(this.networks)
+                }
+              }
+            })
+          })
+
+      })
+  }
+
 }

@@ -460,7 +460,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staffData["/group/agency/" + this.agencyId + "/agencyallusersgroup/" + uid + "/"] = true;
     console.log("group path: " + (this.userType - 1) + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1]);
     staffData["/group/agency/" + this.agencyId + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
-    if (this.userType == UserType.CountryDirector || this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert || this.userType == UserType.Donor) {
+    if (this.userType == UserType.CountryDirector || this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       staffData["/group/country/" + this.countryOffice.$key + "/countryallusersgroup/" + uid + "/"] = true;
       staffData["/group/country/" + this.countryOffice.$key + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
     }

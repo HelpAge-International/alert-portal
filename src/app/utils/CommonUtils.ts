@@ -1,4 +1,5 @@
 import {MessageModel} from "../model/message.model";
+import {NetworkViewModel} from "../country-admin/country-admin-header/network-view.model";
 
 export class CommonUtils {
 
@@ -64,6 +65,23 @@ export class CommonUtils {
 
   static messageExistInList(messageId: string, messageList: MessageModel[]) {
     return messageList.map(msg => msg.id).indexOf(messageId) != -1;
+  }
+
+  static itemExistInList(id: any, itemList: any[]) {
+    return itemList.map(item => item.id ? item.id : item.$key).indexOf(id) != -1;
+  }
+
+  static buildNetworkViewValues(model: NetworkViewModel) {
+    let values = {};
+    values["systemId"] = model.systemId;
+    values["agencyId"] = model.agencyId;
+    values["countryId"] = model.countryId;
+    values["userType"] = model.userType;
+    values["uid"] = model.uid;
+    values["networkId"] = model.networkId;
+    values["networkCountryId"] = model.networkCountryId;
+    values["isViewing"] = model.isViewing;
+    return values;
   }
 
 }

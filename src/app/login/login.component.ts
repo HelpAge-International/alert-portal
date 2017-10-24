@@ -5,6 +5,7 @@ import {Constants} from "../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-login',
@@ -34,13 +35,20 @@ export class LoginComponent implements OnInit, OnDestroy {
   private mCheckLoginDisallowCountryId: string;
   private mCheckLoginDisallowFirstLogin: boolean;
 
-  constructor(public af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
+  constructor(public af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private storageService: LocalStorageService,
+              private agencyService: AgencyService) {
     this.mErrorCodes.set("password", "LOGIN.INCORRECT_PASSWORD");
     this.mErrorCodes.set("no user record", "LOGIN.INCORRECT_EMAIL");
     this.mErrorCodes.set("blocked", "LOGIN.LOGIN_BLOCKED");
   }
 
   ngOnInit() {
+    //clear local storage
+    this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_SELECTED_ID)
+
     if (Constants.SHOW_MAINTENANCE_PAGE) {
       this.router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
     } else {

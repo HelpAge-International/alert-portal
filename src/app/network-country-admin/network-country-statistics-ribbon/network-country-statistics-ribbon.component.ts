@@ -462,7 +462,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
   goToCHS() {
     if (this.userPermissions.minimumPreparedness) {
-      this.router.navigate(["/network-country/network-country-mpa", {"isCHS": true}]).then();
+      this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", {"isCHS": true}]) : this.router.navigate(["/network-country/network-country-mpa", {"isCHS": true}]);
     }
   }
 

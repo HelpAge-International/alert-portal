@@ -1,10 +1,18 @@
-<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-  <app-network-country-header></app-network-country-header>
-  <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewing; else country">
+  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+    <app-network-country-header></app-network-country-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-container>
 </ng-container>
+
 <ng-template #localNetworkAdmin>
   <app-local-network-header></app-local-network-header>
   <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<ng-template #country>
+  <app-country-admin-header></app-country-admin-header>
+  <app-network-country-menu [isViewing]="true"></app-network-country-menu>
 </ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
@@ -22,7 +30,8 @@
         [level1]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL1'"
         [level2]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL2'">
       </tooltip>
-      <button class="btn btn-primary" [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-plans/create-edit-network-plan', {'isLocalNetworkAdmin':isLocalNetworkAdmin}]:['/network-country/network-plans/create-edit-network-plan']">
+      <button class="btn btn-primary"
+              [routerLink]="isViewing ? ['/network-country/network-plans/create-edit-network-plan', networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-plans/create-edit-network-plan', {'isLocalNetworkAdmin':isLocalNetworkAdmin}]:['/network-country/network-plans/create-edit-network-plan']">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
       </button>
     </div>
@@ -186,14 +195,11 @@
           </div>
           <div class="col-sm-3">
             <div class="btn-group btn-block">
-              <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
-                      (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
-              </button>
-              <button *ngIf="!isViewing" type="button" class="btn  btn-block" [class.btn-success]="plan.status==2"
+              <button type="button" class="btn  btn-block" [class.btn-success]="plan.status==2"
                       [class.btn-primary]="plan.status!=2" data-toggle="dropdown" aria-haspopup="true"
                       aria-expanded="false">{{"RESPONSE_PLANS.HOME.OPTIONS" | translate}}
               </button>
-              <button *ngIf="!isViewing" type="button" class="btn dropdown-toggle dropdown-toggle-split"
+              <button type="button" class="btn dropdown-toggle dropdown-toggle-split"
                       [class.btn-success]="plan.status==2" [class.btn-primary]="plan.status!=2"
                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
@@ -271,11 +277,11 @@
               {{plan?.startDate | date:'d/MM/y'}}
             </div>
             <div class="col-sm-3">
-              <a *ngIf="!isViewing" class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
+              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
                 | translate}}</a>
-              <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
-                      (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
-              </button>
+              <!--<button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"-->
+                      <!--(click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}-->
+              <!--</button>-->
             </div>
           </div>
         </div>

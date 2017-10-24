@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
@@ -6,6 +6,7 @@ import {Constants} from "../../utils/Constants";
 import {ModelSeason} from "../../model/season.model";
 import {ColourSelector} from "../../utils/ColourSelector";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NetworkService} from "../../services/network.service";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -46,14 +47,55 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   public addSeasonEndDate: number;
   public addSeasonStartDate: number;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  //for network
+  @Input() isNetworkCountry: boolean;
+  @Input() isLocalNetworkAdmin: boolean;
+  private networkCountryId: string;
+
+  constructor(private pageControl: PageControlService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router) {
   }
 
   ngOnInit() {
+    this.isNetworkCountry ? this.networkCountryAccess() : this.isLocalNetworkAdmin ? this.localNetworkAccess() : this.normalAccess();
+  }
+
+  private normalAccess() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.countryId = countryId;
       this.getAllSeasonsForCountryId(this.countryId);
+    });
+  }
+
+  private networkCountryAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkCountryId = selection["networkCountryId"];
+          this.getAllSeasonsForCountryId(this.networkCountryId);
+        });
+    });
+  }
+
+  private localNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkCountryId = selection["id"];
+          this.getAllSeasonsForCountryId(this.networkCountryId);
+        });
     });
   }
 
@@ -181,7 +223,8 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     console.log(this.addSeasonColour);
     let season: ModelSeason = new ModelSeason(this.addSeasonColour, this.addSeasonName, this.addSeasonStart, this.addSeasonEnd);
     console.log(season);
-    this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryId + "/").push(season);
+    let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
+    this.af.database.list(Constants.APP_STATUS + "/season/" + id + "/").push(season);
     // Below line wasn't working when I was trying to hide it!
     // jQuery("#add_calendar").modal("hide");
   }
@@ -214,13 +257,15 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     console.log(season);
     console.log(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey);
 
-    this.af.database.object(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey).update(season);
+    let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
+    this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).update(season);
     // Below line wasn't working when I was trying to hide it!
     // jQuery("#add_calendar").modal("hide");
   }
 
   public deleteSeason() {
-    this.af.database.object(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey).remove();
+    let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
+    this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).remove();
   }
 
   public setCurrentColour(colourCode: string) {

@@ -14,6 +14,7 @@ import {NetworkMessageModel} from "../network-admin/network-message/network-crea
 import {NetworkCountryModel} from "../network-country-admin/network-country.model";
 import {NetworkModulesEnabledModel} from "./pagecontrol.service";
 import {isEmptyObject} from "angularfire2/utils";
+import {NetworkWithCountryModel} from "../country-admin/country-admin-header/network-with-country.model";
 
 @Injectable()
 export class NetworkService {
@@ -711,6 +712,29 @@ export class NetworkService {
           return Object.keys(snap.val()).map(key => snap.val()[key]);
         }
         return ids;
+      })
+  }
+
+  getNetworkWithCountryModelsForCountry(agencyId, countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+      .map(networks => {
+        return networks.map(network => {
+          let model = new NetworkWithCountryModel();
+          model.networkId = network.$key;
+          model.networkCountryId = network.$value;
+          return model;
+        })
+      })
+  }
+
+  mapNetworkWithCountryForCountry(agencyId, countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+      .map(networks => {
+       let map = new Map<string,string>();
+       networks.forEach(network =>{
+         map.set(network.$key, network.$value)
+       })
+        return map
       })
   }
 

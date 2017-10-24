@@ -7,20 +7,20 @@
       </div>
       <span>{{CountriesList[countryLocation] | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="{{userPermissions.responsePlan ? '/network-country/network-plans' : '#'}}">
+    <li class="list-inline-item" routerLink="{{userPermissions.responsePlan ? isLocalNetworkAdmin ? '/network/local-network-plans' : '/network-country/network-plans' : '#'}}">
       <div class="Icon">
         <div class="Icon__circle Icon--{{userPermissions.responsePlan ? 'blue' : 'grey'}} Icon--lg">{{userPermissions.responsePlan ? numOfApprovedResponsePlans : 'N/A'}}</div>
       </div>
       <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? '/network-country/network-country-mpa' : '#'}}">
+    <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? isLocalNetworkAdmin ? '/network/local-network-preparedness-mpa' : '/network-country/network-country-mpa' : '#'}}">
       <div class="Icon">
         <div class="Icon__circle Icon--b-{{userPermissions.minimumPreparedness ? mpaStatusColor : 'grey'}} Icon--lg">
           <i class="fa {{userPermissions.minimumPreparedness ? mpaStatusIcon : 'fa-times'}} fa-2x fa-inverse" aria-hidden="true"></i></div>
       </div>
       <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
     </li>
-    <li class="list-inline-item" routerLink="{{userPermissions.advancedPreparedness ? '/network-country/network-country-apa' : '#'}}">
+    <li class="list-inline-item" routerLink="{{userPermissions.advancedPreparedness ? isLocalNetworkAdmin ? '/network/local-network-preparedness-apa' : '/network-country/network-country-apa' : '#'}}">
       <div class="Icon">
         <div class="Icon__circle Icon--b-{{userPermissions.advancedPreparedness ? apaStatusColor : 'grey'}} Icon--lg">
           <i class="fa {{userPermissions.advancedPreparedness ? apaStatusIcon : 'fa-times'}} fa-2x fa-inverse" aria-hidden="true"></i>

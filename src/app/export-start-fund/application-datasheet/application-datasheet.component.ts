@@ -58,7 +58,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private userService: UserService,
-              private networkService:NetworkService,
+              private networkService: NetworkService,
               private route: ActivatedRoute) {
   }
 
@@ -72,11 +72,18 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
         this.responsePlanId = params["id"];
         this.networkCountryId = params["networkCountryId"];
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-          this.uid = user.uid;
+        if (params["isViewing"]) {
+          this.uid = params["uid"]
+          this.systemAdminUid = params["systemId"]
           this.downloadResponsePlanData();
           this.downloadAgencyData(null);
-        });
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.downloadResponsePlanData();
+            this.downloadAgencyData(null);
+          });
+        }
       } else {
         this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
           this.uid = user.uid;
@@ -97,6 +104,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency(agencyId: string) {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -133,7 +141,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
       });
   }
 
-  private downloadAgencyData(userType){
+  private downloadAgencyData(userType) {
 
     const normalUser = () => {
       this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
@@ -200,8 +208,8 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
 
-          this.af.database.object(Constants.APP_STATUS+ "/staff/"+this.countryId+"/"+user.id+"/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
-            if(position != null){
+          this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
+            if (position != null) {
               this.planLeadPosition = position.$value;
             }
           });
@@ -246,13 +254,17 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
         });
     };
     const networkUser = () => {
-      let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
-      this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(systemId => {
-          this.systemAdminUid = systemId;
-          this.downloadGroups(responsePlan);
-        });
+      if (this.systemAdminUid) {
+        this.downloadGroups(responsePlan);
+      } else {
+        let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
+        this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            this.systemAdminUid = systemId;
+            this.downloadGroups(responsePlan);
+          });
+      }
     };
     this.networkCountryId ? networkUser() : normalUser();
   }

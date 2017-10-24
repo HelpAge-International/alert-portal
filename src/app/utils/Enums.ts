@@ -139,8 +139,8 @@ export enum StaffPosition {
 }
 
 export enum NetworkUserAccountType {
-  NetworkAdmin = 0,
-  NetworkCountryAdmin = 1
+  NetworkAdmin = 100,
+  NetworkCountryAdmin = 101
 }
 
 export enum UserType {

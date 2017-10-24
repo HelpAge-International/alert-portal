@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {LocalStorageService} from "angular-2-local-storage";
+import {Constants} from "../../utils/Constants";
+import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
+import {CommonUtils} from "../../utils/CommonUtils";
 
 @Component({
   selector: 'app-network-country-menu',
@@ -7,9 +11,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NetworkCountryMenuComponent implements OnInit {
 
-  constructor() { }
+  private networkViewModel: NetworkViewModel;
+  private networkViewValues: {};
+  @Input() isViewing:boolean;
+
+  constructor(private storageService: LocalStorageService) {
+  }
 
   ngOnInit() {
+    let obj = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    if (obj) {
+      this.networkViewModel = new NetworkViewModel(null, null, null, null, null, null, null, null);
+      this.networkViewModel.mapFromObject(obj)
+      this.networkViewValues = CommonUtils.buildNetworkViewValues(this.networkViewModel);
+    }
   }
 
 }

@@ -1,18 +1,27 @@
-<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-  <app-network-country-header></app-network-country-header>
-  <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewing; else country">
+  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+    <app-network-country-header></app-network-country-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-container>
+  <ng-template #localNetworkAdmin>
+    <app-local-network-header></app-local-network-header>
+    <app-local-network-menu></app-local-network-menu>
+  </ng-template>
 </ng-container>
-<ng-template #localNetworkAdmin>
-  <app-local-network-header></app-local-network-header>
-  <app-local-network-menu></app-local-network-menu>
+
+<ng-template #country>
+  <app-country-admin-header></app-country-admin-header>
+  <app-network-country-menu></app-network-country-menu>
 </ng-template>
+
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng--grey">
   <div class="Full-page__wrap--inner">
 
-    <app-network-country-statistics-ribbon [isLocalNetworkAdmin]="isLocalNetworkAdmin"></app-network-country-statistics-ribbon>
+    <app-network-country-statistics-ribbon
+      [isLocalNetworkAdmin]="isLocalNetworkAdmin"></app-network-country-statistics-ribbon>
 
     <!--alert screen-->
     <div *ngIf="moduleSettings.riskMonitoring">
@@ -205,9 +214,8 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 routerLink="/network-country/network-country-mpa">{{"GLOBAL.UPDATE"
-                |
-                translate}}
+                 [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+                {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
           </div>
@@ -225,9 +233,8 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 routerLink="/network-country/network-risk-monitoring">{{"GLOBAL.UPDATE"
-                |
-                translate}}
+                 routerLink="/network-country/network-risk-monitoring">
+                {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
           </div>
@@ -245,9 +252,8 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 routerLink="/network-country/network-country-mpa">{{"GLOBAL.UPDATE"
-                |
-                translate}}
+                 [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+                {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
           </div>
@@ -285,9 +291,8 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                 routerLink="/network-country/network-country-mpa">{{"GLOBAL.UPDATE"
-                |
-                translate}}</a>
+                 [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+                {{"GLOBAL.UPDATE" | translate}}</a>
             </div>
           </div>
         </div>
@@ -343,7 +348,8 @@
       <div class="Widget Calendar-Widget">
         <h3>{{"DASHBOARD.CALENDAR.SEASONAL_CALENDAR" | translate}}</h3>
         <div id="target2" class="timeline-tgt Spaced"></div>
-        <a href="javascript:void(0)" routerLink="#">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
+        <a href="javascript:void(0)"
+           [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-calendar'] : ['/network-country/network-calendar']">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
           | translate}}</a>
       </div>
 

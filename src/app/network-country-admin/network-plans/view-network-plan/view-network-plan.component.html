@@ -1,12 +1,26 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewing; else country">
+  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+    <app-network-country-header></app-network-country-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-container>
+</ng-container>
+
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<ng-template #country>
+  <app-country-admin-header></app-country-admin-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Back--button"
-         routerLink="{{isLocalNetworkAdmin ? '/network/local-network-plans' : '/network-country/network-plans'}}">
+         [routerLink]="isViewing ? ['/network-country/network-plans', networkViewValues] :isLocalNetworkAdmin ? '/network/local-network-plans' : '/network-country/network-plans'">
       {{"RESPONSE_PLANS.TITLE_TEXT" |
       translate}}
     </div>

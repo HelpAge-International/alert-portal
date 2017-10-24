@@ -1,9 +1,19 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<ng-container *ngIf="!isLocalNetworkAdmin && !isNetworkCountry">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalNetworkAdmin">
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-container>
+<ng-container *ngIf="isNetworkCountry">
+  <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-container>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/dashboard">{{"GLOBAL.HOME" | translate}}</div>
+    <div class="Back--button" [routerLink]="isNetworkCountry ? ['/network-country/network-dashboard'] : isLocalNetworkAdmin ? ['/network/local-network-dashboard'] : ['/dashboard']">{{"GLOBAL.HOME" | translate}}</div>
     <div class="Header-title__wrap">
       <h1>Seasonal calendar <a class="btn btn-outline-primary" (click)="addCalendar()">{{"DASHBOARD.CALENDAR.ADD_TO_CALENDAR" | translate}}</a></h1>
       <div class="Header-title__wrap__Inline-links">
