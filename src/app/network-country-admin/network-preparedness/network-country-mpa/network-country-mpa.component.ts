@@ -33,6 +33,8 @@ import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 import {MessageModel} from "../../../model/message.model";
 import {WindowRefService} from "../../../services/window-ref.service";
 import {LocalStorageService} from "angular-2-local-storage/dist";
+import {CommonUtils} from "../../../utils/CommonUtils";
+import {NetworkCountryModel} from "../../network-country.model";
 
 declare var jQuery: any;
 
@@ -254,6 +256,11 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
 
+    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkMap => {
+        this.initNetworkAdmin(networkMap)
+      })
     this.initStaff();
 
     // Currency
@@ -359,6 +366,16 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.getStaffDetails(snapshot.key, false);
         });
       });
+  }
+
+  private initNetworkAdmin(map: Map<string, string>) {
+    CommonUtils.convertMapToKeysInArray(map).forEach(networkId => {
+      this.networkService.getNetworkCountry(networkId, map.get(networkId))
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((model: NetworkCountryModel) => {
+          this.getStaffDetails(model.adminId, false)
+        })
+    })
   }
 
   /**
