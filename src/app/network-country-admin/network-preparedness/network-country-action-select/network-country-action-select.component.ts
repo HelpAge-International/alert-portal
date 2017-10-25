@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
-import {ActionLevel, GenericActionCategory} from "../../../utils/Enums";
+import {ActionLevel, GenericActionCategory, UserType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
 import {NetworkService} from "../../../services/network.service";
@@ -53,6 +53,12 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
   //for local network
   private isLocalNetworkAdmin: boolean;
 
+  //netowrk view
+  private isViewing: boolean
+  private agencyId: string
+  private countryId: string
+  private userType: UserType
+
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -68,7 +74,17 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
       }
-      this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.systemAdminUid = params["systemId"];
+        this.agencyId = params["agencyId"];
+        this.countryId = params["countryId"];
+        this.userType = params["userType"];
+        this.networkId = params["networkId"];
+        this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"];
+      }
+      this.isViewing ? this.initGenericActions() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
 
@@ -142,7 +158,8 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
 
   continueEvent() {
     this.storage.set('selectedAction', this.actionSelected);
-    this.router.navigate(this.isLocalNetworkAdmin ? ["/network-country/network-country-create-edit-action", {"isLocalNetworkAdmin": true}] : ["/network-country/network-country-create-edit-action"]);
+    let viewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+    this.router.navigate(this.isViewing && viewValues ? ["/network-country/network-country-create-edit-action", viewValues] : this.isLocalNetworkAdmin ? ["/network-country/network-country-create-edit-action", {"isLocalNetworkAdmin": true}] : ["/network-country/network-country-create-edit-action"]);
   }
 
   selectAction(action: GenericToCustomListModel) {

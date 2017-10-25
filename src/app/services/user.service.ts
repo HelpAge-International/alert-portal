@@ -621,7 +621,7 @@ export class UserService {
   }
 
   logout() {
-    this.af.auth.logout();
+    return this.af.auth.logout();
   }
 
   saveUserNetworkSelection(uid, userType, networkId) {

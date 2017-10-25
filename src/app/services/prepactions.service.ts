@@ -279,6 +279,11 @@ export class PrepActionService {
     // else {
     //   this.actions[i].type = null;
     // }
+    if (action.hasOwnProperty('createdByAgencyId')) this.actions[i].createdByAgencyId = action.createdByAgencyId;
+    else if (action.type == ActionType.custom) action.createdByAgencyId = null;
+    if (action.hasOwnProperty('createdByCountryId')) this.actions[i].createdByCountryId = action.createdByCountryId;
+    else if (action.type == ActionType.custom) action.createdByCountryId = null;
+
     if (action.hasOwnProperty('updatedAt')) this.actions[i].updatedAt = action.updatedAt;
     else if (action.type == ActionType.custom) action.isArchived = null;
     if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived;
@@ -490,6 +495,8 @@ export class PreparednessAction {
   public noteId: string;
   public notes: PreparednessNotes[];
   public documents: any[];
+  public createdByAgencyId:string;
+  public createdByCountryId:string;
 
   public computedClockSetting: number;
 

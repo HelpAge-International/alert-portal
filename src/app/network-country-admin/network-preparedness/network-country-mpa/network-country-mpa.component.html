@@ -84,7 +84,7 @@
              [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action',{'isLocalNetworkAdmin':true}] :['/network-country/network-country-create-edit-action']">{{"CREATE_CUSTOM_ACTIONS"
             | translate}}</a>
           <a class="dropdown-item"
-             [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-select-action', {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-select-action']">{{"SELECT_FROM_GENERIC_ACTIONS"
+             [routerLink]="isViewing ? ['/network-country/network-country-select-action', networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-select-action', {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-select-action']">{{"SELECT_FROM_GENERIC_ACTIONS"
             | translate}}</a>
         </div>
       </div>
@@ -266,7 +266,7 @@
 
                           <a
                             *ngIf="action.asignee == uid"
-                            [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
+                            [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
                         <!--<div class="col-md-3 col-sm-4 btn-block"-->
@@ -284,6 +284,10 @@
                         <!--<strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>-->
                         <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
                           != null ?
+                          action.createdByAgencyId ? CURRENT_USERS.get(action.asignee).firstName + ' ' +
+                          CURRENT_USERS.get(action.asignee).lastName +', ' +
+                          agencyNamesMap.get(action.createdByAgencyId)?.name
+                          :
                           CURRENT_USERS.get(action.asignee).firstName + ' ' +
                           CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}</strong></div>
@@ -310,8 +314,8 @@
                             </div>
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || (action.noteId != null && action.noteId != '')">
-                            <div class="col-12 form-group" *ngIf="!isViewing">
+                                                || isViewing && permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')">
+                            <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="{{'ADD_A_COMPLETION_NOTE_HERE' | translate}}"
                                   [(ngModel)]="action.note"></textarea>
@@ -334,12 +338,14 @@
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="(note.uploadedBy == uid)"
-                                     href="javascript:void(0);" class="text-primary"
-                                     (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                  | <a *ngIf="(note.uploadedBy == uid)"
-                                       href="javascript:void(0);" class="text-danger"
-                                       (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
+                                  <a
+                                    *ngIf="(note.uploadedBy == uid && !isViewing || isViewing && note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
+                                    href="javascript:void(0);" class="text-primary"
+                                    (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
+                                  | <a
+                                  *ngIf="(note.uploadedBy == uid && !isViewing || isViewing && note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
+                                  href="javascript:void(0);" class="text-danger"
+                                  (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
                                   {{"EDITING" | translate}}
@@ -348,9 +354,9 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-3 btn-block" *ngIf="!isViewing">
+                        <div class="col-md-3 btn-block">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || (action.noteId != null && action.noteId != '')"
+                                                || isViewing && permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                             translate) :
@@ -387,9 +393,9 @@
                             <div class="col-12">
                               <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
-                                *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin)"
+                                *ngIf="uid == doc.uploadedBy || !userType || userType == userTypes.CountryAdmin || (isViewing && permissionsAreEnabled.other.DownloadDocuments)"
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">{{"DOWNLOAD" | translate}}</a> |
-                                <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin"
+                                <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin || !userType"
                                    href="javascript:void(0);" class="text-danger"
                                    (click)="deleteDocument(action, doc.documentId)">{{"DELETE" | translate}}</a></span>
                               </p>
@@ -547,13 +553,15 @@
                         <!--assign people-->
                         <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
-                             aria-expanded="false" aria-controls="popover_content" *ngIf="!((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA))
-                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA))"
+                             aria-expanded="false" aria-controls="popover_content" *ngIf="!((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && isViewing))
+                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && isViewing)) || (!((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && !isViewing && !permissionsAreEnabled.mandatedMPA.Assign))
+                                    && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && !isViewing && !permissionsAreEnabled.chsActions.Assign))
+                                    && !((action.level == actionLevelEnum.MPA && !isViewing && !permissionsAreEnabled.customMPA.Assign)))"
                              class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
                             | translate}}</a>
 
                           <a
-                            *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
+                            *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && isViewing) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && isViewing)) || !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !isViewing && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !isViewing && !permissionsAreEnabled.customAPA.Edit))"
                             [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
@@ -601,8 +609,8 @@
                           </div>
                         </div>
                         <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || (action.noteId != null && action.noteId != '')">
-                          <div class="col-12 form-group" *ngIf="!isViewing">
+                                                || (isViewing && permissionsAreEnabled.notes.New) || (action.noteId != null && action.noteId != '')">
+                          <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="{{'ADD_A_COMPLETION_NOTE_HERE' | translate}}"
                                   [(ngModel)]="action.note"></textarea>
@@ -625,10 +633,10 @@
                               <div class="col-6 text-bold text-right"
                                    *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                <a *ngIf="(note.uploadedBy == uid)"
+                                <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Edit)"
                                    href="javascript:void(0);" class="text-primary"
                                    (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                | <a *ngIf="(note.uploadedBy == uid)"
+                                | <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Delete)"
                                      href="javascript:void(0);" class="text-danger"
                                      (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                               </div>
@@ -639,9 +647,9 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-3 btn-block" *ngIf="!isViewing">
+                      <div class="col-md-3 btn-block">
                         <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || (action.noteId != null && action.noteId != '')"
+                                               || (isViewing && permissionsAreEnabled.notes.New) || (action.noteId != null && action.noteId != '')"
                            href="javascript:void(0)" class="btn btn-primary btn-block"
                            (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                           translate) :
@@ -684,7 +692,7 @@
                           <div class="col-12">
                             <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
                               <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
-                              *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin)"
+                              *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin || (isViewing && permissionsAreEnabled.other.DownloadDocuments)"
                               href="javascript:void(0);"
                               (click)="exportDocument(action, i)">{{"DOWNLOAD" | translate}}</a> |
                                 <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin"
@@ -786,6 +794,7 @@
                             | translate}}</a>
 
                           <a
+                            *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !isViewing && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !isViewing && !permissionsAreEnabled.customAPA.Edit))"
                             [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
@@ -831,8 +840,8 @@
                             </div>
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || (action.noteId != null && action.noteId != '')">
-                            <div class="col-12 form-group" *ngIf="!isViewing">
+                                               || (isViewing && permissionsAreEnabled.notes.New) || (action.noteId != null && action.noteId != '')">
+                            <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="{{'ADD_A_COMPLETION_NOTE_HERE' | translate}}"
                                   [(ngModel)]="action.note"></textarea>
@@ -855,10 +864,10 @@
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="(note.uploadedBy == uid)"
+                                  <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Edit)"
                                      href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                  | <a *ngIf="(note.uploadedBy == uid)"
+                                  | <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Delete)"
                                        href="javascript:void(0);" class="text-danger"
                                        (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                 </div>
@@ -869,9 +878,9 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-3 btn-block" *ngIf="!isViewing">
+                        <div class="col-md-3 btn-block">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || (action.noteId != null && action.noteId != '')"
+                                                || (isViewing && permissionsAreEnabled.notes.New) || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                             translate) :
@@ -908,7 +917,7 @@
                             <div class="col-12">
                               <p *ngFor="let doc of action.documents; let i = index" [attr.data-index]="i">
                                 <strong>{{action.documents[i].fileName}}</strong>&nbsp;&nbsp;<span><a
-                                *ngIf="(uid == doc.uploadedBy || userType == userTypes.CountryAdmin)"
+                                *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin || (isViewing && permissionsAreEnabled.other.DownloadDocuments)"
                                 href="javascript:void(0);" (click)="exportDocument(action, i)">{{"DOWNLOAD" | translate}}</a> |
                                 <a *ngIf="uid == doc.uploadedBy || userType == userTypes.CountryAdmin"
                                    href="javascript:void(0);" class="text-danger"

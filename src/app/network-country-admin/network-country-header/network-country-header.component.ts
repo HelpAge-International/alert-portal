@@ -17,6 +17,7 @@ declare var jQuery: any;
 import {Constants} from "../../utils/Constants";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
 @Component({

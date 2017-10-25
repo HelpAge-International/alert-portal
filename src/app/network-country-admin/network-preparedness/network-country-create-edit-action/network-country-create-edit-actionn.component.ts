@@ -50,6 +50,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   private networkCountryId: string;
   private showLoader: boolean;
   private systemId: string;
+  private isViewing: boolean;
 
 
   //copy over
@@ -110,6 +111,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
   //for local network admin
   private isLocalNetworkAdmin: boolean;
+  private networkViewValues: {};
 
 
   constructor(private pageControl: PageControlService,
@@ -149,7 +151,17 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         this.action.id = params['id'];
         this.editDisableLoading = true;
       }
-      this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.systemId = params["systemId"];
+        this.agencyId = params["agencyId"];
+        this.countryId = params["countryId"];
+        this.userType = params["userType"];
+        this.networkId = params["networkId"];
+        this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"];
+      }
+      this.isViewing ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
 
   }
@@ -229,6 +241,28 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
             });
         });
     });
+  }
+
+  private initViewNetworkAccess() {
+    this.getStaffDetails(this.uid, true);
+
+    this.networkService.getNetworkModuleMatrix(this.networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(modules => this.moduleAccess = modules);
+
+    this.getHazards();
+    this.initStaff();
+    this.calculateCurrency();
+
+    if (this.action.id != null) {
+      this.showDueDate = true;
+      this.initFromExistingActionId(true, true);
+    }
+    else {
+      this.action.isAllHazards = true;
+    }
+
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES)
   }
 
   ngOnDestroy() {
@@ -512,6 +546,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       updateObj.budget = this.action.budget;
       if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
         updateObj.asignee = this.action.asignee;
+        if (this.isViewing) {
+          updateObj.createdByAgencyId = this.agencyId;
+          updateObj.createdByCountryId = this.countryId;
+        }
       }
       if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
         updateObj.assignHazard = [];
@@ -726,7 +764,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     jQuery("#archive-action").modal('hide');
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-      this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
+      this.isViewing ? this.router.navigate(this.action.level == ActionLevel.MPA ? ["/network-country/network-country-mpa", this.networkViewValues] : ["/network-country/network-country-apa", this.networkViewValues])
+        :
+        this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
     });
   }
 
@@ -738,7 +778,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     jQuery("#delete-action").modal('hide');
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).set(null).then(() => {
-      this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
+      this.isViewing ? this.router.navigate(this.action.level == ActionLevel.MPA ? ["/network-country/network-country-mpa", this.networkViewValues] : ["/network-country/network-country-apa", this.networkViewValues])
+        :
+        this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
     });
   }
 
