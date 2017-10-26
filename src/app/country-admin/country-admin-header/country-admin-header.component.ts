@@ -145,7 +145,9 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
             this.isViewingNetwork = true;
             this.networkService.getNetworkDetail(networkId)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(network => this.selectedNetwork = network)
+              .subscribe(network => {
+                this.selectedNetwork = network
+              })
           }
 
           // Check chosen user language
@@ -252,7 +254,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private checkAlerts() {
-    this.alertService.getAlerts(this.countryId)
+    let id = this.isViewingNetwork && this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.countryId;
+    this.alertService.getAlerts(id)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {
         this.isRed = false;
@@ -328,6 +331,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, this.networkCountryMap.get(this.selectedNetwork.id), true)
     // this.networkRequest.emit(model)
     this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
+    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, this.networkCountryMap.get(network.id))
     let values = this.buildNetworkViewValues();
     this.router.navigate(["/network-country/network-dashboard", values])
   }
@@ -348,7 +352,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   selectAgency() {
     this.isViewingNetwork = false;
     this.selectedNetwork = null;
-    this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES)
+    this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
     this.router.navigateByUrl("/dashboard")
     // this.userService.deleteUserNetworkSelection(this.uid, this.userType);
   }
@@ -388,7 +392,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   logout() {
     console.log("logout");
     this.af.auth.logout().then(() => {
-      this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES)
+      this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
       this.router.navigateByUrl(Constants.LOGIN_PATH)
     }, error => {
       console.log(error.message)
@@ -403,7 +407,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   clearNetworkLocalStorage() {
     this.isViewingNetwork = false;
     this.selectedNetwork = null;
-    this.storageService.remove(Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_ID)
+    this.storageService.remove(Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
   }
 
   /**
@@ -436,7 +440,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               if (!CommonUtils.itemExistInList(network.id, this.networks)) {
                 if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
                   this.networks.push(network);
-                  console.log(this.networks)
                 }
               }
             })

@@ -73,7 +73,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   //for local network admin
   @Input() isLocalNetworkAdmin: boolean;
   private networkViewValues: {};
-  private agencyNamesMap = new Map<string,ModelAgency>()
+  private agencyNamesMap = new Map<string, ModelAgency>()
 
   //copy over from response plan
   // IDs
@@ -147,7 +147,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private windowService: WindowRefService,
               private storageService: LocalStorageService,
-              private userService:UserService,
+              private userService: UserService,
               private router: Router) {
     this.firebase = firebaseApp;
   }
@@ -397,7 +397,9 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   public assignActionDialogAdv(action: PreparednessAction) {
     if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
       // TODO: FIGURE OUT HOW THIS IS GOING TO BE EDITING
-      this.isLocalNetworkAdmin ? this.router.navigate(["/network-country/network-country-create-edit-action/" + action.id, {"isLocalNetworkAdmin": true}]) : this.router.navigateByUrl("/network-country/network-country-create-edit-action/" + action.id);
+      this.isViewing ? this.router.navigate(["/network-country/network-country-create-edit-action/" + action.id, this.networkViewValues])
+        :
+        this.isLocalNetworkAdmin ? this.router.navigate(["/network-country/network-country-create-edit-action/" + action.id, {"isLocalNetworkAdmin": true}]) : this.router.navigateByUrl("/network-country/network-country-create-edit-action/" + action.id);
     } else {
       this.assignActionId = action.id;
     }

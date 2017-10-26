@@ -442,7 +442,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    * Initialising hazards
    */
   private getHazards() {
-    let id = this.countryId ? this.countryId : this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.af.database.list(Constants.APP_STATUS + "/hazard/" + id, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
