@@ -992,6 +992,7 @@ export class Constants {
   //network view
   static NETWORK_VIEW_VALUES = "network-view-values"
   static NETWORK_VIEW_SELECTED_ID = "network-view-selected-id"
+  static NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID = "network-view-selected-network-country-id"
 }
 
 export enum FILE_SETTING {

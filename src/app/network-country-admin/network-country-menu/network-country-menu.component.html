@@ -20,7 +20,7 @@
           <a  [hidden]="permMinimumPreparedness" class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-mpa', networkViewValues] : ['/network-country/network-country-mpa']">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA"
             | translate}}</a>
           <a  [hidden]="permAdvancedPreparedness" class="dropdown-item"
-             routerLink="/network-country/network-country-apa">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
+             [routerLink]="networkViewValues ? ['/network-country/network-country-apa', networkViewValues] : ['/network-country/network-country-apa']">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
         </div>
       </div>
     </li>

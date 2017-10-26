@@ -1,5 +1,19 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewing; else country">
+  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+    <app-network-country-header></app-network-country-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-container>
+</ng-container>
+
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<ng-template #country>
+  <app-country-admin-header></app-country-admin-header>
+  <app-network-country-menu [isViewing]="true"></app-network-country-menu>
+</ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
@@ -13,7 +27,9 @@
       <h1 *ngIf="!action.id">{{"CREATE_NEW_PREPAREDNESS_ACTION" | translate}}</h1>
       <h1 *ngIf="action.id">{{"PREPAREDNESS.TITLE_TEXT_EDIT_PAGE" | translate}}</h1>
       <div class="Action-buttons-wrapper__absolute" *ngIf="!editDisableLoading && action.id">
-        <button href="javascript:void(0)" class="btn btn-block btn-danger" *ngIf="action.type == actionType.custom && (((action.level == actionLevelEnum.MPA) || (action.level == actionLevelEnum.APA)) || userType == userTypes.CountryAdmin)" (click)="showActionConfirm('delete-action')">
+        <button href="javascript:void(0)" class="btn btn-block btn-danger"
+                *ngIf="action.type == actionType.custom && (((action.level == actionLevelEnum.MPA) || (action.level == actionLevelEnum.APA)) || userType == userTypes.CountryAdmin)"
+                (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>
         <button class="btn btn-block btn-outline-primary" *ngIf="
@@ -56,8 +72,10 @@
           <label for="level_{{aLevel}}" class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
             <input [disabled]="editDisableLoading || action.type != actionType.custom
                               || (((aLevel == actionLevelEnum.MPA && (!moduleAccess.minimumPreparedness))
-                              || (aLevel == actionLevelEnum.APA && (!moduleAccess.advancedPreparedness))) && userType != userTypes.CountryAdmin)" type="radio"
-                   #pActionLevel="ngModel" required id="level_{{aLevel}}" [value]="aLevel" (change)="removeFilterLockLevel()"
+                              || (aLevel == actionLevelEnum.APA && (!moduleAccess.advancedPreparedness))) && userType != userTypes.CountryAdmin)"
+                   type="radio"
+                   #pActionLevel="ngModel" required id="level_{{aLevel}}" [value]="aLevel"
+                   (change)="removeFilterLockLevel()"
                    [(ngModel)]="action.level">
             {{actionLevel[aLevel] | translate}}
           </label>
@@ -99,7 +117,8 @@
                    (change)="selectHazardCategory(hList.hazardScenario, $event)" name="hazardCategory">
             <span
               class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{getHazardImage(hList.hazardScenario)}}"></span>
-            &nbsp; {{hList.hazardScenario != -1 ? (hazardCategory[hList.hazardScenario] | translate) : hList.displayName}}
+            &nbsp; {{hList.hazardScenario != -1 ? (hazardCategory[hList.hazardScenario] | translate) :
+            hList.displayName}}
           </label>
         </div>
       </div>
@@ -112,22 +131,26 @@
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
           <label for="n-AssignTo">{{"ASSIGN_TO" | translate}}</label>
-          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader"
+          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"
+                  *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader"
                   [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA))
                                     || ((action.type == actionType.chs && action.level == actionLevelEnum.MPA))">
             <option selected value="">{{"UNASSIGNED" | translate}}</option>
-            <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}} {{userAssign.lastName}}</option>
+            <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}}
+              {{userAssign.lastName}}
+            </option>
           </select>
           <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
-          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="!userType">
+          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"
+                  *ngIf="!userType || userType == userTypes.Ert || userType == userTypes.PartnerUser">
             <option selected value="">{{"UNASSIGNED" | translate}}</option>
             <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
           </select>
           <!--<select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert || userType == userTypes.PartnerUser" [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA))-->
-                                    <!--|| ((action.type == actionType.chs && action.level == actionLevelEnum.MPA))-->
-                                    <!--|| ((action.level == actionLevelEnum.MPA))">-->
-            <!--<option selected value="">{{"UNASSIGNED" | translate}}</option>-->
-            <!--<option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>-->
+          <!--|| ((action.type == actionType.chs && action.level == actionLevelEnum.MPA))-->
+          <!--|| ((action.level == actionLevelEnum.MPA))">-->
+          <!--<option selected value="">{{"UNASSIGNED" | translate}}</option>-->
+          <!--<option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>-->
           <!--</select>-->
         </div>
       </div>
@@ -141,7 +164,9 @@
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
           <label for="n-DueDate">{{"PREPAREDNESS.DUE_DATE" | translate}}:</label>
-          <material-datepicker id="n-DueDate" placeholder="{{action.dueDate ? (action.dueDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control col-sm-5"
+          <material-datepicker id="n-DueDate"
+                               placeholder="{{action.dueDate ? (action.dueDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                               class="form-control col-sm-5"
                                dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)" [rangeStart]="getNowDate()"
                                [(date)]="dueDate"></material-datepicker>
         </div>
@@ -156,40 +181,40 @@
           FREQUENCY
     -->
     <!--<div class="row System-admin&#45;&#45;form-wrap" *ngIf="action.level == actionLevelEnum.MPA">-->
-      <!--<div class="col-lg-8 col-md-10">-->
-        <!--<div class="form-group">-->
-          <!--<label for="n-Frequency">{{"PREPAREDNESS.FREQUENCY" | translate}}</label>-->
-        <!--</div>-->
+    <!--<div class="col-lg-8 col-md-10">-->
+    <!--<div class="form-group">-->
+    <!--<label for="n-Frequency">{{"PREPAREDNESS.FREQUENCY" | translate}}</label>-->
+    <!--</div>-->
 
-        <!--<div class="row no-gutters">-->
-          <!--<label for="frequency-check" class="Checkbox&#45;&#45;ribbon Left">-->
-            <!--<input type="checkbox" name="frequency-check" id="frequency-check"-->
-                   <!--[checked]="action.isFrequencyActive" (change)="updateFrequencyActive()">-->
-            <!--{{"PREPAREDNESS.FREQUENCY_LABEL" | translate}}-->
-          <!--</label>-->
-          <!--&lt;!&ndash;tooltip&ndash;&gt;-->
-          <!--<tooltip-->
-            <!--[level1]="'TOOLTIPS.PREPAREDNESS.TT11.LEVEL1'">-->
-          <!--</tooltip>-->
-        <!--</div>-->
-        <!--<div class="row align-items-center" *ngIf="action.isFrequencyActive">-->
-          <!--<div class="col-sm-1 col-2">{{"EVERY" | translate}}</div>-->
-          <!--<div class="col-sm-2 col-4">-->
-            <!--<select class="form-control" [(ngModel)]="action.frequencyQuantity">-->
-              <!--<option *ngFor="let f of frequencyQuantities" [value]="f"-->
-                      <!--[selected]="action.frequencyQuantity == f">{{f}}</option>-->
-            <!--</select>-->
-          <!--</div>-->
-          <!--<div class="col-sm-3 col-6">-->
-            <!--<select class="form-control" [(ngModel)]="action.frequencyType">-->
-              <!--<option *ngFor="let list of durationTypeList; let i = index" [value]="i"-->
-                      <!--[selected]="action.frequencyType == i">-->
-                <!--{{durationType[i] | translate}}-->
-              <!--</option>-->
-            <!--</select>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
+    <!--<div class="row no-gutters">-->
+    <!--<label for="frequency-check" class="Checkbox&#45;&#45;ribbon Left">-->
+    <!--<input type="checkbox" name="frequency-check" id="frequency-check"-->
+    <!--[checked]="action.isFrequencyActive" (change)="updateFrequencyActive()">-->
+    <!--{{"PREPAREDNESS.FREQUENCY_LABEL" | translate}}-->
+    <!--</label>-->
+    <!--&lt;!&ndash;tooltip&ndash;&gt;-->
+    <!--<tooltip-->
+    <!--[level1]="'TOOLTIPS.PREPAREDNESS.TT11.LEVEL1'">-->
+    <!--</tooltip>-->
+    <!--</div>-->
+    <!--<div class="row align-items-center" *ngIf="action.isFrequencyActive">-->
+    <!--<div class="col-sm-1 col-2">{{"EVERY" | translate}}</div>-->
+    <!--<div class="col-sm-2 col-4">-->
+    <!--<select class="form-control" [(ngModel)]="action.frequencyQuantity">-->
+    <!--<option *ngFor="let f of frequencyQuantities" [value]="f"-->
+    <!--[selected]="action.frequencyQuantity == f">{{f}}</option>-->
+    <!--</select>-->
+    <!--</div>-->
+    <!--<div class="col-sm-3 col-6">-->
+    <!--<select class="form-control" [(ngModel)]="action.frequencyType">-->
+    <!--<option *ngFor="let list of durationTypeList; let i = index" [value]="i"-->
+    <!--[selected]="action.frequencyType == i">-->
+    <!--{{durationType[i] | translate}}-->
+    <!--</option>-->
+    <!--</select>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
     <!--</div>-->
 
 
@@ -204,7 +229,9 @@
                  (keypress)="removeFilterLockBudget()"
                  class="form-control col-sm-5" id="n-Budget" min="0" placeholder="{{CURRENCIES[currency]}}">
         </div>
-        <div [hidden]="action.budget != undefined || filterLockBudget" class="alert alert-danger">{{"PREPAREDNESS.NO_BUDGET" | translate}}</div>
+        <div [hidden]="action.budget != undefined || filterLockBudget" class="alert alert-danger">
+          {{"PREPAREDNESS.NO_BUDGET" | translate}}
+        </div>
       </div>
     </div>
 
@@ -221,12 +248,14 @@
         </tooltip>
         <div class="row no-gutters">
           <label for="yes-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-            <input type="radio"  #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true" (change)="removeFilterLockDoc()"
+            <input type="radio" #requireDoc="ngModel" name="requireDoc" required id="yes-completion" [value]="true"
+                   (change)="removeFilterLockDoc()"
                    [(ngModel)]="action.requireDoc">{{"YES" | translate}}</label>
         </div>
         <div class="row no-gutters">
           <label for="no-completion" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-            <input type="radio" #requireDoc="ngModel" name="requireDoc" id="no-completion" [value]="false" (change)="removeFilterLockDoc()"
+            <input type="radio" #requireDoc="ngModel" name="requireDoc" id="no-completion" [value]="false"
+                   (change)="removeFilterLockDoc()"
                    [(ngModel)]="action.requireDoc">{{"GLOBAL.NO" | translate}}</label>
         </div>
         <div class="alert alert-danger" [hidden]="action.requireDoc != undefined || filterLockDocument">
@@ -235,7 +264,8 @@
       </div>
     </div>
     <div class="Form-submit__wrapper">
-      <button class="btn btn-primary" (click)="createOrUpdateAction()">{{"PREPAREDNESS.SAVE_NEW_ACTION" | translate}}</button>
+      <button class="btn btn-primary" (click)="createOrUpdateAction()">{{"PREPAREDNESS.SAVE_NEW_ACTION" | translate}}
+      </button>
       <div class="btn btn-outline-secondary" (click)="backButtonAction()">{{"GLOBAL.CANCEL" |
         translate}}
       </div>

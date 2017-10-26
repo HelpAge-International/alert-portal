@@ -15,7 +15,10 @@ import {
   UserType
 } from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
-import {NetworkModulesEnabledModel, PageControlService} from "../../../services/pagecontrol.service";
+import {
+  CountryPermissionsMatrix, NetworkModulesEnabledModel,
+  PageControlService
+} from "../../../services/pagecontrol.service";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import * as firebase from "firebase";
 import {NetworkService} from "../../../services/network.service";
@@ -34,6 +37,10 @@ import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 import {MessageModel} from "../../../model/message.model";
 import {WindowRefService} from "../../../services/window-ref.service";
 import {LocalStorageService} from "angular-2-local-storage/dist";
+import {CommonUtils} from "../../../utils/CommonUtils";
+import {NetworkCountryModel} from "../../network-country.model";
+import * as firebase from "firebase";
+import {ModelAgency} from "../../../model/agency.model";
 
 declare var jQuery: any;
 
@@ -67,6 +74,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   @Input() isLocalNetworkAdmin: boolean;
   //network view
   private networkViewValues: {};
+  private agencyNamesMap = new Map<string, ModelAgency>()
 
 
   //copy over from response plan
@@ -131,6 +139,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private modulesAreEnabled: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
   protected prepActionService: PrepActionService = new PrepActionService();
+  private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   private privacy: ModelAgencyPrivacy;
   private userAgencyId: string;
@@ -255,7 +264,16 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
 
+    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkMap => {
+        this.initNetworkAdmin(networkMap)
+        this.initAgenciesDetails(networkMap)
+      })
     this.initStaff();
+    PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
+      this.permissionsAreEnabled = isEnabled;
+    });
 
     // Currency
     // this.calculateCurrency();
@@ -362,6 +380,16 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       });
   }
 
+  private initNetworkAdmin(map: Map<string, string>) {
+    CommonUtils.convertMapToKeysInArray(map).forEach(networkId => {
+      this.networkService.getNetworkCountry(networkId, map.get(networkId))
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((model: NetworkCountryModel) => {
+          this.getStaffDetails(model.adminId, false)
+        })
+    })
+  }
+
   /**
    * Assigning an action to someone
    */
@@ -395,6 +423,10 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             });
           });
       });
+    if (this.isViewing) {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByAgencyId").set(this.agencyId)
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByCountryId").set(this.countryId)
+    }
     this.closeModal();
   }
 
@@ -751,4 +783,19 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     }
   }
 
+  private initAgenciesDetails(networkMap: Map<string, string>) {
+    CommonUtils.convertMapToKeysInArray(networkMap).forEach(networkId => {
+      this.networkService.mapAgencyCountryForNetworkCountry(networkId, networkMap.get(networkId))
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountryMap => {
+          CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
+            this.userService.getAgencyModel(agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((agency: ModelAgency) => {
+                this.agencyNamesMap.set(agencyId, agency)
+              })
+          })
+        })
+    })
+  }
 }
