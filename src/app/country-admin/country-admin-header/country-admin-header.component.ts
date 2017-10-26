@@ -427,17 +427,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private getNetworks(agencyId: string, countryId: string) {
-    console.log('getNetworks')
-    console.log(countryId)
     this.networkService.mapNetworkWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(map => this.networkCountryMap = map)
     this.networkService.getNetworkWithCountryModelsForCountry(agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkModels => {
-        console.log(networkModels)
-        console.log(agencyId)
-        console.log(countryId)
         this.networks = [];
         networkModels.map(model => {
           return this.networkService.getNetworkDetail(model.networkId)

@@ -205,6 +205,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.modulesAreEnabled = matrix);
 
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyCountryMap => {
+              this.initAgencies(agencyCountryMap)
+            })
+
           // Currency
           // this.calculateCurrency();
         });
@@ -266,10 +272,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
-        this.initNetworkAdmin(networkMap)
-        this.initAgenciesDetails(networkMap)
+        if (networkMap) {
+          this.initNetworkAdmin(networkMap)
+          this.initAgenciesDetails(networkMap)
+        }
       })
-    this.initStaff();
+    this.initStaff(this.agencyId, this.countryId);
     PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
       this.permissionsAreEnabled = isEnabled;
     });
@@ -358,8 +366,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   /**
    * Initialisation method for the staff under the country office
    */
-  private initCountryAdmin() {
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+  private initCountryAdmin(agencyId, countryId) {
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
@@ -368,9 +376,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       });
   }
 
-  private initStaff() {
-    this.initCountryAdmin();
-    this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
+  private initStaff(agencyId, countryId) {
+    this.initCountryAdmin(agencyId, countryId);
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
@@ -795,6 +803,20 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
               })
           })
         })
+    })
+  }
+
+  private initAgencies(agencyCountryMap: Map<string, string>) {
+    CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
+      this.userService.getAgencyModel(agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agency: ModelAgency) => {
+          this.agencyNamesMap.set(agencyId, agency)
+        })
+    })
+
+    CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
+      this.initStaff(agencyId, agencyCountryMap.get(agencyId))
     })
   }
 }

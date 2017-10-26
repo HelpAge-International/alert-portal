@@ -28,6 +28,7 @@ import {
   DashboardSeasonalCalendarComponent
 } from "../../dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {ActionsService} from "../../services/actions.service";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -113,6 +114,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   // Module settings
   private moduleSettings: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
+  private networkViewValues: {};
 
 
   constructor(private pageControl: PageControlService,
@@ -120,6 +122,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               private networkService: NetworkService,
               private notificationService: NotificationService,
               private userService: UserService,
+              private storageService:LocalStorageService,
               private actionService: ActionsService,
               private route: ActivatedRoute,
               private router: Router) {
@@ -187,7 +190,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initViewAccess() {
-
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
     this.loadData();
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -213,14 +216,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
    */
 
   private loadData() {
-    let id = this.countryId ? this.countryId : this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    let agencyId = this.agencyId ? this.agencyId : this.networkId;
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.getAllSeasonsForCountryId(id);
     this.getAlerts(id);
     this.getCountryContextIndicators(id);
     this.getHazards(id);
     this.initData(id);
-    this.getCountryDataNetwork(agencyId, id, this.isLocalNetworkAdmin);
+    this.getCountryDataNetwork(this.networkId, id, this.isLocalNetworkAdmin);
   }
 
   private loadDataForPartnerUser(agencyId, countryId) {

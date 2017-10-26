@@ -16,6 +16,9 @@ export class CommonUtils {
   }
 
   static convertMapToObjectOnlyWithTrueValue(map: Map<string, boolean>) {
+    if (!map) {
+      return {}
+    }
     let obj = {};
     map.forEach((v, k) => {
       if (v) {
@@ -26,12 +29,18 @@ export class CommonUtils {
   }
 
   static convertMapToKeysInArray(map) {
+    if (!map) {
+      return []
+    }
     let keys = [];
     map.forEach((v, k) => keys.push(k));
     return keys;
   }
 
   static convertMapToValuesInArray(map) {
+    if (!map) {
+      return []
+    }
     let values = [];
     map.forEach((v, k) => values.push(v));
     return values;

@@ -92,6 +92,31 @@ export class PrepActionService {
     });
   }
 
+  public initActionsWithInfoAllAgenciesInNetwork(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
+                                    countryId: string, agencyId: string, systemId: string, agencyCountryMap:Map<string,string>) {
+    this.uid = uid;
+    this.ngUnsubscribe = ngUnsubscribe;
+    this.isMPA = isMPA;
+    this.countryId = countryId;
+    this.agencyId = agencyId;
+    this.systemAdminId = systemId;
+    this.getDefaultClockSettingsNetwork(af, this.agencyId, this.countryId, () => {
+      if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+      }
+      this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
+      this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
+
+      agencyCountryMap.forEach((countryId,agencyId) =>{
+        if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+          this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+        }
+        this.init(af, "actionMandated", agencyId, isMPA, PrepSourceTypes.AGENCY);
+        this.init(af, "action", countryId, isMPA, PrepSourceTypes.COUNTRY);
+      })
+    });
+  }
+
   public initActionsWithInfoNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
                                      agencyId: string, systemId: string) {
     this.uid = uid;

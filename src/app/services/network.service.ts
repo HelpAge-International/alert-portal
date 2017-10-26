@@ -732,7 +732,6 @@ export class NetworkService {
       .map(networks => {
        let map = new Map<string,string>();
        networks.forEach(network =>{
-         console.log(network[network.$key])
          map.set(network.$key, network.networkCountryId)
        })
         return map

@@ -17,6 +17,7 @@ import {AngularFire} from "angularfire2";
 import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {NetworkService} from "../../services/network.service";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-network-country-statistics-ribbon',
@@ -85,19 +86,22 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
   //for local network admin
   @Input() isLocalNetworkAdmin: boolean;
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private networkService: NetworkService,
               private af: AngularFire,
               private router: Router,
+              private storageService: LocalStorageService,
               private userService: UserService) {
     this.userPermissions = new NetworkModulesEnabledModel();
   }
 
   ngOnInit() {
     // this.normalAccess();
-    this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    this.networkViewValues ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
   }
 
   private initNetworkAccess() {
@@ -185,28 +189,33 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
     });
   }
 
-  private normalAccess() {
-    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
-      this.countryId = countryId;
-      this.agencyId = agencyId;
-      this.systemId = systemId;
-      this.downloadThreshold(() => {
-        this.downloadDefaultClockSettings(this.agencyId, () => {
-          this.initAlerts(this.countryId, () => {
-            this.getCountryNumber(this.agencyId, this.countryId);
-            this.getApprovedResponsePlansCount(this.countryId);
-            this.prepActionService.addUpdater(() => {
-              this.recalculateAll();
+  private initViewNetworkAccess() {
+    this.uid = this.networkViewValues["uid"];
+    this.networkId = this.networkViewValues["networkId"];
+    this.networkCountryId = this.networkViewValues["networkCountryId"];
+    this.systemId = this.networkViewValues["systemId"];
+
+    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountryMap =>{
+        this.downloadThreshold(() => {
+          this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
+            this.initAlerts(this.networkCountryId, () => {
+              this.getCountryNumberNetwork(this.networkId, this.networkCountryId);
+              this.getApprovedResponsePlansCount(this.networkCountryId);
+              this.prepActionService.addUpdater(() => {
+                this.recalculateAll();
+              });
+              this.prepActionService.initActionsWithInfoAllAgenciesInNetwork(this.af, this.ngUnsubscribe, this.uid, null, this.networkCountryId, this.networkId, this.systemId, agencyCountryMap)
             });
-            this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, userType, null, this.countryId, this.agencyId, this.systemId)
           });
         });
-      });
-      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled => {
-        this.userPermissions = isEnabled;
-      }));
-    });
+      })
+
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => this.userPermissions = matrix);
+
   }
 
   ngOnDestroy() {
@@ -384,6 +393,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   }
 
   private recalculateAll() {
+    // console.log(this.prepActionService.actions)
     let minTotal: number = 0;
     let minGreen: number = 0;
     let advTotal: number = 0;
@@ -410,8 +420,10 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
       if (x.type == ActionType.chs) {
         if (!x.isArchived) {
           chsTotal++;
+          console.log(`chs total ${chsTotal}`)
           if (this.isActionCompleted(x)) {
             chsGreen++;
+            console.log(`chs completed: ${chsGreen}`)
           }
         }
       }

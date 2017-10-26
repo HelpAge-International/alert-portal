@@ -205,20 +205,22 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           .subscribe(map => {
             this.agencyCountryMap = map;
             this.agenciesNeedToApprove = [];
-            CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
-              this.userService.getAgencyModel(agencyId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(model => {
-                  console.log(model);
-                  this.agenciesNeedToApprove.push(model);
-                });
-              //prepare agency region map
-              this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(regionId => {
-                  this.agencyRegionMap.set(agencyId, regionId);
-                });
-            });
+            if (this.agencyCountryMap) {
+              CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
+                this.userService.getAgencyModel(agencyId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(model => {
+                    console.log(model);
+                    this.agenciesNeedToApprove.push(model);
+                  });
+                //prepare agency region map
+                this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(regionId => {
+                    this.agencyRegionMap.set(agencyId, regionId);
+                  });
+              });
+            }
           });
       });
   }

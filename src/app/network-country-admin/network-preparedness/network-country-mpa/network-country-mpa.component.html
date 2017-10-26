@@ -71,7 +71,8 @@
                [level2]="'TOOLTIPS.PREPAREDNESS.TT1.LEVEL2'">
       </tooltip>
 
-      <div class="btn-group">
+      <div class="btn-group"
+           *ngIf="!userType || (isViewing && (permissionsAreEnabled.customMPA.New || userType == userTypes.CountryAdmin))">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{"CREATE_ACTION" | translate}}
         </button>
@@ -265,7 +266,7 @@
                           </div>
 
                           <a
-                            *ngIf="action.asignee == uid"
+                            *ngIf="(action.asignee == uid && !isViewing) || (isViewing && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && permissionsAreEnabled.customAPA.Edit)))"
                             [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
@@ -314,7 +315,7 @@
                             </div>
                           </div>
                           <div class="row" *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || isViewing && permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')">
+                                                || (isViewing && permissionsAreEnabled.notes.New) || (action.noteId != null && action.noteId != '')">
                             <div class="col-12 form-group">
                         <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                                   placeholder="{{'ADD_A_COMPLETION_NOTE_HERE' | translate}}"
@@ -339,11 +340,11 @@
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || note.uploadedBy == uid && note.id != action.noteId">
                                   <a
-                                    *ngIf="(note.uploadedBy == uid && !isViewing || isViewing && note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
+                                    *ngIf="note.uploadedBy == uid && !isViewing || (isViewing && note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
                                     href="javascript:void(0);" class="text-primary"
                                     (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
                                   | <a
-                                  *ngIf="(note.uploadedBy == uid && !isViewing || isViewing && note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
+                                  *ngIf="note.uploadedBy == uid && !isViewing || (isViewing && note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
                                   href="javascript:void(0);" class="text-danger"
                                   (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                 </div>
@@ -356,7 +357,7 @@
                         </div>
                         <div class="col-md-3 btn-block">
                           <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
-                                                || isViewing && permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
+                                                || (isViewing && permissionsAreEnabled.notes.New) || (action.noteId != null && action.noteId != '')"
                              href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                             translate) :
@@ -633,12 +634,14 @@
                               <div class="col-6 text-bold text-right"
                                    *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Edit)"
-                                   href="javascript:void(0);" class="text-primary"
-                                   (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                | <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Delete)"
-                                     href="javascript:void(0);" class="text-danger"
-                                     (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
+                                <a
+                                  *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Edit)"
+                                  href="javascript:void(0);" class="text-primary"
+                                  (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
+                                | <a
+                                *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Delete)"
+                                href="javascript:void(0);" class="text-danger"
+                                (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                               </div>
                               <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
                                 {{"EDITING" | translate}}
@@ -864,12 +867,14 @@
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin || !userType
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Edit)"
-                                     href="javascript:void(0);" class="text-primary"
-                                     (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                  | <a *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Delete)"
-                                       href="javascript:void(0);" class="text-danger"
-                                       (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
+                                  <a
+                                    *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Edit)"
+                                    href="javascript:void(0);" class="text-primary"
+                                    (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
+                                  | <a
+                                  *ngIf="(note.uploadedBy == uid && !isViewing) || (note.uploadedBy == uid && isViewing && permissionsAreEnabled.notes.Delete)"
+                                  href="javascript:void(0);" class="text-danger"
+                                  (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
                                   {{"EDITING" | translate}}
