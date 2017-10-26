@@ -235,6 +235,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               agency["relatedCountryId"] = ids.$value;
               this.agenciesMap.set(ids.$key, agency);
               this.partnerAgencies = this.getPartnerAgencies(this.agenciesMap);
+
             });
         });
 
@@ -334,6 +335,9 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private buildNetworkViewValues() {
     let values = {};
+    console.log(this.selectedNetwork.id)
+    console.log(this.networkCountryMap)
+    console.log(this.networkCountryMap.get(this.selectedNetwork.id))
     values["systemId"] = this.systemId;
     values["agencyId"] = this.agencyId;
     values["countryId"] = this.countryId;
@@ -419,14 +423,17 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private getNetworks(agencyId: string, countryId: string) {
-
+    console.log('getNetworks')
+    console.log(countryId)
     this.networkService.mapNetworkWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(map => this.networkCountryMap = map)
-
     this.networkService.getNetworkWithCountryModelsForCountry(agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkModels => {
+        console.log(networkModels)
+        console.log(agencyId)
+        console.log(countryId)
         this.networks = [];
         networkModels.map(model => {
           return this.networkService.getNetworkDetail(model.networkId)
