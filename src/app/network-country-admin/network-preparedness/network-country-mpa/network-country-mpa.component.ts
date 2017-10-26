@@ -20,7 +20,6 @@ import {
   PageControlService
 } from "../../../services/pagecontrol.service";
 import {AngularFire, FirebaseApp} from "angularfire2";
-import * as firebase from "firebase";
 import {NetworkService} from "../../../services/network.service";
 import {NotificationService} from "../../../services/notification.service";
 import {UserService} from "../../../services/user.service";
