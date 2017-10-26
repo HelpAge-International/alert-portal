@@ -735,6 +735,7 @@ export class NetworkService {
          console.log(network[network.$key])
          map.set(network.$key, network.networkCountryId)
        })
+        console.log(map)
         return map
       })
   }

@@ -22,6 +22,9 @@ declare var jQuery: any;
   styleUrls: ['./local-network-coordination-add-edit.component.scss']
 })
 export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestroy {
+  countryId: any;
+  agencyId: any;
+  isViewing = false;
 
   private uid: string;
   private networkId: string;
@@ -67,22 +70,31 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
   ngOnInit() {
 
-    this.route.params.subscribe((params: Params) => {
-      if (params["isNetworkCountry"]) {
-        this.isNetworkCountry = true;
-      }
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if(params['isViewing']){
+          this.isViewing = params['isViewing'];
+        }
+        if(params['agencyId']){
+          this.agencyId = params['agencyId'];
+        }
+        if(params['countryId']){
+          this.countryId = params['countryId'];
+        }
+        if(params['networkId']){
+          this.networkId = params['networkId'];
+        }
+        if(params['networkCountryId']){
+          this.networkCountryId = params['networkCountryId'];
+        }
 
-      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-        this.uid = user.uid;
+        console.log(this.isViewing)
 
-        this.networkService.getSelectedIdObj(user.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(selection => {
-            this.networkId = selection["id"];
-
-            if (this.isNetworkCountry) {
-              this.networkCountryId = selection["networkCountryId"];
-            }
+      console.log(params)
+        if(this.isViewing) {
+          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            this.uid = user.uid;
 
             if (params['id']) {
               this.isNetworkCountry ? this.getCoordinationForNetworkCountry(params) : this.getCoordinationForLocalNetworkAdmin(params);
@@ -91,7 +103,29 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
             this.isNetworkCountry ? this.getAgenciesForNetworkCountry() : this.getAgenciesForLocalNetworkAdmin();
           })
-      })
+        } else {
+
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                this.networkId = selection["id"];
+
+                if (this.isNetworkCountry) {
+                  this.networkCountryId = selection["networkCountryId"];
+                }
+
+                if (params['id']) {
+                  this.isNetworkCountry ? this.getCoordinationForNetworkCountry(params) : this.getCoordinationForLocalNetworkAdmin(params);
+                  this.isNetworkCountry ? this.getCoordinationNonAlertMemberForNetworkCountry(params) : this.getCoordinationNonAlertMemberForLocalNetworkAdmin(params);
+                }
+
+                this.isNetworkCountry ? this.getAgenciesForNetworkCountry() : this.getAgenciesForLocalNetworkAdmin();
+              })
+          })
+        }
     });
   }
 
@@ -135,6 +169,7 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   private getCoordinationForLocalNetworkAdmin(params: Params) {
+
     this._coordinationArrangementService.getCoordinationArrangementNetwork(this.networkId, params['id'])
       .subscribe(coordinationArrangement => {
         this.coordinationArrangement = coordinationArrangement;

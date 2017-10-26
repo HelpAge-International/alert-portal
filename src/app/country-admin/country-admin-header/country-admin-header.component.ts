@@ -339,9 +339,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private buildNetworkViewValues() {
     let values = {};
-    console.log(this.selectedNetwork.id)
-    console.log(this.networkCountryMap)
-    console.log(this.networkCountryMap.get(this.selectedNetwork.id))
+
     values["systemId"] = this.systemId;
     values["agencyId"] = this.agencyId;
     values["countryId"] = this.countryId;
@@ -435,9 +433,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.networkService.getNetworkWithCountryModelsForCountry(agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkModels => {
-        console.log(networkModels)
-        console.log(agencyId)
-        console.log(countryId)
         this.networks = [];
         networkModels.map(model => {
           return this.networkService.getNetworkDetail(model.networkId)
