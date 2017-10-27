@@ -1,12 +1,13 @@
 import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {ModelSeason} from "../../model/season.model";
 import {ColourSelector} from "../../utils/ColourSelector";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -51,16 +52,29 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   @Input() isNetworkCountry: boolean;
   @Input() isLocalNetworkAdmin: boolean;
   private networkCountryId: string;
+  private isViewing: boolean = false;
+  private  networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
               private af: AngularFire,
+              private storageService: LocalStorageService,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.isNetworkCountry ? this.networkCountryAccess() : this.isLocalNetworkAdmin ? this.localNetworkAccess() : this.normalAccess();
+    this.route.params.subscribe((params: Params) => {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.countryId = params["countryId"];
+        this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"]
+        this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      }
+      this.isViewing ? this.getAllSeasonsForCountryId(this.networkCountryId) : this.isNetworkCountry ? this.networkCountryAccess() : this.isLocalNetworkAdmin ? this.localNetworkAccess() : this.normalAccess();
+    })
+
   }
 
   private normalAccess() {

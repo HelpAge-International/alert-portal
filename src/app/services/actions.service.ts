@@ -682,6 +682,7 @@ export class ActionsService {
             .subscribe(user => {
               plan["displayName"] = user.firstName + " " + user.lastName;
             });
+          plan["networkCountryId"] = networkCountryId
         });
         return plans;
       });

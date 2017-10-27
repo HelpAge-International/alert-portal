@@ -93,7 +93,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfoAllAgenciesInNetwork(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
-                                    countryId: string, agencyId: string, systemId: string, agencyCountryMap:Map<string,string>) {
+                                                 countryId: string, agencyId: string, systemId: string, agencyCountryMap: Map<string, string>) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -107,7 +107,7 @@ export class PrepActionService {
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
       this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
 
-      agencyCountryMap.forEach((countryId,agencyId) =>{
+      agencyCountryMap.forEach((countryId, agencyId) => {
         if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
           this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
         }
@@ -118,7 +118,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfoNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
-                                     agencyId: string, systemId: string) {
+                                         agencyId: string, systemId: string) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -520,8 +520,8 @@ export class PreparednessAction {
   public noteId: string;
   public notes: PreparednessNotes[];
   public documents: any[];
-  public createdByAgencyId:string;
-  public createdByCountryId:string;
+  public createdByAgencyId: string;
+  public createdByCountryId: string;
 
   public computedClockSetting: number;
 

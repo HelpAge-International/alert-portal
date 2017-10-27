@@ -87,6 +87,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private networkCountryId: string;
   private networkId: string;
+  private networkMap: Map<string, string>;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -107,41 +108,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
 
       //get networks for country
-      this.networkService.getNetworksForCountry(this.agencyId, this.countryId)
+      // this.networkService.getNetworksForCountry(this.agencyId, this.countryId)
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe(networkCountryId => {
+      //     if (networkCountryId) {
+      //       this.networkCountryId = networkCountryId[0];
+      //       console.log(this.networkCountryId)
+      //     }
+
+      // this.networkService.getNetworksForAgency(this.agencyId)
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe(networkIds => {
+      //     if (networkIds) {
+      //       this.networkId = networkIds[0];
+      //       console.log(this.networkId);
+      //     }
+      this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(networkCountryId => {
-          if (networkCountryId) {
-            this.networkCountryId = networkCountryId[0];
-            console.log(this.networkCountryId)
+        .subscribe(networkMap => {
+          this.networkMap = networkMap
+
+          if (userType == UserType.CountryDirector) {
+            this.DashboardTypeUsed = DashboardType.director;
+          } else {
+            this.DashboardTypeUsed = DashboardType.default;
+          }
+          if (this.userType == UserType.PartnerUser) {
+            console.log("partner user")
+            this.agencyId = agencyId;
+            this.countryId = countryId;
+            this.loadDataForPartnerUser(agencyId, countryId);
+          } else {
+            this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+            this.loadData();
           }
 
-          this.networkService.getNetworksForAgency(this.agencyId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(networkIds => {
-              if (networkIds) {
-                this.networkId = networkIds[0];
-                console.log(this.networkId);
-              }
+        })
 
-              if (userType == UserType.CountryDirector) {
-                this.DashboardTypeUsed = DashboardType.director;
-              } else {
-                this.DashboardTypeUsed = DashboardType.default;
-              }
-              if (this.userType == UserType.PartnerUser) {
-                console.log("partner user")
-                this.agencyId = agencyId;
-                this.countryId = countryId;
-                this.loadDataForPartnerUser(agencyId, countryId);
-              } else {
-                this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-                this.loadData();
-              }
-
-            })
+      // })
 
 
-        });
+      // });
 
 
       PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
@@ -309,21 +316,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
-            x.task = action.task;
-            x.level = action.level;
+            if (action) {
+              x.task = action.task;
+              x.level = action.level;
+            }
           });
         }
 
         for (let x of this.actionsToday) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
-            x.task = action.task;
-            x.level = action.level;
+            if (action) {
+              x.task = action.task;
+              x.level = action.level;
+            }
           });
         }
         for (let x of this.actionsThisWeek) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
-            x.task = action.task;
-            x.level = action.level;
+            if (action) {
+              x.task = action.task;
+              x.level = action.level;
+            }
           });
         }
       });
@@ -377,20 +390,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
-      if (this.networkCountryId) {
-        this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
+      this.responsePlansForApprovalNetwork = Observable.of([])
+      this.responsePlansForApprovalNetworkLocal = Observable.of([])
+      if (this.networkMap) {
+        this.networkMap.forEach((networkCountryId, networkId) => {
+          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkCountryId, this.uid, true));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
+        })
       }
-      if (this.networkId) {
-        this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkId, this.uid, true);
-      }
+      // if (this.networkId) {
+      //   this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkId, this.uid, true);
+      // }
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
-      if (this.networkCountryId) {
-        this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkCountryId);
+      this.responsePlansForApprovalNetwork = Observable.of([])
+      this.responsePlansForApprovalNetworkLocal = Observable.of([])
+      if (this.networkMap) {
+        this.networkMap.forEach((networkCountryId, networkId) => {
+          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+        })
       }
-      if (this.networkId) {
-        this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
-      }
+      // if (this.networkId) {
+      //   this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
+      // }
     }
     if (this.responsePlansForApproval) {
       this.responsePlansForApproval
@@ -404,6 +427,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlansNetwork = plans
+          console.log(this.approvalPlansNetwork)
         });
     }
     if (this.responsePlansForApprovalNetworkLocal) {
@@ -573,16 +597,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.rejectRedAlert(this.countryId, alertId, this.uid);
   }
 
-  planReview(planId, isLocal) {
+  planReview(plan, isLocal) {
+    console.log(plan)
     this.router.navigate(["/dashboard/review-response-plan", isLocal ? {
-      "id": planId,
-      "networkCountryId": this.networkId,
-      "systemId":this.systemId
+      "id": plan.$key,
+      "networkCountryId": plan.networkCountryId,
+      "systemId": this.systemId
     } : this.networkCountryId ? {
-      "id": planId,
-      "networkCountryId": this.networkCountryId,
-      "systemId":this.systemId
-    } : {"id": planId}]);
+      "id": plan.$key,
+      "networkCountryId": plan.networkCountryId,
+      "systemId": this.systemId
+    } : {"id": plan.$key}]);
   }
 
   goToAgenciesInMyCountry() {

@@ -170,6 +170,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.networkCountryId = params["networkCountryId"];
         this.uid = params["uid"];
       }
+      if (params['isCHS']) {
+        this.filterType = 0;
+      }
       this.isViewing ? this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }

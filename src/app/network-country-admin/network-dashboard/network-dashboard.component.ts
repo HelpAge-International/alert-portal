@@ -138,6 +138,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         this.userType = params["userType"];
         this.networkId = params["networkId"];
         this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"]
       }
       this.isViewing ? this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
@@ -190,7 +191,12 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initViewAccess() {
+    this.DashboardTypeUsed = DashboardType.default
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    if (!this.networkViewValues) {
+      this.router.navigateByUrl("/dashboard")
+      return
+    }
     this.loadData();
 
     this.networkService.getNetworkModuleMatrix(this.networkId)

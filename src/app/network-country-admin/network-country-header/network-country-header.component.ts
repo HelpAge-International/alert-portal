@@ -73,7 +73,7 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
       this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
-      this.USER_TYPE = Constants.NETWORK_USER_PATHS[NetworkUserAccountType.NetworkCountryAdmin];
+      this.USER_TYPE = "administratorNetworkCountry";
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)

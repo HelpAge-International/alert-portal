@@ -405,7 +405,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   goToHome() {
-    this.router.navigateByUrl("/dashboard");
+    this.isViewingNetwork ? this.router.navigate(['/network-country/network-dashboard', this.storageService.get(Constants.NETWORK_VIEW_VALUES)]) : this.router.navigateByUrl("/dashboard");
   }
 
   clearNetworkLocalStorage() {

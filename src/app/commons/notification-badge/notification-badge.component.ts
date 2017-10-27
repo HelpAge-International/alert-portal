@@ -4,7 +4,7 @@ import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {CommonUtils} from "../../utils/CommonUtils";
 
 @Component({
@@ -13,6 +13,7 @@ import {CommonUtils} from "../../utils/CommonUtils";
   styleUrls: ['./notification-badge.component.css']
 })
 export class NotificationBadgeComponent implements OnInit, OnDestroy {
+
   private unreadMessages: MessageModel[];
 
   private _USER_TYPE: string;
@@ -22,9 +23,12 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
   private _networkId: string;
   private _networkCountryId: string;
 
+  private isViewing: boolean;
+
   @Input()
   set USER_TYPE(USER_TYPE: string) {
     this._USER_TYPE = USER_TYPE;
+    console.log(this._USER_TYPE)
     this.getUnreadMessages();
   }
 
@@ -62,11 +66,17 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
 
   constructor(private _notificationService: NotificationService,
               private af: AngularFire,
+              private route:ActivatedRoute,
               private router: Router) {
     this.unreadMessages = [];
   }
 
   ngOnInit() {
+    this.route.params.subscribe((params:Params) =>{
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+      }
+    })
   }
 
   ngOnDestroy() {

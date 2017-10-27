@@ -21,6 +21,7 @@ export class NetworkCountryMenuComponent implements OnInit {
   ngOnInit() {
     let obj = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
     if (obj) {
+      this.isViewing = true;
       this.networkViewModel = new NetworkViewModel(null, null, null, null, null, null, null, null);
       this.networkViewModel.mapFromObject(obj)
       this.networkViewValues = CommonUtils.buildNetworkViewValues(this.networkViewModel);

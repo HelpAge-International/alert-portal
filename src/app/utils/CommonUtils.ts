@@ -81,6 +81,9 @@ export class CommonUtils {
   }
 
   static buildNetworkViewValues(model: NetworkViewModel) {
+    if (!model) {
+      return null
+    }
     let values = {};
     values["systemId"] = model.systemId;
     values["agencyId"] = model.agencyId;

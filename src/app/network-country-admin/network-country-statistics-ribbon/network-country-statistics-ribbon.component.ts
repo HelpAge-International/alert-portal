@@ -197,7 +197,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
     this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(agencyCountryMap =>{
+      .subscribe(agencyCountryMap => {
         this.downloadThreshold(() => {
           this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
             this.initAlerts(this.networkCountryId, () => {
@@ -420,10 +420,10 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
       if (x.type == ActionType.chs) {
         if (!x.isArchived) {
           chsTotal++;
-          console.log(`chs total ${chsTotal}`)
+          // console.log(`chs total ${chsTotal}`)
           if (this.isActionCompleted(x)) {
             chsGreen++;
-            console.log(`chs completed: ${chsGreen}`)
+            // console.log(`chs completed: ${chsGreen}`)
           }
         }
       }
@@ -474,7 +474,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
   goToCHS() {
     if (this.userPermissions.minimumPreparedness) {
-      this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", {"isCHS": true}]) : this.router.navigate(["/network-country/network-country-mpa", {"isCHS": true}]);
+      this.networkViewValues ? this.router.navigate(["/network-country/network-country-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)]) : this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", {"isCHS": true}]) : this.router.navigate(["/network-country/network-country-mpa", {"isCHS": true}]);
     }
   }
 

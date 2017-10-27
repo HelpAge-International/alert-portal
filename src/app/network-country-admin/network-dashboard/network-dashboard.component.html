@@ -215,7 +215,7 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+                 [routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
                 {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
@@ -234,7 +234,7 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 routerLink="/network-country/network-risk-monitoring">
+                 [routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">
                 {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
@@ -253,7 +253,7 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+                 [routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
                 {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
@@ -272,9 +272,8 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 routerLink="/network-country/network-risk-monitoring">{{"GLOBAL.UPDATE"
-                |
-                translate}}
+                 [routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">
+                {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
           </div>
@@ -292,7 +291,7 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                 [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+                 [routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
                 {{"GLOBAL.UPDATE" | translate}}</a>
             </div>
           </div>
@@ -310,8 +309,8 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                 routerLink="/network-country/network-risk-monitoring">{{"GLOBAL.UPDATE"
-                | translate}}</a>
+                 [routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">
+                {{"GLOBAL.UPDATE" | translate}}</a>
             </div>
           </div>
         </div>
@@ -350,7 +349,7 @@
         <h3>{{"DASHBOARD.CALENDAR.SEASONAL_CALENDAR" | translate}}</h3>
         <div id="target2" class="timeline-tgt Spaced"></div>
         <a href="javascript:void(0)"
-           [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-calendar'] : ['/network-country/network-calendar']">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
+           [routerLink]="isViewing ? ['/network-country/network-calendar', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-calendar'] : ['/network-country/network-calendar']">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
           | translate}}</a>
       </div>
 

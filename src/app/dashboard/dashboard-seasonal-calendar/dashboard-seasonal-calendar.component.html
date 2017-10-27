@@ -6,19 +6,29 @@
   <app-local-network-header></app-local-network-header>
   <app-local-network-menu></app-local-network-menu>
 </ng-container>
-<ng-container *ngIf="isNetworkCountry">
+<ng-container *ngIf="isNetworkCountry && !isViewing">
   <app-network-country-header></app-network-country-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-container>
+<ng-container *ngIf="isNetworkCountry && isViewing">
+  <app-country-admin-header></app-country-admin-header>
   <app-network-country-menu></app-network-country-menu>
 </ng-container>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" [routerLink]="isNetworkCountry ? ['/network-country/network-dashboard'] : isLocalNetworkAdmin ? ['/network/local-network-dashboard'] : ['/dashboard']">{{"GLOBAL.HOME" | translate}}</div>
+    <div class="Back--button"
+         [routerLink]="isViewing ? ['/network-country/network-dashboard', networkViewValues] : isNetworkCountry ? ['/network-country/network-dashboard'] : isLocalNetworkAdmin ? ['/network/local-network-dashboard'] : ['/dashboard']">
+      {{"GLOBAL.HOME" | translate}}
+    </div>
     <div class="Header-title__wrap">
-      <h1>Seasonal calendar <a class="btn btn-outline-primary" (click)="addCalendar()">{{"DASHBOARD.CALENDAR.ADD_TO_CALENDAR" | translate}}</a></h1>
+      <h1>Seasonal calendar <a class="btn btn-outline-primary" (click)="addCalendar()">{{"DASHBOARD.CALENDAR.ADD_TO_CALENDAR"
+        | translate}}</a></h1>
       <div class="Header-title__wrap__Inline-links">
-        <a href="javascript:void(0)" class="{{!currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setWeekView()">{{"DASHBOARD.CALENDAR.VIEW_AS_WEEKS" | translate}}</a> |
-        <a href="javascript:void(0)" class="{{currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setMonthView()">{{"DASHBOARD.CALENDAR.VIEW_AS_MONTHS" | translate}}</a>
+        <a href="javascript:void(0)" class="{{!currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setWeekView()">{{"DASHBOARD.CALENDAR.VIEW_AS_WEEKS"
+          | translate}}</a> |
+        <a href="javascript:void(0)" class="{{currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setMonthView()">{{"DASHBOARD.CALENDAR.VIEW_AS_MONTHS"
+          | translate}}</a>
       </div>
     </div>
 
@@ -31,8 +41,10 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLabel" *ngIf="!edit"><b>{{"DASHBOARD.CALENDAR.ADD_SEASON" | translate}}</b></h5>
-        <h5 class="modal-title" id="exampleModalLabel" *ngIf="edit"><b>{{"DASHBOARD.CALENDAR.EDIT_SEASON" | translate}}</b></h5>
+        <h5 class="modal-title" id="exampleModalLabel" *ngIf="!edit"><b>{{"DASHBOARD.CALENDAR.ADD_SEASON" |
+          translate}}</b></h5>
+        <h5 class="modal-title" id="exampleModalLabel" *ngIf="edit"><b>{{"DASHBOARD.CALENDAR.EDIT_SEASON" |
+          translate}}</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -43,7 +55,8 @@
           <div class="col-sm-6">
             <div class="form-group">
               <label for="S-name">{{"DASHBOARD.CALENDAR.SEASON_NAME" | translate}}</label>
-              <input type="text" [(ngModel)]="addSeasonName" class="form-control form-control-danger" id="S-name" placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
+              <input type="text" [(ngModel)]="addSeasonName" class="form-control form-control-danger" id="S-name"
+                     placeholder='{{"GLOBAL.PLEASE_ENTER" | translate}}'>
             </div>
           </div>
         </div>
@@ -51,15 +64,21 @@
           <div class="col-sm-6">
             <label>{{"RISK_MONITORING.ADD_HAZARD.START_DATE" | translate}}:</label>
             <div class="form-group">
-              <material-datepicker id="S-date" placeholder="{{addSeasonStart ? (addSeasonStart | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
-                                   dateFormat="DD-MM-YYYY" (onSelect)="selectStartDate(addSeasonStartDate)" [(date)]="addSeasonStartDate"></material-datepicker>
+              <material-datepicker id="S-date"
+                                   placeholder="{{addSeasonStart ? (addSeasonStart | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                                   class="form-control"
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectStartDate(addSeasonStartDate)"
+                                   [(date)]="addSeasonStartDate"></material-datepicker>
             </div>
           </div>
           <div class="col-sm-6">
             <label>{{"DASHBOARD.CALENDAR.END_DATE" | translate}}:</label>
             <div class="form-group">
-              <material-datepicker id="E-date" placeholder="{{addSeasonEnd ? (addSeasonEnd | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
-                                   dateFormat="DD-MM-YYYY" (onSelect)="selectEndDate(addSeasonEndDate)" [(date)]="addSeasonEndDate"></material-datepicker>
+              <material-datepicker id="E-date"
+                                   placeholder="{{addSeasonEnd ? (addSeasonEnd | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                                   class="form-control"
+                                   dateFormat="DD-MM-YYYY" (onSelect)="selectEndDate(addSeasonEndDate)"
+                                   [(date)]="addSeasonEndDate"></material-datepicker>
             </div>
           </div>
         </div>
@@ -68,17 +87,25 @@
             <label>{{"DASHBOARD.CALENDAR.COLOUR" | translate}}:</label>
           </div>
           <div class="col-sm-12">
-            <div *ngFor="let x of colours" class="{{x.cssName}} {{x.colorCode == addSeasonColour ? 'Active' : ''}}" (click)="setCurrentColour(x.colorCode)"></div>
+            <div *ngFor="let x of colours" class="{{x.cssName}} {{x.colorCode == addSeasonColour ? 'Active' : ''}}"
+                 (click)="setCurrentColour(x.colorCode)"></div>
           </div>
         </div>
 
       </div>
       <div class="modal-footer">
 
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
-        <button type="button" (click)="saveCalendarInfo()" class="btn btn-success" data-dismiss="modal" *ngIf="!edit">{{"SAVE" | translate}}</button>
-        <button type="button" (click)="editCalendarInfo()" class="btn btn-success" data-dismiss="modal" *ngIf="edit">{{"SAVE" | translate}}</button>
-        <button type="button" (click)="deleteSeason()" class="btn btn-danger" data-dismiss="modal" *ngIf="edit">{{"DELETE" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}
+        </button>
+        <button type="button" (click)="saveCalendarInfo()" class="btn btn-success" data-dismiss="modal" *ngIf="!edit">
+          {{"SAVE" | translate}}
+        </button>
+        <button type="button" (click)="editCalendarInfo()" class="btn btn-success" data-dismiss="modal" *ngIf="edit">
+          {{"SAVE" | translate}}
+        </button>
+        <button type="button" (click)="deleteSeason()" class="btn btn-danger" data-dismiss="modal" *ngIf="edit">
+          {{"DELETE" | translate}}
+        </button>
 
       </div>
     </div>
