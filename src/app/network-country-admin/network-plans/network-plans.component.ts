@@ -476,7 +476,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         });
     } else {
       let networkViewObj = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
-      networkViewObj["id"] = this.responsePlanToEdit.$key
+      if (networkViewObj) {
+        networkViewObj["id"] = this.responsePlanToEdit.$key
+      }
       this.router.navigate(['network-country/network-plans/create-edit-network-plan', this.isViewing ? networkViewObj : this.isLocalNetworkAdmin ? {
         id: this.responsePlanToEdit.$key,
         "isLocalNetworkAdmin": this.isLocalNetworkAdmin

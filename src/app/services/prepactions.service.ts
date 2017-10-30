@@ -22,6 +22,7 @@ export class PrepActionService {
 
   // Actions: Used for list
   public actions: PreparednessAction[];
+  public actionsNetwork: PreparednessAction[];
   private ranClockInitialiser: boolean = false;
   private defaultClockType: number;
   private defaultClockValue: number;
@@ -30,6 +31,7 @@ export class PrepActionService {
 
   constructor() {
     this.actions = [];
+    this.actionsNetwork = [];
   }
 
   /**
@@ -117,6 +119,26 @@ export class PrepActionService {
     });
   }
 
+  public initActionsWithInfoAllNetworksInCountry(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
+                                                 countryId: string, agencyId: string, systemId: string, networkMap: Map<string, string>) {
+    // this.uid = uid;
+    // this.ngUnsubscribe = ngUnsubscribe;
+    // this.isMPA = isMPA;
+    // this.countryId = countryId;
+    // this.agencyId = agencyId;
+    // this.systemAdminId = systemId;
+    // this.getDefaultClockSettings(af, agencyId, countryId, () => {
+    console.log(networkMap)
+    networkMap.forEach((networkCountryId, networkId) => {
+      // if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+      //   this.initNetwork(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+      // }
+      this.initNetwork(af, "actionMandated", networkId, isMPA, PrepSourceTypes.AGENCY, countryId, networkId, networkCountryId);
+      this.initNetwork(af, "action", networkCountryId, isMPA, PrepSourceTypes.COUNTRY, countryId, networkId, networkCountryId);
+    })
+    // });
+  }
+
   public initActionsWithInfoNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
                                          agencyId: string, systemId: string) {
     this.uid = uid;
@@ -184,6 +206,7 @@ export class PrepActionService {
       .subscribe((snap) => {
         this.defaultClockValue = (+(snap.val().preparedness.value));
         this.defaultClockType = (+(snap.val().preparedness.durationType));
+        console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
         if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
           defaultClockSettingsAquired();
           this.ranClockInitialiser = true;
@@ -251,6 +274,29 @@ export class PrepActionService {
           }
           else if (this.findAction(snapshot.key) != null) {
             this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+          }
+        });
+      });
+  }
+
+  private initNetwork(af: AngularFire, path: string, userId: string, isMPA: boolean, source: PrepSourceTypes, countryId, networkId, networkCountryId, updated?: (action: PreparednessAction) => void) {
+    af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          if (snapshot.val() && snapshot.val().createdByCountryId && snapshot.val().createdByCountryId == countryId) {
+            if (isMPA == null) {
+              this.updateActionNetwork(af, snapshot.key, snapshot.val(), userId, source, networkId, networkCountryId, updated);
+            }
+            else if (isMPA && snapshot.val().level == ActionLevel.MPA) {
+              this.updateActionNetwork(af, snapshot.key, snapshot.val(), userId, source, networkId, networkCountryId, updated);
+            }
+            else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
+              this.updateActionNetwork(af, snapshot.key, snapshot.val(), userId, source, networkId, networkCountryId, updated);
+            }
+            else if (this.findActionNetwork(snapshot.key) != null) {
+              this.updateActionNetwork(af, snapshot.key, snapshot.val(), userId, source, networkId, networkCountryId, updated);
+            }
           }
         });
       });
@@ -386,6 +432,120 @@ export class PrepActionService {
 
   }
 
+  private updateActionNetwork(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, networkId, networkCountryId, updated: (action: PreparednessAction) => void) {
+    console.log(action)
+    let run: boolean = this.findActionNetwork(id) == null;
+    let i = this.findOrCreateIndexNetwork(id, whichUser, source, networkId, networkCountryId);
+    let applyCustom = false; // Fixes bug with frequencyValue and frequencyBase
+    if (action.hasOwnProperty('asignee')) this.actionsNetwork[i].asignee = action.asignee;
+    else if (action.type == ActionType.custom) this.actionsNetwork[i].asignee = null;
+    if (action.hasOwnProperty('dueDate')) this.actionsNetwork[i].dueDate = action.dueDate;
+    else if (action.type == ActionType.custom) this.actionsNetwork[i].dueDate = null;
+    if (action.hasOwnProperty('assignHazard')) {
+      this.actionsNetwork[i].assignedHazards = [];
+      for (const x of action.assignHazard) {
+        this.actionsNetwork[i].assignedHazards.push(x);
+      }
+    }
+    // else {
+    //   this.actions[i].assignedHazards = null;
+    // }
+    if (action.hasOwnProperty('type')) {
+      this.actionsNetwork[i].type = action.type;
+      /** WORKAROUND LOGIC FOR APA'S ON MANDATED PREP ACTIONS
+       * - All Hazards are underneath it **/
+      if (action.type == ActionType.mandated && this.isMPA) {
+        // Add all of them
+        this.actionsNetwork[i].assignedHazards = [];
+        for (const x in HazardScenario) {
+          this.actionsNetwork[i].assignedHazards.push(+HazardScenario[x]);
+        }
+      }
+    }
+    // else {
+    //   this.actions[i].type = null;
+    // }
+    if (action.hasOwnProperty('createdByAgencyId')) this.actionsNetwork[i].createdByAgencyId = action.createdByAgencyId;
+    else if (action.type == ActionType.custom) action.createdByAgencyId = null;
+    if (action.hasOwnProperty('createdByCountryId')) this.actionsNetwork[i].createdByCountryId = action.createdByCountryId;
+    else if (action.type == ActionType.custom) action.createdByCountryId = null;
+
+    if (action.hasOwnProperty('updatedAt')) this.actionsNetwork[i].updatedAt = action.updatedAt;
+    else if (action.type == ActionType.custom) action.isArchived = null;
+    if (action.hasOwnProperty('isArchived')) this.actionsNetwork[i].isArchived = action.isArchived;
+    else if (action.type == ActionType.custom) action.isArchived = null;
+    if (action.hasOwnProperty('budget')) this.actionsNetwork[i].budget = action.budget;
+    else if (action.type == ActionType.custom) action.budget = null;
+    if (action.hasOwnProperty('department')) this.actionsNetwork[i].department = action.department; // else action.department = null;
+    if (action.hasOwnProperty('level')) this.actionsNetwork[i].level = action.level; // else action.level = null;
+    if (action.hasOwnProperty('calculatedIsComplete')) this.actionsNetwork[i].isComplete = action.calculatedIsComplete;
+    else if (action.type == ActionType.custom) action.calculatedIsComplete = null;
+    if (action.hasOwnProperty('isCompleteAt')) this.actionsNetwork[i].isCompleteAt = action.isCompleteAt;
+    else if (action.type == ActionType.custom) action.isCompleteAt = null;
+    if (action.hasOwnProperty('isComplete')) this.actionsNetwork[i].isComplete = action.isComplete;
+    else if (action.type == ActionType.custom) action.isComplete = null;
+    if (action.hasOwnProperty('requireDoc')) this.actionsNetwork[i].requireDoc = action.requireDoc;
+    else if (action.type == ActionType.custom) action.requireDoc = null;
+    if (action.hasOwnProperty('task')) this.actionsNetwork[i].task = action.task; // else action.task = null;
+    if (action.hasOwnProperty('frequencyBase')) {
+      this.actionsNetwork[i].frequencyBase = action.frequencyBase;
+      applyCustom = true;
+    }
+    else action.frequencyBase = null;
+    if (action.hasOwnProperty('frequencyValue')) {
+      this.actionsNetwork[i].frequencyValue = action.frequencyValue;
+      applyCustom = true;
+    }
+    else action.frequencyValue = null;
+    this.initNotes(af, id, run);
+
+    // Document deletion check
+    if (action.hasOwnProperty('documents')) {
+      let docsToRemove: string[] = [];
+      for (let x of this.actionsNetwork[i].documents) {
+        let docIsGoneFromOnline: boolean = true;
+        for (let doc in action.documents) {
+          if (doc == x.documentId) {
+            docIsGoneFromOnline = false;
+          }
+        }
+        if (docIsGoneFromOnline) {
+          this.actionsNetwork[i].removeDoc(x.documentId);
+          docsToRemove.push(x.documentId);
+        }
+      }
+      for (let doc in action.documents) {
+        if (docsToRemove.indexOf(doc) <= -1)
+          this.initDoc(af, whichUser, doc, this.actionsNetwork[i].id);
+      }
+    }
+    // else {
+    //   this.actions[i].documents = [];
+    // }
+
+    // Clock settings
+    if (applyCustom) {
+      this.actionsNetwork[i].setComputedClockSetting(+this.actionsNetwork[i].frequencyValue, +this.actionsNetwork[i].frequencyBase);
+    }
+    else {
+      this.actionsNetwork[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
+    }
+
+
+    // Optional notifier method
+    if (updated != null) {
+      updated(this.actionsNetwork[i]);
+    }
+
+    // console.log("Updating!");
+    // console.log(this.actions[i]);
+
+    // Subscriber method
+    if (this.updater != null) {
+      this.updater();
+    }
+  }
+
   public addUpdater(func: () => void) {
     this.updater = func;
   }
@@ -418,8 +578,41 @@ export class PrepActionService {
     return returnI;
   }
 
+  private findOrCreateIndexNetwork(id: string, uid: string, source: PrepSourceTypes, networkId: string, networkCountryId: string) {
+    let returnI = -1;
+    for (let i = 0; i < this.actionsNetwork.length; i++) {
+      if (this.actionsNetwork[i].id == id) {
+        returnI = i;
+        i = this.actionsNetwork.length;
+      }
+    }
+    if (returnI == -1) {
+      let newPrep: PreparednessAction = new PreparednessAction();
+      newPrep.id = id;
+      newPrep.networkId = networkId;
+      newPrep.networkCountryId = networkCountryId;
+      this.actionsNetwork.push(newPrep);
+      returnI = this.actionsNetwork.length - 1;
+    }
+    if (source == PrepSourceTypes.SYSTEM)
+      this.actionsNetwork[returnI].systemUid = uid;
+    if (source == PrepSourceTypes.AGENCY)
+      this.actionsNetwork[returnI].agencyUid = uid;
+    if (source == PrepSourceTypes.COUNTRY)
+      this.actionsNetwork[returnI].countryUid = uid;
+    return returnI;
+  }
+
   public findAction(id: string) {
     for (let x of this.actions) {
+      if (x.id == id)
+        return x;
+    }
+    return null;
+  }
+
+  public findActionNetwork(id: string) {
+    for (let x of this.actionsNetwork) {
       if (x.id == id)
         return x;
     }
@@ -522,6 +715,8 @@ export class PreparednessAction {
   public documents: any[];
   public createdByAgencyId: string;
   public createdByCountryId: string;
+  public networkId: string;
+  public networkCountryId: string;
 
   public computedClockSetting: number;
 

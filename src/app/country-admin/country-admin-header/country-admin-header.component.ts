@@ -17,6 +17,7 @@ import {ModelNetwork} from "../../model/network.model";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {NetworkViewModel} from "./network-view.model";
 import {LocalStorageService} from "angular-2-local-storage";
+import {Location} from "@angular/common";
 
 declare const jQuery: any;
 
@@ -87,6 +88,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               private networkService: NetworkService,
               private storageService: LocalStorageService,
               private userService: UserService,
+              private locationService: Location,
               private http: Http,
               private translate: TranslateService) {
 
@@ -209,6 +211,11 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.locationService.subscribe(state => {
+      if (!state.url.includes("isViewing=true")) {
+        this.selectAgency()
+      }
+    });
 
   }
 

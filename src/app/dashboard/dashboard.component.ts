@@ -16,6 +16,9 @@ import {
 } from "./dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import {NetworkService} from "../services/network.service";
+import {CommonUtils} from "../utils/CommonUtils";
+import {LocalStorageService} from "angular-2-local-storage";
+import {NetworkViewModel} from "../country-admin/country-admin-header/network-view.model";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -44,9 +47,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private actionsOverdue = [];
   private actionsToday = [];
   private actionsThisWeek = [];
+  private actionsOverdueNetwork = [];
+  private actionsTodayNetwork = [];
+  private actionsThisWeekNetwork = [];
   private indicatorsOverdue = [];
   private indicatorsToday = [];
   private indicatorsThisWeek = [];
+  private indicatorsOverdueNetwork = [];
+  private indicatorsTodayNetwork = [];
+  private indicatorsThisWeekNetwork = [];
 
   private Countries = Countries;
   private CountriesList = Constants.COUNTRIES;
@@ -85,8 +94,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
-  private networkCountryId: string;
-  private networkId: string;
+  // private networkCountryId: string;
+  // private networkId: string;
   private networkMap: Map<string, string>;
 
   constructor(private pageControl: PageControlService,
@@ -95,6 +104,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
               private router: Router,
               private userService: UserService,
               private networkService: NetworkService,
+              private storageService: LocalStorageService,
               private actionService: ActionsService) {
   }
 
@@ -127,7 +137,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(networkMap => {
           this.networkMap = networkMap
-
+          console.log(this.networkMap)
           if (userType == UserType.CountryDirector) {
             this.DashboardTypeUsed = DashboardType.director;
           } else {
@@ -341,6 +351,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       });
 
+    this.initNetworkActions(startOfToday, endOfToday, this.networkMap)
+
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
@@ -386,7 +398,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // console.log('Count ---- ' + this.responseType.length)
       });
 
-    //TODO update here to get all plan to approval from network
+    this.initNetworkIndicators(startOfToday, endOfToday, this.networkMap)
+
+    // plan approval
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
@@ -457,16 +471,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
   }
 
+  private updateTaskDataForActionsNetwork(actionId: string, action: any, networkCountryId: string, fun: (action) => void) {
+    let node: string = "";
+    let typeId: string = "";
+    if (action.type == ActionType.mandated) {
+      node = "actionMandated";
+      let map = CommonUtils.reverseMap(this.networkMap)
+      typeId = map.get(networkCountryId);
+    }
+    if (action.type == ActionType.chs) {
+      node = "actionCHS";
+      typeId = this.systemId;
+    }
+    this.af.database.object(Constants.APP_STATUS + "/" + node + "/" + typeId + "/" + actionId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        fun(snap.val());
+      });
+  }
+
   private getCountryData() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((location: any) => {
-          this.countryLocation = location.$value;
-          res(true);
-        });
-    });
-    return promise;
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((location: any) => {
+        this.countryLocation = location.$value;
+      });
   }
 
   private getAlerts() {
@@ -603,7 +632,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       "id": plan.$key,
       "networkCountryId": plan.networkCountryId,
       "systemId": this.systemId
-    } : this.networkCountryId ? {
+    } : plan.networkCountryId ? {
       "id": plan.$key,
       "networkCountryId": plan.networkCountryId,
       "systemId": this.systemId
@@ -628,8 +657,128 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
+  navigateToNetworkActions(action) {
+    console.log(action)
+    let reverseMap = CommonUtils.reverseMap(this.networkMap);
+    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
+    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, model.networkId);
+    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, model.networkCountryId);
+    this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
+    action.level == ActionLevel.MPA ?
+      this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+      :
+      this.router.navigate(['/network-country/network-country-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+  }
+
+  navigateToNetworkIndicators(indicator) {
+    console.log(indicator)
+  }
+
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
 
+  private initNetworkActions(startOfToday: number, endOfToday: number, networkMap: Map<string, string>) {
+    this.actionsOverdueNetwork = [];
+    this.actionsTodayNetwork = [];
+    this.actionsThisWeekNetwork = [];
+    CommonUtils.convertMapToValuesInArray(networkMap).forEach(networkCountryId => {
+      this.actionService.getActionsDueInWeek(networkCountryId, this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(actions => {
+
+          // Display APA only if there is a red alert
+          actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
+
+
+          this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
+          this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
+          this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
+
+          for (let x of this.actionsOverdueNetwork) {
+            this.updateTaskDataForActionsNetwork(x.$key, x, networkCountryId, (action) => {
+              if (action) {
+                x.task = action.task;
+                x.level = action.level;
+              }
+            });
+            console.log(this.actionsOverdueNetwork)
+          }
+
+          for (let x of this.actionsTodayNetwork) {
+            this.updateTaskDataForActionsNetwork(x.$key, x, networkCountryId, (action) => {
+              if (action) {
+                x.task = action.task;
+                x.level = action.level;
+              }
+            });
+            console.log(this.actionsTodayNetwork)
+          }
+          for (let x of this.actionsThisWeekNetwork) {
+            this.updateTaskDataForActionsNetwork(x.$key, x, networkCountryId, (action) => {
+              if (action) {
+                x.task = action.task;
+                x.level = action.level;
+              }
+            });
+            console.log(this.actionsThisWeekNetwork)
+          }
+        });
+    })
+  }
+
+  private initNetworkIndicators(startOfToday, endOfToday, networkMap: Map<string, string>) {
+    this.indicatorsOverdueNetwork = [];
+    this.indicatorsThisWeekNetwork = [];
+    this.indicatorsTodayNetwork = [];
+    CommonUtils.convertMapToValuesInArray(networkMap).forEach(networkCountryId => {
+      this.actionService.getIndicatorsDueInWeek(networkCountryId, this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(indicators => {
+          let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
+          this.indicatorsOverdueNetwork = this.indicatorsOverdueNetwork.concat(overdueIndicators);
+          let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
+          this.indicatorsTodayNetwork = this.indicatorsTodayNetwork.concat(dayIndicators);
+          let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
+          this.indicatorsThisWeekNetwork = this.indicatorsThisWeekNetwork.concat(weekIndicators);
+          if (overdueIndicators.length > 0) {
+            overdueIndicators.forEach(indicator => {
+              if (this.actionService.isExist(indicator.$key, this.indicatorsOverdueNetwork)) {
+                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsOverdueNetwork);
+                if (index != -1) {
+                  this.indicatorsOverdueNetwork[index] = indicator;
+                }
+              } else {
+                this.indicatorsOverdueNetwork.push(indicator);
+              }
+            });
+          }
+          if (dayIndicators.length > 0) {
+            dayIndicators.forEach(indicator => {
+              if (this.actionService.isExist(indicator.$key, this.indicatorsTodayNetwork)) {
+                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsTodayNetwork);
+                if (index != -1) {
+                  this.indicatorsTodayNetwork[index] = indicator;
+                }
+              } else {
+                this.indicatorsTodayNetwork.push(indicator);
+              }
+            });
+          }
+          if (weekIndicators.length > 0) {
+            weekIndicators.forEach(indicator => {
+              if (this.actionService.isExist(indicator.$key, this.indicatorsThisWeekNetwork)) {
+                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsThisWeekNetwork);
+                if (index != -1) {
+                  this.indicatorsThisWeekNetwork[index] = indicator;
+                }
+              } else {
+                this.indicatorsThisWeekNetwork.push(indicator);
+              }
+            });
+          }
+          // console.log('Count ---- ' + this.responseType.length)
+        });
+    })
+  }
 }

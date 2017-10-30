@@ -47,6 +47,7 @@ export class ActionsService {
         let filteredActions = [];
         actions.forEach(action => {
           if (action.asignee === uid && !action.isComplete) {
+            action["countryId"] = countryId
             filteredActions.push(action);
           }
         });
@@ -72,6 +73,7 @@ export class ActionsService {
         let filteredIndicators = [];
         indicators.forEach(indicator => {
           if (indicator.assignee === uid) {
+            indicator["countryId"] = countryId;
             filteredIndicators.push(indicator);
           }
         });

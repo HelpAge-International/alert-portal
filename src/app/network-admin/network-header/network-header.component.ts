@@ -51,6 +51,7 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (auth, oldUserType) => {
       this.uid = auth.uid;
       this.USER_TYPE = Constants.NETWORK_USER_PATHS[NetworkUserAccountType.NetworkAdmin];

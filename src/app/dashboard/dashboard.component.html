@@ -410,7 +410,10 @@
     <!--empty rubber for default dashboard not partner-->
     <div *ngIf="userType!=UserType.PartnerUser">
       <div
-        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default && approvalPlans.length == 0"
+        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 &&
+         actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default &&
+          approvalPlans.length == 0 && actionsOverdueNetwork.length == 0 && actionsThisWeekNetwork.length == 0 && actionsTodayNetwork.length == 0 &&
+          indicatorsThisWeekNetwork.length == 0 && indicatorsTodayNetwork.length == 0 && indicatorsOverdueNetwork.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
         <div class="My-Tasks container-fluid">
@@ -562,7 +565,10 @@
 
       <!--normal users-->
       <div
-        *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0">
+        *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 ||
+         indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ||
+          actionsOverdueNetwork.length>0 || actionsTodayNetwork.length>0 || actionsThisWeekNetwork.length>0 ||
+          indicatorsOverdueNetwork.length > 0 || indicatorsThisWeekNetwork.length > 0 || indicatorsTodayNetwork.length > 0">
 
         <div *ngFor="let action of actionsOverdue">
           <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
@@ -576,6 +582,25 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE"
+                |
+                translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div *ngFor="let action of actionsOverdueNetwork">
+          <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
+              <p>{{getActionTitle(action)}}<strong> {{action.dueDate | date:'mediumDate'}}</strong>.<br/>
+                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkActions(action)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -602,6 +627,26 @@
           </div>
         </div>
 
+        <div *ngFor="let indicator of indicatorsOverdueNetwork">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{indicator.dueDate | date:'mediumDate'}}</strong>.<br/>
+                <span>{{indicator.name}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block"
+                 (click)="navigateToNetworkIndicators(indicator)">{{"GLOBAL.UPDATE"
+                |
+                translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div *ngFor="let action of actionsToday">
           <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
             <div class="col-md-1">
@@ -614,6 +659,25 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE"
+                |
+                translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div *ngFor="let action of actionsTodayNetwork">
+          <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
+              <p>{{getActionTitle(action)}}<strong> {{"TODAY" | translate}}</strong>.<br/>
+                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkActions(action)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -640,6 +704,26 @@
           </div>
         </div>
 
+        <div *ngFor="let indicator of indicatorsTodayNetwork">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{"TODAY" | translate}}</strong>.<br/>
+                <span>{{indicator.name}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block"
+                 (click)="navigateToNetworkIndicators(indicator)">{{"GLOBAL.UPDATE"
+                |
+                translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div *ngFor="let action of actionsThisWeek">
           <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
             <div class="col-md-1">
@@ -658,6 +742,24 @@
           </div>
         </div>
 
+        <div *ngFor="let action of actionsThisWeekNetwork">
+          <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
+              <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.<br/>
+                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToNetworkActions(action)">{{"GLOBAL.UPDATE"
+                |
+                translate}}</a>
+            </div>
+          </div>
+        </div>
+
         <div *ngFor="let indicator of indicatorsThisWeek">
           <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
             <div class="col-md-1">
@@ -670,6 +772,24 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+                | translate}}</a>
+            </div>
+          </div>
+        </div>
+
+        <div *ngFor="let indicator of indicatorsThisWeekNetwork">
+          <div *ngIf="shouldShow(indicator.level, indicator.action)" class="row Spaced">
+            <div class="col-md-1">
+              <i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i>
+            </div>
+            <div class="col-md-8">
+              <p>{{getIndicatorName(indicator)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.<br/>
+                <span>{{indicator?.name}}</span>
+              </p>
+            </div>
+            <div class="col-md-3">
+              <a href="javascript:void(0)" class="btn btn-primary btn-block"
+                 (click)="navigateToNetworkIndicators(indicator)">{{"GLOBAL.UPDATE"
                 | translate}}</a>
             </div>
           </div>

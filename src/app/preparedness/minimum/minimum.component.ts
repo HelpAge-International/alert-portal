@@ -16,7 +16,10 @@ import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 import * as firebase from "firebase";
 import {UserService} from "../../services/user.service";
-import {AgencyModulesEnabled, CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
+import {
+  AgencyModulesEnabled, CountryPermissionsMatrix, NetworkModulesEnabledModel,
+  PageControlService
+} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
@@ -32,6 +35,8 @@ import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {SettingsService} from "../../services/settings.service";
 import {WindowRefService} from "../../services/window-ref.service";
+import {NetworkService} from "../../services/network.service";
+import {ModelNetwork} from "../../model/network.model";
 
 declare var jQuery: any;
 
@@ -69,6 +74,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
+  private CURRENT_USERS_NETWORK: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
   private actionLevelEnum = ActionLevel;
 
@@ -115,6 +121,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private privacy: ModelAgencyPrivacy;
   private userAgencyId: string;
 
+  //network
+  private networkModuleMap = new Map<string, NetworkModulesEnabledModel>();
+  private networkModelMap = new Map<string, ModelNetwork>();
+
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               protected af: AngularFire,
@@ -125,6 +135,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               protected agencyService: AgencyService,
               protected countryService: SettingsService,
               protected notificationService: NotificationService,
+              private networkService: NetworkService,
               private windowService: WindowRefService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
@@ -204,6 +215,29 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
           // Currency
           this.calculateCurrency();
+
+          //network
+          if (!this.isViewing) {
+            this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(networkMap => {
+                console.log(networkMap)
+                networkMap.forEach((networkCountryId, networkId) => {
+                  this.networkService.getNetworkModuleMatrix(networkId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(matrix => {
+                      this.networkModuleMap.set(networkId, matrix)
+                    })
+
+                  this.networkService.getNetworkDetail(networkId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(network => this.networkModelMap.set(networkId, network))
+                })
+
+                this.prepActionService.initActionsWithInfoAllNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, true, this.countryId, this.agencyId, this.systemAdminId, networkMap)
+
+              })
+          }
         });
 
       });
@@ -279,6 +313,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)

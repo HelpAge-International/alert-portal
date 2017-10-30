@@ -730,10 +730,10 @@ export class NetworkService {
   mapNetworkWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
       .map(networks => {
-       let map = new Map<string,string>();
-       networks.forEach(network =>{
-         map.set(network.$key, network.networkCountryId)
-       })
+        let map = new Map<string, string>();
+        networks.forEach(network => {
+          map.set(network.$key, network.networkCountryId)
+        })
         return map
       })
   }
@@ -779,13 +779,13 @@ export class NetworkService {
   }
 
 
-  getAgencyCountryOfficesByNetworkCountry(networkCountryId: string, networkId: string){
-    var countryOfficeAgencyMap = new Map<string,string>()
-    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
-      .map( agencies => {
-        agencies.forEach( agency => {
-          Object.keys(agency).forEach(function(key) {
-            if(agency[key].isApproved == true){
+  getAgencyCountryOfficesByNetworkCountry(networkCountryId: string, networkId: string) {
+    let countryOfficeAgencyMap = new Map<string, string>()
+    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+      .map(agencies => {
+        agencies.forEach(agency => {
+          Object.keys(agency).forEach(function (key) {
+            if (agency[key].isApproved == true) {
               countryOfficeAgencyMap.set(agency.$key, key)
             }
           });
@@ -794,11 +794,10 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountryAgencies(networkId, networkCountryId){
-    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+  getNetworkCountryAgencies(networkId, networkCountryId) {
+    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
 
   }
-
 
 
 }
