@@ -93,8 +93,6 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
       console.log(params)
         if(this.isViewing) {
-          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-            this.uid = user.uid;
 
             if (params['id']) {
               this.isNetworkCountry ? this.getCoordinationForNetworkCountry(params) : this.getCoordinationForLocalNetworkAdmin(params);
@@ -102,7 +100,7 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
             }
 
             this.isNetworkCountry ? this.getAgenciesForNetworkCountry() : this.getAgenciesForLocalNetworkAdmin();
-          })
+
         } else {
 
           this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {

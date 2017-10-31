@@ -265,7 +265,8 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
             isNetworkCountry: true
           } : {id: coordinationArrangementId}], {skipLocationChange: true});
       } else {
-        this.router.navigate(['/network/local-network-office-profile/coordination/add-edit', this.isNetworkCountry ? {isNetworkCountry: true} : null]);
+        console.log()
+        this.router.navigate(['/network/local-network-office-profile/coordination/add-edit', this.isNetworkCountry ? {isNetworkCountry: true} : {}]);
       }
     }
   }
