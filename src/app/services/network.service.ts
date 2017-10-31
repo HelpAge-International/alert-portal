@@ -730,10 +730,11 @@ export class NetworkService {
   mapNetworkWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
       .map(networks => {
-        let map = new Map<string, string>();
-        networks.forEach(network => {
-          map.set(network.$key, network.networkCountryId)
-        })
+       let map = new Map<string,string>();
+       networks.forEach(network =>{
+         console.log(network[network.$key])
+         map.set(network.$key, network.networkCountryId)
+       })
         return map
       })
   }
@@ -794,10 +795,11 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountryAgencies(networkId, networkCountryId) {
-    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+  getNetworkCountryAgencies(networkId, networkCountryId){
+    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
 
   }
+
 
 
 }

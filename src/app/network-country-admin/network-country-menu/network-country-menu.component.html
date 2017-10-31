@@ -34,28 +34,28 @@
       <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE"
         | translate}}</a>
       <div class="dropdown-menu">
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-programme">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-programme', networkViewValues] : ['/network-country/network-country-office-profile-programme']">
           Programme
         </a>
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-office-capacity">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-office-capacity', networkViewValues] : ['/network-country/network-country-office-profile-office-capacity']">
           Office Capacity
         </a>
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-partners">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-partners', networkViewValues] : ['/network-country/network-country-office-profile-partners']">
           Partners
         </a>
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-equipment">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-equipment', networkViewValues] : ['/network-country/network-country-office-profile-equipment']">
           Equipment
         </a>
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-coordination">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-coordination', networkViewValues] : ['/network-country/network-country-office-profile-coordination']">
           Coordination
         </a>
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-stock-capacity">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-stock-capacity', networkViewValues] : ['/network-country/network-country-office-profile-stock-capacity']">
           Stock Capacity
         </a>
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-documents">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-documents', networkViewValues] : ['/network-country/network-country-office-profile-documents']">
           Documents
         </a>
-        <a class="dropdown-item" routerLink="/network-country/network-country-office-profile-contacts">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-contacts', networkViewValues] : ['/network-country/network-country-office-profile-contacts']">
           Contacts
         </a>
       </div>

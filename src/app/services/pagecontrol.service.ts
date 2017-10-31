@@ -192,7 +192,9 @@ export class PageControlService {
     "response-plans*",
     "country-admin*",
     "new-user-password",
-    "export-proposal*"
+    "export-proposal*",
+    "network-country*",
+    "network*"
   ]);
   public static ErtLeader = PageUserType.create(UserType.ErtLeader, "dashboard", [
     "dashboard*",
@@ -205,7 +207,8 @@ export class PageControlService {
     "country-admin*",
     "new-user-password",
     "export-proposal*",
-    "network-country*"
+    "network-country*",
+    "network*"
   ]);
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
@@ -218,7 +221,8 @@ export class PageControlService {
     "country-admin*",
     "new-user-password",
     "export-proposal*",
-    "network-country*"
+    "network-country*",
+    "network*"
   ]);
   public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
     "dashboard*",
@@ -259,7 +263,8 @@ export class PageControlService {
     "risk-monitoring*",
     "export-start-fund*",
     "export-proposal*",
-    "network-country*"
+    "network-country*",
+    "network*"
   ]);
   public static NonAlert = PageUserType.create(UserType.NonAlert, "dashboard", []);
   public static CountryUser = PageUserType.create(UserType.CountryUser, "director", [
