@@ -2597,9 +2597,8 @@
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
-                        {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
-                        date:"d MMM
-                        ''yy"}}</strong>
+                        {{"EXPIRED_ON" | translate}} <strong>
+                        {{(action.updatedAt + action.computedClockSetting) |date:"d MMM yy"}}</strong>
                       </div>
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                            *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
@@ -2680,14 +2679,10 @@
 
                             <a
                               *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
-                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                              (click)="editNetworkAction(action)"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
-                          <div class="col-md-3 col-sm-4 btn-block"
-                               *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
-                            <a href="javascript:void(0)" (click)="copyAction(action)"
-                               class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
-                          </div>
+
                         </div>
                         <div class="row">
                           <div class="subrow-line">
@@ -2770,7 +2765,7 @@
                             <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                                href="javascript:void(0)" class="btn btn-primary btn-block"
-                               (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
+                               (click)="addNoteNetwork(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                               translate) :
                               ("ADD_NOTE" | translate)}}</a>
                             <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
@@ -2874,7 +2869,7 @@
                       </div>
                       <div class="col-md-3 btn-block">
                         <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                           (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
+                           (click)="completeActionNetwork(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                         <a href="javascript:void(0)" class="btn btn-block"
                            onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
                           translate}}</a>

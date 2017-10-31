@@ -3,7 +3,6 @@
  */
 
 import {ActionLevel, ActionType, DurationType, HazardScenario, UserType} from "../utils/Enums";
-import {Inject, Injectable} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
@@ -497,7 +496,7 @@ export class PrepActionService {
       applyCustom = true;
     }
     else action.frequencyValue = null;
-    this.initNotes(af, id, run);
+    this.initNotesNetwork(af, id, action, run);
 
     // Document deletion check
     if (action.hasOwnProperty('documents')) {
@@ -637,6 +636,27 @@ export class PrepActionService {
               prepNote.time = noteSnap.val().time;
               prepNote.uploadedBy = noteSnap.val().uploadBy;
               this.addNoteToAction(prepNote, action);
+            });
+          }
+        });
+    }
+  }
+
+  public initNotesNetwork(af: AngularFire, id: string, action: PreparednessAction, run: boolean) {
+    if (run) {
+      af.database.list(Constants.APP_STATUS + "/note/" + action.networkCountryId + '/' + id, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          console.log(snap)
+          let model: PreparednessAction = this.findActionNetwork(id);
+          if (model != null) {
+            this.findActionNetwork(id).notes = [];
+            snap.forEach((noteSnap) => {
+              let prepNote: PreparednessNotes = new PreparednessNotes(noteSnap.key, id);
+              prepNote.content = noteSnap.val().content;
+              prepNote.time = noteSnap.val().time;
+              prepNote.uploadedBy = noteSnap.val().uploadBy;
+              this.addNoteToAction(prepNote, model);
             });
           }
         });

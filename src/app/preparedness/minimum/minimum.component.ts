@@ -37,6 +37,7 @@ import {SettingsService} from "../../services/settings.service";
 import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
+import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 
 declare var jQuery: any;
 
@@ -456,6 +457,29 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
+  public addNoteNetwork(action: PreparednessAction) {
+    if (action.note == undefined) {
+      return;
+    }
+
+    const note = {
+      content: action.note,
+      time: new Date().getTime(),
+      uploadBy: this.uid
+    };
+    const noteId = action.noteId;
+
+    action.note = '';
+    action.noteId = '';
+
+    if (noteId != null && noteId !== '') {
+      this.af.database.object(Constants.APP_STATUS + '/note/' + action.networkCountryId + '/' + action.id + '/' + noteId).set(note);
+    }
+    else {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + action.networkCountryId + '/' + action.id).push(note);
+    }
+  }
+
   // Edit mode
   protected editNote(note: PreparednessNotes, action: PreparednessAction) {
     action.noteId = note.id;
@@ -560,6 +584,43 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           isCompleteAt: new Date().getTime()
         });
         this.addNote(action);
+        this.closePopover(action);
+      }
+    }
+  }
+
+  protected completeActionNetwork(action: PreparednessAction) {
+    if (action.note == null || action.note.trim() == "") {
+      this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
+    } else {
+      if (action.requireDoc) {
+        if (action.attachments != undefined && action.attachments.length > 0) {
+          action.attachments.map(file => {
+            this.uploadFile(action, file);
+          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
+            isComplete: true,
+            isCompleteAt: new Date().getTime()
+          });
+          this.addNoteNetwork(action);
+          this.closePopover(action);
+        }
+        else {
+          this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
+        }
+      }
+      else {
+        // Doesn't require doc
+        if (action.attachments != null) {
+          action.attachments.map(file => {
+            this.uploadFile(action, file);
+          });
+        }
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
+          isComplete: true,
+          isCompleteAt: new Date().getTime()
+        });
+        this.addNoteNetwork(action);
         this.closePopover(action);
       }
     }
@@ -740,5 +801,17 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     } else if (source.startsWith("www.")) {
       this.windowService.getNativeWindow().open("http://" + source);
     }
+  }
+
+  editNetworkAction(action) {
+    this.switchToNetwork(action)
+      this.router.navigate(['/network-country/network-country-create-edit-action/' + action.id, this.storage.get(Constants.NETWORK_VIEW_VALUES)])
+  }
+
+  private switchToNetwork(action: PreparednessAction) {
+    this.storage.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, action.networkCountryId)
+    this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
+    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
+    this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
   }
 }
