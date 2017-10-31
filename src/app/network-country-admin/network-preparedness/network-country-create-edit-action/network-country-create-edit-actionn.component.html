@@ -32,10 +32,10 @@
                 (click)="showActionConfirm('delete-action')">
           {{"PREPAREDNESS.DELETE_ACTION_BUTTON" | translate}}
         </button>
-        <button class="btn btn-block btn-outline-primary" *ngIf="
-                !(action.type == actionType.chs ||
-                 (action.type == actionType.mandated && userType != userTypes.CountryDirector))
-            " (click)="showActionConfirm('archive-action')">
+        <button class="btn btn-block btn-outline-primary"
+                *ngIf="!(action.type == actionType.chs ||
+                 (action.type == actionType.mandated && userType != userTypes.CountryDirector))"
+                (click)="showActionConfirm('archive-action')">
           {{"PREPAREDNESS.ARCHIVE_ACTION_BUTTON" | translate}}
         </button>
       </div>

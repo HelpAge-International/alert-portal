@@ -127,7 +127,6 @@ export class PrepActionService {
     // this.agencyId = agencyId;
     // this.systemAdminId = systemId;
     // this.getDefaultClockSettings(af, agencyId, countryId, () => {
-    console.log(networkMap)
     networkMap.forEach((networkCountryId, networkId) => {
       // if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
       //   this.initNetwork(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
@@ -432,7 +431,6 @@ export class PrepActionService {
   }
 
   private updateActionNetwork(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, networkId, networkCountryId, updated: (action: PreparednessAction) => void) {
-    console.log(action)
     let run: boolean = this.findActionNetwork(id) == null;
     let i = this.findOrCreateIndexNetwork(id, whichUser, source, networkId, networkCountryId);
     let applyCustom = false; // Fixes bug with frequencyValue and frequencyBase
@@ -496,7 +494,7 @@ export class PrepActionService {
       applyCustom = true;
     }
     else action.frequencyValue = null;
-    this.initNotesNetwork(af, id, action, run);
+    this.initNotesNetwork(af, id, networkCountryId, run);
 
     // Document deletion check
     if (action.hasOwnProperty('documents')) {
@@ -515,7 +513,7 @@ export class PrepActionService {
       }
       for (let doc in action.documents) {
         if (docsToRemove.indexOf(doc) <= -1)
-          this.initDoc(af, whichUser, doc, this.actionsNetwork[i].id);
+          this.initDocNetwork(af, whichUser, doc, this.actionsNetwork[i].id);
       }
     }
     // else {
@@ -543,6 +541,8 @@ export class PrepActionService {
     if (this.updater != null) {
       this.updater();
     }
+
+    console.log(this.actionsNetwork)
   }
 
   public addUpdater(func: () => void) {
@@ -642,12 +642,11 @@ export class PrepActionService {
     }
   }
 
-  public initNotesNetwork(af: AngularFire, id: string, action: PreparednessAction, run: boolean) {
+  public initNotesNetwork(af: AngularFire, id: string, networkCountryId: string, run: boolean) {
     if (run) {
-      af.database.list(Constants.APP_STATUS + "/note/" + action.networkCountryId + '/' + id, {preserveSnapshot: true})
+      af.database.list(Constants.APP_STATUS + "/note/" + networkCountryId + '/' + id, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
-          console.log(snap)
           let model: PreparednessAction = this.findActionNetwork(id);
           if (model != null) {
             this.findActionNetwork(id).notes = [];
@@ -692,6 +691,21 @@ export class PrepActionService {
           if (doc != null && doc != undefined) {
             doc.documentId = snap.key;
             this.findAction(actionId).addDoc(doc);
+          }
+        }
+      });
+  }
+
+  private initDocNetwork(af: AngularFire, alertUserTypeId: string, docId: string, actionId: string) {
+    af.database.object(Constants.APP_STATUS + "/document/" + alertUserTypeId + "/" + docId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (this.findActionNetwork(actionId) != null) {
+          let doc = snap.val();
+          console.log(doc);
+          if (doc != null && doc != undefined) {
+            doc.documentId = snap.key;
+            this.findActionNetwork(actionId).addDoc(doc);
           }
         }
       });

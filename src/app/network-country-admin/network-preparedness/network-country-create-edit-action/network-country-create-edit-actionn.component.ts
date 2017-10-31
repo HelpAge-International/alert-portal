@@ -606,6 +606,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       else {
         // Saving
         updateObj.createdAt = new Date().getTime();
+        updateObj.networkId = this.networkId;
         console.log(updateObj);
         this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
 
