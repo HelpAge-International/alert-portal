@@ -727,6 +727,18 @@ export class NetworkService {
       })
   }
 
+  getLocalNetworkModelsForCountry(agencyId, countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
+      .map(networks => {
+        return networks.map(network => {
+          let model = new ModelNetwork();
+          model.id = network.$key;
+          return model;
+        })
+      })
+  }
+
+
   mapNetworkWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
       .map(networks => {
@@ -736,6 +748,13 @@ export class NetworkService {
          map.set(network.$key, network.networkCountryId)
        })
         return map
+      })
+  }
+
+  getLocalNetworksWithCountryForCountry(agencyId, countryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
+      .map(networks => {
+        return Object.keys(networks)
       })
   }
 

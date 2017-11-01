@@ -27,6 +27,10 @@
             <a *ngFor="let network of networks" class="dropdown-item"
                (click)="selectNetwork(network)">{{network.name}}</a>
           </ng-container>
+          <ng-container *ngIf="localNetworks.length>0">
+            <a *ngFor="let network of localNetworks" class="dropdown-item"
+               (click)="selectLocalNetwork(network)">{{network.name}}</a>
+          </ng-container>
 
         </div>
       </li>

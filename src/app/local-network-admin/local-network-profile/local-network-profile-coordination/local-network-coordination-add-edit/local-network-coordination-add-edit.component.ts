@@ -12,6 +12,7 @@ import {AgencyService} from "../../../../services/agency-service.service";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {isEmptyObject} from "angularfire2/utils";
+import {LocalStorageService} from "angular-2-local-storage";
 
 
 declare var jQuery: any;
@@ -25,6 +26,7 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   countryId: any;
   agencyId: any;
   isViewing = false;
+  private networkViewValues: {};
 
   private uid: string;
   private networkId: string;
@@ -59,6 +61,7 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
               private _coordinationArrangementService: CoordinationArrangementService,
               private _agencyService: AgencyService,
               private router: Router,
+              private storageService: LocalStorageService,
               private route: ActivatedRoute) {
     this.coordinationArrangement = new CoordinationArrangementNetworkModel();
   }
@@ -69,7 +72,7 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   ngOnInit() {
-
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -87,6 +90,9 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
         }
         if (params['networkCountryId']) {
           this.networkCountryId = params['networkCountryId'];
+        }
+        if (params['isNetworkCountry']) {
+          this.isNetworkCountry = params['isNetworkCountry'];
         }
 
         console.log(this.isViewing)
@@ -285,8 +291,13 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   goBack() {
-    this.router.navigateByUrl(this.isNetworkCountry ? '/network-country/network-country-office-profile-coordination' : '/network/local-network-office-profile/coordination');
-  }
+    console.log(this.isNetworkCountry)
+    if(this.isViewing){
+      this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-coordination', this.networkViewValues ] : ['/network/local-network-office-profile/coordination', this.networkViewValues]);
+    } else {
+      this.router.navigateByUrl(this.isNetworkCountry ? '/network-country/network-country-office-profile-coordination' : '/network/local-network-office-profile/coordination');
+    }
+    }
 
   toggleAgencySelection(agency) {
     console.log(this.nonAlertMembers)
@@ -339,12 +350,23 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   deleteAction() {
     this.closeModal();
 
-    this._coordinationArrangementService.deleteCoordinationArrangementNetwork(this.networkId, this.coordinationArrangement)
-      .then(() => {
-        this.goBack();
-        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_DELETED', AlertMessageType.Success);
-      })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    if(this.isNetworkCountry){
+      this._coordinationArrangementService.deleteCoordinationArrangementNetworkCountry(this.networkCountryId, this.coordinationArrangement)
+        .then(() => {
+          this.goBack();
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    } else {
+      this._coordinationArrangementService.deleteCoordinationArrangementLocalNetwork(this.networkId, this.coordinationArrangement)
+        .then(() => {
+          this.goBack();
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    }
+
+
   }
 
   closeModal() {

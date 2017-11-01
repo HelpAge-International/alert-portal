@@ -24,6 +24,8 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   private uid: string;
   private networkId: string;
   private agencyId: string;
+  private isViewing: boolean;
+  private countryId: string;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -53,30 +55,56 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
+      if (params['isViewing']) {
+        this.isViewing = params['isViewing'];
+      }
+      if (params['agencyId']) {
+        this.agencyId = params['agencyId'];
+      }
+      if (params['countryId']) {
+        this.countryId = params['countryId'];
+      }
+      if (params['networkId']) {
+        this.networkId = params['networkId'];
+      }
+      if (params['networkCountryId']) {
+        this.networkCountryId = params['networkCountryId'];
+      }
       if (params['isNetworkCountry']) {
         this.isNetworkCountry = params['isNetworkCountry'];
       }
 
-      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-        this.uid = user.uid;
+      if(this.isViewing){
 
-        this.networkService.getSelectedIdObj(user.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(selection => {
-            this.networkId = selection["id"];
-            if (this.isNetworkCountry) {
-              this.networkCountryId = selection["networkCountryId"];
-            }
-            if (params['id']) {
-              this.isNetworkCountry ? this.getStockCapacityForNetworkCountry(params) : this.getStockCapacityForLocalNetworkAdmin(params);
-            }
-            if (params['stockType']) {
-              this.stockCapacity.stockType = Number(params['stockType']);
-            }
+        if (params['id']) {
+          this.isNetworkCountry ? this.getStockCapacityForNetworkCountry(params) : this.getStockCapacityForLocalNetworkAdmin(params);
+        }
+        if (params['stockType']) {
+          this.stockCapacity.stockType = Number(params['stockType']);
+        }
 
-          })
+      } else {
+        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+          this.uid = user.uid;
 
-      });
+          this.networkService.getSelectedIdObj(user.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(selection => {
+              this.networkId = selection["id"];
+              if (this.isNetworkCountry) {
+                this.networkCountryId = selection["networkCountryId"];
+              }
+              if (params['id']) {
+                this.isNetworkCountry ? this.getStockCapacityForNetworkCountry(params) : this.getStockCapacityForLocalNetworkAdmin(params);
+              }
+              if (params['stockType']) {
+                this.stockCapacity.stockType = Number(params['stockType']);
+              }
+
+            })
+
+        });
+      }
     });
 
   }

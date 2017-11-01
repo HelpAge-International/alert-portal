@@ -1,14 +1,20 @@
-<div *ngIf="!isViewing">
-  <ng-container *ngIf="!isNetworkCountry; else networkCountry">
-    <app-local-network-header></app-local-network-header>
-    <app-local-network-menu></app-local-network-menu>
-  </ng-container>
 
-  <ng-template #networkCountry>
+<ng-container *ngIf="!isViewing; else country">
+  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
     <app-network-country-header></app-network-country-header>
     <app-network-country-menu></app-network-country-menu>
-  </ng-template>
-</div>
+  </ng-container>
+</ng-container>
+
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<ng-template #country>
+  <app-country-admin-header></app-country-admin-header>
+  <app-network-country-menu [isViewing]="true"></app-network-country-menu>
+</ng-template>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -20,7 +26,7 @@
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT' | translate }}</h2>
-      <div *ngIf="!isViewing" class="col-sm-6 Right-aligned">
+      <div class="col-sm-6 Right-aligned">
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="!isEdit"
                 (click)="editStockCapacity()">Edit Network Owned Stock
@@ -152,7 +158,7 @@
       </div>
 
       <button class="btn btn-outline-primary text-uppercase"
-              *ngIf="canEdit && !isViewing"
+              *ngIf="canEdit"
               (click)="addEditStockCapacity(STOCK_TYPE.Network)">{{ 'GLOBAL.ADD' | translate }}
       </button>
 
@@ -260,7 +266,7 @@
       </div>
 
       <button class="btn btn-outline-primary text-uppercase"
-              *ngIf="canEdit && !isViewing"
+              *ngIf="canEdit"
               (click)="addEditStockCapacity(STOCK_TYPE.External)">{{ 'GLOBAL.ADD' | translate }}
       </button>
     </div>
