@@ -281,7 +281,7 @@ export class CoordinationArrangementService {
     return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
   }
 
-  public deleteCoordinationArrangementNetwork(countryId: string, coordinationArrangement: CoordinationArrangementNetworkModel): firebase.Promise<any>{
+  public deleteCoordinationArrangementLocalNetwork(countryId: string, coordinationArrangement: CoordinationArrangementNetworkModel): firebase.Promise<any>{
     if(!countryId || !coordinationArrangement || !coordinationArrangement.id )
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
@@ -290,6 +290,20 @@ export class CoordinationArrangementService {
     const coordinationArrangementData = {};
 
     coordinationArrangementData['/localNetworkProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;
+
+    return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
+  }
+
+  public deleteCoordinationArrangementNetworkCountry(countryId: string, coordinationArrangement: CoordinationArrangementNetworkModel): firebase.Promise<any>{
+    if(!countryId || !coordinationArrangement || !coordinationArrangement.id )
+    {
+      return Promise.reject('Missing countryId or coordinationArrangement');
+    }
+
+    console.log('/networkCountryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id)
+    const coordinationArrangementData = {};
+
+    coordinationArrangementData['/networkCountryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;
 
     return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
   }

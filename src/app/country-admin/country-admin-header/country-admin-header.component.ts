@@ -16,6 +16,7 @@ import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {NetworkViewModel} from "./network-view.model";
+import {LocalNetworkViewModel} from "./local-network-view.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Location} from "@angular/common";
 
@@ -77,6 +78,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private isViewingNetwork: boolean;
   private networkCountryMap: Map<string, string>;
   private showLoader: boolean;
+  private localNetworkList: string[];
+  private localNetworks: ModelNetwork[] = [];
 
 
   constructor(private pageControl: PageControlService,
@@ -205,6 +208,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
           //get networks
           this.getNetworks(agencyId, countryId)
+
+          this.getLocalNetworks(agencyId, countryId)
         }
       } else {
         this.router.navigateByUrl(Constants.LOGIN_PATH);
@@ -344,6 +349,22 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(["/network-country/network-dashboard", values])
   }
 
+
+  selectLocalNetwork(network: ModelNetwork) {
+    this.selectedNetwork = network;
+    this.isViewingNetwork = true;
+    // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
+    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
+    console.log(network)
+    //build emit value
+    let model = new LocalNetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, true)
+    // this.networkRequest.emit(model)
+    this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
+    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, this.networkCountryMap.get(network.id))
+    let values = this.buildNetworkViewValues();
+    this.router.navigate(["/network/local-network-dashboard", values])
+  }
+
   private buildNetworkViewValues() {
     let values = {};
 
@@ -455,4 +476,27 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       })
   }
 
+  private getLocalNetworks(agencyId: string, countryId: any) {
+    this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(list => this.localNetworkList = list)
+    this.networkService.getLocalNetworkModelsForCountry(agencyId, countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkModels => {
+        this.localNetworks = [];
+        networkModels.map(model => {
+          return this.networkService.getNetworkDetail(model.id)
+        })
+          .forEach(item => {
+            item.takeUntil(this.ngUnsubscribe).subscribe(network => {
+              if (!CommonUtils.itemExistInList(network.id, this.localNetworks)) {
+                if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
+                  this.localNetworks.push(network);
+                }
+              }
+            })
+          })
+
+      })
+  }
 }
