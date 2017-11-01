@@ -37,8 +37,8 @@
     </div>
 
     <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let section of sections; index as i">
-      <ng-container *ngIf="i!==10">
-        <div class="col-lg-1 col-md-1 col-sm-1 col-1 text-center">{{i + 1}}.</div>
+      <ng-container *ngIf="i!==0">
+        <div class="col-lg-1 col-md-1 col-sm-1 col-1 text-center">{{i}}.</div>
         <div class="col-lg-8 col-md-8 col-sm-5 col-5">{{RESPONSE_PLANS_SECTION_SETTINGS[i] | translate}}</div>
         <div class="col-lg-3 col-md-3 col-sm-6 col-6">
           <div class="btn btn_fixed_width"

@@ -1,13 +1,14 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../../model/alert-message.model";
-import {AlertMessageType, DurationType} from "../../../utils/Enums";
+import {AlertMessageType, DurationType, ResponsePlanSectionSettings} from "../../../utils/Enums";
 import {SettingsService} from "../../../services/settings.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NetworkService} from "../../../services/network.service";
 import {ClockSettingsModel} from "../../../model/clock-settings.model";
 import {Constants} from "../../../utils/Constants";
+import {Frequency} from "../../../utils/Frequency";
 
 @Component({
   selector: 'app-network-clock-settings',
@@ -77,6 +78,20 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
 
   saveChanges() {
     console.log("save changes");
+    console.log(this.clockSettings)
+    this.updateCountriesClockSettings(this.networkId, this.clockSettings)
+    // this.networkService.getAllNetworkCountryIdsByNetwork(this.networkId)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(networkCountryIds => {
+    //     console.log(networkCountryIds)
+    //     networkCountryIds.forEach(networkCountryId=>{
+    //       // this.networkService.(this.networkId, networkCountryId)
+    //       //   .takeUntil(this.ngUnsubscribe)
+    //       //   .subscribe(networkCountrySettins =>{
+    //       //     console.log(networkCountrySettins)
+    //       //   })
+    //     })
+    //   })
     this.settingService.saveNetworkClockSettings(this.networkId, this.clockSettings).then(() => {
       this.alertMessage = new AlertMessageModel("Clock Settings successfully saved!", AlertMessageType.Success);
     }, error => {
@@ -123,6 +138,47 @@ export class NetworkClockSettingsComponent implements OnInit, OnDestroy {
     } else if (this.clockSettings.responsePlans.durationType == DurationType.Year && this.clockSettings.responsePlans.value > Constants.YEAR_MAX_NUMBER) {
       this.clockSettings.responsePlans.value = Constants.YEAR_MAX_NUMBER;
     }
+  }
+
+  private updateCountriesClockSettings(networkId, passedSettings: ClockSettingsModel) {
+    this.networkService.getAllNetworkCountriesByNetwork(networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkCountryObjList => {
+        networkCountryObjList.map(networkCountryObj => {
+          console.log(networkCountryObj)
+          let clockSettings: any = networkCountryObj['clockSettings'];
+          let networkCountryId = networkCountryObj.$key
+          let update: boolean = false;
+
+          if (new Frequency(passedSettings['riskMonitoring']['showLogsFrom']).gt(new Frequency(clockSettings['riskMonitoring']['showLogsFrom']))) {
+            update = true;
+            clockSettings['riskMonitoring']['showLogsFrom']['value'] = passedSettings.riskMonitoring.showLogsFrom.value;
+            clockSettings['riskMonitoring']['showLogsFrom']['durationType'] = passedSettings.riskMonitoring.showLogsFrom.durationType;
+          }
+
+          if (new Frequency(passedSettings['riskMonitoring']['hazardsValidFor']).gt(new Frequency(clockSettings['riskMonitoring']['hazardsValidFor']))) {
+            update = true;
+            clockSettings['riskMonitoring']['hazardsValidFor']['value'] = passedSettings.riskMonitoring.hazardsValidFor.value;
+            clockSettings['riskMonitoring']['hazardsValidFor']['durationType'] = passedSettings.riskMonitoring.hazardsValidFor.durationType;
+          }
+
+          if (new Frequency(passedSettings['preparedness']).gt(new Frequency(clockSettings['preparedness']))) {
+            update = true;
+            clockSettings['preparedness']['value'] = passedSettings.preparedness.value;
+            clockSettings['preparedness']['durationType'] = passedSettings.preparedness.durationType;
+          }
+
+          if (new Frequency(passedSettings['responsePlans']).gt(new Frequency(clockSettings['responsePlans']))) {
+            update = true;
+            clockSettings['responsePlans']['value'] = passedSettings.responsePlans.value;
+            clockSettings['responsePlans']['durationType'] = passedSettings.responsePlans.durationType;
+          }
+
+          if (update) {
+            this.networkService.setNetworkField('/networkCountry/' + this.networkId + '/' + networkCountryId + '/clockSettings/', clockSettings)
+          }
+        });
+      });
   }
 
 }

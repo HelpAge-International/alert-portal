@@ -15,6 +15,7 @@ import {NetworkCountryModel} from "../network-country-admin/network-country.mode
 import {NetworkModulesEnabledModel} from "./pagecontrol.service";
 import {isEmptyObject} from "angularfire2/utils";
 import {NetworkWithCountryModel} from "../country-admin/country-admin-header/network-with-country.model";
+import {ClockSettingsModel} from "../model/clock-settings.model";
 
 @Injectable()
 export class NetworkService {
@@ -570,7 +571,6 @@ export class NetworkService {
   getNetworkResponsePlanClockSettingsDuration(networkId) {
     return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/clockSettings/responsePlans")
       .map(settings => {
-        console.log(settings);
         let duration = 0;
         let oneDay = 24 * 60 * 60 * 1000;
         let durationType = Number(settings.durationType);
@@ -584,6 +584,37 @@ export class NetworkService {
         }
         return duration;
       });
+  }
+
+  getNetworkCountryResponsePlanClockSettingsDuration(networkId, networkCountryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/clockSettings/responsePlans")
+      .map(settings => {
+        let duration = 0;
+        let oneDay = 24 * 60 * 60 * 1000;
+        let durationType = Number(settings.durationType);
+        let value = Number(settings.value);
+        if (durationType === DurationType.Week) {
+          duration = value * 7 * oneDay;
+        } else if (durationType === DurationType.Month) {
+          duration = value * 30 * oneDay;
+        } else if (durationType === DurationType.Year) {
+          duration = value * 365 * oneDay;
+        }
+        return duration;
+      });
+  }
+
+  getAllNetworkCountriesByNetwork(networkId) {
+    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
+  }
+
+  getNetworkClockSettings(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/clockSettings")
+      .map(obj => {
+        let setting = new ClockSettingsModel()
+        setting.mapFromObject(obj)
+        return setting
+      })
   }
 
 
@@ -742,11 +773,10 @@ export class NetworkService {
   mapNetworkWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
       .map(networks => {
-       let map = new Map<string,string>();
-       networks.forEach(network =>{
-         console.log(network[network.$key])
-         map.set(network.$key, network.networkCountryId)
-       })
+        let map = new Map<string, string>();
+        networks.forEach(network => {
+          map.set(network.$key, network.networkCountryId)
+        })
         return map
       })
   }
@@ -814,11 +844,9 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountryAgencies(networkId, networkCountryId){
-    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+  getNetworkCountryAgencies(networkId, networkCountryId) {
+    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
 
   }
-
-
 
 }

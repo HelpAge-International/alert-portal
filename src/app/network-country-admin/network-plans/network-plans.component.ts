@@ -121,7 +121,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       this.networkService.getSelectedIdObj(user.uid)
         .flatMap(selection => {
           this.networkId = selection["id"];
-          return this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId);
+          return this.networkService.getNetworkCountryResponsePlanClockSettingsDuration(this.networkId, this.networkCountryId);
         })
         .takeUntil(this.ngUnsubscribe)
         .subscribe(duration => {
@@ -162,7 +162,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         .flatMap(selection => {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
-          return this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId);
+          return this.networkService.getNetworkCountryResponsePlanClockSettingsDuration(this.networkId, this.networkCountryId);
         })
         .takeUntil(this.ngUnsubscribe)
         .subscribe(duration => {
@@ -195,7 +195,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   private initViewAccess() {
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId)
+    this.networkService.getNetworkCountryResponsePlanClockSettingsDuration(this.networkId, this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(duration => {
         this.networkPlanExpireDuration = duration;

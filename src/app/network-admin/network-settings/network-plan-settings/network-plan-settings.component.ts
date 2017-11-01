@@ -18,7 +18,7 @@ export class NetworkPlanSettingsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
   //constants and enums
-  private RESPONSE_PLANS_SECTION_SETTINGS = Constants.RESPONSE_PLANS_SECTION_SETTINGS;
+  private RESPONSE_PLANS_SECTION_SETTINGS = Constants.RESPONSE_PLANS_SECTION_SETTINGS_NETWORK;
 
   // Models
   private alertMessage: AlertMessageModel = null;

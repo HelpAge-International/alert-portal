@@ -75,11 +75,20 @@ export class NetworkCountryClockSettingsComponent implements OnInit, OnDestroy {
 
   saveChanges() {
     console.log("save changes");
-    this.settingService.saveNetworkCountryClockSettings(this.networkId, this.networkCountryId, this.clockSettings).then(() => {
-      this.alertMessage = new AlertMessageModel("Clock Settings successfully saved!", AlertMessageType.Success);
-    }, error => {
-      this.alertMessage = new AlertMessageModel(error.message);
-    });
+    this.networkService.getNetworkClockSettings(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(settings => {
+        console.log(settings)
+        let isValid = this.checkIfCountrySettingValid(settings);
+        if (isValid) {
+          this.settingService.saveNetworkCountryClockSettings(this.networkId, this.networkCountryId, this.clockSettings).then(() => {
+            this.alertMessage = new AlertMessageModel("Clock Settings successfully saved!", AlertMessageType.Success);
+          }, error => {
+            this.alertMessage = new AlertMessageModel(error.message);
+          });
+        }
+      })
+
   }
 
   convertToNumber(value): number {
@@ -121,6 +130,43 @@ export class NetworkCountryClockSettingsComponent implements OnInit, OnDestroy {
     } else if (this.clockSettings.responsePlans.durationType == DurationType.Year && this.clockSettings.responsePlans.value > Constants.YEAR_MAX_NUMBER) {
       this.clockSettings.responsePlans.value = Constants.YEAR_MAX_NUMBER;
     }
+  }
+
+  private checkIfCountrySettingValid(settings: any): boolean {
+    console.log(settings)
+    let isValid = true;
+    let riskShowLogValue = this.clockSettings.riskMonitoring.showLogsFrom.value;
+    let riskShowLogType = this.clockSettings.riskMonitoring.showLogsFrom.durationType;
+    let riskHazardValue = this.clockSettings.riskMonitoring.hazardsValidFor.value;
+    let riskHazardType = this.clockSettings.riskMonitoring.hazardsValidFor.durationType;
+    let preparednessValue = this.clockSettings.preparedness.value;
+    let preparednessType = this.clockSettings.preparedness.durationType;
+    let planValue = this.clockSettings.responsePlans.value;
+    let planType = this.clockSettings.responsePlans.durationType;
+
+    let agencyPreparednessValue = settings.preparedness.value;
+    let agencyPreparednessType = settings.preparedness.durationType;
+    let agencyPlanValue = settings.responsePlans.value;
+    let agencyPlanType = settings.responsePlans.durationType;
+    let agencyRiskShowLogValue = settings.riskMonitoring.showLogsFrom.value;
+    let agencyRiskShowLogType = settings.riskMonitoring.showLogsFrom.durationType;
+    let agencyRiskHazardValue = settings.riskMonitoring.hazardsValidFor.value;
+    let agencyRiskHazardType = settings.riskMonitoring.hazardsValidFor.durationType;
+
+    if (riskShowLogType == agencyRiskShowLogType && riskShowLogValue > agencyRiskShowLogValue || riskShowLogType > agencyRiskShowLogType) {
+      this.alertMessage = new AlertMessageModel("Risk monitoring show log setting can not set longer than agency level");
+      isValid = false;
+    } else if (riskHazardType == agencyRiskHazardType && riskHazardValue > agencyRiskHazardValue || riskHazardType > agencyRiskHazardType) {
+      this.alertMessage = new AlertMessageModel("Risk monitoring hazard remain setting can not set longer than agency level");
+      isValid = false;
+    } else if (preparednessType == agencyPreparednessType && preparednessValue > agencyPreparednessValue || preparednessType > agencyPreparednessType) {
+      this.alertMessage = new AlertMessageModel("Preparedness setting can not set longer than agency level");
+      isValid = false;
+    } else if (planType == agencyPlanType && planValue > agencyPlanValue || planType > agencyPlanType) {
+      this.alertMessage = new AlertMessageModel("Response plan setting can not set longer than agency level");
+      isValid = false;
+    }
+    return isValid;
   }
 
 }
