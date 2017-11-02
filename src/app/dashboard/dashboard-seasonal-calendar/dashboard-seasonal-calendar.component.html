@@ -18,6 +18,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Back--button"
+         (click)="clearStorage()"
          [routerLink]="isViewing ? ['/network-country/network-dashboard', networkViewValues] : isNetworkCountry ? ['/network-country/network-dashboard'] : isLocalNetworkAdmin ? ['/network/local-network-dashboard'] : ['/dashboard']">
       {{"GLOBAL.HOME" | translate}}
     </div>

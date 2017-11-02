@@ -503,65 +503,83 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       jQuery("#dialog-action").modal("hide");
     }
     // if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
+    this.af.database.object(Constants.APP_STATUS + "/directorCountry", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        if (snap && snap.val()) {
+          let countriesHasDirector = Object.keys(snap.val());
+          let approvalCanProceed = true
+          CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
+            if (countriesHasDirector.indexOf(countryId) == -1) {
+              approvalCanProceed = false
+              this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
+              this.alertMessage = new AlertMessageModel(this.waringMessage);
+            }
+          })
+          if (approvalCanProceed) {
+            CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyKey => {
+              let approvalData = {};
+              let countryId = this.agencyCountryMap.get(agencyKey);
+              let agencyId = agencyKey;
+              this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId)
+                .do(director => {
+                  if (director && director.$value) {
+                    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+                    // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
+                    approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/countryDirector/" + countryId] = ApprovalStatus.WaitingApproval;
+                    approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
 
-    CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyKey => {
-      let approvalData = {};
-      let countryId = this.agencyCountryMap.get(agencyKey);
-      let agencyId = agencyKey;
-      this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId)
-        .do(director => {
-          if (director && director.$value) {
-            let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-            // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
-            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/countryDirector/" + countryId] = ApprovalStatus.WaitingApproval;
-            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+                    // Send notification to country director
+                    let notification = new MessageModel();
+                    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+                    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+                    notification.time = new Date().getTime();
+                    this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
+                    });
 
-            // Send notification to country director
-            let notification = new MessageModel();
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
+                  } else {
+                    this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
+                    this.alertMessage = new AlertMessageModel(this.waringMessage);
+                    return;
+                  }
+                })
+                .flatMap(() => {
+                  return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
+                })
+                .map(approvalSettings => {
+                  let setting = [];
+                  approvalSettings.forEach(item => {
+                    setting.push(item.$value);
+                  });
+                  return setting;
+                })
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(approvalSettings => {
+                  if (approvalSettings[0] == false && approvalSettings[1] == false) {
+                    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+                    approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
+                    approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
+                    this.updatePartnerValidation(approvalData);
+
+                  } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
+                    console.log("regional enabled");
+                    this.updateWithRegionalApproval(agencyId, countryId, approvalData);
+                  } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
+                    console.log("global enabled");
+                    this.updateWithGlobalApproval(agencyId, countryId, approvalData);
+                  } else {
+                    console.log("both directors enabled");
+                    this.updateWithGlobalApproval(agencyId, countryId, approvalData);
+                    this.updateWithRegionalApproval(agencyId, countryId, approvalData);
+                  }
+                });
             });
-
-          } else {
-            this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
-            this.alertMessage = new AlertMessageModel(this.waringMessage);
-            return;
           }
-        })
-        .flatMap(() => {
-          return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
-        })
-        .map(approvalSettings => {
-          let setting = [];
-          approvalSettings.forEach(item => {
-            setting.push(item.$value);
-          });
-          return setting;
-        })
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(approvalSettings => {
-          if (approvalSettings[0] == false && approvalSettings[1] == false) {
-            let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
-            approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
-            this.updatePartnerValidation(approvalData);
-
-          } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
-            console.log("regional enabled");
-            this.updateWithRegionalApproval(agencyId, countryId, approvalData);
-          } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-            console.log("global enabled");
-            this.updateWithGlobalApproval(agencyId, countryId, approvalData);
-          } else {
-            console.log("both directors enabled");
-            this.updateWithGlobalApproval(agencyId, countryId, approvalData);
-            this.updateWithRegionalApproval(agencyId, countryId, approvalData);
-          }
-        });
-    });
-
+        } else {
+          this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
+          this.alertMessage = new AlertMessageModel(this.waringMessage);
+        }
+      })
     // }
   }
 

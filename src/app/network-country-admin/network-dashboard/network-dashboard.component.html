@@ -349,6 +349,7 @@
         <h3>{{"DASHBOARD.CALENDAR.SEASONAL_CALENDAR" | translate}}</h3>
         <div id="target2" class="timeline-tgt Spaced"></div>
         <a href="javascript:void(0)"
+           (click)="toCalendar()"
            [routerLink]="isViewing ? ['/network-country/network-calendar', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-calendar'] : ['/network-country/network-calendar']">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
           | translate}}</a>
       </div>

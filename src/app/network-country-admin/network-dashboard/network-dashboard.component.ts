@@ -29,6 +29,7 @@ import {
 } from "../../dashboard/dashboard-seasonal-calendar/dashboard-seasonal-calendar.component";
 import {ActionsService} from "../../services/actions.service";
 import {LocalStorageService} from "angular-2-local-storage";
+import {CommonUtils} from "../../utils/CommonUtils";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -115,6 +116,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   // Module settings
   private moduleSettings: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
   private networkViewValues: {};
+  private agencyCountryMap = new Map<string, string>();
 
 
   constructor(private pageControl: PageControlService,
@@ -122,7 +124,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               private networkService: NetworkService,
               private notificationService: NotificationService,
               private userService: UserService,
-              private storageService:LocalStorageService,
+              private storageService: LocalStorageService,
               private actionService: ActionsService,
               private route: ActivatedRoute,
               private router: Router) {
@@ -158,11 +160,19 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
 
-          this.loadData();
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyCountryMap => {
+              console.log(agencyCountryMap)
+              this.agencyCountryMap = agencyCountryMap
+              this.loadData();
+            })
+
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
+
 
         });
     });
@@ -197,7 +207,14 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl("/dashboard")
       return
     }
-    this.loadData();
+
+    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountryMap => {
+        console.log(agencyCountryMap)
+        this.agencyCountryMap = agencyCountryMap
+        this.loadData();
+      })
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
       .takeUntil(this.ngUnsubscribe)
@@ -271,8 +288,21 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.seasonEvents.push(x);
           i++;
         });
-        this.initCalendar();
-        // Init map here after replacing the entire array
+        this.agencyCountryMap.size == 0 ? this.initCalendar()
+          :
+          CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(id => {
+            this.af.database.object(Constants.APP_STATUS + "/season/" + id, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(snapshot => {
+                let i = 100;
+                snapshot.forEach((seasonInfo) => {
+                  let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
+                  this.seasonEvents.push(x);
+                  i++;
+                });
+                this.initCalendar();
+              })
+          })
       });
   }
 
@@ -500,10 +530,11 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   private getHazards(id) {
 
+    this.hazards = [];
+
     this.af.database.list(Constants.APP_STATUS + '/hazard/' + id)
-      .flatMap(list => {
-        this.hazards = [];
-        let tempList = [];
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(list => {
         list.forEach(hazard => {
           if (hazard.hazardScenario == -1) {
             this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
@@ -513,20 +544,71 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
                 this.hazards.push(hazard);
               });
           } else {
-            this.hazards.push(hazard);
+            if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
+              this.hazards.push(hazard);
+              this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(object => {
+                  this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                });
+            } else {
+              this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(object => {
+                  let key = this.getHazardIdIfExist(hazard, this.hazards)
+                  this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                });
+            }
           }
-          tempList.push(hazard);
         });
-        return Observable.from(tempList)
       })
-      .flatMap(hazard => {
-        return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key);
-      })
-      .distinctUntilChanged()
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(object => {
-        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
-      });
+
+    //get hazard and indicator for all normal country in network
+    this.getHazardsForCountriesInNetwork();
+  }
+
+  private getHazardsForCountriesInNetwork() {
+    CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
+      this.af.database.list(Constants.APP_STATUS + '/hazard/' + countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(list => {
+          list.forEach(hazard => {
+            if (hazard.hazardScenario == -1) {
+              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
+                .first()
+                .subscribe(nameObj => {
+                  hazard.otherName = nameObj.name;
+                  this.hazards.push(hazard);
+                });
+            } else {
+              if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
+                this.hazards.push(hazard);
+                this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(object => {
+                    this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                  });
+              } else {
+                this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(object => {
+                    let key = this.getHazardIdIfExist(hazard, this.hazards)
+                    this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                  });
+              }
+            }
+          });
+        })
+    })
+  }
+
+  private checkHazardScenarioExist(hazard, hazardList) {
+    return hazardList.map(hazard => hazard.hazardScenario).indexOf(hazard.hazardScenario) > -1
+  }
+
+  private getHazardIdIfExist(hazard, hazardList) {
+    let index = hazardList.map(hazard => hazard.hazardScenario).indexOf(hazard.hazardScenario)
+    return hazardList[index].$key
   }
 
   private getCountryContextIndicators(id) {
@@ -538,6 +620,19 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.countryContextIndicators.push(indicator);
         });
       });
+
+    //get other countries in network
+    CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
+      this.af.database.list(Constants.APP_STATUS + '/indicator/' + countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(list => {
+          list.forEach(indicator => {
+            if (!CommonUtils.itemExistInList(indicator.$key, this.countryContextIndicators)) {
+              this.countryContextIndicators.push(indicator);
+            }
+          });
+        });
+    })
   }
 
   public getCountryCodeFromLocation(location: number) {
@@ -563,9 +658,12 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   updateAlert(alertId, isDirectorAmber) {
-    if(this.isLocalNetworkAdmin){
+    if (this.isLocalNetworkAdmin) {
       if (this.DashboardTypeUsed == DashboardType.default) {
-        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level/', {id: alertId, networkId: this.networkId}]);
+        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level/', {
+          id: alertId,
+          networkId: this.networkId
+        }]);
       } else if (isDirectorAmber) {
         this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level', {
           id: alertId,
@@ -578,7 +676,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
     } else {
       if (this.DashboardTypeUsed == DashboardType.default) {
-        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
+        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {
+          id: alertId,
+          networkCountryId: this.networkCountryId
+        }]);
       } else if (isDirectorAmber) {
         this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
           id: alertId,
@@ -616,6 +717,12 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  toCalendar() {
+    if (this.agencyCountryMap.size > 0) {
+      this.storageService.set(Constants.NETWORK_CALENDAR, this.agencyCountryMap)
+    }
   }
 
 }

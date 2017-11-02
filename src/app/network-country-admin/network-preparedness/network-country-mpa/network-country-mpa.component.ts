@@ -405,7 +405,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
    */
   public assignActionDialogAdv(action: PreparednessAction) {
     if (action.dueDate == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
-      this.router.navigateByUrl("/network-country/network-country-create-edit-action/" + action.id);
+      this.isViewing ? this.router.navigate(["/network-country/network-country-create-edit-action/" + action.id, this.networkViewValues]) : this.router.navigateByUrl("/network-country/network-country-create-edit-action/" + action.id);
     } else {
       this.assignActionId = action.id;
     }
@@ -509,7 +509,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   protected deleteNote(note: PreparednessUser, action: PreparednessAction) {
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    this.af.database.list(Constants.APP_STATUS + '/note/' + this.networkCountryId + '/' + action.id + '/' + note.id).remove();
+    this.af.database.list(Constants.APP_STATUS + '/note/' + id + '/' + action.id + '/' + note.id).remove();
   }
 
   // Disable editing a note

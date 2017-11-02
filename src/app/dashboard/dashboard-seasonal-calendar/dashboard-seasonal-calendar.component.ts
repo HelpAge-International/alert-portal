@@ -53,7 +53,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   @Input() isLocalNetworkAdmin: boolean;
   private networkCountryId: string;
   private isViewing: boolean = false;
-  private  networkViewValues: {};
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -116,6 +116,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    this.clearStorage()
   }
 
 
@@ -152,6 +153,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    * me to not have to track which item has changed opposed to list
    */
   public getAllSeasonsForCountryId(countryId: string) {
+    let agencyCountry = this.storageService.get(Constants.NETWORK_CALENDAR);
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
@@ -164,8 +166,25 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
           this.seasonEvents.push(x);
           i++;
         });
-        this.initCalendar();
-        // Init map here after replacing the entire array
+        !agencyCountry ? this.initCalendar()
+          :
+          Object.keys(agencyCountry).forEach(agencyId => {
+            console.log(agencyId)
+            console.log(agencyCountry[agencyId])
+            console.log(agencyCountry[agencyId][1])
+            //data pulled from storage is strange, need to check
+            this.af.database.object(Constants.APP_STATUS + "/season/" + agencyCountry[agencyId][1], {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(snapshot => {
+                let i = 100;
+                snapshot.forEach((seasonInfo) => {
+                  let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
+                  this.seasonEvents.push(x);
+                  i++;
+                });
+                this.initCalendar();
+              })
+          })
       });
   }
 
@@ -312,6 +331,10 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     this.edit = false;
     this.editSeasonKey = undefined;
     jQuery("#add_calendar").modal("show");
+  }
+
+  clearStorage() {
+    this.storageService.remove(Constants.NETWORK_CALENDAR)
   }
 }
 
