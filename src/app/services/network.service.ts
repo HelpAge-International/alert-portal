@@ -844,8 +844,8 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountryAgencies(networkId, networkCountryId) {
-    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+  getNetworkCountryAgencies(networkId, networkCountryId){
+    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
 
   }
 

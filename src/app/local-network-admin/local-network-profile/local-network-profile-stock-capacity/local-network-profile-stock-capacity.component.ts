@@ -103,6 +103,9 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
         if (params['networkCountryId']) {
           this.networkCountryId = params['networkCountryId'];
         }
+        if (params['uid']) {
+          this.uid = params['uid'];
+        }
 
 
       })
@@ -420,6 +423,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
   }
 
   addNote(stockCapacity: StockCapacityModel, note: NoteModel) {
+    console.log("/networkCountryOfficeProfile/capacity/stockCapacity/" + this.networkCountryId + "/" + stockCapacity.id + "/notes")
     if (this.validateNote(note)) {
       const stockCapacityNode = this.isNetworkCountry ? "/networkCountryOfficeProfile/capacity/stockCapacity/" + this.networkCountryId + "/" + stockCapacity.id + "/notes" : "/localNetworkProfile/capacity/stockCapacity/" + this.networkId + "/" + stockCapacity.id + "/notes"
       this._noteService.saveNote(stockCapacityNode, note).then(() => {

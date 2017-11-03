@@ -10,6 +10,7 @@ import {StockCapacityModel} from "../../../../model/stock-capacity.model";
 import {StockService} from "../../../../services/stock.service";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
 
@@ -26,6 +27,7 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   private agencyId: string;
   private isViewing: boolean;
   private countryId: string;
+  private networkViewValues: {};
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -42,6 +44,7 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService, private networkService: NetworkService,
               private router: Router,
+              private storageService: LocalStorageService,
               private route: ActivatedRoute) {
     this.stockCapacity = new StockCapacityModel();
     this.stockCapacity.stockType = StockType.Network; // set default stock type
@@ -54,6 +57,7 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   }
 
   ngOnInit() {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     this.route.params.subscribe((params: Params) => {
       if (params['isViewing']) {
         this.isViewing = params['isViewing'];
@@ -167,7 +171,12 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   }
 
   goBack() {
-    this.router.navigateByUrl(this.isNetworkCountry ? '/network-country/network-country-office-profile-stock-capacity' : '/network/local-network-office-profile/stock-capacity');
+
+    if(this.isViewing){
+      this.router.navigate(this.isNetworkCountry ? ['network-country/network-country-office-profile-stock-capacity', this.networkViewValues ] : ['/network/local-network-office-profile/stock-capacity', this.networkViewValues]);
+    } else {
+      this.router.navigateByUrl(this.isNetworkCountry ? '/network-country/network-country-office-profile-stock-capacity' : '/network/local-network-office-profile/stock-capacity');
+    }
   }
 
   deleteStockCapacity() {
