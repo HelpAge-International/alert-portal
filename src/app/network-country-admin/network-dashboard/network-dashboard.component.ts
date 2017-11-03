@@ -142,7 +142,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         this.networkCountryId = params["networkCountryId"];
         this.uid = params["uid"]
       }
-      this.isViewing ? this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+      this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
 
   }
@@ -189,7 +189,12 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
 
-          this.loadData();
+          this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyCountryMap => {
+              this.agencyCountryMap = agencyCountryMap
+              this.loadData();
+            })
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
@@ -208,6 +213,27 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     }
 
     this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountryMap => {
+        console.log(agencyCountryMap)
+        this.agencyCountryMap = agencyCountryMap
+        this.loadData();
+      })
+
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => this.moduleSettings = matrix);
+  }
+
+  private initLocalViewAccess() {
+    this.DashboardTypeUsed = DashboardType.default
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    if (!this.networkViewValues) {
+      this.router.navigateByUrl("/dashboard")
+      return
+    }
+
+    this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyCountryMap => {
         console.log(agencyCountryMap)
@@ -287,7 +313,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.seasonEvents.push(x);
           i++;
         });
-        this.agencyCountryMap.size == 0 ? this.initCalendar()
+        this.agencyCountryMap && this.agencyCountryMap.size == 0 ? this.initCalendar()
           :
           CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(id => {
             this.af.database.object(Constants.APP_STATUS + "/season/" + id, {preserveSnapshot: true})
@@ -675,21 +701,24 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
     } else {
       if (this.DashboardTypeUsed == DashboardType.default) {
-        if(this.networkViewValues){
+        if (this.networkViewValues) {
           this.networkViewValues["id"] = alertId
         }
-        this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level/', this.networkViewValues] : ['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
+        this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level/', this.networkViewValues] : ['network-country/network-dashboard/dashboard-update-alert-level/', {
+          id: alertId,
+          networkCountryId: this.networkCountryId
+        }]);
       } else if (isDirectorAmber) {
-        if(this.networkViewValues){
+        if (this.networkViewValues) {
           this.networkViewValues["id"] = alertId
           this.networkViewValues["isDirector"] = true
         }
         this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level', this.networkViewValues]
           : ['network-country/network-dashboard/dashboard-update-alert-level', {
-          id: alertId,
-          networkCountryId: this.networkCountryId,
-          isDirector: true
-        }]);
+            id: alertId,
+            networkCountryId: this.networkCountryId,
+            isDirector: true
+          }]);
       } else {
         let selection = this.approveMap.get(alertId);
         this.approveMap.set(alertId, !selection);

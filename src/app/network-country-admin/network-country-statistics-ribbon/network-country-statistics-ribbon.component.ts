@@ -101,7 +101,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   ngOnInit() {
     // this.normalAccess();
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
-    this.networkViewValues ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+    this.networkViewValues ? this.isLocalNetworkAdmin ? this.initViewLocalNetworkAccess() : this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
   }
 
   private initNetworkAccess() {
@@ -207,6 +207,35 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
                 this.recalculateAll();
               });
               this.prepActionService.initActionsWithInfoAllAgenciesInNetwork(this.af, this.ngUnsubscribe, this.uid, null, this.networkCountryId, this.networkId, this.systemId, agencyCountryMap)
+            });
+          });
+        });
+      })
+
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => this.userPermissions = matrix);
+
+  }
+
+  private initViewLocalNetworkAccess() {
+    console.log("initViewLocalNetworkAccess")
+    this.uid = this.networkViewValues["uid"];
+    this.networkId = this.networkViewValues["networkId"];
+    this.systemId = this.networkViewValues["systemId"];
+
+    this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agencyCountryMap => {
+        this.downloadThreshold(() => {
+          this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
+            this.initAlerts(this.networkId, () => {
+              this.getCountryNumberNetworkLocal(this.networkId);
+              this.getApprovedResponsePlansCount(this.networkId);
+              this.prepActionService.addUpdater(() => {
+                this.recalculateAll();
+              });
+              this.prepActionService.initActionsWithInfoAllAgenciesInNetworkLocal(this.af, this.ngUnsubscribe, this.uid, null, this.networkId, this.networkId, this.systemId, agencyCountryMap)
             });
           });
         });

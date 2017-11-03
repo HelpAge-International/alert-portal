@@ -22,6 +22,7 @@ export class PrepActionService {
   // Actions: Used for list
   public actions: PreparednessAction[];
   public actionsNetwork: PreparednessAction[];
+  public actionsNetworkLocal: PreparednessAction[];
   private ranClockInitialiser: boolean = false;
   private defaultClockType: number;
   private defaultClockValue: number;
@@ -31,6 +32,7 @@ export class PrepActionService {
   constructor() {
     this.actions = [];
     this.actionsNetwork = [];
+    this.actionsNetworkLocal = [];
   }
 
   /**
@@ -102,6 +104,31 @@ export class PrepActionService {
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
     this.getDefaultClockSettingsNetwork(af, this.agencyId, this.countryId, () => {
+      if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+      }
+      this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
+      this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
+
+      agencyCountryMap.forEach((countryId, agencyId) => {
+        if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+          this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+        }
+        this.init(af, "actionMandated", agencyId, isMPA, PrepSourceTypes.AGENCY);
+        this.init(af, "action", countryId, isMPA, PrepSourceTypes.COUNTRY);
+      })
+    });
+  }
+
+  public initActionsWithInfoAllAgenciesInNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
+                                                 countryId: string, agencyId: string, systemId: string, agencyCountryMap: Map<string, string>) {
+    this.uid = uid;
+    this.ngUnsubscribe = ngUnsubscribe;
+    this.isMPA = isMPA;
+    this.countryId = countryId;
+    this.agencyId = agencyId;
+    this.systemAdminId = systemId;
+    this.getDefaultClockSettingsNetworkLocal(af, this.agencyId, () => {
       if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
         this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
       }
@@ -216,11 +243,13 @@ export class PrepActionService {
     af.database.object(Constants.APP_STATUS + "/networkCountry/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        this.defaultClockValue = (+(snap.val().preparedness.value));
-        this.defaultClockType = (+(snap.val().preparedness.durationType));
-        if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
-          defaultClockSettingsAquired();
-          this.ranClockInitialiser = true;
+        if (snap && snap.val()) {
+          this.defaultClockValue = (+(snap.val().preparedness.value));
+          this.defaultClockType = (+(snap.val().preparedness.durationType));
+          if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+            defaultClockSettingsAquired();
+            this.ranClockInitialiser = true;
+          }
         }
       });
   }
@@ -545,6 +574,121 @@ export class PrepActionService {
     console.log(this.actionsNetwork)
   }
 
+  private updateActionNetworkLocal(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, networkId, updated: (action: PreparednessAction) => void) {
+    let run: boolean = this.findActionNetworkLocal(id) == null;
+    let i = this.findOrCreateIndexNetworkLocal(id, whichUser, source, networkId);
+    let applyCustom = false; // Fixes bug with frequencyValue and frequencyBase
+    if (action.hasOwnProperty('asignee')) this.actionsNetworkLocal[i].asignee = action.asignee;
+    else if (action.type == ActionType.custom) this.actionsNetworkLocal[i].asignee = null;
+    if (action.hasOwnProperty('dueDate')) this.actionsNetworkLocal[i].dueDate = action.dueDate;
+    else if (action.type == ActionType.custom) this.actionsNetworkLocal[i].dueDate = null;
+    if (action.hasOwnProperty('assignHazard')) {
+      this.actionsNetworkLocal[i].assignedHazards = [];
+      for (const x of action.assignHazard) {
+        this.actionsNetworkLocal[i].assignedHazards.push(x);
+      }
+    }
+    // else {
+    //   this.actions[i].assignedHazards = null;
+    // }
+    if (action.hasOwnProperty('type')) {
+      this.actionsNetworkLocal[i].type = action.type;
+      /** WORKAROUND LOGIC FOR APA'S ON MANDATED PREP ACTIONS
+       * - All Hazards are underneath it **/
+      if (action.type == ActionType.mandated && this.isMPA) {
+        // Add all of them
+        this.actionsNetworkLocal[i].assignedHazards = [];
+        for (const x in HazardScenario) {
+          this.actionsNetworkLocal[i].assignedHazards.push(+HazardScenario[x]);
+        }
+      }
+    }
+    // else {
+    //   this.actions[i].type = null;
+    // }
+    if (action.hasOwnProperty('createdByAgencyId')) this.actionsNetworkLocal[i].createdByAgencyId = action.createdByAgencyId;
+    else if (action.type == ActionType.custom) action.createdByAgencyId = null;
+    if (action.hasOwnProperty('createdByCountryId')) this.actionsNetworkLocal[i].createdByCountryId = action.createdByCountryId;
+    else if (action.type == ActionType.custom) action.createdByCountryId = null;
+
+    if (action.hasOwnProperty('updatedAt')) this.actionsNetworkLocal[i].updatedAt = action.updatedAt;
+    else if (action.type == ActionType.custom) action.isArchived = null;
+    if (action.hasOwnProperty('isArchived')) this.actionsNetworkLocal[i].isArchived = action.isArchived;
+    else if (action.type == ActionType.custom) action.isArchived = null;
+    if (action.hasOwnProperty('budget')) this.actionsNetworkLocal[i].budget = action.budget;
+    else if (action.type == ActionType.custom) action.budget = null;
+    if (action.hasOwnProperty('department')) this.actionsNetworkLocal[i].department = action.department; // else action.department = null;
+    if (action.hasOwnProperty('level')) this.actionsNetworkLocal[i].level = action.level; // else action.level = null;
+    if (action.hasOwnProperty('calculatedIsComplete')) this.actionsNetworkLocal[i].isComplete = action.calculatedIsComplete;
+    else if (action.type == ActionType.custom) action.calculatedIsComplete = null;
+    if (action.hasOwnProperty('isCompleteAt')) this.actionsNetworkLocal[i].isCompleteAt = action.isCompleteAt;
+    else if (action.type == ActionType.custom) action.isCompleteAt = null;
+    if (action.hasOwnProperty('isComplete')) this.actionsNetworkLocal[i].isComplete = action.isComplete;
+    else if (action.type == ActionType.custom) action.isComplete = null;
+    if (action.hasOwnProperty('requireDoc')) this.actionsNetworkLocal[i].requireDoc = action.requireDoc;
+    else if (action.type == ActionType.custom) action.requireDoc = null;
+    if (action.hasOwnProperty('task')) this.actionsNetworkLocal[i].task = action.task; // else action.task = null;
+    if (action.hasOwnProperty('frequencyBase')) {
+      this.actionsNetworkLocal[i].frequencyBase = action.frequencyBase;
+      applyCustom = true;
+    }
+    else action.frequencyBase = null;
+    if (action.hasOwnProperty('frequencyValue')) {
+      this.actionsNetworkLocal[i].frequencyValue = action.frequencyValue;
+      applyCustom = true;
+    }
+    else action.frequencyValue = null;
+    this.initNotesNetwork(af, id, networkId, run);
+
+    // Document deletion check
+    if (action.hasOwnProperty('documents')) {
+      let docsToRemove: string[] = [];
+      for (let x of this.actionsNetworkLocal[i].documents) {
+        let docIsGoneFromOnline: boolean = true;
+        for (let doc in action.documents) {
+          if (doc == x.documentId) {
+            docIsGoneFromOnline = false;
+          }
+        }
+        if (docIsGoneFromOnline) {
+          this.actionsNetworkLocal[i].removeDoc(x.documentId);
+          docsToRemove.push(x.documentId);
+        }
+      }
+      for (let doc in action.documents) {
+        if (docsToRemove.indexOf(doc) <= -1)
+          this.initDocNetwork(af, whichUser, doc, this.actionsNetwork[i].id);
+      }
+    }
+    // else {
+    //   this.actions[i].documents = [];
+    // }
+
+    // Clock settings
+    if (applyCustom) {
+      this.actionsNetwork[i].setComputedClockSetting(+this.actionsNetwork[i].frequencyValue, +this.actionsNetwork[i].frequencyBase);
+    }
+    else {
+      this.actionsNetwork[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
+    }
+
+
+    // Optional notifier method
+    if (updated != null) {
+      updated(this.actionsNetwork[i]);
+    }
+
+    // console.log("Updating!");
+    // console.log(this.actions[i]);
+
+    // Subscriber method
+    if (this.updater != null) {
+      this.updater();
+    }
+
+    console.log(this.actionsNetwork)
+  }
+
   public addUpdater(func: () => void) {
     this.updater = func;
   }
@@ -602,6 +746,30 @@ export class PrepActionService {
     return returnI;
   }
 
+  private findOrCreateIndexNetworkLocal(id: string, uid: string, source: PrepSourceTypes, networkId: string) {
+    let returnI = -1;
+    for (let i = 0; i < this.actionsNetworkLocal.length; i++) {
+      if (this.actionsNetworkLocal[i].id == id) {
+        returnI = i;
+        i = this.actionsNetworkLocal.length;
+      }
+    }
+    if (returnI == -1) {
+      let newPrep: PreparednessAction = new PreparednessAction();
+      newPrep.id = id;
+      newPrep.networkId = networkId;
+      this.actionsNetworkLocal.push(newPrep);
+      returnI = this.actionsNetworkLocal.length - 1;
+    }
+    if (source == PrepSourceTypes.SYSTEM)
+      this.actionsNetworkLocal[returnI].systemUid = uid;
+    if (source == PrepSourceTypes.AGENCY)
+      this.actionsNetworkLocal[returnI].agencyUid = uid;
+    if (source == PrepSourceTypes.COUNTRY)
+      this.actionsNetworkLocal[returnI].countryUid = uid;
+    return returnI;
+  }
+
   public findAction(id: string) {
     for (let x of this.actions) {
       if (x.id == id)
@@ -617,6 +785,15 @@ export class PrepActionService {
     }
     return null;
   }
+
+  public findActionNetworkLocal(id: string) {
+    for (let x of this.actionsNetworkLocal) {
+      if (x.id == id)
+        return x;
+    }
+    return null;
+  }
+
 
   /**
    * Initialisation method for the notes

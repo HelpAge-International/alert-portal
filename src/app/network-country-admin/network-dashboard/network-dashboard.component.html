@@ -11,8 +11,14 @@
 </ng-template>
 
 <ng-template #country>
-  <app-country-admin-header></app-country-admin-header>
-  <app-network-country-menu [isViewing]="isViewing"></app-network-country-menu>
+  <ng-container *ngIf="!isLocalNetworkAdmin">
+    <app-country-admin-header></app-country-admin-header>
+    <app-network-country-menu [isViewing]="isViewing"></app-network-country-menu>
+  </ng-container>
+  <ng-container *ngIf="isLocalNetworkAdmin">
+    <app-country-admin-header></app-country-admin-header>
+    <app-local-network-menu [isViewing]="isViewing"></app-local-network-menu>
+  </ng-container>
 </ng-template>
 
 
