@@ -98,17 +98,19 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
         this.isViewing = params["isViewing"];
         this.systemId = params["systemId"];
         this.agencyId = params["agencyId"];
         this.countryId = params["countryId"];
         this.userType = params["userType"];
         this.networkId = params["networkId"];
-        this.networkCountryId = params["networkCountryId"];
+        if (!this.isLocalNetworkAdmin) {
+          this.networkCountryId = params["networkCountryId"];
+        }
         this.uid = params["uid"];
       }
-      this.isViewing ? this.initViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
+      this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess()  : this.initViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
     })
   }
 
@@ -201,6 +203,38 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         this.networkPlanExpireDuration = duration;
         this.getResponsePlans(this.networkCountryId);
         this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(map => {
+            this.agencyCountryMap = map;
+            this.agenciesNeedToApprove = [];
+            if (this.agencyCountryMap) {
+              CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
+                this.userService.getAgencyModel(agencyId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(model => {
+                    console.log(model);
+                    this.agenciesNeedToApprove.push(model);
+                  });
+                //prepare agency region map
+                this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(regionId => {
+                    this.agencyRegionMap.set(agencyId, regionId);
+                  });
+              });
+            }
+          });
+      });
+  }
+
+  private initLocalViewAccess() {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
+    this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(duration => {
+        this.networkPlanExpireDuration = duration;
+        this.getResponsePlans(this.networkId);
+        this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(map => {
             this.agencyCountryMap = map;

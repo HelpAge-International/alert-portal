@@ -160,20 +160,24 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
         this.isViewing = params["isViewing"];
         this.systemAdminId = params["systemId"];
         this.agencyId = params["agencyId"];
         this.countryId = params["countryId"];
         this.userType = params["userType"];
         this.networkId = params["networkId"];
-        this.networkCountryId = params["networkCountryId"];
+        if (!this.isLocalNetworkAdmin) {
+          this.networkCountryId = params["networkCountryId"];
+        }
         this.uid = params["uid"];
       }
       if (params['isCHS']) {
         this.filterType = 0;
       }
-      this.isViewing ? this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+      console.log(this.isViewing)
+      console.log(this.isLocalNetworkAdmin)
+      this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalNetworkViewAccess() : this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
 
@@ -286,7 +290,41 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     });
 
     // Currency
-    // this.calculateCurrency();
+    this.calculateCurrency();
+  }
+
+  private initLocalNetworkViewAccess() {
+    this.assignActionAsignee = this.uid;
+    this.filterAssigned = "0";
+    this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+
+    this.getStaffDetails(this.uid, true);
+
+    this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid, true,
+      this.networkId, this.systemAdminId);
+    this.initDocumentTypes();
+
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => this.modulesAreEnabled = matrix);
+
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+
+    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkMap => {
+        if (networkMap) {
+          this.initNetworkAdmin(networkMap)
+          this.initAgenciesDetails(networkMap)
+        }
+      })
+    this.initStaff(this.agencyId, this.countryId);
+    PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
+      this.permissionsAreEnabled = isEnabled;
+    });
+
+    // Currency
+    this.calculateCurrency();
   }
 
   ngOnDestroy() {

@@ -503,7 +503,11 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
   goToCHS() {
     if (this.userPermissions.minimumPreparedness) {
-      this.networkViewValues ? this.router.navigate(["/network-country/network-country-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)]) : this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", {"isCHS": true}]) : this.router.navigate(["/network-country/network-country-mpa", {"isCHS": true}]);
+      this.networkViewValues ? this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)]) : this.router.navigate(["/network-country/network-country-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)])
+        :
+        this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", {"isCHS": true}])
+          :
+          this.router.navigate(["/network-country/network-country-mpa", {"isCHS": true}]);
     }
   }
 

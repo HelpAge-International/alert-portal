@@ -132,14 +132,16 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
         this.isViewing = params["isViewing"];
         this.systemId = params["systemId"];
         this.agencyId = params["agencyId"];
         this.countryId = params["countryId"];
         this.userType = params["userType"];
         this.networkId = params["networkId"];
-        this.networkCountryId = params["networkCountryId"];
+        if (!this.isLocalNetworkAdmin) {
+          this.networkCountryId = params["networkCountryId"];
+        }
         this.uid = params["uid"]
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
@@ -701,21 +703,24 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
     } else {
       if (this.DashboardTypeUsed == DashboardType.default) {
-        if(this.networkViewValues){
+        if (this.networkViewValues) {
           this.networkViewValues["id"] = alertId
         }
-        this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level/', this.networkViewValues] : ['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
+        this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level/', this.networkViewValues] : ['network-country/network-dashboard/dashboard-update-alert-level/', {
+          id: alertId,
+          networkCountryId: this.networkCountryId
+        }]);
       } else if (isDirectorAmber) {
-        if(this.networkViewValues){
+        if (this.networkViewValues) {
           this.networkViewValues["id"] = alertId
           this.networkViewValues["isDirector"] = true
         }
         this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level', this.networkViewValues]
           : ['network-country/network-dashboard/dashboard-update-alert-level', {
-          id: alertId,
-          networkCountryId: this.networkCountryId,
-          isDirector: true
-        }]);
+            id: alertId,
+            networkCountryId: this.networkCountryId,
+            isDirector: true
+          }]);
       } else {
         let selection = this.approveMap.get(alertId);
         this.approveMap.set(alertId, !selection);

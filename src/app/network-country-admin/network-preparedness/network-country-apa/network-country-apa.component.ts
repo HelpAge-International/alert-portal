@@ -154,17 +154,19 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
         this.isViewing = params["isViewing"];
         this.systemAdminId = params["systemId"];
         this.agencyId = params["agencyId"];
         this.countryId = params["countryId"];
         this.userType = params["userType"];
         this.networkId = params["networkId"];
-        this.networkCountryId = params["networkCountryId"];
+        if (!this.isLocalNetworkAdmin) {
+          this.networkCountryId = params["networkCountryId"];
+        }
         this.uid = params["uid"];
       }
-      this.isViewing ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+      this.isViewing ? this.isLocalNetworkAdmin ? this.initViewLocalNetworkAccess() : this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
 
@@ -252,6 +254,36 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
     this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, false,
       this.networkCountryId, this.networkId, this.systemAdminId);
+    this.initDocumentTypes();
+    this.initAlerts();
+
+    this.networkService.getNetworkModuleMatrix(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(matrix => this.privacy = matrix);
+
+    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkMap => {
+        this.initNetworkAdmin(networkMap)
+        this.initAgenciesDetails(networkMap)
+      })
+
+    this.initStaff(this.agencyId, this.countryId)
+
+    PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
+      this.permissionsAreEnabled = isEnabled;
+    });
+
+  }
+
+  private initViewLocalNetworkAccess() {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    this.filterAssigned = "0";
+    this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+    this.getStaffDetails(this.uid, true);
+
+    this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid, false,
+      this.networkId, this.systemAdminId);
     this.initDocumentTypes();
     this.initAlerts();
 
