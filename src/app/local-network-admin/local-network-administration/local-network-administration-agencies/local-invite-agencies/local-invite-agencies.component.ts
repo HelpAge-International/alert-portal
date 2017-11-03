@@ -33,13 +33,13 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
   //logic
   private networkId: string;
   private agencies = [];
-  private countryCodes = {};
   private agencySelectionMap = new Map<string, boolean>();
   private agencyNameMap = new Map<string, string>();
   private selectedAgencies: string[];
   private leadAgencyId: string;
   private existingAgencyIds: string[];
   private showLoader:boolean;
+  private networkCountryCode: number;
 
 
   constructor(private pageControl: PageControlService,
@@ -64,6 +64,7 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
           this.networkService.getNetworkDetail(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(network =>{
+              this.networkCountryCode = network.countryCode
 
               this.agencyService.getAllAgencyFromPlatform()
                 .takeUntil(this.ngUnsubscribe)
@@ -151,15 +152,14 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
   }
 
   saveAgenciesAndLead() {
-    this.selectedAgencies.forEach( agency =>{
-      this.networkService.getNetworkDetail(this.networkId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe( network => {
-          this.networkService.getCountryCodeForAgency(agency, network.countryCode)
+
+          this.selectedAgencies.forEach( agency =>{
+          this.networkService.getCountryCodeForAgency(agency, this.networkCountryCode)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe( countryCodes => {
-              this.countryCodes = countryCodes
-              this.networkService.updateAgenciesForLocalNetwork(this.networkId, this.leadAgencyId, this.selectedAgencies, this.countryCodes).then(() => {
+            .subscribe( countryCode => {
+
+
+              this.networkService.updateAgencyForLocalNetwork(this.networkId, this.leadAgencyId, agency, countryCode).then(() => {
                 this.router.navigateByUrl("/network/local-network-administration/agencies");
               }).catch(rej => {
                 this.alertMessage = new AlertMessageModel(rej.message);
@@ -168,8 +168,6 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
             })
 
         })
-    })
-
 
   }
 

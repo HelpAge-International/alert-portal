@@ -129,19 +129,17 @@ export class NetworkService {
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
 
-  updateAgenciesForLocalNetwork(networkId: string, leadAgencyId: string, selectedAgencies: string[], countryCode: object) {
+  updateAgencyForLocalNetwork(networkId: string, leadAgencyId: string, agencyId: string, countryCode: string) {
     let data = {};
     data["/network/" + networkId + "/leadAgencyId"] = leadAgencyId;
-    selectedAgencies.forEach(agencyId => {
 
       let item = {};
-      if (!isEmptyObject(countryCode)) {
+      if (countryCode) {
         item["countryCode"] = countryCode
       }
       item["isApproved"] = false;
       data["/network/" + networkId + "/agencies/" + agencyId] = item;
 
-    });
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
 
