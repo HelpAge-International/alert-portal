@@ -8,6 +8,7 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
 
@@ -62,11 +63,14 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   private networkCountryId: string;
   private networkId: string;
   private agencyCountryMap: Map<string, string>;
+  private networkViewValues: {};
+  private countryId: string;
 
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private router: Router,
+              private storageService: LocalStorageService,
               private networkService: NetworkService, private agencyService: AgencyService,
               private af: AngularFire) {
 
@@ -78,63 +82,127 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit() {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params['isViewing']) {
+          this.isViewing = params['isViewing'];
+        }
+        if (params['agencyId']) {
+          this.agencyId = params['agencyId'];
+        }
+        if (params['countryId']) {
+          this.countryId = params['countryId'];
+        }
+        if (params['networkId']) {
+          this.networkId = params['networkId'];
+        }
+        if (params['networkCountryId']) {
+          this.networkCountryId = params['networkCountryId'];
+        }
+        if (params['uid']) {
+          this.uid = params['uid'];
+        }
 
-    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+        this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+      })
 
   }
 
   private networkCountryAccess() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
 
-      this.networkService.getSelectedIdObj(this.uid)
+    if(this.isViewing){
+
+      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
-          this.networkCountryId = selection["networkCountryId"];
-
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(map => {
-              console.log(map);
-              this.agencies = [];
-              this.agencyCountryMap = map;
-              map.forEach((v, k) => {
-                this.agencyService.getAgency(k)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => this.agencies.push(agency));
-              });
-              this._getProgramme(map);
-            });
+        .subscribe(map => {
+          console.log(map);
+          this.agencies = [];
+          this.agencyCountryMap = map;
+          map.forEach((v, k) => {
+            this.agencyService.getAgency(k)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => this.agencies.push(agency));
+          });
+          this._getProgramme(map);
         });
-    });
+
+    }else{
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
+
+        this.networkService.getSelectedIdObj(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
+            this.networkCountryId = selection["networkCountryId"];
+
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(map => {
+                console.log(map);
+                this.agencies = [];
+                this.agencyCountryMap = map;
+                map.forEach((v, k) => {
+                  this.agencyService.getAgency(k)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => this.agencies.push(agency));
+                });
+                this._getProgramme(map);
+              });
+          });
+      });
+    }
+
   }
 
   private localNetworkAdminAccess() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
-      this.networkService.getSelectedIdObj(user.uid)
+    if(this.isViewing){
+
+      this.networkService.getAgencyCountryOfficesByNetwork(this.networkID)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkID = selection["id"];
-          this.networkService.getAgencyCountryOfficesByNetwork(this.networkID)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(officeAgencyMap => {
-              this.agencies = []
+        .subscribe(officeAgencyMap => {
+          this.agencies = []
 
-              officeAgencyMap.forEach((value: string, key: string) => {
-                this.agencyService.getAgency(key)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies.push(agency)
-                  })
+          officeAgencyMap.forEach((value: string, key: string) => {
+            this.agencyService.getAgency(key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                this.agencies.push(agency)
               })
+          })
 
-
-              this._getProgramme(officeAgencyMap);
-            })
+          this._getProgramme(officeAgencyMap);
         })
-    })
+
+    }else{
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
+        this.networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkID = selection["id"];
+            this.networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(officeAgencyMap => {
+                this.agencies = []
+
+                officeAgencyMap.forEach((value: string, key: string) => {
+                  this.agencyService.getAgency(key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency)
+                    })
+                })
+
+
+                this._getProgramme(officeAgencyMap);
+              })
+          })
+      })
+    }
+
   }
 
   saveNote(programmeID: any, agency: any) {

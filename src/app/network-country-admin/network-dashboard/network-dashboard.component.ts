@@ -131,6 +131,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.route.params.subscribe((params: Params) => {
       if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
         this.isViewing = params["isViewing"];
@@ -142,6 +143,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         this.networkCountryId = params["networkCountryId"];
         this.uid = params["uid"]
       }
+
+      console.log(this.isLocalNetworkAdmin)
       this.isViewing ? this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
 

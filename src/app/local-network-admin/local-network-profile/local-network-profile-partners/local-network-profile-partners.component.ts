@@ -18,6 +18,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {OperationAreaModel} from "../../../model/operation-area.model";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
 
@@ -71,6 +72,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   //network country re-use
   @Input() isNetworkCountry: boolean;
   private networkCountryId: string;
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
@@ -80,6 +82,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
               private _agencyService: AgencyService,
               private _networkService: NetworkService,
               private networkService: NetworkService,
+              private storageService: LocalStorageService,
               private af: AngularFire,
               private router: Router) {
     this.areasOfOperation = [];
@@ -95,116 +98,227 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params['isViewing']) {
+          this.isViewing = params['isViewing'];
+        }
+        if (params['agencyId']) {
+          this.agencyId = params['agencyId'];
+        }
+        if (params['countryId']) {
+          this.countryId = params['countryId'];
+        }
+        if (params['networkId']) {
+          this.networkId = params['networkId'];
+        }
+        if (params['networkCountryId']) {
+          this.networkCountryId = params['networkCountryId'];
+        }
+        if (params['uid']) {
+          this.uid = params['uid'];
+        }
+
+        this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+      })
   }
 
   private networkCountryAccess() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
+    if(this.isViewing){
 
-      this.networkService.getSelectedIdObj(this.uid)
+      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
-          this.networkCountryId = selection["networkCountryId"];
-
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(map => {
-              console.log(map);
-              this.officeAgencyMap = map;
-
-              map.forEach((value: string, key: string) => {
-                this._agencyService.getAgency(key)
+        .subscribe(map => {
+          console.log(map);
+          this.officeAgencyMap = map;
+          map.forEach((value: string, key: string) => {
+            this._agencyService.getAgency(key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                this.agencies.push(agency);
+                this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies.push(agency);
+                  .subscribe(partnerOrganisations => {
+                          this.partnerOrganisations.set(key, partnerOrganisations);
 
-                    this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(partnerOrganisations => {
-                        this.partnerOrganisations.set(key, partnerOrganisations);
+                    this.assignProjectsToDisplayPerPartnerOrg(key, value);
 
-                        this.assignProjectsToDisplayPerPartnerOrg(key, value);
-
-                        // Get the partner organisation notes
-                        this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
-                          const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-                          this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
-                            partnerOrganisation.notes = notes;
-                          });
-
-                          // Create the new note model for partner organisation
-                          this.newNote[partnerOrganisation.id] = new NoteModel();
-                          this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
-                        });
+                    // Get the partner organisation notes
+                    this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
+                      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                      this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                        partnerOrganisation.notes = notes;
                       });
 
-                    // get the country levels values
-                    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(content => {
-                        this.countryLevelsValues = content;
-                      });
-                  })
-              });
+                            // Create the new note model for partner organisation
+                      this.newNote[partnerOrganisation.id] = new NoteModel();
+                      this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                    });
+                  });
+
+                // get the country levels values
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(content => {
+                    this.countryLevelsValues = content;
+                  });
+              })
+          });
 
 
-            });
         });
-    });
+    }else{
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
+
+        this.networkService.getSelectedIdObj(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
+            this.networkCountryId = selection["networkCountryId"];
+
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(map => {
+                console.log(map);
+                this.officeAgencyMap = map;
+
+                map.forEach((value: string, key: string) => {
+                  this._agencyService.getAgency(key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency);
+
+                      this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(partnerOrganisations => {
+                          this.partnerOrganisations.set(key, partnerOrganisations);
+
+                          this.assignProjectsToDisplayPerPartnerOrg(key, value);
+
+                          // Get the partner organisation notes
+                          this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
+                            const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                            this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                              partnerOrganisation.notes = notes;
+                            });
+
+                            // Create the new note model for partner organisation
+                            this.newNote[partnerOrganisation.id] = new NoteModel();
+                            this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                          });
+                        });
+
+                      // get the country levels values
+                      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(content => {
+                          this.countryLevelsValues = content;
+                        });
+                    })
+                });
+
+
+              });
+          });
+      });
+    }
+
   }
 
   private localNetworkAdminAccess() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
-      this._networkService.getSelectedIdObj(user.uid)
+    if(this.isViewing){
+      this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
-
-          this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(officeAgencyMap => {
-              this.officeAgencyMap = officeAgencyMap
-
-              officeAgencyMap.forEach((value: string, key: string) => {
-                this._agencyService.getAgency(key)
+        .subscribe(officeAgencyMap => {
+          this.officeAgencyMap = officeAgencyMap
+          officeAgencyMap.forEach((value: string, key: string) => {
+            this._agencyService.getAgency(key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                this.agencies.push(agency)
+                this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies.push(agency)
-
-                    this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(partnerOrganisations => {
-                        this.partnerOrganisations.set(key, partnerOrganisations)
-
-                        this.assignProjectsToDisplayPerPartnerOrg(key, value);
-
-                        // Get the partner organisation notes
-                        this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
-                          const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-                          this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
-                            partnerOrganisation.notes = notes;
-                          });
-
-                          // Create the new note model for partner organisation
-                          this.newNote[partnerOrganisation.id] = new NoteModel();
-                          this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
-                        });
+                  .subscribe(partnerOrganisations => {
+                    this.partnerOrganisations.set(key, partnerOrganisations)
+                    this.assignProjectsToDisplayPerPartnerOrg(key, value);
+                          // Get the partner organisation notes
+                    this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
+                      const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                      this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                        partnerOrganisation.notes = notes;
                       });
 
-                    // get the country levels values
-                    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(content => {
-                        this.countryLevelsValues = content;
-                      });
-                  })
+                      // Create the new note model for partner organisation
+                      this.newNote[partnerOrganisation.id] = new NoteModel();
+                      this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                    });
+                  });
+
+                // get the country levels values
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(content => {
+                    this.countryLevelsValues = content;
+                  });
               })
-            });
-        })
-    });
+          })
+        });
+
+    }else{
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
+        this._networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
+
+            this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(officeAgencyMap => {
+                this.officeAgencyMap = officeAgencyMap
+
+                officeAgencyMap.forEach((value: string, key: string) => {
+                  this._agencyService.getAgency(key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency)
+
+                      this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(partnerOrganisations => {
+                          this.partnerOrganisations.set(key, partnerOrganisations)
+
+                          this.assignProjectsToDisplayPerPartnerOrg(key, value);
+
+                          // Get the partner organisation notes
+                          this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
+                            const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                            this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                              partnerOrganisation.notes = notes;
+                            });
+
+                            // Create the new note model for partner organisation
+                            this.newNote[partnerOrganisation.id] = new NoteModel();
+                            this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                          });
+                        });
+
+                      // get the country levels values
+                      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(content => {
+                          this.countryLevelsValues = content;
+                        });
+                    })
+                })
+              });
+          })
+      });
+    }
+
   }
 
   private assignProjectsToDisplayPerPartnerOrg(key, value) {

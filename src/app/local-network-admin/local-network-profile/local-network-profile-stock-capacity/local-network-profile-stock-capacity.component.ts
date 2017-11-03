@@ -108,9 +108,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
         }
 
 
+        this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
       })
-
-    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
 
   };
 
