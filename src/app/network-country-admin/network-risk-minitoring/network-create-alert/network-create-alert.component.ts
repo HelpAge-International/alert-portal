@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {CommonService} from "../../../services/common.service";
 import {NetworkService} from "../../../services/network.service";
 import {OperationAreaModel} from "../../../model/operation-area.model";
@@ -15,6 +15,8 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
+import {LocalStorageService} from "angular-2-local-storage";
+import {Local} from "protractor/built/driverProviders";
 
 
 @Component({
@@ -27,6 +29,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   leadAgencyId: any;
   networkCountryId: any;
 
+  private networkViewValues: {}
   private UserType: number;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -59,6 +62,8 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
   private hazards: any[] = [];
   private networkId: any;
+  private isViewing: boolean;
+  private systemId: string;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -67,6 +72,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               private _commonService: CommonService,
               private translate: TranslateService,
               private userService: UserService,
+              private storage: LocalStorageService,
               private networkService: NetworkService,
               private notificationService: NotificationService) {
     this.initAlertData();
@@ -87,64 +93,92 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
 
-      //get network id
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          console.log(selection)
-          this.networkId = selection["id"];
-          this.networkCountryId = selection["networkCountryId"];
-          this.UserType = selection["userType"];
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
+        }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
 
+        if(this.isViewing){
 
-          console.log(this.networkId)
           this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe( network => {
+            .subscribe(network => {
               this.leadAgencyId = network.leadAgencyId
-              Object.keys( network.agencyCountries[this.leadAgencyId]).forEach( key => {
+              Object.keys(network.agencyCountries[this.leadAgencyId]).forEach(key => {
                 this.leadAgencyCountryOffice = key
               })
-
               this._getHazards();
               this._getDirectorCountryID();
             })
 
-          // this._getCountryID().then(() => {
-          //   this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-          //   this._getHazards();
-          //   this._getDirectorCountryID();
-          // });
-        })
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+              this.countryLevelsValues = content;
+              err => console.log(err);
+            });
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
 
-      // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe).subscribe(content => {
-        this.countryLevelsValues = content;
-        err => console.log(err);
-      });
-    });
+            //get network id
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                console.log(selection)
+                this.networkId = selection["id"];
+                this.networkCountryId = selection["networkCountryId"];
+                this.UserType = selection["userType"];
 
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   this.UserType = userType;
-    //
-    //   this._getCountryID().then(() => {
-    //     this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-    //     this._getHazards();
-    //     this._getDirectorCountryID();
-    //   });
-    //
-    //   // get the country levels values
-    //   this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-    //     .takeUntil(this.ngUnsubscribe).subscribe(content => {
-    //     this.countryLevelsValues = content;
-    //     err => console.log(err);
-    //   });
-    // });
+
+                console.log(this.networkId)
+                this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(network => {
+                    this.leadAgencyId = network.leadAgencyId
+                    Object.keys(network.agencyCountries[this.leadAgencyId]).forEach(key => {
+                      this.leadAgencyCountryOffice = key
+                    })
+
+                    this._getHazards();
+                    this._getDirectorCountryID();
+                  })
+              })
+
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+              this.countryLevelsValues = content;
+              err => console.log(err);
+            });
+          });
+        }
+
+
+      })
+
   }
 
   ngOnDestroy(): void {
@@ -201,7 +235,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
             }
 
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
-            this.router.navigateByUrl('/network-country/network-dashboard');
+            this.router.navigate(this.networkViewValues ? ['/network-country/network-dashboard', this.networkViewValues] : ['/network-country/network-dashboard']);
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });

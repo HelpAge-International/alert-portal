@@ -578,9 +578,17 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
     } else {
       if (this.DashboardTypeUsed == DashboardType.default) {
-        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
+        if(this.networkViewValues){
+          this.networkViewValues["id"] = alertId
+        }
+        this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level/', this.networkViewValues] : ['network-country/network-dashboard/dashboard-update-alert-level/', {id: alertId, networkCountryId: this.networkCountryId}]);
       } else if (isDirectorAmber) {
-        this.router.navigate(['network-country/network-dashboard/dashboard-update-alert-level', {
+        if(this.networkViewValues){
+          this.networkViewValues["id"] = alertId
+          this.networkViewValues["isDirector"] = true
+        }
+        this.router.navigate(this.networkViewValues ? ['network-country/network-dashboard/dashboard-update-alert-level', this.networkViewValues]
+          : ['network-country/network-dashboard/dashboard-update-alert-level', {
           id: alertId,
           networkCountryId: this.networkCountryId,
           isDirector: true

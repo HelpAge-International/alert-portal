@@ -9,7 +9,7 @@
         | translate}}</a>
     </li>
     <li class="" [hidden]="permRiskMonitoring" routerLinkActive="active">
-      <a routerLink="/network-country/network-risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</a>
+      <a [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring', networkViewValues] : ['/network-country/network-risk-monitoring']">{{"RISK_MONITORING_TEXT" | translate}}</a>
     </li>
 
     <li class="" routerLinkActive="active">
