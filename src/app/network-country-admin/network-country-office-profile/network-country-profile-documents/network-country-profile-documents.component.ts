@@ -11,6 +11,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import * as firebase from "firebase/app";
 import App = firebase.app.App;
 declare var jQuery: any;
+import {LocalStorageService} from "angular-2-local-storage";
 
 
 @Component({
@@ -58,6 +59,7 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private networkViewValues: {};
 
 
   constructor(private pageControl: PageControlService,
@@ -65,6 +67,7 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
               private networkService: NetworkService,
               private route: ActivatedRoute,
               private af: AngularFire,
+              private storageService: LocalStorageService,
               private router: Router) {
 
     this.docFilterSubject = new BehaviorSubject(undefined);
@@ -86,56 +89,99 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
 
 
   ngOnInit() {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        if (params["countryId"]) {
-          this.countryId = params["countryId"];
+        if (params['isViewing']) {
+          this.isViewing = params['isViewing'];
         }
-        if (params["isViewing"]) {
-          this.isViewing = params["isViewing"];
+        if (params['agencyId']) {
+          this.agencyId = params['agencyId'];
         }
-        if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
+        if (params['countryId']) {
+          this.countryId = params['countryId'];
+        }
+        if (params['networkId']) {
+          this.networkId = params['networkId'];
+        }
+        if (params['networkCountryId']) {
+          this.networkCountryId = params['networkCountryId'];
+        }
+        if (params['uid']) {
+          this.uid = params['uid'];
         }
 
         this.docFilterSubject.next();
 
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-          this.uid = user.uid;
-
-
-          this.networkService.getSelectedIdObj(user.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(selection => {
-              console.log(selection)
-              this.networkId = selection["id"];
-              this.networkCountryId = selection["networkCountryId"];
-              this.UserType = selection["userType"];
-              console.log(this.networkCountryId)
-              this.af.database.object( Constants.APP_STATUS + '/networkCountry/' + this.networkId + '/' + this.networkCountryId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe( network => {
-                  this.countries[0] = network;
-                  console.log(network)
-              if (this.agencyId && this.countryId && this.isViewing) {
-
-                this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
+        if(this.isViewing){
+                this.af.database.object( Constants.APP_STATUS + '/networkCountry/' + this.networkId + '/' + this.networkCountryId)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_ => {
-                    this.countries = _;
-                    Object.keys(this.countries).map(country => {
-                      let key = this.countries[country].$key;
+                  .subscribe( network => {
+                    this.countries[0] = network;
+                    console.log(network)
+                    // if (this.agencyId && this.countryId && this.isViewing) {
+                    //
+                    //   this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
+                    //     .takeUntil(this.ngUnsubscribe)
+                    //     .subscribe(_ => {
+                    //       this.countries = _;
+                    //       Object.keys(this.countries).map(country => {
+                    //         let key = this.countries[country].$key;
+                    //
+                    //         if (key == this.countryId) {
+                    //           this.locationId = this.countries[country].location;
+                    //           //this.countriesFilterSubject.next(Countries[this.locationId]);
+                    //         }
+                    //         console.log(key)
+                    //
+                    //         this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
+                    //           .takeUntil(this.ngUnsubscribe)
+                    //           .subscribe(_ => {
+                    //             let docs = _;
+                    //             console.log(docs)
+                    //             docs = docs.filter(doc => {
+                    //               if (this.userSelected == "-1")
+                    //                 return true;
+                    //
+                    //               return doc.uploadedBy == this.userSelected;
+                    //             });
+                    //             Object.keys(docs).map(doc => {
+                    //               let uploadedBy = docs[doc].uploadedBy;
+                    //               this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                    //                 .takeUntil(this.ngUnsubscribe)
+                    //                 .subscribe(_ => {
+                    //                   docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+                    //                 });
+                    //             });
+                    //             this.countries[country]['docs'] = docs;
+                    //             this.countries[country]['docsfiltered'] = docs;
+                    //             this.countries[country]['hasDocs'] = (docs.length > 0);
+                    //           });
+                    //       });
+                    //     });
+                    //
+                    //   this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
+                    //     .takeUntil(this.ngUnsubscribe)
+                    //     .subscribe(_ => {
+                    //       let users = _;
+                    //       Object.keys(users).map(user => {
+                    //         let userKey = users[user].$key;
+                    //         this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                    //           .takeUntil(this.ngUnsubscribe)
+                    //           .subscribe(_ => {
+                    //             this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                    //           });
+                    //       });
+                    //     });
+                    //
+                    // } else {
 
-                      if (key == this.countryId) {
-                        this.locationId = this.countries[country].location;
-                        //this.countriesFilterSubject.next(Countries[this.locationId]);
-                      }
-
-                      this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
+                      this.af.database.list(Constants.APP_STATUS + '/document/' + this.networkCountryId, this.docFilter)
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(_ => {
                           let docs = _;
+                          console.log(docs)
                           docs = docs.filter(doc => {
                             if (this.userSelected == "-1")
                               return true;
@@ -150,87 +196,94 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
                                 docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
                               });
                           });
-                          this.countries[country]['docs'] = docs;
-                          this.countries[country]['docsfiltered'] = docs;
-                          this.countries[country]['hasDocs'] = (docs.length > 0);
-                        });
-                    });
-                  });
 
-                this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_ => {
-                    let users = _;
-                    Object.keys(users).map(user => {
-                      let userKey = users[user].$key;
-                      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                          this.countries[0]['docs'] = docs;
+                          this.countries[0]['docsfiltered'] = docs;
+                          this.countries[0]['hasDocs'] = (docs.length > 0);
+                        });
+
+
+                      this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(_ => {
-                          this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
-                        });
-                    });
-                  });
-
-              } else {
-                // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-                //   .takeUntil(this.ngUnsubscribe)
-                //   .subscribe(agencyId => {
-                //     this.agencyId = agencyId;
-                //
-                //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-                //       .takeUntil(this.ngUnsubscribe)
-                //       .subscribe(countryId => {
-                //         this.countryId = countryId;
-                // this.agencyId = agencyId;
-                // this.countryId = countryId;
+                          let users = _;
+                          Object.keys(users).map(user => {
+                            let userKey = users[user].$key;
+                            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe(_ => {
+                                this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                              });
+                          });
+                        })
+                    // }
+                  })
+        }else{
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
 
 
-                this.af.database.list(Constants.APP_STATUS + '/document/' + this.networkCountryId, this.docFilter)
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                console.log(selection)
+                this.networkId = selection["id"];
+                this.networkCountryId = selection["networkCountryId"];
+                this.UserType = selection["userType"];
+                console.log(this.networkCountryId)
+                this.af.database.object( Constants.APP_STATUS + '/networkCountry/' + this.networkId + '/' + this.networkCountryId)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_ => {
-                    let docs = _;
-                    console.log(docs)
-                    docs = docs.filter(doc => {
-                      if (this.userSelected == "-1")
-                        return true;
+                  .subscribe( network => {
+                    this.countries[0] = network;
+                    console.log(network)
 
-                      return doc.uploadedBy == this.userSelected;
-                    });
-                    Object.keys(docs).map(doc => {
-                      let uploadedBy = docs[doc].uploadedBy;
-                      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+
+                      this.af.database.list(Constants.APP_STATUS + '/document/' + this.networkCountryId, this.docFilter)
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(_ => {
-                          docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+                          let docs = _;
+                          console.log(docs)
+                          docs = docs.filter(doc => {
+                            if (this.userSelected == "-1")
+                              return true;
+
+                            return doc.uploadedBy == this.userSelected;
+                          });
+                          Object.keys(docs).map(doc => {
+                            let uploadedBy = docs[doc].uploadedBy;
+                            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe(_ => {
+                                docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+                              });
+                          });
+
+                          this.countries[0]['docs'] = docs;
+                          this.countries[0]['docsfiltered'] = docs;
+                          this.countries[0]['hasDocs'] = (docs.length > 0);
                         });
-                    });
-
-                    this.countries[0]['docs'] = docs;
-                    this.countries[0]['docsfiltered'] = docs;
-                    this.countries[0]['hasDocs'] = (docs.length > 0);
-                  });
 
 
-                this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_ => {
-                    let users = _;
-                    Object.keys(users).map(user => {
-                      let userKey = users[user].$key;
-                      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                      this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(_ => {
-                          this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                          let users = _;
+                          Object.keys(users).map(user => {
+                            let userKey = users[user].$key;
+                            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe(_ => {
+                                this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                              });
+                          });
                         });
-                    });
-                  });
-                //     });
-                // });
-              }
-            })
-            })
+                  })
+              })
 
-        });
+          });
+        }
+
+
       });
   }
 

@@ -13,6 +13,7 @@ import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import * as moment from "moment";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
 
@@ -93,6 +94,9 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   @Input() isNetworkCountry: boolean;
   private networkId: string;
   private networkCountryId: string;
+  private networkViewValues: {};
+  private countryId: string;
+  private agencyId: string;
 
 
   constructor(private pageControl: PageControlService,
@@ -104,6 +108,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               private _networkService: NetworkService,
               private _agencyService: AgencyService,
               private networkService: NetworkService,
+              private storageService: LocalStorageService,
               private af: AngularFire) {
 
   }
@@ -115,85 +120,172 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
   ngOnInit() {
 
-    this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params['isViewing']) {
+          this.isViewing = params['isViewing'];
+        }
+        if (params['agencyId']) {
+          this.agencyId = params['agencyId'];
+        }
+        if (params['countryId']) {
+          this.countryId = params['countryId'];
+        }
+        if (params['networkId']) {
+          this.networkId = params['networkId'];
+        }
+        if (params['networkCountryId']) {
+          this.networkCountryId = params['networkCountryId'];
+        }
+        if (params['uid']) {
+          this.uid = params['uid'];
+        }
+
+        this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
+      })
 
   }
 
   private networkCountryAccess() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
 
-      this.networkService.getSelectedIdObj(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
-          this.networkCountryId = selection["networkCountryId"];
+    if(this.isViewing){
 
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(map => {
-              console.log(map);
-              this.officeAgencyMap = map;
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(map => {
+                console.log(map);
+                this.officeAgencyMap = map;
 
-              map.forEach((value: string, key: string) => {
-                this._agencyService.getAgency(key)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies.push(agency)
-                  })
+                map.forEach((value: string, key: string) => {
+                  this._agencyService.getAgency(key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency)
+                    })
+                });
+
+                this._getTotalStaff(map);
+                this.getStaff(map);
+                this.getSurgeCapacity(map);
+                this._getCountryOfficeCapacity(map).then();
+                this._getSkills();
+
               });
 
-              this._getTotalStaff(map);
-              this.getStaff(map);
-              this.getSurgeCapacity(map);
-              this._getCountryOfficeCapacity(map).then();
-              this._getSkills();
+    }else{
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
 
-            });
-        });
-    });
+        this.networkService.getSelectedIdObj(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
+            this.networkCountryId = selection["networkCountryId"];
+
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(map => {
+                console.log(map);
+                this.officeAgencyMap = map;
+
+                map.forEach((value: string, key: string) => {
+                  this._agencyService.getAgency(key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency)
+                    })
+                });
+
+                this._getTotalStaff(map);
+                this.getStaff(map);
+                this.getSurgeCapacity(map);
+                this._getCountryOfficeCapacity(map).then();
+                this._getSkills();
+
+              });
+          });
+      });
+    }
+
   }
 
   private localNetworkAdminAccess() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
-      this._networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkID = selection["id"];
+    if(this.isViewing){
 
-          this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(officeAgencyMap => {
-              this.officeAgencyMap = officeAgencyMap
+            this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(officeAgencyMap => {
+                this.officeAgencyMap = officeAgencyMap
 
-              officeAgencyMap.forEach((value: string, key: string) => {
-                this._agencyService.getAgency(key)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies.push(agency)
+                officeAgencyMap.forEach((value: string, key: string) => {
+                  this._agencyService.getAgency(key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency)
+                    })
+                })
+
+                this._getTotalStaff(officeAgencyMap);
+                this.getStaff(officeAgencyMap);
+                this.getSurgeCapacity(officeAgencyMap);
+                this._getCountryOfficeCapacity(officeAgencyMap).then(() => {
+
+
+                  console.log(this.agencies)
+                  officeAgencyMap.forEach((value: string, key: string) => {
+                    console.log(this.surgeCapacities)
                   })
+                });
+
+                this._getSkills();
+
+
               })
 
-              this._getTotalStaff(officeAgencyMap);
-              this.getStaff(officeAgencyMap);
-              this.getSurgeCapacity(officeAgencyMap);
-              this._getCountryOfficeCapacity(officeAgencyMap).then(() => {
+    }else{
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
+        this._networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkID = selection["id"];
 
+            this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(officeAgencyMap => {
+                this.officeAgencyMap = officeAgencyMap
 
-                console.log(this.agencies)
                 officeAgencyMap.forEach((value: string, key: string) => {
-                  console.log(this.surgeCapacities)
+                  this._agencyService.getAgency(key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency)
+                    })
                 })
-              });
 
-              this._getSkills();
+                this._getTotalStaff(officeAgencyMap);
+                this.getStaff(officeAgencyMap);
+                this.getSurgeCapacity(officeAgencyMap);
+                this._getCountryOfficeCapacity(officeAgencyMap).then(() => {
 
 
-            })
-        });
+                  console.log(this.agencies)
+                  officeAgencyMap.forEach((value: string, key: string) => {
+                    console.log(this.surgeCapacities)
+                  })
+                });
 
-    })
+                this._getSkills();
+
+
+              })
+          });
+
+      })
+    }
+
   }
 
   private getSurgeCapacity(officeAgencyMap) {
