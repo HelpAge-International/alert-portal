@@ -384,7 +384,7 @@ export class MapService {
   }
   public initBlankMapObj(map: google.maps.Map, elementId: string) {
     let uluru = {lat: 20, lng: 0};
-    map = new google.maps.Map(document.getElementById(elementId), {
+    this.map = new google.maps.Map(document.getElementById(elementId), {
       zoom: 2,
       center: uluru,
       mapTypeControlOptions: {
