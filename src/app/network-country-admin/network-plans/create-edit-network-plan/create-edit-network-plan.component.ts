@@ -968,12 +968,15 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
    */
 
   addToSummarizeScenarioObject(bulletPoint, textEntered) {
+
     if (textEntered) {
       this.scenarioCrisisObject[bulletPoint] = textEntered;
+
     } else {
       if (this.scenarioCrisisObject[bulletPoint]) {
         delete this.scenarioCrisisObject[bulletPoint];
       }
+
     }
   }
 
@@ -986,11 +989,13 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.summarizeScenarioBulletPointsCounter--;
     this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
 
+
     // Removing bullet point from list if exists
     if (this.scenarioCrisisObject[bulletPoint]) {
       delete this.scenarioCrisisObject[bulletPoint];
     } else {
       console.log("Bullet point not in list");
+
     }
   }
 
@@ -1012,7 +1017,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   removeImpactOfCrisisBulletPoint(bulletPoint) {
     this.impactOfCrisisBulletPointsCounter--;
     this.impactOfCrisisBulletPoints = this.impactOfCrisisBulletPoints.filter(item => item !== bulletPoint);
-
+    console.log(this.impactOfCrisisBulletPointsCounter);
     // Removing bullet point from list if exists
     if (this.impactOfCrisisObject[bulletPoint]) {
       delete this.impactOfCrisisObject[bulletPoint];
@@ -1043,7 +1048,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     // Removing bullet point from list if exists
     if (this.availabilityOfFundsObject[bulletPoint]) {
       delete this.availabilityOfFundsObject[bulletPoint];
+
     } else {
+      console.log(bulletPoint, this.availabilityOfFundsBulletPointsCounter,  this.availabilityOfFundsBulletPoints.filter);
       console.log("Bullet point not in list");
     }
   }

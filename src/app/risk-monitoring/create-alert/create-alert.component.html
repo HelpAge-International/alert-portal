@@ -51,20 +51,22 @@
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
         <input type="radio" name="alert1" id="RT_yes" [(ngModel)]="alertData.alertLevel" [value]="1">
       </label>
-      <button class="btn btn-warning Left">{{alertLevels[1] | translate}}</button>
+      <button class="btn btn-warning Left" id="amberAlert" (click)="highlightRadio()">{{alertLevels[1] | translate}}</button>
+
       <!--red alert -->
       <label for="RT_yes"
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
-        <input type="radio" name="alert1" checked="uncheck" [(ngModel)]="alertData.alertLevel" [value]="2">
+        <input type="radio" name="alert1" id="radioRed" [(ngModel)]="alertData.alertLevel" [value]="2">
       </label>
-      <button class="btn btn-danger Left">{{alertLevels[2] | translate}}</button>
+      <button  id="redAlert" (click)="highlightRadio()" class="btn btn-danger Left">{{alertLevels[2] | translate}}</button>
     </div>
 
     <br>
+
     <h6 class="Spaced-above" *ngIf="alertData.alertLevel && alertData.alertLevel == 2"><b>{{"REASONS_FOR_RED_ALERT_REQUEST" | translate}}</b></h6>
     <div class="Spaced-above form-group col-sm-12 row" *ngIf="alertData.alertLevel && alertData.alertLevel == 2">
       <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5"
-             id="smFormGroupInput" [(ngModel)]="alertData.reasonForRedAlert">
+             id="smFormGroupInput" [(ngModel)]="alertData.reasonForxRedAlert">
     </div>
 
     <!--Affected Areas-->

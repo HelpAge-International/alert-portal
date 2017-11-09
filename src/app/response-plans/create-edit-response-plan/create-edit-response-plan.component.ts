@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router, Params, ActivatedRoute} from "@angular/router";
-import {AngularFire} from "angularfire2";
+import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {
   AgeRange,
@@ -21,6 +21,7 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import {isNull, isNullOrUndefined} from "util";
+import {forEach} from "@angular/router/src/utils/collection";
 // import {jQuery} from "../../network-country-admin/network-plans/network-plans.component";
 
 declare var jQuery: any;
@@ -105,10 +106,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private scenarioCrisisObject: {} = {};
   private impactOfCrisisObject: {} = {};
   private availabilityOfFundsObject: {} = {};
-
   private summarizeScenarioBulletPointsCounter: number = 1;
   private summarizeScenarioBulletPoints: number[] = [this.summarizeScenarioBulletPointsCounter];
-
+  private summarizeBP: any;
+  private bpList: number [];
   private impactOfCrisisBulletPointsCounter: number = 1;
   private impactOfCrisisBulletPoints: number[] = [this.impactOfCrisisBulletPointsCounter];
 
@@ -645,6 +646,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
   addToSummarizeScenarioObject(bulletPoint, textEntered) {
+
     if (textEntered) {
       this.scenarioCrisisObject[bulletPoint] = textEntered;
     } else {
@@ -655,20 +657,66 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   addSummarizeScenarioBulletPoint() {
-    this.summarizeScenarioBulletPointsCounter++;
-    this.summarizeScenarioBulletPoints.push(this.summarizeScenarioBulletPointsCounter);
+
+
+    this.summarizeBP = this.summarizeScenarioBulletPoints;
+    this.summarizeScenarioBulletPointsCounter = this.summarizeBP.length;
+
+    if(this.summarizeScenarioBulletPoints.length > 4) {
+      console.log('stop adding bullet points');
+    } else {
+
+      if (this.summarizeBP.length){
+        this.summarizeBP.length = this.summarizeScenarioBulletPointsCounter;
+
+        this.summarizeBP.push(this.summarizeScenarioBulletPointsCounter + 1);
+        this.summarizeScenarioBulletPointsCounter++;
+
+
+
+      }
+    }
+
+
+
   }
 
-  removeSummarizeScenarioBulletPoint(bulletPoint) {
-    this.summarizeScenarioBulletPointsCounter--;
-    this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
+   removeSummarizeScenarioBulletPoint(bulletPoint) {
 
-    // Removing bullet point from list if exists
-    if (this.scenarioCrisisObject[bulletPoint]) {
-      delete this.scenarioCrisisObject[bulletPoint];
-    } else {
-      console.log("Bullet point not in list");
-    }
+
+
+     this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
+     this.summarizeScenarioBulletPointsCounter--;
+
+
+     /*if(this.summarizeScenarioBulletPoints.length < 4 ) {
+       jQuery('.Add__row__cta').show();
+     }*/
+
+ 
+
+     // Removing bullet point from list if exists
+     if (this.scenarioCrisisObject[bulletPoint]) {
+
+       // Removes object from bullet point list
+       console.log('bullet point in list');
+
+
+     } else {
+
+       // this will remove if input field is empty
+       console.log("Bullet point not in list");
+
+     }
+
+     // loop the bullet points to get correct number in span tag
+     for (let i = 0; i < this.summarizeScenarioBulletPoints.length; i++){
+
+       this.summarizeScenarioBulletPoints[i] = i + 1;
+       console.log(i + 1);
+
+     }
+     //delete this.scenarioCrisisObject[bulletPoint];
   }
 
   addToImpactOfCrisisObject(bulletPoint, textEntered) {
@@ -1495,6 +1543,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection2(responsePlan: ResponsePlan) {
+
     //scenario crisis list
     let scenarioCrisisList = responsePlan.scenarioCrisisList;
     this.loadSection2Back(0, scenarioCrisisList, this.summarizeScenarioBulletPointsCounter, this.summarizeScenarioBulletPoints);
@@ -1507,6 +1556,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection2Back(type: number, list: string[], counter: number, counterList: number[]) {
+
     if (list) {
       for (let i = 0; i < list.length; i++) {
         if (i != 0) {
@@ -1517,6 +1567,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       counterList.forEach(item => {
         if (type == 0) {
           this.addToSummarizeScenarioObject(item, list[item - 1]);
+          console.log(this.addToSummarizeScenarioObject(item, list[item - 1]), 'here');
+          console.log(this.summarizeScenarioBulletPoints.length, ': in the list');
         } else if (type == 1) {
           this.addToImpactOfCrisisObject(item, list[item - 1]);
         } else if (type == 2) {
