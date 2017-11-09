@@ -73,6 +73,9 @@ export class InformService {
     return response != null && response.data != null && response.data.length === 1;
   }
   private getFromResponse(response, code: string): number {
+    console.log('------')
+    console.log(response)
+    console.log(code)
     if (this.validResponse(response)) {
       console.log(response.data[0][code])
       return response.data[0][code];

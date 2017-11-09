@@ -31,7 +31,7 @@
           </option>
           <option [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false"
                   *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ?
-            (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}
+            (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}<span *ngIf="hazard.fromNetwork"> (From Network)</span>
           </option>
         </template>
       </select>

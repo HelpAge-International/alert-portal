@@ -541,7 +541,7 @@ export class ActionsService {
 
       this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, alertChangedNotificationSetting, agencyId, countryId);
       console.log(networkViewValues)
-      networkCountryId == '' && networkId ? this.router.navigateByUrl('/network/local-network-dashboard') : networkCountryId && networkCountryId != '' ? this.router.navigate(networkViewValues ? ['/network-country/network-dashboard', networkViewValues] : ['/network-country/network-dashboard']) : this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME)
+      networkCountryId == '' && networkId ? this.router.navigate(networkViewValues ? ['/network/local-network-dashboard', networkViewValues] : ['/network/local-network-dashboard']) : networkCountryId && networkCountryId != '' ? this.router.navigate(networkViewValues ? ['/network-country/network-dashboard', networkViewValues] : ['/network-country/network-dashboard']) : this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME)
     }, error => {
       console.log(error.message);
     });

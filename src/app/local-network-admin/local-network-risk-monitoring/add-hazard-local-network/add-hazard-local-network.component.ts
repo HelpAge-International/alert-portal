@@ -3,7 +3,7 @@ import {NgForm} from '@angular/forms';
 import {AlertMessageType, HazardScenario} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ModelHazard} from "../../../model/hazard.model";
 import {AlertMessageModel} from '../../../model/alert-message.model';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -96,6 +96,11 @@ export class AddHazardLocalNetworkComponent implements OnInit, OnDestroy {
   private showInformUnavailable: boolean = false;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private networkViewValues: {};
+  private isViewing: boolean;
+  private agencyId: string;
+  private systemId: string;
+
 
   constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private http: Http, private router: Router, private storage: LocalStorageService, private userService: UserService, private networkService: NetworkService) {
     this.hazardData.seasons = [];
@@ -107,27 +112,55 @@ export class AddHazardLocalNetworkComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+        if (params["userType"]) {
+          this.UserType = params["userType"];
+        }
 
-      //get network id
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkCountryId = selection["networkCountryId"];
-          this.networkId = selection["id"];
-          this.UserType = selection["userType"];
+        if(this.isViewing){
 
           this._loadData();
 
-        })
-    })
+        }else{
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
 
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   this.UserType = userType;
-    //   this._loadData();
-    // });
+            //get network id
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                this.networkCountryId = selection["networkCountryId"];
+                this.networkId = selection["id"];
+                this.UserType = selection["userType"];
+
+                this._loadData();
+
+              })
+          })
+        }
+      })
+
   }
 
   ngOnDestroy() {
@@ -159,11 +192,12 @@ export class AddHazardLocalNetworkComponent implements OnInit, OnDestroy {
   }
 
   _getCountryLocation() {
+    console.log('getting location')
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((network) => {
-
+          console.log(network)
           this.locationID = network.countryId;
           console.log(this.locationID)
           this._getTopResults();
@@ -319,7 +353,7 @@ export class AddHazardLocalNetworkComponent implements OnInit, OnDestroy {
                   otherName: key.key
                 };
                 this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkId + "/" + hazardKey.key).update(updateHazardObj).then(_ => {
-                  this.router.navigate(['/network/local-network-risk-monitoring/']);
+                  this.router.navigate(this.networkViewValues ? ['/network/local-network-risk-monitoring/', this.networkViewValues] : ['/network/local-network-risk-monitoring/']);
                 }).catch(err => {
                   this.alertMessage = new AlertMessageModel("ERROR_UPDATING_OTHER_HAZARD_REF");
                 });
@@ -328,7 +362,7 @@ export class AddHazardLocalNetworkComponent implements OnInit, OnDestroy {
                 this.alertMessage = new AlertMessageModel("ERROR_UPDATING_OTHER_HAZARD_DATA");
               });
             } else {
-              this.router.navigate(['/network/local-network-risk-monitoring/']);
+              this.router.navigate(this.networkViewValues ? ['/network/local-network-risk-monitoring/', this.networkViewValues] : ['/network/local-network-risk-monitoring/']);
             }
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')

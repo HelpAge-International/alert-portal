@@ -456,7 +456,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         this.networkService.getAgencyCountryOfficesByNetworkCountry(this.networkCountryId, this.networkId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe( officeAgencyMap => {
-
+            console.log(officeAgencyMap)
             officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
 

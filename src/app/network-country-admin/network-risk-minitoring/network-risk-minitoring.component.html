@@ -749,6 +749,7 @@
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div class="sub-sub-contents__wrap--risk col-sm-11">
+
                   <a href="javascript:void(0)"
                      *ngIf="hazard.existsOnNetwork"
                      data-toggle="modal"
@@ -760,10 +761,12 @@
                      data-toggle="modal"
                      data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
-
-
-                  <a [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                  <a *ngIf="hazard.existsOnNetwork" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
+                  <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)" (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                    | translate}}</a>
+
+
                 </div>
               </div>
               <!----------------------------Trends in malnutrition---------------------------->

@@ -118,6 +118,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private countryLocation: number;
 
+  private networkId: string;
+  private networkCountryId: string;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -163,6 +166,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
+        }
+
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
         }
 
         if (this.copyCountryId && this.copyIndicatorId) {
@@ -242,6 +253,12 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.isEdit = true;
           this.hazardID = params['hazardID'];
           this.indicatorID = params['indicatorID'];
+          if (params["networkId"]) {
+            this.networkId = params["networkId"];
+          }
+          if (params["networkCountryId"]) {
+            this.networkCountryId = params["networkCountryId"];
+          }
 
           this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
             if (user) {
@@ -350,6 +367,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   saveIndicator() {
 
     if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+      console.log(this.hazardsObject)
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {
@@ -486,11 +504,76 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
+    this.hazards = [];
+    this.hazardsObject = {};
+    if(this.networkId){
+
+      if(this.networkCountryId){
+        this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((hazards: any) => {
+
+
+            for (let hazard in hazards) {
+              if(hazard == this.hazardID){
+                if (!hazard.includes("$") && hazard != "countryContext") {
+                  hazards[hazard].key = hazard;
+
+                  if (hazards[hazard].hazardScenario != -1) {
+                    this.hazards.push(hazards[hazard]);
+                    this.hazardsObject[hazard] = hazards[hazard];
+                  } else {
+                    this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
+                      .first()
+                      .subscribe(nameObj => {
+                        hazards[hazard].displayName = nameObj.name;
+                        this.hazards.push(hazards[hazard]);
+                        this.hazardsObject[hazard] = hazards[hazard];
+                      });
+                  }
+                }
+              }
+            }
+
+          });
+      }else{
+        this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((hazards: any) => {
+            for (let hazard in hazards) {
+              if(hazard == this.hazardID){
+                if (!hazard.includes("$") && hazard != "countryContext") {
+                  hazards[hazard].key = hazard;
+
+                  if (hazards[hazard].hazardScenario != -1) {
+                    this.hazards.push(hazards[hazard]);
+                    this.hazardsObject[hazard] = hazards[hazard];
+                  } else {
+                    this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
+                      .first()
+                      .subscribe(nameObj => {
+                        hazards[hazard].displayName = nameObj.name;
+                        this.hazards.push(hazards[hazard]);
+                        this.hazardsObject[hazard] = hazards[hazard];
+                      });
+                  }
+                }
+              }
+            }
+
+          });
+      }
+
+
+
+
+
+
+    }
     this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((hazards: any) => {
-        this.hazards = [];
-        this.hazardsObject = {};
+
 
         hazards["countryContext"] = {key: "countryContext"};
         this.hazards.push(hazards["countryContext"]);
@@ -537,6 +620,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   _getIndicator(hazardID: string, indicatorID: string) {
 
     //this.indicatorData = new Indicator();
+
 
     if (this.hazardID == 'countryContext') {
       this.url = Constants.APP_STATUS + "/indicator/" + this.countryID + '/' + indicatorID;
