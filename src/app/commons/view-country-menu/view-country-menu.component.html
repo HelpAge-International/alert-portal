@@ -10,7 +10,7 @@
       <div>{{CountryNames[countryLocation] | translate}}</div>
       <ul>
         <li *ngIf="userAgencyId==agencyId || privacy?.officeProfile == Privacy.Public" [class.Active]="menuMap.get('officeProfile')" (click)="menuSelection('officeProfile')">
-         {{COUNTRY_OFFICE_PROFILE | translate}}
+         {{"COUNTRY_OFFICE_PROFILE" | translate}}
         </li>
         <li *ngIf="userAgencyId==agencyId || privacy?.riskMonitoring == Privacy.Public" [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">{{"RISK_MONITORING_TEXT" | translate}}</li>
         <!--<li [class.Active]="menuMap.get('preparedness')" (click)="menuSelection('preparedness')">Preparedness</li>-->

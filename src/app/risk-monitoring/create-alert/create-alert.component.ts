@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Output} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -14,6 +14,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
 import {HazardImages} from "../../utils/HazardImages";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-create-alert',
@@ -191,6 +192,13 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       });
     });
     return promise;
+  }
+
+  highlightRadio(){
+
+
+    console.log(this.alertData.alertLevel);
+
   }
 
   _validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {

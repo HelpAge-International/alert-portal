@@ -209,6 +209,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   validateForm() {
+
+
     if (!this.title) {
       this.warningMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_TITLE';
       return false;
@@ -241,7 +243,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_EMAIL';
       return false;
     }
-    if (!this.phone) {
+    if (!CustomerValidator.PhoneNumberValidator(this.phone)) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_PHONE';
       return false;
     }

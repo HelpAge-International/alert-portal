@@ -13278,14 +13278,18 @@ html.W-Sticky-nav--en .Alert-success, html.W-Sticky-nav--en .Alert-warning, html
   color: #636361;
   height: 58px;
   line-height: 60px;
+  cursor: pointer;
 }
 
 .Country__bar ul li.Active {
   background: #F9F9F9;
+  text-decoration: underline;
 }
 
 .Country__icon__wrapper {
+
   margin-right: auto;
+
 }
 
 .AlertLevel-gray{
