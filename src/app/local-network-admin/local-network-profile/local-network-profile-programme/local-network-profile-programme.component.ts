@@ -31,7 +31,6 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
   private uid: string;
-  private networkID: string;
   private agencies = [];
 
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
@@ -114,6 +113,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
     if(this.isViewing){
 
+      console.log('here1')
       this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(map => {
@@ -160,10 +160,12 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   private localNetworkAdminAccess() {
     if(this.isViewing){
 
-      this.networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+      console.log('here1')
+      this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(officeAgencyMap => {
           this.agencies = []
+          console.log(officeAgencyMap)
 
           officeAgencyMap.forEach((value: string, key: string) => {
             this.agencyService.getAgency(key)
@@ -171,6 +173,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
               .subscribe(agency => {
                 this.agencies.push(agency)
               })
+            console.log(this.agencies)
           })
 
           this._getProgramme(officeAgencyMap);
@@ -182,8 +185,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
         this.networkService.getSelectedIdObj(user.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(selection => {
-            this.networkID = selection["id"];
-            this.networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+            this.networkId = selection["id"];
+            this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(officeAgencyMap => {
                 this.agencies = []
@@ -232,7 +235,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   }
 
   private localNetworkAdminSaveNote(agency: any, programmeID: any) {
-    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key)
+    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkId + '/agencies/' + agency.$key)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(netAgency => {
 
@@ -339,7 +342,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
   private localAdminUpdateNote(agency) {
     var dataToUpdate = {content: this.noteTmp['content']};
-    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key)
+    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkId + '/agencies/' + agency.$key)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(netAgency => {
         console.log(netAgency)
@@ -367,7 +370,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   }
 
   private localAdminDeleteNote(agency) {
-    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkID + '/agencies/' + agency.$key)
+    this.af.database.object(Constants.APP_STATUS + '/network/' + this.networkId + '/agencies/' + agency.$key)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(netAgency => {
         this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + netAgency.countryCode + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID']).remove().then(() => {
@@ -437,7 +440,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
         dataToUpdate[key] = val;
       }
     });
-    this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/programme/' + this.networkID + '/sectorExpertise/')
+    this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/programme/' + this.networkId + '/sectorExpertise/')
       .set(dataToUpdate)
       .then(_ => {
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_SELECTORS', AlertMessageType.Success);

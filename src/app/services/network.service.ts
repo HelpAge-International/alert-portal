@@ -814,9 +814,11 @@ export class NetworkService {
   }
 
   getAgencyCountryOfficesByNetwork(networkId: string) {
+    console.log(networkId)
     let countryOfficeAgencyMap = new Map<string, string>()
     return this.af.database.list(Constants.APP_STATUS + '/network/' + networkId + '/agencies')
       .map(agencies => {
+        console.log(agencies)
         agencies.forEach(agency => {
           if (agency.countryCode && agency.isApproved) {
             countryOfficeAgencyMap.set(agency.$key, agency.countryCode)

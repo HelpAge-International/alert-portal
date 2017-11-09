@@ -122,6 +122,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private assignedUser: string;
   private networkId: any;
   private countryLevelsValues: any;
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -152,7 +153,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.usersForAssign = [];
-
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -165,6 +166,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
         }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
         if (params["systemId"]) {
           this.systemId = params["systemId"];
         }
@@ -174,56 +178,98 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
         }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+        if (params["userType"]) {
+          this.UserType = params["userType"];
+        }
 
 
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-          this.uid = user.uid;
 
-          //get network id
-          this.networkService.getSelectedIdObj(user.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(selection => {
-              console.log(selection)
-              this.networkId = selection["id"];
-              this.UserType = selection["userType"];
+        if(this.isViewing){
 
-              console.log(selection)
+                this.networkService.getNetworkDetail(this.networkId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(network => {
+                    if (network.agencies) {
+                      Object.keys(network.agencies).forEach(key => {
+                        this.agencyService.getAgency(key)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(agency => {
+                            console.log(agency)
+                            this.agencies.push(agency)
+                          })
+                      });
+                    }
+                  })
+
+                this._getHazards()
+                this.getCountryLocation()
+                  .then(_ => {
+                    // get the country levels values
+                    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(content => {
+
+                        this.countryLevelsValues = content[this.countryLocation];
+                        console.log(this.countryLevelsValues)
+                        err => console.log(err);
+                      });
+                  })
+                this._getCountryContextIndicators();
+                this.getUsersForAssign();
+
+        }else{
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+
+            //get network id
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                console.log(selection)
+                this.networkId = selection["id"];
+                this.UserType = selection["userType"];
+
+                console.log(selection)
 
 
-              this.networkService.getNetworkDetail(this.networkId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(network => {
-                  if (network.agencies) {
-                    Object.keys(network.agencies).forEach(key => {
-                      this.agencyService.getAgency(key)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(agency => {
-                          console.log(agency)
-                          this.agencies.push(agency)
-                        })
-                    });
-                  }
-                })
+                this.networkService.getNetworkDetail(this.networkId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(network => {
+                    if (network.agencies) {
+                      Object.keys(network.agencies).forEach(key => {
+                        this.agencyService.getAgency(key)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(agency => {
+                            console.log(agency)
+                            this.agencies.push(agency)
+                          })
+                      });
+                    }
+                  })
 
-              this._getHazards()
-              this.getCountryLocation()
-                .then(_ => {
-                  // get the country levels values
-                  this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(content => {
+                this._getHazards()
+                this.getCountryLocation()
+                  .then(_ => {
+                    // get the country levels values
+                    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(content => {
 
-                      this.countryLevelsValues = content[this.countryLocation];
-                      console.log(this.countryLevelsValues)
-                      err => console.log(err);
-                    });
-                })
-              this._getCountryContextIndicators();
-              this.getUsersForAssign();
+                        this.countryLevelsValues = content[this.countryLocation];
+                        console.log(this.countryLevelsValues)
+                        err => console.log(err);
+                      });
+                  })
+                this._getCountryContextIndicators();
+                this.getUsersForAssign();
 
 
-            });
-        })
+              });
+          })
+        }
       })
   }
 
@@ -984,6 +1030,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getUsersForAssign() {
     if (this.UserType == UserType.Ert || this.UserType == UserType.PartnerUser) {
+      console.log('partner/ert')
       this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID + "/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(staff => {
@@ -995,6 +1042,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
             });
         });
     } else {
+      console.log('else')
       //Obtaining the country admin data
       this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((data: any) => {
         if (data.adminId) {

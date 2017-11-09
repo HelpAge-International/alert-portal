@@ -7,7 +7,8 @@ import {
   DetailedDurationType,
   GeoLocation,
   HazardScenario,
-  UserType
+  UserType,
+  NetworkUserAccountType
 } from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -122,6 +123,9 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
   private agencyOverview: boolean;
 
   private countryLocation: number;
+  private systemId: string;
+  private isViewing: boolean;
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -140,6 +144,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -152,54 +157,94 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         if (params["countryOfficeCode"]) {
           this.copyCountryOfficeCode = params["countryOfficeCode"];
         }
-
         if (params["hazardID"]) {
           this.copyHazardId = params["hazardId"];
+        }
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
+        }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+        if (params["userType"]) {
+          this.UserType = params["userType"];
         }
 
         if (this.copyCountryId && this.copyIndicatorId) {
           this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 
-        this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-          this.uid = user.uid;
+        if(this.isViewing){
+
+                this._getHazards();
+                this.getUsersForAssign();
+                this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
+
+                // get the country levels values
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(content => {
+                    this.countryLevelsValues = content;
+                    err => console.log(err);
+                  });
+
+
+        }else{
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+
+            //get network id
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                console.log(selection)
+                this.networkCountryId = selection["networkCountryId"];
+                this.networkId = selection["id"]
+                this.UserType = selection["userType"];
+                console.log(this.UserType)
 
 
 
+                this._getHazards();
+                this.getUsersForAssign();
+                this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
 
-          //get network id
-          this.networkService.getSelectedIdObj(user.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(selection => {
-              console.log(selection)
-              this.networkCountryId = selection["networkCountryId"];
-              this.networkId = selection["id"]
-              this.UserType = selection["userType"];
+                // get the country levels values
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(content => {
+                    this.countryLevelsValues = content;
+                    err => console.log(err);
+                  });
+
+                // //get country location enum
+                // this.userService.getCountryDetail(this.countryID, this.agencyId)
+                //   .first()
+                //   .subscribe(country => {
+                //     this.countryLocation = country.location;
+                //   });
+
+              })
+
+          });
+        }
 
 
-
-              this._getHazards();
-              this.getUsersForAssign();
-              this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
-
-              // get the country levels values
-              this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(content => {
-                  this.countryLevelsValues = content;
-                  err => console.log(err);
-                });
-
-              // //get country location enum
-              // this.userService.getCountryDetail(this.countryID, this.agencyId)
-              //   .first()
-              //   .subscribe(country => {
-              //     this.countryLocation = country.location;
-              //   });
-
-            })
-
-        });
       });
   }
 
@@ -241,35 +286,65 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
           return false;
         }
 
-        this.hazardID = params['hazardID'];
-        console.log(this.hazardID);
-
-        if (params['indicatorID']) {
-          this.isEdit = true;
-          this.hazardID = params['hazardID'];
-          this.indicatorID = params['indicatorID'];
-
-          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-            this.networkService.getSelectedIdObj(user.uid)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(selection => {
-                console.log(selection)
-                this.networkId = selection["id"];
-                this.UserType = selection["userType"];
-                if (user) {
-                  this.uid = user.uid;
-                  this._getIndicator(this.hazardID, this.indicatorID);
-                } else {
-                  console.log('user is fals')
-                  this.navigateToLogin();
-                }
-              })
-          });
-        } else {
-          this.addAnotherSource();
-          // this.addAnotherLocation();
-          this.addIndicatorTrigger();
+        if (params["countryOfficeCode"]) {
+          this.copyCountryOfficeCode = params["countryOfficeCode"];
         }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+
+
+
+        this.hazardID = params['hazardID'];
+        if(params["isViewing"]){
+          if (params['indicatorID']) {
+            this.isEdit = true;
+            this.hazardID = params['hazardID'];
+            this.indicatorID = params['indicatorID'];
+
+                  if(params["uid"]){
+                    this.uid = params["uid"];
+                    this._getIndicator(this.hazardID, this.indicatorID);
+                  } else {
+                    console.log('user is fals')
+                    this.navigateToLogin();
+                  }
+
+          } else {
+            this.addAnotherSource();
+            // this.addAnotherLocation();
+            this.addIndicatorTrigger();
+          }
+        }else{
+          if (params['indicatorID']) {
+            this.isEdit = true;
+            this.hazardID = params['hazardID'];
+            this.indicatorID = params['indicatorID'];
+
+            this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+              this.networkService.getSelectedIdObj(user.uid)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(selection => {
+                  console.log(selection)
+                  this.networkId = selection["id"];
+                  this.UserType = selection["userType"];
+                  if (user) {
+                    this.uid = user.uid;
+                    this._getIndicator(this.hazardID, this.indicatorID);
+                  } else {
+                    console.log('user is fals')
+                    this.navigateToLogin();
+                  }
+                })
+            });
+          } else {
+            this.addAnotherSource();
+            // this.addAnotherLocation();
+            this.addIndicatorTrigger();
+          }
+        }
+
+
       });
   }
 
@@ -309,7 +384,15 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
   getUsersForAssign() {
     console.log(this.UserType)
-    if (this.UserType == UserType.GlobalDirector) {
+    if( this.UserType == NetworkUserAccountType.NetworkAdmin ){
+      this.userService.getUser(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe( (user: ModelUserPublic) => {
+          console.log(user)
+          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+          this.usersForAssign.push(userToPush);
+        })
+    }else if (this.UserType == UserType.GlobalDirector) {
       console.log('globalDirector')
       this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
@@ -340,11 +423,14 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(countryOffices => {
               countryOffices.filter( countryOffice => {
-                if(this.copyCountryOfficeCode == countryOffice.$key){
+                console.log(this.countryID)
+                console.log(countryOffice.$key)
+                if(this.countryID == countryOffice.$key){
+                  console.log('match')
                   this.agencyId = agency.$key
 
                   // Obtaining the country admin data
-                  this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
+                  this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
                     if (data.adminId) {
                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
                         var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
@@ -353,7 +439,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                     }
                   });
                   //Obtaining other staff data
-                  this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
+                  this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
                     for (let userID in data) {
                       if (!userID.startsWith('$')) {
                         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
@@ -416,6 +502,15 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         });
         if (this.indicatorData.geoLocation == GeoLocation.national && this.indicatorData.affectedLocation) {
           this.indicatorData.affectedLocation = null;
+        }
+
+        //if isViewing add the country office and agency ID to retrieve in country office view
+        if(this.isViewing){
+
+          this.indicatorData['agencyId'] = this.agencyId
+          this.indicatorData['countryOfficeId'] = this.countryID
+
+
         }
 
         var dataToSave = this.indicatorData;
@@ -609,7 +704,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
     this.af.database.object(path).set(null)
       .then(() => {
-        this.router.navigateByUrl("/network/local-network-risk-monitoring");
+        this.router.navigate(this.networkViewValues ? ["/network/local-network-risk-monitoring", this.networkViewValues] : ["/network/local-network-risk-monitoring"]);
       })
       .catch((error) => {
         this.alertMessage = new AlertMessageModel('DELETE_INDICATOR_DIALOG.UNABLE_TO_DELETE', AlertMessageType.Error);
@@ -637,7 +732,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
     this.af.database.object(this.url).takeUntil(this.ngUnsubscribe).subscribe((indicator: any) => {
       if (indicator.$value === null) {
         console.log(indicator)
-        this.router.navigate(['/network/local-network-risk-monitoring']);
+        this.router.navigate(this.networkViewValues ? ['/network/local-network-risk-monitoring', this.networkViewValues] : ['/network/local-network-risk-monitoring']);
         return false;
       }
       indicator.id = indicatorID;
@@ -796,7 +891,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
   }
 
   backToRiskHome() {
-    this.router.navigateByUrl("/network/local-network-risk-monitoring");
+    this.router.navigate(this.networkViewValues ? ["/network/local-network-risk-monitoring", this.networkViewValues] : ["/network/local-network-risk-monitoring"]);
   }
 
   back() {

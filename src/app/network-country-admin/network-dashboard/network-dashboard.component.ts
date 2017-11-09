@@ -687,9 +687,12 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   updateAlert(alertId, isDirectorAmber) {
     if (this.isLocalNetworkAdmin) {
       if (this.DashboardTypeUsed == DashboardType.default) {
-        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level/', {
+        if (this.networkViewValues) {
+          this.networkViewValues["id"] = alertId
+        }
+        this.router.navigate(this.networkViewValues ? ['network/local-network-dashboard/dashboard-update-alert-level/', this.networkViewValues] : ['network/local-network-dashboard/dashboard-update-alert-level/', {
           id: alertId,
-          networkId: this.networkId
+          networkCountryId: this.networkCountryId
         }]);
       } else if (isDirectorAmber) {
         this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level', {

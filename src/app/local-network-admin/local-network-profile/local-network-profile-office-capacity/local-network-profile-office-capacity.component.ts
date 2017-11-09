@@ -53,7 +53,6 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
   private uid: string;
-  private networkID: string;
   private agencyID: string;
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
   private ResponsePlanSectorsList: number[] = [
@@ -214,7 +213,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private localNetworkAdminAccess() {
     if(this.isViewing){
 
-            this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+            this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(officeAgencyMap => {
                 this.officeAgencyMap = officeAgencyMap
@@ -250,9 +249,9 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
         this._networkService.getSelectedIdObj(user.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(selection => {
-            this.networkID = selection["id"];
+            this.networkId = selection["id"];
 
-            this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+            this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(officeAgencyMap => {
                 this.officeAgencyMap = officeAgencyMap

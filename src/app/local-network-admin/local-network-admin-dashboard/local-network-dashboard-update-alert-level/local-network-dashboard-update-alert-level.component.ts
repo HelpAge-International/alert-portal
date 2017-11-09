@@ -12,6 +12,8 @@ import {NetworkService} from "../../../services/network.service";
 import {OperationAreaModel} from "../../../model/operation-area.model";
 import {CommonService} from "../../../services/common.service";
 import {HazardImages} from "../../../utils/HazardImages";
+import {LocalStorageService} from "angular-2-local-storage";
+import {Local} from "protractor/built/driverProviders";
 
 @Component({
   selector: 'app-local-network-dashboard-update-alert-level',
@@ -48,12 +50,17 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
   private countriesList = Constants.COUNTRY_SELECTION;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
+  private networkViewValues: {};
+  private isViewing: boolean;
+  private countryID: string;
+
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
               private _commonService: CommonService,
               private route: ActivatedRoute,
+              private storage: LocalStorageService,
               private alertService: ActionsService,
               private userService: UserService,
               private networkService: NetworkService) {
@@ -75,26 +82,33 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
   }
 
   ngOnInit() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
 
-      //get network id
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
-          this.networkCountryId = selection["networkCountryId"];
-          this.route.params
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((param: Params) => {
-              if (param['id']) {
-                this.alertId = param['id'];
+    this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+        if(params['id']){
+          this.alertId = params['id'];
+        }
 
+        if (this.isViewing) {
 
-
-                this.loadAlert(this.alertId, this.networkId);
-              }
-            });
+          this.loadAlert(this.alertId, this.networkId);
 
           this.networkService.getNetworkDetail(this.networkId)
             .takeUntil(this.ngUnsubscribe)
@@ -108,15 +122,61 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
                 })
             })
 
-        })
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+              this.countryLevelsValues = content;
+              err => console.log(err);
+            });
 
-      // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe).subscribe(content => {
-        this.countryLevelsValues = content;
-        err => console.log(err);
-      });
-    });
+        }else{
+          console.log('else')
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+
+            //get network id
+            this.networkService.getSelectedIdObj(user.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                this.networkId = selection["id"];
+                this.networkCountryId = selection["networkCountryId"];
+                this.route.params
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((param: Params) => {
+                    if (param['id']) {
+                      this.alertId = param['id'];
+
+
+
+                      this.loadAlert(this.alertId, this.networkId);
+                    }
+                  });
+
+                this.networkService.getNetworkDetail(this.networkId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe( network => {
+                    console.log(network)
+                    this.leadAgencyId = network.leadAgencyId
+                    this.af.database.list( Constants.APP_STATUS + '/countryOffice/' + this.leadAgencyId )
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe( offices => {
+                        this.leadAgencyCountryOffice = offices.filter( x => x.location == network.countryCode)[0].$key
+                      })
+                  })
+
+              })
+
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+              this.countryLevelsValues = content;
+              err => console.log(err);
+            });
+          });
+        }
+
+      })
+
   }
 
   private loadAlert(alertId: string, countryId: string) {
@@ -219,13 +279,21 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
 
     console.log(this.loadedAlert);
 
+    //
+    // if(this.networkCountryId){
+    //   this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId);
+    // } else if(this.networkId){
+    //   this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, '', this.networkId );
+    // } else {
+    //   this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId);
+    // }
 
-    if(this.networkCountryId){
-      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId);
-    } else if(this.networkId){
-      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, '', this.networkId );
+    if(this.networkViewValues){
+      console.log(true)
+      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, '', this.networkId, this.networkViewValues);
     } else {
-      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId);
+      console.log(true)
+      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, '', this.networkId);
     }
 
   }
