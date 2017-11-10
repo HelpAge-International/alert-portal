@@ -115,7 +115,6 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
                     if (param['id']) {
                       this.alertId = param['id'];
 
-
                       this.loadAlert(this.alertId, this.networkCountryId);
                     }
                   });

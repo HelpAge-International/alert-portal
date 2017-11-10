@@ -180,6 +180,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initLocalNetworkAccess() {
+
     this.DashboardTypeUsed = DashboardType.default;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
@@ -207,6 +208,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initViewAccess() {
+    console.log(this.userType)
     this.DashboardTypeUsed = DashboardType.default
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
     if (!this.networkViewValues) {
@@ -228,7 +230,15 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initLocalViewAccess() {
-    this.DashboardTypeUsed = DashboardType.default
+    console.log(this.userType)
+    if(this.userType == UserType.CountryDirector){
+      this.DashboardTypeUsed = DashboardType.director
+    }else{
+      this.DashboardTypeUsed = DashboardType.default
+    }
+
+    console.log(this.DashboardTypeUsed)
+
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
     if (!this.networkViewValues) {
       this.router.navigateByUrl("/dashboard")
@@ -450,9 +460,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
       }
     } else if (this.userType == UserType.CountryDirector) {
+      console.log('getting response plans c d ')
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
+      console.log(this.responsePlansForApproval)
       if (this.networkCountryId) {
+        console.log('now net country')
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkCountryId);
+        console.log(this.responsePlansForApprovalNetwork)
       }
     }
     if (this.responsePlansForApproval) {
@@ -519,7 +533,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       this.alerts = this.actionService.getAlerts(id);
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
-      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id);
+      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id, true);
+      console.log(this.alerts)
       this.amberAlerts = this.actionService.getAlerts(id)
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
@@ -528,6 +543,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         });
+
+      console.log(this.redAlerts)
     }
     this.actionService.getRedAlerts(id)
       .takeUntil(this.ngUnsubscribe)
@@ -695,7 +712,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           networkCountryId: this.networkCountryId
         }]);
       } else if (isDirectorAmber) {
-        this.router.navigate(['network/local-network-dashboard/dashboard-update-alert-level', {
+        if (this.networkViewValues) {
+          this.networkViewValues["id"] = alertId
+        }
+        this.router.navigate(this.networkViewValues ? ['network/local-network-dashboard/dashboard-update-alert-level', this.networkViewValues] :  ['network/local-network-dashboard/dashboard-update-alert-level', {
           id: alertId,
           networkId: this.networkId,
           isDirector: true
@@ -733,11 +753,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlert(alertId) {
-    this.actionService.approveRedAlert(this.countryId, alertId, this.uid);
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.actionService.approveRedAlert(id, alertId, this.uid, true);
   }
 
   rejectRedRequest(alertId) {
-    this.actionService.rejectRedAlert(this.countryId, alertId, this.uid);
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.actionService.rejectRedAlert(id, alertId, this.uid);
   }
 
   planReview(planId) {

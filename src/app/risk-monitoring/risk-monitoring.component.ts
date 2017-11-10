@@ -142,7 +142,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-      console.log(params)
+        console.log(params)
         if (params["countryId"]) {
           this.countryID = params["countryId"];
         }
@@ -269,6 +269,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                 });
                 indicator.logs = this._sortLogsByDate(logs);
               });
+
+
             });
             hazard.indicators = indicators;
           });
@@ -292,7 +294,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         res(true);
 
         this.getLocalNetworkIndicators()
-        this.getNetworkIndicators()
+
 
 
       });
@@ -301,7 +303,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
 
-  getLocalNetworkIndicators(){
+  getLocalNetworkIndicators() {
     this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryID + '/localNetworks')
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryOfficeLocalNetworks => {
@@ -310,180 +312,344 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(localNetworkDetails => {
 
-          this.af.database.list(Constants.APP_STATUS + '/hazard/' + localNetwork.$key)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(hazards => {
+              this.af.database.list(Constants.APP_STATUS + '/hazard/' + localNetwork.$key)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(hazards => {
 
-              hazards.forEach(hazard => { //loop through hazards from local network
+                  hazards.forEach(hazard => { //loop through hazards from local network
 
-                // ***** Start custom hazard *****
-                if (hazard.hazardScenario == -1) { // hazard is custom
-                  console.log('first')
-                  var filteredActiveHazards = this.activeHazards.filter(activeHazard => activeHazard.hazardScenario == -1)
-                  var filteredArchivedHazards = this.archivedHazards.filter(archivedHazard => archivedHazard.hazardScenario == -1)
-                  this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + hazard.otherName)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(hazardName => {
-                      if (hazard.isActive) {
-                        filteredActiveHazards.forEach(activeHazard => {
+                    // ***** Start custom hazard *****
+                    if (hazard.hazardScenario == -1) { // hazard is custom
+                      console.log('first')
+                      var filteredActiveHazards = this.activeHazards.filter(activeHazard => activeHazard.hazardScenario == -1)
+                      var filteredArchivedHazards = this.archivedHazards.filter(archivedHazard => archivedHazard.hazardScenario == -1)
+                      this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + hazard.otherName)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(hazardName => {
+                          if (hazard.isActive) {
+                            filteredActiveHazards.forEach(activeHazard => {
 
-                          this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + activeHazard.otherName)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(activeHazardName => {
-                              if (hazardName.name == activeHazardName.name && hazard.isSeasonal == activeHazard.isSeasonal) { // hazard matches an existing one
-                                console.log('test')
-                                //add indicators from hazard to this active hazard
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                            })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.networkName = localNetworkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = localNetwork.$key
-                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                        });
-                                      }
-                                    })
-                                  })
-                              } else { // hazard doesn't exactly match an existing one
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      hazard.indicators = []
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                            })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.networkName = localNetworkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = localNetwork.$key
-                                          hazard.indicators.push(indicator)
+                              this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + activeHazard.otherName)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(activeHazardName => {
+                                  if (hazardName.name == activeHazardName.name && hazard.isSeasonal == activeHazard.isSeasonal) { // hazard matches an existing one
+                                    console.log('test')
+                                    //add indicators from hazard to this active hazard
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.networkName = localNetworkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = localNetwork.$key
+                                              if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))){
+                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                              } else{
+                                                var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
+                                                console.log(indicatorIndex)
+                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
+                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                              }
+
+                                            });
+                                          }
                                         })
+                                      })
+                                  } else { // hazard doesn't exactly match an existing one
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          hazard.indicators = []
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.networkName = localNetworkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = localNetwork.$key
+
+                                            })
+                                            if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                              hazard.indicators.push(indicator)
+                                            }else{
+                                              var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                              console.log(indicatorIndex)
+                                              hazard.indicators.splice(indicatorIndex, 1)
+                                              hazard.indicators.push(indicator)
+                                            }
+                                          }
+                                        })
+                                        console.log(this.activeHazards.some(activeHazard => activeHazard.$key == hazard.$key))
+                                        if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
+                                          hazard.fromNetwork = true;
+                                          hazard.networkId = localNetwork.$key
+                                          hazard.existsOnAgency = false
+                                          this.activeHazards.push(hazard)
+                                        }
+                                      })
+                                  }
+                                })
+                            })
+
+                          } else { // hazard is archived
+                            filteredArchivedHazards.forEach(archivedHazard => {
+
+                              this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + archivedHazard.otherName)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(archivedHazardName => {
+                                  if (hazardName.name == archivedHazardName.name && hazard.isSeasonal == archivedHazard.isSeasonal) { // hazard matches an existing one
+                                    console.log('test')
+                                    //add indicators from hazard to this active hazard
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.networkName = localNetworkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = localNetwork.$key
+                                              if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                                this.archivedHazards[archivedHazard].indicators.push(indicator)
+                                              }else{
+                                                var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
+                                                console.log(indicatorIndex)
+                                                this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
+                                                this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                              }
+                                            })
+                                          }
+                                        })
+                                      })
+                                  } else { // hazard doesn't exactly match an existing one
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          hazard.indicators = []
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.netowrkName = localNetworkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = localNetwork.$key
+                                            })
+                                            if(!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                              hazard.indicators.push(indicator)
+                                            }else{
+                                              var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                              console.log(indicatorIndex)
+                                              hazard.indicators.splice(indicatorIndex, 1)
+                                              hazard.indicators.push(indicator)
+                                            }
+                                          }
+                                        })
+                                        console.log(this.archivedHazards)
+                                        console.log(hazard)
+                                        if (hazard.indicators && hazard.indicators.length > 0 && !(this.archivedHazards.some(archivedHazard => archivedHazard.hazardScenario == hazard.hazardScenario))) {
+                                          hazard.fromNetwork = true;
+                                          hazard.networkId = localNetwork.$key
+                                          hazard.existsOnAgency = false
+                                          this.archivedHazards.push(hazard)
+                                        }
+                                      })
+                                  }
+                                })
+                            })
+                          }
+                        })
+                      // ***** End custom hazard *****
+                    } else { // hazard is not custom
+
+                      if (this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario && activeHazard.isSeasonal == hazard.isSeasonal)) { // hazard matches an existing one
+
+                        if (hazard.isActive) {
+                          this.activeHazards.forEach(activeHazard => {
+                            console.log(hazard)
+
+                            if (hazard.isSeasonal == activeHazard.isSeasonal && hazard.hazardScenario == activeHazard.hazardScenario) {
+                              console.log('test')
+                              //add indicators from hazard to this active hazard
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    if (indicator.countryOfficeId == this.countryID) {
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.networkName = localNetworkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = localNetwork.$key
+                                        if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                        }else{
+                                          var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
+                                          console.log(indicatorIndex)
+                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
+                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                        }
+                                      })
+
+                                    }
+                                  })
+                                })
+                            } else {
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    hazard.indicators = []
+                                    if (indicator.countryOfficeId == this.countryID) {
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.netowrkName = localNetworkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = localNetwork.$key
+
+                                      })
+                                      if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                        hazard.indicators.push(indicator)
+                                      }else{
+                                        var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                        console.log(indicatorIndex)
+                                        hazard.indicators.splice(indicatorIndex, 1)
+                                        hazard.indicators.push(indicator)
                                       }
-                                    })
+                                    }
+                                  })
+                                  console.log(this.activeHazards.some(activeHazard => activeHazard.$key == hazard.$key))
+                                  if ( hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
                                     hazard.fromNetwork = true;
                                     hazard.networkId = localNetwork.$key
                                     hazard.existsOnAgency = false
                                     this.activeHazards.push(hazard)
-                                  })
-                              }
-                            })
-                        })
+                                  }
+                                })
+                            }
 
-                      } else { // hazard is archived
-                        filteredArchivedHazards.forEach(archivedHazard => {
+                          })
 
-                          this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + archivedHazard.otherName)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(archivedHazardName => {
-                              if (hazardName.name == archivedHazardName.name && hazard.isSeasonal == archivedHazard.isSeasonal) { // hazard matches an existing one
-                                console.log('test')
-                                //add indicators from hazard to this active hazard
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                            })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.networkName = localNetworkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = localNetwork.$key
+                        } else {
+                          this.archivedHazards.forEach(archivedHazard => {
+
+                            if (hazard.isSeasonal == archivedHazard.isSeasonal && hazard.hazardScenario == archivedHazard.hazardScenario) {
+                              console.log('test')
+                              //add indicators from hazard to this active hazard
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    if (indicator.countryOfficeId == this.countryID) {
+
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.networkName = localNetworkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = localNetwork.$key
+                                        if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                           this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                        })
-                                      }
-                                    })
+                                        }else{
+                                          var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
+                                          console.log(indicatorIndex)
+                                          this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
+                                          this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                        }
+                                      })
+                                    }
                                   })
-                              } else { // hazard doesn't exactly match an existing one
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      hazard.indicators = []
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                            })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.netowrkName = localNetworkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = localNetwork.$key
-                                          hazard.indicators.push(indicator)
-                                        })
+                                })
+                            } else {
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    hazard.indicators = []
+                                    if (indicator.countryOfficeId == this.countryID) {
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.networkName = localNetworkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = localNetwork.$key
+
+                                      })
+                                      if(!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                        hazard.indicators.push(indicator)
+                                      }else{
+                                        var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                        console.log(indicatorIndex)
+                                        hazard.indicators.splice(indicatorIndex, 1)
+                                        hazard.indicators.push(indicator)
                                       }
-                                    })
+                                    }
+                                  })
+
+                                  if (hazard.indicators && hazard.indicators.length > 0 && !(this.archivedHazards.some(archivedHazard => archivedHazard.hazardScenario == hazard.hazardScenario))) {
                                     hazard.fromNetwork = true;
                                     hazard.networkId = localNetwork.$key
                                     hazard.existsOnAgency = false
                                     this.archivedHazards.push(hazard)
-                                  })
-                              }
-                            })
-                        })
-                      }
-                    })
-                  // ***** End custom hazard *****
-                } else { // hazard is not custom
-                  console.log('not custom')
-                  console.log(hazard)
-                  if (this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario && activeHazard.isSeasonal == hazard.isSeasonal)) { // hazard matches an existing one
+                                  }
+                                })
+                            }
 
-                    console.log('shouldn\'t go here')
-                    if (hazard.isActive) {
-                      this.activeHazards.forEach(activeHazard => {
+                          })
+                        }
+                      } else { // hazard doesn't match an existing one
 
 
-                        if (hazard.isSeasonal == activeHazard.isSeasonal && hazard.hazardScenario == activeHazard.hazardScenario) {
-                          console.log('test')
-                          //add indicators from hazard to this active hazard
-                          this.getIndicators(hazard.$key)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(indicators => {
-                              indicators.forEach(indicator => {
-                                if (indicator.countryOfficeId == this.countryID) {
-                                    this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                      logs.forEach((log, key) => {
-                                        this.getUsers(log.addedBy).subscribe((user: any) => {
-                                          log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                        })
-                                      });
-                                      indicator.logs = this._sortLogsByDate(logs);
-                                      indicator.hazardId = hazard.$key
-                                      indicator.networkName = localNetworkDetails.name
-                                      indicator.fromNetwork = true
-                                      indicator.networkId = localNetwork.$key
-                                      this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                    })
-
-                                }
-                              })
-                            })
-                        } else {
+                        if (hazard.isActive) {
                           this.getIndicators(hazard.$key)
                             .takeUntil(this.ngUnsubscribe)
                             .subscribe(indicators => {
@@ -498,49 +664,28 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     });
                                     indicator.logs = this._sortLogsByDate(logs);
                                     indicator.hazardId = hazard.$key
-                                    indicator.netowrkName = localNetworkDetails.name
+                                    indicator.networkName = localNetworkDetails.name
                                     indicator.fromNetwork = true
                                     indicator.networkId = localNetwork.$key
-                                    hazard.indicators.push(indicator)
+
                                   })
+                                  if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                    hazard.indicators.push(indicator)
+                                  }else{
+                                    var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                    console.log(indicatorIndex)
+                                    hazard.indicators.splice(indicatorIndex, 1)
+                                    hazard.indicators.push(indicator)
+                                  }
                                 }
                               })
-                              hazard.fromNetwork = true;
-                              hazard.networkId = localNetwork.$key
-                              hazard.existsOnAgency = false
-                              this.activeHazards.push(hazard)
-                            })
-                        }
 
-                      })
-
-                    } else {
-                      this.archivedHazards.forEach(archivedHazard => {
-
-                        if (hazard.isSeasonal == archivedHazard.isSeasonal && hazard.hazardScenario == archivedHazard.hazardScenario) {
-                          console.log('test')
-                          //add indicators from hazard to this active hazard
-                          this.getIndicators(hazard.$key)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(indicators => {
-                              indicators.forEach(indicator => {
-                                if (indicator.countryOfficeId == this.countryID) {
-
-                                    this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                      logs.forEach((log, key) => {
-                                        this.getUsers(log.addedBy).subscribe((user: any) => {
-                                          log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                        })
-                                      });
-                                      indicator.logs = this._sortLogsByDate(logs);
-                                      indicator.hazardId = hazard.$key
-                                      indicator.networkName = localNetworkDetails.name
-                                      indicator.fromNetwork = true
-                                      indicator.networkId = localNetwork.$key
-                                      this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                    })
-                                }
-                              })
+                              if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
+                                hazard.fromNetwork = true;
+                                hazard.networkId = localNetwork.$key
+                                hazard.existsOnAgency = false
+                                this.activeHazards.push(hazard)
+                              }
                             })
                         } else {
                           this.getIndicators(hazard.$key)
@@ -560,89 +705,39 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     indicator.networkName = localNetworkDetails.name
                                     indicator.fromNetwork = true
                                     indicator.networkId = localNetwork.$key
-                                    hazard.indicators.push(indicator)
+
                                   })
+                                  if(!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                    hazard.indicators.push(indicator)
+                                  }else{
+                                    var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                    console.log(indicatorIndex)
+                                    hazard.indicators.splice(indicatorIndex, 1)
+                                    hazard.indicators.push(indicator)
+                                  }
                                 }
                               })
-                              hazard.fromNetwork = true;
-                              hazard.networkId = localNetwork.$key
-                              hazard.existsOnAgency = false
-                              this.archivedHazards.push(hazard)
+                              if (hazard.indicators && hazard.indicators.length > 0 && !(this.archivedHazards.some(archivedHazard => archivedHazard.hazardScenario == hazard.hazardScenario))) {
+                                hazard.fromNetwork = true;
+                                hazard.networkId = localNetwork.$key
+                                hazard.existsOnAgency = false
+                                this.archivedHazards.push(hazard)
+                              }
                             })
                         }
 
-                      })
+                      }
                     }
-                  } else { // hazard doesn't match an existing one
-                    console.log('should go here')
+                  })
+                })
 
-                    if (hazard.isActive) {
-                      this.getIndicators(hazard.$key)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(indicators => {
-                          indicators.forEach(indicator => {
-                            hazard.indicators = []
-                            if (indicator.countryOfficeId == this.countryID) {
-                              this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                logs.forEach((log, key) => {
-                                  this.getUsers(log.addedBy).subscribe((user: any) => {
-                                    log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                  })
-                                });
-                                indicator.logs = this._sortLogsByDate(logs);
-                                indicator.hazardId = hazard.$key
-                                indicator.networkName = localNetworkDetails.name
-                                indicator.fromNetwork = true
-                                indicator.networkId = localNetwork.$key
-                                hazard.indicators.push(indicator)
-                              })
-                            }
-                          })
-                          hazard.fromNetwork = true;
-                          hazard.networkId = localNetwork.$key
-                          hazard.existsOnAgency = false
-                          this.activeHazards.push(hazard)
-                        })
-                    } else {
-                      this.getIndicators(hazard.$key)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(indicators => {
-                          indicators.forEach(indicator => {
-                            hazard.indicators = []
-                            if (indicator.countryOfficeId == this.countryID) {
-                              this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                logs.forEach((log, key) => {
-                                  this.getUsers(log.addedBy).subscribe((user: any) => {
-                                    log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                  })
-                                });
-                                indicator.logs = this._sortLogsByDate(logs);
-                                indicator.hazardId = hazard.$key
-                                indicator.networkName = localNetworkDetails.name
-                                indicator.fromNetwork = true
-                                indicator.networkId = localNetwork.$key
-                                hazard.indicators.push(indicator)
-                              })
-                            }
-                          })
-                          hazard.fromNetwork = true;
-                          hazard.networkId = localNetwork.$key
-                          hazard.existsOnAgency = false
-                          this.archivedHazards.push(hazard)
-                        })
-                    }
-
-                  }
-                }
-              })
             })
-
         })
-      })
+        this.getNetworkIndicators()
       })
   }
 
-  getNetworkIndicators(){
+  getNetworkIndicators() {
     this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryID + '/networks')
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryOfficeNetworks => {
@@ -650,191 +745,341 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.object(Constants.APP_STATUS + '/network/' + network.$key)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(networkDetails => {
-          console.log(network)
-          this.af.database.list(Constants.APP_STATUS + '/hazard/' + network.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(hazards => {
+              this.af.database.list(Constants.APP_STATUS + '/hazard/' + network.networkCountryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(hazards => {
 
-              hazards.forEach(hazard => { //loop through hazards from local network
+                  hazards.forEach(hazard => { //loop through hazards from local network
 
-                // ***** Start custom hazard *****
-                if (hazard.hazardScenario == -1) { // hazard is custom
-                  console.log('first')
-                  var filteredActiveHazards = this.activeHazards.filter(activeHazard => activeHazard.hazardScenario == -1)
-                  var filteredArchivedHazards = this.archivedHazards.filter(archivedHazard => archivedHazard.hazardScenario == -1)
-                  this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + hazard.otherName)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(hazardName => {
-                      if (hazard.isActive) {
-                        filteredActiveHazards.forEach(activeHazard => {
+                    // ***** Start custom hazard *****
+                    if (hazard.hazardScenario == -1) { // hazard is custom
+                      var filteredActiveHazards = this.activeHazards.filter(activeHazard => activeHazard.hazardScenario == -1)
+                      var filteredArchivedHazards = this.archivedHazards.filter(archivedHazard => archivedHazard.hazardScenario == -1)
+                      this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + hazard.otherName)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(hazardName => {
+                          if (hazard.isActive) {
+                            filteredActiveHazards.forEach(activeHazard => {
 
-                          this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + activeHazard.otherName)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(activeHazardName => {
-                              if (hazardName.name == activeHazardName.name && hazard.isSeasonal == activeHazard.isSeasonal) { // hazard matches an existing one
-                                console.log('test')
-                                //add indicators from hazard to this active hazard
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
+                              this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + activeHazard.otherName)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(activeHazardName => {
+                                  if (hazardName.name == activeHazardName.name && hazard.isSeasonal == activeHazard.isSeasonal) { // hazard matches an existing one
+                                    //add indicators from hazard to this active hazard
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.networkName = networkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = network.$key
+                                              indicator.networkCountryId = network.networkCountryId
+                                              if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                              }else{
+                                                var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
+                                                console.log(indicatorIndex)
+                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
+                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                              }
                                             })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.networkName = networkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = network.$key
-                                          indicator.networkCountryId = network.networkCountryId
-                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                          }
                                         })
-                                      }
-                                    })
-                                  })
-                              } else { // hazard doesn't exactly match an existing one
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      hazard.indicators = []
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                            })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.networkName = networkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = network.$key
-                                          indicator.networkCountryId = network.networkCountryId
-                                          hazard.indicators.push(indicator)
-                                        })
-                                      }
-                                    })
-                                    if (hazard.indicators > 0) {
-                                      hazard.fromNetwork = true;
-                                      hazard.networkId = network.$key
-                                      hazard.networkCountryId = network.networkCountryId
-                                      hazard.existsOnAgency = false
-                                      this.activeHazards.push(hazard)
-                                    }
-                                  })
-                              }
-                            })
-                        })
-
-                      } else { // hazard is archived
-                        filteredArchivedHazards.forEach(archivedHazard => {
-
-                          this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + archivedHazard.otherName)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(archivedHazardName => {
-                              if (hazardName.name == archivedHazardName.name && hazard.isSeasonal == archivedHazard.isSeasonal) { // hazard matches an existing one
-                                console.log('test')
-                                //add indicators from hazard to this active hazard
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                            })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.networkName = networkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = network.$key
-                                          indicator.networkCountryId = network.networkCountryId
-                                          this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                        })
-                                      }
-                                    })
-                                  })
-                              } else { // hazard doesn't exactly match an existing one
-                                this.getIndicators(hazard.$key)
-                                  .takeUntil(this.ngUnsubscribe)
-                                  .subscribe(indicators => {
-                                    indicators.forEach(indicator => {
-                                      hazard.indicators = []
-                                      if (indicator.countryOfficeId == this.countryID) {
-                                        this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                          logs.forEach((log, key) => {
-                                            this.getUsers(log.addedBy).subscribe((user: any) => {
-                                              log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                            })
-                                          });
-                                          indicator.logs = this._sortLogsByDate(logs);
-                                          indicator.hazardId = hazard.$key
-                                          indicator.networkName = networkDetails.name
-                                          indicator.fromNetwork = true
-                                          indicator.networkId = network.$key
-                                          indicator.networkCountryId = network.networkCountryId
-                                          hazard.indicators.push(indicator)
-                                        })
-                                      }
-                                    })
-                                    if (hazard.indicators > 0) {
-                                      hazard.fromNetwork = true;
-                                      hazard.networkId = network.$key
-                                      hazard.networkCountryId = network.networkCountryId
-                                      hazard.existsOnAgency = false
-                                      this.archivedHazards.push(hazard)
-                                    }
-                                  })
-                              }
-                            })
-                        })
-                      }
-                    })
-                  // ***** End custom hazard *****
-                } else { // hazard is not custom
-                  console.log('not custom')
-                  console.log(hazard)
-                  if (this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario && activeHazard.isSeasonal == hazard.isSeasonal)) { // hazard matches an existing one
-
-                    console.log('shouldn\'t go here')
-                    if (hazard.isActive) {
-                      this.activeHazards.forEach(activeHazard => {
-
-
-                        if (hazard.isSeasonal == activeHazard.isSeasonal && hazard.hazardScenario == activeHazard.hazardScenario) {
-                          console.log('test')
-                          //add indicators from hazard to this active hazard
-                          this.getIndicators(hazard.$key)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(indicators => {
-                              indicators.forEach(indicator => {
-                                if (indicator.countryOfficeId == this.countryID) {
-                                  this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                    logs.forEach((log, key) => {
-                                      this.getUsers(log.addedBy).subscribe((user: any) => {
-                                        log.addedByFullName = user.firstName + ' ' + user.lastName;
                                       })
-                                    });
-                                    indicator.logs = this._sortLogsByDate(logs);
-                                    indicator.hazardId = hazard.$key
-                                    indicator.networkName = networkDetails.name
-                                    indicator.fromNetwork = true
-                                    indicator.networkId = network.$key
-                                    indicator.networkCountryId = network.networkCountryId
-                                    this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                  })
-                                }
-                              })
+                                  } else { // hazard doesn't exactly match an existing one
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          hazard.indicators = []
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.networkName = networkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = network.$key
+                                              indicator.networkCountryId = network.networkCountryId
+                                            })
+                                            if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                              hazard.indicators.push(indicator)
+                                            }else{
+                                              var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                              console.log(indicatorIndex)
+                                              hazard.indicators.splice(indicatorIndex, 1)
+                                              hazard.indicators.push(indicator)
+                                            }
+                                          }
+                                        })
+                                        if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
+
+                                          hazard.fromNetwork = true;
+                                          hazard.networkId = network.$key
+                                          hazard.networkCountryId = network.networkCountryId
+                                          hazard.existsOnAgency = false
+                                          this.activeHazards.push(hazard)
+                                        }
+                                      })
+                                  }
+                                })
                             })
+
+                          } else { // hazard is archived
+                            filteredArchivedHazards.forEach(archivedHazard => {
+
+                              this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + archivedHazard.otherName)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(archivedHazardName => {
+                                  if (hazardName.name == archivedHazardName.name && hazard.isSeasonal == archivedHazard.isSeasonal) { // hazard matches an existing one
+
+                                    //add indicators from hazard to this active hazard
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.networkName = networkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = network.$key
+                                              indicator.networkCountryId = network.networkCountryId
+                                              if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                                this.archivedHazards[archivedHazard].indicators.push(indicator)
+                                              }else{
+                                                var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
+                                                console.log(indicatorIndex)
+                                                this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
+                                                this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                              }
+                                            })
+                                          }
+                                        })
+                                      })
+                                  } else { // hazard doesn't exactly match an existing one
+                                    this.getIndicators(hazard.$key)
+                                      .takeUntil(this.ngUnsubscribe)
+                                      .subscribe(indicators => {
+                                        indicators.forEach(indicator => {
+                                          hazard.indicators = []
+                                          if (indicator.countryOfficeId == this.countryID) {
+                                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                              logs.forEach((log, key) => {
+                                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                                })
+                                              });
+                                              indicator.logs = this._sortLogsByDate(logs);
+                                              indicator.hazardId = hazard.$key
+                                              indicator.networkName = networkDetails.name
+                                              indicator.fromNetwork = true
+                                              indicator.networkId = network.$key
+                                              indicator.networkCountryId = network.networkCountryId
+
+                                            })
+                                            if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                              hazard.indicators.push(indicator)
+                                            }else{
+                                              var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                              console.log(indicatorIndex)
+                                              hazard.indicators.splice(indicatorIndex, 1)
+                                              hazard.indicators.push(indicator)
+                                            }
+                                          }
+                                        })
+                                        if (hazard.indicators && hazard.indicators.length > 0 && !(this.archivedHazards.some(archivedHazard => archivedHazard.hazardScenario == hazard.hazardScenario))) {
+                                          hazard.fromNetwork = true;
+                                          hazard.networkId = network.$key
+                                          hazard.networkCountryId = network.networkCountryId
+                                          hazard.existsOnAgency = false
+                                          this.archivedHazards.push(hazard)
+                                        }
+                                      })
+                                  }
+                                })
+                            })
+                          }
+                        })
+                      // ***** End custom hazard *****
+                    } else { // hazard is not custom
+
+                      if (this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario && activeHazard.isSeasonal == hazard.isSeasonal)) { // hazard matches an existing one
+
+
+                        if (hazard.isActive) {
+                          this.activeHazards.forEach(activeHazard => {
+
+
+                            if (hazard.isSeasonal == activeHazard.isSeasonal && hazard.hazardScenario == activeHazard.hazardScenario) {
+
+                              //add indicators from hazard to this active hazard
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    if (indicator.countryOfficeId == this.countryID) {
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.networkName = networkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = network.$key
+                                        indicator.networkCountryId = network.networkCountryId
+                                        if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                        }else{
+                                          var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
+                                          console.log(indicatorIndex)
+                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
+                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                        }
+                                      })
+                                    }
+                                  })
+                                })
+                            } else {
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    hazard.indicators = []
+                                    if (indicator.countryOfficeId == this.countryID) {
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.networkName = networkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = network.$key
+                                        indicator.networkCountryId = network.networkCountryId
+
+                                      })
+                                      if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                        hazard.indicators.push(indicator)
+                                      }else{
+                                        var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                        console.log(indicatorIndex)
+                                        hazard.indicators.splice(indicatorIndex, 1)
+                                        hazard.indicators.push(indicator)
+                                      }
+                                    }
+                                  })
+                                  if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
+
+                                    hazard.fromNetwork = true;
+                                    hazard.networkId = network.$key
+                                    hazard.networkCountryId = network.networkCountryId
+                                    hazard.existsOnAgency = false
+                                    this.activeHazards.push(hazard)
+                                  }
+                                })
+                            }
+
+                          })
+
                         } else {
+                          this.archivedHazards.forEach(archivedHazard => {
+
+                            if (hazard.isSeasonal == archivedHazard.isSeasonal && hazard.hazardScenario == archivedHazard.hazardScenario) {
+
+                              //add indicators from hazard to this active hazard
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    if (indicator.countryOfficeId == this.countryID) {
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.networkName = networkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = network.$key
+                                        indicator.networkCountryId = network.networkCountryId
+                                        if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                          this.archivedHazards[archivedHazard].indicators.push(indicator)
+                                        }else{
+                                          var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
+                                          console.log(indicatorIndex)
+                                          this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
+                                          this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                        }
+                                      })
+                                    }
+                                  })
+                                })
+                            } else {
+                              this.getIndicators(hazard.$key)
+                                .takeUntil(this.ngUnsubscribe)
+                                .subscribe(indicators => {
+                                  indicators.forEach(indicator => {
+                                    hazard.indicators = []
+                                    if (indicator.countryOfficeId == this.countryID) {
+                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                        logs.forEach((log, key) => {
+                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                          })
+                                        });
+                                        indicator.logs = this._sortLogsByDate(logs);
+                                        indicator.hazardId = hazard.$key
+                                        indicator.networkName = networkDetails.name
+                                        indicator.fromNetwork = true
+                                        indicator.networkId = network.$key
+                                        indicator.networkCountryId = network.networkCountryId
+
+                                      })
+                                      hazard.indicators.push(indicator)
+                                    }
+                                  })
+                                  if (hazard.indicators && hazard.indicators.length > 0 && !(this.archivedHazards.some(archivedHazard => archivedHazard.hazardScenario == hazard.hazardScenario))) {
+                                    hazard.fromNetwork = true;
+                                    hazard.networkId = network.$key
+                                    hazard.networkCountryId = network.networkCountryId
+                                    hazard.existsOnAgency = false
+                                    this.archivedHazards.push(hazard)
+                                  }
+                                })
+                            }
+
+                          })
+                        }
+                      } else { // hazard doesn't match an existing one
+
+                        if (hazard.isActive) {
                           this.getIndicators(hazard.$key)
                             .takeUntil(this.ngUnsubscribe)
                             .subscribe(indicators => {
@@ -853,11 +1098,19 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     indicator.fromNetwork = true
                                     indicator.networkId = network.$key
                                     indicator.networkCountryId = network.networkCountryId
-                                    hazard.indicators.push(indicator)
+
                                   })
+                                  if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                    hazard.indicators.push(indicator)
+                                  }else{
+                                    var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                    console.log(indicatorIndex)
+                                    hazard.indicators.splice(indicatorIndex, 1)
+                                    hazard.indicators.push(indicator)
+                                  }
                                 }
                               })
-                              if (hazard.indicators > 0) {
+                              if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
                                 hazard.fromNetwork = true;
                                 hazard.networkId = network.$key
                                 hazard.networkCountryId = network.networkCountryId
@@ -865,38 +1118,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                 this.activeHazards.push(hazard)
                               }
                             })
-                        }
-
-                      })
-
-                    } else {
-                      this.archivedHazards.forEach(archivedHazard => {
-
-                        if (hazard.isSeasonal == archivedHazard.isSeasonal && hazard.hazardScenario == archivedHazard.hazardScenario) {
-                          console.log('test')
-                          //add indicators from hazard to this active hazard
-                          this.getIndicators(hazard.$key)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(indicators => {
-                              indicators.forEach(indicator => {
-                                if (indicator.countryOfficeId == this.countryID) {
-                                  this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                    logs.forEach((log, key) => {
-                                      this.getUsers(log.addedBy).subscribe((user: any) => {
-                                        log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                      })
-                                    });
-                                    indicator.logs = this._sortLogsByDate(logs);
-                                    indicator.hazardId = hazard.$key
-                                    indicator.networkName = networkDetails.name
-                                    indicator.fromNetwork = true
-                                    indicator.networkId = network.$key
-                                    indicator.networkCountryId = network.networkCountryId
-                                    this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                  })
-                                }
-                              })
-                            })
                         } else {
                           this.getIndicators(hazard.$key)
                             .takeUntil(this.ngUnsubscribe)
@@ -916,11 +1137,18 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     indicator.fromNetwork = true
                                     indicator.networkId = network.$key
                                     indicator.networkCountryId = network.networkCountryId
-                                    hazard.indicators.push(indicator)
                                   })
+                                  if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                    hazard.indicators.push(indicator)
+                                  }else{
+                                    var indicatorIndex = hazard.indicators.indexOf(indicator)
+                                    console.log(indicatorIndex)
+                                    hazard.indicators.splice(indicatorIndex, 1)
+                                    hazard.indicators.push(indicator)
+                                  }
                                 }
                               })
-                              if (hazard.indicators > 0) {
+                              if (hazard.indicators && hazard.indicators.length > 0 && !(this.archivedHazards.some(archivedHazard => archivedHazard.hazardScenario == hazard.hazardScenario))) {
                                 hazard.fromNetwork = true;
                                 hazard.networkId = network.$key
                                 hazard.networkCountryId = network.networkCountryId
@@ -930,83 +1158,15 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                             })
                         }
 
-                      })
+                      }
                     }
-                  } else { // hazard doesn't match an existing one
-                    console.log('should go here')
-
-                    if (hazard.isActive) {
-                      this.getIndicators(hazard.$key)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(indicators => {
-                          indicators.forEach(indicator => {
-                            hazard.indicators = []
-                            if (indicator.countryOfficeId == this.countryID) {
-                              this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                logs.forEach((log, key) => {
-                                  this.getUsers(log.addedBy).subscribe((user: any) => {
-                                    log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                  })
-                                });
-                                indicator.logs = this._sortLogsByDate(logs);
-                                indicator.hazardId = hazard.$key
-                                indicator.networkName = networkDetails.name
-                                indicator.fromNetwork = true
-                                indicator.networkId = network.$key
-                                indicator.networkCountryId = network.networkCountryId
-                                hazard.indicators.push(indicator)
-                              })
-                            }
-                          })
-                          if (hazard.indicators > 0) {
-                            hazard.fromNetwork = true;
-                            hazard.networkId = network.$key
-                            hazard.networkCountryId = network.networkCountryId
-                            hazard.existsOnAgency = false
-                            this.activeHazards.push(hazard)
-                          }
-                        })
-                    } else {
-                      this.getIndicators(hazard.$key)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(indicators => {
-                          indicators.forEach(indicator => {
-                            hazard.indicators = []
-                            if (indicator.countryOfficeId == this.countryID) {
-                              this.getLogs(indicator.$key).subscribe((logs: any) => {
-                                logs.forEach((log, key) => {
-                                  this.getUsers(log.addedBy).subscribe((user: any) => {
-                                    log.addedByFullName = user.firstName + ' ' + user.lastName;
-                                  })
-                                });
-                                indicator.logs = this._sortLogsByDate(logs);
-                                indicator.hazardId = hazard.$key
-                                indicator.networkName = networkDetails.name
-                                indicator.fromNetwork = true
-                                indicator.networkId = network.$key
-                                indicator.networkCountryId = network.networkCountryId
-                                hazard.indicators.push(indicator)
-                              })
-                            }
-                          })
-                          if (hazard.indicators > 0) {
-                            hazard.fromNetwork = true;
-                            hazard.networkId = network.$key
-                            hazard.networkCountryId = network.networkCountryId
-                            hazard.existsOnAgency = false
-                            this.archivedHazards.push(hazard)
-                          }
-                        })
-                    }
-
-                  }
-                }
-              })
+                  })
+                })
             })
-        })
         })
       })
   }
+
   getIndicators(hazardID: string) {
     return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardID);
   }
@@ -1074,6 +1234,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
     const indicatorID = indicator.$key;
+
 
     if (!hazardID || !indicatorID) {
       console.log('hazardID or indicatorID cannot be empty');

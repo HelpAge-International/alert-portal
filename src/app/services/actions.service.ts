@@ -547,15 +547,19 @@ export class ActionsService {
     });
   }
 
-  getAlertsForDirectorToApprove(uid, countryId) {
+  getAlertsForDirectorToApprove(uid, countryId, isNetwork?) {
+    console.log(countryId)
+    console.log(uid)
+    console.log(isNetwork)
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
-        orderByChild: "approval/countryDirector/" + countryId,
+        orderByChild: isNetwork ? "approval/countryDirector/" + uid : "approval/countryDirector/" + countryId,
         equalTo: AlertStatus.WaitingResponse
       }
     })
       .map(alerts => {
+        console.log(alerts)
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();
@@ -639,8 +643,16 @@ export class ActionsService {
       });
   }
 
-  approveRedAlert(countryId, alertId, uid) {
-    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+  approveRedAlert(countryId, alertId, uid, isNetwork?) {
+    if(isNetwork){
+      console.log(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid)
+      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + uid).set(AlertStatus.Approved);
+
+      //TODO send alert to each country office in the network with a notification to their country directors
+    }else{
+      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+    }
+
   }
 
   rejectRedAlert(countryId, alertId, uid) {
