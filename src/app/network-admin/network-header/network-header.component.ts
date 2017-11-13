@@ -9,6 +9,7 @@ import {NetworkUserAccountType, UserType} from "../../utils/Enums";
 import {TranslateService} from "@ngx-translate/core";
 import {Http, Response} from '@angular/http';
 import {AngularFire} from "angularfire2";
+
 declare var jQuery: any;
 
 
@@ -33,7 +34,8 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
   private user: any;
   private network: any;
   private USER_TYPE: string;
-  private networkId : string;
+  private networkId: string;
+  private showLoader: boolean;
 
   constructor(private pageControl: PageControlService,
               private userService: UserService,
@@ -51,6 +53,7 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showLoader = true;
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (auth, oldUserType) => {
       this.uid = auth.uid;
@@ -61,22 +64,23 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           this.user = user;
+          this.showLoader = false;
         });
 
       //get network info
       this.networkService.getSelectedIdObj(this.uid)
-        .flatMap(data =>{
+        .flatMap(data => {
           this.networkId = data["id"];
           return this.networkService.getNetworkDetail(data["id"])
         })
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(network =>{
+        .subscribe(network => {
           this.network = network;
         })
 
       this.loadJSON().subscribe(data => {
 
-        for (var key in data){
+        for (var key in data) {
 
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
@@ -87,7 +91,7 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
-          if(user.language) {
+          if (user.language) {
             this.language = user.language;
             this.translate.use(this.language.toLowerCase());
           } else {
@@ -111,15 +115,14 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
 
   // Dan's Modal functions
 
-  loadJSON(){
+  loadJSON() {
 
     return this.http.get(this.languageSelectPath)
-      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
 
   }
 
-  openLanguageModal()
-  {
+  openLanguageModal() {
 
     console.log('Open language modal');
     jQuery("#language-selection").modal("show");

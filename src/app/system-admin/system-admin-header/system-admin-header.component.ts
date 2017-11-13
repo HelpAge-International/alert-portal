@@ -6,6 +6,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Http, Response} from '@angular/http';
+
 declare var jQuery: any;
 
 @Component({
@@ -14,7 +15,7 @@ declare var jQuery: any;
   styleUrls: ['system-admin-header.component.css']
 })
 
-export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
+export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
 
   uid: string;
   firstName: string = "";
@@ -28,6 +29,7 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
   private userLang = [];
   private language: string;
   private browserLang: string = "";
+  private showLoader: boolean;
 
   // End
 
@@ -40,6 +42,7 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
   }
 
   ngOnInit() {
+    this.showLoader = true;
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
@@ -49,10 +52,11 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
         .subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
+          this.showLoader = false;
         });
       this.loadJSON().subscribe(data => {
 
-        for (var key in data){
+        for (var key in data) {
 
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
@@ -63,7 +67,7 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
-          if(user.language) {
+          if (user.language) {
             this.language = user.language;
             this.translate.use(this.language.toLowerCase());
           } else {
@@ -96,15 +100,14 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
 
   // Dan's Modal functions
 
-  loadJSON(){
+  loadJSON() {
 
     return this.http.get(this.languageSelectPath)
-      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
 
   }
 
-  openLanguageModal()
-  {
+  openLanguageModal() {
 
     console.log('Open language modal');
     jQuery("#language-selection").modal("show");
@@ -118,8 +121,8 @@ export class SystemAdminHeaderComponent implements OnInit,OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
 
 
-      this.translate.use(language.toLowerCase());
-      jQuery("#language-selection").modal("hide");
+    this.translate.use(language.toLowerCase());
+    jQuery("#language-selection").modal("hide");
 
 
   }

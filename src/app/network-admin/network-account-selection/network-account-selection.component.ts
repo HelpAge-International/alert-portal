@@ -39,7 +39,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   private agencyDetail: any;
   private UserType = UserType;
   private userType: UserType;
-  private networkCountries:NetworkCountryModel[] = [];
+  private networkCountries: NetworkCountryModel[] = [];
   private networkIdMap = new Map<string, string>();
 
   constructor(private pageControl: PageControlService,
@@ -195,6 +195,37 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
           break;
         default:
           this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            let path = ""
+            switch (userType) {
+              case UserType.CountryAdmin:
+                path = Constants.COUNTRY_ADMIN_HOME
+                break
+              case UserType.PartnerUser:
+                path = Constants.COUNTRY_ADMIN_HOME
+                break
+              case UserType.SystemAdmin:
+                path = Constants.SYSTEM_ADMIN_HOME
+                break
+              case UserType.CountryDirector:
+                path = Constants.COUNTRY_ADMIN_HOME
+                break
+              case UserType.ErtLeader:
+                path = Constants.COUNTRY_ADMIN_HOME
+                break
+              case UserType.Ert:
+                path = Constants.COUNTRY_ADMIN_HOME
+                break
+              case UserType.Donor:
+                path = Constants.DONOR_HOME
+                break
+              case UserType.AgencyAdmin:
+                path = Constants.AGENCY_ADMIN_HOME
+                break
+              default:
+                path = Constants.G_OR_R_DIRECTOR_DASHBOARD
+                break
+            }
+            this.router.navigateByUrl(path)
           });
           break;
       }
@@ -278,11 +309,11 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private goToLocalNetworkAdmin(){
+  private goToLocalNetworkAdmin() {
     let selectionUpdate = {};
     selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetwork"] = this.selectedAccountId;
     selectionUpdate["/networkUserSelection/" + this.uid + "/selectedNetworkCountry"] = null;
-    this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(()=>{
+    this.af.database.object(Constants.APP_STATUS).update(selectionUpdate).then(() => {
       this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType)
         .first()
         .subscribe(firstLogin => {
@@ -312,8 +343,8 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.alertMessage = "";
   }
 
-  private setGlobalStatus(){
-    this.af.database.object(Constants.APP_STATUS + "/network/" + this.selectedAccountId ).takeUntil(this.ngUnsubscribe).subscribe(obj => this.isGlobal = obj.isGlobal)
+  private setGlobalStatus() {
+    this.af.database.object(Constants.APP_STATUS + "/network/" + this.selectedAccountId).takeUntil(this.ngUnsubscribe).subscribe(obj => this.isGlobal = obj.isGlobal)
   }
 
 

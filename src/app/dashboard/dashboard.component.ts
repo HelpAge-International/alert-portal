@@ -65,6 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private AlertStatus = AlertStatus;
 
   private alerts: Observable<any>;
+  private alertsNetwork: Observable<any>;
 
   private hazards: any[] = [];
   private numberOfIndicatorsObject = {};
@@ -504,6 +505,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.countryId);
+      if (this.networkMap) {
+        this.alertsNetwork = Observable.from([])
+        this.networkMap.forEach((networkCountryId, networkId) => {
+          this.alertsNetwork = Observable.merge(this.alertsNetwork, this.actionService.getAlertsForDirectorToApproveNetwork(this.countryId, networkCountryId, networkId))
+        })
+      }
+
       this.amberAlerts = this.actionService.getAlerts(this.countryId)
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
@@ -622,8 +630,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionService.approveRedAlert(this.countryId, alertId, this.uid);
   }
 
+  approveRedAlertNetwork(alert) {
+    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(()=>{
+      this.networkService.mapAgencyCountryForNetworkCountry(alert.networkId, alert.networkCountryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountryMap => {
+          this.actionService.getAlertObj(alert.networkCountryId, alert.id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(alertObj => {
+              this.actionService.copyRedAlertOverFromNetwork(agencyCountryMap, alert.id, alertObj)
+            })
+        })
+    });
+  }
+
   rejectRedRequest(alertId) {
     this.actionService.rejectRedAlert(this.countryId, alertId, this.uid);
+  }
+
+  rejectRedRequestNetwork(alert) {
+    this.actionService.rejectRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId);
   }
 
   planReview(plan, isLocal) {
