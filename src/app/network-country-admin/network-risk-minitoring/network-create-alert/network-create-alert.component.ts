@@ -199,7 +199,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
         this.alertData.approval['countryDirector'] = [];
-        this.alertData.approval['countryDirector'][this.leadAgencyCountryOffice] = (this.alertData.alertLevel == AlertLevels.Red ? this.UserType == UserType.CountryDirector ? 1 : 0 : 1);
+        this.alertData.approval['countryDirector'][this.directorCountryID] = (this.alertData.alertLevel == AlertLevels.Red ? this.UserType == UserType.CountryDirector ? 1 : 0 : 1);
         this.alertData.estimatedPopulation = parseInt(this.alertData.estimatedPopulation);
 
         var dataToSave = this.alertData;
