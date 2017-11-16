@@ -9,6 +9,7 @@ import {Constants} from '../../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {Countries} from "../../utils/Enums";
 import {HazardImages} from "../../utils/HazardImages";
+
 /**
  * Created by jordan on 08/10/2017.
  */
@@ -50,6 +51,7 @@ export class NetworkGlobalMapListComponent implements OnInit, OnDestroy {
               () => {
                 // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
                 console.log('Network map initialised');
+
               },
               (country) => {
                 // Do nothing. First element is null so map isn't intialised

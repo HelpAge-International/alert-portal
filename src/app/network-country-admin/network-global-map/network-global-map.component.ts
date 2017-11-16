@@ -41,6 +41,7 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
       console.log(this.uid);
+      console.log('hello');
       this.networkService.getSelectedIdObj(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
@@ -59,8 +60,8 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           }));
         });
 
-      // this.mapService = MapService.init(this.af, this.ngUnsubscribe);
-      // this.mapService.initBlankMap('global-map');
+      //this.mapService = MapService.init(this.af, this.ngUnsubscribe);
+      //this.mapService.initBlankMap('global-map');
     });
   }
 

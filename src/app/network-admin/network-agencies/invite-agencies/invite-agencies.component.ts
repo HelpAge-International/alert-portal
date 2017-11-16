@@ -106,7 +106,7 @@ export class InviteAgenciesComponent implements OnInit, OnDestroy {
   confirmInvitation() {
     console.log("confirm invitation");
     if (!this.selectedAgencies || this.selectedAgencies.length == 0) {
-      this.alertMessage = new AlertMessageModel("No agencies was selected!");
+      this.alertMessage = new AlertMessageModel("No agencies were selected!");
       return;
     }
     if (!this.leadAgencyId) {

@@ -881,6 +881,8 @@ export class MapCountry {
   }
 
   public calculateDepartments() {
+
+
     let depMap: Map<string, MapDepartment> = new Map<string, MapDepartment>();
     this.actionMap.forEach((value, key) => {
       let department = (value.department ? value.department : 'unassigned');
