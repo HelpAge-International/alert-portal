@@ -434,7 +434,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
                   if (data.adminId) {
                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
                       var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-                      this.usersForAssign.push(userToPush);
+                      this.usersForAssign.push(userToPush); 
                     });
                   }
                 });

@@ -647,6 +647,10 @@ export class NetworkService {
       })
   }
 
+  getLocalNetwork(networkId): Observable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId)
+  }
+
   getAgencyIdsForNetworkCountryOffice(networkId, networkCountryId) {
     return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries", {preserveSnapshot: true})
       .map(snap => {
@@ -717,6 +721,29 @@ export class NetworkService {
       });
   }
 
+  mapAgencyCountryForLocalNetworkCountry(networkId) {
+    return this.getLocalNetwork(networkId)
+      .map(localNetwork => {
+        console.log(localNetwork)
+        if (localNetwork.agencies) {
+          let agencyCountries = localNetwork.agencies;
+          let agencyCountryList = Object.keys(agencyCountries).map(key => {
+            console.log(agencyCountries)
+            let obj = {};
+
+            obj["agencyId"] = key;
+            obj["countryId"] = agencyCountries[key].countryCode;
+            return obj;
+          });
+          let agencyCountryMap = new Map<string, string>();
+          agencyCountryList.forEach(item => {
+            agencyCountryMap.set(item["agencyId"], item["countryId"]);
+          });
+          return agencyCountryMap;
+        }
+      });
+  }
+
   validateNetworkCountryToken(countryId, token) {
     return this.af.database.object(Constants.APP_STATUS + "/networkCountryValidation/" + countryId + "/validationToken")
       .map(tokenObj => {
@@ -728,7 +755,7 @@ export class NetworkService {
             return !currentTime.isAfter(tokenExpiryTime);
           }
         } else {
-          return false;
+          return false; 
         }
       })
   }
@@ -782,7 +809,11 @@ export class NetworkService {
   getLocalNetworksWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
       .map(networks => {
-        return Object.keys(networks)
+        var networkKeys = []
+        networks.forEach(network => {
+          networkKeys.push(network.$key)
+        })
+        return networkKeys
       })
   }
 

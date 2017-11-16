@@ -98,6 +98,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // private networkCountryId: string;
   // private networkId: string;
   private networkMap: Map<string, string>;
+  private localNetworks: any;
+  private alertsLocalNetwork: Observable<any>;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -155,6 +157,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
 
         })
+
+      this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(localNetworks => {
+          this.localNetworks = localNetworks
+          console.log(this.localNetworks)
+          if (userType == UserType.CountryDirector) {
+            this.DashboardTypeUsed = DashboardType.director;
+          } else {
+            this.DashboardTypeUsed = DashboardType.default;
+          }
+          if (this.userType == UserType.PartnerUser) {
+            console.log("partner user")
+            this.agencyId = agencyId;
+            this.countryId = countryId;
+            this.loadDataForPartnerUser(agencyId, countryId);
+          } else {
+            this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+            this.loadData();
+          }
+
+        })
+
 
       // })
 
@@ -353,6 +378,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     this.initNetworkActions(startOfToday, endOfToday, this.networkMap)
+    this.initLocalNetworkActions(startOfToday, endOfToday, this.localNetworks)
 
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
@@ -400,6 +426,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     this.initNetworkIndicators(startOfToday, endOfToday, this.networkMap)
+    this.initLocalNetworkIndicators(startOfToday, endOfToday, this.localNetworks)
 
     // plan approval
     if (this.userType == UserType.PartnerUser) {
@@ -410,6 +437,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkCountryId, this.uid, true));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
+        })
+      }
+      if(this.localNetworks){
+        this.localNetworks.forEach(networkId => {
+          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
         })
       }
@@ -424,6 +457,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.networkMap.forEach((networkCountryId, networkId) => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+        })
+      }
+      if(this.localNetworks){
+        this.localNetworks.forEach(networkId => {
+          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
         })
       }
       // if (this.networkId) {
@@ -509,6 +548,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.alertsNetwork = Observable.from([])
         this.networkMap.forEach((networkCountryId, networkId) => {
           this.alertsNetwork = Observable.merge(this.alertsNetwork, this.actionService.getAlertsForDirectorToApproveNetwork(this.countryId, networkCountryId, networkId))
+        })
+      }
+      if (this.localNetworks) {
+        this.alertsLocalNetwork = Observable.from([])
+        this.localNetworks.forEach((networkId) => {
+          this.alertsLocalNetwork = Observable.merge(this.alertsNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
         })
       }
 
@@ -644,6 +689,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  approveRedAlertLocalNetwork(alert) {
+    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(()=>{
+      this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountryMap => {
+          console.log(agencyCountryMap)
+          this.actionService.getAlertObj(alert.networkId, alert.id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(alertObj => {
+              console.log(alertObj)
+
+              this.actionService.copyRedAlertOverFromNetwork(agencyCountryMap, alert.id, alertObj)
+            })
+        })
+    });
+  }
+
   rejectRedRequest(alertId) {
     this.actionService.rejectRedAlert(this.countryId, alertId, this.uid);
   }
@@ -753,12 +815,116 @@ export class DashboardComponent implements OnInit, OnDestroy {
     })
   }
 
+  private initLocalNetworkActions(startOfToday: number, endOfToday: number, localNetworks) {
+    this.actionsOverdueNetwork = [];
+    this.actionsTodayNetwork = [];
+    this.actionsThisWeekNetwork = [];
+    localNetworks.forEach(networkId => {
+      this.actionService.getActionsDueInWeek(networkId, this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(actions => {
+
+          // Display APA only if there is a red alert
+          actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
+
+
+          this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
+          this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
+          this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
+
+          for (let x of this.actionsOverdueNetwork) {
+            this.updateTaskDataForActionsNetwork(x.$key, x, networkId, (action) => {
+              if (action) {
+                x.task = action.task;
+                x.level = action.level;
+              }
+            });
+            console.log(this.actionsOverdueNetwork)
+          }
+
+          for (let x of this.actionsTodayNetwork) {
+            this.updateTaskDataForActionsNetwork(x.$key, x, networkId, (action) => {
+              if (action) {
+                x.task = action.task;
+                x.level = action.level;
+              }
+            });
+            console.log(this.actionsTodayNetwork)
+          }
+          for (let x of this.actionsThisWeekNetwork) {
+            this.updateTaskDataForActionsNetwork(x.$key, x, networkId, (action) => {
+              if (action) {
+                x.task = action.task;
+                x.level = action.level;
+              }
+            });
+            console.log(this.actionsThisWeekNetwork)
+          }
+        });
+    })
+  }
+
   private initNetworkIndicators(startOfToday, endOfToday, networkMap: Map<string, string>) {
     this.indicatorsOverdueNetwork = [];
     this.indicatorsThisWeekNetwork = [];
     this.indicatorsTodayNetwork = [];
     CommonUtils.convertMapToValuesInArray(networkMap).forEach(networkCountryId => {
       this.actionService.getIndicatorsDueInWeek(networkCountryId, this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(indicators => {
+          let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
+          this.indicatorsOverdueNetwork = this.indicatorsOverdueNetwork.concat(overdueIndicators);
+          let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
+          this.indicatorsTodayNetwork = this.indicatorsTodayNetwork.concat(dayIndicators);
+          let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
+          this.indicatorsThisWeekNetwork = this.indicatorsThisWeekNetwork.concat(weekIndicators);
+          if (overdueIndicators.length > 0) {
+            overdueIndicators.forEach(indicator => {
+              if (this.actionService.isExist(indicator.$key, this.indicatorsOverdueNetwork)) {
+                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsOverdueNetwork);
+                if (index != -1) {
+                  this.indicatorsOverdueNetwork[index] = indicator;
+                }
+              } else {
+                this.indicatorsOverdueNetwork.push(indicator);
+              }
+            });
+          }
+          if (dayIndicators.length > 0) {
+            dayIndicators.forEach(indicator => {
+              if (this.actionService.isExist(indicator.$key, this.indicatorsTodayNetwork)) {
+                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsTodayNetwork);
+                if (index != -1) {
+                  this.indicatorsTodayNetwork[index] = indicator;
+                }
+              } else {
+                this.indicatorsTodayNetwork.push(indicator);
+              }
+            });
+          }
+          if (weekIndicators.length > 0) {
+            weekIndicators.forEach(indicator => {
+              if (this.actionService.isExist(indicator.$key, this.indicatorsThisWeekNetwork)) {
+                let index = this.actionService.indexOfItem(indicator.$key, this.indicatorsThisWeekNetwork);
+                if (index != -1) {
+                  this.indicatorsThisWeekNetwork[index] = indicator;
+                }
+              } else {
+                this.indicatorsThisWeekNetwork.push(indicator);
+              }
+            });
+          }
+          // console.log('Count ---- ' + this.responseType.length)
+        });
+    })
+  }
+
+  private initLocalNetworkIndicators(startOfToday, endOfToday, localNetworks) {
+    this.indicatorsOverdueNetwork = [];
+    this.indicatorsThisWeekNetwork = [];
+    this.indicatorsTodayNetwork = [];
+    localNetworks.forEach(networkId => {
+      this.actionService.getIndicatorsDueInWeek(networkId, this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(indicators => {
           let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
