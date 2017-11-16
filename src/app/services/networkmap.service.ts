@@ -67,6 +67,7 @@ export class NetworkMapService {
 
   public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
               done: () => void, countryClicked: (country: string) => void) {
+
     this.af = af;
     this.ngUnsubscribe = ngUnsubscribe;
     // Get the agencies of a network
@@ -86,14 +87,14 @@ export class NetworkMapService {
                  *   Even though we're in a forEach, counter is maintained so this method fires when
                  *   they are all done */
                 this.initHazards();
+                this.loadColoredLayers(countryClicked);
+                console.log('load target layers');
                 for (const x of this.countries) {
                   for (const agencyX of x.agencies) {
                     this.getAllMPAValuesToCountries(agencyX.countryId, agencyX.id, systemAdminId, () => {
                       /* ALL MPA VALUES FOUND FOR ALL COUNTRY OFFICES
                        *   Even though we're in a two for loops, counter is maintained inside getAllMPAValuesToCountries
                        *   so this method fires when they are all done */
-                      console.log(this.countries);
-                      this.loadColoredLayers(countryClicked);
                       done();
                     });
                   }
@@ -213,7 +214,7 @@ export class NetworkMapService {
                   }
                 }
               }
-              // if (!lock && res) {
+              //if (!lock && res) {
               if (res) {
                 // Everyone on the approval list has approved it. Uncomment the three 'lock' comments if you require ALL
                 //   on the approval list to approve
@@ -251,7 +252,6 @@ export class NetworkMapService {
                   }
 
                   networkMapHazard.instancesOfHazard.push(raised);
-
                   this.placeMarker(country.location, networkMapHazard.hazardScenario);
                 });
               }
@@ -302,7 +302,7 @@ export class NetworkMapService {
    */
   private getAgencyCountriesOfNetwork(networkId: string, networkCountryId: string,
                                       done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
-    console.log('Accessing ' + Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId);
+    console.log('Accessing ' + Constants.APP_STATUS + '/networkCountry/' + networkId + '/');
     this.af.database.object(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId,
       {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -419,6 +419,7 @@ export class NetworkMapService {
       else {
         red.push(Countries[x.location]);
       }
+      console.log(x.location);
     }
 
     const layer = new google.maps.FusionTablesLayer({
@@ -866,7 +867,7 @@ export class NetworkMapService {
     });
   }
 
-  //engregion
+  //end region
 
   /**
    * Utility methods to interact with the below datastructure

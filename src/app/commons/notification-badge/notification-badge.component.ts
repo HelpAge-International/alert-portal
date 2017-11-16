@@ -28,7 +28,7 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
   @Input()
   set USER_TYPE(USER_TYPE: string) {
     this._USER_TYPE = USER_TYPE;
-    console.log(this._USER_TYPE)
+    console.log(this._USER_TYPE);
     this.getUnreadMessages();
   }
 

@@ -2823,13 +2823,14 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
                           \n Thanks
                           \n Your ALERT team `;
+              console.log('we are executing code here');
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New welcome email sent to:', email);
               });
@@ -2877,7 +2878,7 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
@@ -2931,7 +2932,7 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
@@ -2985,7 +2986,7 @@ exports.sendNetworkAgencyValidationEmail_UAT_2 = functions.database.ref('/uat-2/
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
@@ -3265,6 +3266,8 @@ exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/
           admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
             let network = networkSnap.val();
 
+
+
             let expiry = moment.utc().add(1, 'weeks').valueOf();
 
             let validationToken = {'token': uuidv4(), 'expiry': expiry};
@@ -3276,7 +3279,7 @@ exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
@@ -3332,7 +3335,7 @@ exports.sendNetworkCountryAgencyValidationEmail_TEST = functions.database.ref('/
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
@@ -3388,7 +3391,7 @@ exports.sendNetworkCountryAgencyValidationEmail_UAT_1 = functions.database.ref('
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
@@ -3444,7 +3447,7 @@ exports.sendNetworkCountryAgencyValidationEmail_UAT_2 = functions.database.ref('
                 to: email
               };
 
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
