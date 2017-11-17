@@ -14,7 +14,7 @@
            aria-expanded="false">{{agencyDetail?.name}}</a>
         <a *ngIf="isViewingNetwork" class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
            aria-expanded="false">{{selectedNetwork?.name}}</a>
-        <div *ngIf="isViewingNetwork || partnerAgencies.length>1 || networks.length>0" class="dropdown-menu">
+        <div *ngIf="isViewingNetwork || partnerAgencies.length>1 || networks.length>0 || localNetworks.length>0" class="dropdown-menu">
           <ng-container *ngIf="isViewingNetwork">
             <a class="dropdown-item"
                (click)="selectAgency()">{{agencyDetail?.name}}</a>
@@ -28,7 +28,7 @@
                (click)="selectNetwork(network)">{{network.name}}</a>
           </ng-container>
           <ng-container *ngIf="localNetworks.length>0">
-            <a *ngFor="let network of localNetworks" class="dropdown-item"
+            <a class="testtt" *ngFor="let network of localNetworks" class="dropdown-item"
                (click)="selectLocalNetwork(network)">{{network.name}}</a>
           </ng-container>
 

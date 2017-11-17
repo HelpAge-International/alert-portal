@@ -207,6 +207,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           }
 
           //get networks
+          console.log('getting stuff')
           this.getNetworks(agencyId, countryId)
 
           this.getLocalNetworks(agencyId, countryId)
@@ -467,6 +468,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
             item.takeUntil(this.ngUnsubscribe).subscribe(network => {
               if (!CommonUtils.itemExistInList(network.id, this.networks)) {
                 if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
+                  console.log(network)
                   this.networks.push(network);
                 }
               }
@@ -479,7 +481,11 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private getLocalNetworks(agencyId: string, countryId: any) {
     this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(list => this.localNetworkList = list)
+      .subscribe(list => {
+        this.localNetworkList = list
+        console.log(this.localNetworkList)
+      })
+
     this.networkService.getLocalNetworkModelsForCountry(agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkModels => {
