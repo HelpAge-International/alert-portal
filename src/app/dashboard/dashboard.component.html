@@ -21,8 +21,7 @@
             </div>
 
             <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-              <i div
-                 class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+              <i class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
               <div>
                 <span>{{"ALERT.RISK" | translate}}:</span>
                 {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) :

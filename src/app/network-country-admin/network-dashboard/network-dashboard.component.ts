@@ -195,9 +195,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyCountryMap => {
-              this.agencyCountryMap = agencyCountryMap
+              this.agencyCountryMap = agencyCountryMap;
               this.loadData();
-            })
+            });
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
@@ -208,11 +208,11 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initViewAccess() {
-    console.log(this.userType)
-    this.DashboardTypeUsed = DashboardType.default
-    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    console.log(this.userType);
+    this.DashboardTypeUsed = DashboardType.default;
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     if (!this.networkViewValues) {
-      this.router.navigateByUrl("/dashboard")
+      this.router.navigateByUrl("/dashboard");
       return
     }
 
@@ -529,6 +529,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private getAlerts(id) {
+
     if (this.DashboardTypeUsed == DashboardType.default) {
       this.alerts = this.actionService.getAlerts(id);
 
@@ -544,7 +545,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved);
         });
 
-      console.log(this.redAlerts)
+      console.log(this.redAlerts, 'red alerts');
     }
     this.actionService.getRedAlerts(id)
       .takeUntil(this.ngUnsubscribe)
