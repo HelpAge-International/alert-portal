@@ -2911,48 +2911,104 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
       let networkId = event.params['networkId'];
       let agencyId = event.params['agencyId'];
 
-      admin.database().ref('/test/agency/' + agencyId + '/adminId').once("value", (data) => {
-        let adminId = data.val();
-        console.log("admin id: " + adminId);
+      admin.database().ref('/sand/network/' + networkId).once("value", (data) => {
 
-        admin.database().ref('/test/userPublic/' + adminId).once("value", (user) => {
-          let email = user.val().email;
-          console.log("admin email: " + email);
+        if (data.val().isGlobal) {
+          console.log('isGlobal')
 
-          admin.database().ref('/test/network/' + networkId).once("value", networkSnap => {
-            let network = networkSnap.val();
+          admin.database().ref('/test/agency/' + agencyId + '/adminId').once("value", (data) => {
+            let adminId = data.val();
+            console.log("admin id: " + adminId);
 
-            let expiry = moment.utc().add(1, 'weeks').valueOf();
+            admin.database().ref('/test/userPublic/' + adminId).once("value", (user) => {
+              let email = user.val().email;
+              console.log("admin email: " + email);
 
-            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+              admin.database().ref('/test/network/' + networkId).once("value", networkSnap => {
+                let network = networkSnap.val();
 
-            admin.database().ref('test/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT Network" <noreply@firebase.com>',
-                to: email
-              };
+                let expiry = moment.utc().add(1, 'weeks').valueOf();
 
-              mailOptions.subject = `You have been invited to join a network`;
-              mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
-                          \n To confirm, please click on the link below
-                          \n https://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+                admin.database().ref('test/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                  console.log('success validationToken');
+                  const mailOptions = {
+                    from: '"ALERT Network" <noreply@firebase.com>',
+                    to: email
+                  };
+
+                  mailOptions.subject = `You have been invited to join a network`;
+                  mailOptions.text = `Hello,
+                              \nYour Agency was added into ${network.name} network!.
+                              \n To confirm, please click on the link below
+                              \n https://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                              \n Thanks
+                              \n Your ALERT team `;
+                  return mailTransport.sendMail(mailOptions).then(() => {
+                    console.log('New welcome email sent to:', email);
+                  });
+                }, error => {
+                  console.log(error.message);
+                });
+
               });
-            }, error => {
-              console.log(error.message);
+
             });
-
           });
+        }else{
+          console.log('isNotGlobal')
 
-        });
-      });
+          admin.database().ref('/test/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
+            let countryOfficeCode = data.val().countryCode;
+
+            admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
+              let adminId = data.val();
+              console.log("admin id: " + adminId);
+
+              admin.database().ref('/test/userPublic/' + adminId).once("value", (user) => {
+                let email = user.val().email;
+                console.log("admin email: " + email);
+
+                admin.database().ref('/test/network/' + networkId).once("value", networkSnap => {
+                  let network = networkSnap.val();
+
+                  let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+                  let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+                  admin.database().ref('test/networkCountryValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
+                    console.log('success validationToken');
+                    const mailOptions = {
+                      from: '"ALERT Network" <noreply@firebase.com>',
+                      to: email
+                    };
+
+                    mailOptions.subject = `You have been invited to join a network`;
+                    mailOptions.text = `Hello,
+                              \nYour Agency was added into ${network.name} network!.
+                              \n To confirm, please click on the link below
+                              \n https://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                              \n Thanks
+                              \n Your ALERT team `;
+                    return mailTransport.sendMail(mailOptions).then(() => {
+                      console.log('New welcome email sent to:', email);
+                    });
+                  }, error => {
+                    console.log(error.message);
+                  });
+
+                });
+
+              });
+            });
+          })
+
+        }
+      })
     }
   });
+
 
 exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/network/{networkId}/agencies/{agencyId}')
   .onWrite(event => {
@@ -2965,46 +3021,100 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
       let networkId = event.params['networkId'];
       let agencyId = event.params['agencyId'];
 
-      admin.database().ref('/uat/agency/' + agencyId + '/adminId').once("value", (data) => {
-        let adminId = data.val();
-        console.log("admin id: " + adminId);
+      admin.database().ref('/sand/network/' + networkId).once("value", (data) => {
 
-        admin.database().ref('/uat/userPublic/' + adminId).once("value", (user) => {
-          let email = user.val().email;
-          console.log("admin email: " + email);
+        if (data.val().isGlobal) {
+          console.log('isGlobal')
 
-          admin.database().ref('/uat/network/' + networkId).once("value", networkSnap => {
-            let network = networkSnap.val();
+          admin.database().ref('/uat/agency/' + agencyId + '/adminId').once("value", (data) => {
+            let adminId = data.val();
+            console.log("admin id: " + adminId);
 
-            let expiry = moment.utc().add(1, 'weeks').valueOf();
+            admin.database().ref('/uat/userPublic/' + adminId).once("value", (user) => {
+              let email = user.val().email;
+              console.log("admin email: " + email);
 
-            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+              admin.database().ref('/uat/network/' + networkId).once("value", networkSnap => {
+                let network = networkSnap.val();
 
-            admin.database().ref('uat/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT Network" <noreply@firebase.com>',
-                to: email
-              };
+                let expiry = moment.utc().add(1, 'weeks').valueOf();
 
-              mailOptions.subject = `You have been invited to join a network`;
-              mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
-                          \n To confirm, please click on the link below
-                          \n https://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+                admin.database().ref('uat/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                  console.log('success validationToken');
+                  const mailOptions = {
+                    from: '"ALERT Network" <noreply@firebase.com>',
+                    to: email
+                  };
+
+                  mailOptions.subject = `You have been invited to join a network`;
+                  mailOptions.text = `Hello,
+                              \nYour Agency was added into ${network.name} network!.
+                              \n To confirm, please click on the link below
+                              \n https://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                              \n Thanks
+                              \n Your ALERT team `;
+                  return mailTransport.sendMail(mailOptions).then(() => {
+                    console.log('New welcome email sent to:', email);
+                  });
+                }, error => {
+                  console.log(error.message);
+                });
+
               });
-            }, error => {
-              console.log(error.message);
+
             });
-
           });
+        } else {
+          console.log('isNotGlobal')
 
-        });
-      });
+          admin.database().ref('/uat/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
+            let countryOfficeCode = data.val().countryCode;
+
+            admin.database().ref('/uat/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
+              let adminId = data.val();
+              console.log("admin id: " + adminId);
+
+              admin.database().ref('/uat/userPublic/' + adminId).once("value", (user) => {
+                let email = user.val().email;
+                console.log("admin email: " + email);
+
+                admin.database().ref('/uat/network/' + networkId).once("value", networkSnap => {
+                  let network = networkSnap.val();
+
+                  let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+                  let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+                  admin.database().ref('uat/networkCountryValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
+                    console.log('success validationToken');
+                    const mailOptions = {
+                      from: '"ALERT Network" <noreply@firebase.com>',
+                      to: email
+                    };
+
+                    mailOptions.subject = `You have been invited to join a network`;
+                    mailOptions.text = `Hello,
+                                \nYour Agency was added into ${network.name} network!.
+                                \n To confirm, please click on the link below
+                                \n https://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                                \n Thanks
+                                \n Your ALERT team `;
+                    return mailTransport.sendMail(mailOptions).then(() => {
+                      console.log('New welcome email sent to:', email);
+                    });
+                  }, error => {
+                    console.log(error.message);
+                  });
+
+                });
+
+              });
+            });
+          })
+        }
+      })
     }
   });
 
