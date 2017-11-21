@@ -28,6 +28,10 @@ export class PrepActionService {
   private defaultClockValue: number;
 
   private updater: () => void;
+  private CHSkeys: any;
+  private completeCHS: number;
+  private totalCHS: number;
+  private CHSCompletePercentage: number;
 
   constructor() {
     this.actions = [];
@@ -61,6 +65,76 @@ export class PrepActionService {
       });
   }
 
+  public initNetworkDashboardActions(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, systemId: string, networkId: string, networkCountryId?: string){
+    af.database.list(Constants.APP_STATUS + '/actionCHS/' + systemId)
+      .takeUntil(ngUnsubscribe)
+      .subscribe( CHSactions => {
+        this.CHSkeys = [];
+        CHSactions.forEach(action => {
+          this.CHSkeys.push(action.$key)
+        })
+          this.completeCHS = 0;
+          this.totalCHS = 0;
+          if(networkCountryId){
+            af.database.object(Constants.APP_STATUS +  '/networkCountry/' + networkId + '/' + networkCountryId)
+              .takeUntil(ngUnsubscribe)
+              .subscribe(network => {
+                //loop through each agency/country pair within network
+                Object.keys(network.agencyCountries).forEach( agencyCountry => {
+                  //get the country office key
+                  Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {
+                    //check if the country office has been approved
+                    if (network.agencyCountries[agencyCountry][countryKey].isApproved) {
+                      af.database.list(Constants.APP_STATUS +  '/action/' + countryKey)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(actions => { //get a list of the actions within a country office
+                          this.CHSkeys.forEach( key => {
+                            this.totalCHS++;
+                            actions.forEach( action => {
+                              if(action.$key == key ){
+                                  if(action.isComplete) {
+                                    this.completeCHS++;
+                                  }
+                              }
+                            })
+                          })
+                        })
+                    }
+                  })
+                })
+              })
+          }else{
+            af.database.object(Constants.APP_STATUS +  '/network/' + networkId)
+              .takeUntil(ngUnsubscribe)
+              .subscribe(network => {
+                //loop through each agency/country pair within network
+                console.log(network.agencies)
+                Object.keys(network.agencies).forEach(agencyCountry => {
+                  console.log(agencyCountry)
+                  console.log(network.agencies[agencyCountry].countryCode)
+                  //check if the country office has been approved
+                  if (network.agencies[agencyCountry].isApproved) {
+                    af.database.list(Constants.APP_STATUS + '/action/' + network.agencies[agencyCountry].countryCode)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(actions => { //get a list of the actions within a country office
+                        this.CHSkeys.forEach(key => {
+                          this.totalCHS++;
+                          actions.forEach(action => {
+                            if (action.$key == key) {
+                              if (action.isComplete) {
+                                this.completeCHS++;
+                              }
+                            }
+                          })
+                        })
+                      })
+                  }
+                })
+              })
+          }
+      })
+  }
+
   public initActionsWithInfo(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
                              countryId: string, agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
     this.uid = uid;
@@ -87,9 +161,6 @@ export class PrepActionService {
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
     this.getDefaultClockSettingsNetwork(af, this.agencyId, this.countryId, () => {
-      if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
-      }
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
       this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
     });
@@ -173,9 +244,6 @@ export class PrepActionService {
     this.countryId = agencyId;
     this.systemAdminId = systemId;
     this.getDefaultClockSettingsNetworkLocal(af, this.agencyId, () => {
-      if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
-      }
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
       this.init(af, "action", this.agencyId, isMPA, PrepSourceTypes.COUNTRY);
     });

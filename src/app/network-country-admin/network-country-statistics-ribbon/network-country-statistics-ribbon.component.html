@@ -39,7 +39,7 @@
     <li class="list-inline-item" (click)="goToCHS()">
       <div class="Icon">
         <div class="Icon__circle Icon--{{userPermissions.chsPreparedness ? 'blue' : 'grey'}} Icon--lg">
-          {{userPermissions.chsPreparedness ? chsPrepPercentage : 'N/A'}}%
+          {{userPermissions.chsPreparedness ?  this.Math.round((prepActionService.completeCHS * 100) / prepActionService.totalCHS)  : 'N/A'}}%
         </div>
       </div>
       <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>

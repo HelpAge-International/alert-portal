@@ -245,8 +245,11 @@ export class NetworkService {
       });
   }
 
-  resendEmail(networkId, agencyId) {
+  resendEmail(networkId, agencyId, countryCode?) {
     let data = {};
+    if (countryCode) {
+      data["countryCode"] = countryCode
+    }
     data["isApproved"] = false;
     this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(null).then(() => {
       this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(data);
@@ -755,7 +758,7 @@ export class NetworkService {
             return !currentTime.isAfter(tokenExpiryTime);
           }
         } else {
-          return false; 
+          return false;
         }
       })
   }

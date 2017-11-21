@@ -69,7 +69,6 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
               this.agencyService.getAllAgencyFromPlatform()
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(agencies =>{
-                  console.log(agencies)
                   agencies.forEach(agency =>{
 
                     this.agencyService.getAllAgencyByNetworkCountry(network.countryCode, agency.id)
@@ -125,8 +124,6 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
   toggleAgencySelection(agency, value) {
     this.agencySelectionMap.set(agency.$key, value);
     this.agencyNameMap.set(agency.$key, agency.name);
-    console.log(this.agencySelectionMap)
-    console.log(this.agencyNameMap)
   }
 
   showSelectedAgencies() {

@@ -22,7 +22,9 @@ declare var jQuery: any;
   templateUrl: './local-network-coordination-add-edit.component.html',
   styleUrls: ['./local-network-coordination-add-edit.component.scss']
 })
+
 export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestroy {
+
   countryId: any;
   agencyId: any;
   isViewing = false;

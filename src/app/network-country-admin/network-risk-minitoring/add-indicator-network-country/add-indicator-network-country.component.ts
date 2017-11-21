@@ -305,7 +305,6 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
                     this.uid = user.uid;
                     this._getIndicator(this.hazardID, this.indicatorID);
                   } else {
-                    console.log('user is fals')
                     this.navigateToLogin();
                   }
                 })
@@ -355,7 +354,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   getUsersForAssign() {
-    if( this.UserType == NetworkUserAccountType.NetworkAdmin ){
+    console.log(this.UserType)
+    if( this.UserType == NetworkUserAccountType.NetworkCountryAdmin ){
       this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe( (user: ModelUserPublic) => {
@@ -363,6 +363,42 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
           this.usersForAssign.push(userToPush);
         })
+
+      this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(network => {
+          Object.keys(network.agencyCountries).forEach( agencyKey => {
+            this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryOffices => {
+                countryOffices.forEach(countryOffice => {
+                  if(network.agencyCountries[agencyKey][countryOffice.$key]) {
+                    // Obtaining the country admin data
+                    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
+                      if (data.adminId) {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                          var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                          this.usersForAssign.push(userToPush);
+                        });
+                      }
+                    });
+                    //Obtaining other staff data
+                    this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
+                      for (let userID in data) {
+                        if (!userID.startsWith('$')) {
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                            var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                            this.usersForAssign.push(userToPush);
+                          });
+                        }
+                      }
+                    });
+                  }
+                })
+              })
+          })
+        })
+
     }else if (this.UserType == UserType.GlobalDirector) {
       console.log('globalDirector')
       this.userService.getUser(this.uid)
@@ -434,7 +470,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
                   if (data.adminId) {
                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
                       var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-                      this.usersForAssign.push(userToPush); 
+                      this.usersForAssign.push(userToPush);
                     });
                   }
                 });

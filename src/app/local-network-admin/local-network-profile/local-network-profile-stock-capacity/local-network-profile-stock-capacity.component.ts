@@ -388,10 +388,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
         this.router.navigate(['/network/local-network-office-profile/stock-capacity/add-edit',
           this.networkViewValues], {skipLocationChange: true});
       } else {
-        console.log('here1')
         this.networkViewValues['stockType'] = stockType;
         if(this.isNetworkCountry){
-          console.log('setting isNetworkCountry')
           this.networkViewValues['isNetworkCountry'] = true;
         }
         this.router.navigate(['/network/local-network-office-profile/stock-capacity/add-edit',

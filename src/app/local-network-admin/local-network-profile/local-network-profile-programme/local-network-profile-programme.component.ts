@@ -112,8 +112,6 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   private networkCountryAccess() {
 
     if(this.isViewing){
-
-      console.log('here1')
       this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(map => {
@@ -159,8 +157,6 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
   private localNetworkAdminAccess() {
     if(this.isViewing){
-
-      console.log('here1')
       this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(officeAgencyMap => {

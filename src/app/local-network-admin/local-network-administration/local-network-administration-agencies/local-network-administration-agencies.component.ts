@@ -35,6 +35,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   private networkAgencies: NetworkAgencyModel[] = [];
   private removeAgencyObj: FirebaseObjectObservable<any>;
   private showLoader: boolean;
+  private networkCountryCode: number | any;
 
 
   constructor(private pageControl: PageControlService,
@@ -49,11 +50,19 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
 
+
+
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
+
+          this.networkService.getNetworkDetail(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network => {
+              this.networkCountryCode = network.countryCode
+            })
 
           //fetch network agencies
           this.networkService.getAgenciesForNetwork(this.networkId)
@@ -128,8 +137,15 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   }
 
   resendEmail(agencyId) {
-    console.log(agencyId);
-    this.networkService.resendEmail(this.networkId, agencyId);
+
+    this.networkService.getCountryCodeForAgency(agencyId, this.networkCountryCode)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe( countryCode => {
+        this.networkService.resendEmail(this.networkId, agencyId, countryCode);
+
+      })
+
+
   }
 
   navigateToAddAgency(){

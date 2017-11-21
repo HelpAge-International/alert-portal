@@ -88,6 +88,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
       })
 
+    console.log(this.isNetworkCountry)
     this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
   }
 
@@ -114,7 +115,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
 
                       }
-                      this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
+                      this._coordinationArrangementService.getCoordinationArrangementNonAlertMembersCountry(this.networkCountryId, coordinationArrangement.id)
                         .subscribe(coordinationArrangementNonAlert => {
                           if (coordinationArrangementNonAlert.nonAlertMembers) {
                             Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
@@ -162,7 +163,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
 
                     }
-                    this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
+                    this._coordinationArrangementService.getCoordinationArrangementNonAlertMembersCountry(this.networkCountryId, coordinationArrangement.id)
                       .subscribe(coordinationArrangementNonAlert => {
                         if (coordinationArrangementNonAlert.nonAlertMembers) {
                           Object.keys(coordinationArrangementNonAlert.nonAlertMembers)

@@ -306,7 +306,6 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                     this.uid = params["uid"];
                     this._getIndicator(this.hazardID, this.indicatorID);
                   } else {
-                    console.log('user is fals')
                     this.navigateToLogin();
                   }
 
@@ -332,7 +331,6 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                     this.uid = user.uid;
                     this._getIndicator(this.hazardID, this.indicatorID);
                   } else {
-                    console.log('user is fals')
                     this.navigateToLogin();
                   }
                 })
@@ -392,6 +390,40 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
           let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
           this.usersForAssign.push(userToPush);
         })
+
+      this.networkService.getNetworkDetail(this.networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(network => {
+          Object.keys(network.agencies).forEach(agencyKey => {
+            this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + '/' + network.agencies[agencyKey].countryCode)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryOffice => {
+                this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
+                  console.log(data)
+                  if (data.adminId) {
+                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                      var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                      this.usersForAssign.push(userToPush);
+                    });
+                  }
+                });
+                //Obtaining other staff data
+                this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
+                  for (let userID in data) {
+                    if (!userID.startsWith('$')) {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                        var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                        this.usersForAssign.push(userToPush);
+                      });
+                    }
+                  }
+                });
+              })
+          })
+        })
+
+
+
     }else if (this.UserType == UserType.GlobalDirector) {
       console.log('globalDirector')
       this.userService.getUser(this.uid)
@@ -426,7 +458,6 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                 console.log(this.countryID)
                 console.log(countryOffice.$key)
                 if(this.countryID == countryOffice.$key){
-                  console.log('match')
                   this.agencyId = agency.$key
 
                   // Obtaining the country admin data

@@ -174,7 +174,6 @@ export class AddHazardLocalNetworkComponent implements OnInit, OnDestroy {
 
   _getTopResults() {
     this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
-      console.log('p[[p[p[pp[p[')
       console.log(list)
       this.showInformUnavailable = (list.length == 0);
       this.hazardScenariosListTop = list;

@@ -121,6 +121,15 @@ export class CoordinationArrangementService {
     return getCoordinationArrangementSubscription;
   }
 
+  public getCoordinationArrangementNonAlertMembersCountry(networkCountryId: string, coordinationArrangementId: string){
+    if (!networkCountryId || !coordinationArrangementId) {
+      return;
+    }
+    return this.af.database.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkCountryId + '/' + coordinationArrangementId )
+
+
+  }
+
   public getCoordinationArrangementNonAlertMembers(networkId: string, coordinationArrangementId: string){
     if (!networkId || !coordinationArrangementId) {
       return;
@@ -194,7 +203,6 @@ export class CoordinationArrangementService {
           if(nonAlertMembers){
               nonAlertMembers.forEach( member => {
                 if(member){
-                  console.log('uyyyt')
                   this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + newCoordination.key + "/nonAlertMembers").push({"name": member});
                 }
               })
@@ -261,7 +269,6 @@ export class CoordinationArrangementService {
     } else {
       nonAlertMembers.forEach( member => {
         if(member){
-          console.log('uyyyt')
           this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push(member);
         }
       })
@@ -300,7 +307,7 @@ export class CoordinationArrangementService {
       return Promise.reject('Missing countryId or coordinationArrangement');
     }
 
-    console.log('/networkCountryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id)
+
     const coordinationArrangementData = {};
 
     coordinationArrangementData['/networkCountryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;

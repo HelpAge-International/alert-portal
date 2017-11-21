@@ -11,6 +11,7 @@ import {
   DurationType,
   HazardScenario,
   UserType,
+  NetworkUserAccountType
 } from "../../../utils/Enums";
 import {NetworkModulesEnabledModel, PageControlService} from "../../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
@@ -26,6 +27,7 @@ import {MessageModel} from "../../../model/message.model";
 import {Location} from "@angular/common";
 import {LocalStorageService} from "angular-2-local-storage";
 import {HazardImages} from "../../../utils/HazardImages";
+import {AgencyService} from "../../../services/agency-service.service";
 
 declare var jQuery: any;
 
@@ -58,7 +60,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
   private uid: string;
   private userType: UserType;
+  private networkUserType: NetworkUserAccountType;
   private userTypes = UserType;
+  private networkUserTypes = NetworkUserAccountType;
   private agencyId: string;
   private countryId: string;
   public myFirstName: string;
@@ -109,9 +113,13 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
   private now: Date = new Date();
 
+
   //for local network admin
   private isLocalNetworkAdmin: boolean;
   private networkViewValues: {};
+  private copyCountryOfficeCode: any;
+  private usersForAssign: any = [];
+  private hasUsers: boolean = false;
 
 
   constructor(private pageControl: PageControlService,
@@ -121,6 +129,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               private notificationService: NotificationService,
               private userService: UserService,
               private storage: LocalStorageService,
+              private _agencyService: AgencyService,
               private route: ActivatedRoute,
               private translate: TranslateService,
               private router: Router) {
@@ -151,16 +160,34 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         this.action.id = params['id'];
         this.editDisableLoading = true;
       }
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if(params["isViewing"]){
         this.isViewing = params["isViewing"];
+      }
+      if(params["systemId"]) {
         this.systemId = params["systemId"];
+      }
+      if(params["agencyId"]) {
         this.agencyId = params["agencyId"];
+      }
+      if(params["countryId"]) {
         this.countryId = params["countryId"];
+      }
+      if(params["userType"]) {
         this.userType = params["userType"];
+      }
+      if(params["networkId"]) {
         this.networkId = params["networkId"];
+      }
+      if(params["networkCountryId"]) {
         this.networkCountryId = params["networkCountryId"];
+      }
+      if(params["countryOfficeCode"]) {
+        this.copyCountryOfficeCode = params["countryOfficeCode"];
+      }
+      if(params["uid"]) {
         this.uid = params["uid"];
       }
+
       this.isViewing ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
 
@@ -168,9 +195,11 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
   private initNetworkAccess() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      console.log('network access')
       this.showLoader = true;
       this.uid = user.uid;
-      this.getStaffDetails(this.uid, true);
+      console.log(user)
+
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -179,6 +208,11 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           this.showLoader = false;
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
+          this.userType = selection["userType"];
+          this.networkUserType = selection["userType"];
+
+          this.getStaffDetails(this.uid, true);
+
 
           this.networkService.getNetworkModuleMatrix(this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
@@ -209,7 +243,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
-      this.getStaffDetails(this.uid, true);
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -217,6 +250,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         .subscribe(selection => {
           this.showLoader = false;
           this.networkId = selection["id"];
+          this.userType = selection["userType"];
+          this.networkUserType = selection["userType"];
+
+          this.getStaffDetails(this.uid, true);
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
@@ -244,6 +281,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private initViewNetworkAccess() {
+    console.log('shouldnt be doing thisss')
     this.getStaffDetails(this.uid, true);
 
     this.networkService.getNetworkModuleMatrix(this.networkCountryId)
@@ -717,21 +755,312 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
    */
 
   public getStaffDetails(uid: string, isMe: boolean) {
-    if (!this.CURRENT_USERS.get(uid)) {
-      this.CURRENT_USERS.set(uid, PreparednessUser.placeholder(uid));
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
-          let prepUser: PreparednessUser = new PreparednessUser(uid, this.uid == uid);
-          prepUser.firstName = snap.firstName;
-          prepUser.lastName = snap.lastName;
-          this.CURRENT_USERS.set(uid, prepUser);
-          this.updateUser(prepUser);
-          if (isMe) {
-            this.myFirstName = snap.firstName;
-            this.myLastName = snap.lastName;
-          }
-        });
+
+    // console.log(this.userType)
+    // console.log(this.networkUserType)
+    // if( this.networkUserType == NetworkUserAccountType.NetworkCountryAdmin ){
+    //   console.log('hereee')
+    //   this.userService.getUser(this.uid)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe( (user) => {
+    //       let prepUser: PreparednessUser = new PreparednessUser(this.uid, this.uid == this.uid);
+    //       prepUser.firstName = user.firstName
+    //       prepUser.lastName = user.firstName
+    //       this.CURRENT_USERS.set(this.uid, prepUser);
+    //     })
+    //
+    //   this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe(network => {
+    //       Object.keys(network.agencyCountries).forEach( agencyKey => {
+    //         this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
+    //           .takeUntil(this.ngUnsubscribe)
+    //           .subscribe(countryOffices => {
+    //             countryOffices.forEach(countryOffice => {
+    //               if(network.agencyCountries[agencyKey][countryOffice.$key]) {
+    //                 // Obtaining the country admin data
+    //                 this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
+    //                   if (data.adminId) {
+    //                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+    //
+    //                       let prepUser: PreparednessUser = new PreparednessUser(data.adminId, this.uid == data.adminId);
+    //                       prepUser.firstName = user.firstName
+    //                       prepUser.lastName = user.firstName
+    //                       this.CURRENT_USERS.set(data.admin, prepUser);
+    //                     });
+    //                   }
+    //                 });
+    //                 //Obtaining other staff data
+    //                 this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
+    //                   for (let userID in data) {
+    //                     if (!userID.startsWith('$')) {
+    //                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+    //                         let prepUser: PreparednessUser = new PreparednessUser(userID, this.uid == userID);
+    //                         prepUser.firstName = user.firstName
+    //                         prepUser.lastName = user.firstName
+    //                         this.CURRENT_USERS.set(userID, prepUser);
+    //                       });
+    //                     }
+    //                   }
+    //                 });
+    //               }
+    //             })
+    //           })
+    //       })
+    //     })
+    //
+    // }
+    // else if (this.userType == UserType.GlobalDirector) {
+    //   console.log('globalDirector')
+    //   this.userService.getUser(this.uid)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe( (user) => {
+    //
+    //       let prepUser: PreparednessUser = new PreparednessUser(this.uid, this.uid == this.uid);
+    //       prepUser.firstName = user.firstName
+    //       prepUser.lastName = user.firstName
+    //       this.CURRENT_USERS.set(this.uid, prepUser);
+    //     })
+    // } else if (this.userType == UserType.Ert || this.userType == UserType.PartnerUser) {
+    //   console.log('ert/ partner')
+    //   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode + "/" + this.uid)
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe(staff => {
+    //       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+    //         .takeUntil(this.ngUnsubscribe)
+    //         .subscribe((user) => {
+    //
+    //           let prepUser: PreparednessUser = new PreparednessUser(staff.$key, this.uid == staff.$key);
+    //           prepUser.firstName = user.firstName
+    //           prepUser.lastName = user.firstName
+    //           this.CURRENT_USERS.set(staff.$key, prepUser);
+    //         });
+    //     });
+    // } else {
+    //
+    //   this._agencyService.getAllCountryOffices()
+    //     .takeUntil(this.ngUnsubscribe)
+    //     .subscribe(agencies => {
+    //       console.log(this.uid)
+    //       agencies.forEach(agency => {
+    //         this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agency.$key)
+    //           .takeUntil(this.ngUnsubscribe)
+    //           .subscribe(countryOffices => {
+    //
+    //
+    //             if(this.isViewing){
+    //               countryOffices.filter( countryOffice => {
+    //                 console.log(countryOffice.$key)
+    //                 if(this.countryId == countryOffice.$key){
+    //                   this.agencyId = agency.$key
+    //
+    //                   // Obtaining the country admin data
+    //                   this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId).subscribe((data: any) => {
+    //                     if (data.adminId) {
+    //                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+    //                         let prepUser: PreparednessUser = new PreparednessUser(data.adminID, this.uid == data.adminID);
+    //                         prepUser.firstName = user.firstName
+    //                         prepUser.lastName = user.firstName
+    //                         this.CURRENT_USERS.set(data.adminID, prepUser);
+    //                       });
+    //                     }
+    //                   });
+    //                   //Obtaining other staff data
+    //                   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId).subscribe((data: {}) => {
+    //                     for (let userID in data) {
+    //                       if (!userID.startsWith('$')) {
+    //                         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+    //                           let prepUser: PreparednessUser = new PreparednessUser(userID, this.uid == userID);
+    //                           prepUser.firstName = user.firstName
+    //                           prepUser.lastName = user.firstName
+    //                           this.CURRENT_USERS.set(userID, prepUser);
+    //
+    //                         });
+    //                       }
+    //                     }
+    //                   });
+    //                 }
+    //               })
+    //             } else {
+    //               countryOffices.filter( countryOffice => {
+    //                 console.log(countryOffice.$key)
+    //                 if(this.copyCountryOfficeCode == countryOffice.$key){
+    //                   this.agencyId = agency.$key
+    //
+    //                   // Obtaining the country admin data
+    //                   this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
+    //                     if (data.adminId) {
+    //                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+    //                         let prepUser: PreparednessUser = new PreparednessUser(data.adminID, this.uid == data.adminID);
+    //                         prepUser.firstName = user.firstName
+    //                         prepUser.lastName = user.firstName
+    //                         this.CURRENT_USERS.set(data.adminID, prepUser);
+    //
+    //                       });
+    //                     }
+    //                   });
+    //                   //Obtaining other staff data
+    //                   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
+    //                     for (let userID in data) {
+    //                       if (!userID.startsWith('$')) {
+    //                         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+    //                           let prepUser: PreparednessUser = new PreparednessUser(userID, this.uid == userID);
+    //                           prepUser.firstName = user.firstName
+    //                           prepUser.lastName = user.firstName
+    //                           this.CURRENT_USERS.set(userID, prepUser);
+    //                         });
+    //                       }
+    //                     }
+    //                   });
+    //                 }
+    //               })
+    //             }
+    //
+    //           })
+    //       });
+    //     })
+    //
+    // }
+
+    if(!this.hasUsers) {
+      this.hasUsers = true
+      if (this.networkUserType == NetworkUserAccountType.NetworkCountryAdmin) {
+        this.userService.getUser(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((user) => {
+            console.log(user)
+            let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          })
+
+        this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(network => {
+            Object.keys(network.agencyCountries).forEach(agencyKey => {
+              this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(countryOffices => {
+                  countryOffices.forEach(countryOffice => {
+                    if (network.agencyCountries[agencyKey][countryOffice.$key]) {
+                      // Obtaining the country admin data
+                      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
+                        if (data.adminId) {
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+                            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                            this.usersForAssign.push(userToPush);
+                          });
+                        }
+                      });
+                      //Obtaining other staff data
+                      this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
+                        for (let userID in data) {
+                          if (!userID.startsWith('$')) {
+                            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+                              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                              this.usersForAssign.push(userToPush);
+                            });
+                          }
+                        }
+                      });
+                    }
+                  })
+                })
+            })
+          })
+
+      } else if( this.networkUserType == NetworkUserAccountType.NetworkAdmin ) {
+        this.userService.getUser(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((user) => {
+            console.log(user)
+            let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          })
+      } else if (this.userType == UserType.GlobalDirector) {
+        console.log('globalDirector')
+        this.userService.getUser(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((user) => {
+            let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+            this.usersForAssign.push(userToPush);
+          })
+      } else if (this.userType == UserType.Ert || this.userType == UserType.PartnerUser) {
+        console.log('ert/ partner')
+        this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode + "/" + this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(staff => {
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((user) => {
+                let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
+                this.usersForAssign.push(userToPush);
+              });
+          });
+      } else {
+
+        this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(countryOffices => {
+            console.log(countryOffices)
+            if (this.isViewing) {
+              countryOffices.forEach(countryOffice => {
+                console.log(countryOffice.$key)
+                console.log(this.countryId)
+                if (this.countryId == countryOffice.$key) {
+
+                  // Obtaining the country admin data
+                  this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId).subscribe((data: any) => {
+                    if (data.adminId) {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+                        var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                        this.usersForAssign.push(userToPush);
+                      });
+                    }
+                  });
+                  //Obtaining other staff data
+                  this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId).subscribe((data: {}) => {
+                    for (let userID in data) {
+                      if (!userID.startsWith('$')) {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+                          var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                          this.usersForAssign.push(userToPush);
+                        });
+                      }
+                    }
+                  });
+                }
+              })
+            } else {
+              countryOffices.filter(countryOffice => {
+                console.log(countryOffice.$key)
+                if (this.copyCountryOfficeCode == countryOffice.$key) {
+
+                  // Obtaining the country admin data
+                  this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
+                    if (data.adminId) {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+                        var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                        this.usersForAssign.push(userToPush);
+                      });
+                    }
+                  });
+                  //Obtaining other staff data
+                  this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
+                    for (let userID in data) {
+                      if (!userID.startsWith('$')) {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+                          var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                          this.usersForAssign.push(userToPush);
+                        });
+                      }
+                    }
+                  });
+                }
+              })
+            }
+
+          })
+      }
     }
   }
 

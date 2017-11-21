@@ -83,6 +83,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
 
   private userPermissions: any;
   private hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+  Math: any;
 
   //for local network admin
   @Input() isLocalNetworkAdmin: boolean;
@@ -95,6 +96,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
               private router: Router,
               private storageService: LocalStorageService,
               private userService: UserService) {
+    this.Math = Math;
     this.userPermissions = new NetworkModulesEnabledModel();
   }
 
@@ -131,6 +133,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
                     this.prepActionService.addUpdater(() => {
                       this.recalculateAll();
                     });
+                    this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId, this.networkCountryId)
                     this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, null, this.networkCountryId, this.networkId, this.systemId)
                   });
                 });
@@ -173,6 +176,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
                     this.prepActionService.addUpdater(() => {
                       this.recalculateAll();
                     });
+                    this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId)
                     this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid, null, this.networkId, this.systemId)
                   });
                 });
@@ -206,6 +210,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
               this.prepActionService.addUpdater(() => {
                 this.recalculateAll();
               });
+              this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId, this.networkCountryId)
               this.prepActionService.initActionsWithInfoAllAgenciesInNetwork(this.af, this.ngUnsubscribe, this.uid, null, this.networkCountryId, this.networkId, this.systemId, agencyCountryMap)
             });
           });
@@ -235,11 +240,13 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
               this.prepActionService.addUpdater(() => {
                 this.recalculateAll();
               });
-              this.prepActionService.initActionsWithInfoAllAgenciesInNetworkLocal(this.af, this.ngUnsubscribe, this.uid, null, this.networkId, this.networkId, this.systemId, agencyCountryMap)
+              this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId)
+              this.prepActionService.initActionsWithInfoAllAgenciesInNetworkLocal(this.af, this.ngUnsubscribe, this.uid, true, this.networkId, this.networkId, this.systemId, agencyCountryMap)
             });
           });
         });
       })
+
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
       .takeUntil(this.ngUnsubscribe)
@@ -429,6 +436,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
     let advGreen: number = 0;
     let chsTotal: number = 0;
     let chsGreen: number = 0;
+    console.log(this.prepActionService.actions)
     for (let x of this.prepActionService.actions) {
       if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
@@ -446,16 +454,16 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
           }
         }
       }
-      if (x.type == ActionType.chs) {
-        if (!x.isArchived) {
-          chsTotal++;
-          // console.log(`chs total ${chsTotal}`)
-          if (this.isActionCompleted(x)) {
-            chsGreen++;
-            // console.log(`chs completed: ${chsGreen}`)
-          }
-        }
-      }
+      // if (x.type == ActionType.chs) {
+      //   if (!x.isArchived) {
+      //     chsTotal++;
+      //     // console.log(`chs total ${chsTotal}`)
+      //     if (this.isActionCompleted(x)) {
+      //       chsGreen++;
+      //       // console.log(`chs completed: ${chsGreen}`)
+      //     }
+      //   }
+      // }
     }
     this.minPrepPercentage = minTotal == 0 ? 0 : (minGreen * 100) / minTotal;
     this.advPrepPercentage = advTotal == 0 ? 0 : (advGreen * 100) / advTotal;
