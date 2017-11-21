@@ -425,9 +425,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // console.log('Count ---- ' + this.responseType.length)
       });
 
-    this.initNetworkIndicators(startOfToday, endOfToday, this.networkMap)
-    this.initLocalNetworkIndicators(startOfToday, endOfToday, this.localNetworks)
-
+    this.initNetworkIndicators(startOfToday, endOfToday, this.networkMap);
+    this.initLocalNetworkIndicators(startOfToday, endOfToday, this.localNetworks);
     // plan approval
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
@@ -449,10 +448,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       // if (this.networkId) {
       //   this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkId, this.uid, true);
       // }
+
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
-      this.responsePlansForApprovalNetwork = Observable.of([])
-      this.responsePlansForApprovalNetworkLocal = Observable.of([])
+      this.responsePlansForApprovalNetwork = Observable.of([]);
+      this.responsePlansForApprovalNetworkLocal = Observable.of([]);
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
@@ -491,6 +491,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.approvalPlansNetworkLocal = plans
         });
     }
+
   }
 
   private updateTaskDataForActions(actionId: string, action: any, fun: (action) => void) {

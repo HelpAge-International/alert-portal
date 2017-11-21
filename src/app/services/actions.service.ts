@@ -898,7 +898,9 @@ export class ActionsService {
             .subscribe(user => {
               plan["displayName"] = user.firstName + " " + user.lastName;
             });
+
         });
+        console.log(plans, 'Dan in actions');
         return plans;
       });
   }
@@ -941,6 +943,7 @@ export class ActionsService {
               plan["countryId"] = countryId;
             });
         });
+
         return plans;
       });
   }

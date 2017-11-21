@@ -231,29 +231,36 @@ export class NetworkMapService {
                     });
                 }
                 const raised: NetworkMapHazardRaised = new NetworkMapHazardRaised();
+                let lengthOfHazard = networkMapHazard.instancesOfHazard.length;
                 raised.population = element.val().estimatedPopulation;
                 raised.agencyName = agency.name;
-                this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
-                  for (const x of element.val().affectedAreas) {
-                    const obj = {
-                      country: '',
-                      areas: ''
-                    };
-                    if (x.country > -1) {
-                      obj.country = this.getCountryNameById(x.country);
-                    }
-                    if (x.level1 > -1) {
-                      obj.areas = ', ' + value[x.country].levelOneValues[x.level1].value;
-                    }
-                    if (x.level2 > -1) {
-                      obj.areas = obj.areas + ', ' + value[x.country].levelOneValues[x.level1].levelTwoValues[x.level2].value;
-                    }
-                    raised.affectedAreas.push({country: obj.country, areas: obj.areas});
-                  }
+                if (lengthOfHazard != 1) {
+                  this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+                    for (const x of element.val().affectedAreas) {
+                      console.log(x.country);
+                      const obj = {
+                        country: '',
+                        areas: ''
+                      };
+                      if (x.country > -1) {
+                        obj.country = this.getCountryNameById(x.country);
+                      }
+                      if (x.level1 > -1) {
+                        obj.areas = ', ' + value[x.country].levelOneValues[x.level1].value;
+                      }
+                      if (x.level2 > -1) {
+                        obj.areas = obj.areas + ', ' + value[x.country].levelOneValues[x.level1].levelTwoValues[x.level2].value;
+                      }
+                      raised.affectedAreas.push({country: obj.country, areas: obj.areas});
+                      console.log(networkMapHazard.instancesOfHazard.length, 'this one');
 
-                  networkMapHazard.instancesOfHazard.push(raised);
-                  this.placeMarker(country.location, networkMapHazard.hazardScenario);
-                });
+                    }
+                    networkMapHazard.instancesOfHazard.push(raised);
+                    this.placeMarker(country.location, networkMapHazard.hazardScenario);
+                  });
+                } else {
+                  console.log('do nothing!');
+                }
               }
             }
           });
