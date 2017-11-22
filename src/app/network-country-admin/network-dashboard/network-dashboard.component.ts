@@ -211,7 +211,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     console.log(this.userType);
     this.DashboardTypeUsed = DashboardType.default;
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
+    console.log('network view values')
     if (!this.networkViewValues) {
+      console.log('no network view values')
       this.router.navigateByUrl("/dashboard");
       return
     }
@@ -220,8 +222,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyCountryMap => {
         console.log(agencyCountryMap)
-        this.agencyCountryMap = agencyCountryMap
-        this.loadData();
+        this.agencyCountryMap = agencyCountryMap;
+        if(this.userType == UserType.PartnerUser){
+          this.loadDataForPartnerUser(this.agencyId, this.countryId);
+        }else{
+          this.loadData();
+        }
+
       })
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -240,6 +247,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     console.log(this.DashboardTypeUsed)
 
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    console.log('hereeeee')
+    console.log(this.networkViewValues)
     if (!this.networkViewValues) {
       this.router.navigateByUrl("/dashboard")
       return
@@ -250,7 +259,11 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .subscribe(agencyCountryMap => {
         console.log(agencyCountryMap)
         this.agencyCountryMap = agencyCountryMap
-        this.loadData();
+        if(this.userType == UserType.PartnerUser){
+          this.loadDataForPartnerUser(this.agencyId, this.countryId);
+        }else{
+          this.loadData();
+        }
       })
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -286,6 +299,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadDataForPartnerUser(agencyId, countryId) {
+    console.log('loading for partner user')
     if (agencyId != null && countryId != null) {
       this.agencyId = agencyId;
       this.countryId = countryId;

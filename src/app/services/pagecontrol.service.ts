@@ -233,7 +233,9 @@ export class PageControlService {
     "preparedness*",
     "response-plans*",
     "country-admin*",
-    "new-user-password"
+    "new-user-password",
+    "network-country*",
+    "network*"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*",

@@ -108,10 +108,9 @@ export class PrepActionService {
               .takeUntil(ngUnsubscribe)
               .subscribe(network => {
                 //loop through each agency/country pair within network
-                console.log(network.agencies)
+
                 Object.keys(network.agencies).forEach(agencyCountry => {
-                  console.log(agencyCountry)
-                  console.log(network.agencies[agencyCountry].countryCode)
+
                   //check if the country office has been approved
                   if (network.agencies[agencyCountry].isApproved) {
                     af.database.list(Constants.APP_STATUS + '/action/' + network.agencies[agencyCountry].countryCode)
@@ -199,6 +198,7 @@ export class PrepActionService {
     this.countryId = countryId;
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
+
     this.getDefaultClockSettingsNetworkLocal(af, this.agencyId, () => {
       if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
         this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
@@ -207,6 +207,7 @@ export class PrepActionService {
       this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
 
       agencyCountryMap.forEach((countryId, agencyId) => {
+
         if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
           this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
         }
@@ -639,7 +640,6 @@ export class PrepActionService {
       this.updater();
     }
 
-    console.log(this.actionsNetwork)
   }
 
   private updateActionNetworkLocal(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, networkId, updated: (action: PreparednessAction) => void) {
@@ -754,7 +754,6 @@ export class PrepActionService {
       this.updater();
     }
 
-    console.log(this.actionsNetwork)
   }
 
   public addUpdater(func: () => void) {
@@ -932,7 +931,6 @@ export class PrepActionService {
       .subscribe((snap) => {
         if (this.findAction(actionId) != null) {
           let doc = snap.val();
-          console.log(doc);
           if (doc != null && doc != undefined) {
             doc.documentId = snap.key;
             this.findAction(actionId).addDoc(doc);
@@ -947,7 +945,6 @@ export class PrepActionService {
       .subscribe((snap) => {
         if (this.findActionNetwork(actionId) != null) {
           let doc = snap.val();
-          console.log(doc);
           if (doc != null && doc != undefined) {
             doc.documentId = snap.key;
             this.findActionNetwork(actionId).addDoc(doc);

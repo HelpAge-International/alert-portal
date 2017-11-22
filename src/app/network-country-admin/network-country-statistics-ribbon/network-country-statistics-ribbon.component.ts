@@ -118,28 +118,32 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
           this.showLoader = false;
-
-          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(systemId => {
-              this.systemId = systemId;
-              console.log(`system id: ${systemId}`);
+            .subscribe(agencyCountryMap => {
 
-              this.downloadThreshold(() => {
-                this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
-                  this.initAlerts(this.networkCountryId, () => {
-                    this.getCountryNumberNetwork(this.networkId, this.networkCountryId);
-                    this.getApprovedResponsePlansCount(this.networkCountryId);
-                    this.prepActionService.addUpdater(() => {
-                      this.recalculateAll();
+              this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(systemId => {
+                  this.systemId = systemId;
+                  console.log(`system id: ${systemId}`);
+
+                  this.downloadThreshold(() => {
+                    this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
+                      this.initAlerts(this.networkCountryId, () => {
+                        this.getCountryNumberNetwork(this.networkId, this.networkCountryId);
+                        this.getApprovedResponsePlansCount(this.networkCountryId);
+                        this.prepActionService.addUpdater(() => {
+                          this.recalculateAll();
+                        });
+                        this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId, this.networkCountryId)
+                        this.prepActionService.initActionsWithInfoAllAgenciesInNetwork(this.af, this.ngUnsubscribe, this.uid, null, this.networkCountryId, this.networkId, this.systemId, agencyCountryMap)
+                      });
                     });
-                    this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId, this.networkCountryId)
-                    this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, null, this.networkCountryId, this.networkId, this.systemId)
                   });
-                });
-              });
 
-            });
+                });
+            })
 
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -162,27 +166,32 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
           this.networkId = selection["id"];
           this.showLoader = false;
 
-          this.networkService.getSystemIdForNetworkAdmin(this.uid)
+          this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(systemId => {
-              this.systemId = systemId;
-              console.log(`system id: ${systemId}`);
+            .subscribe(agencyCountryMap => {
 
-              this.downloadThreshold(() => {
-                this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
-                  this.initAlerts(this.networkId, () => {
-                    this.getCountryNumberNetworkLocal(this.networkId);
-                    this.getApprovedResponsePlansCount(this.networkId);
-                    this.prepActionService.addUpdater(() => {
-                      this.recalculateAll();
+              this.networkService.getSystemIdForNetworkAdmin(this.uid)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(systemId => {
+                  this.systemId = systemId;
+                  console.log(`system id: ${systemId}`);
+
+                  this.downloadThreshold(() => {
+                    this.downloadDefaultClockSettingsNetwork(this.networkId, () => {
+                      this.initAlerts(this.networkId, () => {
+                        this.getCountryNumberNetworkLocal(this.networkId);
+                        this.getApprovedResponsePlansCount(this.networkId);
+                        this.prepActionService.addUpdater(() => {
+                          this.recalculateAll();
+                        });
+                        this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId)
+                        this.prepActionService.initActionsWithInfoAllAgenciesInNetworkLocal(this.af, this.ngUnsubscribe, this.uid, null, this.networkId, this.networkId, this.systemId, agencyCountryMap)
+                      });
                     });
-                    this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId)
-                    this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid, null, this.networkId, this.systemId)
                   });
-                });
-              });
 
-            });
+                });
+            })
 
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -241,7 +250,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
                 this.recalculateAll();
               });
               this.prepActionService.initNetworkDashboardActions(this.af, this.ngUnsubscribe, this.uid, this.systemId, this.networkId)
-              this.prepActionService.initActionsWithInfoAllAgenciesInNetworkLocal(this.af, this.ngUnsubscribe, this.uid, true, this.networkId, this.networkId, this.systemId, agencyCountryMap)
+              this.prepActionService.initActionsWithInfoAllAgenciesInNetworkLocal(this.af, this.ngUnsubscribe, this.uid, null, this.networkId, this.networkId, this.systemId, agencyCountryMap)
             });
           });
         });
@@ -438,6 +447,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
     let chsGreen: number = 0;
     console.log(this.prepActionService.actions)
     for (let x of this.prepActionService.actions) {
+      console.log(x)
       if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
           minTotal++;
@@ -447,6 +457,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
         }
       }
       else if (x.level == ActionLevel.APA) {
+        console.log(x)
         if (!x.isArchived && x.isRedAlertActive(this.hazardRedAlert)) {
           advTotal++;
           if (this.isActionCompleted(x)) {

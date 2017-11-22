@@ -320,12 +320,15 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   addCustomAgencyField() {
-    this.customAgencyFields[this.customAgencyFieldsCount] = this.customAgencyFieldsCount + 1
+
+    console.log(this.nonAlertMembers)
+
     this.customAgencyFieldsCount++
+    this.customAgencyFields.push(this.customAgencyFieldsCount)
+    console.log(this.customAgencyFields)
   }
 
   toggleNonAlertMemberSelection(member) {
-
 
     this.nonAlertMembersExisting.find((o, i) => {
       if (o['id'] === member.id) {

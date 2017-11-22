@@ -126,6 +126,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           }
 
           if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
+            console.log('navigating to dashboard')
             this.router.navigateByUrl("/dashboard").then(() => {
               console.log("Invalid url parameters!!");
             }, error => {

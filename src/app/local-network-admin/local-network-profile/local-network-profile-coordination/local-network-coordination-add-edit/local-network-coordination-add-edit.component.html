@@ -136,6 +136,8 @@
       <div id="customAgencyContainer">
         <div *ngIf="customAgency">
           <p>Please specify non-alert members</p>
+          {{nonAlertMembers[0]}}
+          // look at on change
           <input
             name="custom"
             type="text"
@@ -149,7 +151,8 @@
             name="custom"
             type="text"
             class="col-sm-4 margin-bottom-one form-control"
-            [(ngModel)]="nonAlertMembers[field]"/></div>
+            [(ngModel)]="nonAlertMembers[1]"
+          /></div>
         </div>
       </div>
 

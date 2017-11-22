@@ -2904,6 +2904,7 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
+    console.log('test yeyegkbyjlvyjh')
 
     if (!preData && currData) {
       console.log("Network agency added");
@@ -2911,7 +2912,7 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
       let networkId = event.params['networkId'];
       let agencyId = event.params['agencyId'];
 
-      admin.database().ref('/sand/network/' + networkId).once("value", (data) => {
+      admin.database().ref('/test/network/' + networkId).once("value", (data) => {
 
         if (data.val().isGlobal) {
           console.log('isGlobal')
@@ -2962,7 +2963,7 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
           admin.database().ref('/test/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
             let countryOfficeCode = data.val().countryCode;
 
-            admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
+            admin.database().ref('/test/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
               let adminId = data.val();
               console.log("admin id: " + adminId);
 
@@ -3021,7 +3022,7 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
       let networkId = event.params['networkId'];
       let agencyId = event.params['agencyId'];
 
-      admin.database().ref('/sand/network/' + networkId).once("value", (data) => {
+      admin.database().ref('/uat/network/' + networkId).once("value", (data) => {
 
         if (data.val().isGlobal) {
           console.log('isGlobal')
