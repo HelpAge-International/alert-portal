@@ -119,7 +119,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.countryId = countryId;
       this.systemId = systemId;
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-
       //get networks for country
       // this.networkService.getNetworksForCountry(this.agencyId, this.countryId)
       //   .takeUntil(this.ngUnsubscribe)
@@ -428,8 +427,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.initNetworkIndicators(startOfToday, endOfToday, this.networkMap);
     this.initLocalNetworkIndicators(startOfToday, endOfToday, this.localNetworks);
     // plan approval
+    console.log(this.approvalPlans, 'approval pland before subscribe');
+
     if (this.userType == UserType.PartnerUser) {
-      console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
       this.responsePlansForApprovalNetwork = Observable.of([])
       this.responsePlansForApprovalNetworkLocal = Observable.of([])
@@ -480,7 +480,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApprovalNetwork
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
-          this.approvalPlansNetwork = plans
+          this.approvalPlansNetwork = plans;
           console.log(this.approvalPlansNetwork)
         });
     }
@@ -491,7 +491,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.approvalPlansNetworkLocal = plans
         });
     }
-
   }
 
   private updateTaskDataForActions(actionId: string, action: any, fun: (action) => void) {

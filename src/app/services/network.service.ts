@@ -213,6 +213,7 @@ export class NetworkService {
 
   deleteNetworkField(path) {
     return this.af.database.object(Constants.APP_STATUS + path).set(null);
+
   }
 
   validateNetworkAgencyToken(agencyId, token) {

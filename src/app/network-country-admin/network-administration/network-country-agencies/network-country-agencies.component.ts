@@ -124,6 +124,7 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   removeAgency(agencyId) {
+
     this.removeAgencyObj = this.agencyService.getAgency(agencyId);
   }
 

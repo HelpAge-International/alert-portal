@@ -8006,7 +8006,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 }
 
 .padding-left-four {
-  padding-left: 2em !important;
+  padding-left: 2em;
 }
 
 .no-padding-right {
