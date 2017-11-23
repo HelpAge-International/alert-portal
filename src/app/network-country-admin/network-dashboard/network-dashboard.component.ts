@@ -484,17 +484,17 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
     }
     if (this.responsePlansForApproval) {
-      this.responsePlansForApproval
+        this.responsePlansForApproval
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlans = plans;
+
         });
     }
     if (this.responsePlansForApprovalNetwork) {
       this.responsePlansForApprovalNetwork
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
-          console.log(this.approvalPlansNetwork);
           this.approvalPlansNetwork = plans
         });
     }

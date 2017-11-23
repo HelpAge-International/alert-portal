@@ -569,6 +569,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
                     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
                     notification.time = new Date().getTime();
                     this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
+                      console.log('we in here');
                     });
 
                   } else {

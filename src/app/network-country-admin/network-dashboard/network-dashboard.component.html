@@ -464,7 +464,6 @@
          *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
       <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
       <br>
-
       <!--partner users-->
       <div *ngIf="userType == UserType.PartnerUser">
         <div *ngIf="responsePlansForApproval | async as plans">
