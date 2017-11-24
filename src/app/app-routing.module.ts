@@ -503,6 +503,7 @@ const routes: Routes = [
   {path: 'network/local-network-risk-monitoring/create-alert', component: LocalNetworkCreateAlertComponent},
 
 
+
   {path: 'network/local-network-dashboard/dashboard-update-alert-level', component: LocalNetworkDashboardUpdateAlertLevelComponent},
   {path: 'network/local-network-dashboard/dashboard-update-alert-level//:id/:networkId', component: LocalNetworkDashboardUpdateAlertLevelComponent},
 

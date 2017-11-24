@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Countries} from "../../utils/Enums";
+import {Countries, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -55,12 +55,15 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((params: Params) => {
+
           if (params["countryId"]) {
             this.countryIdReceived = params["countryId"];
             this.agencyIdReceived = params["agencyId"];
             this.loadData();
           }
+
         });
+
     });
   }
 

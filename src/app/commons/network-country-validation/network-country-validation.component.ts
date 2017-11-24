@@ -57,6 +57,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
                 this.networkService.validateNetworkCountryToken(this.countryId, this.accessToken)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(validate => {
+                    console.log('net country validate')
                     console.log(validate);
                     this.isValidated = validate;
                     if (validate) {

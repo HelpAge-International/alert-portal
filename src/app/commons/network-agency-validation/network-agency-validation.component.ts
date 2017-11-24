@@ -53,6 +53,8 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
                 this.networkService.validateNetworkAgencyToken(this.agencyId, this.accessToken)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(validate => {
+                    console.log('net country validate')
+                    // TODO after lunch: this isn't working......
                     console.log(validate);
                     this.isValidated = validate;
                     if (validate) {
