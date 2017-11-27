@@ -126,7 +126,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   }
 
   private networkCountryAccess() {
-    if(this.isViewing){
+    if (this.isViewing) {
 
       this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
@@ -141,7 +141,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                 this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(partnerOrganisations => {
-                          this.partnerOrganisations.set(key, partnerOrganisations);
+                    this.partnerOrganisations.set(key, partnerOrganisations);
 
                     this.assignProjectsToDisplayPerPartnerOrg(key, value);
 
@@ -152,7 +152,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                         partnerOrganisation.notes = notes;
                       });
 
-                            // Create the new note model for partner organisation
+                      // Create the new note model for partner organisation
                       this.newNote[partnerOrganisation.id] = new NoteModel();
                       this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
                     });
@@ -169,7 +169,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
 
 
         });
-    }else{
+    } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
 
@@ -229,7 +229,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   }
 
   private localNetworkAdminAccess() {
-    if(this.isViewing){
+    if (this.isViewing) {
       this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(officeAgencyMap => {
@@ -244,7 +244,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                   .subscribe(partnerOrganisations => {
                     this.partnerOrganisations.set(key, partnerOrganisations)
                     this.assignProjectsToDisplayPerPartnerOrg(key, value);
-                          // Get the partner organisation notes
+                    // Get the partner organisation notes
                     this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
                       const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
                       this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
@@ -267,7 +267,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
           })
         });
 
-    }else{
+    } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
         this._networkService.getSelectedIdObj(user.uid)
@@ -504,6 +504,26 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
     return exists;
   }
 
+  hasOrganisationProjectSectorFilter(partnerOrganisations: PartnerOrganisationModel[], sector: string): boolean {
+    let exists = false;
+    if (sector == null || sector == "null") {
+      exists = true
+    }
+    if (partnerOrganisations != null && this.partnerOrganisations.size > 0) {
+      partnerOrganisations.forEach(partnerOrganisation => {
+        partnerOrganisation.projects.forEach(project => {
+          Object.keys(project.sector).forEach(key => {
+            if (key == sector && project.sector[key]) {
+              exists = true;
+            }
+          });
+        })
+      })
+    }
+
+    return exists;
+  }
+
   private hasAreaOfOperation(partnerOrganisation: PartnerOrganisationModel, locationName: any): boolean {
     let exists = false;
 
@@ -511,6 +531,49 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
 
     if (areasOfOperation.join(",").search(locationName) !== -1) {
       exists = true;
+    }
+
+    return exists;
+  }
+
+  hasAreaOfOperationFilter(partnerOrganisations: PartnerOrganisationModel[], locationName: any): boolean {
+    let exists = false;
+    if (locationName == null || locationName == "null") {
+      exists = true
+    }
+    if (partnerOrganisations != null && partnerOrganisations.length > 0) {
+      partnerOrganisations.forEach(partnerOrganisation => {
+        if (partnerOrganisation != null && partnerOrganisation.projectsToDisplay != null) {
+          let areasOfOperation = this.getAreasOfOperation(partnerOrganisation.projectsToDisplay);
+          if (areasOfOperation.join(",").search(locationName) !== -1) {
+            exists = true;
+          }
+        }
+      })
+    }
+
+    return exists;
+  }
+
+  getOrganisationsNames() {
+    let partners = []
+    this.partnerOrganisations.forEach((v, k) => {
+      partners = partners.concat(v)
+    })
+    return partners
+  }
+
+  hasOrganisationNameFilter(partnerOrganisations: PartnerOrganisationModel[], id: String) {
+    let exists = false;
+    if (id == null || id == "null") {
+      exists = true
+    }
+    if (partnerOrganisations != null && partnerOrganisations.length > 0) {
+      partnerOrganisations.forEach(partnerOrganisation => {
+        if (partnerOrganisation != null && partnerOrganisation.id == id) {
+          exists = true;
+        }
+      })
     }
 
     return exists;

@@ -376,8 +376,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.initNetworkActions(startOfToday, endOfToday, this.networkMap)
-    this.initLocalNetworkActions(startOfToday, endOfToday, this.localNetworks)
+    if (this.networkMap) {
+      this.initNetworkActions(startOfToday, endOfToday, this.networkMap)
+    }
+    if (this.localNetworks) {
+      this.initLocalNetworkActions(startOfToday, endOfToday, this.localNetworks)
+    }
 
     this.actionService.getIndicatorsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
@@ -424,8 +428,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // console.log('Count ---- ' + this.responseType.length)
       });
 
-    this.initNetworkIndicators(startOfToday, endOfToday, this.networkMap);
-    this.initLocalNetworkIndicators(startOfToday, endOfToday, this.localNetworks);
+    if (this.networkMap) {
+      this.initNetworkIndicators(startOfToday, endOfToday, this.networkMap);
+    }
+    if (this.localNetworks) {
+      this.initLocalNetworkIndicators(startOfToday, endOfToday, this.localNetworks);
+    }
     // plan approval
     console.log(this.approvalPlans, 'approval pland before subscribe');
 
@@ -553,7 +561,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.localNetworks) {
         this.alertsLocalNetwork = Observable.from([])
         this.localNetworks.forEach((networkId) => {
-          this.alertsLocalNetwork = Observable.merge(this.alertsNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
+          this.alertsLocalNetwork = Observable.merge(this.alertsLocalNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
         })
       }
 

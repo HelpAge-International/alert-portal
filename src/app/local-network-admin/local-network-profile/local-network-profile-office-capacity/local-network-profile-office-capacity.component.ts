@@ -556,6 +556,72 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
   }
 
+  filterDataAll(event: any, filterType: any) {
+    var filterVal = event.target.value;
+
+    // this.officeFilter = filterType == 'office' ? filterVal : 0;
+    // this.sSkillsFilter = filterType == 'sSkills' ? filterVal : 0;
+    // this.tSkillsFilter = filterType == 'tSkills' ? filterVal : 0;
+    switch (filterType) {
+      case "office":
+        this.officeFilter = filterVal;
+        break;
+      case "sSkills":
+        this.sSkillsFilter = filterVal;
+        break;
+      case "tSkills":
+        this.tSkillsFilter = filterVal;
+        break;
+    }
+
+    console.log(filterType)
+    console.log(filterVal);
+
+    // var result = [];
+    //
+    // this.responseStaffsOrigin.get(agency.$key).forEach(staff => {
+    //
+    //   var isSkillsFilter = false;
+    //   var iStSkillsFilter = false;
+    //
+    //   staff.skill.forEach((val, key) => {
+    //     if (this.sSkillsFilter == val) {
+    //       isSkillsFilter = true;
+    //     }
+    //     if (this.tSkillsFilter == val) {
+    //       iStSkillsFilter = true;
+    //     }
+    //   });
+    //   // if (
+    //   //   (this.officeFilter == staff.officeType || this.officeFilter == 0) &&
+    //   //   (isSkillsFilter || this.sSkillsFilter == 0) &&
+    //   //   (iStSkillsFilter || this.tSkillsFilter == 0)
+    //   // ) {
+    //   //   result.push(staff);
+    //   // }
+    //   if (this.officeFilter == 0 && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
+    //     result = this.responseStaffsOrigin.get(agency.$key);
+    //   } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
+    //     result.push(staff);
+    //   } else if (this.officeFilter == 0 && isSkillsFilter && this.tSkillsFilter == 0) {
+    //     result.push(staff);
+    //   } else if (this.officeFilter == 0 && this.sSkillsFilter == 0 && iStSkillsFilter) {
+    //     result.push(staff);
+    //   } else if (this.officeFilter == staff.officeType && isSkillsFilter && this.tSkillsFilter == 0) {
+    //     result.push(staff);
+    //   } else if (this.officeFilter == 0 && isSkillsFilter && iStSkillsFilter) {
+    //     result.push(staff);
+    //   } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && iStSkillsFilter) {
+    //     result.push(staff);
+    //   } else if (this.officeFilter == staff.officeType && isSkillsFilter && iStSkillsFilter) {
+    //     result.push(staff);
+    //   }
+    // });
+    //
+    // this.responseStaffs.set(agency.$key, result)
+
+  }
+
   //
   _getUserName(userID: string) {
     return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userID);
