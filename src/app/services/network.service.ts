@@ -627,6 +627,14 @@ export class NetworkService {
     return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid)
   }
 
+  getListOfAllNetworkCountries() {
+    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/");
+  }
+
+  getGlobalNetwork(globalNetworkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + globalNetworkId);
+  }
+
   getAllNetworkCountries(uid) {
     return this.af.database.list(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/networkCountryIds", {preserveSnapshot: true})
       .map(snaps => {

@@ -233,7 +233,6 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   }
 
   private initViewLocalNetworkAccess() {
-    console.log("initViewLocalNetworkAccess")
     this.uid = this.networkViewValues["uid"];
     this.networkId = this.networkViewValues["networkId"];
     this.systemId = this.networkViewValues["systemId"];
@@ -438,16 +437,13 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   }
 
   private recalculateAll() {
-    // console.log(this.prepActionService.actions)
     let minTotal: number = 0;
     let minGreen: number = 0;
     let advTotal: number = 0;
     let advGreen: number = 0;
     let chsTotal: number = 0;
     let chsGreen: number = 0;
-    console.log(this.prepActionService.actions)
     for (let x of this.prepActionService.actions) {
-      console.log(x)
       if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
           minTotal++;
@@ -457,7 +453,6 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
         }
       }
       else if (x.level == ActionLevel.APA) {
-        console.log(x)
         if (!x.isArchived && x.isRedAlertActive(this.hazardRedAlert)) {
           advTotal++;
           if (this.isActionCompleted(x)) {

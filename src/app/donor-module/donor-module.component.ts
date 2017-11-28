@@ -61,7 +61,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   goToListView() {
-    console.log('Here');
     this.router.navigate(['/donor-module/donor-list-view']);
     // this.router.navigateByUrl('/donor-module/donor-list-view');
   }
@@ -176,7 +175,6 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   private getHazardInfo(country: any) {
-    console.log(country);
     this.af.database.list(Constants.APP_STATUS + "/alert/" + country.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snap => {
@@ -264,15 +262,10 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       if (v.size > 0) {
         let position = 0;
         let scenarios = Array.from(v);
-        console.log('key, then value')
-        console.log(k)
-        console.log(v)
         scenarios.forEach(item => {
 
 
           this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(k)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-            console.log(status)
-            console.log(geoResult)
             if (status == GeocoderStatus.OK && geoResult.length >= 1) {
               let pos = {
                 lng: geoResult[0].geometry.location.lng() + position,
@@ -299,8 +292,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
         scenarios.forEach(item => {
 
           this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(Number(k))}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-            console.log(status)
-            console.log(geoResult)
+
             if (status == GeocoderStatus.OK && geoResult.length >= 1) {
               let pos = {
                 lng: geoResult[0].geometry.location.lng() + position,
