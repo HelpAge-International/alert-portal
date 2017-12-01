@@ -19,6 +19,7 @@ import {NetworkViewModel} from "./network-view.model";
 import {LocalNetworkViewModel} from "./local-network-view.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Location} from "@angular/common";
+import {NetworkCountryAgenciesComponent} from "../../network-country-admin/network-administration/network-country-agencies/network-country-agencies.component";
 
 declare const jQuery: any;
 
@@ -105,6 +106,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.showLoader = true;
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.systemId = systemId;
@@ -126,6 +128,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
 
       if (user) {
+
         if (this.isAnonym && this.userService.anonymousUserPath != 'ExternalPartnerResponsePlan') {
           this.af.auth.logout().then(() => {
             this.router.navigate(['/login']);
@@ -152,6 +155,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe(network => {
                 this.selectedNetwork = network
+
               })
           }
 
@@ -207,8 +211,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           }
 
           //get networks
-          console.log('getting stuff')
-          this.getNetworks(agencyId, countryId)
+          console.log('getting stuff');
+          this.getNetworks(agencyId, countryId);
 
           this.getLocalNetworks(agencyId, countryId)
         }
@@ -217,12 +221,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       }
     });
 
+
     this.locationService.subscribe(state => {
       if (!state.url.includes("isViewing=true")) {
         this.selectAgency()
       }
     });
-
   }
 
   private initDataForPartnerUser(agencyId, countryId) {
@@ -356,7 +360,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.isViewingNetwork = true;
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
-    console.log(network)
+    console.log(network);
     //build emit value
     let model = new LocalNetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, true)
     // this.networkRequest.emit(model)
@@ -456,26 +460,29 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private getNetworks(agencyId: string, countryId: string) {
     this.networkService.mapNetworkWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(map => this.networkCountryMap = map)
+      .subscribe(map => this.networkCountryMap = map);
     this.networkService.getNetworkWithCountryModelsForCountry(agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkModels => {
         this.networks = [];
         networkModels.map(model => {
           return this.networkService.getNetworkDetail(model.networkId)
+
         })
           .forEach(item => {
             item.takeUntil(this.ngUnsubscribe).subscribe(network => {
               if (!CommonUtils.itemExistInList(network.id, this.networks)) {
                 if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
-                  console.log(network)
                   this.networks.push(network);
+                  console.log(this.networks, 'dan');
+
                 }
               }
             })
           })
 
       })
+
   }
 
   private getLocalNetworks(agencyId: string, countryId: any) {

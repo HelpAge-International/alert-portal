@@ -23,7 +23,7 @@
             <a *ngFor="let agency of partnerAgencies" class="dropdown-item"
                (click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>
           </ng-container>
-          <ng-container *ngIf="networks.length>0">
+          <ng-container *ngIf="networks.length > 0">
             <a *ngFor="let network of networks" class="dropdown-item"
                (click)="selectNetwork(network)">{{network.name}}</a>
           </ng-container>

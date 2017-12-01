@@ -216,6 +216,10 @@ export class NetworkService {
 
   }
 
+  deleteNetworks(countryOfficePath){
+    return this.af.database.list(Constants.APP_STATUS + countryOfficePath).remove();
+  }
+
   validateNetworkAgencyToken(agencyId, token) {
     return this.af.database.object(Constants.APP_STATUS + "/networkAgencyValidation/" + agencyId + "/validationToken")
       .map(tokenObj => {

@@ -40,6 +40,7 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
   private countryAgencyMap = new Map<string, string>();
 
 
+
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
@@ -78,7 +79,7 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
                         .subscribe(country => {
                           if (country) {
                             this.agencies.push(agencyObj);
-                            console.log(this.agencies);
+                            console.log(this.agencies, '1');
                             console.log(country);
                             this.countryAgencyMap.set(country.id, agencyObj.id);
                           }
@@ -129,6 +130,8 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
       }
     });
   }
+
+
 
   confirmInvitation() {
     console.log("confirm invitation");
