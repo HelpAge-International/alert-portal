@@ -15,9 +15,12 @@ export class Indicator extends BaseModel {
   public name: string = '';
   public source: any[] = [];
   public assignee: string;
+  public hazardScenario:any
   public geoLocation: GeoLocation;
   public affectedLocation: any[] = [];
   public trigger: any[] = [];
+  public dueDate:number
+  public updatedAt:number
 
 
   validate(excludedFields = []): AlertMessageModel {

@@ -835,7 +835,9 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   _validateIndicatorSource(indicatorSource: IndicatorSourceModel): AlertMessageModel {
+    console.log(indicatorSource.name)
     this.alertMessage = indicatorSource.validate();
+    console.log(this.alertMessage)
     return this.alertMessage;
   }
 
