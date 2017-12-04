@@ -98,6 +98,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
     if(!this.network.isGlobal){
       let countryCode = this.network.agencies[this.agencyId].countryCode;
       update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
+
     }
       this.networkService.updateNetworkField(update).then(() => {
         this.navigateToThanksPage();

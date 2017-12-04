@@ -80,6 +80,7 @@ export class CommonUtils {
     return itemList.map(item => item.id ? item.id : item.$key).indexOf(id) != -1;
   }
 
+
   static buildNetworkViewValues(model: NetworkViewModel) {
     if (!model) {
       return null

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Injectable, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
@@ -9,12 +9,16 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
 import {NetworkAgencyModel} from "../../../network-admin/network-agencies/network-agency.model";
+import {AngularFire} from "angularfire2";
+import {Constants} from "../../../utils/Constants";
 
 @Component({
   selector: 'app-network-country-agencies',
   templateUrl: './network-country-agencies.component.html',
   styleUrls: ['./network-country-agencies.component.css']
 })
+
+
 export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<any> = new Subject<any>();
@@ -37,16 +41,23 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
   private removeAgencyObj: FirebaseObjectObservable<any>;
   private agencyCountryMap = new Map<string, string>();
 
+  //Dan Variables
+  private forDeletion: Array<any> = [];
+  private finalData: Array<any> = [];
+  private Loading: boolean = true;
+
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
+              private af: AngularFire,
               private agencyService: AgencyService,
               private userService: UserService,
               private router: Router) {
   }
 
   ngOnInit() {
+
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       // this.showLoader = true;
 
@@ -61,7 +72,7 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyMap => {
               this.agencyCountryMap = agencyMap;
-              console.log(this.agencyCountryMap);
+              console.log(this.agencyCountryMap.size, 'size of map');
 
               //fetch network agencies
               this.networkService.getAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.agencyCountryMap)
@@ -124,12 +135,13 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   removeAgency(agencyId) {
-
+    console.log("/agency/" + agencyId + "/networks/" + this.networkId);
     this.removeAgencyObj = this.agencyService.getAgency(agencyId);
+
+
   }
 
   confirmRemove(agencyId) {
-    console.log(agencyId);
     if (this.leadAgencyId == agencyId) {
       this.alertMessage = new AlertMessageModel("DELETE_LEAD_AGENCY_ERROR");
     } else {
@@ -137,6 +149,18 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
       let validationPath = "/networkCountryAgencyValidation/" + agencyId;
       this.networkService.deleteNetworkField(path);
       this.networkService.deleteNetworkField(validationPath);
+
+      // Dan's bug fix
+      this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryOffice => {
+          let nodeRemove = countryOffice[1].$key;
+          let countryOfficePath = "/countryOffice/" + agencyId + "/" + nodeRemove + "/networks/";
+          console.log(countryOfficePath, 'delete path');
+          this.networkService.deleteNetworks(countryOfficePath);
+        });
+
+
     }
   }
 
