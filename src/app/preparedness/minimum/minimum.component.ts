@@ -775,6 +775,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.firebase.storage().ref().child('documents/' + this.countryId + "/" + x.documentId + "/" + x.fileName).delete();
       }
     }
+
+    //remove deleted doc from list
+    let actionIndex = this.prepActionService.actions.map(a => {return a.id}).indexOf(action.id);
+    this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {return doc.documentId != docId})
+    this.closeDocumentsModal('documents_popover_' + action.id)
+
     // if we make it here we can't find the document requesting to be deleted
   }
 
