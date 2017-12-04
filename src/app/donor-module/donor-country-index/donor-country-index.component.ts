@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Countries} from "../../utils/Enums";
+import {Countries, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
+import {NetworkService} from "../../services/network.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Location} from "@angular/common";
 
@@ -31,17 +32,25 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   private Countries = Countries;
 
   private numOfCountryOffices: number = 0;
+  private numOfNetworkCountries: number = 0;
 
   private countryOffices: any = [];
   private agencies = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private networkCountryIdReceived: any;
+  private globalNetworkIdReceived: any;
+  private networkCountries = [];
+  private networkToShow: any;
+  private globalNetworks = [];
+
 
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
               private agencyService: AgencyService,
+              private networkService: NetworkService,
               private location: Location,
               private route: ActivatedRoute) {
   }
@@ -55,12 +64,21 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((params: Params) => {
+
           if (params["countryId"]) {
             this.countryIdReceived = params["countryId"];
             this.agencyIdReceived = params["agencyId"];
             this.loadData();
           }
+
+          if (params["networkCountryId"]) {
+            this.networkCountryIdReceived = params["networkCountryId"];
+            this.globalNetworkIdReceived = params["globalNetworkId"];
+            this.loadData();
+          }
+
         });
+
     });
   }
 
@@ -75,13 +93,39 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
    Private Functions
    */
   private loadData() {
-    this.getCountry().then(() => {
-      // this.getAgencyID().then(() => {
+    if(this.countryIdReceived){
+      this.getCountry().then(() => {
         this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
+        })
+        this.getNetworksWithSameLocationsInOtherGlobalNetworks(true, true).then(_ => {
           this.loaderInactive = true;
         });
-      // });
+      });
+    } else{
+      this.getNetwork().then(() => {
+        this.getNetworksWithSameLocationsInOtherGlobalNetworks(true, true).then(_ => {
+        })
+        this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
+          this.loaderInactive = true;
+        })
+      });
+    }
+
+  }
+
+  private getNetwork(){
+    let promise = new Promise((res, rej) => {
+      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + this.globalNetworkIdReceived + "/" + this.networkCountryIdReceived)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((network) => {
+          if (network) {
+            this.networkToShow = network;
+            this.countryToShow = network;
+            res(true);
+          }
+        });
     });
+    return promise;
   }
 
   private getCountry() {
@@ -91,6 +135,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
         .subscribe((country) => {
           if (country) {
             this.countryToShow = country;
+            this.networkToShow = country;
             res(true);
           }
         });
@@ -144,6 +189,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
 
             if (countries.length > 0) {
 
+
               // An agency should only have one country office per country
               this.countryOffices.push(countries[0]);
 
@@ -156,6 +202,48 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(agency => {
                   this.agencies[countries[0].countryId] = agency;
+                });
+            }
+            res(true);
+          });
+        });
+    });
+    return promise;
+  }
+
+  // Getting all networks with the same location in other global networks
+  private getNetworksWithSameLocationsInOtherGlobalNetworks(getAllAlertLevels: boolean, fromOnInit: boolean) {
+    this.networkCountries = [];
+
+    let promise = new Promise((res, rej) => {
+
+      this.networkService.getListOfAllNetworkCountries()
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(globalNetworks => {
+          globalNetworks.forEach(globalNetwork => {
+            let networkCountries = Object.keys(globalNetwork).filter(key => !(key.indexOf("$") > -1)).map(key => {
+              let temp = globalNetwork[key];
+              temp["$key"] = key;
+              temp["networkCountryId"] = key;
+              temp["globalNetworkId"] = globalNetwork.$key;
+              return temp;
+            });
+            networkCountries = networkCountries.filter(countryItem => countryItem.location == this.networkToShow.location);
+
+            if (networkCountries.length > 0) {
+
+              // An agency should only have one country office per country
+              this.networkCountries.push(networkCountries[0]);
+
+              // To make sure the number of country offices don't change with filters
+              if (fromOnInit) {
+                this.numOfNetworkCountries++;
+              }
+
+              this.networkService.getGlobalNetwork(globalNetwork.$key)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(globalNetwork => {
+                  this.globalNetworks[networkCountries[0].networkCountryId] = globalNetwork;
                 });
             }
             res(true);

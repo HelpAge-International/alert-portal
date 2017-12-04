@@ -11,6 +11,7 @@ import {MapService} from "../services/map.service";
 import GeocoderStatus = google.maps.GeocoderStatus;
 import GeocoderResult = google.maps.GeocoderResult;
 import {HazardImages} from "../utils/HazardImages";
+import {UserType} from "../utils/Enums";
 declare var jQuery: any;
 
 @Component({
@@ -42,12 +43,17 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   // Maps location -> [hazards]
   private countryToHazardScenarioList: Map<number, Set<number>> = new Map<number, Set<number>>();
 
+  private networkCountryToHazardScenarioList: Map<number, Set<number>> = new Map<number, Set<number>>();
+
   private userTypePath: string;
 
   @ViewChild("globalMap") globalMap: ElementRef;
   private hazardMap = new Map<number, Set<number>>();
   private countryLocationMap = new Map<string, number>();
   private countryAgencyRefMap = new Map<number, any>();
+  private networkCountryGlobalNetworkRefMap = new Map<number, any>();
+  private UserType: UserType;
+
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
@@ -55,10 +61,15 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   goToListView() {
-    console.log('Here');
     this.router.navigate(['/donor-module/donor-list-view']);
     // this.router.navigateByUrl('/donor-module/donor-list-view');
   }
+
+  //TODO Monday: everything should be displayed on the map on a server which has unlimited API requests
+  //  Need to make sure the view when you click a country also displays the network countries with a tag to show they are networks rather than country offices
+  //  Also make sure the list view gets the country when params contains network country id and global network id.
+  //  Then when a network is clikced from the list view it should take them to the network profile.
+
 
   ngOnInit() {
 
@@ -66,6 +77,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.UserType = userType;
       this.uid = user.uid;
       this.userTypePath = Constants.USER_PATHS[userType];
     });
@@ -78,29 +90,72 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
+
+    //get agencies
+    // this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
+    //   .map(snap => {
+    //     let locations = [];
+    //     if (snap && snap.val()) {
+    //       let countryObjects = Object.keys(snap.val()).map(key => {
+    //         let countryWithAgencyId = snap.val()[key];
+    //         countryWithAgencyId["agencyId"] = key;
+    //         return countryWithAgencyId;
+    //       });
+    //       countryObjects.forEach(item => {
+    //         let countries = Object.keys(item).filter(key => key != "agencyId").map(key => {
+    //           let country = item[key];
+    //           country["countryId"] = key;
+    //           country["agencyId"] = item.agencyId;
+    //           return country;
+    //         });
+    //         countries.forEach(country => {
+    //           locations.push(country.location);
+    //           this.hazardMap.set(Number(country.location), new Set<number>());
+    //           this.countryAgencyRefMap.set(Number(country.location), country);
+    //         });
+    //         countries.forEach(country => {
+    //           this.getHazardInfo(country);
+    //         });
+    //       });
+    //     }
+    //     return locations;
+    //   })
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(allLocations => {
+    //     this.doneWithEmbeddedStyles(country => {
+    //       let navRef = this.countryAgencyRefMap.get(Countries[country]);
+    //
+    //       this.router.navigate(["donor-module/donor-country-index", {
+    //         "countryId": navRef.countryId,
+    //         "agencyId": navRef.agencyId
+    //       }]);
+    //     }, allLocations);
+    //   });
+
+    //get network country offices
+    this.af.database.object(Constants.APP_STATUS + "/networkCountry/", {preserveSnapshot: true})
       .map(snap => {
         let locations = [];
         if (snap && snap.val()) {
-          let countryObjects = Object.keys(snap.val()).map(key => {
-            let countryWithAgencyId = snap.val()[key];
-            countryWithAgencyId["agencyId"] = key;
-            return countryWithAgencyId;
+          let networkCountryObjects = Object.keys(snap.val()).map(key => {
+            let countryWithGlobalNetworkId = snap.val()[key];
+            countryWithGlobalNetworkId["globalNetworkId"] = key;
+            return countryWithGlobalNetworkId;
           });
-          countryObjects.forEach(item => {
-            let countries = Object.keys(item).filter(key => key != "agencyId").map(key => {
-              let country = item[key];
-              country["countryId"] = key;
-              country["agencyId"] = item.agencyId;
-              return country;
+          networkCountryObjects.forEach(item => {
+            let networkCountries = Object.keys(item).filter(key => key != "globalNetworkId").map(key => {
+              let networkCountry = item[key];
+              networkCountry["networkCountryId"] = key;
+              networkCountry["globalNetworkId"] = item.globalNetworkId;
+              return networkCountry;
             });
-            countries.forEach(country => {
-              locations.push(country.location);
-              this.hazardMap.set(Number(country.location), new Set<number>());
-              this.countryAgencyRefMap.set(Number(country.location), country);
+            networkCountries.forEach(networkCountry => {
+              locations.push(networkCountry.location);
+              this.hazardMap.set(Number(networkCountry.location), new Set<number>());
+              this.networkCountryGlobalNetworkRefMap.set(Number(networkCountry.location), networkCountry);
             });
-            countries.forEach(country => {
-              this.getHazardInfo(country);
+            networkCountries.forEach(networkCountry => {
+              this.getHazardInfoNetworkCountry(networkCountry);
             });
           });
         }
@@ -108,18 +163,18 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(allLocations => {
-        this.doneWithEmbeddedStyles(country => {
-          let navRef = this.countryAgencyRefMap.get(Countries[country]);
+        this.doneWithEmbeddedStylesNetworkCountry(networkCountry => {
+
+          let navRef = this.networkCountryGlobalNetworkRefMap.get(Countries[networkCountry]);
           this.router.navigate(["donor-module/donor-country-index", {
-            "countryId": navRef.countryId,
-            "agencyId": navRef.agencyId
+            "networkCountryId": navRef.networkCountryId,
+            "globalNetworkId": navRef.globalNetworkId
           }]);
         }, allLocations);
       });
   }
 
   private getHazardInfo(country: any) {
-    console.log(country);
     this.af.database.list(Constants.APP_STATUS + "/alert/" + country.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snap => {
@@ -160,6 +215,48 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       });
   }
 
+  private getHazardInfoNetworkCountry(networkCountry: any) {
+
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + networkCountry.networkCountryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        let hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
+        snap.forEach((snapshot) => {
+          if (snapshot.val().alertLevel == AlertLevels.Red) {
+            let res: boolean = false;
+            for (const userTypes in snapshot.val().approval) {
+              for (const thisUid in snapshot.val().approval[userTypes]) {
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
+                }
+              }
+            }
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+          }
+          else {
+            if (hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
+          }
+        });
+        let listOfActiveHazards: Set<number> = new Set<number>();
+        if (this.networkCountryToHazardScenarioList.get(networkCountry.location) != null) {
+          listOfActiveHazards = this.networkCountryToHazardScenarioList.get(networkCountry.location);
+        }
+        hazardRedAlert.forEach((value, key) => {
+          if (value) {
+            listOfActiveHazards.add(key);
+          }
+        });
+        if (listOfActiveHazards.size != 0) {
+          this.networkCountryToHazardScenarioList.set(networkCountry.location, listOfActiveHazards);
+        }
+        this.drawHazardMarkersNetworkCountry();
+      });
+  }
+
   private drawHazardMarkers() {
     this.countryToHazardScenarioList.forEach((v, k) => {
       if (v.size > 0) {
@@ -167,7 +264,35 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
         let scenarios = Array.from(v);
         scenarios.forEach(item => {
 
+
           this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(k)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+              let pos = {
+                lng: geoResult[0].geometry.location.lng() + position,
+                lat: geoResult[0].geometry.location.lat()
+              };
+              let marker = new google.maps.Marker({
+                position: pos,
+                icon: HazardImages.init().get(item)
+              });
+              marker.setMap(this.map);
+              position += 1.2;
+            }
+          });
+        });
+      }
+    });
+  }
+
+  private drawHazardMarkersNetworkCountry() {
+    this.networkCountryToHazardScenarioList.forEach((v, k) => {
+      if (v.size > 0) {
+        let position = 0;
+        let scenarios = Array.from(v);
+        scenarios.forEach(item => {
+
+          this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(Number(k))}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+
             if (status == GeocoderStatus.OK && geoResult.length >= 1) {
               let pos = {
                 lng: geoResult[0].geometry.location.lng() + position,
@@ -200,8 +325,61 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
     let blue: string[] = [];
 
+
     locations.forEach(location => {
+
+        blue.push(Countries[location]);
+
+    });
+
+    let layer = new google.maps.FusionTablesLayer({
+      suppressInfoWindows: true,
+      query: {
+        select: '*',
+        from: '1Y4YEcr06223cs93DmixwCGOsz4jzXW_p4UTWzPyi',
+        where: this.arrayToQuote(blue)
+      },
+      styles: [
+        {
+          polygonOptions: {
+            fillColor: '#f00ff9',
+            strokeOpacity: 0.0
+          }
+        },
+        {
+          where: this.arrayToQuote(blue),
+          polygonOptions: {
+            fillColor: '#66A8C6',
+            fillOpacity: 1.0,
+            strokeOpacity: 0.0,
+            strokeColor: "#FFFFFF"
+          },
+          polylineOptions: {
+            strokeColor: "#FFFFFF",
+            strokeOpacity: 1.0,
+            strokeWeight: 1.0
+          }
+        }
+      ]
+    });
+    layer.setMap(this.map);
+    google.maps.event.addListener(layer, 'click', function (e) {
+      console.log(e.row.ISO_2DIGIT.value);
+      countryClicked(e.row.ISO_2DIGIT.value);
+      // let c: Countries = <Countries>Countries["GB"];
+
+    });
+  }
+
+  private doneWithEmbeddedStylesNetworkCountry(countryClicked: (country: string) => void, locations) {
+
+    let blue: string[] = [];
+
+
+    locations.forEach(location => {
+
       blue.push(Countries[location]);
+
     });
 
     let layer = new google.maps.FusionTablesLayer({

@@ -136,14 +136,12 @@
       <div id="customAgencyContainer">
         <div *ngIf="customAgency">
           <p>Please specify non-alert members</p>
-          {{nonAlertMembers[0]}}
-          // look at on change
           <input
             name="custom"
             type="text"
             class="col-sm-4 form-control"
             id="customAgency"
-            [(ngModel)]="nonAlertMembers[0]"/><br>
+            (change)="valuechange($event, 0)"/><br>
           <button type="button" class="btn-ghost btn-primary margin-bottom-one" (click)="addCustomAgencyField()">+ Add
             another non-alert member to this coordination arrangement
           </button>
@@ -151,7 +149,7 @@
             name="custom"
             type="text"
             class="col-sm-4 margin-bottom-one form-control"
-            [(ngModel)]="nonAlertMembers[1]"
+            (change)="valuechange($event, field)"
           /></div>
         </div>
       </div>
