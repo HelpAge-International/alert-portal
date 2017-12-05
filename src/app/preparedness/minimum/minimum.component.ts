@@ -279,6 +279,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -613,6 +614,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       }
     }
     // if we make it here we can't find the document requesting to be deleted
+    let actionIndex = this.prepActionService.actions.map(action => {
+      return action.id
+    }).indexOf(action.id);
+    if (actionIndex != -1) {
+      this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {
+        return doc.documentId != docId
+      })
+      this.closeDocumentsModal("documents_popover_" + action.id)
+    }
   }
 
   // Exporting all the documents

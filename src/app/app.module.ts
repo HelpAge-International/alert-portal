@@ -200,13 +200,24 @@ export function HttpLoaderFactory(http: Http) {
 }
 
 // Must export the config
+// FOR LIVE
+// export const firebaseConfig = {
+//   apiKey: "AIzaSyC3HmARInyyYi6B8IGRkEZV_gQR0SoGgjU",
+//   authDomain: "alert-live.firebaseio.com",
+//   databaseURL: "https://alert-live.firebaseio.com/",
+//   storageBucket: "alert-live.appspot.com",
+//   messagingSenderId: "44847393433"
+// };
+
+//FOR SAND AND OTHERS
 export const firebaseConfig = {
-  apiKey: "AIzaSyC3HmARInyyYi6B8IGRkEZV_gQR0SoGgjU",
-  authDomain: "alert-live.firebaseio.com",
-  databaseURL: "https://alert-live.firebaseio.com/",
-  storageBucket: "alert-live.appspot.com",
-  messagingSenderId: "44847393433"
+  apiKey: "AIzaSyDC5QFD23t701ackZXBFhurvsMoIdJ3JZQ",
+  authDomain: "alert-190fa.firebaseapp.com",
+  databaseURL: "https://alert-190fa.firebaseio.com",
+  storageBucket: "alert-190fa.appspot.com",
+  messagingSenderId: "305491871378"
 };
+
 
 const firebaseAuthConfig = {
   provider: AuthProviders.Google,
