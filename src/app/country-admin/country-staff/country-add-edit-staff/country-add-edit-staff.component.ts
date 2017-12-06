@@ -451,9 +451,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.hideWarning = true;
       this.hideSuccess = false;
-      Observable.timer(1500)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(() => {
+      Observable.timer(1500).subscribe(() => {
           this.router.navigateByUrl('/country-admin/country-staff');
         });
     }, error => {
