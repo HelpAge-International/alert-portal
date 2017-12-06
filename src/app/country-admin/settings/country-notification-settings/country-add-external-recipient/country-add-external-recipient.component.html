@@ -59,7 +59,8 @@
             <label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label>
     </div>
     <div class="row Spaced">
-      <label *ngFor="let notification of externalRecipient?.notificationsSettings | keyValues"
+      <label *ngFor="let notification of externalRecipient?.notificationsSettings | keyValues; index as i"
+             [hidden]="i==3"
           class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
       <input type="checkbox"  name="notifications_{{ notification.key }}"
               [(ngModel)] = "externalRecipient && externalRecipient.notificationsSettings[notification.key]">{{NOTIFICATION_SETTINGS[notification.key] |
