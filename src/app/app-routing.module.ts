@@ -203,6 +203,18 @@ import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-ne
 import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
 import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
 
+
+/* Local Agency */
+
+import {LocalAgencyDashboardComponent} from "./local-agency/local-agency-dashboard/local-agency-dashboard.component";
+import { LocalAgencyRiskMonitoringComponent } from './local-agency/local-agency-risk-monitoring/local-agency-risk-monitoring.component';
+import { LocalAgencyAddHazardComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-hazard/local-agency-add-hazard.component';
+import { LocalAgencyAddIndicatorComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-indicator/local-agency-add-indicator.component';
+import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-risk-monitoring/local-agency-create-alert/local-agency-create-alert.component';
+import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
+import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
+import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
+
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
 
@@ -550,6 +562,22 @@ const routes: Routes = [
   {path: 'network-country/network-country-office-profile-documents', component: NetworkCountryProfileDocumentsComponent},
   {path: 'network-country/network-country-office-profile-contacts', component: NetworkCountryProfileContactsComponent},
   {path: 'network-country/network-calendar', component: NetworkCalendarComponent},
+
+
+  /* Local Agency */
+  {path: 'local-agency/dashboard', component: LocalAgencyDashboardComponent},
+  {path: 'local-agency/risk-monitoring', component: LocalAgencyRiskMonitoringComponent},
+  {path: 'local-agency/risk-monitoring/add-hazard', component: LocalAgencyAddHazardComponent},
+  {path: 'local-agency/risk-monitoring/add-indicator/:hazardID/:indicatorID', component: LocalAgencyAddIndicatorComponent},
+  {path: 'local-agency/risk-monitoring/add-indicator/:hazardID', component: LocalAgencyAddIndicatorComponent},
+  {path: 'local-agency/risk-monitoring/create-alert', component: LocalAgencyCreateAlertComponent},
+  {path: 'local-agency/agency-staff', component: LocalAgencyAdministrationStaffComponent},
+  {path: 'local-agency/agency-staff/add-edit-staff', component: LocalAgencyAddEditStaffComponent},
+  {path: 'local-agency/agency-staff/add-edit-partner', component: LocalAgencyAddEditPartnerComponent},
+
+
+
+
 
   /**
    * Maintanace page

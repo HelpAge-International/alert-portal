@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+
 
 @Component({
   selector: 'app-local-network-admin-dashboard',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LocalNetworkAdminDashboardComponent implements OnInit {
 
+
+
   constructor() { }
 
   ngOnInit() {
+
+
+
   }
+
 
 }

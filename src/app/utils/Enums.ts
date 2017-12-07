@@ -158,7 +158,10 @@ export enum UserType {
   AgencyAdmin = 11,
   SystemAdmin = 12,
   PartnerUser = 13,
-  PartnerOrganisation = 14
+  PartnerOrganisation = 14,
+  LocalAgencyAdmin = 15,
+  AgencyDirector = 16,
+  AgencyUser = 17
 }
 export enum OfficeType {
   All = 0,

@@ -23,6 +23,8 @@ export class ModelAgency extends BaseModel{
   public postCode:string;
   public website:string;
   public remainApproved:number;
+  public isGlobalAgency: boolean;
+  public countryCode: number
   public sentmessages:{};
   public notificationSetting: any = [];
   public clockSettings:{} = {};
