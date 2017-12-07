@@ -59,13 +59,13 @@ export class Constants {
   // local agency administrator
 
   static LOCAL_AGENCY_ADMIN_HOME = "/dashboard";
-  static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
+  static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.LOCAL_AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
     "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
-  static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.AgencyDirector, UserType.AgencyUser,
+  static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.LocalAgencyDirector, UserType.AgencyUser,
     UserType.ErtLeader, UserType.Ert];
-  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.AgencyDirector, UserType.LocalAgencyAdmin,
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.LocalAgencyDirector, UserType.LocalAgencyAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
-  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "agencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "localagencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
 
 
 

@@ -1,5 +1,12 @@
-<app-agency-admin-header></app-agency-admin-header>
-<app-agency-admin-menu></app-agency-admin-menu>
+<ng-container *ngIf="userType == UserType.AgencyAdmin">
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-container>
+<ng-container *ngIf="userType == UserType.LocalAgencyAdmin">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
+
 <app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
                   (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 

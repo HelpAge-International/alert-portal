@@ -574,6 +574,7 @@ const routes: Routes = [
   {path: 'local-agency/agency-staff', component: LocalAgencyAdministrationStaffComponent},
   {path: 'local-agency/agency-staff/add-edit-staff', component: LocalAgencyAddEditStaffComponent},
   {path: 'local-agency/agency-staff/add-edit-partner', component: LocalAgencyAddEditPartnerComponent},
+  {path: 'local-agency/settings/departments', component: DepartmentComponent},
 
 
 

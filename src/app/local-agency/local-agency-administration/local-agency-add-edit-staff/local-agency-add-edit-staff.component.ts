@@ -25,8 +25,9 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
   private secondApp: firebase.app.App;
 
   private uid: string;
-  private agencyAdminId: string;
+  private localAgencyAdminId: string;
   private countryId: string;
+  private agencyId: string;
   private isUserTypeChange: boolean;
   private editInitialUserType: UserType;
 
@@ -39,8 +40,8 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
   // private countryEnum = Countries;
   private countryEnum = Constants.COUNTRIES;
 
-  private userTypeConstant = Constants.COUNTRY_ADMIN_USER_TYPE;
-  private userTypeSelection = Constants.COUNTRY_ADMIN_USER_TYPE_SELECTION;
+  private userTypeConstant = Constants.LOCAL_AGENCY_ADMIN_USER_TYPE;
+  private userTypeSelection = Constants.LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION;
   private userTitle = Constants.PERSON_TITLE;
   private userTitleSelection = Constants.PERSON_TITLE_SELECTION;
   private officeTypeConstant = Constants.OFFICE_TYPE;
@@ -73,7 +74,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
   isResponseMember: boolean;
 
   private selectedStaffId: string;
-  private selectedOfficeId: string;
+  private selectedAgencyId: string;
   private emailInDatabase: string;
   private isEmailChange: boolean;
   private isUpdateOfficeOnly: boolean;
@@ -96,23 +97,24 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.uid = user.uid;
+      this.systemId = systemId
+      this.agencyId = agencyId
 
-      this.af.database.object(Constants.APP_STATUS + '/administratorLocalAgency/' + this.uid)
+
+
+      this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId + '/adminId')
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryAdmin => {
-            // Get the country id and agency administrator id
-            this.countryId = countryAdmin.countryId;
-            this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
-            this.systemId = countryAdmin.systemAdmin ? Object.keys(countryAdmin.systemAdmin)[0] : '';
+        .subscribe(localAgencyAdmin => {
+            this.localAgencyAdminId = localAgencyAdmin.$value ? localAgencyAdmin.$value : '';
             this.initData();
             this.route.params
               .takeUntil(this.ngUnsubscribe)
               .subscribe((params: Params) => {
                 if (params['id']) {
                   this.selectedStaffId = params['id'];
-                  this.selectedOfficeId = this.countryId;
+                  this.selectedAgencyId = this.agencyId;
                   this.isEdit = true;
-                  this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
+                  this.loadStaffInfo(this.selectedStaffId, this.selectedAgencyId);
                 }
                 /*Filtering country director option in the user types if there exists a country director for this country already*/
                 this.updateUserTypeSelection();
@@ -141,14 +143,15 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
 
   private initData() {
 
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + '/' + this.countryId)
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.localAgencyAdminId + '/' + this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryOffice => {
         this.countryOffice = countryOffice;
       });
 
-    this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId);
-    this.departmentList = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
+    this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.localAgencyAdminId);
+    console.log(Constants.APP_STATUS + '/agency/' + this.localAgencyAdminId + '/departments')
+    this.departmentList = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/departments', {preserveSnapshot: true})
       .map(departments => {
         let names: ModelDepartment[] = [];
         departments.forEach(department => {
@@ -158,7 +161,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
       });
 
 
-    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/skills')
+    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.localAgencyAdminId + '/skills')
       .takeUntil(this.ngUnsubscribe)
       .subscribe(_ => {
         _.filter(skill => skill.$value).map(skill => {
@@ -180,7 +183,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
         });
       });
 
-    this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/notificationSetting');
+    this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.localAgencyAdminId + '/notificationSetting');
   }
 
   private updateUserTypeSelection() {
@@ -316,7 +319,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
   }
 
   private updateNoEmailChange() {
-    if (this.countryOffice && this.countryOffice.$key !== this.selectedOfficeId) {
+    if (this.countryOffice && this.countryOffice.$key !== this.selectedAgencyId) {
       this.isUpdateOfficeOnly = true;
     }
     if (this.editInitialUserType != this.userType) {
@@ -352,8 +355,8 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
 
     // add to group
     staffData['/group/systemadmin/allusersgroup/' + uid + '/'] = true;
-    staffData['/group/agency/' + this.agencyAdminId + '/agencyallusersgroup/' + uid + '/'] = true;
-    staffData['/group/agency/' + this.agencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1] + '/' + uid + '/'] = true;
+    staffData['/group/agency/' + this.localAgencyAdminId + '/agencyallusersgroup/' + uid + '/'] = true;
+    staffData['/group/agency/' + this.localAgencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1] + '/' + uid + '/'] = true;
     staffData['/group/country/' + this.countryId + '/countryallusersgroup/' + uid + '/'] = true;
     staffData['/group/country/' + this.countryId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1] + '/' + uid + '/'] = true;
 
@@ -374,23 +377,23 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     staff.updatedAt = Date.now();
 
     if (this.isUpdateOfficeOnly) {
-      staffData['/staff/' + this.selectedOfficeId + '/' + uid + '/'] = null;
+      staffData['/staff/' + this.selectedAgencyId + '/' + uid + '/'] = null;
     }
 
     if (!this.hideCountry) {
       staffData['/staff/' + this.countryOffice.$key + '/' + uid + '/'] = staff;
     } else if (!this.hideRegion) {
-      staffData['/staff/globalUser/' + this.agencyAdminId + '/' + uid + '/'] = staff;
+      staffData['/staff/globalUser/' + this.localAgencyAdminId + '/' + uid + '/'] = staff;
       //staffData['/region/' + this.uid + '/' + this.region.$key + '/directorId'] = uid;
     } else {
       staffData['/staff/' + this.countryOffice.$key + '/' + uid + '/'] = staff;
-      staffData['/staff/globalUser/' + this.agencyAdminId + '/' + uid + '/'] = staff;
+      staffData['/staff/globalUser/' + this.localAgencyAdminId + '/' + uid + '/'] = staff;
     }
 
     if (this.isEmailChange) {
       staffData['/userPublic/' + this.selectedStaffId + '/'] = null;
       if (!this.hideCountry) {
-        staffData['/staff/' + this.selectedOfficeId + '/' + this.selectedStaffId + '/'] = null;
+        staffData['/staff/' + this.selectedAgencyId + '/' + this.selectedStaffId + '/'] = null;
       } else {
         staffData['/staff/globalUser/' + this.uid + '/' + this.selectedStaffId + '/'] = null;
       }
@@ -399,7 +402,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     //push user group
     let userData = {};
     let agency = {};
-    agency[this.agencyAdminId] = true;
+    agency[this.localAgencyAdminId] = true;
     userData["agencyAdmin"] = agency;
 
     if (!this.isEdit) {
@@ -476,7 +479,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
 
     let path = officeId !== 'null'
       ? Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId
-      : Constants.APP_STATUS + '/staff/globalUser/' + this.agencyAdminId + '/' + staffId;
+      : Constants.APP_STATUS + '/staff/globalUser/' + this.localAgencyAdminId + '/' + staffId;
 
     this.af.database.object(path)
       .takeUntil(this.ngUnsubscribe)
@@ -541,7 +544,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     this.checkUserType();
 
     //requested by client to lock red alert checked if user type is country director
-    if (userType == UserType.CountryDirector) {
+    if (userType == UserType.LocalAgencyDirector) {
       this.notificationSettings[NotificationSettingEvents.RedAlertRequest] = true;
       this.notificationsMap.set(NotificationSettingEvents.RedAlertRequest, true);
     }
@@ -559,19 +562,19 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     jQuery('#delete-action').modal('hide');
     let delData = {};
     delData['/userPublic/' + this.selectedStaffId + '/'] = null;
-    delData['/staff/' + this.selectedOfficeId + '/' + this.selectedStaffId + '/'] = null;
+    delData['/staff/' + this.selectedAgencyId + '/' + this.selectedStaffId + '/'] = null;
 
     delData['/group/systemadmin/allusersgroup/' + this.selectedStaffId + '/'] = null;
-    delData['/group/agency/' + this.agencyAdminId + '/agencyallusersgroup/' + this.selectedStaffId + '/'] = null;
-    delData['/group/agency/' + this.agencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1]
+    delData['/group/agency/' + this.localAgencyAdminId + '/agencyallusersgroup/' + this.selectedStaffId + '/'] = null;
+    delData['/group/agency/' + this.localAgencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1]
     + '/' + this.selectedStaffId + '/'] = null;
 
-    if (this.userType === UserType.CountryDirector) {
+    if (this.userType === UserType.LocalAgencyDirector) {
       delData['/directorCountry/' + this.countryOffice.$key + '/'] = null;
     }
 
     this.af.database.object(Constants.APP_STATUS).update(delData).then(() => {
-      this.router.navigateByUrl('/country-admin/country-staff');
+      this.router.navigateByUrl('/local-agency/agency-staff');
     }, error => {
       this.warningMessage = error.message;
       this.showAlert();

@@ -60,6 +60,7 @@ export class NewUserPasswordComponent implements OnInit, OnDestroy {
       this.authState.auth.updatePassword(this.passwordEntered).then(() => {
 
         let directorData = {};
+
         directorData["/" + Constants.USER_PATHS[this.userType] + "/" + this.uid + '/firstLogin'] = false;
 
         this.af.database.object(Constants.APP_STATUS).update(directorData).then(() => {

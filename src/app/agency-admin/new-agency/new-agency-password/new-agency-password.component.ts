@@ -5,6 +5,7 @@ import {Constants} from "../../../utils/Constants";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {UserType} from "../../../utils/Enums";
 
 @Component({
   selector: 'app-new-agency-password',
@@ -29,6 +30,7 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
   private authState: FirebaseAuthState;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
@@ -59,7 +61,9 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
         Observable.timer(Constants.ALERT_REDIRECT_DURATION)
           .takeUntil(this.ngUnsubscribe).subscribe(() => {
           this.successInactive = true;
-          this.router.navigateByUrl('/agency-admin/new-agency/new-agency-details');
+          console.log('navigating to /agency-admin/new-agency/new-agency-details')
+            this.router.navigateByUrl('/agency-admin/new-agency/new-agency-details');
+
         });
       }, error => {
         console.log(error.message);

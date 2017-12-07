@@ -108,6 +108,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       agencyData['/agency/' + this.agencyId + '/website'] = this.agencyWebAddress;
       agencyData['/agency/' + this.agencyId + '/currency'] = this.agencyCurrency;
       agencyData['/administratorAgency/' + this.uid + '/firstLogin'] = false;
+      agencyData['/administratorLocalAgency/' + this.uid + '/firstLogin'] = false;
 
       if (this.logoFile) {
 
