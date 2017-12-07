@@ -23,6 +23,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
   private accessToken: string;
   private networkId: string;
   private agencyId: string;
+  private countryId: string;
   private isValidated: boolean;
   private network: any;
 
@@ -40,6 +41,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
           this.accessToken = params["token"];
           this.networkId = params["networkId"];
           this.agencyId = params["agencyId"];
+          this.countryId = params["countryId"];
 
           firebase.auth().signInAnonymously().catch(error => {
             console.log(error.message);
@@ -50,11 +52,10 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
             if (user) {
               if (user.isAnonymous) {
                 //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
-                this.networkService.validateNetworkAgencyToken(this.agencyId, this.accessToken)
+                let validationId = this.countryId ? this.countryId : this.agencyId
+                this.networkService.validateNetworkAgencyToken(validationId, this.accessToken)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(validate => {
-                    console.log('net country validate')
-                    // TODO after lunch: this isn't working......
                     console.log(validate);
                     this.isValidated = validate;
                     if (validate) {
