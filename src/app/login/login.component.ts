@@ -219,6 +219,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginCheckingFirstLoginValue(successUid, "donor", Constants.DONOR_HOME, 'new-user-password');
     this.loginCheckingAgency(successUid, "administratorAgency",
       Constants.AGENCY_ADMIN_HOME, 'agency-admin/new-agency/new-agency-password');
+
   }
 
   // Override method for checking the login. Just passes it to below with no firstLogin dir
@@ -321,7 +322,16 @@ export class LoginComponent implements OnInit, OnDestroy {
           .subscribe((snapshot) => {
             if (snapshot.val() != null) {
               if (snapshot.val().isActive != null && snapshot.val().isActive) {
-                this.router.navigateByUrl(directToIfSuccess);
+                if(snapshot.val().hasOwnProperty('isGlobalAgency')){
+                  if(snapshot.val().isGlobalAgency){
+                    this.router.navigateByUrl(directToIfSuccess);
+                  }else{
+                    this.router.navigateByUrl('/local-agency/dashboard');
+                  }
+                } else {
+                  this.router.navigateByUrl(directToIfSuccess);
+                }
+
               }
               else {
                 this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
@@ -336,6 +346,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(directToIfFirst);
       });
   }
+
 
 
   /**

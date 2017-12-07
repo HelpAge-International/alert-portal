@@ -290,6 +290,21 @@ import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-ne
 import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
 import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
 import {NetworkMapService} from "./services/networkmap.service";
+import { LocalAgencyComponent } from './local-agency/local-agency.component';
+import { LocalAgencyDashboardComponent } from './local-agency/local-agency-dashboard/local-agency-dashboard.component';
+import { LocalAgencyMenuComponent } from './local-agency/local-agency-menu/local-agency-menu.component';
+import { LocalAgencyHeaderComponent } from './local-agency/local-agency-header/local-agency-header.component';
+import { LocalAgencyProfileComponent } from './local-agency/local-agency-profile/local-agency-profile.component';
+import { LocalAgencyDashboardSeasonalCalendarComponent } from './local-agency/local-agency-dashboard/local-agency-dashboard-seasonal-calendar/local-agency-dashboard-seasonal-calendar.component';
+import { LocalAgencyStatisticsRibbonComponent } from './local-agency/local-agency-statistics-ribbon/local-agency-statistics-ribbon.component';
+import { LocalAgencyRiskMonitoringComponent } from './local-agency/local-agency-risk-monitoring/local-agency-risk-monitoring.component';
+import { LocalAgencyAddHazardComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-hazard/local-agency-add-hazard.component';
+import { LocalAgencyAddIndicatorComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-indicator/local-agency-add-indicator.component';
+import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-risk-monitoring/local-agency-create-alert/local-agency-create-alert.component';
+import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
+import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
+import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
+
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -574,7 +589,21 @@ const firebaseAuthConfig = {
     AddHazardLocalNetworkComponent,
     AddIndicatorLocalNetworkComponent,
     LocalNetworkCreateAlertComponent,
-    LocalNetworkDashboardUpdateAlertLevelComponent
+    LocalNetworkDashboardUpdateAlertLevelComponent,
+    LocalAgencyComponent,
+    LocalAgencyDashboardComponent,
+    LocalAgencyMenuComponent,
+    LocalAgencyHeaderComponent,
+    LocalAgencyProfileComponent,
+    LocalAgencyDashboardSeasonalCalendarComponent,
+    LocalAgencyStatisticsRibbonComponent,
+    LocalAgencyRiskMonitoringComponent,
+    LocalAgencyAddHazardComponent,
+    LocalAgencyAddIndicatorComponent,
+    LocalAgencyCreateAlertComponent,
+    LocalAgencyAdministrationStaffComponent,
+    LocalAgencyAddEditStaffComponent,
+    LocalAgencyAddEditPartnerComponent
   ],
   imports: [
     BrowserModule,

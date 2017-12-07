@@ -1,0 +1,39 @@
+<div class="Widget">
+  <ul class="list-inline">
+    <li class="list-inline-item active">
+      <div class="Icon">
+        <div
+          class="Icon--lg Icon--align-center Icon__country--{{getCountryCodeFromLocation(agencyLocation)}}"></div>
+      </div>
+      <span>{{CountriesList[agencyLocation] | translate}}</span>
+    </li>
+    <li class="list-inline-item" routerLink="{{userPermissions.responsePlan ? '/response-plans' : '#'}}">
+      <div class="Icon">
+        <div class="Icon__circle Icon--{{userPermissions.responsePlan ? 'blue' : 'grey'}} Icon--lg">{{userPermissions.responsePlan ? numOfApprovedResponsePlans : 'N/A'}}</div>
+      </div>
+      <span>{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</span>
+    </li>
+    <li class="list-inline-item" routerLink="{{userPermissions.minimumPreparedness ? '/preparedness/minimum' : '#'}}">
+      <div class="Icon">
+        <div class="Icon__circle Icon--b-{{userPermissions.minimumPreparedness ? mpaStatusColor : 'grey'}} Icon--lg">
+          <i class="fa {{userPermissions.minimumPreparedness ? mpaStatusIcon : 'fa-times'}} fa-2x fa-inverse" aria-hidden="true"></i></div>
+      </div>
+      <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
+    </li>
+    <li class="list-inline-item" routerLink="{{userPermissions.advancedPreparedness ? '/preparedness/advanced' : '#'}}">
+      <div class="Icon">
+        <div class="Icon__circle Icon--b-{{userPermissions.advancedPreparedness ? apaStatusColor : 'grey'}} Icon--lg">
+          <i class="fa {{userPermissions.advancedPreparedness ? apaStatusIcon : 'fa-times'}} fa-2x fa-inverse" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <span>{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</span>
+    </li>
+    <li class="list-inline-item" (click)="goToCHS()">
+      <div class="Icon">
+        <div class="Icon__circle Icon--{{userPermissions.chsPreparedness ? 'blue' : 'grey'}} Icon--lg">{{userPermissions.chsPreparedness ? chsPrepPercentage : 'N/A'}}%</div>
+      </div>
+      <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+    </li>
+  </ul>
+</div>

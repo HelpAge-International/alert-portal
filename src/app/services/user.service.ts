@@ -211,6 +211,17 @@ export class UserService {
       })
   }
 
+  getPartnerUserIdsForAgency(agencyId): Observable<string[]> {
+    return this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partners')
+      .map(partners => {
+        let partnerIds = [];
+        partners.forEach(partner => {
+          partnerIds.push(partner.$key);
+        });
+        return partnerIds;
+      })
+  }
+
   getPartnerUserById(partnerId): Observable<PartnerModel> {
     return this.af.database.object(Constants.APP_STATUS + '/partner/' + partnerId)
       .map(partner => {
@@ -436,13 +447,29 @@ export class UserService {
           return Observable.of(UserType.SystemAdmin);
         }
         else {
-          return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+          console.log(uid)
+          return af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
             .flatMap((mySnap) => {
               if (mySnap.val() != null) {
-                return Observable.of(UserType.AgencyAdmin);
+
+                      console.log('local agency return')
+
+                      return Observable.of(UserType.LocalAgencyAdmin);
+
               }
               else {
-                return UserService.recursiveUserMap(af, paths, 0);
+
+                //TODO: for this to work we need to push the local agency admins to /administratorLocalAgency when creating the local agency within system admin.
+                return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+                  .flatMap((snap) => {
+                    if (snap.val() != null) {
+                      console.log('agency return')
+                      return Observable.of(UserType.AgencyAdmin);
+                    } else {
+                      console.log('returning the other thing')
+                      return UserService.recursiveUserMap(af, paths, 0);
+                    }
+                  })
               }
             });
         }
@@ -492,13 +519,25 @@ export class UserService {
           return Observable.of(UserType.SystemAdmin);
         }
         else {
-          return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+          return this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
             .flatMap((mySnap) => {
+
               if (mySnap.val() != null) {
                 return Observable.of(UserType.AgencyAdmin);
               }
               else {
-                return UserService.recursiveUserMap(this.af, paths, 0);
+
+                return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+                  .flatMap((snap) => {
+                    if (snap.val() != null) {
+                      console.log('agency return')
+                      return Observable.of(UserType.AgencyAdmin);
+                    } else {
+                      console.log('returning the other thing')
+                      return UserService.recursiveUserMap(this.af, paths, 0);
+                    }
+                  })
+
               }
             });
         }

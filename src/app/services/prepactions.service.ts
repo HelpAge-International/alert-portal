@@ -295,17 +295,32 @@ export class PrepActionService {
    * We need these to do the bulk of the calculations with the preparedness actions in terms of the state
    */
   private getDefaultClockSettings(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
-    af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        this.defaultClockValue = (+(snap.val().preparedness.value));
-        this.defaultClockType = (+(snap.val().preparedness.durationType));
-        console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
-        if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
-          defaultClockSettingsAquired();
-          this.ranClockInitialiser = true;
-        }
-      });
+    if(countryId == null){
+      af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.defaultClockValue = (+(snap.val().preparedness.value));
+          this.defaultClockType = (+(snap.val().preparedness.durationType));
+          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
+          if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+            defaultClockSettingsAquired();
+            this.ranClockInitialiser = true;
+          }
+        });
+    }else{
+      af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.defaultClockValue = (+(snap.val().preparedness.value));
+          this.defaultClockType = (+(snap.val().preparedness.durationType));
+          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
+          if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+            defaultClockSettingsAquired();
+            this.ranClockInitialiser = true;
+          }
+        });
+    }
+
   }
 
   private getDefaultClockSettingsNetwork(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
