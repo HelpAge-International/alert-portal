@@ -141,6 +141,7 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
     }
     if (!this.leadAgencyId) {
       jQuery('#leadAgencySelection').modal('show');
+      //need to handle lead agency from upper level
     } else {
       this.saveAgenciesAndLead();
     }

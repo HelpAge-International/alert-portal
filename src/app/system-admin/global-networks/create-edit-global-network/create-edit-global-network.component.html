@@ -164,10 +164,10 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <button *ngIf="!isEdit" class="btn btn-primary" type="submit" (click)="validate()">
+          <button *ngIf="!isEdit" class="btn btn-primary" type="submit">
             {{"SYSTEM_ADMIN.GLOBAL_NETWORKS.SAVE_NEW_NETWORK" | translate | uppercase}}
           </button>
-          <button *ngIf="isEdit" class="btn btn-primary" type="submit" (click)="validate()">
+          <button *ngIf="isEdit" class="btn btn-primary" type="submit">
             {{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}
           </button>
           <button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}

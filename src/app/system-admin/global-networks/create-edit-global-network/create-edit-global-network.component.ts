@@ -133,19 +133,21 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    console.log("submit");
-    this.refreshData();
-    if (!CustomerValidator.EmailValidator(this.adminEmail)) {
-      this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
-      this.showAlert();
-      return;
+    if (this.validate()) {
+      console.log("submit");
+      this.refreshData();
+      if (!CustomerValidator.EmailValidator(this.adminEmail)) {
+        this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
+        this.showAlert();
+        return;
+      }
+      if (this.isEdit && this.preNetworkName == this.networkName) {
+        console.log("no name change update");
+        this.editNetwork();
+        return;
+      }
+      this.validateNetworkName();
     }
-    if (this.isEdit && this.preNetworkName == this.networkName) {
-      console.log("no name change update");
-      this.editNetwork();
-      return;
-    }
-    this.validateNetworkName();
   }
 
   private validateNetworkName() {
@@ -199,8 +201,8 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       });
   }
 
-  validate() {
-    this.validForm();
+  validate(): boolean {
+    return this.validForm();
   }
 
   cancel() {
@@ -208,6 +210,7 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   validForm(): boolean {
+    console.log(this.country)
     if (!this.networkName) {
       this.alerts[this.networkName] = true;
       this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME_EMPTY";
@@ -228,6 +231,11 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
       this.waringMessage = "SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_ADMIN_EMAIL";
       this.showAlert();
       return false;
+    } else if (!this.isGlobal && !this.country) {
+      this.alerts[this.country] = true;
+      this.waringMessage = "LOCAL_NETWORK_NO_COUNTRY_ERROR";
+      this.showAlert();
+      return false
     } else {
       this.hideWarning = true;
       return true;
