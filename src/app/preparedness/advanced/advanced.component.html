@@ -770,8 +770,7 @@
                                  *ngIf="!countrySelected">
                               <div
                                 *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
-                                <a href="javascript:void(0)" data-toggle="collapse"
-                                   [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
+                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
                                    aria-controls="popover_content"
                                    class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                               </div>
@@ -780,6 +779,9 @@
                                 *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                                 [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                              <a
+                                *ngIf="action.isComplete" (click)="undoCompleteAction(action)"
+                                class="btn btn-block link-color">Undo completion</a>
                             </div>
                             <div class="col-md-3 col-sm-4 btn-block"
                                  *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
@@ -922,7 +924,7 @@
                         <div class="col-md-7">
                           <div class="row">
                             <div class="col-12">
-                              <h4>C{{"CONFIRM_THIS_ACTION_IS_COMPLETED" | translate}}</h4>
+                              <h4>{{"CONFIRM_THIS_ACTION_IS_COMPLETED" | translate}}</h4>
                             </div>
                           </div>
                           <div class="row">
@@ -962,7 +964,7 @@
                           <a href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                             (click)="closePopover(action)">{{"GLOBAL.CANCEL" |
                             translate}}</a>
                         </div>
                       </div>
@@ -1098,8 +1100,7 @@
                                  *ngIf="!countrySelected">
                               <div
                                 *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))">
-                                <a href="javascript:void(0)" data-toggle="collapse"
-                                   [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
+                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
                                    aria-controls="popover_content"
                                    class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                               </div>
@@ -1290,7 +1291,7 @@
                           <a href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                             (click)="closePopover(action)" >{{"GLOBAL.CANCEL" |
                             translate}}</a>
                         </div>
                       </div>
@@ -1425,8 +1426,7 @@
                                  *ngIf="!countrySelected">
                               <div
                                 *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
-                                <a href="javascript:void(0)" data-toggle="collapse"
-                                   [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
+                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
                                    aria-controls="popover_content"
                                    class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                               </div>
