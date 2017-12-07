@@ -608,14 +608,18 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(object => {
-                  this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                  if (object) {
+                    this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                  }
                 });
             } else {
               this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(object => {
-                  let key = this.getHazardIdIfExist(hazard, this.hazards)
-                  this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                  if (object) {
+                    let key = this.getHazardIdIfExist(hazard, this.hazards)
+                    this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                  }
                 });
             }
           }
@@ -645,14 +649,18 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
                 this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(object => {
-                    this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                    if (object) {
+                      this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                    }
                   });
               } else {
                 this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(object => {
-                    let key = this.getHazardIdIfExist(hazard, this.hazards)
-                    this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                    if (object) {
+                      let key = this.getHazardIdIfExist(hazard, this.hazards)
+                      this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                    }
                   });
               }
             }
