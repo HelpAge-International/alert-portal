@@ -498,8 +498,7 @@
                              *ngIf="!countrySelected">
                           <div
                             *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
-                            <a href="javascript:void(0)" data-toggle="collapse"
-                               [attr.data-target]="'#popover_content_' + action.id" aria-expanded="false"
+                            <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
                                aria-controls="popover_content"
                                class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                           </div>
@@ -508,6 +507,11 @@
                             *ngIf="(action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !isViewing) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom  && !isViewing) || (action.level == actionLevelEnum.MPA && action.type == ActionType.custom && isViewing && permissionsAreEnabled.customMPA.Edit && action.asignee == uid) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom  && isViewing && permissionsAreEnabled.customAPA.Edit && action.asignee == uid)"
                             [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+
+                          <a
+                            *ngIf="action.isComplete" (click)="undoCompleteAction(action)"
+                            class="btn btn-block link-color">Undo completion</a>
+
                         </div>
 
                       </div>
@@ -688,7 +692,7 @@
                       <a href="javascript:void(0)" class="btn btn-primary btn-block"
                          (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                       <a href="javascript:void(0)" class="btn btn-block"
-                         onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                         (click)="closePopover(action)">{{"GLOBAL.CANCEL" |
                         translate}}</a>
                     </div>
                   </div>

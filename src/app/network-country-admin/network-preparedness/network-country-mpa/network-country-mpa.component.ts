@@ -128,6 +128,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private fbLocationCalls = 3;
   private now: number = new Date().getTime();
 
+  //Dan Variable
+  private dialogOpen: boolean;
+
   // Assigning action
   private assignActionId: string = "0";
   private assignActionCategoryUid: string = "0";
@@ -649,10 +652,34 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Close documents popover
-  protected closePopover(action: PreparednessAction) {
-    jQuery("#popover_content_" + action.id).toggle("collapse");
+  /**
+   * Undoing an action
+   */
+
+  // (Dan) - this new function is for the undo completed MPA
+  protected undoCompleteAction(action: PreparednessAction){
+
+    // Call to firebase to update values to revert back to *In Progress*
+    this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
+      isComplete: false,
+      isCompleteAt: null,
+      // Set updatedAt to time it was undone
+      updatedAt: new Date().getTime()
+    });
+
   }
+
+   //Close documents popover
+  protected closePopover(action: PreparednessAction) {
+
+    let toggleDialog = jQuery("#popover_content_" + action.id);
+
+    toggleDialog.toggle();
+
+
+  }
+
+
 
   // Uploading a file to Firebase
   //TODO NEED TO FIGURE OUT WHERE TO PUSH FOR LOCAL NETWORK ADMIN
@@ -723,6 +750,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       return true;
     });
   }
+
+
 
   // Delete document from firebase
   protected deleteDocument(action: PreparednessAction, docId: string) {

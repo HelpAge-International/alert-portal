@@ -39,6 +39,7 @@ import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 import {CommonUtils} from "../../utils/CommonUtils";
+import {AddIndicatorRiskMonitoringComponent} from "../../risk-monitoring/add-indicator/add-indicator.component";
 
 declare var jQuery: any;
 
@@ -602,6 +603,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   protected completeActionNetwork(action: PreparednessAction) {
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -629,8 +631,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           });
         }
         this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
+
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
         });
         this.addNoteNetwork(action);
         this.closePopover(action);
@@ -638,11 +641,32 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Close documents popover
-  protected closePopover(action: PreparednessAction) {
-    jQuery("#popover_content_" + action.id).toggle("collapse");
+  /**
+   * Undoing an action
+   */
+
+
+  // (Dan) - this new function is for the undo completed MPA
+  protected undoCompleteAction(action: PreparednessAction){
+
+    // Call to firebase to update values to revert back to *In Progress*
+    this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
+      isComplete: false,
+      isCompleteAt: null,
+      updatedAt: new Date().getTime()
+    });
+
   }
 
+  //Close documents popover
+  protected closePopover(action: PreparednessAction) {
+
+    let toggleDialog = jQuery("#popover_content_" + action.id);
+
+    toggleDialog.toggle();
+
+
+  }
   // Uploading a file to Firebase
   protected uploadFile(action: PreparednessAction, file) {
     let document = {
