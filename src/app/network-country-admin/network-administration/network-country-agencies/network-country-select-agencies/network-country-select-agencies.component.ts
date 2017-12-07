@@ -7,6 +7,7 @@ import {NetworkService} from "../../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../../services/agency-service.service";
 import {ModelAgency} from "../../../../model/agency.model";
+import {ModelNetwork} from "../../../../model/network.model";
 
 declare const jQuery: any;
 
@@ -38,7 +39,8 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
   private existingAgencyIds: string[];
   private showLoader: boolean;
   private countryAgencyMap = new Map<string, string>();
-
+  private agencyObjMap = new Map<string, any>();
+  private networkModel: ModelNetwork;
 
 
   constructor(private pageControl: PageControlService,
@@ -60,6 +62,12 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
           this.networkCountryId = selection["networkCountryId"];
           this.showLoader = false;
 
+          this.networkService.getNetworkDetail(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network => {
+              this.networkModel = network
+            })
+
           //get network country object
           this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
@@ -72,15 +80,13 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
                   this.agencies = [];
                   approvedAgencies.forEach(agency => {
                     agency.takeUntil(this.ngUnsubscribe).subscribe(agencyObj => {
-
                       //filter agencies only with same country stay
                       this.agencyService.countryExistInAgency(networkCountry.location, agencyObj.id)
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(country => {
                           if (country) {
                             this.agencies.push(agencyObj);
-                            console.log(this.agencies, '1');
-                            console.log(country);
+                            this.agencyObjMap.set(agencyObj.id, agencyObj)
                             this.countryAgencyMap.set(country.id, agencyObj.id);
                           }
                         })
@@ -132,7 +138,6 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
   }
 
 
-
   confirmInvitation() {
     console.log("confirm invitation");
     if (!this.selectedAgencies || this.selectedAgencies.length == 0) {
@@ -141,7 +146,12 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
     }
     if (!this.leadAgencyId) {
       jQuery('#leadAgencySelection').modal('show');
-      //need to handle lead agency from upper level
+      console.log(this.networkModel)
+      if (this.agencies.filter(agency => {
+          return agency.id === this.networkModel.leadAgencyId
+        }).length != 0) {
+        this.leadAgencyId = this.networkModel.leadAgencyId
+      }
     } else {
       this.saveAgenciesAndLead();
     }

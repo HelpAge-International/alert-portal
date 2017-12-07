@@ -80,28 +80,30 @@ export class PrepActionService {
             .takeUntil(ngUnsubscribe)
             .subscribe(network => {
               //loop through each agency/country pair within network
-              Object.keys(network.agencyCountries).forEach(agencyCountry => {
-                //get the country office key
-                Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {
-                  //check if the country office has been approved
-                  if (network.agencyCountries[agencyCountry][countryKey].isApproved) {
-                    af.database.list(Constants.APP_STATUS + '/action/' + countryKey)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(actions => { //get a list of the actions within a country office
-                        this.CHSkeys.forEach(key => {
-                          this.totalCHS++;
-                          actions.forEach(action => {
-                            if (action.$key == key) {
-                              if (action.isComplete) {
-                                this.completeCHS++;
+              if (network) {
+                Object.keys(network.agencyCountries).forEach(agencyCountry => {
+                  //get the country office key
+                  Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {
+                    //check if the country office has been approved
+                    if (network.agencyCountries[agencyCountry][countryKey].isApproved) {
+                      af.database.list(Constants.APP_STATUS + '/action/' + countryKey)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(actions => { //get a list of the actions within a country office
+                          this.CHSkeys.forEach(key => {
+                            this.totalCHS++;
+                            actions.forEach(action => {
+                              if (action.$key == key) {
+                                if (action.isComplete) {
+                                  this.completeCHS++;
+                                }
                               }
-                            }
+                            })
                           })
                         })
-                      })
-                  }
+                    }
+                  })
                 })
-              })
+              }
             })
         } else {
           af.database.object(Constants.APP_STATUS + '/network/' + networkId)
@@ -182,13 +184,15 @@ export class PrepActionService {
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
       this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
 
-      agencyCountryMap.forEach((countryId, agencyId) => {
-        if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-          this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
-        }
-        this.init(af, "actionMandated", agencyId, isMPA, PrepSourceTypes.AGENCY);
-        this.init(af, "action", countryId, isMPA, PrepSourceTypes.COUNTRY);
-      })
+      if (agencyCountryMap) {
+        agencyCountryMap.forEach((countryId, agencyId) => {
+          if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+            this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+          }
+          this.init(af, "actionMandated", agencyId, isMPA, PrepSourceTypes.AGENCY);
+          this.init(af, "action", countryId, isMPA, PrepSourceTypes.COUNTRY);
+        })
+      }
     });
   }
 
@@ -297,7 +301,7 @@ export class PrepActionService {
    * We need these to do the bulk of the calculations with the preparedness actions in terms of the state
    */
   private getDefaultClockSettings(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
-    if(countryId == null){
+    if (countryId == null) {
       af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
@@ -309,7 +313,7 @@ export class PrepActionService {
             this.ranClockInitialiser = true;
           }
         });
-    }else{
+    } else {
       af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {

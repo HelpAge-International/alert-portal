@@ -72,7 +72,6 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyMap => {
               this.agencyCountryMap = agencyMap;
-              console.log(this.agencyCountryMap.size, 'size of map');
 
               //fetch network agencies
               this.networkService.getAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.agencyCountryMap)
