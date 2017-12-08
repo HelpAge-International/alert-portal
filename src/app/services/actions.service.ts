@@ -172,8 +172,9 @@ export class ActionsService {
     return title;
   }
 
-  getAlerts(countryId) {
+  getAlerts(countryId, isLocalAgency?) {
 
+    console.log(Constants.APP_STATUS + "/alert/" + countryId)
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
         orderByChild: "alertLevel",
@@ -181,6 +182,7 @@ export class ActionsService {
       }
     })
       .map(alerts => {
+        console.log(alerts)
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();
@@ -214,8 +216,14 @@ export class ActionsService {
 
 
           modelAlert.affectedAreas = affectedAreas;
-          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
-          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          if(isLocalAgency){
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+          } else{
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          }
+
           alertList.push(modelAlert);
         });
         return alertList;
@@ -281,7 +289,7 @@ export class ActionsService {
     return Constants.COUNTRIES[countryId];
   }
 
-  getRedAlerts(countryId) {
+  getRedAlerts(countryId, isLocalAgency?) {
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
@@ -321,8 +329,14 @@ export class ActionsService {
             affectedAreas.push(modelAffectedArea);
           });
           modelAlert.affectedAreas = affectedAreas;
-          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
-          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          if(isLocalAgency){
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+          } else{
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          }
+
           alertList.push(modelAlert);
         });
         return alertList;

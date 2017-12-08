@@ -204,6 +204,30 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
     });
   }
 
+  saveUserNotificationBasedOnNotificationSettingLocalAgency(message: MessageModel, notificationSetting: number, agencyId: string)
+  {
+    // Regular staff
+    this._userService.getStaffList(agencyId).subscribe(staffs => {
+      staffs.forEach(staff => {
+        if(staff.notification && staff.notification.indexOf(notificationSetting) !== -1)
+        {
+          this.saveUserNotificationLocalAgency(staff.id, message, staff.userType, agencyId).then(() => {});
+        }
+      });
+    });
+
+    // Global staff
+    this._userService.getGlobalStaffList(agencyId).subscribe(staffs => {
+      staffs.forEach(staff => {
+        if(staff.notification && (staff.userType === UserType.RegionalDirector || staff.userType === UserType.GlobalDirector)
+          && staff.notification.indexOf(notificationSetting) !== -1)
+        {
+          this.saveUserNotificationLocalAgency(staff.id, message, staff.userType, agencyId).then(() => {});
+        }
+      });
+    });
+  }
+
   saveUserNotificationWithoutDetails(userId: string, message: MessageModel): Observable<any>{
     if(!userId || !message)
     {
@@ -269,6 +293,41 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
       case UserType.CountryUser:
         node = "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId + "/{messageId}";
         break;
+
+    }
+
+    return this.saveNotification(node, message);
+  }
+
+  saveUserNotificationLocalAgency(userId: string, message: MessageModel, userType: number, agencyId: string): firebase.Promise<any>{
+    let node = '';
+
+    if(!userId || !message || !userType || !agencyId )
+    {
+      throw new Error('Missing required fields.')
+    }
+
+    switch(userType){
+      case UserType.AgencyAdmin:
+        node = "/messageRef/systemadmin/allagencyadminsgroup/" + agencyId +  "/{messageId}";
+        break;
+      case UserType.LocalAgencyAdmin:
+        node = "/messageRef/agency/" + agencyId + "/localagencyadmins/" + userId + "/{messageId}";
+        break;
+      case UserType.LocalAgencyDirector:
+        node = "/messageRef/agency/" + agencyId + "/localagencydirectors/" + userId + "/{messageId}";
+        break;
+      case UserType.RegionalDirector:
+        node = "/messageRef/agency/" + agencyId + "/regionaldirector/" + userId + "/{messageId}";
+        break;
+      case UserType.GlobalDirector:
+        node = "/messageRef/agency/" + agencyId + "/globaldirector/" + userId + "/{messageId}";
+        break;
+      case UserType.GlobalUser:
+        node = "/messageRef/agency/" + agencyId + "/globaluser/" + userId + "/{messageId}";
+        break;
+
+
 
     }
 

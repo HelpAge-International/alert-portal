@@ -7,7 +7,7 @@
     <app-local-agency-statistics-ribbon></app-local-agency-statistics-ribbon>
 
     <!--alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring">
+    <div *ngIf="DashboardTypeUsed == DashboardType.default">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">

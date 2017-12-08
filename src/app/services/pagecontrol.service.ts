@@ -289,6 +289,12 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-details"
   ]);
 
+  public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
+    "local-agency*",
+    "agency-admin/new-agency/new-agency-password",
+    "agency-admin/new-agency/new-agency-details"
+  ]);
+
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
     "system-admin*"
   ]);
@@ -348,6 +354,7 @@ export class PageControlService {
       this.pageControlMap.set(UserType.SystemAdmin, PageControlService.SystemAdmin);
       this.pageControlMap.set(UserType.PartnerUser, PageControlService.PartnerUser);
       this.pageControlMap.set(UserType.LocalAgencyAdmin, PageControlService.LocalAgencyAdmin);
+      this.pageControlMap.set(UserType.LocalAgencyDirector, PageControlService.LocalAgencyDirector);
     }
     return this.pageControlMap;
   }
@@ -930,6 +937,7 @@ export class ModelUserTypeReturn {
     x.push(new ModelUserTypeReturn(UserType.SystemAdmin, "system"));
     x.push(new ModelUserTypeReturn(UserType.PartnerUser, "partnerUser"));
     x.push(new ModelUserTypeReturn(UserType.LocalAgencyAdmin, "administratorLocalAgency"));
+    x.push(new ModelUserTypeReturn(UserType.LocalAgencyDirector, "localAgencyDirector"));
     return x;
   }
 

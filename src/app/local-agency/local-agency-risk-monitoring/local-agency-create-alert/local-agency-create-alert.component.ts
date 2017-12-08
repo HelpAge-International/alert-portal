@@ -87,7 +87,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.agencyId = agencyId;
       this.countryID = countryId;
       this._getHazards();
-      this._getDirectorCountryID();
+      this._getDirectorLocalAgencyId();
 
 
 
@@ -118,8 +118,8 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
 
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
-        this.alertData.approval['countryDirector'] = [];
-        this.alertData.approval['countryDirector'][this.countryID] = (this.alertData.alertLevel == AlertLevels.Red ? this.UserType == UserType.CountryDirector ? 1 : 0 : 1);
+        this.alertData.approval['localAgencyDirector'] = [];
+        this.alertData.approval['localAgencyDirector'][this.agencyId] = (this.alertData.alertLevel == AlertLevels.Red ? this.UserType == UserType.LocalAgencyDirector ? 1 : 0 : 1);
         this.alertData.estimatedPopulation = parseInt(this.alertData.estimatedPopulation);
 
         var dataToSave = this.alertData;
@@ -131,7 +131,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         }
         console.log(dataToSave);
 
-        this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
+        this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
           .then(() => {
 
@@ -151,7 +151,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", {riskName: riskNameTranslated});
               notification.time = new Date().getTime();
 
-              this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, redAlertNotificationSetting, this.agencyId, this.countryID);
+              this.notificationService.saveUserNotificationBasedOnNotificationSettingLocalAgency(notification, redAlertNotificationSetting, this.agencyId);
             }
 
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
@@ -209,7 +209,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
   _getHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID, {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snapshot) => {
         for (let x of snapshot) {
@@ -227,10 +227,10 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       });
   }
 
-  _getDirectorCountryID() {
+  _getDirectorLocalAgencyId() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((directorCountryID: any) => {
-        this.directorCountryID = directorCountryID.$value ? directorCountryID.$value : false;
+      this.af.database.object(Constants.APP_STATUS + "/directorLocalAgency/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe((directorLocalAgencyId: any) => {
+        this.directorCountryID = directorLocalAgencyId.$value ? directorLocalAgencyId.$value : false;
 
       });
     });

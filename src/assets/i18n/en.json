@@ -419,7 +419,8 @@
       "ERT":"ERTs",
       "DONOR":"Donors",
       "PARTNER":"Partners",
-      "NON_ALERT":"Non-Alert User"
+      "NON_ALERT":"Non-Alert User",
+      "LOCAL_AGENCY_DIRECTORS":"Local Agency Directors"
     },
     "ACCOUNT_SETTINGS":{
       "TITLE":"Account Settings",

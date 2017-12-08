@@ -70,6 +70,8 @@ export class NewUserPasswordComponent implements OnInit, OnDestroy {
             .subscribe(() => {
               this.successInactive = true;
 
+              console.log('checking types...')
+              console.log(this.userType)
               if (
                 (this.userType == UserType.GlobalDirector) ||
                 (this.userType == UserType.RegionalDirector) ||
@@ -82,6 +84,12 @@ export class NewUserPasswordComponent implements OnInit, OnDestroy {
                 (this.userType == UserType.Ert) ||
                 (this.userType == UserType.PartnerUser)) {
                 this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+              } else if(
+                (this.userType == UserType.LocalAgencyDirector) ||
+                (this.userType == UserType.AgencyUser)
+              ){
+                console.log('local agency stuff')
+                this.router.navigateByUrl(Constants.LOCAL_AGENCY_ADMIN_HOME);
               } else if (this.userType == UserType.Donor) {
                 this.router.navigateByUrl(Constants.DONOR_HOME);
               }

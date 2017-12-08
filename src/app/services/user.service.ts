@@ -437,7 +437,8 @@ export class UserService {
       {path: Constants.APP_STATUS + "/ertLeader/" + uid, type: UserType.ErtLeader},
       {path: Constants.APP_STATUS + "/ert/" + uid, type: UserType.Ert},
       {path: Constants.APP_STATUS + "/donor/" + uid, type: UserType.Donor},
-      {path: Constants.APP_STATUS + "/partnerUser/" + uid, type: UserType.PartnerUser}
+      {path: Constants.APP_STATUS + "/partnerUser/" + uid, type: UserType.PartnerUser},
+      {path: Constants.APP_STATUS + "/localAgencyDirector/" + uid, type: UserType.LocalAgencyDirector}
       // {path: Constants.APP_STATUS + "/administratorAgency/" + uid, type: UserType.AgencyAdmin}
     ];
     // Check if it's a system admin
@@ -452,6 +453,7 @@ export class UserService {
             .flatMap((mySnap) => {
               if (mySnap.val() != null) {
 
+                console.log(mySnap.val())
                       console.log('local agency return')
 
                       return Observable.of(UserType.LocalAgencyAdmin);
