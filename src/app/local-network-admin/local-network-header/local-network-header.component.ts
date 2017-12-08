@@ -9,6 +9,7 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {TranslateService} from "@ngx-translate/core";
 import {Http, Response} from '@angular/http';
+
 declare var jQuery: any;
 
 import {AlertLevels, AlertStatus, Countries} from "../../utils/Enums";
@@ -87,7 +88,7 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
 
       this.loadJSON().subscribe(data => {
 
-        for (var key in data){
+        for (var key in data) {
 
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
@@ -98,7 +99,7 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
-          if(user.language) {
+          if (user.language) {
             this.language = user.language;
             this.translate.use(this.language.toLowerCase());
           } else {
@@ -122,15 +123,14 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
 
   // Dan's Modal functions
 
-  loadJSON(){
+  loadJSON() {
 
     return this.http.get(this.languageSelectPath)
-      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
 
   }
 
-  openLanguageModal()
-  {
+  openLanguageModal() {
 
     console.log('Open language modal');
     jQuery("#language-selection").modal("show");
@@ -166,10 +166,12 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
         this.isRed = false;
         this.isAmber = false;
         alerts.forEach(alert => {
+          console.log(alert)
           if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
             this.isRed = true;
           }
-          if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))) {
+          if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected)) ||
+            alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse && alert.timeUpdated) {
             this.isAmber = true;
           }
         });

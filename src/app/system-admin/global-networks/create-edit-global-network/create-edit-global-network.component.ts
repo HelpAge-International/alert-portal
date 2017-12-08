@@ -189,7 +189,6 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
         }
       })
       .first()
-      .takeUntil(this.ngUnsubscribe)
       .subscribe(() => {
         if (this.isUserExist) {
           console.log("Existing user");

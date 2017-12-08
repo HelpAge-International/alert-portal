@@ -192,6 +192,7 @@ export class ActionsService {
           modelAlert.infoNotes = alert.infoNotes;
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
           modelAlert.timeCreated = alert.timeCreated;
+          modelAlert.timeUpdated = alert.timeUpdated;
           modelAlert.createdBy = alert.createdBy;
           if (alert.updatedBy) {
             modelAlert.updatedBy = alert.updatedBy;

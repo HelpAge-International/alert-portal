@@ -447,7 +447,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
         })
       }
-      if(this.localNetworks){
+      if (this.localNetworks) {
         this.localNetworks.forEach(networkId => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
@@ -467,7 +467,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
         })
       }
-      if(this.localNetworks){
+      if (this.localNetworks) {
         this.localNetworks.forEach(networkId => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
@@ -561,7 +561,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.localNetworks) {
         this.alertsLocalNetwork = Observable.from([])
         this.localNetworks.forEach((networkId) => {
-          console.log("local network id: "+networkId)
+          console.log("local network id: " + networkId)
           this.alertsLocalNetwork = Observable.merge(this.alertsLocalNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
         })
       }
@@ -685,7 +685,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlertNetwork(alert) {
-    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(()=>{
+    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(() => {
       this.networkService.mapAgencyCountryForNetworkCountry(alert.networkId, alert.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
@@ -699,7 +699,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlertLocalNetwork(alert) {
-    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(()=>{
+    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(() => {
       this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
@@ -720,7 +720,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   rejectRedRequestNetwork(alert) {
-    this.actionService.rejectRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId);
+    this.actionService.rejectRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId ? alert.networkcountryId : alert.networkId);
   }
 
   planReview(plan, isLocal) {

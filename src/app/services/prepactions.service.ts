@@ -80,7 +80,7 @@ export class PrepActionService {
             .takeUntil(ngUnsubscribe)
             .subscribe(network => {
               //loop through each agency/country pair within network
-              if (network) {
+              if (network.agencyCountries) {
                 Object.keys(network.agencyCountries).forEach(agencyCountry => {
                   //get the country office key
                   Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {

@@ -40,6 +40,7 @@ import {CommonUtils} from "../../../utils/CommonUtils";
 import {NetworkCountryModel} from "../../network-country.model";
 import * as firebase from "firebase";
 import {ModelAgency} from "../../../model/agency.model";
+import {ModelNetwork} from "../../../model/network.model";
 
 declare var jQuery: any;
 
@@ -256,6 +257,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.modulesAreEnabled = matrix);
 
+          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyCountryMap => {
+              this.initAgencies(agencyCountryMap)
+            })
+
           // Currency
           // this.calculateCurrency();
         });
@@ -313,12 +320,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
 
-    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+    this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(networkMap => {
-        if (networkMap) {
-          this.initNetworkAdmin(networkMap)
-          this.initAgenciesDetails(networkMap)
+      .subscribe(networkIds => {
+        if (networkIds && networkIds.length > 0) {
+          this.initLocalNetworkAdmin(networkIds)
+          this.initAgenciesDetailsForLocal(networkIds)
         }
       })
     this.initStaff(this.agencyId, this.countryId);
@@ -437,6 +444,16 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((model: NetworkCountryModel) => {
           this.getStaffDetails(model.adminId, false)
+        })
+    })
+  }
+
+  private initLocalNetworkAdmin(networkIds) {
+    networkIds.forEach(networkId => {
+      this.networkService.getNetworkDetail(networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((model: ModelNetwork) => {
+          this.getStaffDetails(model.networkAdminId, false)
         })
     })
   }
@@ -657,7 +674,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
    */
 
   // (Dan) - this new function is for the undo completed MPA
-  protected undoCompleteAction(action: PreparednessAction){
+  protected undoCompleteAction(action: PreparednessAction) {
 
     // Call to firebase to update values to revert back to *In Progress*
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
@@ -669,7 +686,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   }
 
-   //Close documents popover
+  //Close documents popover
   protected closePopover(action: PreparednessAction) {
 
     let toggleDialog = jQuery("#popover_content_" + action.id);
@@ -678,7 +695,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
 
   }
-
 
 
   // Uploading a file to Firebase
@@ -750,7 +766,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       return true;
     });
   }
-
 
 
   // Delete document from firebase
@@ -865,6 +880,24 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkService.mapAgencyCountryForNetworkCountry(networkId, networkMap.get(networkId))
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
+          agencyCountryMap.forEach((countryId, agencyId) =>{this.initStaff(agencyId, countryId);})
+          CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
+            this.userService.getAgencyModel(agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((agency: ModelAgency) => {
+                this.agencyNamesMap.set(agencyId, agency)
+              })
+          })
+        })
+    })
+  }
+
+  private initAgenciesDetailsForLocal(networkIds) {
+    networkIds.forEach(networkId => {
+      this.networkService.mapAgencyCountryForLocalNetworkCountry(networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountryMap => {
+          agencyCountryMap.forEach((countryId, agencyId) =>{this.initStaff(agencyId, countryId);})
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
               .takeUntil(this.ngUnsubscribe)
