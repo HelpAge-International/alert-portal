@@ -21,7 +21,8 @@
             </div>
 
             <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-              <i class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+              <i
+                class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
               <div>
                 <span>{{"ALERT.RISK" | translate}}:</span>
                 {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) :
@@ -687,17 +688,15 @@
     </div>
 
     <!--empty ribbon for director dashboard-->
-    <div *ngIf="approvalPlans.length == 0">
-      <div
-        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 &&
+    <div
+      *ngIf="approvalPlans.length == 0 && actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 &&
         actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.director &&
         approvalPlansNetwork.length == 0 && approvalPlansNetworkLocal.length == 0"
-        class="Widget">
-        <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
-        <div class="My-Tasks container-fluid">
-          <div class="Empty--ribbon">
-            {{"DASHBOARD.EMPTY_DIRECTOR" | translate}}
-          </div>
+      class="Widget">
+      <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+      <div class="My-Tasks container-fluid">
+        <div class="Empty--ribbon">
+          {{"DASHBOARD.EMPTY_DIRECTOR" | translate}}
         </div>
       </div>
     </div>

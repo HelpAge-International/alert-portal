@@ -60,6 +60,8 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
         .subscribe(selection => {
           this.networkId = selection["id"];
 
+          console.log(this.networkId)
+
           this.networkService.getNetworkDetail(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(network => {

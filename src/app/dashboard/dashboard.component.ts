@@ -561,6 +561,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.localNetworks) {
         this.alertsLocalNetwork = Observable.from([])
         this.localNetworks.forEach((networkId) => {
+          console.log("local network id: "+networkId)
           this.alertsLocalNetwork = Observable.merge(this.alertsLocalNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
         })
       }

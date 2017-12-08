@@ -92,6 +92,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private AlertStatus = AlertStatus;
 
   private alerts: Observable<any>;
+  private alertsNetwork: Observable<any>;
+  private alertsNetworkLocal: Observable<any>;
 
   private hazards: any[] = [];
   private numberOfIndicatorsObject = {};
@@ -209,7 +211,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   private initViewAccess() {
     console.log(this.userType);
-    this.DashboardTypeUsed = DashboardType.default;
+    this.DashboardTypeUsed = this.userType == UserType.CountryDirector ? DashboardType.director : DashboardType.default;
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     console.log('network view values')
     if (!this.networkViewValues) {
@@ -223,9 +225,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .subscribe(agencyCountryMap => {
         console.log(agencyCountryMap)
         this.agencyCountryMap = agencyCountryMap;
-        if(this.userType == UserType.PartnerUser){
+        if (this.userType == UserType.PartnerUser) {
           this.loadDataForPartnerUser(this.agencyId, this.countryId);
-        }else{
+        } else {
           this.loadData();
         }
 
@@ -238,9 +240,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   private initLocalViewAccess() {
     console.log(this.userType)
-    if(this.userType == UserType.CountryDirector){
+    if (this.userType == UserType.CountryDirector) {
       this.DashboardTypeUsed = DashboardType.director
-    }else{
+    } else {
       this.DashboardTypeUsed = DashboardType.default
     }
 
@@ -259,9 +261,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .subscribe(agencyCountryMap => {
         console.log(agencyCountryMap)
         this.agencyCountryMap = agencyCountryMap
-        if(this.userType == UserType.PartnerUser){
+        if (this.userType == UserType.PartnerUser) {
           this.loadDataForPartnerUser(this.agencyId, this.countryId);
-        }else{
+        } else {
           this.loadData();
         }
       })
@@ -484,7 +486,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
     }
     if (this.responsePlansForApproval) {
-        this.responsePlansForApproval
+      this.responsePlansForApproval
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlans = plans;
@@ -548,8 +550,14 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       this.alerts = this.actionService.getAlerts(id);
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
-      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id, true);
-      console.log(this.alerts)
+      // this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id, true);
+      // console.log(this.alerts)
+      if (this.networkCountryId) {
+        this.alertsNetwork = this.actionService.getAlertsForDirectorToApproveNetwork(this.countryId, this.networkCountryId, this.networkId)
+      } else {
+        this.alertsNetworkLocal = this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, this.networkId)
+      }
+
       this.amberAlerts = this.actionService.getAlerts(id)
         .map(alerts => {
           return alerts.filter(alert => alert.alertLevel == AlertLevels.Amber);
@@ -658,6 +666,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(object => {
                     if (object) {
+
                       let key = this.getHazardIdIfExist(hazard, this.hazards)
                       this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
                     }
@@ -738,7 +747,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         if (this.networkViewValues) {
           this.networkViewValues["id"] = alertId
         }
-        this.router.navigate(this.networkViewValues ? ['network/local-network-dashboard/dashboard-update-alert-level', this.networkViewValues] :  ['network/local-network-dashboard/dashboard-update-alert-level', {
+        this.router.navigate(this.networkViewValues ? ['network/local-network-dashboard/dashboard-update-alert-level', this.networkViewValues] : ['network/local-network-dashboard/dashboard-update-alert-level', {
           id: alertId,
           networkId: this.networkId,
           isDirector: true
@@ -777,7 +786,32 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   approveRedAlert(alertId) {
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    this.actionService.approveRedAlert(id, alertId, this.uid, true);
+    console.log(id)
+    this.actionService.approveRedAlertNetwork(this.countryId, alertId, id).then(() => {
+      if (this.isLocalNetworkAdmin) {
+        this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(map => {
+            this.actionService.getAlertObj(this.networkId, alertId)
+              .first()
+              .subscribe(alertObj => {
+                this.actionService.copyRedAlertOverFromNetwork(map, alertId, alertObj)
+              })
+          })
+      } else {
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(map => {
+            console.log(map)
+            this.actionService.getAlertObj(this.networkCountryId, alertId)
+              .first()
+              .subscribe(alertObj => {
+                this.actionService.copyRedAlertOverFromNetwork(map, alertId, alertObj)
+              })
+          })
+      }
+
+    });
   }
 
   rejectRedRequest(alertId) {
