@@ -47,7 +47,50 @@
       ></tooltip>
       </div>
     <div class="row">
-      <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.where">
+
+      <!--START TODO: resume setCountryLevel function with relevant HTML-->
+      <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above">
+      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
+        <div class="col-sm-12 row">
+          <div class="col-sm-3">
+            <div class="form-group-risk-frequency ">
+              <select #selectElem (change)="setCountryLevel(selectElem.value)" class="form-control" name="CountryArea">
+                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
+                  translate}}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!--LEVEL 1 START-->
+
+          <div class="col-sm-3" >
+            <div class="form-group-risk-frequency ">
+              <select class="form-control" name="CountryAreaLevelOne">
+                <option value="undefined" disabled selected hidden >
+                  {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
+                </option>
+                <option>
+                  <!--List in here-->
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!--LEVEL 1 END-->
+
+        </div>
+
+
+      <!--<input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.where">-->
+        <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherLocation()">+
+          {{"ADD_PARTNER.ADD_ANOTHER_LOCATION" | translate}}</a>
+
+
+      </div>
+      <!--END-->
+
     </div>
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" |
