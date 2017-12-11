@@ -119,22 +119,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.countryId = countryId;
       this.systemId = systemId;
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-      //get networks for country
-      // this.networkService.getNetworksForCountry(this.agencyId, this.countryId)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(networkCountryId => {
-      //     if (networkCountryId) {
-      //       this.networkCountryId = networkCountryId[0];
-      //       console.log(this.networkCountryId)
-      //     }
 
-      // this.networkService.getNetworksForAgency(this.agencyId)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(networkIds => {
-      //     if (networkIds) {
-      //       this.networkId = networkIds[0];
-      //       console.log(this.networkId);
-      //     }
+      //get networks for country
       this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(networkMap => {
@@ -154,7 +140,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
             this.loadData();
           }
-
         })
 
       this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
@@ -176,15 +161,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
             this.loadData();
           }
-
         })
-
-
-      // })
-
-
-      // });
-
 
       PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
         this.moduleSettings = isEnabled;

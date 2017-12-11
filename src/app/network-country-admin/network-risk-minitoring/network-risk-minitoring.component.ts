@@ -21,6 +21,7 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import * as firebase from "firebase/app";
 
 import App = firebase.app.App;
+import {NetworkCountryModel} from "../network-country.model";
 
 declare var jQuery: any;
 
@@ -184,38 +185,38 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
           this.agencyOverview = params["agencyOverview"];
         }
 
-        if(this.isViewing){
+        if (this.isViewing) {
           console.log(this.networkId)
           console.log(this.networkCountryId)
 
-                this.networkService.getNetworkCountryAgencies(this.networkId, this.networkCountryId)
+          this.networkService.getNetworkCountryAgencies(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencies => {
+              agencies.forEach(agency => {
+                this.agencyService.getAgency(agency.$key)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agencies => {
-                    agencies.forEach(agency => {
-                      this.agencyService.getAgency(agency.$key)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(agency => {
-                          this.agencies.push(agency)
-                        })
-                    })
+                  .subscribe(agency => {
+                    this.agencies.push(agency)
                   })
+              })
+            })
 
 
-                this._getHazards()
-                this.getCountryLocation()
-                  .then(_ => {
-                    // get the country levels values
-                    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(content => {
+          this._getHazards()
+          this.getCountryLocation()
+            .then(_ => {
+              // get the country levels values
+              this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(content => {
 
-                        this.countryLevelsValues = content[this.countryLocation];
-                        console.log(this.countryLevelsValues)
-                        err => console.log(err);
-                      });
-                  })
-                this._getCountryContextIndicators();
-                this.getUsersForAssign();
+                  this.countryLevelsValues = content[this.countryLocation];
+                  console.log(this.countryLevelsValues)
+                  err => console.log(err);
+                });
+            })
+          this._getCountryContextIndicators();
+          this.getUsersForAssign();
 
 
         } else {
@@ -246,7 +247,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
 
                 this._getHazards()
-                this.getCountryLocation()
+                this.getNetworkCountryLocation()
                   .then(_ => {
                     // get the country levels values
                     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -274,10 +275,10 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  changeLocationFilter(location){
+  changeLocationFilter(location) {
     console.log(location)
-    if(location){
-      if(location == 'location'){
+    if (location) {
+      if (location == 'location') {
         this.locationFilter = -1;
       } else {
         this.locationFilter = location;
@@ -287,10 +288,10 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeEventFilter(event){
+  changeEventFilter(event) {
     console.log(event)
-    if(event){
-      if(event == 'event'){
+    if (event) {
+      if (event == 'event') {
         this.eventFilter = -1;
       } else {
         this.eventFilter = event;
@@ -300,22 +301,22 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeAgencyFilter(agency){
+  changeAgencyFilter(agency) {
     console.log(agency)
-      if(agency == 'agency'){
-        this.agencyFilter = -1;
-      } else {
-        this.agencyFilter = agency;
-      }
+    if (agency == 'agency') {
+      this.agencyFilter = -1;
+    } else {
+      this.agencyFilter = agency;
+    }
   }
 
-  changeIndicatorLevelFilter(indicatorLevel){
+  changeIndicatorLevelFilter(indicatorLevel) {
     console.log(indicatorLevel)
-      if(indicatorLevel == 'indicator'){
-        this.indicatorLevelFilter = -1;
-      } else {
-        this.indicatorLevelFilter = indicatorLevel;
-      }
+    if (indicatorLevel == 'indicator') {
+      this.indicatorLevelFilter = -1;
+    } else {
+      this.indicatorLevelFilter = indicatorLevel;
+    }
   }
 
   private getCountryLocation() {
@@ -328,6 +329,17 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         });
     });
     return promise;
+  }
+
+  private getNetworkCountryLocation() {
+    return new Promise((res, rej) => {
+      this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((networkCountry: NetworkCountryModel) => {
+          this.countryLocation = networkCountry.location
+          res(true)
+        })
+    });
   }
 
   _getIndicatorFutureTimestamp(indicator) {
@@ -378,30 +390,30 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       //gets all relevant country office indicator data from country context
       this.networkService.getAgencyCountryOfficesByNetworkCountry(this.networkCountryId, this.networkId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe( officeAgencyMap => {
+        .subscribe(officeAgencyMap => {
           console.log(officeAgencyMap)
           officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
             this.af.database.list(Constants.APP_STATUS + "/indicator/" + value).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
-              indicators.forEach( indicator => {
-                  indicator.fromAgency = true;
-                  indicator.countryOfficeCode = value
-                  this.agencyService.getAgency(agencyKey)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe( agency => {
-                      indicator.agency = agency;
+              indicators.forEach(indicator => {
+                indicator.fromAgency = true;
+                indicator.countryOfficeCode = value
+                this.agencyService.getAgency(agencyKey)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(agency => {
+                    indicator.agency = agency;
 
+                  })
+                this.getLogs(indicator.$key).subscribe((logs: any) => {
+                  logs.forEach((log, key) => {
+                    this.getUsers(log.addedBy).subscribe((user: any) => {
+                      log.addedByFullName = user.firstName + ' ' + user.lastName;
                     })
-                  this.getLogs(indicator.$key).subscribe((logs: any) => {
-                    logs.forEach((log, key) => {
-                      this.getUsers(log.addedBy).subscribe((user: any) => {
-                        log.addedByFullName = user.firstName + ' ' + user.lastName;
-                      })
-                    });
-                    indicator.logs = this._sortLogsByDate(logs);
-                    this.indicatorsCC.push(indicator)
                   });
+                  indicator.logs = this._sortLogsByDate(logs);
+                  this.indicatorsCC.push(indicator)
                 });
+              });
             });
           })
         })
@@ -455,10 +467,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         //gets all relevant country office hazard and indicator data from non-country context hazards
         this.networkService.getAgencyCountryOfficesByNetworkCountry(this.networkCountryId, this.networkId)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe( officeAgencyMap => {
+          .subscribe(officeAgencyMap => {
             console.log(officeAgencyMap)
             officeAgencyMap.forEach((value: string, agencyKey: string) => {
-
 
 
               this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
@@ -467,31 +478,31 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                   if (hazard.hazardScenario != -1) {
                     hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
                   }
-                  this.getIndicators(hazard.id).subscribe((indicators: any) => {indicators.forEach((indicator, key) => {
+                  this.getIndicators(hazard.id).subscribe((indicators: any) => {
+                    indicators.forEach((indicator, key) => {
 
 
-                    indicator.fromAgency = true;
-                    indicator.countryOfficeCode = value
-                    this.agencyService.getAgency(agencyKey)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe( agency => {
-                        indicator.agency = agency;
-                      })
-                    this.getLogs(indicator.$key).subscribe((logs: any) => {
-                      logs.forEach((log, key) => {
-                        this.getUsers(log.addedBy).subscribe((user: any) => {
-                          log.addedByFullName = user.firstName + ' ' + user.lastName;
+                      indicator.fromAgency = true;
+                      indicator.countryOfficeCode = value
+                      this.agencyService.getAgency(agencyKey)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(agency => {
+                          indicator.agency = agency;
                         })
+                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                        logs.forEach((log, key) => {
+                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                          })
+                        });
+                        indicator.logs = this._sortLogsByDate(logs);
                       });
-                      indicator.logs = this._sortLogsByDate(logs);
                     });
-                  });
                     hazard.indicators = indicators;
                     hazard.existsOnNetwork = false;
 
 
-
-                    if(hazard.isActive) {
+                    if (hazard.isActive) {
 
                       var containsHazard = false;
                       var hasIndicators = false;
@@ -509,7 +520,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                         }
 
                       })
-                      if(hazard.isSeasonal){
+                      if (hazard.isSeasonal) {
                         if (hazard.isActive) {
                           this.activeHazards.push(hazard);
                           if (hazard.hazardScenario == -1) {
@@ -527,10 +538,10 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
                           hazard.indicators.forEach(indicator => {
 
-                            if(this.activeHazards[activeHazardIndex].indicators.map(item=>item.$key).indexOf(indicator.$key) == -1){
+                            if (this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key) == -1) {
                               this.activeHazards[activeHazardIndex].indicators.push(indicator)
                             } else {
-                              this.activeHazards[activeHazardIndex].indicators.splice(this.activeHazards[activeHazardIndex].indicators.map(item=>item.$key).indexOf(indicator.$key), 1)
+                              this.activeHazards[activeHazardIndex].indicators.splice(this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key), 1)
                               this.activeHazards[activeHazardIndex].indicators.push(indicator)
                             }
 
@@ -548,14 +559,14 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                         activeHazardIndex = null;
 
                       } else {
-                          this.activeHazards.push(hazard);
-                          if (hazard.hazardScenario == -1) {
-                            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
-                              .takeUntil(this.ngUnsubscribe)
-                              .subscribe((snap) => {
-                                hazard.hazardName = snap.val().name;
-                              });
-                          }
+                        this.activeHazards.push(hazard);
+                        if (hazard.hazardScenario == -1) {
+                          this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe((snap) => {
+                              hazard.hazardName = snap.val().name;
+                            });
+                        }
                         containsHazard = false;
                         hasIndicators = false;
                         activeHazardIndex = null;
@@ -578,7 +589,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                         }
 
                       })
-                      if(hazard.isSeasonal){
+                      if (hazard.isSeasonal) {
                         if (hazard.isActive) {
                           this.archivedHazards.push(hazard);
                         }
@@ -699,7 +710,6 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     const indicatorID = indicator.$key;
 
 
-
     if (!hazardID || !indicatorID) {
       console.log('hazardID or indicatorID cannot be empty');
       return false;
@@ -713,7 +723,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     var urlToUpdate;
 
 
-    if(indicator.countryOfficeCode && hazardID == 'countryContext'){
+    if (indicator.countryOfficeCode && hazardID == 'countryContext') {
       urlToUpdate = Constants.APP_STATUS + "/indicator/" + indicator.countryOfficeCode + '/' + indicatorID;
     } else if (hazardID == 'countryContext') {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.networkCountryId + '/' + indicatorID;
@@ -962,7 +972,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     let y = 10;
 
     logs.forEach(log => {
-      if ((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp )) {
+      if ((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp)) {
         if (y > pageHeight) {
           y = 10;
           doc.addPage();
@@ -1077,7 +1087,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     });
   }
 
-  createNewHazardFromCountry(hazard){
+  createNewHazardFromCountry(hazard) {
     var newHazard = {}
     newHazard['timeCreated'] = this._getCurrentTimestamp()
     newHazard['existsOnNetwork'] = hazard.existsOnNetwork
@@ -1092,7 +1102,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       .push(newHazard)
       .then((hazard) => {
 
-        this.router.navigate(this.networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key, this.networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key ])
+        this.router.navigate(this.networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key, this.networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key])
       })
   }
 

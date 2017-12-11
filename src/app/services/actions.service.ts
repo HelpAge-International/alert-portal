@@ -199,22 +199,22 @@ export class ActionsService {
           }
 
           let affectedAreas: ModelAffectedArea[] = [];
-          let ids: string[] = Object.keys(alert.affectedAreas);
-          ids.forEach(id => {
-            let modelAffectedArea = new ModelAffectedArea();
-            let affectedCountry = alert.affectedAreas[id]['country'];
-            let affectedLevel1 = alert.affectedAreas[id]['level1'];
-            let affectedLevel2 = alert.affectedAreas[id]['level2'];
+          if (alert.affectedAreas) {
+            let ids: string[] = Object.keys(alert.affectedAreas);
+            ids.forEach(id => {
+              let modelAffectedArea = new ModelAffectedArea();
+              let affectedCountry = alert.affectedAreas[id]['country'];
+              let affectedLevel1 = alert.affectedAreas[id]['level1'];
+              let affectedLevel2 = alert.affectedAreas[id]['level2'];
 
-            modelAffectedArea.affectedCountry = affectedCountry;
-            modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
-            modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
+              modelAffectedArea.affectedCountry = affectedCountry;
+              modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
+              modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
 
-            affectedAreas.push(modelAffectedArea);
-          });
-
-
-          modelAlert.affectedAreas = affectedAreas;
+              affectedAreas.push(modelAffectedArea);
+              modelAlert.affectedAreas = affectedAreas;
+            });
+          }
           modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
           modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
           alertList.push(modelAlert);

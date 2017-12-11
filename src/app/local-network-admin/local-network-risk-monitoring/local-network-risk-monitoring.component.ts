@@ -20,6 +20,8 @@ import * as jsPDF from 'jspdf'
 import {ModelUserPublic} from "../../model/user-public.model";
 import * as firebase from "firebase/app";
 import App = firebase.app.App;
+import {NetworkCountryModel} from "../../network-country-admin/network-country.model";
+import {ModelNetwork} from "../../model/network.model";
 
 declare var jQuery: any;
 
@@ -251,7 +253,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                   })
 
                 this._getHazards()
-                this.getCountryLocation()
+                this.getLocalNetworkLocation()
                   .then(_ => {
                     // get the country levels values
                     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -332,6 +334,17 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         });
     });
     return promise;
+  }
+
+  private getLocalNetworkLocation() {
+    return new Promise((res, rej) => {
+      this.networkService.getNetworkDetail(this.networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((localNetwork:ModelNetwork) => {
+          this.countryLocation = localNetwork.countryCode
+          res(true)
+        })
+    });
   }
 
   _getIndicatorFutureTimestamp(indicator) {
