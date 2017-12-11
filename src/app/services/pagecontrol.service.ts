@@ -282,6 +282,12 @@ export class PageControlService {
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*"
   ]);
+
+  public static LocalAgencyAdmin = PageUserType.create(UserType.LocalAgencyAdmin, "local-agency/dashboard", [
+    "local-agency*",
+    "agency-admin/new-agency/new-agency-password"
+  ]);
+
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
     "system-admin*"
   ]);
@@ -340,6 +346,7 @@ export class PageControlService {
       this.pageControlMap.set(UserType.AgencyAdmin, PageControlService.AgencyAdmin);
       this.pageControlMap.set(UserType.SystemAdmin, PageControlService.SystemAdmin);
       this.pageControlMap.set(UserType.PartnerUser, PageControlService.PartnerUser);
+      this.pageControlMap.set(UserType.LocalAgencyAdmin, PageControlService.LocalAgencyAdmin);
     }
     return this.pageControlMap;
   }
@@ -502,8 +509,10 @@ export class PageControlService {
                 }
               }
             }
-            // IF YOU'RE AN AGENCY ADMIN
-            if (userType == UserType.AgencyAdmin) {
+
+            // IF YOU'RE AN AGENCY ADMIN OR A LOCAL AGENCY ADMIN
+            if (userType == UserType.AgencyAdmin || userType == UserType.LocalAgencyAdmin) {
+
               if (userObj.hasOwnProperty('agencyId')) {
                 agencyId = userObj.agencyId;
               }
@@ -565,6 +574,7 @@ export class PageControlService {
                            userCallback: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,
                            authStateCallback: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,) {
     let type: PageUserType = PageControlService.initPageControlMap().get(userType);
+
     if (PageControlService.checkUrl(route, userType, type)) {
       PageControlService.agencyBuildPermissionsMatrix(this.af, ngUnsubscribe, authState.auth.uid, Constants.USER_PATHS[userType], (list) => {
         let s = PageControlService.buildEndUrl(route);
@@ -606,7 +616,24 @@ export class PageControlService {
         .subscribe((snap) => {
           if (snap.val() != null) {
             // It's this user type!
-            fun(modelTypes[index].userType, snap.val());
+            if(modelTypes[index].userType == UserType.AgencyAdmin){ //checks to see if user type is agency admin
+              //checks to make sure it ins't actually a local agency admin as they exist in both nodes
+              this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+                .takeUntil(ngUnsubscribe)
+                .subscribe((innerSnap) => {
+                  if (innerSnap.val() != null) {
+
+                    fun(UserType.LocalAgencyAdmin, innerSnap.val());
+                  }else{
+
+                    fun(modelTypes[index].userType, snap.val());
+                  }
+                })
+            }else{
+              fun(modelTypes[index].userType, snap.val());
+            }
+
+
           }
           else {
             this.checkAuth(ngUnsubscribe, uid, modelTypes, index + 1, fun);
@@ -618,13 +645,16 @@ export class PageControlService {
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
+
     for (let x of type.urls) {
       if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {
+
         // Current page matches which URL is checked
         return true;
       }
     }
     // Attempted to access a page that's not allowed.
+
     return false;
   }
 
@@ -898,6 +928,7 @@ export class ModelUserTypeReturn {
     x.push(new ModelUserTypeReturn(UserType.AgencyAdmin, "administratorAgency"));
     x.push(new ModelUserTypeReturn(UserType.SystemAdmin, "system"));
     x.push(new ModelUserTypeReturn(UserType.PartnerUser, "partnerUser"));
+    x.push(new ModelUserTypeReturn(UserType.LocalAgencyAdmin, "administratorLocalAgency"));
     return x;
   }
 

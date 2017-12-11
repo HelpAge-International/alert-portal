@@ -65,50 +65,51 @@ export class PrepActionService {
       });
   }
 
-  public initNetworkDashboardActions(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, systemId: string, networkId: string, networkCountryId?: string){
+  public initNetworkDashboardActions(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, systemId: string, networkId: string, networkCountryId?: string) {
     af.database.list(Constants.APP_STATUS + '/actionCHS/' + systemId)
       .takeUntil(ngUnsubscribe)
-      .subscribe( CHSactions => {
+      .subscribe(CHSactions => {
         this.CHSkeys = [];
         CHSactions.forEach(action => {
           this.CHSkeys.push(action.$key)
         })
-          this.completeCHS = 0;
-          this.totalCHS = 0;
-          if(networkCountryId){
-            af.database.object(Constants.APP_STATUS +  '/networkCountry/' + networkId + '/' + networkCountryId)
-              .takeUntil(ngUnsubscribe)
-              .subscribe(network => {
-                //loop through each agency/country pair within network
-                Object.keys(network.agencyCountries).forEach( agencyCountry => {
-                  //get the country office key
-                  Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {
-                    //check if the country office has been approved
-                    if (network.agencyCountries[agencyCountry][countryKey].isApproved) {
-                      af.database.list(Constants.APP_STATUS +  '/action/' + countryKey)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(actions => { //get a list of the actions within a country office
-                          this.CHSkeys.forEach( key => {
-                            this.totalCHS++;
-                            actions.forEach( action => {
-                              if(action.$key == key ){
-                                  if(action.isComplete) {
-                                    this.completeCHS++;
-                                  }
+        this.completeCHS = 0;
+        this.totalCHS = 0;
+        if (networkCountryId) {
+          af.database.object(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId)
+            .takeUntil(ngUnsubscribe)
+            .subscribe(network => {
+              //loop through each agency/country pair within network
+              Object.keys(network.agencyCountries).forEach(agencyCountry => {
+                //get the country office key
+                Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {
+                  //check if the country office has been approved
+                  if (network.agencyCountries[agencyCountry][countryKey].isApproved) {
+                    af.database.list(Constants.APP_STATUS + '/action/' + countryKey)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(actions => { //get a list of the actions within a country office
+                        this.CHSkeys.forEach(key => {
+                          this.totalCHS++;
+                          actions.forEach(action => {
+                            if (action.$key == key) {
+                              if (action.isComplete) {
+                                this.completeCHS++;
                               }
-                            })
+                            }
                           })
                         })
-                    }
-                  })
+                      })
+                  }
                 })
               })
-          }else{
-            af.database.object(Constants.APP_STATUS +  '/network/' + networkId)
-              .takeUntil(ngUnsubscribe)
-              .subscribe(network => {
-                //loop through each agency/country pair within network
+            })
+        } else {
+          af.database.object(Constants.APP_STATUS + '/network/' + networkId)
+            .takeUntil(ngUnsubscribe)
+            .subscribe(network => {
+              //loop through each agency/country pair within network
 
+              if (network.agencies) {
                 Object.keys(network.agencies).forEach(agencyCountry => {
 
                   //check if the country office has been approved
@@ -129,8 +130,9 @@ export class PrepActionService {
                       })
                   }
                 })
-              })
-          }
+              }
+            })
+        }
       })
   }
 
@@ -191,7 +193,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfoAllAgenciesInNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
-                                                 countryId: string, agencyId: string, systemId: string, agencyCountryMap: Map<string, string>) {
+                                                      countryId: string, agencyId: string, systemId: string, agencyCountryMap: Map<string, string>) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -295,17 +297,32 @@ export class PrepActionService {
    * We need these to do the bulk of the calculations with the preparedness actions in terms of the state
    */
   private getDefaultClockSettings(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
-    af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        this.defaultClockValue = (+(snap.val().preparedness.value));
-        this.defaultClockType = (+(snap.val().preparedness.durationType));
-        console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
-        if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
-          defaultClockSettingsAquired();
-          this.ranClockInitialiser = true;
-        }
-      });
+    if(countryId == null){
+      af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.defaultClockValue = (+(snap.val().preparedness.value));
+          this.defaultClockType = (+(snap.val().preparedness.durationType));
+          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
+          if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+            defaultClockSettingsAquired();
+            this.ranClockInitialiser = true;
+          }
+        });
+    }else{
+      af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.defaultClockValue = (+(snap.val().preparedness.value));
+          this.defaultClockType = (+(snap.val().preparedness.durationType));
+          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
+          if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+            defaultClockSettingsAquired();
+            this.ranClockInitialiser = true;
+          }
+        });
+    }
+
   }
 
   private getDefaultClockSettingsNetwork(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {

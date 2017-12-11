@@ -45,7 +45,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   public uid: string;
   public countryID: string;
 
-  public indicatorData: any;
+  public indicatorData: Indicator;
   public oldIndicatorData;
 
   private alertLevels = Constants.ALERT_LEVELS;
@@ -375,7 +375,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         if (!this.isEdit) {
           this.indicatorData.triggerSelected = 0;
         }
-        this.indicatorData.category = parseInt(this.indicatorData.category);
+        // this.indicatorData.category = parseInt(this.indicatorData.category);
         this.indicatorData.dueDate = this._calculationDueDate(Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType), Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue));
         this.indicatorData.updatedAt = new Date().getTime();
         if (!this.indicatorData.assignee) {
@@ -460,6 +460,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           });
         }
 
+      } else {
+        // console.log(this.indicatorData)
+        // if (!this.indicatorData.sources || this.indicatorData.sources.filter(source=>{return source.name}).length ==0) {
+        //   this.alertMessage = new AlertMessageModel("RISK_MONITORING.ADD_INDICATOR.NO_SOURCE_NAME")
+        // }
       }
     });
 
@@ -506,16 +511,16 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   _getHazards() {
     this.hazards = [];
     this.hazardsObject = {};
-    if(this.networkId){
+    if (this.networkId) {
 
-      if(this.networkCountryId){
+      if (this.networkCountryId) {
         this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((hazards: any) => {
 
 
             for (let hazard in hazards) {
-              if(hazard == this.hazardID){
+              if (hazard == this.hazardID) {
                 if (!hazard.includes("$") && hazard != "countryContext") {
                   hazards[hazard].key = hazard;
 
@@ -536,12 +541,12 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
             }
 
           });
-      }else{
+      } else {
         this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((hazards: any) => {
             for (let hazard in hazards) {
-              if(hazard == this.hazardID){
+              if (hazard == this.hazardID) {
                 if (!hazard.includes("$") && hazard != "countryContext") {
                   hazards[hazard].key = hazard;
 
@@ -563,10 +568,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
           });
       }
-
-
-
-
 
 
     }
@@ -652,48 +653,55 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       if (this.alertMessage) {
         res(false);
       }
+
       if (!this.alertMessage) {
+        console.log(this.indicatorData.source)
         this.indicatorData.source.forEach((val, key) => {
           let modelSource = new IndicatorSourceModel();
           modelSource.mapFromObject(val);
-          this._validateIndicatorSource(modelSource);
-          if (this.alertMessage) {
-            res(false);
-          }
-        });
-        this.indicatorData.trigger.forEach((val, key) => {
-          let modelTrigger = new IndicatorTriggerModel();
-          modelTrigger.mapFromObject(val);
-          this._validateIndicatorTrigger(modelTrigger);
+          console.log(modelSource.name)
+          this.alertMessage = this._validateIndicatorSource(modelSource);
           if (this.alertMessage) {
             res(false);
           }
         });
 
         if (!this.alertMessage) {
-          if (this.indicatorData.geoLocation == 1) {
-            this.indicatorData.affectedLocation.forEach((val, key) => {
-              let modelArea = new OperationAreaModel();
-              modelArea.mapFromObject(val);
-              this._validateOperationArea(modelArea);
-              if (this.alertMessage) {
-                res(false);
-              }
-            });
+          this.indicatorData.trigger.forEach((val, key) => {
+            let modelTrigger = new IndicatorTriggerModel();
+            modelTrigger.mapFromObject(val);
+            this._validateIndicatorTrigger(modelTrigger);
+            if (this.alertMessage) {
+              res(false);
+            }
+          });
+
+          if (!this.alertMessage) {
+            if (this.indicatorData.geoLocation == 1) {
+              this.indicatorData.affectedLocation.forEach((val, key) => {
+                let modelArea = new OperationAreaModel();
+                modelArea.mapFromObject(val);
+                this._validateOperationArea(modelArea);
+                if (this.alertMessage) {
+                  res(false);
+                }
+              });
+            }
+          }
+
+          if (!this.alertMessage) {
+            res(true);
           }
         }
-
-        if (!this.alertMessage) {
-          res(true);
-        }
-
       }
     });
     return promise;
   }
 
   _validateIndicatorSource(indicatorSource: IndicatorSourceModel): AlertMessageModel {
+    console.log(indicatorSource.name)
     this.alertMessage = indicatorSource.validate();
+    console.log(this.alertMessage)
     return this.alertMessage;
   }
 

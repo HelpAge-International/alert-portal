@@ -9,6 +9,8 @@ import {AgencyService} from "../../../services/agency-service.service";
 import {FirebaseObjectObservable} from "angularfire2";
 import {NetworkAgencyModel} from "../../../network-admin/network-agencies/network-agency.model";
 import {UserService} from "../../../services/user.service";
+import {ModelNetwork} from "../../../model/network.model";
+import {ModelUserPublic} from "../../../model/user-public.model";
 
 
 @Component({
@@ -36,6 +38,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   private removeAgencyObj: FirebaseObjectObservable<any>;
   private showLoader: boolean;
   private networkCountryCode: number | any;
+  private agencyCountryAdminMap = new Map<String, ModelUserPublic>()
 
 
   constructor(private pageControl: PageControlService,
@@ -51,7 +54,6 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
       this.showLoader = true;
 
 
-
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
@@ -62,6 +64,9 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
             .takeUntil(this.ngUnsubscribe)
             .subscribe(network => {
               this.networkCountryCode = network.countryCode
+              if (!network.isGlobal) {
+                this.getCountries(network)
+              }
             })
 
           //fetch network agencies
@@ -109,6 +114,30 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
     });
   }
 
+  private getCountries(network: ModelNetwork) {
+    console.log("is local, need to get country")
+    console.log(network)
+    if (network.agencies) {
+      Object.keys(network.agencies).map(key => {
+        let temp = {}
+        temp['agencyId'] = key
+        temp['countryId'] = network.agencies[key]['countryCode']
+        return temp
+      })
+        .forEach(obj => {
+          this.userService.getCountryDetail(obj['countryId'], obj['agencyId'])
+            .flatMap(country => {
+              return this.userService.getUser(country.adminId)
+            })
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryAdmin => {
+              this.agencyCountryAdminMap.set(obj['agencyId'], countryAdmin)
+              console.log(this.agencyCountryAdminMap)
+            })
+        })
+    }
+  }
+
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -140,7 +169,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
 
     this.networkService.getCountryCodeForAgency(agencyId, this.networkCountryCode)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe( countryCode => {
+      .subscribe(countryCode => {
         this.networkService.resendEmail(this.networkId, agencyId, countryCode);
 
       })
@@ -148,7 +177,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
 
   }
 
-  navigateToAddAgency(){
+  navigateToAddAgency() {
     this.router.navigateByUrl("/network/local-network-administration/agencies/invite");
   }
 

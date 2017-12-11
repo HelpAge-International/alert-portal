@@ -12,10 +12,57 @@ const mailTransport = nodemailer.createTransport(
   `smtps://${gmailEmail}:${gmailPassword}@smtp.gmail.com`);
 
 const APP_NAME = 'ALERT';
-const WEEK = 0;
-const MONTH = 1;
-const YEAR = 2;
 const TEMP_PASS = "testtest";
+
+const ALERT_GREEN = 0
+const ALERT_AMBER = 1
+const ALERT_RED = 2
+
+const ALERT_LEVEL_CHANGED = 0
+const RED_ALERT_REQUEST = 1
+const UPDATE_HAZARD = 2
+const ACTION_EXPIRED = 3
+const PLAN_EXPIRED = 4
+const PLAN_REJECTED = 5
+
+const WAITING_RESPONSE = 0
+const APPROVED = 1
+const REJECTED = 2
+
+const PLAN_IN_PROGRESS = 0
+const PLAN_WAITINGAPPROVAL = 1
+const PLAN_APPROVED = 2
+const PLAN_NEEDREVIEWING = 3
+
+const HAZARDS = {
+  "0": "Cold Wave",
+  "1": "Conflict",
+  "2": "Cyclone",
+  "3": "Drought",
+  "4": "Earthquake",
+  "5": "Epidemic",
+  "6": "Fire",
+  "7": "Flash Flood",
+  "8": "Flood",
+  "9": "Heat Wave",
+  "10": "Heavy Rain",
+  "11": "Humanitarian Access",
+  "12": "Insect Infestation",
+  "13": "Landslide",
+  "14": "Locust Infestation",
+  "15": "Mudslide",
+  "16": "Population Displacement",
+  "17": "Population Return",
+  "18": "Snow Avalanche",
+  "19": "Snowfall",
+  "20": "Storm",
+  "21": "Storm Surge",
+  "22": "Technological Disaster",
+  "23": "Tornado",
+  "24": "Tsunami",
+  "25": "Violent Wind",
+  "26": "Volcano"
+}
 
 exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
 
@@ -52,6 +99,19 @@ function sendWelcomeEmail(email, userPassword) {
                       \n Your ALERT team `;
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('New welcome email sent to:', email);
+  });
+}
+
+//send general email
+function sendEmail(email, title, content) {
+  const mailOptions = {
+    from: '"ALERT" <noreply@firebase.com>',
+    to: email
+  };
+  mailOptions.subject = title
+  mailOptions.text = content
+  return mailTransport.sendMail(mailOptions).then(() => {
+    console.log('normal email sent to:', email);
   });
 }
 
@@ -2803,7 +2863,9 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
 
       admin.database().ref('/sand/network/' + networkId).once("value", (data) => {
 
-        // if (data.val().isGlobal) {
+        let network = data.val();
+
+        if (data.val().isGlobal) {
           console.log('isGlobal')
           admin.database().ref('/sand/agency/' + agencyId + '/adminId').once("value", (data) => {
             let adminId = data.val();
@@ -2813,14 +2875,50 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
               let email = user.val().email;
               console.log("admin email: " + email);
 
-              admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
-                let network = networkSnap.val();
+              let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+              let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+              admin.database().ref('sand/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT Network" <noreply@firebase.com>',
+                  to: email
+                };
+
+                mailOptions.subject = `You have been invited to join a network`;
+                mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                          \n Thanks
+                          \n Your ALERT team `;
+                console.log('we are executing code here');
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
+              });
+            });
+          });
+        } else {
+          console.log('isNotGlobal')
+          admin.database().ref('/sand/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
+            let countryOfficeCode = data.val().countryCode;
+            admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
+              let adminId = data.val();
+              console.log("admin id: " + adminId);
+
+              admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
+                let email = user.val().email;
+                console.log("admin email: " + email);
 
                 let expiry = moment.utc().add(1, 'weeks').valueOf();
 
                 let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-                admin.database().ref('sand/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                admin.database().ref('sand/networkAgencyValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
                   console.log('success validationToken');
                   const mailOptions = {
                     from: '"ALERT Network" <noreply@firebase.com>',
@@ -2831,7 +2929,7 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
                   mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
-                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
                           \n Thanks
                           \n Your ALERT team `;
                   console.log('we are executing code here');
@@ -2841,70 +2939,19 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
                 }, error => {
                   console.log(error.message);
                 });
-
               });
-
             });
-          });
-        // }else{
-        //   console.log('isNotGlobal')
-        //   admin.database().ref('/sand/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
-        //     let countryOfficeCode = data.val().countryCode;
-        //     admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
-        //       let adminId = data.val();
-        //       console.log("admin id: " + adminId);
-        //
-        //       admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
-        //         let email = user.val().email;
-        //         console.log("admin email: " + email);
-        //
-        //         admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
-        //           let network = networkSnap.val();
-        //
-        //           let expiry = moment.utc().add(1, 'weeks').valueOf();
-        //
-        //           let validationToken = {'token': uuidv4(), 'expiry': expiry};
-        //
-        //           admin.database().ref('sand/networkCountryValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
-        //             console.log('success validationToken');
-        //             const mailOptions = {
-        //               from: '"ALERT Network" <noreply@firebase.com>',
-        //               to: email
-        //             };
-        //
-        //             mailOptions.subject = `You have been invited to join a network`;
-        //             mailOptions.text = `Hello,
-        //                   \nYour Agency was added into ${network.name} network!.
-        //                   \n To confirm, please click on the link below
-        //                   \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-        //                   \n Thanks
-        //                   \n Your ALERT team `;
-        //             console.log('we are executing code here');
-        //             return mailTransport.sendMail(mailOptions).then(() => {
-        //               console.log('New welcome email sent to:', email);
-        //             });
-        //           }, error => {
-        //             console.log(error.message);
-        //           });
-        //
-        //         });
-        //
-        //       });
-        //     });
-        //
-        //   })
-        // }
+
+          })
+        }
       })
     }
   });
-
-
 
 exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/network/{networkId}/agencies/{agencyId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
-    console.log('test yeyegkbyjlvyjh')
 
     if (!preData && currData) {
       console.log("Network agency added");
@@ -2914,9 +2961,10 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
 
       admin.database().ref('/test/network/' + networkId).once("value", (data) => {
 
-        // if (data.val().isGlobal) {
-          console.log('isGlobal')
+        let network = data.val();
 
+        if (data.val().isGlobal) {
+          console.log('isGlobal')
           admin.database().ref('/test/agency/' + agencyId + '/adminId').once("value", (data) => {
             let adminId = data.val();
             console.log("admin id: " + adminId);
@@ -2925,14 +2973,50 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
               let email = user.val().email;
               console.log("admin email: " + email);
 
-              admin.database().ref('/test/network/' + networkId).once("value", networkSnap => {
-                let network = networkSnap.val();
+              let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+              let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+              admin.database().ref('test/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT Network" <noreply@firebase.com>',
+                  to: email
+                };
+
+                mailOptions.subject = `You have been invited to join a network`;
+                mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                          \n Thanks
+                          \n Your ALERT team `;
+                console.log('we are executing code here');
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
+              });
+            });
+          });
+        } else {
+          console.log('isNotGlobal')
+          admin.database().ref('/test/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
+            let countryOfficeCode = data.val().countryCode;
+            admin.database().ref('/test/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
+              let adminId = data.val();
+              console.log("admin id: " + adminId);
+
+              admin.database().ref('/test/userPublic/' + adminId).once("value", (user) => {
+                let email = user.val().email;
+                console.log("admin email: " + email);
 
                 let expiry = moment.utc().add(1, 'weeks').valueOf();
 
                 let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-                admin.database().ref('test/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                admin.database().ref('test/networkAgencyValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
                   console.log('success validationToken');
                   const mailOptions = {
                     from: '"ALERT Network" <noreply@firebase.com>',
@@ -2941,75 +3025,26 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
 
                   mailOptions.subject = `You have been invited to join a network`;
                   mailOptions.text = `Hello,
-                              \nYour Agency was added into ${network.name} network!.
-                              \n To confirm, please click on the link below
-                              \n https://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                              \n Thanks
-                              \n Your ALERT team `;
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
+                          \n Thanks
+                          \n Your ALERT team `;
+                  console.log('we are executing code here');
                   return mailTransport.sendMail(mailOptions).then(() => {
                     console.log('New welcome email sent to:', email);
                   });
                 }, error => {
                   console.log(error.message);
                 });
-
               });
-
             });
-          });
-        // }else{
-        //   console.log('isNotGlobal')
-        //
-        //   admin.database().ref('/test/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
-        //     let countryOfficeCode = data.val().countryCode;
-        //
-        //     admin.database().ref('/test/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
-        //       let adminId = data.val();
-        //       console.log("admin id: " + adminId);
-        //
-        //       admin.database().ref('/test/userPublic/' + adminId).once("value", (user) => {
-        //         let email = user.val().email;
-        //         console.log("admin email: " + email);
-        //
-        //         admin.database().ref('/test/network/' + networkId).once("value", networkSnap => {
-        //           let network = networkSnap.val();
-        //
-        //           let expiry = moment.utc().add(1, 'weeks').valueOf();
-        //
-        //           let validationToken = {'token': uuidv4(), 'expiry': expiry};
-        //
-        //           admin.database().ref('test/networkCountryValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
-        //             console.log('success validationToken');
-        //             const mailOptions = {
-        //               from: '"ALERT Network" <noreply@firebase.com>',
-        //               to: email
-        //             };
-        //
-        //             mailOptions.subject = `You have been invited to join a network`;
-        //             mailOptions.text = `Hello,
-        //                       \nYour Agency was added into ${network.name} network!.
-        //                       \n To confirm, please click on the link below
-        //                       \n https://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-        //                       \n Thanks
-        //                       \n Your ALERT team `;
-        //             return mailTransport.sendMail(mailOptions).then(() => {
-        //               console.log('New welcome email sent to:', email);
-        //             });
-        //           }, error => {
-        //             console.log(error.message);
-        //           });
-        //
-        //         });
-        //
-        //       });
-        //     });
-        //   })
-        //
-        // }
+
+          })
+        }
       })
     }
   });
-
 
 exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/network/{networkId}/agencies/{agencyId}')
   .onWrite(event => {
@@ -3024,9 +3059,10 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
 
       admin.database().ref('/uat/network/' + networkId).once("value", (data) => {
 
-        // if (data.val().isGlobal) {
-          console.log('isGlobal')
+        let network = data.val();
 
+        if (data.val().isGlobal) {
+          console.log('isGlobal')
           admin.database().ref('/uat/agency/' + agencyId + '/adminId').once("value", (data) => {
             let adminId = data.val();
             console.log("admin id: " + adminId);
@@ -3035,14 +3071,50 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
               let email = user.val().email;
               console.log("admin email: " + email);
 
-              admin.database().ref('/uat/network/' + networkId).once("value", networkSnap => {
-                let network = networkSnap.val();
+              let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+              let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+              admin.database().ref('uat/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT Network" <noreply@firebase.com>',
+                  to: email
+                };
+
+                mailOptions.subject = `You have been invited to join a network`;
+                mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
+                          \n Thanks
+                          \n Your ALERT team `;
+                console.log('we are executing code here');
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
+              });
+            });
+          });
+        } else {
+          console.log('isNotGlobal')
+          admin.database().ref('/uat/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
+            let countryOfficeCode = data.val().countryCode;
+            admin.database().ref('/uat/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
+              let adminId = data.val();
+              console.log("admin id: " + adminId);
+
+              admin.database().ref('/uat/userPublic/' + adminId).once("value", (user) => {
+                let email = user.val().email;
+                console.log("admin email: " + email);
 
                 let expiry = moment.utc().add(1, 'weeks').valueOf();
 
                 let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-                admin.database().ref('uat/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                admin.database().ref('uat/networkAgencyValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
                   console.log('success validationToken');
                   const mailOptions = {
                     from: '"ALERT Network" <noreply@firebase.com>',
@@ -3051,125 +3123,24 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
 
                   mailOptions.subject = `You have been invited to join a network`;
                   mailOptions.text = `Hello,
-                              \nYour Agency was added into ${network.name} network!.
-                              \n To confirm, please click on the link below
-                              \n https://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                              \n Thanks
-                              \n Your ALERT team `;
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
+                          \n Thanks
+                          \n Your ALERT team `;
+                  console.log('we are executing code here');
                   return mailTransport.sendMail(mailOptions).then(() => {
                     console.log('New welcome email sent to:', email);
                   });
                 }, error => {
                   console.log(error.message);
                 });
-
               });
-
             });
-          });
-        // } else {
-        //   console.log('isNotGlobal')
-        //
-        //   admin.database().ref('/uat/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
-        //     let countryOfficeCode = data.val().countryCode;
-        //
-        //     admin.database().ref('/uat/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
-        //       let adminId = data.val();
-        //       console.log("admin id: " + adminId);
-        //
-        //       admin.database().ref('/uat/userPublic/' + adminId).once("value", (user) => {
-        //         let email = user.val().email;
-        //         console.log("admin email: " + email);
-        //
-        //         admin.database().ref('/uat/network/' + networkId).once("value", networkSnap => {
-        //           let network = networkSnap.val();
-        //
-        //           let expiry = moment.utc().add(1, 'weeks').valueOf();
-        //
-        //           let validationToken = {'token': uuidv4(), 'expiry': expiry};
-        //
-        //           admin.database().ref('uat/networkCountryValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
-        //             console.log('success validationToken');
-        //             const mailOptions = {
-        //               from: '"ALERT Network" <noreply@firebase.com>',
-        //               to: email
-        //             };
-        //
-        //             mailOptions.subject = `You have been invited to join a network`;
-        //             mailOptions.text = `Hello,
-        //                         \nYour Agency was added into ${network.name} network!.
-        //                         \n To confirm, please click on the link below
-        //                         \n https://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-        //                         \n Thanks
-        //                         \n Your ALERT team `;
-        //             return mailTransport.sendMail(mailOptions).then(() => {
-        //               console.log('New welcome email sent to:', email);
-        //             });
-        //           }, error => {
-        //             console.log(error.message);
-        //           });
-        //
-        //         });
-        //
-        //       });
-        //     });
-        //   })
-        // }
+
+          })
+        }
       })
-    }
-  });
-
-exports.sendNetworkAgencyValidationEmail_UAT_2 = functions.database.ref('/uat-2/network/{networkId}/agencies/{agencyId}')
-  .onWrite(event => {
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-
-    if (!preData && currData) {
-      console.log("Network agency added");
-
-      let networkId = event.params['networkId'];
-      let agencyId = event.params['agencyId'];
-
-      admin.database().ref('/uat-2/agency/' + agencyId + '/adminId').once("value", (data) => {
-        let adminId = data.val();
-        console.log("admin id: " + adminId);
-
-        admin.database().ref('/uat-2/userPublic/' + adminId).once("value", (user) => {
-          let email = user.val().email;
-          console.log("admin email: " + email);
-
-          admin.database().ref('/uat-2/network/' + networkId).once("value", networkSnap => {
-            let network = networkSnap.val();
-
-            let expiry = moment.utc().add(1, 'weeks').valueOf();
-
-            let validationToken = {'token': uuidv4(), 'expiry': expiry};
-
-            admin.database().ref('uat-2/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT Network" <noreply@firebase.com>',
-                to: email
-              };
-
-              mailOptions.subject = `You have been invited to join a network`;
-              mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
-                          \n To confirm, please click on the link below
-                          \n https://uat-2.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
-              });
-            }, error => {
-              console.log(error.message);
-            });
-
-          });
-
-        });
-      });
     }
   });
 
@@ -3433,7 +3404,6 @@ exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/
             let network = networkSnap.val();
 
 
-
             let expiry = moment.utc().add(1, 'weeks').valueOf();
 
             let validationToken = {'token': uuidv4(), 'expiry': expiry};
@@ -3634,3 +3604,867 @@ exports.sendNetworkCountryAgencyValidationEmail_UAT_2 = functions.database.ref('
     }
   });
 /***********************************************************************************************************************/
+
+/********************************************SEND EMAIL TO EXTERNAL RECIPIENTS*****************************************************************/
+exports.sendEmailToExternalForAlertChange_SAND = functions.database.ref('/sand/alert/{countryId}/{alertId}/alertLevel')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData !== currData) {
+
+      let alertId = event.params['alertId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/sand/alert/' + countryId + '/' + alertId).once("value", (data) => {
+        let alert = data.val();
+        console.log(alert);
+        if (alert.hazardScenario !== -1) {
+          admin.database().ref('/sand/externalRecipient/' + countryId).once('value', (data) => {
+            console.log("external recipient: ")
+            console.log(data.val())
+            let exObj = data.val();
+            if (exObj) {
+              let recipients = Object.keys(exObj).map(key => {
+                return exObj[key]
+              })
+              for (let i = 0, len = recipients.length; i < len; i++) {
+                if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                  console.log("alert change!")
+                  console.log("email need to send to: " + recipients[i].email)
+                  let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
+                  let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
+                  sendEmail(recipients[i].email, title, content)
+                } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
+                  console.log("red alert request")
+                  console.log("email need to send to: " + recipients[i].email)
+                  let title = `Red alert for ${HAZARDS[alert.hazardScenario]} has been requested`
+                  let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has requested RED level update`
+                  sendEmail(recipients[i].email, title, content)
+                } else {
+                  console.log("ERROR, please check!")
+                }
+              }
+            }
+          })
+        } else {
+          admin.database().ref('/sand/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
+            let otherHazardName = data.val()
+            admin.database().ref('/sand/externalRecipient/' + countryId).once('value', (data) => {
+              let exObj = data.val();
+              if (exObj) {
+                let recipients = Object.keys(exObj).map(key => {
+                  return exObj[key]
+                })
+                for (let i = 0, len = recipients.length; i < len; i++) {
+                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                    console.log("alert change!")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `The alert level for ${otherHazardName} has been updated`
+                    let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
+                    sendEmail(recipients[i].email, title, content)
+                  } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
+                    console.log("red alert request")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `Red alert for ${otherHazardName} has been requested`
+                    let content = `The following alert: ${otherHazardName} has requested RED level update`
+                    sendEmail(recipients[i].email, title, content)
+                  } else {
+                    console.log("ERROR, please check!")
+                  }
+                }
+              }
+            })
+          })
+        }
+      })
+    } else {
+      console.log("error!!")
+    }
+  })
+
+exports.sendEmailToExternalForAlertChange_TEST = functions.database.ref('/test/alert/{countryId}/{alertId}/alertLevel')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData !== currData) {
+
+      let alertId = event.params['alertId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/test/alert/' + countryId + '/' + alertId).once("value", (data) => {
+        let alert = data.val();
+        console.log(alert);
+        if (alert.hazardScenario !== -1) {
+          admin.database().ref('/test/externalRecipient/' + countryId).once('value', (data) => {
+            console.log("external recipient: ")
+            console.log(data.val())
+            let exObj = data.val();
+            if (exObj) {
+              let recipients = Object.keys(exObj).map(key => {
+                return exObj[key]
+              })
+              for (let i = 0, len = recipients.length; i < len; i++) {
+                if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                  console.log("alert change!")
+                  console.log("email need to send to: " + recipients[i].email)
+                  let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
+                  let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
+                  sendEmail(recipients[i].email, title, content)
+                } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
+                  console.log("red alert request")
+                  console.log("email need to send to: " + recipients[i].email)
+                  let title = `Red alert for ${HAZARDS[alert.hazardScenario]} has been requested`
+                  let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has requested RED level update`
+                  sendEmail(recipients[i].email, title, content)
+                } else {
+                  console.log("ERROR, please check!")
+                }
+              }
+            }
+          })
+        } else {
+          admin.database().ref('/test/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
+            let otherHazardName = data.val()
+            admin.database().ref('/test/externalRecipient/' + countryId).once('value', (data) => {
+              let exObj = data.val();
+              if (exObj) {
+                let recipients = Object.keys(exObj).map(key => {
+                  return exObj[key]
+                })
+                for (let i = 0, len = recipients.length; i < len; i++) {
+                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                    console.log("alert change!")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `The alert level for ${otherHazardName} has been updated`
+                    let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
+                    sendEmail(recipients[i].email, title, content)
+                  } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
+                    console.log("red alert request")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `Red alert for ${otherHazardName} has been requested`
+                    let content = `The following alert: ${otherHazardName} has requested RED level update`
+                    sendEmail(recipients[i].email, title, content)
+                  } else {
+                    console.log("ERROR, please check!")
+                  }
+                }
+              }
+            })
+          })
+        }
+      })
+    } else {
+      console.log("error!!")
+    }
+  })
+
+exports.sendEmailToExternalForAlertChange_UAT = functions.database.ref('/uat/alert/{countryId}/{alertId}/alertLevel')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData !== currData) {
+
+      let alertId = event.params['alertId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/uat/alert/' + countryId + '/' + alertId).once("value", (data) => {
+        let alert = data.val();
+        console.log(alert);
+        if (alert.hazardScenario !== -1) {
+          admin.database().ref('/uat/externalRecipient/' + countryId).once('value', (data) => {
+            console.log("external recipient: ")
+            console.log(data.val())
+            let exObj = data.val();
+            if (exObj) {
+              let recipients = Object.keys(exObj).map(key => {
+                return exObj[key]
+              })
+              for (let i = 0, len = recipients.length; i < len; i++) {
+                if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                  console.log("alert change!")
+                  console.log("email need to send to: " + recipients[i].email)
+                  let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
+                  let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
+                  sendEmail(recipients[i].email, title, content)
+                } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
+                  console.log("red alert request")
+                  console.log("email need to send to: " + recipients[i].email)
+                  let title = `Red alert for ${HAZARDS[alert.hazardScenario]} has been requested`
+                  let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has requested RED level update`
+                  sendEmail(recipients[i].email, title, content)
+                } else {
+                  console.log("ERROR, please check!")
+                }
+              }
+            }
+          })
+        } else {
+          admin.database().ref('/uat/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
+            let otherHazardName = data.val()
+            admin.database().ref('/uat/externalRecipient/' + countryId).once('value', (data) => {
+              let exObj = data.val();
+              if (exObj) {
+                let recipients = Object.keys(exObj).map(key => {
+                  return exObj[key]
+                })
+                for (let i = 0, len = recipients.length; i < len; i++) {
+                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                    console.log("alert change!")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `The alert level for ${otherHazardName} has been updated`
+                    let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
+                    sendEmail(recipients[i].email, title, content)
+                  } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
+                    console.log("red alert request")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `Red alert for ${otherHazardName} has been requested`
+                    let content = `The following alert: ${otherHazardName} has requested RED level update`
+                    sendEmail(recipients[i].email, title, content)
+                  } else {
+                    console.log("ERROR, please check!")
+                  }
+                }
+              }
+            })
+          })
+        }
+      })
+    } else {
+      console.log("error!!")
+    }
+  })
+
+exports.sendEmailToExternalForAlertChangeRed_SAND = functions.database.ref('/sand/alert/{countryId}/{alertId}/approval/countryDirector/{directorId}')
+  .onWrite(event => {
+
+    const currData = event.data.current.val();
+
+    if (currData === APPROVED) {
+      console.log("red alert approved");
+
+      let alertId = event.params['alertId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/sand/alert/' + countryId + '/' + alertId).once("value", (data) => {
+        let alert = data.val();
+        console.log(alert);
+        if (alert.hazardScenario !== -1) {
+          let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
+          let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated to RED ALERT`
+          admin.database().ref('/sand/externalRecipient/' + countryId).once('value', (data) => {
+            console.log("external recipient: ")
+            console.log(data.val())
+            let exObj = data.val();
+            if (exObj) {
+              let recipients = Object.keys(exObj).map(key => {
+                return exObj[key]
+              })
+              for (let i = 0, len = recipients.length; i < len; i++) {
+                if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                  console.log("alert change!")
+                  console.log("email need to send to: " + recipients[i].email)
+                  sendEmail(recipients[i].email, title, content)
+                } else {
+                  console.log("ERROR, please check!")
+                }
+              }
+            }
+          })
+        } else {
+          admin.database().ref('/sand/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
+            let otherHazardName = data.val()
+            admin.database().ref('/sand/externalRecipient/' + countryId).once('value', (data) => {
+              console.log("external recipient: ")
+              console.log(data.val())
+              let exObj = data.val();
+              if (exObj) {
+                let recipients = Object.keys(exObj).map(key => {
+                  return exObj[key]
+                })
+                for (let i = 0, len = recipients.length; i < len; i++) {
+                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                    console.log("alert change!")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `The alert level for ${otherHazardName} has been updated`
+                    let content = `The following alert: ${otherHazardName} has had its level updated to RED ALERT`
+                    sendEmail(recipients[i].email, title, content)
+                  } else {
+                    console.log("ERROR, please check!")
+                  }
+                }
+              }
+            })
+          })
+        }
+      })
+    } else {
+      console.log("error!!")
+    }
+  })
+
+exports.sendEmailToExternalForAlertChangeRed_TEST = functions.database.ref('/test/alert/{countryId}/{alertId}/approval/countryDirector/{directorId}')
+  .onWrite(event => {
+
+    const currData = event.data.current.val();
+
+    if (currData === APPROVED) {
+      console.log("red alert approved");
+
+      let alertId = event.params['alertId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/test/alert/' + countryId + '/' + alertId).once("value", (data) => {
+        let alert = data.val();
+        console.log(alert);
+        if (alert.hazardScenario !== -1) {
+          let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
+          let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated to RED ALERT`
+          admin.database().ref('/test/externalRecipient/' + countryId).once('value', (data) => {
+            console.log("external recipient: ")
+            console.log(data.val())
+            let exObj = data.val();
+            if (exObj) {
+              let recipients = Object.keys(exObj).map(key => {
+                return exObj[key]
+              })
+              for (let i = 0, len = recipients.length; i < len; i++) {
+                if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                  console.log("alert change!")
+                  console.log("email need to send to: " + recipients[i].email)
+                  sendEmail(recipients[i].email, title, content)
+                } else {
+                  console.log("ERROR, please check!")
+                }
+              }
+            }
+          })
+        } else {
+          admin.database().ref('/test/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
+            let otherHazardName = data.val()
+            admin.database().ref('/test/externalRecipient/' + countryId).once('value', (data) => {
+              console.log("external recipient: ")
+              console.log(data.val())
+              let exObj = data.val();
+              if (exObj) {
+                let recipients = Object.keys(exObj).map(key => {
+                  return exObj[key]
+                })
+                for (let i = 0, len = recipients.length; i < len; i++) {
+                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                    console.log("alert change!")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `The alert level for ${otherHazardName} has been updated`
+                    let content = `The following alert: ${otherHazardName} has had its level updated to RED ALERT`
+                    sendEmail(recipients[i].email, title, content)
+                  } else {
+                    console.log("ERROR, please check!")
+                  }
+                }
+              }
+            })
+          })
+        }
+      })
+    } else {
+      console.log("error!!")
+    }
+  })
+
+exports.sendEmailToExternalForAlertChangeRed_UAT = functions.database.ref('/uat/alert/{countryId}/{alertId}/approval/countryDirector/{directorId}')
+  .onWrite(event => {
+
+    const currData = event.data.current.val();
+
+    if (currData === APPROVED) {
+      console.log("red alert approved");
+
+      let alertId = event.params['alertId'];
+      let countryId = event.params['countryId'];
+
+      admin.database().ref('/uat/alert/' + countryId + '/' + alertId).once("value", (data) => {
+        let alert = data.val();
+        console.log(alert);
+        if (alert.hazardScenario !== -1) {
+          let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
+          let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated to RED ALERT`
+          admin.database().ref('/uat/externalRecipient/' + countryId).once('value', (data) => {
+            console.log("external recipient: ")
+            console.log(data.val())
+            let exObj = data.val();
+            if (exObj) {
+              let recipients = Object.keys(exObj).map(key => {
+                return exObj[key]
+              })
+              for (let i = 0, len = recipients.length; i < len; i++) {
+                if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                  console.log("alert change!")
+                  console.log("email need to send to: " + recipients[i].email)
+                  sendEmail(recipients[i].email, title, content)
+                } else {
+                  console.log("ERROR, please check!")
+                }
+              }
+            }
+          })
+        } else {
+          admin.database().ref('/uat/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
+            let otherHazardName = data.val()
+            admin.database().ref('/uat/externalRecipient/' + countryId).once('value', (data) => {
+              console.log("external recipient: ")
+              console.log(data.val())
+              let exObj = data.val();
+              if (exObj) {
+                let recipients = Object.keys(exObj).map(key => {
+                  return exObj[key]
+                })
+                for (let i = 0, len = recipients.length; i < len; i++) {
+                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                    console.log("alert change!")
+                    console.log("email need to send to: " + recipients[i].email)
+                    let title = `The alert level for ${otherHazardName} has been updated`
+                    let content = `The following alert: ${otherHazardName} has had its level updated to RED ALERT`
+                    sendEmail(recipients[i].email, title, content)
+                  } else {
+                    console.log("ERROR, please check!")
+                  }
+                }
+              }
+            })
+          })
+        }
+      })
+    } else {
+      console.log("error!!")
+    }
+  })
+
+exports.sendEmailToExternalForIndicatorUpdate_SAND = functions.database.ref('/sand/indicator/{hazardId}/{indicatorId}/triggerSelected')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData !== preData) {
+      console.log("indicator updated");
+
+      let hazardId = event.params['hazardId'];
+      let indicatorId = event.params['indicatorId'];
+
+      admin.database().ref('/sand/indicator/' + hazardId + '/' + indicatorId).once("value", (data) => {
+        let indicator = data.val();
+        if (indicator.hazardScenario['key'] === 'countryContext') {
+          console.log("send email to state indicator for country context was updated")
+          let title = `The indicator ${indicator.name} for Country Context has been updated`
+          let content = `The following indicator: ${indicator.name} for Country Context has been updated`
+          fetchUsersAndSendEmail('sand', hazardId, title, content, UPDATE_HAZARD)
+        } else {
+          console.log("fetch country id for hazard")
+          admin.database().ref('/sand/hazard').once("value", (data) => {
+            let filteredObjs = Object.keys(data.val()).map(key => {
+              let obj = data.val()[key];
+              obj['id'] = key
+              return obj
+            })
+              .filter(item => {
+                return item.hasOwnProperty(hazardId)
+              })
+
+            let countryId = filteredObjs[0]['id']
+            console.log("fetched country id: " + countryId)
+            if (indicator.hazardScenario.hazardScenario !== -1) {
+              let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              fetchUsersAndSendEmail('sand', countryId, title, content)
+            } else {
+              admin.database().ref('/sand/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
+                let otherHazardName = data.val()
+                let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
+                let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
+                fetchUsersAndSendEmail('sand', countryId, title, content, UPDATE_HAZARD)
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+
+exports.sendEmailToExternalForIndicatorUpdate_TEST = functions.database.ref('/test/indicator/{hazardId}/{indicatorId}/triggerSelected')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData !== preData) {
+      console.log("indicator updated");
+
+      let hazardId = event.params['hazardId'];
+      let indicatorId = event.params['indicatorId'];
+
+      admin.database().ref('/test/indicator/' + hazardId + '/' + indicatorId).once("value", (data) => {
+        let indicator = data.val();
+        if (indicator.hazardScenario['key'] === 'countryContext') {
+          console.log("send email to state indicator for country context was updated")
+          let title = `The indicator ${indicator.name} for Country Context has been updated`
+          let content = `The following indicator: ${indicator.name} for Country Context has been updated`
+          fetchUsersAndSendEmail('test', hazardId, title, content, UPDATE_HAZARD)
+        } else {
+          console.log("fetch country id for hazard")
+          admin.database().ref('/test/hazard').once("value", (data) => {
+            let filteredObjs = Object.keys(data.val()).map(key => {
+              let obj = data.val()[key];
+              obj['id'] = key
+              return obj
+            })
+              .filter(item => {
+                return item.hasOwnProperty(hazardId)
+              })
+
+            let countryId = filteredObjs[0]['id']
+            console.log("fetched country id: " + countryId)
+            if (indicator.hazardScenario.hazardScenario !== -1) {
+              let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              fetchUsersAndSendEmail('test', countryId, title, content)
+            } else {
+              admin.database().ref('/test/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
+                let otherHazardName = data.val()
+                let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
+                let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
+                fetchUsersAndSendEmail('test', countryId, title, content, UPDATE_HAZARD)
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+
+exports.sendEmailToExternalForIndicatorUpdate_UAT = functions.database.ref('/uat/indicator/{hazardId}/{indicatorId}/triggerSelected')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData !== preData) {
+      console.log("indicator updated");
+
+      let hazardId = event.params['hazardId'];
+      let indicatorId = event.params['indicatorId'];
+
+      admin.database().ref('/uat/indicator/' + hazardId + '/' + indicatorId).once("value", (data) => {
+        let indicator = data.val();
+        if (indicator.hazardScenario['key'] === 'countryContext') {
+          console.log("send email to state indicator for country context was updated")
+          let title = `The indicator ${indicator.name} for Country Context has been updated`
+          let content = `The following indicator: ${indicator.name} for Country Context has been updated`
+          fetchUsersAndSendEmail('uat', hazardId, title, content, UPDATE_HAZARD)
+        } else {
+          console.log("fetch country id for hazard")
+          admin.database().ref('/uat/hazard').once("value", (data) => {
+            let filteredObjs = Object.keys(data.val()).map(key => {
+              let obj = data.val()[key];
+              obj['id'] = key
+              return obj
+            })
+              .filter(item => {
+                return item.hasOwnProperty(hazardId)
+              })
+
+            let countryId = filteredObjs[0]['id']
+            console.log("fetched country id: " + countryId)
+            if (indicator.hazardScenario.hazardScenario !== -1) {
+              let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              fetchUsersAndSendEmail('uat', countryId, title, content)
+            } else {
+              admin.database().ref('/uat/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
+                let otherHazardName = data.val()
+                let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
+                let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
+                fetchUsersAndSendEmail('uat', countryId, title, content, UPDATE_HAZARD)
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+
+exports.sendEmailToExternalForPlanExpired_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/isActive')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && !currData) {
+
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      console.log("response plan was expired")
+      admin.database().ref('/sand/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        console.log(plan)
+        let title = `Plan ${plan.name} was expired`
+        let content = `The following plan: ${plan.name} was expired.`
+        fetchUsersAndSendEmail('sand', countryId, title, content, PLAN_EXPIRED);
+      })
+    }
+  })
+
+exports.sendEmailToExternalForPlanExpired_TEST = functions.database.ref('/test/responsePlan/{countryId}/{planId}/isActive')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && !currData) {
+
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      console.log("response plan was expired")
+      admin.database().ref('/test/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        console.log(plan)
+        let title = `Plan ${plan.name} was expired`
+        let content = `The following plan: ${plan.name} was expired.`
+        fetchUsersAndSendEmail('test', countryId, title, content, PLAN_EXPIRED);
+      })
+    }
+  })
+
+exports.sendEmailToExternalForPlanExpired_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/isActive')
+  .onWrite(event => {
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && !currData) {
+
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      console.log("response plan was expired")
+      admin.database().ref('/uat/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        console.log(plan)
+        let title = `Plan ${plan.name} was expired`
+        let content = `The following plan: ${plan.name} was expired.`
+        fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_EXPIRED);
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByCountryDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+    console.log(currData)
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by country director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/sand/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by country director.`
+        fetchUsersAndSendEmail('sand', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByCountryDirector_TEST = functions.database.ref('/test/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+    console.log(currData)
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by country director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/test/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by country director.`
+        fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByCountryDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+    console.log(currData)
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by country director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/uat/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by country director.`
+        fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByRegionDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by region director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/sand/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by region director.`
+        fetchUsersAndSendEmail('sand', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByRegionDirector_TEST = functions.database.ref('/test/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by region director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/test/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by region director.`
+        fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByRegionDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by region director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/uat/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by region director.`
+        fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByGlobalDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by global director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/sand/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by global director.`
+        fetchUsersAndSendEmail('sand', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByGlobalDirector_TEST = functions.database.ref('/test/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by global director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/test/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by global director.`
+        fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+exports.sendEmailPlanRejectedByGlobalDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (currData === PLAN_NEEDREVIEWING) {
+      console.log("plan rejected by global director")
+      let countryId = event.params['countryId'];
+      let planId = event.params['planId'];
+
+      admin.database().ref('/uat/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by global director.`
+        fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
+      })
+    }
+  })
+
+////private functions
+function fetchUsersAndSendEmail(node, countryId, title, content, setting) {
+  admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
+    let exObj = data.val();
+    if (exObj) {
+      let recipients = Object.keys(exObj).map(key => {
+        return exObj[key]
+      })
+      for (let i = 0, len = recipients.length; i < len; i++) {
+        if (recipients[i].notificationsSettings[setting]) {
+          sendEmail(recipients[i].email, title, content)
+        }
+      }
+    }
+  })
+}
+
+function getAlertName(level) {
+  if (level === ALERT_GREEN) {
+    return "GREEN ALERT"
+  } else if (level === ALERT_AMBER) {
+    return "AMBER ALERT"
+  } else if (level === ALERT_RED) {
+    return "RED ALERT"
+  }
+}
+
+/*********************************************************************************************************************************************/

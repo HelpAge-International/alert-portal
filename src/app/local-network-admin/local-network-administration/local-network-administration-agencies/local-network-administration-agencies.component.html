@@ -42,7 +42,7 @@
           </div>
           <p class="col-sm-4 margin-top-three">{{agency.name}}</p>
           <a href="#agencyAdminTooltipOne{{i}}" data-toggle="collapse" class="col-sm-4 margin-top-three"><img
-            class="margin-right-one" src="assets/images/icons/contact.svg" alt="">{{"NETWORK.VIEW_AGENCY_ADMIN_CONTACT_INFO" | translate}}</a>
+            class="margin-right-one" src="assets/images/icons/contact.svg" alt="">{{"VIEW_COUNTRY_ADMIN_CONTACT_INFO" | translate}}</a>
           <p class="col-sm-2 margin-top-three">{{agency.isApproved ? ('GLOBAL.ACTIVE' | translate) : ('NETWORK.INVITATION_SENT' | translate)}}
             <a *ngIf="!agency.isApproved" href="javascript:void(0)" (click)="resendEmail(agency.id)">&nbsp;{{"RESEND" | translate}}</a></p>
           <div class="col-sm-1 margin-top-two">
@@ -57,20 +57,20 @@
         <div class="Tooltip__bubble container-fluid network-agency info collapse" id="agencyAdminTooltipOne{{i}}"
              data-parent="#agencyAdminTooltipOne" aria-controls="agencyAdminTooltipOne">
           <div class="log_left p-3 row col-sm-12">
-            <h3 class="font-weight-bold">{{"NETWORK.AGENCY_ADMIN_CONTACT_INFO" | translate}}</h3>
+            <h3 class="font-weight-bold">{{"VIEW_COUNTRY_ADMIN_CONTACT_INFO" | translate}}</h3>
             <a href="#agencyAdminTooltipOne{{i}}" class="margin-left-five text-right col-sm-12" data-toggle="collapse">{{"GLOBAL.CLOSE" | translate}}</a>
           </div>
           <div class="row col-sm-10 no-padding">
             <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME" | translate}}</strong></p></div>
-            <div class="col-sm-4"><p>{{agency.adminName}}</p></div>
+            <div class="col-sm-4"><p>{{this.agencyCountryAdminMap.get(agency.id) ? (this.agencyCountryAdminMap.get(agency.id).firstName + " " + this.agencyCountryAdminMap.get(agency.id).lastName) : ""}}</p></div>
           </div>
           <div class="row col-sm-10 no-padding">
             <div class="col-sm-2 no-padding-right min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_PHONE" | translate}}</strong></p></div>
-            <div class="col-sm-4"><p>{{agency.adminPhone}}</p></div>
+            <div class="col-sm-4"><p>{{this.agencyCountryAdminMap.get(agency.id) ? this.agencyCountryAdminMap.get(agency.id).phone : ""}}</p></div>
           </div>
           <div class="row col-sm-10 no-padding">
             <div class="col-sm-2 min-width-contact"><p><strong>{{"COUNTRY_ADMIN.PROFILE.COORDINATION.CONTACT_EMAIL" | translate}}</strong></p></div>
-            <div class="col-sm-4"><p>{{agency.adminEmail}}</p></div>
+            <div class="col-sm-4"><p>{{this.agencyCountryAdminMap.get(agency.id) ? this.agencyCountryAdminMap.get(agency.id).email : ""}}</p></div>
           </div>
         </div>
         <!--Agency Admin Contact information Tooltip End-->
