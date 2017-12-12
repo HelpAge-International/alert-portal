@@ -478,7 +478,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                   if (hazard.hazardScenario != -1) {
                     hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
                   }
-                  this.getIndicators(hazard.id).subscribe((indicators: any) => {
+                  this.getIndicators(hazard.id).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
                     indicators.forEach((indicator, key) => {
 
 
