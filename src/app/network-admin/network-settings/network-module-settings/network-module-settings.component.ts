@@ -106,19 +106,6 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
             })
         })
       })
-    // this.userService.getAllCountryIdsForAgency(this.agencyId)
-    //   .first()
-    //   .subscribe(countryIds => {
-    //     countryIds.forEach(countryId => {
-    //       this.settingService.getPrivacySettingForCountry(countryId)
-    //         .first()
-    //         .subscribe((countryPrivacy: ModelAgencyPrivacy) => {
-    //
-    //           this.settingService.updateCountryPrivacy(countryId, module, countryPrivacy);
-    //
-    //         });
-    //     });
-    //   });
   }
 
 }
