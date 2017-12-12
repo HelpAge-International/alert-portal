@@ -72,6 +72,7 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyMap => {
               this.agencyCountryMap = agencyMap;
+              console.log(this.agencyCountryMap)
 
               //fetch network agencies
               this.networkService.getAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.agencyCountryMap)
@@ -141,6 +142,12 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   confirmRemove(agencyId) {
+    console.log(this.agencyCountryMap)
+    let countryId = this.agencyCountryMap.get(agencyId)
+    if (!countryId) {
+      this.alertMessage = new AlertMessageModel("Agency id not available!");
+      return
+    }
     if (this.leadAgencyId == agencyId) {
       this.alertMessage = new AlertMessageModel("DELETE_LEAD_AGENCY_ERROR");
     } else {
@@ -148,18 +155,19 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
       let validationPath = "/networkCountryAgencyValidation/" + agencyId;
       this.networkService.deleteNetworkField(path);
       this.networkService.deleteNetworkField(validationPath);
+      //delete reference in countryOffice node
+      let node = "/countryOffice/" + agencyId + "/" + countryId + "/networks/" + this.networkId
+      this.networkService.deleteNetworkField(node)
 
       // Dan's bug fix
-      this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryOffice => {
-          let nodeRemove = countryOffice[1].$key;
-          let countryOfficePath = "/countryOffice/" + agencyId + "/" + nodeRemove + "/networks/";
-          console.log(countryOfficePath, 'delete path');
-          this.networkService.deleteNetworks(countryOfficePath);
-        });
-
-
+      // this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe(countryOffice => {
+      //     let nodeRemove = countryOffice[1].$key;
+      //     let countryOfficePath = "/countryOffice/" + agencyId + "/" + nodeRemove + "/networks/";
+      //     console.log(countryOfficePath, 'delete path');
+      //     this.networkService.deleteNetworks(countryOfficePath);
+      //   });
     }
   }
 

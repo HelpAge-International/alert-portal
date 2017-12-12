@@ -70,7 +70,7 @@
             </div>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
-            <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+            <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="emptyLead()">{{"GLOBAL.CANCEL" | translate}}</a>
             <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
                     (click)="saveAgenciesAndLead()">{{"SAVE" | translate}}
             </button>
@@ -91,7 +91,7 @@
             </button>
           </div>
           <div class="modal-body text-center">
-            <p>{{"INVITE_AGENCY_CONTENT_NETWORK_COUNTRY" | translate}}:</p>
+            <p>{{"INVITE_AGENCY_CONTENT_NETWORK_COUNTRY" | translate}}</p>
             <p *ngFor="let agencyId of selectedAgencies" class="font-weight-bold">
               {{agencyNameMap.get(agencyId)}}</p>
             <p>{{"ARE_YOU_SURE_TO_CONTINUE" | translate}}?</p>

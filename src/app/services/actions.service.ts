@@ -215,8 +215,10 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
-          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          if (alert.approval['countryDirector']) {
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          }
           alertList.push(modelAlert);
         });
         return alertList;
@@ -267,7 +269,7 @@ export class ActionsService {
               if (affectedArea.affectedLevel1 > -1) {
                 obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
               }
-              if (affectedArea.affectedLevel2 > -1) {
+              if (affectedArea.affectedLevel2 > -1 && value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1]) {
                 obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
               }
               affectedAreasToDisplay.push(obj);

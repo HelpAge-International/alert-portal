@@ -133,12 +133,12 @@ export class NetworkService {
     let data = {};
     data["/network/" + networkId + "/leadAgencyId"] = leadAgencyId;
 
-      let item = {};
-      if (countryCode) {
-        item["countryCode"] = countryCode
-      }
-      item["isApproved"] = false;
-      data["/network/" + networkId + "/agencies/" + agencyId] = item;
+    let item = {};
+    if (countryCode) {
+      item["countryCode"] = countryCode
+    }
+    item["isApproved"] = false;
+    data["/network/" + networkId + "/agencies/" + agencyId] = item;
 
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
@@ -216,7 +216,7 @@ export class NetworkService {
 
   }
 
-  deleteNetworks(countryOfficePath){
+  deleteNetworks(countryOfficePath) {
     return this.af.database.list(Constants.APP_STATUS + countryOfficePath).remove();
   }
 
@@ -676,11 +676,13 @@ export class NetworkService {
       })
   }
 
-  updateAgenciesForNetworkCountry(networkId: string, networkCountryId: string, leadAgencyId: string, selectedAgencyCountryMap: Map<string, string>) {
+  updateAgenciesForNetworkCountry(networkId: string, networkCountryId: string, leadAgencyId: string, agencyCountryMap: Map<string, string>, selectedAgencyMap: Map<string, boolean>) {
     let data = {};
     data["/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId"] = leadAgencyId;
-    selectedAgencyCountryMap.forEach((v, k) => {
-      data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + v + "/" + k + "/isApproved"] = false;
+    selectedAgencyMap.forEach((v, k) => {
+      if (v) {
+        data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + agencyCountryMap.get(k) + "/isApproved"] = false;
+      }
     });
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
@@ -701,7 +703,7 @@ export class NetworkService {
             console.log(agency);
             let model = new NetworkAgencyModel();
             model.id = agency.$key;
-            model.isApproved = agencyCountryMap.get(agency.$key) && agency[agencyCountryMap.get(agency.$key)] ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : false;
+            model.isApproved = agency[agencyCountryMap.get(agency.$key)]["isApproved"]
             agencyModels.push(model);
           });
           return agencyModels;
@@ -891,8 +893,8 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountryAgencies(networkId, networkCountryId){
-    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+  getNetworkCountryAgencies(networkId, networkCountryId) {
+    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
 
   }
 

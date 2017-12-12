@@ -38,7 +38,7 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
   private leadAgencyId: string;
   private existingAgencyIds: string[];
   private showLoader: boolean;
-  private countryAgencyMap = new Map<string, string>();
+  private agencyCountryMap = new Map<string, string>();
   private agencyObjMap = new Map<string, any>();
   private networkModel: ModelNetwork;
 
@@ -87,7 +87,7 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
                           if (country) {
                             this.agencies.push(agencyObj);
                             this.agencyObjMap.set(agencyObj.id, agencyObj)
-                            this.countryAgencyMap.set(country.id, agencyObj.id);
+                            this.agencyCountryMap.set(agencyObj.id, country.id);
                           }
                         })
                     })
@@ -149,7 +149,7 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
       console.log(this.networkModel)
       if (this.agencies.filter(agency => {
           return agency.id === this.networkModel.leadAgencyId
-        }).length != 0) {
+        }).length != 0 && this.agencySelectionMap.get(this.networkModel.leadAgencyId)) {
         this.leadAgencyId = this.networkModel.leadAgencyId
       }
     } else {
@@ -157,9 +157,18 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
     }
   }
 
+  emptyLead() {
+    this.leadAgencyId = null
+  }
+
   saveAgenciesAndLead() {
+    if (!this.leadAgencyId || this.leadAgencyId == undefined) {
+      this.alertMessage = new AlertMessageModel("Lead agency cannot be empty!")
+      return
+    }
     console.log("save agencies and lead agency");
-    this.networkService.updateAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.leadAgencyId, this.countryAgencyMap).then(() => {
+    console.log(this.leadAgencyId)
+    this.networkService.updateAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.leadAgencyId, this.agencyCountryMap, this.agencySelectionMap).then(() => {
       this.router.navigateByUrl("/network-country/network-country-agencies");
     }).catch(rej => {
       this.alertMessage = new AlertMessageModel(rej.message);
