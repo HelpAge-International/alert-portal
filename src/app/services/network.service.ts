@@ -39,26 +39,6 @@ export class NetworkService {
     }
   }
 
-  // checkNetworkUserSelection(uid: string): Observable<any> {
-  //   return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/selectedNetwork")
-  //     .flatMap(networkId => {
-  //       if (networkId.$value) {
-  //         let data = {};
-  //         data["isNetworkAdmin"] = true;
-  //         data["networkId"] = networkId.$value;
-  //         return Observable.of(data);
-  //       } else {
-  //         return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/selectedNetwork")
-  //           .map(networkCountryId => {
-  //             let data = {};
-  //             data["isNetworkAdmin"] = false;
-  //             data["networkCountryId"] = networkCountryId.$value;
-  //             return Observable.of(data);
-  //           })
-  //       }
-  //     })
-  // }
-
   getNetworkUserType(uid) {
     return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid, {preserveSnapshot: true})
       .map(snap => {
@@ -79,14 +59,6 @@ export class NetworkService {
   getNetworkAdmin(uid) {
     return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid)
   }
-
-  //TODO ADD FOR NETWORK COUNTRY
-  // getNetworkDetailByUid(uid) {
-  //   return this.checkNetworkUserSelection(uid)
-  //     .flatMap(data => {
-  //       return data.isNetworkAdmin ? this.getNetworkDetail(data.networkId) : null;
-  //     })
-  // }
 
   getSelectedIdObj(uid: string) {
     return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
@@ -565,13 +537,13 @@ export class NetworkService {
     return this.af.database.list(Constants.APP_STATUS + "/module/" + networkId)
       .map(matrix => {
         let model = new NetworkModulesEnabledModel();
-        model.minimumPreparedness = matrix[0].status;
-        model.advancedPreparedness = matrix[1].status;
-        model.chsPreparedness = matrix[2].status;
-        model.riskMonitoring = matrix[3].status;
-        model.conflictIndicator = matrix[4].status;
-        model.networkOffice = matrix[5].status;
-        model.responsePlan = matrix[6].status;
+        model.minimumPreparedness = matrix[0].privacy;
+        model.advancedPreparedness = matrix[1].privacy;
+        model.chsPreparedness = matrix[2].privacy;
+        model.riskMonitoring = matrix[3].privacy;
+        model.conflictIndicator = matrix[4].privacy;
+        model.networkOffice = matrix[5].privacy;
+        model.responsePlan = matrix[6].privacy;
         return model;
       });
   }
@@ -829,7 +801,7 @@ export class NetworkService {
   getLocalNetworksWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
       .map(networks => {
-        var networkKeys = []
+        let networkKeys = []
         networks.forEach(network => {
           networkKeys.push(network.$key)
         })
@@ -971,6 +943,23 @@ export class NetworkService {
     update["/module/" + countryId + "/6/privacy"] = countryPrivacy.responsePlan;
 
     this.af.database.object(Constants.APP_STATUS).update(update);
+  }
+
+  getPrivacySettingForNetwork(networkId:string): Observable<NetworkPrivacyModel> {
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + networkId, {preserveSnapshot: true})
+      .map(snap => {
+        if (snap.val()) {
+          let privacy = new NetworkPrivacyModel();
+          privacy.mpa = snap.val()[0].privacy;
+          privacy.apa = snap.val()[1].privacy;
+          privacy.chs = snap.val()[2].privacy;
+          privacy.riskMonitoring = snap.val()[3].privacy;
+          privacy.conflictIndicators = snap.val()[4].privacy;
+          privacy.officeProfile = snap.val()[5].privacy;
+          privacy.responsePlan = snap.val()[6].privacy;
+          return privacy;
+        }
+      });
   }
 
 }

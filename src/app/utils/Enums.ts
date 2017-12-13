@@ -272,6 +272,16 @@ export enum ModuleName {
   ResponsePlanning = 5
 }
 
+export enum ModuleNameNetwork {
+  MinimumPreparednessActions = 0,
+  AdvancedPreparednessActions = 1,
+  CHSPreparednessActions = 2,
+  RiskMonitoring = 3,
+  ConflictIndicators = 4,
+  CountryOfficeProfile = 5,
+  ResponsePlanning = 6
+}
+
 
 export enum PermissionsAgency {
   MinimumPreparedness = 0,

@@ -58,6 +58,7 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((modules: ModuleSettingsModel[]) => {
           this.modules = modules;
+          console.log(this.modules)
           this.showLoader = false;
         });
     });

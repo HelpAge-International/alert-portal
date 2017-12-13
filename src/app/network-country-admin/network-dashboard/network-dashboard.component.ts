@@ -16,7 +16,7 @@ import {
   AlertStatus,
   ApprovalStatus,
   Countries,
-  DashboardType,
+  DashboardType, ModuleNameNetwork,
   UserType
 } from "../../utils/Enums";
 import {ModelAlert} from "../../model/alert.model";
@@ -30,6 +30,8 @@ import {
 import {ActionsService} from "../../services/actions.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {CommonUtils} from "../../utils/CommonUtils";
+import {SettingsService} from "../../services/settings.service";
+import {ModuleSettingsModel} from "../../model/module-settings.model";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -46,7 +48,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   //constants and enums
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private ApprovalStatus = ApprovalStatus;
-
+  private NETWORK_MODULE = ModuleNameNetwork
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -119,6 +121,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private moduleSettings: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
   private networkViewValues: {};
   private agencyCountryMap = new Map<string, string>();
+  private networkModules:ModuleSettingsModel[]
 
 
   constructor(private pageControl: PageControlService,
@@ -129,6 +132,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               private storageService: LocalStorageService,
               private actionService: ActionsService,
               private route: ActivatedRoute,
+              private settingService:SettingsService,
               private router: Router) {
   }
 
@@ -236,6 +240,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.networkService.getNetworkModuleMatrix(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.moduleSettings = matrix);
+
+    this.settingService.getCountryModulesSettings(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(modules => {
+        this.networkModules = modules
+      })
+
   }
 
   private initLocalViewAccess() {
@@ -467,7 +478,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         // console.log('Count ---- ' + this.responseType.length)
       });
 
-    //TODO update here to get all plan to approval from network
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
@@ -583,16 +593,16 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   shouldShow(level: number, action: any) {
-    if (level == ActionLevel.MPA && !this.moduleSettings.minimumPreparedness) {
+    if (level == ActionLevel.MPA && !(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.MinimumPreparednessActions].status))) {
       return false;
     }
-    if (level == ActionLevel.APA && (!this.moduleSettings.advancedPreparedness || !this.isRedAlert)) {
+    else if (level == ActionLevel.APA && (!(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.AdvancedPreparednessActions].status)) || !this.isRedAlert)) {
       return false;
     }
-    if (action == ActionType.chs && !this.moduleSettings.chsPreparedness) {
+    else if (action == ActionType.chs && !(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status))) {
       return false;
     }
-    return true;
+    else return true;
   }
 
   private getHazards(id) {

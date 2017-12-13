@@ -27,33 +27,37 @@
     </div>
 
     <div *ngFor="let module of modules; index as i">
-      <div class="row Line-row Small-spaced align-items-center">
+      <div class="row Line-row Small-spaced align-items-center" [hidden]="i >=7">
         <div class="col-lg-4 col-md-4 col-sm-12">{{MODULE_NAME[i] | translate}}</div>
 
         <div class="col-lg-5 col-md-5 col-sm-7">
           <label>
-            <div class="btn "
-                 [ngClass]="{'btn-primary': module.privacy == Privacy.Public, 'btn-outline-primary': module.privacy != Privacy.Public}"
-                 (click)="changePrivacy(i, Privacy.Public)">{{"GLOBAL.PUBLIC" | translate}}
-            </div>
+            <button class="btn "
+                    [ngClass]="{'btn-primary': module.privacy == Privacy.Public, 'btn-outline-primary': module.privacy != Privacy.Public}"
+                    [disabled]="checkDisable(i,0)"
+                    (click)="changePrivacy(i, Privacy.Public)">{{"GLOBAL.PUBLIC" | translate}}
+            </button>
           </label>
           <label>
-            <div class="btn "
-                 [ngClass]="{'btn-primary': module.privacy == Privacy.Private, 'btn-outline-primary': module.privacy != Privacy.Private}"
-                 (click)="changePrivacy(i, Privacy.Private)">{{"GLOBAL.PRIVATE" | translate}}
-            </div>
+            <button class="btn "
+                    [hidden]="true"
+                    [ngClass]="{'btn-primary': module.privacy == Privacy.Private, 'btn-outline-primary': module.privacy != Privacy.Private}"
+                    [disabled]="checkDisable(i,1)"
+                    (click)="changePrivacy(i, Privacy.Private)">{{"GLOBAL.PRIVATE" | translate}}
+            </button>
           </label>
           <label>
-            <div class="btn "
-                 [ngClass]="{'btn-primary': module.privacy == Privacy.Network, 'btn-outline-primary': module.privacy != Privacy.Network}"
-                 (click)="changePrivacy(i, Privacy.Network)">{{"GLOBAL.NETWORK" | translate}}
-            </div>
+            <button class="btn "
+                    [ngClass]="{'btn-primary': module.privacy == Privacy.Network, 'btn-outline-primary': module.privacy != Privacy.Network}"
+                    [disabled]="checkDisable(i,2)"
+                    (click)="changePrivacy(i, Privacy.Network)">{{"GLOBAL.NETWORK" | translate}}
+            </button>
           </label>
         </div>
 
         <div class="col-lg-3 col-md-3 col-sm-6">
-          <p *ngIf="module.status">{{ "GLOBAL.ENABLED" | translate }}</p>
-          <p *ngIf="!module.status">{{ "GLOBAL.DISABLED" | translate }}</p>
+          <p *ngIf="networkModules[i]?.status">{{ "GLOBAL.ENABLED" | translate }}</p>
+          <p *ngIf="!networkModules[i]?.status">{{ "GLOBAL.DISABLED" | translate }}</p>
         </div>
 
       </div>

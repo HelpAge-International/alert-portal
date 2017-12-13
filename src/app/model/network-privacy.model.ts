@@ -1,11 +1,13 @@
+import {Privacy} from "../utils/Enums";
+
 export class NetworkPrivacyModel {
-  public mpa:number;
-  public apa:number;
-  public chs:number;
-  public riskMonitoring:number;
-  public conflictIndicators:number
-  public officeProfile:number;
-  public responsePlan:number;
+  public mpa:number = Privacy.Private;
+  public apa:number = Privacy.Private;
+  public chs:number = Privacy.Private;
+  public riskMonitoring:number = Privacy.Private;
+  public conflictIndicators:number = Privacy.Private
+  public officeProfile:number = Privacy.Private;
+  public responsePlan:number = Privacy.Private;
 
   public mapObject(item:any) {
     this.mpa = item[0].privacy;
