@@ -7,32 +7,32 @@
       <a
         [routerLink]="networkViewModel ? ['/network/local-network-dashboard', networkViewModel] : '/network/local-network-dashboard'">Home</a>
     </li>
-    <li class="" routerLinkActive="active">
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.RiskMonitoring]?.status" routerLinkActive="active">
       <a
         [routerLink]="networkViewModel ? ['/network/local-network-risk-monitoring', networkViewModel] : '/network/local-network-risk-monitoring'">Risk
         Monitoring</a>
     </li>
-    <li class="" routerLinkActive="active">
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status &&  !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" routerLinkActive="active">
       <div class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
            aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
         <div class="dropdown-menu">
-          <a [hidden]="permMinimumPreparedness" class="dropdown-item"
+          <a [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status" class="dropdown-item"
              [routerLink]="networkViewModel ? ['/network/local-network-preparedness-mpa', networkViewModel] : '/network/local-network-preparedness-mpa'">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA"
             | translate}}</a>
-          <a [hidden]="permAdvancedPreparedness" class="dropdown-item"
+          <a [hidden]="networkModules && !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" class="dropdown-item"
              [routerLink]="networkViewModel ? ['/network/local-network-preparedness-apa', networkViewModel] : '/network/local-network-preparedness-apa'">{{"ADVANCED_PREPAREDNESS"
             | translate}}</a>
         </div>
       </div>
     </li>
 
-    <li class="" routerLinkActive="active">
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.ResponsePlanning]?.status" routerLinkActive="active">
       <a
         [routerLink]="networkViewModel ? ['/network/local-network-plans', networkViewModel] : '/network/local-network-plans'">Plans</a>
     </li>
 
-    <li class="" routerLinkActive="active">
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.CountryOfficeProfile]?.status" routerLinkActive="active">
       <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Network
         Office Profile</a>
       <div class="dropdown-menu">

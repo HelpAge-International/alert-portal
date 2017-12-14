@@ -95,8 +95,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
               private af: AngularFire,
               private router: Router,
               private settingService: SettingsService,
-              private storageService: LocalStorageService,
-              private userService: UserService) {
+              private storageService: LocalStorageService) {
     this.Math = Math;
     this.userPermissions = new NetworkModulesEnabledModel();
   }
@@ -271,6 +270,14 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
     this.networkService.getNetworkModuleMatrix(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.userPermissions = matrix);
+
+    //init module status
+    this.settingService.getCountryModulesSettings(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(modules => {
+        console.log(modules)
+        this.networkModules = modules
+      })
 
   }
 
