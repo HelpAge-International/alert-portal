@@ -162,6 +162,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+
     this.route.params.subscribe((params: Params) => {
       if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
         this.isViewing = params["isViewing"];
@@ -178,8 +180,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       if (params['isCHS']) {
         this.filterType = 0;
       }
-      console.log(this.isViewing)
-      console.log(this.isLocalNetworkAdmin)
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalNetworkViewAccess() : this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
@@ -407,6 +407,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       });
   }
 
+
   /**
    * Initialisation method for the staff under the country office
    */
@@ -452,6 +453,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODO: Check what's happening in this function below
   public saveAssignedUser() {
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
@@ -468,7 +470,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
             notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
             console.log(notification.content);
-
+            console.log(task, 'dan checking');
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
             });

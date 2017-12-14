@@ -787,6 +787,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
 
 
+
           this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
           this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
           this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
@@ -831,7 +832,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.actionService.getActionsDueInWeek(networkId, this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(actions => {
-
+          console.log('in subscribe for actions');
           // Display APA only if there is a red alert
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
 

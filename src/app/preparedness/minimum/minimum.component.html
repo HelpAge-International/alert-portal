@@ -184,7 +184,7 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
+                          {{"DUE_ON" | translate}}<strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
                           ''yy")
                           : '-'}}</strong>
                         </div>
