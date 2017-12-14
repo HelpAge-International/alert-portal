@@ -121,7 +121,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private moduleSettings: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
   private networkViewValues: {};
   private agencyCountryMap = new Map<string, string>();
-  private networkModules:ModuleSettingsModel[]
+  private networkModules: ModuleSettingsModel[]
 
 
   constructor(private pageControl: PageControlService,
@@ -132,7 +132,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               private storageService: LocalStorageService,
               private actionService: ActionsService,
               private route: ActivatedRoute,
-              private settingService:SettingsService,
+              private settingService: SettingsService,
               private router: Router) {
   }
 
@@ -613,47 +613,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         list.forEach(hazard => {
-          if (hazard.hazardScenario == -1) {
-            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
-              .first()
-              .subscribe(nameObj => {
-                hazard.otherName = nameObj.name;
-                this.hazards.push(hazard);
-              });
-          } else {
-            if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
-              this.hazards.push(hazard);
-              this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(object => {
-                  if (object) {
-                    this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
-                  }
-                });
-            } else {
-              this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(object => {
-                  if (object) {
-                    let key = this.getHazardIdIfExist(hazard, this.hazards)
-                    this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
-                  }
-                });
-            }
-          }
-        });
-      })
-
-    //get hazard and indicator for all normal country in network
-    this.getHazardsForCountriesInNetwork();
-  }
-
-  private getHazardsForCountriesInNetwork() {
-    CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
-      this.af.database.list(Constants.APP_STATUS + '/hazard/' + countryId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(list => {
-          list.forEach(hazard => {
+          if (hazard.isActive) {
             if (hazard.hazardScenario == -1) {
               this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
                 .first()
@@ -676,11 +636,55 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(object => {
                     if (object) {
-
                       let key = this.getHazardIdIfExist(hazard, this.hazards)
                       this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
                     }
                   });
+              }
+            }
+          }
+        });
+      })
+
+    //get hazard and indicator for all normal country in network
+    this.getHazardsForCountriesInNetwork();
+  }
+
+  private getHazardsForCountriesInNetwork() {
+    CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
+      this.af.database.list(Constants.APP_STATUS + '/hazard/' + countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(list => {
+          list.forEach(hazard => {
+            if (hazard.isActive) {
+              if (hazard.hazardScenario == -1) {
+                this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
+                  .first()
+                  .subscribe(nameObj => {
+                    hazard.otherName = nameObj.name;
+                    this.hazards.push(hazard);
+                  });
+              } else {
+                if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
+                  this.hazards.push(hazard);
+                  this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(object => {
+                      if (object) {
+                        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                      }
+                    });
+                } else {
+                  this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(object => {
+                      if (object) {
+
+                        let key = this.getHazardIdIfExist(hazard, this.hazards)
+                        this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                      }
+                    });
+                }
               }
             }
           });

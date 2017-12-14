@@ -585,17 +585,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.hazards = [];
         let tempList = [];
         list.forEach(hazard => {
-          if (hazard.hazardScenario == -1) {
-            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
-              .first()
-              .subscribe(nameObj => {
-                hazard.otherName = nameObj.name;
-                this.hazards.push(hazard);
-              });
-          } else {
-            this.hazards.push(hazard);
+          if (hazard.isActive) {
+            if (hazard.hazardScenario == -1) {
+              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
+                .first()
+                .subscribe(nameObj => {
+                  hazard.otherName = nameObj.name;
+                  this.hazards.push(hazard);
+                });
+            } else {
+              this.hazards.push(hazard);
+            }
+            tempList.push(hazard);
           }
-          tempList.push(hazard);
         });
         return Observable.from(tempList)
       })

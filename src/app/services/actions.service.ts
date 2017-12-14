@@ -82,7 +82,7 @@ export class ActionsService {
 
     let countryIndicators = this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
       .flatMap(hazards => {
-        return Observable.from(hazards.map(hazard => hazard.$key));
+        return Observable.from(hazards.filter(hazard => hazard.isActive).map(hazard => hazard.$key));
       })
       .flatMap(hazardId => {
         return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardId, {
