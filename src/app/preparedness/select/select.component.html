@@ -1,10 +1,19 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
+
+<ng-container *ngIf="!isLocalAgency">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</ng-container>
+
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/preparedness/minimum">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
+    <div class="Back--button"  [routerLink]="[isLocalAgency ? '/local-agency/preparedness/minimum' :'/preparedness/minimum']">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
     <div class="Header-title__wrap">
       <h1>{{"PREPAREDNESS.SELECT_GENERIC_ACTION" | translate}}</h1>
       <tooltip
@@ -14,7 +23,7 @@
       <button type="button" class="btn btn-primary" [disabled]="!actionSelectedID ? true : false"
               (click)="continueEvent()">{{"GLOBAL.CONTINUE" | translate}}
       </button>
-      <button type="button" class="btn btn-ghost" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}</button>
+      <button type="button" class="btn btn-ghost" [routerLink]="[isLocalAgency ? '/local-agency/preparedness/minimum' :'/preparedness/minimum']">{{"GLOBAL.CANCEL" | translate}}</button>
 
     </div>
     <div class="row align-items-center Filter-form System-admin--form-wrap">

@@ -419,6 +419,14 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
           "/messageRef/systemadmin/allagencyadminsgroup/" + agencyId];
   }
 
+  getAgencyLocalAdministratorNodes(agencyId: string)
+  {
+    return [
+      "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + agencyId,
+      "/messageRef/systemadmin/allusersgroup/" + agencyId,
+      "/messageRef/systemadmin/allagencyadminsgroup/" + agencyId];
+  }
+
   getCountryAdministratorNodes(agencyId: string, countryId: string, userId: string)
   {
     return [

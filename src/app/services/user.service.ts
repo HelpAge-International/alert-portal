@@ -573,6 +573,7 @@ export class UserService {
   }
 
   getSystemAdminId(userType: string, uid): Observable<string> {
+    console.log(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
       .map(systemIds => {
         if (systemIds.length > 0 && systemIds[0].$value) {

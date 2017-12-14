@@ -975,7 +975,10 @@ export class Constants {
     'countryUser',
     'administratorAgency',
     ,
-    'partnerUser'
+    'partnerUser',
+    ,
+    'administratorLocalAgency',
+    'localAgencyDirector'
   ];
 
   // Nodes List, used for saving Notes

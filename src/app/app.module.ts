@@ -304,6 +304,11 @@ import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-ris
 import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
 import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
 import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
+import { LocalAgencyMinimumPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-minimum-preparedness/local-agency-minimum-preparedness.component';
+import { LocalAgencyAdevancedPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-adevanced-preparedness/local-agency-adevanced-preparedness.component';
+import { LocalAgencyBudgetComponent } from './local-agency/local-agency-preparedness/local-agency-budget/local-agency-budget.component';
+import { LocalAgencySelectPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-select-preparedness/local-agency-select-preparedness.component';
+import { LocalAgencyCreateEditPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-create-edit-preparedness/local-agency-create-edit-preparedness.component';
 
 
 
@@ -604,7 +609,13 @@ const firebaseAuthConfig = {
     LocalAgencyCreateAlertComponent,
     LocalAgencyAdministrationStaffComponent,
     LocalAgencyAddEditStaffComponent,
-    LocalAgencyAddEditPartnerComponent
+    LocalAgencyAddEditPartnerComponent,
+    LocalAgencyMinimumPreparednessComponent,
+    LocalAgencyAdevancedPreparednessComponent,
+    LocalAgencyBudgetComponent,
+    LocalAgencySelectPreparednessComponent,
+    LocalAgencyCreateEditPreparednessComponent,
+
   ],
   imports: [
     BrowserModule,

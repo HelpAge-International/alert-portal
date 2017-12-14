@@ -214,6 +214,11 @@ import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-ris
 import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
 import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
 import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
+import { LocalAgencyMinimumPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-minimum-preparedness/local-agency-minimum-preparedness.component';
+import { LocalAgencyAdevancedPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-adevanced-preparedness/local-agency-adevanced-preparedness.component';
+import { LocalAgencyBudgetComponent } from './local-agency/local-agency-preparedness/local-agency-budget/local-agency-budget.component';
+import { LocalAgencySelectPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-select-preparedness/local-agency-select-preparedness.component';
+import { LocalAgencyCreateEditPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-create-edit-preparedness/local-agency-create-edit-preparedness.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -566,6 +571,8 @@ const routes: Routes = [
 
   /* Local Agency */
   {path: 'local-agency/dashboard', component: LocalAgencyDashboardComponent},
+  {path: 'local-agency/dashboard-update-alert-level', component: DashboardUpdateAlertLevelComponent},
+  {path: 'local-agency/dashboard-update-alert-level/:id/:agencyId', component: DashboardUpdateAlertLevelComponent},
   {path: 'local-agency/risk-monitoring', component: LocalAgencyRiskMonitoringComponent},
   {path: 'local-agency/risk-monitoring/add-hazard', component: LocalAgencyAddHazardComponent},
   {path: 'local-agency/risk-monitoring/add-indicator/:hazardID/:indicatorID', component: LocalAgencyAddIndicatorComponent},
@@ -575,7 +582,14 @@ const routes: Routes = [
   {path: 'local-agency/agency-staff/add-edit-staff', component: LocalAgencyAddEditStaffComponent},
   {path: 'local-agency/agency-staff/add-edit-partner', component: LocalAgencyAddEditPartnerComponent},
   {path: 'local-agency/settings/departments', component: DepartmentComponent},
-
+  {path: 'local-agency/preparedness/minimum/:agencyId', component: LocalAgencyMinimumPreparednessComponent},
+  {path: 'local-agency/preparedness/minimum', component: LocalAgencyMinimumPreparednessComponent},
+  {path: 'local-agency/preparedness/advanced/:agencyId', component: LocalAgencyAdevancedPreparednessComponent},
+  {path: 'local-agency/preparedness/advanced', component: LocalAgencyAdevancedPreparednessComponent},
+  {path: 'local-agency/preparedness/budget', component: LocalAgencyBudgetComponent},
+  {path: 'local-agency/preparedness/select', component: LocalAgencySelectPreparednessComponent},
+  {path: 'local-agency/preparedness/create-edit-preparedness', component: LocalAgencyCreateEditPreparednessComponent},
+  {path: 'local-agency/preparedness/create-edit-preparedness/:id', component: LocalAgencyCreateEditPreparednessComponent},
 
 
 

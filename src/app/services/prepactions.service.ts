@@ -137,7 +137,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfo(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
-                             countryId: string, agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
+                              countryId: string, agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -150,6 +150,22 @@ export class PrepActionService {
       }
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY, updated);
       this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY, updated);
+    });
+  }
+
+  public initActionsWithInfoLocalAgency(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
+                              agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
+    this.uid = uid;
+    this.ngUnsubscribe = ngUnsubscribe;
+    this.isMPA = isMPA;
+    this.agencyId = agencyId;
+    this.systemAdminId = systemId;
+    this.getDefaultClockSettings(af, this.agencyId, null, () => {
+      if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+        this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM, updated);
+      }
+      this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY, updated);
+      this.init(af, "action", this.agencyId, isMPA, PrepSourceTypes.AGENCY, updated);
     });
   }
 
@@ -274,6 +290,25 @@ export class PrepActionService {
       });
   }
 
+  public initOneActionLocalAgency(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, actionId: string, updated: (action: PreparednessAction) => void) {
+    this.ngUnsubscribe = ngUnsubscribe;
+    af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+      console.log(snap.val())
+        this.agencyId = snap.val().agencyId;
+        this.systemAdminId = "";
+        for (let x in snap.val().systemAdmin) {
+          this.systemAdminId = x;
+        }
+        this.getDefaultClockSettings(af, this.agencyId, this.countryId, () => {
+          this.initSpecific(af, "actionCHS", this.systemAdminId, PrepSourceTypes.SYSTEM, actionId, updated);
+          this.initSpecific(af, "actionMandated", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
+          this.initSpecific(af, "action", this.agencyId, PrepSourceTypes.AGENCY, actionId, updated);
+        });
+      });
+  }
+
   public initOneActionNetwork(af: AngularFire, ngUnsubscribe: Subject<void>, countryId: string, agencyId: string, systemId: string, actionId: string, updated: (action: PreparednessAction) => void) {
     this.ngUnsubscribe = ngUnsubscribe;
     this.getDefaultClockSettingsNetwork(af, agencyId, countryId, () => {
@@ -301,6 +336,7 @@ export class PrepActionService {
       af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
+        if(snap.val() != null){
           this.defaultClockValue = (+(snap.val().preparedness.value));
           this.defaultClockType = (+(snap.val().preparedness.durationType));
           console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
@@ -308,6 +344,8 @@ export class PrepActionService {
             defaultClockSettingsAquired();
             this.ranClockInitialiser = true;
           }
+        }
+
         });
     }else{
       af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})

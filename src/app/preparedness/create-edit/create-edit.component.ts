@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -90,6 +90,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private now: Date = new Date();
 
+  //Local Agency
+  @Input() isLocalAgency: boolean;
+
   constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute,
               private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService,
               private notificationService: NotificationService, private translate: TranslateService) {
@@ -138,16 +141,28 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           this.moduleAccess = isEnabled;
         });
 
-        PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, user.uid, userType, (isEnabled) => {
-          this.permissionsAreEnabled = isEnabled;
+        if(this.isLocalAgency){
           if (this.action.id != null) {
             this.showDueDate = true;
-            this.initFromExistingActionId(userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customMPA.Edit, userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customAPA.Edit);
+            this.initFromExistingActionIdLocalAgency(true, true);
           }
           else {
             this.action.isAllHazards = true;
           }
-        });
+        } else {
+          PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, user.uid, userType, (isEnabled) => {
+            this.permissionsAreEnabled = isEnabled;
+            if (this.action.id != null) {
+              this.showDueDate = true;
+              this.initFromExistingActionId(userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customMPA.Edit, userType == UserType.CountryAdmin ? true : this.permissionsAreEnabled.customAPA.Edit);
+            }
+            else {
+              this.action.isAllHazards = true;
+            }
+          });
+        }
+
+
 
         this.getHazards();
         this.initStaff();
@@ -169,10 +184,62 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.prepActionService.initOneAction(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
-          this.router.navigateByUrl("/preparedness/minimum");
+          this.router.navigateByUrl("/preparedness/minimum")
         }
         else {
-          this.router.navigateByUrl("/preparedness/advanced");
+          this.router.navigateByUrl("/preparedness/advanced")
+        }
+      }
+      if (action.type == ActionLevel.MPA) {
+        this.showDueDate = true;
+        this.editDisableLoading = false;
+      }
+      else {
+        this.initialiseListOfHazardsHazards();
+      }
+
+      this.action.id = action.id;
+      this.action.type = action.type;
+      this.action.level = action.level;
+      this.action.task = action.task;
+      this.action.requireDoc = action.requireDoc;
+      this.action.dueDate = action.dueDate;
+      if (action.assignedHazards != null) {
+        for (let x of action.assignedHazards) {
+          this.action.hazards.set((+x), true);
+        }
+      }
+      this.action.asignee = action.asignee;
+      this.action.department = action.department;
+      this.action.budget = action.budget;
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isComplete = action.isComplete;
+      this.action.isCompleteAt = action.isCompleteAt;
+      if (action.frequencyValue != null && action.frequencyBase != null) {
+        console.log("Frequency Values are here!");
+        this.action.isFrequencyActive = true;
+        this.action.frequencyType = action.frequencyBase;
+        this.action.frequencyQuantity = action.frequencyValue;
+      }
+      this.action.computedClockSetting = action.computedClockSetting;
+
+      if (!this.oldAction) {
+        this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
+      }
+
+      console.log(action);
+      console.log(this.action);
+    });
+  }
+
+  public initFromExistingActionIdLocalAgency(canEditMPA: boolean, canEditAPA: boolean) {
+    this.prepActionService.initOneActionLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+      if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/local-agency/preparedness/minimum")
+        }
+        else {
+          this.router.navigateByUrl("/local-agency/preparedness/advanced")
         }
       }
       if (action.type == ActionLevel.MPA) {
@@ -232,6 +299,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
 
 
+
+
   /**
    * Selecting the date on the material date picker
    */
@@ -258,32 +327,67 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   private initialiseListOfHazardsHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        snap.forEach((snapshot) => {
-          if (snapshot.val().alertLevel == AlertLevels.Red) {
-            let res: boolean = false;
-            for (const userTypes in snapshot.val().approval) {
-              for (const thisUid in snapshot.val().approval[userTypes]) {
-                if (snapshot.val().approval[userTypes][thisUid] != 0) {
-                  res = true;
+
+    if(this.isLocalAgency){
+
+      this.af.database.list(Constants.APP_STATUS + "/alert/" + this.agencyId, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          snap.forEach((snapshot) => {
+            if (snapshot.val().alertLevel == AlertLevels.Red) {
+              let res: boolean = false;
+              for (const userTypes in snapshot.val().approval) {
+                for (const thisUid in snapshot.val().approval[userTypes]) {
+                  if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                    res = true;
+                  }
                 }
               }
+              if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+                this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+              }
             }
-            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
-              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            else {
+              if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+                this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+              }
             }
-          }
-          else {
-            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
-              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
-            }
-          }
+          });
+          this.evaluateDueDate(0);
+          this.editDisableLoading = false;
         });
-        this.evaluateDueDate(0);
-        this.editDisableLoading = false;
-      });
+
+    } else {
+
+      this.af.database.list(Constants.APP_STATUS + "/alert/" + this.countryId, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          snap.forEach((snapshot) => {
+            if (snapshot.val().alertLevel == AlertLevels.Red) {
+              let res: boolean = false;
+              for (const userTypes in snapshot.val().approval) {
+                for (const thisUid in snapshot.val().approval[userTypes]) {
+                  if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                    res = true;
+                  }
+                }
+              }
+              if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+                this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+              }
+            }
+            else {
+              if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+                this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+              }
+            }
+          });
+          this.evaluateDueDate(0);
+          this.editDisableLoading = false;
+        });
+
+    }
+
 
     // Populate actions
   }
@@ -317,34 +421,65 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Initialising hazards
    */
   private getHazards() {
-    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        this.hazards = [];
-        snap.forEach((snapshot) => {
-          if (snapshot.val().hazardScenario != -1) {
-            let x: ModelHazard = new ModelHazard();
-            x.id = snapshot.key;
-            x.category = snapshot.val().category;
-            x.hazardScenario = snapshot.val().hazardScenario;
-            x.isSeasonal = snapshot.val().isSeasonal;
-            this.hazards.push(x);
-          } else {
-            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(snapOther => {
-                let x: ModelHazard = new ModelHazard();
-                x.id = snapshot.key;
-                x.category = snapshot.val().category;
-                x.hazardScenario = snapshot.val().hazardScenario;
-                x.isSeasonal = snapshot.val().isSeasonal;
-                x.displayName = snapOther.val().name;
-                this.hazards.push(x);
-              })
-          }
+    if(this.isLocalAgency){
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.agencyId, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.hazards = [];
+          snap.forEach((snapshot) => {
+            if (snapshot.val().hazardScenario != -1) {
+              let x: ModelHazard = new ModelHazard();
+              x.id = snapshot.key;
+              x.category = snapshot.val().category;
+              x.hazardScenario = snapshot.val().hazardScenario;
+              x.isSeasonal = snapshot.val().isSeasonal;
+              this.hazards.push(x);
+            } else {
+              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(snapOther => {
+                  let x: ModelHazard = new ModelHazard();
+                  x.id = snapshot.key;
+                  x.category = snapshot.val().category;
+                  x.hazardScenario = snapshot.val().hazardScenario;
+                  x.isSeasonal = snapshot.val().isSeasonal;
+                  x.displayName = snapOther.val().name;
+                  this.hazards.push(x);
+                })
+            }
 
+          });
         });
-      });
+    } else {
+      this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.hazards = [];
+          snap.forEach((snapshot) => {
+            if (snapshot.val().hazardScenario != -1) {
+              let x: ModelHazard = new ModelHazard();
+              x.id = snapshot.key;
+              x.category = snapshot.val().category;
+              x.hazardScenario = snapshot.val().hazardScenario;
+              x.isSeasonal = snapshot.val().isSeasonal;
+              this.hazards.push(x);
+            } else {
+              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(snapOther => {
+                  let x: ModelHazard = new ModelHazard();
+                  x.id = snapshot.key;
+                  x.category = snapshot.val().category;
+                  x.hazardScenario = snapshot.val().hazardScenario;
+                  x.isSeasonal = snapshot.val().isSeasonal;
+                  x.displayName = snapOther.val().name;
+                  this.hazards.push(x);
+                })
+            }
+
+          });
+        });
+    }
   }
 
   /**
@@ -362,13 +497,23 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   private initStaff() {
-    this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        snap.forEach((snapshot) => {
-          this.getStaffDetails(snapshot.key, false);
+    if(this.isLocalAgency){
+      this.af.database.list(Constants.APP_STATUS + "/staff/" + this.agencyId, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          snap.forEach((snapshot) => {
+            this.getStaffDetails(snapshot.key, false);
+          });
         });
-      });
+    } else {
+      this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          snap.forEach((snapshot) => {
+            this.getStaffDetails(snapshot.key, false);
+          });
+        });
+    }
   }
 
   /**
@@ -473,45 +618,86 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
       if (this.action.id != null) {
         // Updating
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+        if(this.isLocalAgency){
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
 
-          if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
-            console.log("Updating:");
-            console.log(notification.content);
+            if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+              console.log("Updating:");
+              console.log(notification.content);
 
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
-            });
-          }
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+              });
+            }
 
-          this._location.back();
-        })
+            this._location.back();
+          })
+        } else {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+
+            if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+              console.log("Updating:");
+              console.log(notification.content);
+
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+              });
+            }
+
+            this._location.back();
+          })
+        }
       }
       else {
         // Saving
         updateObj.createdAt = new Date().getTime();
-        this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
+        if(this.isLocalAgency){
+          this.af.database.list(Constants.APP_STATUS + "/action/" + this.agencyId).push(updateObj).then(_ => {
 
-          if (updateObj.asignee) {
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+            if (updateObj.asignee) {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+              notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
 
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
-            });
-          }
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+              });
+            }
 
-          this._location.back();
-        });
+            this._location.back();
+          });
+        } else {
+          this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
+
+            if (updateObj.asignee) {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+              notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+              });
+            }
+
+            this._location.back();
+          });
+        }
       }
     }
     console.log('surely route form here?')
@@ -627,14 +813,25 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       isArchived: true
     };
     this.closeActionCancel('archive-action');
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
-      if (this.action.level == ActionLevel.MPA) {
-        this.router.navigateByUrl("/preparedness/minimum");
-      }
-      else {
-        this.router.navigateByUrl("/preparedness/advanced");
-      }
-    });
+    if(this.isLocalAgency){
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/local-agency/preparedness/minimum");
+        }
+        else {
+          this.router.navigateByUrl("/local-agency/preparedness/advanced");
+        }
+      });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/preparedness/minimum");
+        }
+        else {
+          this.router.navigateByUrl("/preparedness/advanced");
+        }
+      });
+    }
   }
 
   /**
@@ -642,14 +839,25 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   public deleteAction() {
     this.closeActionCancel('delete-action');
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).set(null).then(_ => {
-      if (this.action.level == ActionLevel.MPA) {
-        this.router.navigateByUrl("/preparedness/minimum");
-      }
-      else {
-        this.router.navigateByUrl("/preparedness/advanced");
-      }
-    });
+    if(this.isLocalAgency){
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).set(null).then(_ => {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/local-agency/preparedness/minimum");
+        }
+        else {
+          this.router.navigateByUrl("/local-agency/preparedness/advanced");
+        }
+      });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).set(null).then(_ => {
+        if (this.action.level == ActionLevel.MPA) {
+          this.router.navigateByUrl("/preparedness/minimum");
+        }
+        else {
+          this.router.navigateByUrl("/preparedness/advanced");
+        }
+      });
+    }
   }
 
 

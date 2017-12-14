@@ -444,7 +444,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       this.alerts = this.actionService.getAlerts(this.agencyId, true);
       console.log(this.alerts)
     } else if (this.DashboardTypeUsed == DashboardType.director) {
-      this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.agencyId);
+      this.alerts = this.actionService.getAlertsForDirectorToApproveLocalAgency(this.uid, this.agencyId);
       if (this.networkMap) {
         this.alertsNetwork = Observable.from([])
         this.networkMap.forEach((networkCountryId, networkId) => {
@@ -559,11 +559,11 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
 
   updateAlert(alertId, isDirectorAmber) {
     if (this.DashboardTypeUsed == DashboardType.default) {
-      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {id: alertId, countryId: this.countryId}]);
+      this.router.navigate(['/local-agency/dashboard-update-alert-level/', {id: alertId, agencyId: this.agencyId}]);
     } else if (isDirectorAmber) {
-      this.router.navigate(['/dashboard/dashboard-update-alert-level/', {
+      this.router.navigate(['/local-agency/dashboard-update-alert-level/', {
         id: alertId,
-        countryId: this.countryId,
+        agencyId: this.agencyId,
         isDirector: true
       }]);
     } else {
@@ -573,7 +573,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlert(alertId) {
-    this.actionService.approveRedAlert(this.agencyId, alertId, this.uid);
+    this.actionService.approveRedAlertLocalAgency(this.agencyId, alertId, this.uid);
   }
 
   approveRedAlertNetwork(alert) {
@@ -607,8 +607,9 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+
   rejectRedRequest(alertId) {
-    this.actionService.rejectRedAlert(this.agencyId, alertId, this.uid);
+    this.actionService.rejectRedAlertLocalAgency(this.agencyId, alertId, this.uid);
   }
 
   rejectRedRequestNetwork(alert) {
