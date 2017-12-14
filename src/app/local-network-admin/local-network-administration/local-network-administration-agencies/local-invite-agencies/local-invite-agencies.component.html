@@ -28,16 +28,19 @@
     <div class="row Spaced">
       <label *ngFor="let agency of agencies; index as i" for="item{{i}}"
              class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"
-             [hidden]="existingAgencyIds && existingAgencyIds.indexOf(agency.id) !=-1"><img
+             [hidden]="existingAgencyIds && existingAgencyIds.indexOf(agency.$key) !=-1"><img
         class="margin-bottom-none"
         src="{{agency.logoPath ? agency.logoPath : 'assets/images/donor/agency-preview.svg'}}">
         <p>{{agency.name}}</p><input type="checkbox" name="Action-type" id="item{{i}}" #selection
                                      (change)="toggleAgencySelection(agency, selection.checked)"></label>
+
+      <div *ngIf="checkHaveAvailableAgencies" class="Empty--ribbon">No agencies available</div>
+
     </div>
 
-    <ng-template #empty>
-      <div class="Empty--ribbon">No agencies available</div>
-    </ng-template>
+    <!--<ng-template #empty>-->
+      <!--<div class="Empty&#45;&#45;ribbon">No agencies available</div>-->
+    <!--</ng-template>-->
 
 
     <!--Lead Agency Selection Modal (first time agency is invited)-->

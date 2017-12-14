@@ -6,10 +6,6 @@ import {PageControlService} from "../../../../services/pagecontrol.service";
 import {NetworkService} from "../../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../../services/agency-service.service";
-import {ModelAgency} from "../../../../model/agency.model";
-import {Observable} from "rxjs/Observable";
-import {ModelNetwork} from "../../../../model/network.model";
-import {takeUntil} from "rxjs/operator/takeUntil";
 
 declare const jQuery: any;
 
@@ -38,7 +34,7 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
   private selectedAgencies: string[];
   private leadAgencyId: string;
   private existingAgencyIds: string[];
-  private showLoader:boolean;
+  private showLoader: boolean;
   private networkCountryCode: number;
 
 
@@ -63,13 +59,13 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
           //fetch all agencies
           this.networkService.getNetworkDetail(this.networkId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(network =>{
+            .subscribe(network => {
               this.networkCountryCode = network.countryCode
 
               this.agencyService.getAllAgencyFromPlatform()
                 .takeUntil(this.ngUnsubscribe)
-                .subscribe(agencies =>{
-                  agencies.forEach(agency =>{
+                .subscribe(agencies => {
+                  agencies.forEach(agency => {
 
                     this.agencyService.getAllAgencyByNetworkCountry(network.countryCode, agency.id)
                       .takeUntil(this.ngUnsubscribe)
@@ -77,9 +73,9 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
                         if (x.length > 0) {
                           this.agencyService.getAgency(agency.id)
                             .takeUntil(this.ngUnsubscribe)
-                            .subscribe( agency => {
+                            .subscribe(agency => {
                               this.agencies.push(agency)
-
+                              console.log(this.agencies)
                             })
                         }
                       })
@@ -90,13 +86,13 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
             })
 
 
-
           // this.agencies = this.agencyService.getAllAgencyByNetworkCountry();
 
           //fetch already added agency ids
           this.networkService.getAgencyIdsForNetwork(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(ids => {
+              console.log(ids)
               if (ids) {
                 this.existingAgencyIds = ids;
               }
@@ -150,22 +146,26 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
 
   saveAgenciesAndLead() {
 
-          this.selectedAgencies.forEach( agency =>{
-          this.networkService.getCountryCodeForAgency(agency, this.networkCountryCode)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe( countryCode => {
+    this.selectedAgencies.forEach(agency => {
+      this.networkService.getCountryCodeForAgency(agency, this.networkCountryCode)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countryCode => {
 
 
-              this.networkService.updateAgencyForLocalNetwork(this.networkId, this.leadAgencyId, agency, countryCode).then(() => {
-                this.router.navigateByUrl("/network/local-network-administration/agencies");
-              }).catch(rej => {
-                this.alertMessage = new AlertMessageModel(rej.message);
-              });
-
-            })
+          this.networkService.updateAgencyForLocalNetwork(this.networkId, this.leadAgencyId, agency, countryCode).then(() => {
+            this.router.navigateByUrl("/network/local-network-administration/agencies");
+          }).catch(rej => {
+            this.alertMessage = new AlertMessageModel(rej.message);
+          });
 
         })
 
+    })
+
+  }
+
+  checkHaveAvailableAgencies(): boolean {
+    return this.agencies.filter(agency => this.existingAgencyIds.indexOf(agency.$key) === -1).length === 0
   }
 
 

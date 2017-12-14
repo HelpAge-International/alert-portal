@@ -216,7 +216,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
           this.networkService.getNetworkModuleMatrix(this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(modules => this.moduleAccess = modules);
+            .subscribe(modules => {
+              console.log(modules)
+              this.moduleAccess = modules
+            });
 
           this.getHazards();
           // this.initStaff();
@@ -257,7 +260,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(modules => this.moduleAccess = modules);
+            .subscribe(modules => {
+              console.log(modules)
+              this.moduleAccess = modules
+            });
 
           this.getHazards();
           // this.initStaff();

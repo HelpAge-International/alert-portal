@@ -880,7 +880,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkService.mapAgencyCountryForNetworkCountry(networkId, networkMap.get(networkId))
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
-          agencyCountryMap.forEach((countryId, agencyId) =>{this.initStaff(agencyId, countryId);})
+          agencyCountryMap.forEach((countryId, agencyId) => {
+            this.initStaff(agencyId, countryId);
+          })
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
               .takeUntil(this.ngUnsubscribe)
@@ -897,7 +899,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkService.mapAgencyCountryForLocalNetworkCountry(networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
-          agencyCountryMap.forEach((countryId, agencyId) =>{this.initStaff(agencyId, countryId);})
+          agencyCountryMap.forEach((countryId, agencyId) => {
+            this.initStaff(agencyId, countryId);
+          })
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
               .takeUntil(this.ngUnsubscribe)

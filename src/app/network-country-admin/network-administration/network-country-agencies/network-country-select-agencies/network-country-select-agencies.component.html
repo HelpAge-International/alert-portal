@@ -41,11 +41,13 @@
       <input type="checkbox" name="Action-type" id="item{{i}}" #selection
              (change)="toggleAgencySelection(agency, selection.checked)">
     </label>
+
+    <div *ngIf="checkHaveAvailableAgencies()" class="Empty--ribbon">{{"NETWORK.NO_AGENCIES_AVAILABLE" | translate}}</div>
     <!--</div>-->
 
-    <div *ngIf="!agencies || agencies.length == 0" class="Empty--ribbon">{{"NETWORK.NO_AGENCIES_AVAILABLE" |
-      translate}}
-    </div>
+    <!--<div *ngIf="!agencies || agencies.length == 0" class="Empty&#45;&#45;ribbon">{{"NETWORK.NO_AGENCIES_AVAILABLE" |-->
+      <!--translate}}-->
+    <!--</div>-->
 
 
     <!--Lead Agency Selection Modal (first time agency is invited)-->
@@ -70,7 +72,8 @@
             </div>
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
-            <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="emptyLead()">{{"GLOBAL.CANCEL" | translate}}</a>
+            <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="emptyLead()">{{"GLOBAL.CANCEL" |
+              translate}}</a>
             <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
                     (click)="saveAgenciesAndLead()">{{"SAVE" | translate}}
             </button>

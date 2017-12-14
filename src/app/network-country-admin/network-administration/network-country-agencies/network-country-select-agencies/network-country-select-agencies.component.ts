@@ -176,4 +176,8 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
 
   }
 
+  checkHaveAvailableAgencies():boolean {
+    return this.agencies.filter(agency => this.existingAgencyIds.indexOf(agency.id) === -1).length === 0
+  }
+
 }
