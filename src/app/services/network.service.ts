@@ -766,10 +766,11 @@ export class NetworkService {
   getNetworkWithCountryModelsForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
       .map(networks => {
+        console.log(networks)
         return networks.map(network => {
           let model = new NetworkWithCountryModel();
           model.networkId = network.$key;
-          model.networkCountryId = network.$value;
+          model.networkCountryId = network.networkCountryId;
           return model;
         })
       })
