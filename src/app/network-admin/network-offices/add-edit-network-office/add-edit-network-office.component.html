@@ -20,7 +20,7 @@
           <div class="form-group">
             <label for="networkOffice" class="Spaced-above">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
 
-            <select class="form-control" id="networkOffice" required [(ngModel)]="networkOffice.location"
+            <select [disabled]="isEditing" class="form-control" id="networkOffice" required [(ngModel)]="networkOffice.location"
                     name="networkOfficeLocation">
               <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
               <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">
