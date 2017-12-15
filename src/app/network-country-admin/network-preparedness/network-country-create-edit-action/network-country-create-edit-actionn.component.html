@@ -70,9 +70,7 @@
         <strong>{{"PREPAREDNESS.ACTION_SELECT_TEXT" | translate}}</strong>
         <div class="row no-gutters" *ngFor="let aLevel of actionLevelList">
           <label for="level_{{aLevel}}" class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
-            <input [disabled]="editDisableLoading || action.type != actionType.custom
-                              || (((aLevel == actionLevelEnum.MPA && (!moduleAccess.minimumPreparedness))
-                              || (aLevel == actionLevelEnum.APA && (!moduleAccess.advancedPreparedness))) && userType != userTypes.CountryAdmin)"
+            <input [disabled]="editDisableLoading || action.type != actionType.custom"
                    type="radio"
                    #pActionLevel="ngModel" required id="level_{{aLevel}}" [value]="aLevel"
                    (change)="removeFilterLockLevel()"
