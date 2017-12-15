@@ -402,6 +402,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         // obj["responsePlanSettings"]
         this.totalSections = settingObj["totalSections"];
         this.responsePlanSettings = settingObj["responsePlanSettings"];
+        console.log(this.totalSections)
+        console.log(this.responsePlanSettings)
         this.storeAvailableSettingSections();
       })
   }
@@ -412,43 +414,44 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       counter++;
       this.sectionONum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanDetails]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.PlanDetails]) {
       counter = counter + 1;
       this.sectionOneNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.PlanContext]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.PlanContext]) {
       counter = counter + 1;
       this.sectionTwoNum = counter;
+      console.log(this.sectionTwoNum)
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.BasicInformation]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.BasicInformation]) {
       counter = counter + 1;
       this.sectionThreeNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.ResponseObjectives]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.ResponseObjectives]) {
       counter = counter + 1;
       this.sectionFourNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.TargetPopulation]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.TargetPopulation]) {
       counter = counter + 1;
       this.sectionFiveNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.ExpectedResults]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.ExpectedResults]) {
       counter = counter + 1;
       this.sectionSixNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.Activities]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.Activities]) {
       counter = counter + 1;
       this.sectionSevenNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.MonitoringAccLearning]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.MonitoringAccLearning]) {
       counter = counter + 1;
       this.sectionEightNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.DoubleCounting]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.DoubleCounting]) {
       counter = counter + 1;
       this.sectionNineNum = counter;
     }
-    if (this.responsePlanSettings[ResponsePlanSectionSettings.Budget]) {
+    if (this.responsePlanSettings[NetworkResponsePlanSectionSettings.Budget]) {
       counter = counter + 1;
       this.sectionTenNum = counter;
     }
