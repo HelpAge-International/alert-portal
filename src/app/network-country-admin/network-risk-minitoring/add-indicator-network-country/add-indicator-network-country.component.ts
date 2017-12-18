@@ -148,7 +148,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
 
-      console.log(params)
+        console.log(params)
 
         if (params["indicatorID"]) {
           this.copyIndicatorId = params["indicatorId"];
@@ -182,7 +182,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 
-        if(this.isViewing){
+        if (this.isViewing) {
 
           this._getHazards();
           this.getUsersForAssign();
@@ -208,7 +208,6 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
                 this.networkCountryId = selection["networkCountryId"];
                 this.networkId = selection["id"]
                 this.UserType = selection["userType"];
-
 
 
                 this._getHazards();
@@ -290,7 +289,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           this.hazardID = params['hazardID'];
           this.indicatorID = params['indicatorID'];
 
-          if(params['isViewing']){
+          if (params['isViewing']) {
             console.log('just getting indicator')
             this._getIndicator(this.hazardID, this.indicatorID);
           } else {
@@ -355,10 +354,10 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
 
   getUsersForAssign() {
     console.log(this.UserType)
-    if( this.UserType == NetworkUserAccountType.NetworkCountryAdmin ){
+    if (this.UserType == NetworkUserAccountType.NetworkCountryAdmin) {
       this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe( (user: ModelUserPublic) => {
+        .subscribe((user: ModelUserPublic) => {
           console.log(user)
           let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
           this.usersForAssign.push(userToPush);
@@ -367,12 +366,12 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
       this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(network => {
-          Object.keys(network.agencyCountries).forEach( agencyKey => {
+          Object.keys(network.agencyCountries).forEach(agencyKey => {
             this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(countryOffices => {
                 countryOffices.forEach(countryOffice => {
-                  if(network.agencyCountries[agencyKey][countryOffice.$key]) {
+                  if (network.agencyCountries[agencyKey][countryOffice.$key]) {
                     // Obtaining the country admin data
                     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
                       if (data.adminId) {
@@ -399,11 +398,11 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           })
         })
 
-    }else if (this.UserType == UserType.GlobalDirector) {
+    } else if (this.UserType == UserType.GlobalDirector) {
       console.log('globalDirector')
       this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe( (user: ModelUserPublic) => {
+        .subscribe((user: ModelUserPublic) => {
           let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
           this.usersForAssign.push(userToPush);
         })
@@ -421,77 +420,77 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         });
     } else {
 
-     this._agencyService.getAllCountryOffices()
-     .takeUntil(this.ngUnsubscribe)
-     .subscribe(agencies => {
-       console.log(this.uid)
-      agencies.forEach(agency => {
-        this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agency.$key)
+      this._agencyService.getAllCountryOffices()
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryOffices => {
+        .subscribe(agencies => {
+          console.log(this.uid)
+          agencies.forEach(agency => {
+            this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agency.$key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryOffices => {
 
 
-          if(this.isViewing){
-            countryOffices.filter( countryOffice => {
-              console.log(countryOffice.$key)
-              if(this.countryID == countryOffice.$key){
-                this.agencyId = agency.$key
+                if (this.isViewing) {
+                  countryOffices.filter(countryOffice => {
+                    console.log(countryOffice.$key)
+                    if (this.countryID == countryOffice.$key) {
+                      this.agencyId = agency.$key
 
-                // Obtaining the country admin data
-                this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
-                  if (data.adminId) {
-                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
-                      var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-                      this.usersForAssign.push(userToPush);
-                    });
-                  }
-                });
-                //Obtaining other staff data
-                this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
-                  for (let userID in data) {
-                    if (!userID.startsWith('$')) {
-                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-                        var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-                        this.usersForAssign.push(userToPush);
+                      // Obtaining the country admin data
+                      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+                        if (data.adminId) {
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                            this.usersForAssign.push(userToPush);
+                          });
+                        }
+                      });
+                      //Obtaining other staff data
+                      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+                        for (let userID in data) {
+                          if (!userID.startsWith('$')) {
+                            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                              this.usersForAssign.push(userToPush);
+                            });
+                          }
+                        }
                       });
                     }
-                  }
-                });
-              }
-            })
-          } else {
-            countryOffices.filter( countryOffice => {
-              console.log(countryOffice.$key)
-              if(this.copyCountryOfficeCode == countryOffice.$key){
-                this.agencyId = agency.$key
+                  })
+                } else {
+                  countryOffices.filter(countryOffice => {
+                    console.log(countryOffice.$key)
+                    if (this.copyCountryOfficeCode == countryOffice.$key) {
+                      this.agencyId = agency.$key
 
-                // Obtaining the country admin data
-                this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
-                  if (data.adminId) {
-                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
-                      var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-                      this.usersForAssign.push(userToPush);
-                    });
-                  }
-                });
-                //Obtaining other staff data
-                this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
-                  for (let userID in data) {
-                    if (!userID.startsWith('$')) {
-                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
-                        var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-                        this.usersForAssign.push(userToPush);
+                      // Obtaining the country admin data
+                      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
+                        if (data.adminId) {
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                            var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                            this.usersForAssign.push(userToPush);
+                          });
+                        }
+                      });
+                      //Obtaining other staff data
+                      this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
+                        for (let userID in data) {
+                          if (!userID.startsWith('$')) {
+                            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                              var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                              this.usersForAssign.push(userToPush);
+                            });
+                          }
+                        }
                       });
                     }
-                  }
-                });
-              }
-            })
-          }
+                  })
+                }
 
+              })
+          });
         })
-      });
-     })
 
     }
   }
@@ -543,7 +542,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         }
 
         //if isViewing add the country office and agency ID to retrieve in country office view
-        if(this.isViewing){
+        if (this.isViewing) {
 
           this.indicatorData['agencyId'] = this.agencyId
           this.indicatorData['countryOfficeId'] = this.countryID
@@ -557,8 +556,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         var urlToEdit;
 
 
-
-        if(this.copyCountryOfficeCode && this.hazardID == 'countryContext'){
+        if (this.copyCountryOfficeCode && this.hazardID == 'countryContext') {
           urlToPush = Constants.APP_STATUS + "/indicator/" + this.networkCountryId;
           urlToEdit = Constants.APP_STATUS + '/indicator/' + this.copyCountryOfficeCode + '/' + this.indicatorID;
         } else if (this.hazardID == 'countryContext') {
@@ -668,7 +666,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
-    if(this.copyCountryOfficeCode){
+    if (this.copyCountryOfficeCode) {
 
       this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.copyCountryOfficeCode)
         .takeUntil(this.ngUnsubscribe)
@@ -735,7 +733,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
     jQuery("#delete-indicator").modal("hide");
     let path = "";
 
-    if(this.copyCountryOfficeCode && this.hazardID == 'countryContext'){
+    if (this.copyCountryOfficeCode && this.hazardID == 'countryContext') {
       path = Constants.APP_STATUS + "/indicator/" + this.copyCountryOfficeCode + '/' + this.indicatorID;
     } else if (this.hazardID == 'countryContext') {
       path = Constants.APP_STATUS + "/indicator/" + this.networkCountryId + '/' + this.indicatorID;
@@ -753,7 +751,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
       });
   }
 
-  print(location){
+  print(location) {
 
     console.log(location)
   }
@@ -761,7 +759,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   _getIndicator(hazardID: string, indicatorID: string) {
 
     //this.indicatorData = new Indicator();
-    if(this.copyCountryOfficeCode && this.hazardID == 'countryContext'){
+    if (this.copyCountryOfficeCode && this.hazardID == 'countryContext') {
       this.url = Constants.APP_STATUS + "/indicator/" + this.copyCountryOfficeCode + '/' + indicatorID;
     } else if (this.hazardID == 'countryContext') {
       this.url = Constants.APP_STATUS + "/indicator/" + this.networkCountryId + '/' + indicatorID;
@@ -794,6 +792,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
       if (this.alertMessage) {
         res(false);
       }
+
       if (!this.alertMessage) {
         this.indicatorData.source.forEach((val, key) => {
           let modelSource = new IndicatorSourceModel();
@@ -803,31 +802,35 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
             res(false);
           }
         });
-        this.indicatorData.trigger.forEach((val, key) => {
-          let modelTrigger = new IndicatorTriggerModel();
-          modelTrigger.mapFromObject(val);
-          this._validateIndicatorTrigger(modelTrigger);
-          if (this.alertMessage) {
-            res(false);
-          }
-        });
 
         if (!this.alertMessage) {
-          if (this.indicatorData.geoLocation == 1) {
-            this.indicatorData.affectedLocation.forEach((val, key) => {
-              let modelArea = new OperationAreaModel();
-              modelArea.mapFromObject(val);
-              this._validateOperationArea(modelArea);
-              if (this.alertMessage) {
-                res(false);
-              }
-            });
+          this.indicatorData.trigger.forEach((val, key) => {
+            let modelTrigger = new IndicatorTriggerModel();
+            modelTrigger.mapFromObject(val);
+            this._validateIndicatorTrigger(modelTrigger);
+            if (this.alertMessage) {
+              res(false);
+            }
+          });
+
+          if (!this.alertMessage) {
+            if (this.indicatorData.geoLocation == 1) {
+              this.indicatorData.affectedLocation.forEach((val, key) => {
+                let modelArea = new OperationAreaModel();
+                modelArea.mapFromObject(val);
+                this._validateOperationArea(modelArea);
+                if (this.alertMessage) {
+                  res(false);
+                }
+              });
+            }
+          }
+
+          if (!this.alertMessage) {
+            res(true);
           }
         }
 
-        if (!this.alertMessage) {
-          res(true);
-        }
 
       }
     });
