@@ -206,15 +206,6 @@ export class LoginComponent implements OnInit, OnDestroy {
                     this.checkNetworkAll(isNetwork, isNotNetwork);
                   }
                 })
-
-              // this.networkService.getNetworkCountry(obj["networkId"], obj["networkCountryId"])
-              //   .takeUntil(this.ngUnsubscribe)
-              //   .subscribe(networkCountry => {
-              //     if (networkCountry.isActive) {
-              //       this.networkCountryAdmin = true
-              //     }
-              //     this.checkNetworkAll(isNetwork, isNotNetwork);
-              //   })
             })
           } else {
             this.networkCount++
