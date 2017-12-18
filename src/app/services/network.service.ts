@@ -946,7 +946,7 @@ export class NetworkService {
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  getPrivacySettingForNetwork(networkId:string): Observable<NetworkPrivacyModel> {
+  getPrivacySettingForNetwork(networkId: string): Observable<NetworkPrivacyModel> {
     return this.af.database.object(Constants.APP_STATUS + "/module/" + networkId, {preserveSnapshot: true})
       .map(snap => {
         if (snap.val()) {
@@ -961,6 +961,13 @@ export class NetworkService {
           return privacy;
         }
       });
+  }
+
+  getAllNetworkCountriesWithSameAgencyMember(networkId, agencyId) {
+    return this.getAllNetworkCountriesByNetwork(networkId)
+      .map(networkCountries => {
+        return networkCountries.filter(networkCountry => networkCountry.agencyCountries && Object.keys(networkCountry.agencyCountries).indexOf(agencyId) != -1)
+      })
   }
 
 }
