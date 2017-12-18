@@ -1,0 +1,58 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap no-padding">
+  <div class="Full-page__wrap--inner">
+    <div class="row col-sm-12 Spaced-above">
+      <div class="Back--button row col-sm-9 margin-top-none" routerLink="/network/network-mpa">
+        {{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}
+      </div> <!-- Back button-->
+    </div>
+    <div class="row col-sm-12">
+      <h1 class="col-sm-12">{{"AGENCY_ADMIN.MANDATED_PA.CREATE_NEW_MANDATED_PA" | translate}}</h1><br>
+    </div>
+
+    <div class="col-sm-12 Spaced-above">
+      <h6 class="font-weight-bold">{{"WHAT_NEEDS_TO_BE_DONE" | translate}}</h6>
+      <div><textarea name="" id="" cols="100" rows="5" [(ngModel)]="networkActionModel.task"></textarea></div>
+    </div>
+    <br>
+
+    <div class="col-sm-12 Spaced-above">
+      <h6 class="font-weight-bold Spaced-above">{{"PREPAREDNESS.ACTION_SELECT_TEXT" | translate}}</h6>
+
+      <div class="bg-grey padding-one col-sm-3 Spaced-above">
+        <div class="row">
+          <div class="col-sm-1"><input type="radio" value="1" [(ngModel)]="networkActionModel.level"></div>
+          <div class="col-sm-10"><p>{{"MINIMUM_PREP_ACTIONS_TITLE" | translate}}</p></div>
+        </div>
+      </div>
+
+      <div class="bg-grey padding-one col-sm-3 Spaced-above">
+        <div class="row">
+          <div class="col-sm-1"><input type="radio" value="2" [(ngModel)]="networkActionModel.level"></div>
+          <div class="col-sm-10"><p>{{"ADVANCED_PREP_ACTIONS" | translate}}</p></div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+    <div class="row col-sm-12 Spaced-above">
+      <div class="col-sm-2">
+        <button class="btn btn-primary text-uppercase" (click)="saveNetworkMpa()">
+          {{isEditing ? ('UPDATE_ACTION' | translate) : ('PREPAREDNESS.SAVE_NEW_ACTION' | translate)}}
+        </button>
+      </div>
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" class="col-sm-12"
+                                              routerLink="/network/network-mpa">{{"GLOBAL.CANCEL" | translate}}</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+

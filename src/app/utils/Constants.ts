@@ -3,7 +3,7 @@
  */
 import {
   Countries, Currency, DurationType, OfficeType, PersonTitle, StaffPosition, UserType,
-  AlertLevels
+  AlertLevels, GenericActionCategory, HazardScenario
 } from "./Enums";
 
 export class Constants {
@@ -43,6 +43,10 @@ export class Constants {
   static AGENCY_ADMIN_LOGO_FILE_TYPES = ['image/jpeg', 'image/gif', 'image/png'];
   static DEFAULT_CLOCK_SETTINGS_DURATION_VAL = 1;
 
+  //network admin
+  static NETWORK_ADMIN_LOGO_MAX_SIZE = 2000000; //in bytes
+  static NETWORK_ADMIN_LOGO_FILE_TYPES = ['image/jpeg', 'image/gif', 'image/png'];
+
   // country administrator
   static COUNTRY_ADMIN_HOME = "/dashboard";
   static COUNTRY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.COUNTRY_USER",
@@ -52,6 +56,18 @@ export class Constants {
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
+
+  // local agency administrator
+
+  static LOCAL_AGENCY_ADMIN_HOME = "/dashboard";
+  static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
+    "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
+  static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.AgencyDirector, UserType.AgencyUser,
+    UserType.ErtLeader, UserType.Ert];
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.AgencyDirector, UserType.LocalAgencyAdmin,
+    UserType.ErtLeader, UserType.Ert, UserType.Donor];
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "agencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
+
 
 
   // Global director / Regional director
@@ -95,6 +111,20 @@ export class Constants {
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes",
     "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.EmergencyResponseTeamManagement"];
 
+  static CATEGORY_SELECTION: GenericActionCategory[] = [
+    GenericActionCategory.All,
+    GenericActionCategory.OfficeAdministration,
+    GenericActionCategory.Finance,
+    GenericActionCategory.ITFieldCommunications,
+    GenericActionCategory.Logistics,
+    GenericActionCategory.CommunicationsMedia,
+    GenericActionCategory.HumanResources,
+    GenericActionCategory.DonorFundingReporting,
+    GenericActionCategory.Accountability,
+    GenericActionCategory.Security,
+    GenericActionCategory.Programmes,
+    GenericActionCategory.EmergencyResponseTeamManagement];
+
   static ACTION_LEVEL: string[] = ["GLOBAL.PREPAREDNESS_LEVEL.ALL", "GLOBAL.PREPAREDNESS_LEVEL.MPA", "GLOBAL.PREPAREDNESS_LEVEL.APA"];
   static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.DEACTIVE", "GLOBAL.ACTION_STATUS.ARCHIVED"];
   static ACTION_TYPE: string[] = ["GLOBAL.ACTION_TYPE.CHS", "GLOBAL.ACTION_TYPE.MANDATED", "GLOBAL.ACTION_TYPE.CUSTOM"];
@@ -133,6 +163,7 @@ export class Constants {
     Currency.PKR
   ];
 
+
   //agency add staff
   static USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.GLOBAL_DIRECTOR", "GLOBAL.USER_TYPE.REGIONAL_DIRECTOR",
     "GLOBAL.USER_TYPE.COUNTRY_DIRECTORS", "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT", "GLOBAL.USER_TYPE.DONOR",
@@ -169,6 +200,16 @@ export class Constants {
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.CHS_PREP_ACTIONS",
     "RISK_MONITORING_TEXT",
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.COUNTRY_OFFICE_PROFILE",
+    "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING"
+  ];
+
+  static MODULE_NAME_NETWORK_COUNTRY = [
+    "AGENCY_ADMIN.SETTINGS.MODULE_NAME.MINIMUM_PREP_ACTIONS",
+    "AGENCY_ADMIN.SETTINGS.MODULE_NAME.ADVANCED_PREP_ACTIONS",
+    "AGENCY_ADMIN.SETTINGS.MODULE_NAME.CHS_PREP_ACTIONS",
+    "RISK_MONITORING_TEXT",
+    "CONFLICT_INDICATORS",
+    "NETWORK_OFFICE_PROFILE",
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING"
   ];
 
@@ -220,6 +261,36 @@ export class Constants {
     "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO26"
   ];
 
+  static HAZARD_SCENARIO_ENUM_LIST = [
+    HazardScenario.HazardScenario0,
+    HazardScenario.HazardScenario1,
+    HazardScenario.HazardScenario2,
+    HazardScenario.HazardScenario3,
+    HazardScenario.HazardScenario4,
+    HazardScenario.HazardScenario5,
+    HazardScenario.HazardScenario6,
+    HazardScenario.HazardScenario7,
+    HazardScenario.HazardScenario8,
+    HazardScenario.HazardScenario9,
+    HazardScenario.HazardScenario10,
+    HazardScenario.HazardScenario11,
+    HazardScenario.HazardScenario12,
+    HazardScenario.HazardScenario13,
+    HazardScenario.HazardScenario14,
+    HazardScenario.HazardScenario15,
+    HazardScenario.HazardScenario16,
+    HazardScenario.HazardScenario17,
+    HazardScenario.HazardScenario18,
+    HazardScenario.HazardScenario19,
+    HazardScenario.HazardScenario20,
+    HazardScenario.HazardScenario21,
+    HazardScenario.HazardScenario22,
+    HazardScenario.HazardScenario23,
+    HazardScenario.HazardScenario24,
+    HazardScenario.HazardScenario25,
+    HazardScenario.HazardScenario26,
+  ];
+
 
   /*
    * Response Plans
@@ -229,6 +300,20 @@ export class Constants {
   static MAX_BULLET_POINTS_VAL_2: number = 5;
 
   static RESPONSE_PLANS_SECTION_SETTINGS = [
+    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT",
+    "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.PLAN_CONTEXT",
+    "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BASIC_INFORMATION",
+    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT",
+    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT",
+    "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.EXPECTED_RESULTS",
+    "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT",
+    "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.MONITORING_ACC_LEARNING",
+    "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.DOUBLE_COUNTING",
+    "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET"
+  ];
+
+  static RESPONSE_PLANS_SECTION_SETTINGS_NETWORK = [
+    "NETWORK.NETWORK_AGENCIES",
     "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT",
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.PLAN_CONTEXT",
     "AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BASIC_INFORMATION",
@@ -776,11 +861,7 @@ export class Constants {
     "GLOBAL.COUNTRIES.ZW"
   ];
 
-  static HAZARD_CATEGORY = [
-    "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO4",
-    "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO24",
-    "GLOBAL.HAZARD_SCENARIOS.HAZARD_SCENARIO3"
-  ];
+
 
   static HAZARD_CATEGORY_ICON_CLASS = [
     "Icon--earthquake",
@@ -876,6 +957,11 @@ export class Constants {
     '#9012FE'
   ];
 
+  static NETWORK_USER_PATHS = [
+    "administratorNetwork",
+    "administratorNetworkCountry"
+  ];
+
   static USER_PATHS = [
     ,
     'globalDirector',
@@ -929,6 +1015,12 @@ export class Constants {
   static EMAIL_DUPLICATE_ERROR = "auth/email-already-in-use";
 
   static INDICATOR_STATUS = ["RISK_MONITORING.INDICATOR_STATUS.GREEN","RISK_MONITORING.INDICATOR_STATUS.AMBER","RISK_MONITORING.INDICATOR_STATUS.RED"];
+
+  //network view
+  static NETWORK_VIEW_VALUES = "network-view-values"
+  static NETWORK_VIEW_SELECTED_ID = "network-view-selected-id"
+  static NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID = "network-view-selected-network-country-id"
+  static NETWORK_CALENDAR= "network-calendar"
 }
 
 export enum FILE_SETTING {

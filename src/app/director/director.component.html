@@ -16,9 +16,9 @@
 
       <!--empty ribbon for director dashboard-->
       <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
-        <div *ngIf="approvalPlans.length == 0">
+        <div *ngIf="approvalPlans.length == 0 && approvalPlansNetwork.length ==0 && approvalPlansNetworkLocal.length ==0">
           <div class="Widget"
-               *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0">
+               *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && approvalPlans.length == 0">
             <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
             <div class="My-Tasks container-fluid">
               <div class="Empty--ribbon">
@@ -32,7 +32,7 @@
       <!--my tasks-->
       <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
         <div class="Widget"
-             *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
+             *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0 || approvalPlansNetworkLocal.length>0">
           <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
           <br>
 
@@ -53,6 +53,41 @@
             </div>
           </div>
 
+          <!--response plans network-->
+          <div class="row" *ngFor="let plan of approvalPlansNetwork">
+            <div class="col-sm-9">
+              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                {{plan.timeUpdated ?
+                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
+              </button>
+            </div>
+          </div>
+
+          <!--response plans local network-->
+          <div class="row" *ngFor="let plan of approvalPlansNetworkLocal">
+            <div class="col-sm-9">
+              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                {{plan.timeUpdated ?
+                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
+              </button>
+            </div>
+          </div>
+
+          <!--actions and indicators-->
           <div
             *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ">
 
@@ -102,6 +137,7 @@
         </div>
       </div>
 
+      <!--regions-->
       <div class="Ribbon__section__wrap Spaced">
 
         <div *ngFor="let x of regions">

@@ -47,6 +47,7 @@ export class ActionsService {
         let filteredActions = [];
         actions.forEach(action => {
           if (action.asignee === uid && !action.isComplete) {
+            action["countryId"] = countryId
             filteredActions.push(action);
           }
         });
@@ -72,6 +73,7 @@ export class ActionsService {
         let filteredIndicators = [];
         indicators.forEach(indicator => {
           if (indicator.assignee === uid) {
+            indicator["countryId"] = countryId;
             filteredIndicators.push(indicator);
           }
         });
@@ -80,7 +82,7 @@ export class ActionsService {
 
     let countryIndicators = this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
       .flatMap(hazards => {
-        return Observable.from(hazards.map(hazard => hazard.$key));
+        return Observable.from(hazards.filter(hazard => hazard.isActive).map(hazard => hazard.$key));
       })
       .flatMap(hazardId => {
         return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardId, {
@@ -141,9 +143,9 @@ export class ActionsService {
     }
 
     if (action.dueDate && today > action.dueDate) {
-      title += "  "+this.translate.instant("WAS_DUE_ON");
+      title += "  " + this.translate.instant("WAS_DUE_ON");
     } else {
-      title += "  "+this.translate.instant("NEEDS_TO_BE_COMPLETED");
+      title += "  " + this.translate.instant("NEEDS_TO_BE_COMPLETED");
     }
 
     return title;
@@ -162,9 +164,9 @@ export class ActionsService {
     }
 
     if (indicator.dueDate && today > indicator.dueDate) {
-      title += "  "+this.translate.instant("WAS_DUE_ON");
+      title += "  " + this.translate.instant("WAS_DUE_ON");
     } else {
-      title += "  "+this.translate.instant("NEEDS_TO_BE_COMPLETED");
+      title += "  " + this.translate.instant("NEEDS_TO_BE_COMPLETED");
     }
 
     return title;
@@ -190,28 +192,33 @@ export class ActionsService {
           modelAlert.infoNotes = alert.infoNotes;
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
           modelAlert.timeCreated = alert.timeCreated;
+          modelAlert.timeUpdated = alert.timeUpdated;
           modelAlert.createdBy = alert.createdBy;
           if (alert.updatedBy) {
             modelAlert.updatedBy = alert.updatedBy;
           }
 
           let affectedAreas: ModelAffectedArea[] = [];
-          let ids: string[] = Object.keys(alert.affectedAreas);
-          ids.forEach(id => {
-            let modelAffectedArea = new ModelAffectedArea();
-            let affectedCountry = alert.affectedAreas[id]['country'];
-            let affectedLevel1 = alert.affectedAreas[id]['level1'];
-            let affectedLevel2 = alert.affectedAreas[id]['level2'];
+          if (alert.affectedAreas) {
+            let ids: string[] = Object.keys(alert.affectedAreas);
+            ids.forEach(id => {
+              let modelAffectedArea = new ModelAffectedArea();
+              let affectedCountry = alert.affectedAreas[id]['country'];
+              let affectedLevel1 = alert.affectedAreas[id]['level1'];
+              let affectedLevel2 = alert.affectedAreas[id]['level2'];
 
-            modelAffectedArea.affectedCountry = affectedCountry;
-            modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
-            modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
+              modelAffectedArea.affectedCountry = affectedCountry;
+              modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
+              modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
 
-            affectedAreas.push(modelAffectedArea);
-          });
-          modelAlert.affectedAreas = affectedAreas;
-          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
-          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+              affectedAreas.push(modelAffectedArea);
+              modelAlert.affectedAreas = affectedAreas;
+            });
+          }
+          if (alert.approval['countryDirector']) {
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          }
           alertList.push(modelAlert);
         });
         return alertList;
@@ -262,7 +269,7 @@ export class ActionsService {
               if (affectedArea.affectedLevel1 > -1) {
                 obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
               }
-              if (affectedArea.affectedLevel2 > -1) {
+              if (affectedArea.affectedLevel2 > -1 && value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1]) {
                 obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
               }
               affectedAreasToDisplay.push(obj);
@@ -469,7 +476,7 @@ export class ActionsService {
       });
   }
 
-  updateAlert(alert: ModelAlert, alertLevelBefore: number, countryId: string, agencyId: string) {
+  updateAlert(alert: ModelAlert, alertLevelBefore: number, countryId: string, agencyId: string, networkCountryId?, networkId?, networkViewValues?) {
     console.log("update alert");
     let updateData = {};
     let areaData = {};
@@ -489,8 +496,8 @@ export class ActionsService {
     updateData["affectedAreas"] = areaData;
     updateData["alertLevel"] = alert.alertLevel;
     let countryDirectorData = {};
-    // countryDirectorData[alert.approvalDirectorId] = alert.approvalStatus;
-    countryDirectorData[alert.approvalCountryId] = alert.approvalStatus;
+    countryDirectorData[alert.approvalDirectorId] = alert.approvalStatus;
+    // countryDirectorData[alert.approvalCountryId] = alert.approvalStatus;
     let countryDirector = {};
     countryDirector["countryDirector"] = countryDirectorData;
     updateData["approval"] = countryDirector;
@@ -509,7 +516,14 @@ export class ActionsService {
     updateData["updatedBy"] = alert.updatedBy;
 
     console.log(updateData);
-    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alert.id).set(updateData).then(() => {
+    if (networkCountryId) {
+
+    } else if (networkCountryId == '' && networkId) {
+
+    } else {
+
+    }
+    this.af.database.object(networkCountryId == '' && networkId ? Constants.APP_STATUS + "/alert/" + networkId + "/" + alert.id : networkCountryId && networkCountryId != '' ? Constants.APP_STATUS + "/alert/" + networkCountryId + "/" + alert.id : Constants.APP_STATUS + "/alert/" + countryId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;
       let riskNameTranslated = "";
@@ -531,22 +545,26 @@ export class ActionsService {
       notification.time = new Date().getTime();
 
       this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, alertChangedNotificationSetting, agencyId, countryId);
-
-      this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
+      console.log(networkViewValues)
+      networkCountryId == '' && networkId ? this.router.navigate(networkViewValues ? ['/network/local-network-dashboard', networkViewValues] : ['/network/local-network-dashboard']) : networkCountryId && networkCountryId != '' ? this.router.navigate(networkViewValues ? ['/network-country/network-dashboard', networkViewValues] : ['/network-country/network-dashboard']) : this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME)
     }, error => {
       console.log(error.message);
     });
   }
 
-  getAlertsForDirectorToApprove(uid, countryId) {
+  getAlertsForDirectorToApprove(uid, countryId, isNetwork?) {
+    console.log(countryId)
+    console.log(uid)
+    console.log(isNetwork)
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
-        orderByChild: "approval/countryDirector/" + countryId,
+        orderByChild: isNetwork ? "approval/countryDirector/" + countryId : "approval/countryDirector/" + countryId,
         equalTo: AlertStatus.WaitingResponse
       }
     })
       .map(alerts => {
+        console.log(alerts)
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();
@@ -630,14 +648,241 @@ export class ActionsService {
       });
   }
 
-  approveRedAlert(countryId, alertId, uid) {
-    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+  getAlertsForDirectorToApproveNetwork(countryId, networkCountryId, networkId) {
+
+    return this.af.database.list(Constants.APP_STATUS + "/alert/" + networkCountryId, {
+      query: {
+        orderByChild: "approval/countryDirector/" + countryId,
+        equalTo: AlertStatus.WaitingResponse
+      }
+    })
+      .map(alerts => {
+        console.log(alerts)
+        let alertList = [];
+        alerts.forEach(alert => {
+          let modelAlert = new ModelAlert();
+          modelAlert.id = alert.$key;
+          modelAlert.alertLevel = alert.alertLevel;
+          modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.otherName = alert.otherName;
+          modelAlert.otherName = alert.otherName;
+          modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+          modelAlert.infoNotes = alert.infoNotes;
+          modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+          modelAlert.timeCreated = alert.timeCreated;
+          modelAlert.createdBy = alert.createdBy;
+          modelAlert.networkCountryId = networkCountryId;
+          modelAlert.networkId = networkId
+
+          let affectedAreas: ModelAffectedArea[] = [];
+          let ids: string[] = Object.keys(alert.affectedAreas);
+          ids.forEach(id => {
+            let modelAffectedArea = new ModelAffectedArea();
+            let affectedCountry = alert.affectedAreas[id]['country'];
+            let affectedLevel1 = alert.affectedAreas[id]['level1'];
+            let affectedLevel2 = alert.affectedAreas[id]['level2'];
+
+            modelAffectedArea.affectedCountry = affectedCountry;
+            modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
+            modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
+
+            affectedAreas.push(modelAffectedArea);
+          });
+          modelAlert.affectedAreas = affectedAreas;
+
+          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+
+          alertList.push(modelAlert);
+        });
+        return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          if (alert.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
+              .first()
+              .subscribe(nameObj => {
+                alert.otherName = nameObj.name;
+              });
+          }
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          this.userService.getUser(alert.createdBy)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              alert.createdByName = user.firstName + " " + user.lastName
+            });
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          let affectedAreasToDisplay: any[] = [];
+          alert.affectedAreas.forEach(affectedArea => {
+            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+              let obj = {
+                country: "",
+                areas: ""
+              };
+              if (affectedArea.affectedCountry > -1) {
+                obj.country = this.getCountryNameById(affectedArea.affectedCountry);
+              }
+              if (affectedArea.affectedLevel1 > -1) {
+                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+              }
+              if (affectedArea.affectedLevel2 > -1) {
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+              }
+              affectedAreasToDisplay.push(obj);
+            });
+          });
+          alert.affectedAreasDisplay = affectedAreasToDisplay;
+        });
+      });
+  }
+
+  getAlertsForDirectorToApproveLocalNetwork(countryId, networkId) {
+
+    return this.af.database.list(Constants.APP_STATUS + "/alert/" + networkId, {
+      query: {
+        orderByChild: "approval/countryDirector/" + countryId,
+        equalTo: AlertStatus.WaitingResponse
+      }
+    })
+      .map(alerts => {
+        console.log(alerts)
+        let alertList = [];
+        alerts.forEach(alert => {
+          let modelAlert = new ModelAlert();
+          modelAlert.id = alert.$key;
+          modelAlert.alertLevel = alert.alertLevel;
+          modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.otherName = alert.otherName;
+          modelAlert.otherName = alert.otherName;
+          modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+          modelAlert.infoNotes = alert.infoNotes;
+          modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+          modelAlert.timeCreated = alert.timeCreated;
+          modelAlert.createdBy = alert.createdBy;
+          modelAlert.networkId = networkId;
+
+          let affectedAreas: ModelAffectedArea[] = [];
+          let ids: string[] = Object.keys(alert.affectedAreas);
+          ids.forEach(id => {
+            let modelAffectedArea = new ModelAffectedArea();
+            let affectedCountry = alert.affectedAreas[id]['country'];
+            let affectedLevel1 = alert.affectedAreas[id]['level1'];
+            let affectedLevel2 = alert.affectedAreas[id]['level2'];
+
+            modelAffectedArea.affectedCountry = affectedCountry;
+            modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
+            modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
+
+            affectedAreas.push(modelAffectedArea);
+          });
+          modelAlert.affectedAreas = affectedAreas;
+
+          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+
+          alertList.push(modelAlert);
+        });
+        return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          if (alert.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
+              .first()
+              .subscribe(nameObj => {
+                alert.otherName = nameObj.name;
+              });
+          }
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          this.userService.getUser(alert.createdBy)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              alert.createdByName = user.firstName + " " + user.lastName
+            });
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          let affectedAreasToDisplay: any[] = [];
+          alert.affectedAreas.forEach(affectedArea => {
+            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+              let obj = {
+                country: "",
+                areas: ""
+              };
+              if (affectedArea.affectedCountry > -1) {
+                obj.country = this.getCountryNameById(affectedArea.affectedCountry);
+              }
+              if (affectedArea.affectedLevel1 > -1) {
+                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+              }
+              if (affectedArea.affectedLevel2 > -1) {
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+              }
+              affectedAreasToDisplay.push(obj);
+            });
+          });
+          alert.affectedAreasDisplay = affectedAreasToDisplay;
+        });
+      });
+  }
+
+  approveRedAlert(countryId, alertId, uid, isNetwork?) {
+    if (isNetwork) {
+      console.log(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId)
+      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+
+      //TODO send alert to each country office in the network with a notification to their country directors
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+    }
+
+  }
+
+  approveRedAlertNetwork(countryId, alertId, networkCountryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/alert/" + networkCountryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+  }
+
+  getAlertObj(countryId, alertId) {
+    return this.af.database.object(Constants.APP_STATUS + "/alert/"+countryId + "/" + alertId)
+  }
+
+  copyRedAlertOverFromNetwork(agencyCountryMap, alertId, alertObj) {
+    agencyCountryMap.forEach((countryId) => {
+      console.log(countryId)
+      let approvalDta = {}
+      approvalDta[countryId] = AlertStatus.WaitingResponse
+      alertObj["approval"]["countryDirector"] = approvalDta
+      alertObj["timeCreated"] = moment.utc().valueOf()
+      alertObj["timeUpdated"] = moment.utc().valueOf()
+      delete alertObj.$key
+      delete alertObj.$exists
+      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId).set(alertObj)
+    })
+
   }
 
   rejectRedAlert(countryId, alertId, uid) {
     let update = {};
     update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
     update["/alert/" + countryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
+    this.af.database.object(Constants.APP_STATUS).update(update);
+  }
+
+  rejectRedAlertNetwork(countryId, alertId, networkCountryId) {
+    let update = {};
+    update["/alert/" + networkCountryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + networkCountryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
@@ -661,6 +906,27 @@ export class ActionsService {
       });
   }
 
+  getResponsePlanForCountryDirectorToApprovalNetwork(countryId, networkCountryId) {
+    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + networkCountryId, ({
+      query: {
+        orderByChild: "/approval/countryDirector/" + countryId,
+        equalTo: ApprovalStatus.WaitingApproval
+      }
+    }))
+      .map(plans => {
+        plans.forEach(plan => {
+          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              plan["displayName"] = user.firstName + " " + user.lastName;
+            });
+          plan["networkCountryId"] = networkCountryId
+        });
+        return plans;
+      });
+  }
+
   getResponsePlanFoGlobalDirectorToApproval(countryId, uid, agencyId) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, ({
       query: {
@@ -678,6 +944,7 @@ export class ActionsService {
               plan["countryId"] = countryId;
             });
         });
+
         return plans;
       });
   }

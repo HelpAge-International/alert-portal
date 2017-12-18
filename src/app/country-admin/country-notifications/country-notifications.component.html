@@ -1,4 +1,13 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<ng-container *ngIf="!networkViewValues; else networkCountry">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</ng-container>
 
-<app-notifications [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="agencyId"></app-notifications>
+<ng-template #networkCountry>
+  <app-country-admin-header></app-country-admin-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-template>
+
+
+<app-notifications [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId"
+                   [agencyId]="agencyId"></app-notifications>

@@ -9,7 +9,8 @@ import {ApprovalStatus, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import * as firebase from "firebase";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
+import {NetworkService} from "../../services/network.service";
+import {ModelAgency} from "../../model/agency.model";
 
 declare const jQuery: any;
 
@@ -43,7 +44,18 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private rejectToggleMap = new Map();
   private rejectComment: string = "";
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private responsePlanService: ResponsePlanService) {
+  private networkCountryId: string;
+  private agencyCountryMap = new Map<string, string>();
+  private agencyRegionMap = new Map<string, string>();
+  private agenciesNeedToApprove: ModelAgency[];
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private userService: UserService,
+              private networkService: NetworkService,
+              private responsePlanService: ResponsePlanService) {
   }
 
   ngOnInit() {
@@ -91,7 +103,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
                       if (this.accessToken === validationToken.token) {
                         let expiry = validationToken.expiry;
                         let currentTime = moment.utc();
-                        let tokenExpiryTime = moment.utc(expiry)
+                        let tokenExpiryTime = moment.utc(expiry);
 
                         if (currentTime.isBefore(tokenExpiryTime))
                           invalid = false;
@@ -122,7 +134,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
           });
 
         } else {
-          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId) => {
             this.uid = user.auth.uid;
             this.userType = userType;
             this.agencyId = agencyId;
@@ -143,6 +155,9 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
                 if (params["countryId"]) {
                   this.countryId = params["countryId"];
                 }
+                if (params["networkCountryId"]) {
+                  this.networkCountryId = params["networkCountryId"];
+                }
                 if (params["id"]) {
                   this.responsePlanId = params["id"];
                   this.loadResponsePlan(this.responsePlanId);
@@ -156,12 +171,36 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlan(responsePlanId: string) {
     console.log(this.countryId);
-    this.responsePlanService.getResponsePlan(this.countryId, responsePlanId)
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    this.responsePlanService.getResponsePlan(id, responsePlanId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(responsePlan => {
         this.loadedResponseplan = responsePlan;
+        console.log(this.loadedResponseplan);
         this.handlePlanApproval(this.loadedResponseplan);
+        if (this.networkCountryId) {
+          this.handleNetworkAgencyApproval(responsePlan);
+        }
       });
+  }
+
+  private handleNetworkAgencyApproval(plan) {
+    let agencyCountryObj = plan.participatingAgencies;
+    this.agenciesNeedToApprove = [];
+    Object.keys(agencyCountryObj).forEach(agencyId => {
+      this.agencyCountryMap.set(agencyId, agencyCountryObj[agencyId]);
+      this.userService.getAgencyModel(agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(model => {
+          this.agenciesNeedToApprove.push(model);
+        });
+      //prepare agency region map
+      this.networkService.getRegionIdForCountry(agencyCountryObj[agencyId])
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(regionId => {
+          this.agencyRegionMap.set(agencyId, regionId);
+        });
+    });
   }
 
   private handlePlanApproval(responsePlan) {
@@ -186,7 +225,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
                 this.userService.getUser(partner.id)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(user => {
-                    console.log(user)
+                    console.log(user);
                     partner.name = user.firstName + " " + user.lastName;
                   });
               } else {
@@ -241,7 +280,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
     } else {
       let approvalUid = this.getRightUidForApproval();
-      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
     }
   }
 
@@ -279,7 +319,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
     } else {
       let approvalUid = this.getRightUidForApproval();
-      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
     }
   }
 
@@ -300,11 +341,42 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+  shouldShowSuccess(plan, agencyId): boolean {
+    let success = true;
+    if (plan.approval && plan.approval['countryDirector'] && plan.approval['countryDirector'][this.agencyCountryMap.get(agencyId)] != ApprovalStatus.Approved) {
+      success = false;
+    }
+    if (plan.approval && plan.approval['regionDirector'] && plan.approval['regionDirector'][this.agencyRegionMap.get(agencyId)] && plan.approval['regionDirector'][this.agencyRegionMap.get(agencyId)] != ApprovalStatus.Approved) {
+      success = false;
+    }
+    if (plan.approval && plan.approval['globalDirector'] && plan.approval['globalDirector'][agencyId] && plan.approval['globalDirector'][agencyId] != ApprovalStatus.Approved) {
+      success = false;
+    }
+    return success;
+  }
+
+  approvalText(plan, agencyId): string {
+    let text = "tt";
+    if (plan.approval && !plan.approval['countryDirector']) {
+      text = "RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION";
+    }
+    if (plan.approval && plan.approval['countryDirector'] && plan.approval['countryDirector'][this.agencyCountryMap.get(agencyId)] == ApprovalStatus.WaitingApproval ||
+      plan.approval && plan.approval['regionDirector'] && plan.approval['regionDirector'][this.agencyRegionMap.get(agencyId)] == ApprovalStatus.WaitingApproval ||
+      plan.approval && plan.approval['globalDirector'] && plan.approval['globalDirector'][agencyId] == ApprovalStatus.WaitingApproval) {
+      text = "RESPONSE_PLANS.HOME.WAITING_APPROVAL";
+    }
+    if (this.shouldShowSuccess(plan, agencyId)) {
+      text = "RESPONSE_PLANS.HOME.APPROVED";
+    }
+    return text;
+  }
+
   /**
    * Private functions
    */
 
   private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
+    this.router.navigateByUrl(Constants.LOGIN_PATH).then();
   }
+
 }

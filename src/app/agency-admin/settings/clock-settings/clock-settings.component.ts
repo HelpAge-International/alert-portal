@@ -46,27 +46,23 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+      this.agencyId = agencyId;
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(id => {
-          this.agencyId = id.$value;
-          this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(_ => {
-              _.map(setting => {
-                let settingKey = setting.$key;
-                delete setting.$key;
-                delete setting.$exists;
-                this.settings[settingKey] = setting;
-              });
+        .subscribe(_ => {
+          _.map(setting => {
+            let settingKey = setting.$key;
+            delete setting.$key;
+            delete setting.$exists;
+            this.settings[settingKey] = setting;
+          });
 
-              this.riskMonitorShowLogForFreq = new Frequency(this.settings['riskMonitoring']['showLogsFrom']);
-              this.riskMonitorHazardFreq = new Frequency(this.settings['riskMonitoring']['hazardsValidFor']);
-              this.preparednessFreq = new Frequency(this.settings['preparedness']);
-              this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
-            });
+          this.riskMonitorShowLogForFreq = new Frequency(this.settings['riskMonitoring']['showLogsFrom']);
+          this.riskMonitorHazardFreq = new Frequency(this.settings['riskMonitoring']['hazardsValidFor']);
+          this.preparednessFreq = new Frequency(this.settings['preparedness']);
+          this.responsePlansFreq = new Frequency(this.settings['responsePlans']);
         });
     });
   }

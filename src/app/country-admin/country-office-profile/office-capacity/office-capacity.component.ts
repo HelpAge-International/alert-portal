@@ -57,7 +57,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.foodSecurityAndLivelihoods,
     ResponsePlanSectors.protection,
     ResponsePlanSectors.education,
-    ResponsePlanSectors.campManagement,
+    ResponsePlanSectors.campmanagement,
     ResponsePlanSectors.other
   ];
 
@@ -202,8 +202,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
       case ResponsePlanSectors.education:
         this.sectorImgPathMap.set(surge.$key, "education.svg");
         break;
-      case ResponsePlanSectors.campManagement:
-        this.sectorImgPathMap.set(surge.$key, "camp.svg");
+      case ResponsePlanSectors.campmanagement:
+        this.sectorImgPathMap.set(surge.$key, "campmanagement.svg");
         break;
     }
   }

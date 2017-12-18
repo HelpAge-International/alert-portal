@@ -514,6 +514,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         });
       }
     }
+    console.log('surely route form here?')
   }
 
   public getNow() {
@@ -678,6 +679,8 @@ export class CreateEditPrepActionHolder {
   public hazards: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
   public dueDate: number;
   public asignee: string = "";
+  public createdByAgencyId: string;
+  public createdByCountryId: string;
   public department: string;
   public requireDoc: boolean;
   public type: number = -1;

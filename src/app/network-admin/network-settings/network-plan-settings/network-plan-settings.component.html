@@ -1,0 +1,58 @@
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-header></app-network-header>
+  <app-network-menu></app-network-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <app-network-setting-menus [isLocalNetworkAdmin]="isLocalNetworkAdmin"></app-network-setting-menus>
+
+    <div class="Sub-header-title__wrap">
+      <h2>{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.TITLE_TEXT" | translate}}</h2>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="saveChanges()">
+        {{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.SAVE" | translate}}
+      </button>
+      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" (click)="cancelChanges()">
+        {{"GLOBAL.CANCEL" | translate}}
+      </button>
+    </div>
+    <h4 class="System-admin--form-wrap">
+      {{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.SECTIONS_SELECTION" | translate}}
+    </h4>
+    <br>
+    <div class="row Small-spaced align-items-center Header no-gutters">
+      <div class="col-lg-9 col-md-9 col-sm-6 col-6">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.SECTIONS" |
+        translate}}
+      </div>
+      <div class="col-lg-3 col-md-3 col-sm-6 col-6">{{"GLOBAL.STATUS" | translate}}</div>
+    </div>
+
+    <div class="row Line-row Small-spaced align-items-center no-gutters" *ngFor="let section of sections; index as i">
+      <ng-container *ngIf="i!==0">
+        <div class="col-lg-1 col-md-1 col-sm-1 col-1 text-center">{{i}}.</div>
+        <div class="col-lg-8 col-md-8 col-sm-5 col-5">{{RESPONSE_PLANS_SECTION_SETTINGS[i] | translate}}</div>
+        <div class="col-lg-3 col-md-3 col-sm-6 col-6">
+          <div class="btn btn_fixed_width"
+               [ngClass]="{'btn-success': section, 'btn-outline-success': !section}"
+               (click)="changeStatus(i, true)">{{"GLOBAL.ENABLED" | translate}}
+          </div>
+          <div class="btn btn_fixed_width"
+               [ngClass]="{'btn-danger': !section, 'btn-outline-danger': section}"
+               (click)="changeStatus(i, false)">{{"GLOBAL.DISABLED" | translate}}
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+
+  </div>
+</div>

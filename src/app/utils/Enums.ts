@@ -2,6 +2,20 @@
  * Created by Sanjaya on 07/03/2017.
  */
 
+export enum NetworkMessageRecipientType{
+  AllUsers = 0,
+  NetworkCountryAdmins = 1,
+  GlobalDirectors = 2,
+  GlobalUsers = 3,
+  RegionalDirectors = 4,
+  CountryAdmins = 5,
+  CountryDirectors = 6,
+  ERTLeaders = 7,
+  ERTs = 8,
+  Donors = 9,
+  Partners = 10
+}
+
 export enum ActionType {
   chs = 0,
   mandated = 1,
@@ -23,7 +37,6 @@ export enum GenericActionCategory {
   EmergencyResponseTeamManagement = 11
 }
 
-// TODO - Update when Ryan provides actual Hazard Scenario names
 export enum HazardScenario {
   HazardScenario0 = 0,
   HazardScenario1 = 1,
@@ -125,6 +138,11 @@ export enum StaffPosition {
   OfficeStarff = 2
 }
 
+export enum NetworkUserAccountType {
+  NetworkAdmin = 100,
+  NetworkCountryAdmin = 101
+}
+
 export enum UserType {
   All = 0,
   GlobalDirector = 1,
@@ -140,7 +158,10 @@ export enum UserType {
   AgencyAdmin = 11,
   SystemAdmin = 12,
   PartnerUser = 13,
-  PartnerOrganisation = 14
+  PartnerOrganisation = 14,
+  LocalAgencyAdmin = 15,
+  AgencyDirector = 16,
+  AgencyUser = 17
 }
 export enum OfficeType {
   All = 0,
@@ -211,6 +232,20 @@ export enum ResponsePlanSectionSettings {
   Budget = 9
 }
 
+export enum NetworkResponsePlanSectionSettings {
+  ParticipatingAgencies = 0,
+  PlanDetails = 1,
+  PlanContext = 2,
+  BasicInformation = 3,
+  ResponseObjectives = 4,
+  TargetPopulation = 5,
+  ExpectedResults = 6,
+  Activities = 7,
+  MonitoringAccLearning = 8,
+  DoubleCounting = 9,
+  Budget = 10
+}
+
 export enum ResponsePlanSectors {
   wash = 0,
   health = 1,
@@ -219,7 +254,7 @@ export enum ResponsePlanSectors {
   foodSecurityAndLivelihoods = 4,
   protection = 5,
   education = 6,
-  campManagement = 7,
+  campmanagement = 7,
   other = 8
 }
 
@@ -235,6 +270,16 @@ export enum ModuleName {
   RiskMonitoring = 3,
   CountryOfficeProfile = 4,
   ResponsePlanning = 5
+}
+
+export enum ModuleNameNetwork {
+  MinimumPreparednessActions = 0,
+  AdvancedPreparednessActions = 1,
+  CHSPreparednessActions = 2,
+  RiskMonitoring = 3,
+  ConflictIndicators = 4,
+  CountryOfficeProfile = 5,
+  ResponsePlanning = 6
 }
 
 
@@ -1313,7 +1358,8 @@ export class Countries3ISO {
   }
 
   public get(code: Countries): string {
-    return this.map.get(code);
+    console.log(code)
+    return this.map.get(Number(code));
   }
 }
 
@@ -1475,6 +1521,7 @@ export enum Month {
 
 export enum StockType {
   Country = 0,
-  External = 1
+  External = 1,
+  Network = 2
 }
 

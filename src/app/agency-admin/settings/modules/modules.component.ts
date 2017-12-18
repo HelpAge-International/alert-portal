@@ -54,25 +54,22 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+      this.agencyId = agencyId;
+
+      this.af.database.list(Constants.APP_STATUS + '/module/' + this.agencyId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(id => {
-          this.agencyId = id.$value;
-          this.af.database.list(Constants.APP_STATUS + '/module/' + this.agencyId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(_ => {
-              this.ModuleName.map(moduleName => {
-                this.modules[moduleName] = {$key: moduleName, privacy: -1, status: false};
-              });
+        .subscribe(_ => {
+          this.ModuleName.map(moduleName => {
+            this.modules[moduleName] = {$key: moduleName, privacy: -1, status: false};
+          });
 
-              _.map(module => {
-                this.modules[module.$key] = module;
-              });
+          _.map(module => {
+            this.modules[module.$key] = module;
+          });
 
-              this.populateEnabledButtonsList();
-            });
+          this.populateEnabledButtonsList();
         });
     });
   }

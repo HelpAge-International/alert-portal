@@ -14,7 +14,7 @@ export class NetworkComponent implements OnInit {
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
     });
   }

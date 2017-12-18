@@ -1,11 +1,14 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {ModelSeason} from "../../model/season.model";
 import {ColourSelector} from "../../utils/ColourSelector";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NetworkService} from "../../services/network.service";
+import {LocalStorageService} from "angular-2-local-storage";
+
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
 
@@ -45,14 +48,67 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   public addSeasonEndDate: number;
   public addSeasonStartDate: number;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  //for network
+  @Input() isNetworkCountry: boolean;
+  @Input() isLocalNetworkAdmin: boolean;
+  private networkCountryId: string;
+  private isViewing: boolean = false;
+  private networkViewValues: {};
+
+  constructor(private pageControl: PageControlService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private storageService: LocalStorageService,
+              private router: Router) {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.getCountryId().then(() => {
-          this.getAllSeasonsForCountryId(this.countryId);
+    this.route.params.subscribe((params: Params) => {
+      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+        this.isViewing = params["isViewing"];
+        this.countryId = params["countryId"];
+        this.networkCountryId = params["networkCountryId"];
+        this.uid = params["uid"]
+        this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      }
+      this.isViewing ? this.getAllSeasonsForCountryId(this.networkCountryId) : this.isNetworkCountry ? this.networkCountryAccess() : this.isLocalNetworkAdmin ? this.localNetworkAccess() : this.normalAccess();
+    })
+
+  }
+
+  private normalAccess() {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.countryId = countryId;
+      this.getAllSeasonsForCountryId(this.countryId);
+    });
+  }
+
+  private networkCountryAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkCountryId = selection["networkCountryId"];
+          this.getAllSeasonsForCountryId(this.networkCountryId);
+        });
+    });
+  }
+
+  private localNetworkAccess() {
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      //get network id
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+          this.networkCountryId = selection["id"];
+          this.getAllSeasonsForCountryId(this.networkCountryId);
         });
     });
   }
@@ -60,6 +116,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    this.clearStorage()
   }
 
 
@@ -96,6 +153,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    * me to not have to track which item has changed opposed to list
    */
   public getAllSeasonsForCountryId(countryId: string) {
+    let agencyCountry = this.storageService.get(Constants.NETWORK_CALENDAR);
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
@@ -108,24 +166,26 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
           this.seasonEvents.push(x);
           i++;
         });
-        this.initCalendar();
-        // Init map here after replacing the entire array
+        !agencyCountry ? this.initCalendar()
+          :
+          Object.keys(agencyCountry).forEach(agencyId => {
+            console.log(agencyId)
+            console.log(agencyCountry[agencyId])
+            console.log(agencyCountry[agencyId][1])
+            //data pulled from storage is strange, need to check
+            this.af.database.object(Constants.APP_STATUS + "/season/" + agencyCountry[agencyId][1], {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(snapshot => {
+                let i = 100;
+                snapshot.forEach((seasonInfo) => {
+                  let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
+                  this.seasonEvents.push(x);
+                  i++;
+                });
+                this.initCalendar();
+              })
+          })
       });
-  }
-
-  /**
-   * Get the country Id
-   */
-  private getCountryId() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + "/countryId", {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryId) => {
-          this.countryId = countryId.val();
-          res(true);
-        });
-    });
-    return promise;
   }
 
   /**
@@ -135,7 +195,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     // Blank calendar object which will allow the full span to load properly of the calendar
     let daysPlusMinus = DashboardSeasonalCalendarComponent.RANGE_SPAN_DAYS;
     let d = new Date();
-    return new ModelSeason("#00131D50", "Name", d.getTime() - (daysPlusMinus * (1000 * 60 * 60 * 24)),  d.getTime() + (daysPlusMinus * (1000 * 60 * 60 * 24)))
+    return new ModelSeason("#00131D50", "Name", d.getTime() - (daysPlusMinus * (1000 * 60 * 60 * 24)), d.getTime() + (daysPlusMinus * (1000 * 60 * 60 * 24)))
   }
 
   /**
@@ -196,7 +256,8 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     console.log(this.addSeasonColour);
     let season: ModelSeason = new ModelSeason(this.addSeasonColour, this.addSeasonName, this.addSeasonStart, this.addSeasonEnd);
     console.log(season);
-    this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryId + "/").push(season);
+    let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
+    this.af.database.list(Constants.APP_STATUS + "/season/" + id + "/").push(season);
     // Below line wasn't working when I was trying to hide it!
     // jQuery("#add_calendar").modal("hide");
   }
@@ -229,13 +290,15 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     console.log(season);
     console.log(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey);
 
-    this.af.database.object(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey).update(season);
+    let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
+    this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).update(season);
     // Below line wasn't working when I was trying to hide it!
     // jQuery("#add_calendar").modal("hide");
   }
 
   public deleteSeason() {
-    this.af.database.object(Constants.APP_STATUS + "/season/" + this.countryId + "/" + this.editSeasonKey).remove();
+    let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
+    this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).remove();
   }
 
   public setCurrentColour(colourCode: string) {
@@ -247,7 +310,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   }
 
   public static convertUTCToYYYYMMDD(date: number) {
-    return  new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
+    return new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
   }
 
   public selectStartDate(date) {
@@ -269,6 +332,10 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     this.editSeasonKey = undefined;
     jQuery("#add_calendar").modal("show");
   }
+
+  clearStorage() {
+    this.storageService.remove(Constants.NETWORK_CALENDAR)
+  }
 }
 
 /**
@@ -279,7 +346,7 @@ export class ChronolineEvent {
   private title: string;
   private eventHeight: number;
   private section: 1;
-  private attrs: {fill: string, stroke: string};
+  private attrs: { fill: string, stroke: string };
   private click;
 
   constructor() {
@@ -303,7 +370,7 @@ export class ChronolineEvent {
     event.section = 1;
     event.attrs.fill = season.colorCode;
     event.attrs.stroke = season.colorCode;
-    event.click = function() {
+    event.click = function () {
       component.addSeasonName = season.name;
       component.addSeasonStart = season.startTime;
       component.addSeasonEnd = season.endTime;

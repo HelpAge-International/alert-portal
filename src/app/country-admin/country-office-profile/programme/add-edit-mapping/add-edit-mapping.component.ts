@@ -34,7 +34,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.foodSecurityAndLivelihoods,
     ResponsePlanSectors.protection,
     ResponsePlanSectors.education,
-    ResponsePlanSectors.campManagement,
+    ResponsePlanSectors.campmanagement,
     ResponsePlanSectors.other
   ];
 

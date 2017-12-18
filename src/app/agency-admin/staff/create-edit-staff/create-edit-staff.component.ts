@@ -457,9 +457,13 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     staffData["/userPublic/" + uid + "/"] = user;
     //add to group
     staffData["/group/systemadmin/allusersgroup/" + uid + "/"] = true;
-    staffData["/group/agency/" + this.uid + "/agencyallusersgroup/" + uid + "/"] = true;
+    staffData["/group/agency/" + this.agencyId + "/agencyallusersgroup/" + uid + "/"] = true;
     console.log("group path: " + (this.userType - 1) + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1]);
-    staffData["/group/agency/" + this.uid + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
+    staffData["/group/agency/" + this.agencyId + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
+    if (this.userType == UserType.CountryDirector || this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
+      staffData["/group/country/" + this.countryOffice.$key + "/countryallusersgroup/" + uid + "/"] = true;
+      staffData["/group/country/" + this.countryOffice.$key + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + uid + "/"] = true;
+    }
     //staff extra info
     let staff = new ModelStaff();
     staff.userType = Number(this.userType);

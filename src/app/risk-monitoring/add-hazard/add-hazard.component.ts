@@ -409,7 +409,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   createSeasonToCalendar(form: NgForm) {
     this.submitNewCalendar = false;
-    let dataToSave = form.value;
+    const dataToSave = form.value;
     if (this.addSeasonStart == null || this.addSeasonEnd == null || this.addSeasonColour == null) {
       this.alertMessage = new AlertMessageModel("RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_DATE");
       return;

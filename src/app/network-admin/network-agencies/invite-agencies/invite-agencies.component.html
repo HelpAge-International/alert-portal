@@ -1,0 +1,109 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap padding-top-none">
+  <div class="Full-page__wrap--inner">
+    <div class="Back--button"
+         routerLink="/network/network-agencies">
+      {{ "NETWORK.NETWORK_AGENCIES" | translate}}
+    </div>
+    <!-- Back button-->
+    <div class="row col-sm-12">
+      <h1 class="col-sm-9">{{"NETWORK.SELECT_AGENCIES" | translate}}</h1><br>
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)"
+                                              routerLink="/network/network-agencies">{{"GLOBAL.CANCEL"
+        | translate}}</a></div>
+      <div class="col-sm-2">
+        <button href="#inviteAgencies" data-toggle="modal" class="btn btn-primary text-uppercase"
+                (click)="showSelectedAgencies()">{{"NETWORK.SEND_INVITES" | translate}}
+        </button>
+      </div>
+    </div>
+
+    <div class="col-sm-12">
+      <p class="">{{"NETWORK.SELECT_AGENCIES_SUBTITLE" | translate}}</p>
+    </div>
+
+    <!-- Remember to use unique identifiers for the labels -->
+    <div *ngIf="agencies | async as agencyList; else empty" class="row Spaced">
+      <label *ngFor="let agency of agencyList; index as i" for="item{{i}}"
+             class="Checkbox--agency col-lg-3 col-md-4 col-sm-5"
+             [hidden]="existingAgencyIds && existingAgencyIds.indexOf(agency.id) !=-1"><img
+        class="margin-bottom-none"
+        src="{{agency.logoPath ? agency.logoPath : 'assets/images/donor/agency-preview.svg'}}">
+        <p>{{agency.name}}</p><input type="checkbox" name="Action-type" id="item{{i}}" #selection
+                                     (change)="toggleAgencySelection(agency, selection.checked)"></label>
+
+    </div>
+
+    <ng-template #empty>
+      <div class="Empty--ribbon">{{"NETWORK.NO_AGENCIES_AVAILABLE" | translate}}</div>
+    </ng-template>
+
+
+    <!--Lead Agency Selection Modal (first time agency is invited)-->
+    <div class="modal fade" id="leadAgencySelection" tabindex="-1" role="dialog" aria-labelledby="leadAgencySelection"
+         aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" class="Spaced-above">{{"NETWORK.LEAD_AGENCY_SELECTION" | translate}}</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="col-sm-12"><strong>{{"NETWORK.LEAD_AGENCY" | translate}}</strong></p>
+            <div class="col-sm-12 ">
+              <select name="leadAgency" id="leadAgency" class="form-control" [(ngModel)]="leadAgencyId">
+                <option value="undefined" hidden selected disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                <option *ngFor="let agencyId of selectedAgencies" [value]="agencyId">{{agencyNameMap.get(agencyId)}}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row Right-aligned Spaced col-sm-12">
+            <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                    (click)="saveAgenciesAndLead()">{{"SAVE" | translate}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Invite Agencies Modal (second modal triggered n'th time after the agency is invited)-->
+    <div class="modal fade" id="inviteAgencies" tabindex="-1" role="dialog" aria-labelledby="inviteAgencies"
+         aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" class="Spaced-above">{{"NETWORK.INVITE_AGENCIES" | translate}}</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center">
+            <p>{{"NETWORK.INVITE_AGENCY_CONTENT" | translate}}:</p>
+            <p *ngFor="let agencyId of selectedAgencies" class="font-weight-bold">
+              {{agencyNameMap.get(agencyId)}}</p>
+            <p>{{"ARE_YOU_SURE_TO_CONTINUE" | translate}}?</p>
+          </div>
+          <div class="row Right-aligned Spaced col-sm-12">
+            <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                    (click)="confirmInvitation()">{{"GLOBAL.CONFIRM" | translate}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>

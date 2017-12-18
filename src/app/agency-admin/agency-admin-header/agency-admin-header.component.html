@@ -13,6 +13,8 @@
                     <a class="dropdown-item" routerLink="/agency-admin/agency-account-settings">
                         {{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}
                     </a>
+                  <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+
                     <a class="dropdown-item" (click)="logout()">
                         {{"GLOBAL.LOGOUT" | translate}}
                     </a>
@@ -21,4 +23,27 @@
             <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="uid"></app-notification-badge>
         </ul>
     </div>
+</div>
+<!-- Modal for language selection-->
+<div class="modal fade" id="language-selection" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title">{{"GLOBAL.MODAL_HEADER" | translate}}</h2>
+      </div>
+      <div class="modal-body" >
+
+        <div *ngFor="let language of userLang">
+          <hr/>
+          <div class="hover-selection"> <a (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
 </div>

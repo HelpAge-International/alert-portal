@@ -31,7 +31,7 @@
           </option>
           <option [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false"
                   *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ?
-            (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}
+            (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}<span *ngIf="hazard.fromNetwork"> (From Network)</span>
           </option>
         </template>
       </select>
@@ -150,7 +150,7 @@
 
     <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above"
          *ngIf="indicatorData.geoLocation && indicatorData.affectedLocation && indicatorData.affectedLocation.length > 0">
-      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
+      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
       <div class="col-sm-12 row" *ngFor="let location of indicatorData.affectedLocation; let locationKey = index">
         <div class="col-sm-3">
           <div class="form-group-risk-frequency ">

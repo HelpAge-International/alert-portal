@@ -1,0 +1,81 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <!--<div class="Back&#45;&#45;button" routerLink="/system-admin/messages">Messages</div>-->
+
+    <div class="Header-title__wrap">
+      <h1>{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</h1>
+    </div>
+
+
+    <div class="row System-admin--form-wrap">
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="form-group">
+          <label for="n-Done">{{"GLOBAL.TITLE" | translate}}</label>
+          <input type="text" class="form-control" name="n-Done" [(ngModel)]="message.title">
+        </div>
+      </div>
+    </div>
+    <div class="row System-admin--form-wrap">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="form-group">
+          <label for="n-Done">{{"MESSAGES.MESSAGE_CONTENT" | translate}}</label>
+          <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control" [(ngModel)]="message.content"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <label>{{"MESSAGES.RECIPIENTS" | translate}}</label>
+    <div class="row">
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [(ngModel)]="recipients.allUsers">{{"GLOBAL.USER_TYPE.ALL_USERS" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.networkCountryAdmins">{{"NETWORK_COUNTRY_ADMINISTRATORS" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.globalDirectors">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.globalUsers">{{"AGENCY_ADMIN.STAFF.GLOBAL_USERS" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.regionalDirectors">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.countryAdmins">{{"GLOBAL.USER_TYPE.COUNTRY_ADMINS" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.countryDirectors">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.ertLeaders">{{"GLOBAL.USER_TYPE.ERT_LEAD" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.erts">{{"GLOBAL.USER_TYPE.ERT" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.donors">{{"GLOBAL.USER_TYPE.DONOR" | translate}}
+      </label>
+      <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+        <input type="checkbox" name="f-Format" [hidden]="recipients.allUsers" [(ngModel)]="recipients.partners">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}
+      </label>
+    </div>
+
+    <div class="Form-submit__wrapper">
+      <button class="btn btn-primary" (click)="submit()">{{"MESSAGES.SEND_MESSAGE" | translate | uppercase}}</button>
+      <button class="btn btn-outline-secondary" routerLink="/network/network-message">{{"GLOBAL.CANCEL" |
+        translate}}</button>
+    </div>
+
+  </div>
+</div>

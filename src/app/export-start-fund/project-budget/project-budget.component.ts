@@ -10,6 +10,8 @@ import {
   UserType
 } from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {Network} from "../../network-admin/network-account-selection/models/network";
+import {NetworkService} from "../../services/network.service";
 
 @Component({
   selector: 'app-export-start-fund-project-budget',
@@ -44,7 +46,14 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
   private capitalItemsNarrative: string;
   private managementSupportNarrative: string;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  private networkCountryId: string;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute) {
   }
 
   /**
@@ -52,9 +61,27 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.downloadData();
+    this.route.params.subscribe((params: Params) => {
+      if (params["id"] && params["networkCountryId"]) {
+        this.responsePlanId = params["id"];
+        this.networkCountryId = params["networkCountryId"];
+        if (params["isViewing"]) {
+          this.uid = params["uid"]
+          this.downloadResponsePlanData();
+          this.downloadAgencyData(null);
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.downloadResponsePlanData();
+            this.downloadAgencyData(null);
+          });
+        }
+      } else {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.downloadData();
+        });
+      }
     });
   }
 
@@ -68,6 +95,7 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency(agencyId: string) {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -104,17 +132,31 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
       });
   }
 
-  private downloadAgencyData(userType){
-    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((agencyId) => {
-        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
-          if(name != null){
-            this.memberAgencyName = name.$value;
-          }
+  private downloadAgencyData(userType) {
+
+    const normalUser = () => {
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyId) => {
+          this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+            if (name != null) {
+              this.memberAgencyName = name.$value;
+            }
+          });
+          this.calculateCurrency(agencyId);
         });
-        this.calculateCurrency(agencyId);
+    };
+
+    const networkUser = () => {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.responsePlan.planLead + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+        if (name != null) {
+          this.memberAgencyName = name.$value;
+        }
       });
+      this.calculateCurrency(this.responsePlan.planLead);
+    };
+
+    this.networkCountryId ? networkUser() : normalUser();
   }
 
   private downloadResponsePlanData() {
@@ -127,7 +169,8 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
           }
         });
     }
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {

@@ -7,7 +7,9 @@ export class IndicatorSourceModel extends BaseModel {
 
     validate(excludedFields = []): AlertMessageModel {
         console.log('excluded ' + excludedFields);
+        console.log(this.name)
         if (!this.name && !this.isExcluded('name', excludedFields)) {
+          console.log("return error message")
             return new AlertMessageModel('RISK_MONITORING.ADD_INDICATOR.NO_SOURCE_NAME');
         }
         // if (!this.link && !this.isExcluded('link', excludedFields)) {

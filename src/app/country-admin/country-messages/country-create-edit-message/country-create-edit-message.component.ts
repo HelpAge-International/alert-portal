@@ -42,16 +42,10 @@ export class CountryCreateEditMessageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this._userService.getCountryAdminUser(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryAdminUser => {
-        if (countryAdminUser) {
-          this.agencyId = Object.keys(countryAdminUser.agencyAdmin)[0];
-          this.countryId = countryAdminUser.countryId;
-        }
-      });
+      this.agencyId = agencyId;
+      this.countryId = countryId;
     });
   }
 

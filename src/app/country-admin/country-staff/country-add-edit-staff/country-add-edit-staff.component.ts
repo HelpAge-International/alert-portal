@@ -209,6 +209,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   validateForm() {
+
+
     if (!this.title) {
       this.warningMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_TITLE';
       return false;
@@ -241,7 +243,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_EMAIL';
       return false;
     }
-    if (!this.phone) {
+    if (!CustomerValidator.PhoneNumberValidator(this.phone)) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_PHONE';
       return false;
     }
@@ -352,6 +354,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     staffData['/group/systemadmin/allusersgroup/' + uid + '/'] = true;
     staffData['/group/agency/' + this.agencyAdminId + '/agencyallusersgroup/' + uid + '/'] = true;
     staffData['/group/agency/' + this.agencyAdminId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1] + '/' + uid + '/'] = true;
+    staffData['/group/country/' + this.countryId + '/countryallusersgroup/' + uid + '/'] = true;
+    staffData['/group/country/' + this.countryId + '/' + Constants.GROUP_PATH_AGENCY[this.userType - 1] + '/' + uid + '/'] = true;
 
     // staff extra info
     let staff = new ModelStaff();
@@ -447,9 +451,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.hideWarning = true;
       this.hideSuccess = false;
-      Observable.timer(1500)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(() => {
+      Observable.timer(1500).subscribe(() => {
           this.router.navigateByUrl('/country-admin/country-staff');
         });
     }, error => {

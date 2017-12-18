@@ -17,7 +17,7 @@
 <!--Start Put page data-->
 <div class="Page-top__wrap">
   <div class="Login__wrap--inner">
-    <form (ngSubmit)="onSubmit()" >
+    <form (ngSubmit)="onSubmit()">
       <div class="Login__logo-container">
         <img src="/assets/images/alert_logo.svg" class="Login__logo">
       </div>
@@ -27,7 +27,8 @@
 
       <div class="input-group" [ngClass]="{'has-danger': alerts[localUser.userEmail]}">
         <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user" aria-hidden="true"></i></span>
-        <input name="userEmail" [(ngModel)]="localUser.userEmail" type="text" class="form-control" placeholder="Email Address" aria-describedby="basic-addon1">
+        <input name="userEmail" [(ngModel)]="localUser.userEmail" type="text" class="form-control"
+               placeholder="Email Address" aria-describedby="basic-addon1">
       </div>
 
       <div class="input-group" [ngClass]="{'has-danger': alerts[localUser.password]}">
@@ -46,9 +47,7 @@
 
       <input type="submit" class="btn btn-primary Login__button--submit" value="{{'LOGIN.LOGIN' | translate}}"/>
       <a routerLink="/forgot-password" class="Login__forgotten-pass">{{"LOGIN.FORGOT_PASSWORD_BUTTON" | translate}}</a>
-
-      <p class="Login__version">{{"VERSION_TEXT" | translate}} 1.1.1.0</p>
-
+      <p class="Login__version">{{"VERSION_TEXT" | translate}} 1.2.1.0</p>
     </form>
   </div>
 </div>

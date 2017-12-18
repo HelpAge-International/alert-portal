@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {UserService} from "../../services/user.service";
@@ -6,8 +6,10 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
-import { MessageModel } from "../../model/message.model";
+import {MessageModel} from "../../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
+import {Http, Response} from '@angular/http';
+declare var jQuery: any;
 
 @Component({
   selector: 'app-donor-header',
@@ -33,34 +35,65 @@ export class DonorHeaderComponent implements OnInit {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService, private translate : TranslateService) {
+  // Dan's switch language
+  private languageSelectPath: string = '';
+  private languageMap = new Map();
+  private userLang = [];
+  private language: string;
+  private browserLang: string = "";
+
+  // End
+
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService, private translate: TranslateService, private http: Http) {
+
+    translate.setDefaultLang("en");
+
+    this.browserLang = translate.getBrowserLang();
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
       this.USER_TYPE = this.userPaths[userType];
+
       if (this.USER_TYPE) {
         this.getAgencyName();
       }
-
-      this.userService.getAgencyId(this.USER_TYPE, this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(agencyId => {
-            this.agencyId = agencyId;
-      });
-
-      this.userService.getCountryId(this.USER_TYPE, this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-        this.countryId = countryId;
-      });
 
       this.userService.getUser(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
+        });
+      this.loadJSON().subscribe(data => {
+
+        for (var key in data){
+
+          this.userLang.push(key);
+          this.languageMap.set(key, data[key]);
+        }
+
+      });
+
+      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          if(user.language) {
+            this.language = user.language;
+            this.translate.use(this.language.toLowerCase());
+          } else {
+            this.language = "en"
+
+          }
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(this.language.toLowerCase());
+
+
+          this.translate.use(this.language.toLowerCase());
+
         });
     });
   }
@@ -70,10 +103,41 @@ export class DonorHeaderComponent implements OnInit {
     this.ngUnsubscribe.complete();
   }
 
+  // Dan's Modal functions
+
+  loadJSON(){
+
+    return this.http.get(this.languageSelectPath)
+      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+
+  }
+
+  openLanguageModal()
+  {
+
+    console.log('Open language modal');
+    jQuery("#language-selection").modal("show");
+
+  };
+
+  changeLanguage(language: string) {
+    this.language = language;
+    console.log(this.uid);
+
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
+
+
+    this.translate.use(language.toLowerCase());
+    jQuery("#language-selection").modal("hide");
+
+
+  }
+
   logout() {
     console.log('countryId:' + this.countryId + ' userId:' + this.uid);
     this.af.auth.logout();
   }
+
 
   goToHome() {
     this.router.navigateByUrl("/donor-module");
@@ -84,23 +148,13 @@ export class DonorHeaderComponent implements OnInit {
    */
 
   private getAgencyName() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + this.USER_TYPE + "/" + this.uid + '/agencyAdmin')
+    if (this.agencyId) {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIds: any) => {
-          this.agencyId = agencyIds[0].$key ? agencyIds[0].$key : "";
-          res(true);
-          if (this.agencyId) {
-            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + '/name')
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((agencyName) => {
-                this.agencyName = agencyName ? agencyName.$value : this.translate.instant("AGENCY");
-                res(true);
-              });
-          }
+        .subscribe((agencyName) => {
+          this.agencyName = agencyName ? agencyName.$value : this.translate.instant("AGENCY");
         });
-    });
-    return promise;
+    }
   }
 
 }

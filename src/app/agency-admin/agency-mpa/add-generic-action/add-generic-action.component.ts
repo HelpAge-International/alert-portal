@@ -8,6 +8,7 @@ import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ModelDepartment} from "../../../model/department.model";
 import {UserService} from "../../../services/user.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -56,7 +57,7 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
   private categoriesList = [GenericActionCategory.OfficeAdministration, GenericActionCategory.Finance, GenericActionCategory.ITFieldCommunications,
     GenericActionCategory.Logistics, GenericActionCategory.CommunicationsMedia, GenericActionCategory.HumanResources, GenericActionCategory.DonorFundingReporting,
-    GenericActionCategory.Accountability, GenericActionCategory.Security, GenericActionCategory.Programmes,  GenericActionCategory.EmergencyResponseTeamManagement];
+    GenericActionCategory.Accountability, GenericActionCategory.Security, GenericActionCategory.Programmes, GenericActionCategory.EmergencyResponseTeamManagement];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -64,18 +65,13 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.uid = user.uid;
-        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid, {preserveSnapshot: true})
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((snap) => {
-            this.agencyId = snap.val().agencyId;
-            for (let x in snap.val().systemAdmin) {
-              this.systemAdminUid = x;
-              this.getDepartments();
-              this.getGenericActions();
-            }
-          });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.systemAdminUid = systemId;
+
+      this.getDepartments();
+      this.getGenericActions();
     });
   }
 

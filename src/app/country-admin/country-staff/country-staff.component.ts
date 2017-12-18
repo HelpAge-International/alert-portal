@@ -62,15 +62,11 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
-        .subscribe(countryAdmin => {
-          // Get the country id and agency administrator id
-          this.countryId = countryAdmin.countryId;
-          this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
-          this.initData();
-        });
+      this.countryId = countryId;
+      this.agencyAdminId = agencyId;
+      this.initData();
     });
   }
 

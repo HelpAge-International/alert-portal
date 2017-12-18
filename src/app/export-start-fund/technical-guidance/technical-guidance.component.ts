@@ -9,7 +9,8 @@ import {
   MediaFormat,
   MethodOfImplementation,
   PresenceInTheCountry,
-  ResponsePlanSectors, SourcePlan,
+  ResponsePlanSectors,
+  SourcePlan,
   UserType
 } from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -42,7 +43,13 @@ export class TechnicalGuidanceComponent implements OnInit, OnDestroy {
 
   private sectorsRelatedToMap = new Map<number, boolean>();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  private networkCountryId: string;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private route: ActivatedRoute) {
   }
 
   /**
@@ -50,9 +57,25 @@ export class TechnicalGuidanceComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.downloadData();
+    this.route.params.subscribe((params: Params) => {
+      if (params["id"] && params["networkCountryId"]) {
+        this.responsePlanId = params["id"];
+        this.networkCountryId = params["networkCountryId"];
+        if (params["isViewing"]) {
+          this.uid = params["uid"]
+          this.downloadResponsePlanData();
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.downloadResponsePlanData();
+          });
+        }
+      } else {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.downloadData();
+        });
+      }
     });
   }
 
@@ -97,7 +120,8 @@ export class TechnicalGuidanceComponent implements OnInit, OnDestroy {
           }
         });
     }
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {

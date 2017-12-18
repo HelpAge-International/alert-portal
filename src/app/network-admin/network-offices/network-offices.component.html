@@ -1,0 +1,57 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <!--title-->
+    <div class="Header-title__wrap">
+      <div class="row col-sm-12">
+        <h1 class="col-sm-10">{{"NETWORK.NETWORK_OFFICES" | translate}}</h1>
+        <div class="col-sm-2 Centered">
+          <button class="btn btn-primary text-uppercase" routerLink="add-edit-network-office">
+            {{"NETWORK.ADD_NEW_NETWORK_OFFICE" | translate}}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="networkOffices | async as offices; else empty">
+      <div *ngIf="offices.length > 0" class="row Spaced-above font-weight-bold">
+        <p class="col-sm-2">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</p>
+        <p class="col-sm-6">{{"NETWORK.NETWORK_COUNTRY_ADMIN" | translate}}</p>
+        <p class="col-sm-4">{{"GLOBAL.STATUS" | translate}}</p>
+      </div>
+      <div *ngIf="offices.length > 0" class="Line-row"></div>
+
+      <div *ngFor="let office of offices" class="row Spaced-above">
+        <p class="col-sm-2">{{Countries[office.location] | translate}}</p>
+        <p class="col-sm-6">{{office?.adminName | async}}</p>
+        <p class="col-sm-1">{{office.isActive ? ('GLOBAL.ACTIVE' | translate) : ('GLOBAL.DEACTIVE' | translate)}}</p>
+        <div class="col-sm-12 col-md-1 country-offices-btn">
+          <button class="btn" [class.btn-danger]="office.isActive"
+                  [class.btn-success]="!office.isActive" (click)="toggleOfficeActive(office)">
+            {{office.isActive ? ('GLOBAL.DEACTIVATE' | translate) : ('GLOBAL.ACTIVATE' | translate)}}
+          </button>
+        </div>
+        <span class="padding-one"></span>
+        <div class="col-sm-12 col-md-1 country-offices-btn">
+          <button class="btn btn-primary" (click)="editOffice(office.id)">{{"EDIT" | translate}}</button>
+        </div>
+      </div>
+
+      <div *ngIf="offices.length == 0" class="Spaced bg-grey padding-one text-center"><p
+        class="Spaced font-weight-bold">{{"NETWORK.NO_OFFICE" | translate}}</p></div>
+    </div>
+
+    <!--empty message-->
+    <ng-template #empty>
+      <div class="Spaced bg-grey padding-one text-center"><p class="Spaced font-weight-bold">{{"NETWORK.NO_OFFICE" |
+        translate}}</p></div>
+    </ng-template>
+
+  </div>
+</div>
+

@@ -57,7 +57,6 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
     jQuery("#delete-message").modal("show");
   }
 
-  // TODO - FIX
   deleteFromFirebase() {
     let msgData = {};
     let groups = [

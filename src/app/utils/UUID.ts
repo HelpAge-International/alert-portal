@@ -2,6 +2,7 @@
  * Created by Fei on 04/04/2017.
  */
 
+
 export class UUID {
   public static createUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

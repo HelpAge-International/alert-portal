@@ -9,12 +9,13 @@ import {ModelAgency} from "../../model/agency.model";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
-import {DurationType, PersonTitle, Privacy} from "../../utils/Enums";
+import {DurationType, Privacy} from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {UUID} from "../../utils/UUID";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NotificationSettingsModel} from "../../model/notification-settings.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -53,6 +54,11 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private preAgencyName: string;
   private isDonor: boolean = false;
+  private isGlobalAgency: boolean = true;
+  private country: string;
+
+  COUNTRY = Constants.COUNTRIES;
+  COUNTRY_SELECTION = Constants.COUNTRY_SELECTION;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -61,19 +67,19 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        this.systemAdminUid = user.uid;
-        this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
-        this.inactive = true;
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe((params: Params) => {
-            if (params["id"]) {
-              this.agencyId = params["id"];
-              this.isEdit = true;
-              this.loadAgencyInfo(params["id"]);
-            }
-          });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.systemAdminUid = systemId;
+      this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
+      this.inactive = true;
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.agencyId = params["id"];
+            this.isEdit = true;
+            this.loadAgencyInfo(params["id"]);
+          }
+        });
     });
   }
 
@@ -91,6 +97,17 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
         this.preAgencyName = agency.name;
         this.adminId = agency.adminId;
         this.isDonor = agency.isDonor;
+
+        //checks to see if isGlobal exists on the agency as old agencies may not have the property
+        if(agency.hasOwnProperty('isGlobalAgency')){
+          this.isGlobalAgency = agency.isGlobalAgency;
+        } else{
+          this.isGlobalAgency = true
+        }
+
+        if (!this.isGlobalAgency) {
+          this.country = this.COUNTRY[agency.countryCode];
+        }
 
         //load from user public
         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + agency.adminId)
@@ -156,6 +173,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     console.log("new email");
     // let secondApp = firebase.initializeApp(firebaseConfig, "second");
     let tempPassword = Constants.TEMP_PASSWORD;
+    console.log(this.agencyAdminEmail)
+    console.log(tempPassword)
     this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
       console.log("user " + x.uid + " created successfully");
       let uid: string = x.uid;
@@ -210,6 +229,12 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       updateData["/userPublic/" + this.adminId] = this.userPublic;
       updateData["/agency/" + this.agencyId + "/name"] = this.agencyName;
       updateData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
+      updateData["/agency/" + this.agencyId + "/isGlobalAgency"] = this.isGlobalAgency;
+      if (!this.isGlobalAgency) {
+        updateData["/agency/" + this.agencyId + "/countryCode"] = this.COUNTRY.indexOf(this.country);
+      } else {
+        updateData["/agency/" + this.agencyId + "/countryCode"] = null;
+      }
 
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
         this.backToHome();
@@ -219,6 +244,16 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
         this.showAlert();
       });
     }
+  }
+
+  selectAgencyType(value) {
+    this.isGlobalAgency = value;
+    console.log(this.isGlobalAgency);
+  }
+
+  selectCountry() {
+    console.log(this.country);
+    console.log(this.COUNTRY.indexOf(this.country));
   }
 
   private registerNewAgency() {
@@ -264,7 +299,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       this.writeToFirebase(uid);
       // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
       this.secondApp.auth().signOut();
-    }, (error:any) => {
+    }, (error: any) => {
       console.log(error.message);
       console.log(error.code);
       if (error.code == 'auth/email-already-in-use') {
@@ -289,24 +324,47 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     newAgencyAdmin.postCode = this.agencyAdminPostCode ? this.agencyAdminPostCode : "";
     newAgencyAdmin.phone = "";
     agencyData["/userPublic/" + uid] = newAgencyAdmin;
+    if (!this.isGlobalAgency) {
+      agencyData["/administratorLocalAgency/" + uid + "/systemAdmin/" + this.systemAdminUid] = true;
+    }
     agencyData["/administratorAgency/" + uid + "/systemAdmin/" + this.systemAdminUid] = true;
 
     if (this.isEdit) {
+      if (!this.isGlobalAgency) {
+        agencyData["/administratorLocalAgency/" + uid + "/agencyId"] = this.agencyId;
+      }
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
       console.log(this.emailInDatabase + "/" + this.agencyAdminEmail);
       if (this.emailInDatabase != this.agencyAdminEmail) {
+        if (!this.isGlobalAgency) {
+          agencyData["/administratorLocalAgency/" + uid + "/firstLogin"] = true;
+        }
         agencyData["/administratorAgency/" + uid + "/firstLogin"] = true;
       }
       agencyData["/agency/" + this.agencyId + "/adminId"] = uid;
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
+      agencyData["/agency/" + this.agencyId + "/isGlobalAgency"] = this.isGlobalAgency;
+      if (!this.isGlobalAgency) {
+        agencyData["/agency/" + this.agencyId + "/countryCode"] = this.COUNTRY.indexOf(this.country);
+      } else {
+        agencyData["/agency/" + this.agencyId + "/countryCode"] = null;
+      }
       //delete old node
+      if (!this.isGlobalAgency) {
+        agencyData["/administratorLocalAgency/" + this.adminId] = null;
+      }
       agencyData["/administratorAgency/" + this.adminId] = null;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + this.adminId] = null;
       agencyData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
 
+
+
     } else {
+      if (!this.isGlobalAgency) {
+        agencyData["/administratorLocalAgency/" + uid + "/agencyId"] = uid;
+      }
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;
       agencyData["/administratorAgency/" + uid + "/firstLogin"] = true;
       agencyData["/group/systemadmin/allagencyadminsgroup/" + uid] = true;
@@ -315,6 +373,12 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agency.isDonor = this.isDonor;
       agency.isActive = true;
       agency.adminId = uid;
+      agency.isGlobalAgency = this.isGlobalAgency;
+      if (!this.isGlobalAgency) {
+        agency.countryCode = this.COUNTRY.indexOf(this.country);
+      } else {
+        agency.countryCode = null;
+      }
 
       //init notification settings
       let notificationList: NotificationSettingsModel[] = [];

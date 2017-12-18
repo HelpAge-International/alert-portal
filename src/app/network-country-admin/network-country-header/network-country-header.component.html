@@ -1,0 +1,64 @@
+<div class="Header_bar">
+  <div class="Header_bar__wrap--inner">
+    <div class="logo" routerLink="/network-country/network-dashboard"></div>
+    <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0"
+          [class.badge-warning]="alertLevel==1"
+          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
+    </span>
+    <ul *ngIf="!isAnonym">
+      <li *ngIf="network | async as networkObj">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{networkObj?.name}}</a>
+        <!--<div *ngIf="partnerAgencies.length>1" class="dropdown-menu">-->
+        <!--<a *ngFor="let agency of partnerAgencies" class="dropdown-item"-->
+        <!--(click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>-->
+        <!--</div>-->
+      </li>
+
+      <li class="Header_bar__username" *ngIf="user | async as userObj">
+        {{userObj.firstName + " " + userObj.lastName}}
+      </li>
+
+      <li class="Header_bar__country dropdown" *ngIf="networkCountry | async as networkCountryObj">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[networkCountryObj.location]}}</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" routerLink="/network-country/network-country-account-settings">{{"GLOBAL.ACCOUNT_SETTINGS.TITLE"
+            | translate}}</a>
+          <!--<a class="dropdown-item" routerLink="/country-admin/country-my-agency">{{"VIEW_MY_AGENCY" | translate}}</a>-->
+          <!--<a-->
+          <!--*ngIf="userType == UserType.CountryAdmin || userType == UserType.CountryDirector || userType==UserType.ErtLeader"-->
+          <!--class="dropdown-item" routerLink="/country-admin/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" | translate}}</a>-->
+          <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="logout()">
+            {{"GLOBAL.LOGOUT" | translate}}
+          </a>
+        </div>
+      </li>
+      <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [networkCountryId]="networkCountryId"
+                              [networkId]="networkId"></app-notification-badge>
+    </ul>
+
+  </div>
+  <!-- Modal for language selection-->
+  <div class="modal fade" id="language-selection" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title">{{"GLOBAL.MODAL_HEADER" | translate}}</h2>
+        </div>
+        <div class="modal-body" >
+
+          <div *ngFor="let language of userLang">
+            <hr/>
+            <div class="hover-selection"> <a (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

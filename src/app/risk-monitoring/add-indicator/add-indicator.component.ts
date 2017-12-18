@@ -45,7 +45,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   public uid: string;
   public countryID: string;
 
-  public indicatorData: any;
+  public indicatorData: Indicator;
   public oldIndicatorData;
 
   private alertLevels = Constants.ALERT_LEVELS;
@@ -118,6 +118,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private countryLocation: number;
 
+  private networkId: string;
+  private networkCountryId: string;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -163,6 +166,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
+        }
+
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
         }
 
         if (this.copyCountryId && this.copyIndicatorId) {
@@ -242,6 +253,12 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.isEdit = true;
           this.hazardID = params['hazardID'];
           this.indicatorID = params['indicatorID'];
+          if (params["networkId"]) {
+            this.networkId = params["networkId"];
+          }
+          if (params["networkCountryId"]) {
+            this.networkCountryId = params["networkCountryId"];
+          }
 
           this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
             if (user) {
@@ -357,7 +374,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         if (!this.isEdit) {
           this.indicatorData.triggerSelected = 0;
         }
-        this.indicatorData.category = parseInt(this.indicatorData.category);
+        // this.indicatorData.category = parseInt(this.indicatorData.category);
         this.indicatorData.dueDate = this._calculationDueDate(Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType), Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue));
         this.indicatorData.updatedAt = new Date().getTime();
         if (!this.indicatorData.assignee) {
@@ -442,6 +459,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           });
         }
 
+      } else {
+        // console.log(this.indicatorData)
+        // if (!this.indicatorData.sources || this.indicatorData.sources.filter(source=>{return source.name}).length ==0) {
+        //   this.alertMessage = new AlertMessageModel("RISK_MONITORING.ADD_INDICATOR.NO_SOURCE_NAME")
+        // }
       }
     });
 
@@ -486,11 +508,72 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
+    this.hazards = [];
+    this.hazardsObject = {};
+    if (this.networkId) {
+
+      if (this.networkCountryId) {
+        this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((hazards: any) => {
+
+
+            for (let hazard in hazards) {
+              if (hazard == this.hazardID) {
+                if (!hazard.includes("$") && hazard != "countryContext") {
+                  hazards[hazard].key = hazard;
+
+                  if (hazards[hazard].hazardScenario != -1) {
+                    this.hazards.push(hazards[hazard]);
+                    this.hazardsObject[hazard] = hazards[hazard];
+                  } else {
+                    this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
+                      .first()
+                      .subscribe(nameObj => {
+                        hazards[hazard].displayName = nameObj.name;
+                        this.hazards.push(hazards[hazard]);
+                        this.hazardsObject[hazard] = hazards[hazard];
+                      });
+                  }
+                }
+              }
+            }
+
+          });
+      } else {
+        this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((hazards: any) => {
+            for (let hazard in hazards) {
+              if (hazard == this.hazardID) {
+                if (!hazard.includes("$") && hazard != "countryContext") {
+                  hazards[hazard].key = hazard;
+
+                  if (hazards[hazard].hazardScenario != -1) {
+                    this.hazards.push(hazards[hazard]);
+                    this.hazardsObject[hazard] = hazards[hazard];
+                  } else {
+                    this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazards[hazard].otherName)
+                      .first()
+                      .subscribe(nameObj => {
+                        hazards[hazard].displayName = nameObj.name;
+                        this.hazards.push(hazards[hazard]);
+                        this.hazardsObject[hazard] = hazards[hazard];
+                      });
+                  }
+                }
+              }
+            }
+
+          });
+      }
+
+
+    }
     this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((hazards: any) => {
-        this.hazards = [];
-        this.hazardsObject = {};
+
 
         hazards["countryContext"] = {key: "countryContext"};
         this.hazards.push(hazards["countryContext"]);
@@ -568,42 +651,45 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       if (this.alertMessage) {
         res(false);
       }
+
       if (!this.alertMessage) {
         this.indicatorData.source.forEach((val, key) => {
           let modelSource = new IndicatorSourceModel();
           modelSource.mapFromObject(val);
-          this._validateIndicatorSource(modelSource);
+          console.log(modelSource.name)
+          this.alertMessage = this._validateIndicatorSource(modelSource);
           if (this.alertMessage) {
             res(false);
           }
-          if (!this.alertMessage) {
-            this.indicatorData.trigger.forEach((val, key) => {
-              let modelTrigger = new IndicatorTriggerModel();
-              modelTrigger.mapFromObject(val);
-              this._validateIndicatorTrigger(modelTrigger);
-              if (this.alertMessage) {
-                res(false);
-              }
-
-              if (!this.alertMessage) {
-                if (this.indicatorData.geoLocation == 1) {
-                  this.indicatorData.affectedLocation.forEach((val, key) => {
-                    let modelArea = new OperationAreaModel();
-                    modelArea.mapFromObject(val);
-                    this._validateOperationArea(modelArea);
-                    if (this.alertMessage) {
-                      res(false);
-                    }
-                  });
-                }
-              }
-
-              if (!this.alertMessage) {
-                res(true);
-              }
-            });
-          }
         });
+
+        if (!this.alertMessage) {
+          this.indicatorData.trigger.forEach((val, key) => {
+            let modelTrigger = new IndicatorTriggerModel();
+            modelTrigger.mapFromObject(val);
+            this._validateIndicatorTrigger(modelTrigger);
+            if (this.alertMessage) {
+              res(false);
+            }
+          });
+
+          if (!this.alertMessage) {
+            if (this.indicatorData.geoLocation == 1) {
+              this.indicatorData.affectedLocation.forEach((val, key) => {
+                let modelArea = new OperationAreaModel();
+                modelArea.mapFromObject(val);
+                this._validateOperationArea(modelArea);
+                if (this.alertMessage) {
+                  res(false);
+                }
+              });
+            }
+          }
+
+          if (!this.alertMessage) {
+            res(true);
+          }
+        }
       }
     });
     return promise;

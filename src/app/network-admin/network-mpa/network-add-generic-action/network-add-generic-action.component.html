@@ -1,0 +1,66 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap no-padding">
+  <div class="Full-page__wrap--inner">
+    <div class="row col-sm-12 Spaced-above">
+      <div class="Back--button row col-sm-9 margin-top-none" routerLink="/network/network-mpa">
+        {{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}
+      </div> <!-- Back button-->
+      <div class="col-sm-1 margin-top-one"><a href="javascript:void(0)" (click)="resetSelections()">{{"GLOBAL.CANCEL" |
+        translate}}</a></div>
+      <div class="col-sm-2">
+        <button class="btn btn-primary text-uppercase" (click)="addActions()">
+          {{"AGENCY_ADMIN.MANDATED_PA.ADD_NEW_ACTIONS" | translate}}
+        </button>
+      </div>
+    </div>
+    <div class="row col-sm-12">
+      <h1 class="col-sm-12">{{"ADD_GENERIC_PREPARED" | translate}}</h1><br>
+    </div>
+
+    <div class="row col-sm-9 Spaced-above">
+      <div class="padding-one col-sm-1"><p>{{"FILTER" | translate}}:</p></div>
+      <div class="col-sm-4"><select class="form-control" [(ngModel)]="selectedLevel" (change)="triggerFilter()">
+        <option class="" value="0">{{"GLOBAL.PREPAREDNESS_LEVEL.ALL" | translate}}</option>
+        <option class="" value="1">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</option>
+        <option class="" value="2">{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</option>
+      </select></div>
+      <div class="col-sm-4"><select class="form-control" [(ngModel)]="selectedCategory" (change)="triggerFilter()">
+        <option *ngFor="let category of CategorySelection" [value]="category">{{CategoryName[category] | translate}}
+        </option>
+      </select></div>
+    </div>
+
+    <div *ngIf="genericActions | async as actions; else empty">
+      <div *ngFor="let action of actions" class="bg-grey Spaced text-center padding-one">
+        <div class="row col-sm-12">
+          <div class="col-sm-1 max-width-contact"><input #box type="checkbox"
+                                                         (change)="selectAction(action, box.checked)"></div>
+          <div class="col-sm-9"><p class="text-left">{{action.task}}</p></div>
+        </div>
+        <div class="row col-sm-12">
+          <div class="col-sm-1 max-width-contact"></div>
+          <div class="text-left col-sm-11 "><p>{{"GLOBAL.CATEGORY:" | translate}}<strong>{{CategoryName[action.category]
+            | translate}}</strong>
+          </p></div>
+        </div>
+      </div>
+      <div [hidden]="actions.length>0" class="bg-grey Spaced text-center">
+        <p class="font-weight-bold padding-two">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</p>
+      </div>
+    </div>
+
+    <ng-template #empty>
+      <div class="bg-grey Spaced text-center">
+        <p class="font-weight-bold padding-two">{{"AGENCY_ADMIN.MANDATED_PA.NO_GENERIC_ACTIONS" | translate}}</p>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

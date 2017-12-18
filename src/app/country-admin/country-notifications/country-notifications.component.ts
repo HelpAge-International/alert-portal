@@ -6,6 +6,7 @@ import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {UserService} from "../../services/user.service";
+import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
 
@@ -22,37 +23,24 @@ export class CountryNotificationsComponent implements OnInit, OnDestroy {
   private USER_TYPE;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private _userService: UserService,
               private _notificationService: NotificationService,
               private route: ActivatedRoute,
+              private storageService: LocalStorageService,
               private af: AngularFire,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
-
-      this._userService.getUserType(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(userType => {
-
-          this.USER_TYPE = Constants.USER_PATHS[userType];
-
-          this._userService.getAgencyId(this.USER_TYPE, this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(agencyId => {
-              this.agencyId = agencyId;
-            });
-
-          this._userService.getCountryId(this.USER_TYPE, this.uid)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(countryId => {
-              this.countryId = countryId;
-            });
-        });
+      this.USER_TYPE = Constants.USER_PATHS[userType];
+      this.agencyId = agencyId;
+      this.countryId = countryId;
     });
   }
 

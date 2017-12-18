@@ -7,7 +7,8 @@ import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
 import {
   AgeRange,
-  BudgetCategory, Currency,
+  BudgetCategory,
+  Currency,
   Gender,
   MethodOfImplementation,
   PresenceInTheCountry,
@@ -18,6 +19,7 @@ import {ModelPlanActivity} from "../../model/plan-activity.model";
 import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import * as firebase from "firebase";
+import {NetworkService} from "../../services/network.service";
 
 declare var jQuery: any;
 
@@ -43,6 +45,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryId: string;
+  private networkCountryId: string;
   private agencyId: string;
   private isViewing: boolean;
 
@@ -106,7 +109,16 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private showingSections: number[] = [];
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  private isLocalNetworkAdmin: boolean;
+  private planLocalNetworkId: string;
+  private planNetworkCountryId: string;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -132,6 +144,15 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         }
         if (params["partnerOrganisationId"]) {
           this.partnerOrganisationId = params["partnerOrganisationId"];
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
+        }
+        if (params["isLocalNetworkAdmin"]) {
+          this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+        }
+        if (params["systemId"]) {
+          this.systemAdminUid = params["systemId"];
         }
 
         if (this.accessToken) {
@@ -176,29 +197,42 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
           }
 
         } else {
-          this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
-            //get response plan settings from agency
-            this.userService.getAgencyDetail(agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(agency => {
-                let sections = agency.responsePlanSettings.sections;
-                this.showingSections = Object.keys(sections).filter(key => sections[key]).map(key => Number(key));
-                console.log(this.showingSections)
-              });
+          const normalUser = () => {
+            this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
-            this.uid = user.auth.uid;
-            this.userPath = Constants.USER_PATHS[userType];
-            if (userType == UserType.PartnerUser) {
-              this.agencyId = agencyId;
-              this.countryId = countryId;
-              this.systemAdminUid = systemId;
+              //get response plan settings from agency
+              this.userService.getAgencyDetail(agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => {
+                  let sections = agency.responsePlanSettings.sections;
+                  this.showingSections = Object.keys(sections).filter(key => sections[key]).map(key => Number(key));
+                  console.log(this.showingSections)
+                });
+
+              this.uid = user.auth.uid;
+              this.userPath = Constants.USER_PATHS[userType];
+              if (userType == UserType.PartnerUser) {
+                this.agencyId = agencyId;
+                this.countryId = countryId;
+                this.systemAdminUid = systemId;
+                this.handleLoadResponsePlan();
+              } else {
+                this.loadData(userType);
+              }
+              this.calculateCurrency(agencyId);
+            });
+          };
+
+          const networkUser = () => {
+            this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+              this.uid = user.uid;
+              this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
               this.handleLoadResponsePlan();
-            } else {
-              this.loadData(userType);
-            }
-            this.calculateCurrency(agencyId);
-          });
+            });
+          };
+
+          this.networkCountryId ? networkUser() : normalUser();
         }
 
       });
@@ -218,6 +252,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency(agencyId: string) {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -304,12 +339,35 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private configGroups(responsePlan: ResponsePlan) {
-    this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((systemAdminIds) => {
-        this.systemAdminUid = systemAdminIds[0].$key;
-        this.getGroups(responsePlan);
-      });
+
+    const normalUser = () => {
+      this.af.database.list(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + '/systemAdmin')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((systemAdminIds) => {
+          this.systemAdminUid = systemAdminIds[0].$key;
+          console.log(this.systemAdminUid);
+          this.getGroups(responsePlan);
+        });
+    };
+    const networkUser = () => {
+      if (this.isLocalNetworkAdmin) {
+        this.networkService.getSystemIdForNetworkAdmin(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            console.log(systemId)
+            this.systemAdminUid = systemId;
+            this.getGroups(responsePlan);
+          });
+      } else {
+        this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(systemId => {
+            this.systemAdminUid = systemId;
+            this.getGroups(responsePlan);
+          });
+      }
+    };
+    this.systemAdminUid ? this.getGroups(responsePlan) : this.networkCountryId ? networkUser() : normalUser();
   }
 
   private getGroups(responsePlan: ResponsePlan) {
@@ -344,7 +402,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
@@ -365,11 +424,20 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private loadSection1PlanLead(responsePlan: ResponsePlan) {
 
     if (responsePlan.planLead) {
-      this.userService.getUser(responsePlan.planLead)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(user => {
-          this.planLeadName = user.firstName + " " + user.lastName;
-        });
+      const normalUser = () => {
+        this.userService.getUser(responsePlan.planLead)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
+            this.planLeadName = user.firstName + " " + user.lastName;
+          });
+      };
+
+      const networkUser = () => {
+        this.userService.getAgencyModel(responsePlan.planLead)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agency => this.planLeadName = agency.name);
+      };
+      this.networkCountryId ? networkUser() : normalUser();
     } else {
       this.planLeadName = 'Unassigned';
     }

@@ -1,0 +1,91 @@
+<div class="Sub-header_bar">
+  <div class="Hamburger">
+    <span></span>
+  </div>
+  <ul>
+    <li class="" routerLinkActive="active">
+      <a
+        [routerLink]="networkViewModel ? ['/network/local-network-dashboard', networkViewModel] : '/network/local-network-dashboard'">Home</a>
+    </li>
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.RiskMonitoring]?.status" routerLinkActive="active">
+      <a
+        [routerLink]="networkViewModel ? ['/network/local-network-risk-monitoring', networkViewModel] : '/network/local-network-risk-monitoring'">Risk
+        Monitoring</a>
+    </li>
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status &&  !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" routerLinkActive="active">
+      <div class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
+           aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
+        <div class="dropdown-menu">
+          <a [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status" class="dropdown-item"
+             [routerLink]="networkViewModel ? ['/network/local-network-preparedness-mpa', networkViewModel] : '/network/local-network-preparedness-mpa'">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA"
+            | translate}}</a>
+          <a [hidden]="networkModules && !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" class="dropdown-item"
+             [routerLink]="networkViewModel ? ['/network/local-network-preparedness-apa', networkViewModel] : '/network/local-network-preparedness-apa'">{{"ADVANCED_PREPAREDNESS"
+            | translate}}</a>
+        </div>
+      </div>
+    </li>
+
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.ResponsePlanning]?.status" routerLinkActive="active">
+      <a
+        [routerLink]="networkViewModel ? ['/network/local-network-plans', networkViewModel] : '/network/local-network-plans'">Plans</a>
+    </li>
+
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.CountryOfficeProfile]?.status" routerLinkActive="active">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Network
+        Office Profile</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/programme', networkViewModel] : '/network/local-network-office-profile/programme'">
+          Programme
+        </a>
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/office-capacity', networkViewModel] : '/network/local-network-office-profile/office-capacity'">
+          Office Capacity
+        </a>
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/partners', networkViewModel] : '/network/local-network-office-profile/partners'">
+          Partners
+        </a>
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/equipment', networkViewModel] : '/network/local-network-office-profile/equipment'">
+          Equipment
+        </a>
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/coordination', networkViewModel] : '/network/local-network-office-profile/coordination'">
+          Coordination
+        </a>
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/stock-capacity', networkViewModel] : '/network/local-network-office-profile/stock-capacity'">
+          Stock Capacity
+        </a>
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/documents', networkViewModel] : '/network/local-network-office-profile/documents'">
+          Documents
+        </a>
+        <a class="dropdown-item"
+           [routerLink]="networkViewModel ? ['/network/local-network-office-profile/contacts', networkViewModel] : '/network/local-network-office-profile/contacts'">
+          Contacts
+        </a>
+      </div>
+    </li>
+    <li class="" routerLinkActive="active">
+      <a routerLink="#">Global Map</a> <!--TODO: Add route to component-->
+    </li>
+    <li class="" routerLinkActive="active" *ngIf="!networkViewModel">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Administration</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" routerLink="/network/local-network-administration/agencies">
+          Network Agencies
+        </a>
+        <a class="dropdown-item" routerLink="/network/local-network-administration/settings">
+          Network Office Settings
+        </a>
+        <a class="dropdown-item" routerLink="/network/local-network-administration/messages">
+          Network Office Messages
+        </a>
+      </div>
+    </li>
+  </ul>
+</div>

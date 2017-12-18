@@ -43,20 +43,17 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.userService.getCountryId(Constants.USER_PATHS[userType], user.uid)
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.countryId = countryId;
+      console.log(this.countryId)
+      this.route.params
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-          this.countryId = countryId;
-          this.route.params
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe((params: Params) => {
-              if (params["id"]) {
-                this.isEditing = true;
-                this.surgeId = params["id"];
-                this.loadSurgeInfo(this.surgeId, this.countryId);
-              }
-            });
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.isEditing = true;
+            this.surgeId = params["id"];
+            this.loadSurgeInfo(this.surgeId, this.countryId);
+          }
         });
     });
   }

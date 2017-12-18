@@ -67,8 +67,9 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.showCountryStaff.set("globaluser", true);
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.agencyId = agencyId;
       this.initData();
     });
   }
@@ -79,10 +80,6 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(id => {
-        this.agencyId = id.$value;
         this.getStaffData();
 
         this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
@@ -98,7 +95,6 @@ export class StaffComponent implements OnInit, OnDestroy {
               this.departmentMap.set(x.id, x.name);
             });
           });
-      });
   }
 
   private getStaffData() {

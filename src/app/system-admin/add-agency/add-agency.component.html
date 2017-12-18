@@ -18,6 +18,42 @@
 
     <div class="row">
       <div class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Name">Agency type*</label>
+        </div>
+      </div>
+    </div>
+    <div class="row no-gutters">
+      <label for="agency-global" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+        <input type="radio" name="is-global" id="agency-global" [checked]="isGlobalAgency"
+               (change)="selectAgencyType(true)">
+        Global Agency
+      </label>
+    </div>
+    <div class="row no-gutters">
+      <label for="agency-national" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+        <input type="radio" name="is-global" id="agency-national" [checked]="!isGlobalAgency"
+               (change)="selectAgencyType(false)">
+        National Agency
+      </label>
+    </div>
+
+    <div *ngIf="!isGlobalAgency" class="row">
+      <div class="col-lg-4 col-md-6">
+        <div class="form-group" [ngClass]="{'has-danger': alerts[networkName]}">
+          <label>Country*</label>
+          <select class="form-control" [required]="!isGlobalAgency" [(ngModel)]="country" name="country" (change)="selectCountry()">
+            <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+            <option *ngFor="let country of COUNTRY" [value]="country">
+              {{country | translate}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4 col-md-6">
         <div class="form-group" [ngClass]="{'has-danger': alerts[agencyName]}">
           <label for="Name">{{"SYSTEM_ADMIN.AGENCIES.AGENCY_NAME" | translate}}*</label>
           <input type="text" class="form-control" id="Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyName" name="name">

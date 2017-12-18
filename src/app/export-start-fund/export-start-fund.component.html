@@ -1,16 +1,34 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<ng-container *ngIf="!isViewing; else country">
+  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+    <app-network-country-header></app-network-country-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-container>
+</ng-container>
+
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<ng-template #country>
+  <app-country-admin-header></app-country-admin-header>
+  <app-network-country-menu></app-network-country-menu>
+</ng-template>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="">
-      <div class="Back--button" routerLink="/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" | translate}}</div>
+      <div class="Back--button"
+           [routerLink]="isViewing ? ['/network-country/network-plans', networkViewValues] : isLocalNetworkAdmin ? '/network/local-network-plans' : networkCountryId ? '/network-country/network-plans' : '/response-plans'">
+        {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
+      </div>
 
       <div align="center">
         <h1>{{"RESPONSE_PLANS.HOME.EXPORT_FOR_START_FUND" | translate}}</h1>
         <a id="downloadLink" style="display:none;"></a>
 
-        <input type="button" onclick="exportToExcelFile(['tableProjectNarrative', 'tableProjectBudget', 'tableProjectReport', 'tableBudgetReport', 'tableProjectActivities', 'tableTechnicalGuidance','tableGuidanceReport', 'tableProjectActivity', 'tableReportingDataSheet', 'tableApplicationDatasheet'], ['Basic Data & Narrative', 'Project Budget', 'Report Basic Data & Narrative', 'Report Budget', 'Project Activities', 'Technical Guidance', 'Guidance Report', 'Activity Report', 'Reporting Datasheet', 'Application Datasheet'])"
+        <input type="button"
+               onclick="exportToExcelFile(['tableProjectNarrative', 'tableProjectBudget', 'tableProjectReport', 'tableBudgetReport', 'tableProjectActivities', 'tableTechnicalGuidance','tableGuidanceReport', 'tableProjectActivity', 'tableReportingDataSheet', 'tableApplicationDatasheet'], ['Basic Data & Narrative', 'Project Budget', 'Report Basic Data & Narrative', 'Report Budget', 'Project Activities', 'Technical Guidance', 'Guidance Report', 'Activity Report', 'Reporting Datasheet', 'Application Datasheet'])"
                value="Download All"/>
       </div>
 

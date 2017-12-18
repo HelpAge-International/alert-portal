@@ -111,7 +111,7 @@
           <!--Log post #1-->
           <div class="row Spaced log-post__wrap--risk" *ngFor="let note of m.notes">
             <div class="log-date__wrap--risk col-lg-1">
-              <p>{{m.when | date:"dd/MM/yyyy"}}</p>
+              <p>{{note.time | date:"dd/MM/yyyy"}}</p>
               <!--                            <p>Status: <img src="assets/images/oval_green.svg"></p>-->
             </div>
             <div class="col-lg-6">

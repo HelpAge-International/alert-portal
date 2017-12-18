@@ -1,0 +1,61 @@
+<app-network-country-header></app-network-country-header>
+<app-network-country-menu></app-network-country-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Header-title__wrap">
+      <h1>{{"MESSAGES.CREATE_NEW_MESSAGE" | translate}}</h1>
+    </div>
+
+    <form (ngSubmit)="submit()">
+
+      <div class="row System-admin--form-wrap">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+          <div class="form-group">
+            <label for="title">{{"GLOBAL.TITLE" | translate}}</label>
+            <input type="text" class="form-control" name="title" id="title" [(ngModel)]="userMessage.title">
+          </div>
+        </div>
+      </div>
+      <div class="row System-admin--form-wrap">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+          <div class="form-group">
+            <label for="n-Done">{{"MESSAGES.MESSAGE_CONTENT" | translate}}</label>
+            <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
+                      [(ngModel)]="userMessage && userMessage.content"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <label>{{"MESSAGES.RECIPIENTS" | translate}}</label>
+      <div class="row">
+        <label class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"
+               *ngFor="let userType of USER_TYPE_SELECTION | keyValues;">
+          <input type="checkbox" name="f-Format_{{ i }}"
+                 [(ngModel)]="userMessage.userType[userType.value]"
+                 (click)="recipientSelected(userType.value)">{{USER_TYPE[userType.value] | translate}}
+        </label>
+      </div>
+
+      <div class="Form-submit__wrapper">
+        <button type="submit" class="btn btn-primary" (click)="validateForm()">{{"MESSAGES.SEND_MESSAGE" | translate |
+          uppercase}}
+        </button>
+        <button class="btn btn-outline-secondary"
+                [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-messages'] : ['/network-country/network-country-messages']">
+          {{"GLOBAL.CANCEL" |
+          translate}}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

@@ -5,6 +5,7 @@ import {Constants} from "../../utils/Constants";
 import {Observable, Scheduler, Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -45,24 +46,20 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-        // console.log(user.auth.uid);
-        this.uid = user.uid;
-        this.agencyService.getAgencyId(this.uid)
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(agencyId => {
-            this.agencyId = agencyId;
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      // console.log(user.auth.uid);
+      this.uid = user.uid;
+      this.agencyId = agencyId;
 
-            this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId);
-            this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
-            this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
-              regions.forEach(region => {
-                this.showRegionMap.set(region.$key, false);
-              });
-            });
-            this.checkAnyCountryNoRegion();
-          });
+      this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId);
+      this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
+      this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
+        regions.forEach(region => {
+          this.showRegionMap.set(region.$key, false);
+        });
       });
+      this.checkAnyCountryNoRegion();
+    });
   }
 
   ngOnDestroy() {
@@ -124,7 +121,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
-        let exist = this.otherCountries.filter(country => country.$key == result.$key).length >0;
+        let exist = this.otherCountries.filter(country => country.$key == result.$key).length > 0;
         if (!exist) {
           this.otherCountries.push(result);
         }
@@ -146,7 +143,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   toggleActive() {
     let state: boolean = !this.countryToUpdate.isActive;
 
-    this.otherCountries.forEach(country =>{
+    this.otherCountries.forEach(country => {
       console.log(country)
       if (country.$key == this.countryToUpdate.$key) {
         country.isActive = state;

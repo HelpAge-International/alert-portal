@@ -345,7 +345,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private unassignActions(uid: string) {
     console.log("Un-assigning actions");
-    console.log(Constants.APP_STATUS + "/action/" + this.countryOfficeId);
+    console.log(this.oldCountryAdmin);
     this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryOfficeId, {
       query: {
         orderByChild: "asignee",
@@ -354,6 +354,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     })
       .takeUntil(this.ngUnsubscribe)
       .subscribe((actions: any) => {
+        console.log(actions)
         if (actions == null || actions.length == 0) {
           console.log("Finished un-assigning actions");
           this.unassignResponsePlans(uid);
@@ -375,7 +376,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       });
   }
 
-  private unassignResponsePlans(uid:string) {
+  private unassignResponsePlans(uid: string) {
     console.log("Un-assigning response plans");
     console.log(Constants.APP_STATUS + "/responsePlan/" + this.countryOfficeId);
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryOfficeId).takeUntil(this.ngUnsubscribe).subscribe((plans: any) => {

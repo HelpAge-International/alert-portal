@@ -7,25 +7,27 @@
   <div class="Full-page__wrap--inner">
     <div class="Back--button row Spaced-above" (click)="goBack()">{{"HEADERS.GLOBAL_MAP" | translate}}</div>
     <div class="Header-title__wrap">
-      <h1 *ngIf="countryToShow">{{"GLOBAL.COUNTRIES." + Countries[countryToShow.location] | translate}}</h1>
+      <h1 *ngIf="networkToShow">{{"GLOBAL.COUNTRIES." + Countries[networkToShow.location] | translate}}</h1>
     </div>
 
-    <div class="Bordered-box light-grey padding-one col-sm-4 Spaced-above">
+    <div class="Bordered-box light-grey padding-one col-sm-8 Spaced-above">
       <div class="row margin-left-two">
-        <div *ngIf="countryToShow" class="col-sm-6 text-center padding-one">
-          <i class="Icon__square--transparent  Icon__country--{{Countries[countryToShow.location]}} Icon--lg"></i>
+
+        <div *ngIf="networkToShow" class="col-sm-4 text-center padding-one">
+          <i class="Icon__square--transparent  Icon__country--{{Countries[networkToShow.location]}} Icon--lg"></i>
           <div class="Spaced-above">
             <b>
-              <p>{{"GLOBAL.COUNTRIES." + Countries[countryToShow.location] | translate}}
-                ({{Countries[countryToShow.location]}})</p>
+              <p>{{"GLOBAL.COUNTRIES." + Countries[networkToShow.location] | translate}}
+                ({{Countries[networkToShow.location]}})</p>
             </b>
           </div>
         </div>
 
-        <div class="text-center padding-one col-sm-6">
+        <div class="text-center padding-one col-sm-4">
           <div class="Icon__circle Icon--blue Icon--lg">
             <!--<h1 class="margin-top-one">{{countryOffices.length}}</h1>-->
-            <h1 class="margin-top-one">{{numOfCountryOffices}}</h1>
+            <h1  class="margin-top-one">{{numOfCountryOffices}}</h1>
+
           </div>
           <div class="margin-top-three">
             <b>
@@ -33,9 +35,21 @@
             </b>
           </div>
         </div>
+
+        <div class="text-center padding-one col-sm-4">
+          <div class="Icon__circle Icon--blue Icon--lg">
+            <!--<h1 class="margin-top-one">{{countryOffices.length}}</h1>-->
+            <h1  class="margin-top-one">{{numOfNetworkCountries}}</h1>
+          </div>
+          <div class="margin-top-three">
+            <b>
+              <p>Network Countries Active</p>
+            </b>
+          </div>
+        </div>
       </div>
     </div>
 
-    <app-country-overview [systemId]="systemAdminId" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices"></app-country-overview>
+    <app-country-overview [systemId]="systemAdminId" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices" [networkCountryData]="networkCountries" [globalNetworks]="globalNetworks"></app-country-overview>
   </div>
 </div>

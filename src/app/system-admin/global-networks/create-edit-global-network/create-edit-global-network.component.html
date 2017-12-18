@@ -19,6 +19,42 @@
 
         <div class="row">
           <div class="col-lg-4 col-md-6">
+            <div class="form-group">
+              <label for="Name">Network type*</label>
+            </div>
+          </div>
+        </div>
+        <div class="row no-gutters">
+          <label for="network-global" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+            <input [disabled]="isEdit" type="radio" name="donor-agency" id="network-global" [checked]="isGlobal"
+                   (change)="selectNetworkType(true)">
+            Global Network
+          </label>
+        </div>
+        <div class="row no-gutters">
+          <label for="network-local" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
+            <input [disabled]="isEdit" type="radio" name="donor-agency" id="network-local" [checked]="!isGlobal"
+                   (change)="selectNetworkType(false)">
+            Local Network
+          </label>
+        </div>
+
+        <div *ngIf="!isGlobal" class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="form-group" [ngClass]="{'has-danger': alerts[networkName]}">
+              <label>Country*</label>
+              <select [disabled]="isEdit" class="form-control" [required]="!isGlobal" [(ngModel)]="country" name="country" (change)="selectCountry()">
+                <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                <option *ngFor="let country of COUNTRY" [value]="country">
+                  {{country | translate}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[networkName]}">
               <label for="Name">{{"SYSTEM_ADMIN.GLOBAL_NETWORKS.NETWORK_NAME" | translate}}*</label>
               <input type="text" class="form-control" id="Name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
@@ -105,7 +141,8 @@
               <label for="Country"> {{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
               <select name="Country" id="Country" class="form-control" [(ngModel)]="adminCountry">
                 <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-                <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}</option>
+                <option *ngFor="let country of COUNTRY_SELECTION" [value]="country">{{COUNTRY[country] | translate}}
+                </option>
               </select>
 
             </div>
@@ -127,10 +164,10 @@
         </div>
 
         <div class="Form-submit__wrapper">
-          <button *ngIf="!isEdit"  class="btn btn-primary" type="submit" (click)="validate()">
+          <button *ngIf="!isEdit" class="btn btn-primary" type="submit">
             {{"SYSTEM_ADMIN.GLOBAL_NETWORKS.SAVE_NEW_NETWORK" | translate | uppercase}}
           </button>
-          <button *ngIf="isEdit"  class="btn btn-primary" type="submit" (click)="validate()">
+          <button *ngIf="isEdit" class="btn btn-primary" type="submit">
             {{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}
           </button>
           <button class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}

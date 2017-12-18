@@ -1,0 +1,6 @@
+<app-network-country-header></app-network-country-header>
+<app-network-country-menu></app-network-country-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<app-notifications [userId]="uid" [USER_TYPE]="USER_TYPE" [networkId]="networkId" [networkCountryId]="networkCountryId"></app-notifications>

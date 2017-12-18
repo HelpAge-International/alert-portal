@@ -1,0 +1,84 @@
+<div class="Sub-header_bar">
+  <div class="Hamburger">
+    <span></span>
+  </div>
+  <ul>
+    <li class="" routerLinkActive="active">
+      <a
+        [routerLink]="networkViewValues ? ['/network-country/network-dashboard', networkViewValues] : ['/network-country/network-dashboard']">{{"GLOBAL.HOME"
+        | translate}}</a>
+    </li>
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.RiskMonitoring]?.status" routerLinkActive="active">
+      <a [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring', networkViewValues] : ['/network-country/network-risk-monitoring']">{{"RISK_MONITORING_TEXT" | translate}}</a>
+    </li>
+
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status &&  !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" routerLinkActive="active">
+      <div class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
+           aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
+        <div class="dropdown-menu">
+          <a  [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status" class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-mpa', networkViewValues] : ['/network-country/network-country-mpa']">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA"
+            | translate}}</a>
+          <a  [hidden]="networkModules && !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" class="dropdown-item"
+             [routerLink]="networkViewValues ? ['/network-country/network-country-apa', networkViewValues] : ['/network-country/network-country-apa']">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
+        </div>
+      </div>
+    </li>
+
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.ResponsePlanning]?.status" routerLinkActive="active">
+      <a
+        [routerLink]="networkViewValues ? ['/network-country/network-plans', networkViewValues] : ['/network-country/network-plans']">
+        {{"HEADERS.PLANS" | translate}}</a>
+    </li>
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.CountryOfficeProfile]?.status" routerLinkActive="active">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE"
+        | translate}}</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-programme', networkViewValues] : ['/network-country/network-country-office-profile-programme']">
+          Programme
+        </a>
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-office-capacity', networkViewValues] : ['/network-country/network-country-office-profile-office-capacity']">
+          Office Capacity
+        </a>
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-partners', networkViewValues] : ['/network-country/network-country-office-profile-partners']">
+          Partners
+        </a>
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-equipment', networkViewValues] : ['/network-country/network-country-office-profile-equipment']">
+          Equipment
+        </a>
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-coordination', networkViewValues] : ['/network-country/network-country-office-profile-coordination']">
+          Coordination
+        </a>
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-stock-capacity', networkViewValues] : ['/network-country/network-country-office-profile-stock-capacity']">
+          Stock Capacity
+        </a>
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-documents', networkViewValues] : ['/network-country/network-country-office-profile-documents']">
+          Documents
+        </a>
+        <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-contacts', networkViewValues] : ['/network-country/network-country-office-profile-contacts']">
+          Contacts
+        </a>
+      </div>
+      <!--<a routerLink="/network-country/network-country-office-profile-programme">{{"NETWORK_OFFICE" | translate}}</a>-->
+    </li>
+    <li class="" routerLinkActive="active">
+      <a [routerLink]="networkViewValues ? ['/network-country/network-global-map', networkViewValues] : '/network-country/network-global-map'">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
+    </li>
+    <li *ngIf="!isViewing" class="" routerLinkActive="active">
+      <div class="dropdown">
+        <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true"
+           aria-expanded="false">{{"ADMINISTRATION" | translate}}</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" routerLink="/network-country/network-country-agencies">{{"NETWORK_AGENCIES_IN_THIS_COUNTRY"
+            |
+            translate}}</a>
+          <a class="dropdown-item" routerLink="/network-country/network-country-settings/network-country-modules">{{"NETWORK_OFFICE_SETTINGS"
+            | translate}}</a>
+          <a class="dropdown-item" routerLink="/network-country/network-country-messages">{{"NETWORK_OFFICE_MESSAGES" |
+            translate}}</a>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+

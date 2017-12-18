@@ -1,0 +1,13 @@
+<ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+  <app-network-header></app-network-header>
+  <app-network-menu></app-network-menu>
+</ng-container>
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<app-notifications [userId]="uid" [USER_TYPE]="USER_TYPE" [networkId]="networkId"></app-notifications>

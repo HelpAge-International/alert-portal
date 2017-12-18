@@ -1,0 +1,77 @@
+<app-network-header></app-network-header>
+<app-network-menu></app-network-menu>
+
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1 class="col-sm-7">{{"AGENCY_ADMIN.MANDATED_PA.TITLE_TEXT" | translate}}</h1><br>
+      <div class="col-sm-3">
+        <button class="btn btn-outline-primary text-uppercase" routerLink="/network/network-mpa/network-add-generic-action">{{"AGENCY_ADMIN.MANDATED_PA.LOOK_UP_ACTIONS" | translate}}</button>
+      </div>
+      <div class="col-sm-2">
+        <button class="btn btn-primary text-uppercase" routerLink="/network/network-mpa/network-create-edit-mpa"> {{"SYSTEM_ADMIN.ACTIONS.CREATE_NEW_ACTION" | translate}}
+        </button>
+      </div>
+    </div>
+
+    <div class="row col-sm-9">
+      <div class="padding-one col-sm-1"><p>{{"FILTER" | translate}}:</p></div>
+      <div class="col-sm-4"><select class="form-control" [(ngModel)]="initFilterSelection" (change)="filterActions()">
+        <option class="" value="0" >{{"GLOBAL.PREPAREDNESS_LEVEL.ALL" | translate}}</option>
+        <option class="" value="1" >{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</option>
+        <option class="" value="2" >{{"GLOBAL.PREPAREDNESS_LEVEL.APA" | translate}}</option>
+      </select></div>
+    </div>
+
+    <div *ngIf="actions | async as mpaActions; else empty">
+      <div *ngFor="let action of mpaActions" class="bg-grey Spaced text-center padding-one">
+        <div class="row col-sm-12">
+          <p class="col-sm-10 text-left">{{action.task}}</p>
+          <div class="col-sm-1">
+            <a class="btn btn-danger text-capitalize" data-toggle="modal" href="#delete-action" (click)="getActionIdToDelete(action.id)">{{"DELETE" | translate}}</a>
+          </div>
+          <div class="col-sm-1">
+            <button class="btn btn-primary text-capitalize" (click)="editAction(action.id)">{{"EDIT" | translate}}</button>
+          </div>
+        </div>
+        <div class="text-left col-sm-12"><p>{{"GLOBAL.TYPE" | translate}}: <strong>{{"GLOBAL.ACTION_TYPE.MANDATED" | translate}}</strong></p></div>
+      </div>
+
+      <div *ngIf="mpaActions.length == 0" class="bg-grey Spaced text-center">
+        <p class="font-weight-bold padding-two">{{"NETWORK.NO_MPA" | translate}}</p>
+      </div>
+
+    </div>
+
+    <ng-template #empty>
+      <div class="bg-grey Spaced text-center">
+        <p class="font-weight-bold padding-two">{{"NETWORK.NO_MPA" | translate}}</p>
+      </div>
+    </ng-template>
+
+  </div>
+</div>
+
+<!--delete action dialog-->
+<div class="modal fade" id="delete-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"GLOBAL.WARNING" | translate}}</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"DELETE_ACTION_DIALOG.CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteMandatedAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL"| translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

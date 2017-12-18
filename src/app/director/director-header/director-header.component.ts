@@ -7,6 +7,11 @@ import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
+import {Http, Response} from '@angular/http';
+import {TranslateService} from "@ngx-translate/core";
+declare var jQuery: any;
+
+
 
 @Component({
   selector: 'app-director-header',
@@ -16,6 +21,13 @@ import {MessageModel} from "../../model/message.model";
 
 export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
+  // Dan's switch language
+  private languageSelectPath: string = '';
+  private languageMap = new Map();
+  private userLang = [];
+  private language: string;
+  private browserLang: string = "";
+  // End
   private USER_TYPE: string;
 
   private uid: string;
@@ -36,7 +48,13 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
               private _notificationService: NotificationService,
               private route: ActivatedRoute,
               private af: AngularFire,
-              private router: Router) {
+              private router: Router,
+              private translate: TranslateService,
+              private http: Http) {
+
+    translate.setDefaultLang("en");
+
+    this.browserLang = translate.getBrowserLang();
   }
 
   ngOnInit() {
@@ -47,7 +65,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
         this.getAgencyName();
       }
 
-      this.userService.getAgencyId(this.USER_TYPE, this.uid).subscribe(agencyId => {
+      this.userService.getAgencyId(this.USER_TYPE, this.uid).takeUntil(this.ngUnsubscribe).subscribe(agencyId => {
         this.agencyId = agencyId;
       });
 
@@ -56,7 +74,37 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
         .subscribe(user => {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
+
+          this.loadJSON().subscribe(data => {
+
+            for (var key in data){
+
+              this.userLang.push(key);
+              this.languageMap.set(key, data[key]);
+            }
+
+          });
+
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              if(user.language) {
+                this.language = user.language;
+                this.translate.use(this.language.toLowerCase());
+              } else {
+                this.language = "en"
+
+              }
+              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(this.language.toLowerCase());
+
+
+              this.translate.use(this.language.toLowerCase());
+
+            });
         });
+
+
+
     });
   }
 
@@ -65,13 +113,43 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+  // Dan's Modal functions
+
+  loadJSON(){
+
+    return this.http.get(this.languageSelectPath)
+      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+
+  }
+
+  openLanguageModal()
+  {
+
+    console.log('Open language modal');
+    jQuery("#language-selection").modal("show");
+
+  };
+
+  changeLanguage(language: string) {
+    this.language = language;
+    console.log(this.uid);
+
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
+
+
+    this.translate.use(language.toLowerCase());
+    jQuery("#language-selection").modal("hide");
+
+
+  }
+
   logout() {
     console.log("logout");
-    this.af.auth.logout();
+    this.af.auth.logout().then(()=>{this.router.navigateByUrl(Constants.LOGIN_PATH).then()});
   }
 
   goToHome() {
-    this.router.navigateByUrl("/director");
+    this.router.navigateByUrl("/director").then();
   }
 
   /**

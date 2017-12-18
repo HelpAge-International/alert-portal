@@ -1,0 +1,97 @@
+<div class="Header-title__wrap">
+  <h1>Network office profile</h1>
+</div>
+
+<!--<div class="Page-top__wrap&#45;&#45;w_sub_header&#45;&#45;no-paddng">-->
+<!--<div class="Full-page__wrap&#45;&#45;inner">-->
+<div class="Sub-header_bar--country no-bg">
+  <div class="Hamburger">
+    <span></span>
+  </div>
+  <ul class="subnav_country-office-profile">
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-programme' : '/network/local-network-office-profile/programme'}}">{{
+        "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToProgrammes()">{{
+        "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-office-capacity' : '/network/local-network-office-profile/office-capacity'}}">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.OFFICE_CAPACITY" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToOfficeCapacity()">{{ "COUNTRY_ADMIN.PROFILE.MENU.OFFICE_CAPACITY" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-partners' : '/network/local-network-office-profile/partners'}}">{{
+        "GLOBAL.USER_TYPE.PARTNER" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToPartners()">{{ "GLOBAL.USER_TYPE.PARTNER" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-equipment' : '/network/local-network-office-profile/equipment'}}">{{
+        "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToEquipment()">{{ "COUNTRY_ADMIN.PROFILE.EQUIPMENT.TITLE_TEXT" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-coordination' : '/network/local-network-office-profile/coordination'}}">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.COORDINATION" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToCoordination()">{{
+        "COUNTRY_ADMIN.PROFILE.MENU.COORDINATION" | translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-stock-capacity' : '/network/local-network-office-profile/stock-capacity'}}">{{
+        "COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT" | translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToStockCapacity()">{{
+        "COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT" | translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-documents' : '/network/local-network-office-profile/documents'}}">{{
+        "DOCUMENTS_TEXT" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToDocuments()">{{ "DOCUMENTS_TEXT" |
+        translate}}</a>
+    </li>
+
+    <li *ngIf="!isViewing" routerLinkActive="active">
+      <a
+        routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-contacts' : '/network/local-network-office-profile/contacts'}}">{{
+        "COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT" |
+        translate}}</a>
+    </li>
+    <li *ngIf="isViewing">
+      <a (click)="goToContacts()">{{ "COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT" |
+        translate}}</a>
+    </li>
+  </ul>
+</div>

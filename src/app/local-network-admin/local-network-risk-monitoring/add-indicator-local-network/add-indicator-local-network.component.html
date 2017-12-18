@@ -1,0 +1,251 @@
+<div *ngIf="!isViewing; else local">
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</div>
+
+<ng-template #local>
+  <app-country-admin-header></app-country-admin-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
+<!--Start Put page data-->
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+    <br>
+    <div class="Back--button" [routerLink]="networkViewValues ? ['/network/local-network-risk-monitoring', networkViewValues] : ['/network/local-network-risk-monitoring']" (click)="back()">{{"RISK_MONITORING_TEXT" | translate}}
+    </div>
+    <div class="row">
+      <div class="Header-title col-sm-10 col-xs-2">
+        <h1 *ngIf="!isEdit">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE" | translate}}</h1>
+        <h1 *ngIf="isEdit">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_EDIT_INDICATOR" | translate}}</h1>
+      </div>
+      <div class="col-sm-2 col-xs-6" *ngIf="isEdit">
+        <button href="#" class="btn btn-block btn-danger" (click)="showDeleteDialog('delete-indicator')">
+          {{"DELETE_INDICATOR_DIALOG.DIALOG" | translate}}
+        </button>
+      </div>
+    </div>
+
+    <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.HAZARD" | translate}}</b></h6>
+    <div class="Spaced-above form-group col-sm-12 row" *ngIf="checkTypeof(indicatorData.category)">
+      <select class="form-control col-sm-4" name="hazardID" (change)="setNewHazardID($event)">
+        <template ngFor let-hazard [ngForOf]="hazards" let-hazardIdx="index">
+          <option [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false"
+                  *ngIf="hazard.key == 'countryContext'">{{"RISK_MONITORING.MAIN_PAGE.COUNTRY_CONTEXT" | translate}}
+          </option>
+          <option [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false"
+                  *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ?
+            (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}
+          </option>
+        </template>
+      </select>
+      <span class="col-sm-1"> </span>
+    </div>
+
+    <!--Indicator -->
+    <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.INDICATOR" | translate}}</b>
+      <tooltip
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT2.LEVEL1'"
+      ></tooltip>
+    </h6>
+    <div class="Spaced-above form-group col-sm-12 row">
+      <input type="text" class="form-control form-control-sm col-sm-5" id="smFormGroupInput" placeholder="Please enter"
+             [(ngModel)]="indicatorData.name">
+    </div>
+
+    <!--Source of Information-->
+    <div class="row Spaced-above">
+      <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.SOURCE_INFORMATION" | translate}}</b></h6>
+      <tooltip
+        [level1]="'TOOLTIPS.RISK_MONITORING.TT12.LEVEL1'"
+        [level2]="'TOOLTIPS.RISK_MONITORING.TT12.LEVEL2'"
+      ></tooltip>
+    </div>
+
+    <div class="Spaced-above form-group col-sm-12 row indicator-source"
+         *ngIf="indicatorData.source && indicatorData.source.length > 0">
+      <div class="col-sm-12 row" style="padding-top:10px;"
+           *ngFor="let source of indicatorData.source; let sourceKey = index">
+        <input type="text" class="form-control form-control-sm col-sm-5" id="sourceName" [(ngModel)]="source.name"
+               placeholder="Name of source">
+        <span class="col-sm-1"></span>
+        <input type="text" class="form-control form-control-sm col-sm-5" id="sourceLink" [(ngModel)]="source.link"
+               placeholder="Link to source if available">
+        <div class="col-sm-1">
+          <a href="javascript:void(0)" class="text-danger" *ngIf="indicatorData.source.length > 1"
+             (click)="removeAnotherSource(sourceKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
+        </div>
+      </div>
+      <a href="javascript:void(0)" class="Spaced-above" (click)="addAnotherSource()">+
+        {{"RISK_MONITORING.ADD_INDICATOR.INPUTS.ADD_ANOTHER_SOURCE" | translate}}</a>
+    </div>
+
+    <div class="row Spaced" *ngIf="indicatorData.trigger && indicatorData.trigger.length > 0"> <!--start of row-->
+      <div class="col Spaced"><!--Trigger Values-->
+        <div class="row">
+          <h6 class="col-sm-4"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.TRIGGER_VALUES" | translate}}</b></h6>
+          <tooltip
+            [level1]="'TOOLTIPS.RISK_MONITORING.TT3.LEVEL1'"
+            [level2]="'TOOLTIPS.RISK_MONITORING.TT3.LEVEL2'"
+          ></tooltip>
+        </div>
+
+        <div *ngFor="let alertLevelKey of alertLevelsList"
+             class="form-group col-sm-12 row Spaced-above">
+          <img class="oval_green__wrap--risk Spaced-above"
+               src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
+          <input type="text" class="form-control form-control-sm col-sm-6"
+                 [(ngModel)]="indicatorData.trigger[alertLevelKey].triggerValue"
+                 placeholder="{{alertLevels[alertLevelKey] | translate}}">
+          <span class="oval_green__wrap--risk"></span>
+        </div>
+
+      </div><!--Trigger Values-->
+
+      <div class="col Spaced"><!--Frequency of Monitoring-->
+        <h6 class="col-sm-6"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.FREQUENCY_MONITORING" | translate}}</b></h6>
+        <div class="Spaced-above form-group-risk-frequency col-sm-12 row" *ngFor="let alertLevelKey of alertLevelsList">
+          <img class="align-middle oval_green__wrap--risk"
+               src="assets/images/oval_icon/oval_{{alertImages[alertLevelKey]}}_large.svg">
+          <label class="oval_green__wrap--risk">{{"EVERY" | translate}}</label>
+          <div class="form-group-risk-frequency">
+            <select class="form-control" id="select1" name="frequencyValue"
+                    [(ngModel)]="indicatorData.trigger[alertLevelKey].frequencyValue">
+              <option value="undefined" disabled selected hidden>0</option>
+              <option *ngFor="let f of frequency; let index = index" [value]="index + 1">{{index + 1}}</option>
+            </select>
+          </div>
+          <!--frequency-->
+          <div class="form-group-risk-frequency">
+            <select class="form-control" id="select2" name="durationType"
+                    [(ngModel)]="indicatorData.trigger[alertLevelKey].durationType">
+              <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+              <option *ngFor="let dKey of durationTypeList" [value]="dKey">{{durationType[dKey] | translate}}</option>
+            </select>
+          </div>
+          <span class="oval_green__wrap--risk"></span>
+        </div>
+      </div><!--Frequency of Monitoring-->
+
+    </div> <!--end of row-->
+
+    <!--Assign to-->
+    <h6 class="Spaced-above"><b>{{"ASSIGN_TO" | translate}}:</b></h6>
+    <div class="form-group col-sm-12 row">
+      <select class="form-control col-sm-4" id="select3" placeholder="Please select"
+              [(ngModel)]="indicatorData.assignee">
+        <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+        <option *ngFor="let uAssign of usersForAssign" [value]="uAssign.userID">{{uAssign.name}}
+        </option>
+      </select>
+    </div>
+    <br>
+
+    <!--Geographical location of indicator monitoring-->
+    <h6><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.GEO_LOCATION" | translate}}</b></h6>
+    <div class="row" *ngFor="let geoLocationKey of geoLocationList">
+      <label for="geoLocation_{{geoLocationKey}}" class="Checkbox--ribbon col-sm-5">
+        <input (change)="stateGeoLocation($event)" type="radio" name="RT" id="geoLocation_{{geoLocationKey}}"
+               value="{{geoLocationKey}}" [checked]="indicatorData.geoLocation == geoLocationKey">{{geoLocation[geoLocationKey]
+        | translate}}
+        <span class="col-sm-9"></span>
+      </label>
+    </div>
+
+    <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above"
+         *ngIf="indicatorData.geoLocation && indicatorData.affectedLocation && indicatorData.affectedLocation.length > 0">
+      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
+      <div class="col-sm-12 row" *ngFor="let location of indicatorData.affectedLocation; let locationKey = index">
+        <div class="col-sm-3">
+          <div class="form-group-risk-frequency ">
+            <select class="form-control" name="CountryArea"
+                    [(ngModel)]="location.country">
+              <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+              <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] |
+                translate}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3" *ngIf="checkTypeof(location.country)">
+          <div class="form-group-risk-frequency ">
+            <select class="form-control" name="CountryAreaLevelOne"
+                    [(ngModel)]="location.level1" (click)="print(location)">
+              <option value="undefined" disabled selected hidden>
+                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
+                countryLevels[location.country]?.levels[0].value | translate }}
+              </option>
+              <option
+                *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
+                [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3" *ngIf="checkTypeof(location.level1)">
+          <div class="form-group-risk-frequency ">
+            <select class="form-control" name="CountryAreaLevelTwo"
+                    [(ngModel)]="location.level2">
+              <option value="undefined" disabled selected hidden>
+                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
+                countryLevels[location.country]?.levels[1].value | translate }}
+              </option>
+              <option
+                *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1]?.levelTwoValues"
+                [ngValue]="countryLevel2Value.id">{{countryLevel2Value.value}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <a href="javascript:void(0)" class="text-danger" *ngIf="indicatorData.affectedLocation.length > 1"
+             (click)="removeAnotherLocation(locationKey)">{{ "GLOBAL.REMOVE" | translate}}</a>
+        </div>
+      </div>
+
+      <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherLocation()">+
+        {{"ADD_PARTNER.ADD_ANOTHER_LOCATION" | translate}}</a>
+    </div>
+
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="isEdit">
+        {{"RISK_MONITORING.ADD_INDICATOR.SAVE_INDICATOR" |
+        translate}}
+      </div>
+      <div class="btn btn-primary" (click)="saveIndicator()" *ngIf="!isEdit">
+        {{"RISK_MONITORING.ADD_INDICATOR.SAVE_NEW_INDICATOR" |
+        translate}}
+      </div>
+      <div class="btn btn-outline-secondary" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</div>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="modal fade" id="delete-indicator" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><strong>{{"DELETE_INDICATOR_DIALOG.TITLE" | translate}}</strong>
+        </h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center"><p>{{"DELETE_INDICATOR_DIALOG.CONTENT" | translate}}</p></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="_deleteIndicator()">{{"GLOBAL.CONFIRM" | translate}}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="_closeModal('delete-indicator')">
+          {{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

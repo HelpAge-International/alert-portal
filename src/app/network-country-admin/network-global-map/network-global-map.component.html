@@ -1,0 +1,76 @@
+<app-network-country-header></app-network-country-header>
+<app-network-country-menu></app-network-country-menu>
+
+<div class="Page-top__wrap--w_sub_header">
+  <div class="Full-page__wrap--inner">
+    <div class="Header-title__wrap">
+      <h1>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.GLOBAL_MAPS" | translate}}</h1>
+      <a href="javascript:void(0)" (click)="gotoMapList()">{{"MAPS.SEE_COUNTRIES_LIST" | translate}}</a>
+    </div>
+    <div class="Ribbon__section__wrap Spaced">
+      <div id="global-map" style="height: 500px;"></div>
+    </div>
+    <div *ngFor="let country of networkMapService.countries" class="modal fade"  id="minimum-prep-modal-{{getCountryCode(country.location)}}"
+         tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="info-window container-fluid Spaced" (change)="openMinimumPreparednessModal()">
+            <div class="info-window__heading row">
+              <div class="col-sm-2 logo"><img class="agency-logo-scale" src=""></div>
+              <div class="col-sm-8"><h5>{{"GLOBAL.COUNTRIES." +
+                getCountryCode(country.location).toUpperCase() | translate}} ({{getCountryCode(country.location)}})</h5></div>
+              <div class="col-sm-2"></div>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <table class="table_border">
+              <div *ngFor="let x of country.hazards">
+                <tr>
+                  <td class="text-left"><strong>Risks:</strong><br/><p>{{HazardScenario[x.hazardScenario] | translate}}</p></td>
+                  <td class="text-left"><strong>Affected Areas:</strong><br/>
+                    <div *ngFor="let y of x.instancesOfHazard">
+                      <p *ngFor="let obj of y.affectedAreas">{{obj.country | translate}}{{obj.areas}}</p>
+                    </div>
+                  </td>
+                  <td class="text-left"><strong>Population:</strong><br/>
+                    <p *ngFor="let y of x.instancesOfHazard">{{y.population}}</p>
+                  </td>
+                  <td class="text-left"><strong>Raised By:</strong><br/>
+                    <p *ngFor="let y of x.instancesOfHazard">{{y.agencyName}}</p>
+                  </td>
+                </tr>
+              </div>
+            </table>
+            <div class="info-window__subheading row">
+              <div class="col">{{"MAPS.MPA" | translate}}</div>
+            </div>
+            <table class="table">
+              <thead>
+              <tr>
+                <th class="col-10 text-left">Agency</th>
+                <th class="col-2 text-center">Preparedness</th>
+              </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ag of country.agencies">
+                  <td><img src="{{ag.image}}"/><p>{{ag.name}}</p></td>
+                  <td *ngIf="ag.overall() >= networkMapService.minGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
+                  <td *ngIf="ag.overall() >= networkMapService.minYellow && ag.overall() < networkMapService.minGreen"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                  <td *ngIf="ag.overall() < networkMapService.minYellow"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                </tr>
+                <tr>
+                  <td><strong>{{"MAPS.OVERALL" | translate}}</strong></td>
+                  <td *ngIf="country.overall(networkMapService.minGreen) >= networkMapService.minGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
+                  <td *ngIf="country.overall(networkMapService.minGreen) >= networkMapService.minYellow && country.overall(networkMapService.minGreen) < networkMapService.minGreen"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
+                  <td *ngIf="country.overall(networkMapService.minGreen) < networkMapService.minYellow"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

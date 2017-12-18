@@ -1589,17 +1589,31 @@ function multi_select_radioSelected(input) {
 "use strict";
 
 function ribbonClick(element) {
-    if ($(element).hasClass("Active")) {
-        $(".Ribbon__header__wrap, .Ribbon__response, .Ribbon__header__chevron").removeClass("Active");
-        $(".Response__content").slideUp();
-    } else {
-        $(".Ribbon__header__wrap, .Ribbon__response, .Ribbon__header__chevron").removeClass("Active");
-        $(".Response__content").slideUp();
-        $(element).parent().addClass("Active");
-        $(element).toggleClass("Active");
-        $(element).parent().parent().next(".Response__content").slideToggle();
-        $(element).parent().parent().toggleClass("Active");
-    }
+  if ($(element).hasClass("Active")) {
+    $(element).parent().removeClass("Active");
+    $(element).toggleClass("Active");
+    $(element).parent().parent().next(".Response__content").slideToggle();
+    $(element).parent().parent().toggleClass("Active");
+  } else {
+    $(element).parent().addClass("Active");
+    $(element).toggleClass("Active");
+    $(element).parent().parent().next(".Response__content").slideToggle();
+    $(element).parent().parent().toggleClass("Active");
+  }
+}
+
+function ribbonClickCloseOthers(element) {
+  if ($(element).hasClass("Active")) {
+    $(".Ribbon__header__wrap, .Ribbon__response, .Ribbon__header__chevron").removeClass("Active");
+    $(".Response__content").slideUp();
+  } else {
+    $(".Ribbon__header__wrap, .Ribbon__response, .Ribbon__header__chevron").removeClass("Active");
+    $(".Response__content").slideUp();
+    $(element).parent().addClass("Active");
+    $(element).toggleClass("Active");
+    $(element).parent().parent().next(".Response__content").slideToggle();
+    $(element).parent().parent().toggleClass("Active");
+  }
 }
 
 function continueToNextRibbon(element) {

@@ -12,6 +12,7 @@ import {ContactService} from "../../../../services/contact.service";
 import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../../../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
+
 declare var jQuery: any;
 
 @Component({
@@ -38,7 +39,7 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService,
-              private af:AngularFire,
+              private af: AngularFire,
               private _userService: UserService,
               private _contactService: ContactService,
               private router: Router,
@@ -54,35 +55,31 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
       this.uid = user.uid;
       this.userType = userType;
+      this.countryId = countryId;
 
-      this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryId => {
-          this.countryId = countryId;
+      this._userService.getStaffList(this.countryId).subscribe(staffList => {
+        this.staffList = staffList;
+        this.staffList.forEach(staff => {
 
-          this._userService.getStaffList(this.countryId).subscribe(staffList => {
-            this.staffList = staffList;
-            this.staffList.forEach(staff => {
-
-              this._userService.getUser(staff.id).subscribe(user => {
-                this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
-              });
-            });
-          });
-
-          const editSubscription = this.route.params.subscribe((params: Params) => {
-            if (params['id']) {
-              this._contactService.getPointOfContact(this.countryId, params['id'])
-                .subscribe(pointOfContact => {
-                  this.pointOfContact = pointOfContact;
-                });
-            }
+          this._userService.getUser(staff.id).takeUntil(this.ngUnsubscribe).subscribe(user => {
+            this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
           });
         });
+      });
+
+      this.route.params.subscribe((params: Params) => {
+        if (params['id']) {
+          this._contactService.getPointOfContact(this.countryId, params['id'])
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(pointOfContact => {
+              this.pointOfContact = pointOfContact;
+            });
+        }
+      });
 
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
         this.countryPermissionsMatrix = isEnabled;

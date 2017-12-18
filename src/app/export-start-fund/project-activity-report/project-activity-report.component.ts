@@ -5,13 +5,10 @@ import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResponsePlan} from "../../model/responsePlan";
 import {UserService} from "../../services/user.service";
-import {
-  BudgetCategory,
-  UserType
-} from "../../utils/Enums";
+import {UserType} from "../../utils/Enums";
 import {ModelPlanActivity} from "../../model/plan-activity.model";
-import {forEach} from "@angular/router/src/utils/collection";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NetworkService} from "../../services/network.service";
 
 @Component({
   selector: 'app-export-start-fund-project-activity-report',
@@ -32,7 +29,14 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
   private sectors: any[];
   private memberAgencyName: string = '';
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private userService: UserService, private route: ActivatedRoute) {
+  private networkCountryId: string;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
+              private route: ActivatedRoute) {
   }
 
   /**
@@ -40,9 +44,27 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.downloadData();
+    this.route.params.subscribe((params: Params) => {
+      if (params["id"] && params["networkCountryId"]) {
+        this.responsePlanId = params["id"];
+        this.networkCountryId = params["networkCountryId"];
+        if (params["isViewing"]) {
+          this.uid = params["uid"]
+          this.downloadResponsePlanData();
+          this.downloadAgencyData(null);
+        } else {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+            this.uid = user.uid;
+            this.downloadResponsePlanData();
+            this.downloadAgencyData(null);
+          });
+        }
+      } else {
+        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+          this.uid = user.uid;
+          this.downloadData();
+        });
+      }
     });
   }
 
@@ -79,16 +101,28 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
       });
   }
 
-  private downloadAgencyData(userType){
-    this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((agencyId) => {
-        this.af.database.object(Constants.APP_STATUS + "/agency/"+agencyId+"/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
-          if(name != null){
-            this.memberAgencyName = name.$value;
-          }
+  private downloadAgencyData(userType) {
+    const normalUser = () => {
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((agencyId) => {
+          this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+            if (name != null) {
+              this.memberAgencyName = name.$value;
+            }
+          });
         });
+    };
+
+    const networkUser = () => {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.responsePlan.planLead + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+        if (name != null) {
+          this.memberAgencyName = name.$value;
+        }
       });
+    };
+
+    this.networkCountryId ? networkUser() : normalUser();
   }
 
   private downloadResponsePlanData() {
@@ -101,7 +135,8 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
           }
         });
     }
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId;
+    let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
@@ -112,7 +147,7 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
       });
   }
 
-  private bindProjectActivitiesData(responsePlan: ResponsePlan){
+  private bindProjectActivitiesData(responsePlan: ResponsePlan) {
     if (responsePlan.sectors) {
       this.sectors = Object.keys(responsePlan.sectors).map(key => {
         let sector = responsePlan.sectors[key];
@@ -125,8 +160,7 @@ export class ProjectActivityReportComponent implements OnInit, OnDestroy {
       Object.keys(responsePlan.sectors).forEach(sectorKey => {
 
         let activitiesData: {} = responsePlan.sectors[sectorKey]["activities"];
-        if(activitiesData)
-        {
+        if (activitiesData) {
           let moreData: {}[] = [];
           Object.keys(activitiesData).forEach(key => {
             let beneficiary = [];
