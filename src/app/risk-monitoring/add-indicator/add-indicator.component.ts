@@ -139,7 +139,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        console.log(params)
+
         if (params["countryId"]) {
           this.copyCountryId = params["countryId"];
         }
@@ -367,7 +367,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   saveIndicator() {
 
     if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
-      console.log(this.hazardsObject)
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {
@@ -622,7 +621,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
     //this.indicatorData = new Indicator();
 
-
     if (this.hazardID == 'countryContext') {
       this.url = Constants.APP_STATUS + "/indicator/" + this.countryID + '/' + indicatorID;
     } else {
@@ -655,7 +653,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       }
 
       if (!this.alertMessage) {
-        console.log(this.indicatorData.source)
         this.indicatorData.source.forEach((val, key) => {
           let modelSource = new IndicatorSourceModel();
           modelSource.mapFromObject(val);
@@ -699,9 +696,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _validateIndicatorSource(indicatorSource: IndicatorSourceModel): AlertMessageModel {
-    console.log(indicatorSource.name)
     this.alertMessage = indicatorSource.validate();
-    console.log(this.alertMessage)
     return this.alertMessage;
   }
 
