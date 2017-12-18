@@ -6,6 +6,7 @@ import {ActionLevel, ActionType, DurationType, HazardScenario, UserType} from ".
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
+import {ModelNetwork} from "../model/network.model";
 
 export class PrepActionService {
 
@@ -238,6 +239,25 @@ export class PrepActionService {
       // }
       this.initNetwork(af, "actionMandated", networkId, isMPA, PrepSourceTypes.AGENCY, countryId, networkId, networkCountryId);
       this.initNetwork(af, "action", networkCountryId, isMPA, PrepSourceTypes.COUNTRY, countryId, networkId, networkCountryId);
+    })
+    // });
+  }
+
+  public initActionsWithInfoAllLocalNetworksInCountry(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
+                                                 countryId: string, agencyId: string, systemId: string, localNetworks: ModelNetwork[]) {
+    // this.uid = uid;
+    // this.ngUnsubscribe = ngUnsubscribe;
+    // this.isMPA = isMPA;
+    // this.countryId = countryId;
+    // this.agencyId = agencyId;
+    // this.systemAdminId = systemId;
+    // this.getDefaultClockSettings(af, agencyId, countryId, () => {
+    localNetworks.forEach((localNetwork) => {
+      // if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+      //   this.initNetwork(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+      // }
+      this.initNetwork(af, "actionMandated", localNetwork.id, isMPA, PrepSourceTypes.AGENCY, countryId, localNetwork.id, localNetwork.id);
+      this.initNetwork(af, "action", localNetwork.id, isMPA, PrepSourceTypes.COUNTRY, countryId, localNetwork.id, localNetwork.id);
     })
     // });
   }

@@ -129,6 +129,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private networkModelMap = new Map<string, ModelNetwork>();
   private networkIdList: string [] = [];
 
+
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               protected af: AngularFire,
@@ -245,10 +246,34 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                 this.prepActionService.initActionsWithInfoAllNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, true, this.countryId, this.agencyId, this.systemAdminId, networkMap)
 
               })
+            // Get all local network Id for this country
+            this.networkService.getLocalNetworkModelsForCountry(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(localNetworks => {
+                console.log(localNetworks);
+                localNetworks.forEach((networkCountryId) => {
+                  this.networkService.getNetworkModuleMatrix(networkCountryId.id)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(matrix => {
+                      this.networkModuleMap.set(networkCountryId.id, matrix)
+                    })
+
+                  this.networkService.getNetworkDetail(networkCountryId.id)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(network => {
+                      this.networkModelMap.set(networkCountryId.id, network)
+                    })
+                })
+
+                this.prepActionService.initActionsWithInfoAllLocalNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, true, this.countryId, this.agencyId, this.systemAdminId, localNetworks)
+
+              })
           }
         });
 
       });
+    this.initLocalDisplay();
+
   }
 
   ngOnDestroy() {
@@ -314,6 +339,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           this.getStaffDetails(snapshot.key, false);
         });
       });
+  }
+
+  initLocalDisplay(){
+    console.log(this.prepActionService.actionsNetworkLocal, 'initLocalDisplay');
+
+
+
+
+
   }
 
   /**

@@ -252,6 +252,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       });
   }
 
+
   getPartnerAgencies(agencies: Map<any, any>) {
     let data = [];
     agencies.forEach((v) => {
@@ -345,6 +346,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
 
   selectLocalNetwork(network: ModelNetwork) {
+
     this.selectedNetwork = network;
     this.isViewingNetwork = true;
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
@@ -374,6 +376,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   selectAgency() {
+    console.log('toggling to agency');
     this.isViewingNetwork = false;
     this.selectedNetwork = null;
     this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
@@ -480,11 +483,13 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private getLocalNetworks(agencyId: string, countryId: any) {
+    console.log('in local networks');
+
     this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         this.localNetworkList = list
-        console.log(this.localNetworkList)
+        console.log(this.localNetworkList, 'local list');
       })
 
     this.networkService.getLocalNetworkModelsForCountry(agencyId, countryId)
@@ -503,7 +508,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               }
             })
           })
-
       })
   }
 }
