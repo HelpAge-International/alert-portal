@@ -271,7 +271,10 @@
                           </div>
 
                           <a
-                            *ngIf="(action.asignee == uid && !isViewing) || (isViewing && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && permissionsAreEnabled.customAPA.Edit)))"
+                            *ngIf="(action.asignee == uid && !isViewing)
+                            || isNetworkAccess
+                            || (isViewing && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && permissionsAreEnabled.customMPA.Edit)
+                            || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && permissionsAreEnabled.customAPA.Edit)))"
                             [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           <a

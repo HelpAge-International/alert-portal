@@ -146,7 +146,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private privacy: ModelAgencyPrivacy;
   private userAgencyId: string;
-
+  private isNetworkAccess: boolean;
 
   constructor(private pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -192,6 +192,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.assignActionAsignee = this.uid;
       this.filterAssigned = "0";
       this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+      this.isNetworkAccess = true;
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -220,7 +221,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyCountryMap => {
               this.initAgencies(agencyCountryMap)
-            })
+            });
 
           // Currency
           // this.calculateCurrency();
@@ -261,7 +262,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyCountryMap => {
               this.initAgencies(agencyCountryMap)
-            })
+            });
 
           // Currency
           // this.calculateCurrency();
