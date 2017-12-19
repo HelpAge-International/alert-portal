@@ -633,6 +633,7 @@ export class NetworkService {
         let model = new NetworkCountryModel();
         model.mapFromObject(networkCountry);
         model.id = networkCountry.$key;
+        model.networkId = networkId
         return model;
       })
   }

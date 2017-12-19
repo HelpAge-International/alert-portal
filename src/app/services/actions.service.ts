@@ -215,7 +215,7 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if (alert.approval['countryDirector']) {
+          if (alert.approval && alert.approval['countryDirector']) {
             modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
             modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
           }
