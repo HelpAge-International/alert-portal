@@ -32,6 +32,12 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
   private totalInputs: number;
   private totalOfAllCosts: number;
   private total: number;
+
+  private inputWaSHBudget: number;
+  private inputWaSHNarrative: string;
+  private inputHealthBudget: number;
+  private inputHealthNarrative: string;
+
   private transportBudget: number;
   private transportNarrative: string;
   private securityBudget: number;
@@ -188,6 +194,12 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
       this.total = responsePlan.budget['total'] ? responsePlan.budget['total'] : 0;
 
       if (responsePlan.budget['item']) {
+        this.inputWaSHBudget = responsePlan.budget['item'][BudgetCategory.Inputs][0] ? responsePlan.budget['item'][BudgetCategory.Inputs][0]['budget'] : 0;
+        this.inputWaSHNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][0] ? responsePlan.budget['item'][BudgetCategory.Inputs][0]['narrative'] : '';
+
+        this.inputHealthBudget = responsePlan.budget['item'][BudgetCategory.Inputs][1] ? responsePlan.budget['item'][BudgetCategory.Inputs][1]['budget'] : 0;
+        this.inputHealthNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][1] ? responsePlan.budget['item'][BudgetCategory.Inputs][1]['narrative'] : '';
+
         this.transportBudget = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['budget'] : 0;
         this.transportNarrative = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['narrative'] : '';
 
