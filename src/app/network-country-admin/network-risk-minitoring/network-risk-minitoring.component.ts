@@ -123,6 +123,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   private assignedUser: string;
   private networkId: any;
   private countryLevelsValues: any;
+  private isViewingFromExternal: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -183,6 +184,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         }
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
+        }
+        if (params["isViewingFromExternal"]) {
+          this.isViewingFromExternal = params["isViewingFromExternal"];
         }
 
         if (this.isViewing) {

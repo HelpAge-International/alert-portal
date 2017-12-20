@@ -80,6 +80,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private partnersApprovalMap = new Map<string, string>();
   private responsePlanToEdit: any;
   private networkPlanExpireDuration: number;
+  private isViewingFromExternal: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -109,6 +110,12 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           this.networkCountryId = params["networkCountryId"];
         }
         this.uid = params["uid"];
+        if (params["isViewingFromExternal"]) {
+          this.isViewingFromExternal = params["isViewingFromExternal"];
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
+        }
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess()  : this.initViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
     })

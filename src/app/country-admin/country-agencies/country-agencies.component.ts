@@ -8,7 +8,6 @@ import {AgencyService} from "../../services/agency-service.service";
 import {ActionsService} from "../../services/actions.service";
 import {UserService} from "../../services/user.service";
 import {NetworkService} from "../../services/network.service";
-import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-country-account-settings',
@@ -39,8 +38,8 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   private networkCountryData = [];
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute,
-              private af: AngularFire, private router: Router, private userService:UserService,
-              private networkService:NetworkService,
+              private af: AngularFire, private router: Router, private userService: UserService,
+              private networkService: NetworkService,
               private agencyService: AgencyService) {
 
   }
@@ -64,7 +63,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   _loadData() {
     this.userService.getCountryDetail(this.countryId, this.agencyID)
       .first()
-      .subscribe(country =>{
+      .subscribe(country => {
         this.countryToShow = country;
         this.countryKey = country.location;
         this.getCountryOfficesWithSameLocationsInOtherAgencies();
@@ -73,34 +72,25 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   private getNetworkAndNetworkCountries() {
-    this.networkService.mapNetworkWithCountryForCountry(this.agencyID, this.countryId)
-      .map(networkMap =>{
-        if (networkMap) {
-          return networkMap
-        } else {
-          return new Map()
-        }
-      })
+
+    this.networkService.mapNetworkOfficesWithSameLocationsInOtherNetworks(this.countryToShow.location)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(networkMap =>{
+      .subscribe(networkMap => {
         this.networkCountryData = []
         this.globalNetworks = []
-        networkMap.forEach((networkCountryId, networkId) =>{
+        networkMap.forEach((networkCountryId, networkId) => {
           this.networkService.getNetworkCountry(networkId, networkCountryId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(networkCountry =>{
+            .subscribe(networkCountry => {
               this.networkCountryData.push(networkCountry)
-              console.log(this.networkCountryData)
             })
           this.networkService.getNetworkDetail(networkId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe(network =>{
+            .subscribe(network => {
               this.globalNetworks[networkCountryId] = network
-              console.log(this.globalNetworks)
             })
         })
       })
-
   }
 
   // Getting all country offices with the same location in other agencies
@@ -127,7 +117,6 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
             // An agency should only have one country office per country
             if (!this.countryOffices.find(x => x == countries[0])) {
               this.countryOffices.push(countries[0]);
-              console.log(this.countryOffices)
             }
 
             this.agencyService.getAgency(agency.$key)

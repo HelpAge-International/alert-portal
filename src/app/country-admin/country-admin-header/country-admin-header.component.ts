@@ -200,7 +200,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           }
 
           //get networks
-          console.log('getting stuff');
           this.getNetworks(agencyId, countryId);
 
           this.getLocalNetworks(agencyId, countryId)
@@ -222,7 +221,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyCountries => {
-        console.log(agencyCountries);
         // this.agencyId = agencyCountries[0].$key;
         // this.countryId = agencyCountries[0].$value;
         this.agencyId = agencyId;
@@ -334,7 +332,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.isViewingNetwork = true;
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
-    console.log(network)
     //build emit value
     let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, this.networkCountryMap.get(this.selectedNetwork.id), true)
     // this.networkRequest.emit(model)
@@ -351,7 +348,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.isViewingNetwork = true;
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
-    console.log(network);
     //build emit value
     let model = new LocalNetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, true)
     // this.networkRequest.emit(model)
@@ -403,7 +399,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   changeLanguage(language: string) {
     this.language = language;
-    console.log(this.uid);
 
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
 
@@ -483,13 +478,11 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private getLocalNetworks(agencyId: string, countryId: any) {
-    console.log('in local networks');
 
     this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         this.localNetworkList = list
-        console.log(this.localNetworkList, 'local list');
       })
 
     this.networkService.getLocalNetworkModelsForCountry(agencyId, countryId)

@@ -1,8 +1,10 @@
 
-<ng-container *ngIf="!isViewing; else country">
-  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-    <app-network-country-header></app-network-country-header>
-    <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewingFromExternal">
+  <ng-container *ngIf="!isViewing; else country">
+    <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+      <app-network-country-header></app-network-country-header>
+      <app-network-country-menu></app-network-country-menu>
+    </ng-container>
   </ng-container>
 </ng-container>
 
@@ -23,16 +25,16 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap--risk">
       <h1>{{"RISK_MONITORING_TEXT" | translate}}</h1>
-      <div class="btn btn-tertiary" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/create-alert', networkViewValues] : ['/network-country/network-risk-monitoring/create-alert']">
+      <div *ngIf="!isViewingFromExternal" class="btn btn-tertiary" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/create-alert', networkViewValues] : ['/network-country/network-risk-monitoring/create-alert']">
         {{"RISK_MONITORING.ADD_ALERT.TITLE_PAGE" | translate}}
       </div>
-      <a [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-hazard', networkViewValues] : ['/network-country/network-risk-monitoring/add-hazard']" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD"
+      <a *ngIf="!isViewingFromExternal" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-hazard', networkViewValues] : ['/network-country/network-risk-monitoring/add-hazard']" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD"
         |
         translate}}</a>
     </div>
 
     <!--Filters-->
-    <div class="row align-items-center Filter-form margin-top-one">
+    <div *ngIf="!isViewingFromExternal" class="row align-items-center Filter-form margin-top-one">
       <div class="col-lg-1 col-md-1 col-sm-6">
         Filter:
       </div>
@@ -116,12 +118,12 @@
              *ngIf="eventFilter == -1 || eventFilter == 'countryContext'">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
-              <div class="sub-sub-contents__wrap--risk col-sm-11">
+              <div *ngIf="!isViewingFromExternal" class="sub-sub-contents__wrap--risk col-sm-11">
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard">
                   {{"ARCHIVE_ACTION_DIALOG.TITLE" | translate}}</a>
 
-                <a [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext', networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                <a  [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext', networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -136,12 +138,14 @@
                   <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
                     *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a *ngIf="indicatorC.fromAgency"
-                       [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode]">{{"EDIT" | translate}}
-                    </a>
-                    <a *ngIf="!indicatorC.fromAgency"
-                       [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key]">{{"EDIT" | translate}}
-                    </a>
+                    <ng-container *ngIf="!isViewingFromExternal">
+                      <a *ngIf="indicatorC.fromAgency"
+                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode]">{{"EDIT" | translate}}
+                      </a>
+                      <a *ngIf="!indicatorC.fromAgency"
+                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key]">{{"EDIT" | translate}}
+                      </a>
+                    </ng-container>
                   </div>
                   <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['agency']">Monitoring Agency: {{indicatorC['agency'].name}}</div>
                 </div>
@@ -256,11 +260,11 @@
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="Update__button">
-                      <div *ngIf="indicatorC?.assignee && uid == indicatorC.assignee && !indicatorC.fromAgency" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="indicatorC?.assignee && uid == indicatorC.assignee && !indicatorC.fromAgency && !isViewingFromExternal" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"GLOBAL.UPDATE" | translate}}
                       </div>
-                      <div *ngIf="!indicatorC?.assignee && (!indicatorC.fromAgency || (indicatorC.fromAgency && indicatorC.countryOfficeCode === countryID))">
+                      <div *ngIf="!indicatorC?.assignee && (!indicatorC.fromAgency || (indicatorC.fromAgency && indicatorC.countryOfficeCode === countryID)) && !isViewingFromExternal">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
                            aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
                           Assign to</a>
@@ -394,6 +398,7 @@
         </div>
       </div>
 
+      <!--NORMAL HAZARD AND INDICATORS-->
       <div class="Ribbon__section__wrap--risk align-items-right"
            *ngFor="let hazard of activeHazards; let hazardIndex = index;">
         <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse-active-' + hazard.$key}}"
@@ -428,7 +433,7 @@
              *ngIf="eventFilter == -1 || eventFilter == hazard.hazardScenario">
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
-              <div class="sub-sub-contents__wrap--risk col-sm-11">
+              <div *ngIf="!isViewingFromExternal" class="sub-sub-contents__wrap--risk col-sm-11">
                 <a href="javascript:void(0)"
                    *ngIf="hazard.existsOnNetwork"
                    data-toggle="modal"
@@ -456,10 +461,10 @@
                   <div class="col-md-4 col-sm-7 margin-left-four">{{indicator.name}} | <span
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID"
+                    <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
                        [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
                     </a>
-                    <a *ngIf="!indicator.fromAgency"
+                    <a *ngIf="!indicator.fromAgency && !isViewingFromExternal"
                        [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT" | translate}}
                     </a>
 
@@ -564,11 +569,11 @@
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div *ngIf="indicator?.assignee && !indicator.fromAgency" class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="indicator?.assignee && !indicator.fromAgency && !isViewingFromExternal" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"GLOBAL.UPDATE" | translate}}
                     </div>
-                    <div *ngIf="!indicator?.assignee && (!indicator.fromAgency || (indicator.fromAgency && indicator.countryOfficeCode === countryID))">
+                    <div *ngIf="!indicator?.assignee && (!indicator.fromAgency || (indicator.fromAgency && indicator.countryOfficeCode === countryID)) && !isViewingFromExternal">
                       <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
                          aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo(hazard.$key, indicator)">
                         Assign to</a>
@@ -748,7 +753,7 @@
                *ngIf="eventFilter == -1 || eventFilter == hazard.hazardScenario">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
-                <div class="sub-sub-contents__wrap--risk col-sm-11">
+                <div *ngIf="!isViewingFromExternal" class="sub-sub-contents__wrap--risk col-sm-11">
 
                   <a href="javascript:void(0)"
                      *ngIf="hazard.existsOnNetwork"
@@ -781,10 +786,10 @@
                     <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
                       *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                       *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                      <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID"
+                      <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
                          [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
                       </a>
-                      <a *ngIf="!indicator.fromAgency"
+                      <a *ngIf="!indicator.fromAgency && !isViewingFromExternal"
                          [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT" | translate}}
                       </a>
                     </div>
@@ -906,7 +911,7 @@
 
                     <div class="end-col__wrap--risk col-md-3 col-sm-6"
                          *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                      <div *ngIf="uid == indicator.assignee && !indicator.fromAgency" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="uid == indicator.assignee && !indicator.fromAgency && !isViewingFromExternal" class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                         {{"GLOBAL.UPDATE" | translate}}
                       </div>

@@ -22,6 +22,9 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {SettingsService} from "../../services/settings.service";
 import {NetworkService} from "../../services/network.service";
+import {Logger} from "codelyzer/util/logger";
+import {NetworkPrivacyModel} from "../../model/network-privacy.model";
+import {CommonUtils} from "../../utils/CommonUtils";
 
 declare var jQuery: any;
 
@@ -44,6 +47,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private _userType: number;
   // private privacyMap = new Map<string, ModelAgencyPrivacy>();
   private privacyMapCountry = new Map<string, ModelAgencyPrivacy>();
+  private privacyMapNetworkCountry = new Map<string, NetworkPrivacyModel>();
   private _networkCountryData: any;
 
 
@@ -99,7 +103,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   @Input()
   set networkCountryData(networkCountryData: any) {
-    console.log(networkCountryData)
     this._networkCountryData = networkCountryData;
     this._loadData();
     this._loadDataForNetworkCountries()
@@ -139,7 +142,10 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private defaultAgencyLogo: string = 'assets/images/alert_logo--grey.svg';
 
   private date: number = new Date().getTime();
+  private userCountryId: string;
   private userAgencyId: string;
+
+  private withinNetworkMap = new Map<string, boolean>()
 
   constructor(private pageControl: PageControlService,
               private agencyService: AgencyService,
@@ -149,13 +155,14 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
               private router: Router,
               protected _sanitizer: DomSanitizer,
               private userService: UserService,
-              private networkService:NetworkService,
+              private networkService: NetworkService,
               private actionsService: ActionsService) {
   }
 
   ngOnInit() {
 
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.userCountryId = countryId;
       this.userAgencyId = agencyId;
       this._loadData();
       this._loadDataForNetworkCountries()
@@ -171,6 +178,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   filterAlertLevel(event: any) {
     this.filter = event.target.value;
     this.filteredCountryOfficeData = (!this.filter || this.filter == 'all') ? this._countryOfficeData : this._countryOfficeData.filter(x => x.alertLevel === +this.filter);
+    this.filteredNetworkCountryData = (!this.filter || this.filter == 'all') ? this._networkCountryData : this._networkCountryData.filter(x => x.alertLevel === +this.filter);
   }
 
   _loadData() {
@@ -218,8 +226,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  _loadDataForNetworkCountries(){
-  //function not finished.
+  _loadDataForNetworkCountries() {
+
     if (this._userId && this._userType && this._systemId && (this._agencyId || this._agencies) && this._networkCountryData) {
 
       this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
@@ -228,46 +236,54 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
           this.advTreshold = advTreshold;
 
-          console.log(this._agencyId)
+          this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(networkCountryMap => {
 
-          this._networkCountryData.forEach(networkCountry => {
-            if (!networkCountry.globalNetworkId) {
-              networkCountry.globalNetworkId = this._agencyId;
-            }
+              let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
 
-            this.prepActionService[networkCountry.id ? networkCountry.id : networkCountry.$key] = new PrepActionService();
-            this.hazardRedAlert[networkCountry.id ? networkCountry.id : networkCountry.$key] = new Map<HazardScenario, boolean>();
+              this._networkCountryData.forEach(networkCountry => {
 
-            this._getResponsePlansNetworkCountry(networkCountry);
-            this._getAlertLevelNetworkCountry(networkCountry).then(() => {
-              this.prepActionService[networkCountry.id ? networkCountry.id : networkCountry.$key].initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this._userId, null, networkCountry.id ? networkCountry.id : networkCountry.$key, networkCountry.globalNetworkId, this._systemId);
-              this.prepActionService[networkCountry.id ? networkCountry.id : networkCountry.$key].addUpdater(() => {
-                this.recalculateAllNetworkCountry(networkCountry);
+                if (!networkCountry.globalNetworkId) {
+                  networkCountry.globalNetworkId = this._agencyId;
+                }
+
+                let networkCountryId = networkCountry.id ? networkCountry.id : networkCountry.$key
+                let networkId = networkCountry.networkId ? networkCountry.networkId : networkCountry.globalNetworkId
+
+                if (networkCountryIds.includes(networkCountryId)) {
+                  this.withinNetworkMap.set(networkCountryId, true)
+                } else {
+                  this.withinNetworkMap.set(networkCountryId, false)
+                }
+
+                this.prepActionService[networkCountryId] = new PrepActionService();
+
+                this.hazardRedAlert[networkCountryId] = new Map<HazardScenario, boolean>();
+                this._getResponsePlansNetworkCountry(networkCountry);
+                this._getAlertLevelNetworkCountry(networkCountry).then(() => {
+                  this.prepActionService[networkCountryId].initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this._userId, null, networkCountryId, networkId, this._systemId);
+                  this.prepActionService[networkCountryId].addUpdater(() => {
+                    this.recalculateAllNetworkCountry(networkCountry);
+                  });
+                });
+
+                this.networkService.getPrivacySettingForNetworkCountry(networkCountryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((privacy: NetworkPrivacyModel) => {
+                    this.privacyMapNetworkCountry.set(networkCountryId, privacy);
+                  });
               });
-            });
-          //
-          //   // this.agencyService.getPrivacySettingForAgency(countryOffice.agencyId)
-          //   //   .takeUntil(this.ngUnsubscribe)
-          //   //   .subscribe((privacy: ModelAgencyPrivacy) => {
-          //   //     this.privacyMap.set(countryOffice.agencyId, privacy);
-          //   //   });
-          //
-          //   this.countryService.getPrivacySettingForCountry(countryOffice.countryId)
-          //     .takeUntil(this.ngUnsubscribe)
-          //     .subscribe((privacy: ModelAgencyPrivacy) => {
-          //       this.privacyMapCountry.set(countryOffice.countryId, privacy);
-          //     });
-          });
-          //
+            })
+
           this.filteredNetworkCountryData = this._networkCountryData;
-          console.log(this.filteredNetworkCountryData)
         });
       });
     }
   }
 
   _getResponsePlans(countryOffice) {
-    let promise = new Promise((res, rej) => {
+    return new Promise((res,) => {
       this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryOffice.$key)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((responsePlans: any) => {
@@ -281,33 +297,25 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
           res(true);
         });
     });
-    return promise;
   }
 
   _getResponsePlansNetworkCountry(networkCountry) {
-    console.log(networkCountry)
-    let promise = new Promise((res, rej) => {
-      let id = networkCountry.id ? networkCountry.id : networkCountry.$key
-      this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((responsePlans: any) => {
-          console.log(responsePlans)
-          this.countResponsePlans[id] = 0;
-          responsePlans.forEach(plan => {
-            if (plan.status == ApprovalStatus.Approved && plan.isActive == true) {
-              this.countResponsePlans[id] = this.countResponsePlans[id] + 1;
-            }
-          });
-
-          res(true);
+    let id = networkCountry.id ? networkCountry.id : networkCountry.$key
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlans: any) => {
+        this.countResponsePlans[id] = 0;
+        responsePlans.forEach(plan => {
+          if (plan.status == ApprovalStatus.Approved && plan.isActive == true) {
+            this.countResponsePlans[id] = this.countResponsePlans[id] + 1;
+          }
         });
-    });
-    return promise;
+      });
   }
 
   _getAlertLevel(countryOffice): Promise<any> {
 
-    let promise = new Promise((res, rej) => {
+    return new Promise((res,) => {
       countryOffice.alertLevel = AlertLevels.Green;
       this.actionsService.getAlerts(countryOffice.$key)
         .takeUntil(this.ngUnsubscribe)
@@ -327,19 +335,16 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         });
     });
 
-    return promise;
-
   }
 
   _getAlertLevelNetworkCountry(networkCountry): Promise<any> {
 
-    let promise = new Promise((res, rej) => {
+    return new Promise((res,) => {
       networkCountry.alertLevel = AlertLevels.Green;
       let id = networkCountry.id ? networkCountry.id : networkCountry.$key
       this.actionsService.getAlerts(id)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((alerts: ModelAlert[]) => {
-          console.log(alerts)
           alerts.forEach(alert => {
             this.hazardRedAlert[id].set(alert.hazardScenario, false);
             if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
@@ -355,19 +360,16 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         });
     });
 
-    return promise;
-
   }
 
   _getSystemThreshold(tresholdType: string) {
-    let promise = new Promise((res, rej) => {
+    return new Promise((res,) => {
       this.af.database.list(Constants.APP_STATUS + "/system/" + this._systemId + '/' + tresholdType)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((treshold: any) => {
           res(treshold);
         });
     });
-    return promise;
   }
 
   private recalculateAll(countryOffice) {
@@ -468,7 +470,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     let advPrepPercentage: number;
 
 
-    for (let x of this.prepActionService[countryID].actionsNetwork) {
+    for (let x of this.prepActionService[countryID].actions) {
       if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
           minTotal++;
@@ -503,7 +505,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     minPrepPercentage = Math.round(minPrepPercentage);
     advPrepPercentage = Math.round(advPrepPercentage);
     this.chsPrepPercentage[countryID] = Math.round(this.chsPrepPercentage[countryID]);
-
 
     if (minTotal == 0) {
       this.mpaStatusColors[countryID] = 'grey';
@@ -561,10 +562,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
-
   protected getBackground(location) {
     if (location)
       return this._sanitizer.bypassSecurityTrustStyle('url(/assets/images/countries/' + this.CountriesEnum[location] + '.svg)');
@@ -589,6 +586,31 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  overviewNetworkCountry(networkCountryId, networkId) {
+    let data = {
+      "countryId": this.userCountryId,
+      "isViewing": true,
+      "agencyId": this.userAgencyId,
+      "systemId": this._systemId,
+      "userType": this._userType,
+      "canCopy": true,
+      "agencyOverview": true,
+      "isViewingFromExternal":true,
+      "networkId":networkId,
+      "networkCountryId":networkCountryId
+    };
+    this.router.navigate(["/dashboard/dashboard-overview", data]);
+    // if (this.isDirector) {
+    //   this.router.navigate(["/director/director-overview", data]);
+    // } else {
+    //   data["canCopy"] = true;
+    //   if (this.agencyOverview) {
+    //     data["agencyOverview"] = this.agencyOverview;
+    //   }
+    //   this.router.navigate(["/dashboard/dashboard-overview", data]);
+    // }
+  }
+
   getIcon(type, agencyId, countryId) {
     let label = "";
     let privacyCountry = this.privacyMapCountry.get(countryId);
@@ -603,12 +625,15 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   getIconNetwork(type, agencyId, countryId) {
+    if (type === "chs") {
+      return "grey"
+    }
     let label = "";
-    let privacyCountry = this.privacyMapCountry.get(countryId);
+    let privacyCountry = this.privacyMapNetworkCountry.get(countryId);
     if (privacyCountry) {
-      if (type == "plan" && privacyCountry.responsePlan == this.Privacy.Public || type == "chs" && privacyCountry.chs == this.Privacy.Public) {
+      if (type == "plan" && (privacyCountry.responsePlan == this.Privacy.Public || (privacyCountry.responsePlan == this.Privacy.Network && this.withinNetworkMap.get(countryId)))) {
         label = "blue";
-      } else if (type == "plan" && privacyCountry.responsePlan == this.Privacy.Private || type == "chs" && privacyCountry.chs == this.Privacy.Private) {
+      } else {
         label = "grey";
       }
     }
@@ -622,6 +647,22 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       if (isMpa && privacyCountry.mpa == this.Privacy.Public || !isMpa && privacyCountry.apa == this.Privacy.Public) {
         label = stdColor;
       } else if (isMpa && privacyCountry.mpa == this.Privacy.Private || !isMpa && privacyCountry.apa == this.Privacy.Private) {
+        label = "grey";
+      }
+    }
+    return label;
+  }
+
+  getActionIconNetwork(isMpa, networkId, networkCountryId, stdColor) {
+    let label = "";
+    let privacyCountry = this.privacyMapNetworkCountry.get(networkCountryId);
+    if (privacyCountry) {
+      if (isMpa && privacyCountry.mpa == this.Privacy.Public ||
+        !isMpa && privacyCountry.apa == this.Privacy.Public ||
+        (isMpa && privacyCountry.mpa == this.Privacy.Network && this.withinNetworkMap.get(networkCountryId)) ||
+        (!isMpa && privacyCountry.apa == this.Privacy.Network && this.withinNetworkMap.get(networkCountryId))) {
+        label = stdColor;
+      } else {
         label = "grey";
       }
     }
