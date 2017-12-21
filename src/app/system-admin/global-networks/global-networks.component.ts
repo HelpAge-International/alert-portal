@@ -1,9 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {NetworkService} from "../../services/network.service";
+import {ModelNetwork} from "../../model/network.model";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -19,19 +22,23 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   private alertContent: string;
   private networkToUpdate;
 
+  private networkId: string;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private networkService: NetworkService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.loadNetworks();
+      this.getLogo();
     });
   }
 
   private loadNetworks() {
     this.networks = this.af.database.list(Constants.APP_STATUS + "/network");
+
   }
 
   ngOnDestroy() {
@@ -42,6 +49,16 @@ export class GlobalNetworksComponent implements OnInit, OnDestroy {
   addNetwork() {
     this.router.navigateByUrl(Constants.SYSTEM_ADMIN_ADD_NETWORK);
   }
+
+  getLogo() {
+
+     console.log('get logo');
+
+     this.networks.subscribe(value => {
+       console.log(value);
+     })
+
+}
 
   update(network) {
     this.networkToUpdate = network;
