@@ -693,7 +693,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
        jQuery('.Add__row__cta').show();
      }*/
 
- 
+
 
      // Removing bullet point from list if exists
      if (this.scenarioCrisisObject[bulletPoint]) {
@@ -1481,17 +1481,18 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (this.agencyAdminUid) {
       this.responsePlanSettings = {};
+
       this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminUid + '/responsePlanSettings/sections')
         .takeUntil(this.ngUnsubscribe)
         .subscribe(list => {
           this.totalSections = 0;
           list.forEach(item => {
             this.responsePlanSettings[item.$key] = item.$value;
-
             if (item.$value) {
               this.totalSections++;
             }
           });
+
           this.storeAvailableSettingSections();
         });
     }
@@ -2020,12 +2021,23 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private getCompleteSectionNumber() {
     let counter = 0;
-    this.sectionsCompleted.forEach((v,) => {
-      if (v) {
-        counter++;
-      }
-    });
-    return counter;
+    if(this.forEditing){
+      let index = 0;
+      this.sections.forEach(section => {
+        if(this.sectionsCompleted.get(section) == true && this.responsePlanSettings[index] == true){
+          counter++;
+        }
+        index++;
+      });
+      return counter;
+    }else{
+      this.sectionsCompleted.forEach((v,) => {
+        if (v) {
+          counter++;
+        }
+      });
+      return counter;
+    }
   }
 
   private storeAvailableSettingSections() {
