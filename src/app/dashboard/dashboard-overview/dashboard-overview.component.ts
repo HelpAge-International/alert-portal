@@ -214,6 +214,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   private updateMainMenuNetwork(privacy: NetworkPrivacyModel) {
     if (privacy.officeProfile == Privacy.Public || (privacy.officeProfile == Privacy.Network && this.withinNetwork)) {
+      this.handleMainMenu("officeProfile");
+    } else {
       if (privacy.riskMonitoring == Privacy.Public || (privacy.riskMonitoring == Privacy.Network && this.withinNetwork)) {
         this.handleMainMenu("risk");
       } else if (privacy.mpa == Privacy.Public || privacy.apa == Privacy.Public || (privacy.mpa == Privacy.Network && this.withinNetwork) || (privacy.apa == Privacy.Network && this.withinNetwork)) {
@@ -229,8 +231,6 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           this.tabMap.set(k, false);
         });
       }
-    } else {
-      this.handleMainMenu("officeProfile");
     }
   }
 
@@ -246,7 +246,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   }
 
   private getAlerts() {
-    this.alerts = this.alertService.getAlerts(this.countryId)
+    let id = this.isViewingFromExternal ? this.networkCountryId : this.countryId
+    this.alerts = this.alertService.getAlerts(id)
       .map(alerts => {
         let alertList = [];
         alerts.forEach(alert => {

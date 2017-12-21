@@ -6,13 +6,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {
-  ActionLevel,
-  ActionType,
-  AlertLevels,
-  AlertStatus,
-  ApprovalStatus,
-  Countries,
-  HazardScenario, Privacy
+  ActionLevel, ActionType, AlertLevels, AlertStatus, ApprovalStatus, Countries, HazardScenario,
+  Privacy
 } from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
@@ -22,7 +17,6 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {SettingsService} from "../../services/settings.service";
 import {NetworkService} from "../../services/network.service";
-import {Logger} from "codelyzer/util/logger";
 import {NetworkPrivacyModel} from "../../model/network-privacy.model";
 import {CommonUtils} from "../../utils/CommonUtils";
 
@@ -573,7 +567,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "isViewing": true,
       "agencyId": agencyId,
       "systemId": this._systemId,
-      "userType": this._userType
+      "userType": this._userType,
+      "uid": this._userId
     };
     if (this.isDirector) {
       this.router.navigate(["/director/director-overview", data]);
@@ -593,22 +588,21 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "agencyId": this.userAgencyId,
       "systemId": this._systemId,
       "userType": this._userType,
-      "canCopy": true,
-      "agencyOverview": true,
-      "isViewingFromExternal":true,
-      "networkId":networkId,
-      "networkCountryId":networkCountryId
+      "uid": this._userId,
+      "isViewingFromExternal": true,
+      "networkId": networkId,
+      "networkCountryId": networkCountryId
     };
-    this.router.navigate(["/dashboard/dashboard-overview", data]);
-    // if (this.isDirector) {
-    //   this.router.navigate(["/director/director-overview", data]);
-    // } else {
-    //   data["canCopy"] = true;
-    //   if (this.agencyOverview) {
-    //     data["agencyOverview"] = this.agencyOverview;
-    //   }
-    //   this.router.navigate(["/dashboard/dashboard-overview", data]);
-    // }
+    // this.router.navigate(["/dashboard/dashboard-overview", data]);
+    if (this.isDirector) {
+      this.router.navigate(["/director/director-overview", data]);
+    } else {
+      data["canCopy"] = true;
+      if (this.agencyOverview) {
+        data["agencyOverview"] = this.agencyOverview;
+      }
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
+    }
   }
 
   getIcon(type, agencyId, countryId) {

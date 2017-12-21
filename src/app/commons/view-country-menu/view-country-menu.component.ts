@@ -45,7 +45,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private pageControl: PageControlService,
               private countryService: SettingsService,
-              private networkService:NetworkService,
+              private networkService: NetworkService,
               private agencyService: AgencyService) {
     this.menuMap.set("officeProfile", false);
     this.menuMap.set("risk", false);
@@ -102,7 +102,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
             this.loadNetworkCountry(this.networkId, this.networkCountryId)
             this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(privacy =>{
+              .subscribe(privacy => {
                 this.privacy = privacy
                 this.updateMainMenuNetwork(this.privacy)
               })
@@ -135,6 +135,8 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
 
   private updateMainMenuNetwork(privacy: NetworkPrivacyModel) {
     if (privacy.officeProfile == Privacy.Public || (privacy.officeProfile == Privacy.Network && this.withinNetwork)) {
+      this.handleActiveClass("officeProfile");
+    } else {
       if (privacy.riskMonitoring == Privacy.Public || (privacy.riskMonitoring == Privacy.Network && this.withinNetwork)) {
         this.handleActiveClass("risk");
       } else if (privacy.mpa == Privacy.Public || privacy.apa == Privacy.Public || (privacy.mpa == Privacy.Network && this.withinNetwork) || (privacy.apa == Privacy.Network && this.withinNetwork)) {
@@ -148,8 +150,6 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
       } else {
         this.handleActiveClass("")
       }
-    } else {
-      this.handleActiveClass("officeProfile");
     }
   }
 
@@ -165,7 +165,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
   private loadNetworkCountry(networkId: string, networkCountryId: string) {
     this.networkService.getNetworkCountry(networkId, networkCountryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(networkCountry =>{
+      .subscribe(networkCountry => {
         this.countryLocation = networkCountry.location
       })
   }

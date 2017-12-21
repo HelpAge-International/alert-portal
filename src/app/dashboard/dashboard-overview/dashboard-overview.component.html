@@ -127,6 +127,16 @@
   <app-minimum *ngIf="tabMap.get('preparedness-min')"></app-minimum>
   <app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
   <app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
+
+  <div
+    *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
+    class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+      <div class="Empty--ribbon">
+        No permission to view country details for this agency!
+      </div>
+    </div>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="isViewingFromExternal">
@@ -153,14 +163,15 @@
   <app-network-plans *ngIf="tabMap.get('plan')"></app-network-plans>
   <app-network-country-mpa *ngIf="tabMap.get('preparedness-min')"></app-network-country-mpa>
   <app-network-country-apa *ngIf="tabMap.get('preparedness-adv')"></app-network-country-apa>
-</ng-container>
 
-<div
-  *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
-  class="Page-top__wrap--w_sub_header--no-paddng">
-  <div class="Full-page__wrap--inner">
-    <div class="Empty--ribbon">
-      No permission to view country details for this agency!
+  <div
+    *ngIf="!tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
+    class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+      <div class="Empty--ribbon">
+        No permission to view office details for this network!
+      </div>
     </div>
   </div>
-</div>
+</ng-container>
+

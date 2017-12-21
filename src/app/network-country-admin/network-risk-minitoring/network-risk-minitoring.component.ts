@@ -182,6 +182,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         if (params["uid"]) {
           this.uid = params["uid"];
         }
+        if (params["userType"]) {
+          this.UserType = params["userType"];
+        }
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
         }
@@ -877,27 +880,29 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     console.log("isContext: " + isContext);
     console.log(hazard);
     if (isContext) {
+      let data = {
+        "countryId": this.countryID,
+        "agencyId": this.agencyId,
+        "systemId": this.systemId,
+        "indicatorId": indicator.$key,
+        "isContext": isContext,
+        "networkId": this.networkId,
+        "networkCountryId": this.networkCountryId
+      }
+      if (this.isViewingFromExternal) {
+        data["isViewingFromExternal"] = true
+      }
       if (this.agencyOverview) {
-        this.router.navigate(["/network-country/network-risk-monitoring/add-indicator/countryContext", {
-          "countryId": this.countryID,
-          "agencyId": this.agencyId,
-          "systemId": this.systemId,
-          "indicatorId": indicator.$key,
-          "isContext": isContext,
-          "agencyOverview": true
-        }]);
+        data["agencyOverview"] = true
+        this.router.navigate(["/risk-monitoring/add-indicator/countryContext", data]);
       } else {
-        this.router.navigate(["/network-country/network-risk-monitoring/add-indicator/countryContext", {
-          "countryId": this.countryID,
-          "agencyId": this.agencyId,
-          "systemId": this.systemId,
-          "indicatorId": indicator.$key,
-          "isContext": isContext
-        }]);
+        this.router.navigate(["/risk-monitoring/add-indicator/countryContext", data]);
       }
 
     } else {
       let hazardScenario = hazard.hazardScenario;
+      console.log(this.uid)
+      console.log(this.UserType)
       this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
         .take(1)
         .subscribe(ownCountryId => {
@@ -917,25 +922,24 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 this.alertMessage = new AlertMessageModel("No same active hazard exist in your country !");
               } else {
                 console.log("do the hazard copy action");
+                let passData = {
+                  "countryId": this.countryID,
+                  "agencyId": this.agencyId,
+                  "systemId": this.systemId,
+                  "indicatorId": indicator.$key,
+                  "hazardId": hazard.$key,
+                  "isContext": isContext,
+                  "networkId": this.networkId,
+                  "networkCountryId": this.networkCountryId
+                }
+                if (this.isViewingFromExternal) {
+                  passData["isViewingFromExternal"] = true
+                }
                 if (this.agencyOverview) {
-                  this.router.navigate(["/network-country/network-risk-monitoring/add-indicator/" + hazards[0].$key, {
-                    "countryId": this.countryID,
-                    "agencyId": this.agencyId,
-                    "systemId": this.systemId,
-                    "indicatorId": indicator.$key,
-                    "hazardId": hazard.$key,
-                    "isContext": isContext,
-                    "agencyOverview": true
-                  }]);
+                  passData["agencyOverview"] = true
+                  this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, passData]);
                 } else {
-                  this.router.navigate(["/network-country/network-risk-monitoring/add-indicator/" + hazards[0].$key, {
-                    "countryId": this.countryID,
-                    "agencyId": this.agencyId,
-                    "systemId": this.systemId,
-                    "indicatorId": indicator.$key,
-                    "hazardId": hazard.$key,
-                    "isContext": isContext
-                  }]);
+                  this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, passData]);
                 }
               }
             });

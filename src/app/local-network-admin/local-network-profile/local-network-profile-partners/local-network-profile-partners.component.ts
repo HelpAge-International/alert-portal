@@ -73,6 +73,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   @Input() isNetworkCountry: boolean;
   private networkCountryId: string;
   private networkViewValues: {};
+  private isViewingFromExternal: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
@@ -119,6 +120,9 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
         }
         if (params['uid']) {
           this.uid = params['uid'];
+        }
+        if (params['isViewingFromExternal']) {
+          this.isViewingFromExternal = params['isViewingFromExternal'];
         }
 
         this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
