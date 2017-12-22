@@ -1,6 +1,6 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NetworkMapService} from '../../services/networkmap.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AngularFire} from 'angularfire2';
 import {PageControlService} from '../../services/pagecontrol.service';
 import {NetworkService} from '../../services/network.service';
@@ -25,6 +25,11 @@ export class NetworkGlobalMapListComponent implements OnInit, OnDestroy {
   private uid: string;
   private networkId: string;
   private networkCountryId: string;
+  private systemAdminId: string;
+
+  public isViewing: boolean;
+  @Input() isLocalNetworkAdmin: boolean;
+  public paramString: string;
 
   private HazardScenario = Constants.HAZARD_SCENARIOS;
 
@@ -37,17 +42,36 @@ export class NetworkGlobalMapListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
-      console.log(this.uid);
-      this.networkService.getSelectedIdObj(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection['id'];
-          this.networkCountryId = selection['networkCountryId'];
-          // TODO: Delete this method when page control does auth properly
-          this.getSystemAdmin(this.uid, (systemAdminId => {
-            this.networkMapService.init(null, this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
+      this.route.params
+        .subscribe((params: Params) => {
+          if (params != null) {
+            for (let x in params) {
+              if (this.paramString == null) {
+                this.paramString = "";
+              }
+              this.paramString += ";" + x + "=" + params[x];
+            }
+          }
+          // this.paramString = params.
+          if (params["networkId"]) {
+            this.networkId = params["networkId"];
+          }
+          if (params["networkCountryId"]) {
+            this.networkCountryId = params["networkCountryId"];
+          }
+          if (params["uid"]) {
+            this.uid = params["uid"];
+          }
+          if (params["systemId"]) {
+            this.systemAdminId = params["systemId"];
+          }
+          if (params["isViewing"]) {
+            this.isViewing = params["isViewing"];
+          }
+          if (this.networkId != null && this.networkCountryId != null && this.uid != null && this.systemAdminId) {
+            this.networkMapService.init(null, this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, this.networkCountryId,
               () => {
                 // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
                 console.log('Network map initialised');
@@ -56,11 +80,28 @@ export class NetworkGlobalMapListComponent implements OnInit, OnDestroy {
               (country) => {
                 // Do nothing. First element is null so map isn't intialised
               });
-          }));
+          } else {
+            this.uid = user.uid;
+            console.log(this.uid);
+            this.networkService.getSelectedIdObj(this.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                this.networkId = selection['id'];
+                this.networkCountryId = selection['networkCountryId'];
+                // TODO: Delete this method when page control does auth properly
+                this.getSystemAdmin(this.uid, (systemAdminId => {
+                  this.networkMapService.init(null, this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
+                    () => {
+                      // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
+                      console.log('Network map initialised');
+                    },
+                    (country) => {
+                      // Do nothing. First element is null so map isn't intialised
+                    });
+                }));
+              });
+          }
         });
-
-      // this.mapService = MapService.init(this.af, this.ngUnsubscribe);
-      // this.mapService.initBlankMap('global-map');
     });
   }
 
@@ -70,7 +111,12 @@ export class NetworkGlobalMapListComponent implements OnInit, OnDestroy {
   }
 
   public gotoListView() {
-    this.router.navigateByUrl('network-country/network-global-map');
+    if (this.paramString == null) {
+      this.router.navigateByUrl('network-country/network-global-map');
+    }
+    else {
+      this.router.navigateByUrl('network-country/network-global-map' + this.paramString);
+    }
   }
 
 

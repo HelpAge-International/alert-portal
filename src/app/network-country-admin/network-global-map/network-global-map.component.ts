@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {MapService} from '../../services/map.service';
 import {PageControlService} from '../../services/pagecontrol.service';
 import {AngularFire} from 'angularfire2';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {UserService} from '../../services/user.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Constants} from '../../utils/Constants';
@@ -23,9 +23,14 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  public isViewing: boolean;
+  @Input() isLocalNetworkAdmin: boolean;
+  private paramString: string;
+
   public uid: string;
   public networkId: string;
   public networkCountryId: string;
+  public systemAdminId: string;
 
   private HazardScenario = Constants.HAZARD_SCENARIOS;
 
@@ -39,29 +44,60 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
-      console.log(this.uid);
-      console.log('hello');
-      this.networkService.getSelectedIdObj(this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection['id'];
-          this.networkCountryId = selection['networkCountryId'];
-          // TODO: Delete this method when page control does auth properly
-          this.getSystemAdmin(this.uid, (systemAdminId => {
-            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
-              () => {
-                // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
-                console.log("Network map initialised");
-              },
-              (country) => {
-                this.showDialog(country);
-              });
-          }));
-        });
+      this.route.params
+        .subscribe((params: Params) => {
+          if (params != null) {
+            for (let x in params) {
+              if (this.paramString == null) {
+                this.paramString = "";
+              }
+              this.paramString += ";" + x + "=" + params[x];
+            }
+          }
+          if (params["networkId"]) {
+            this.networkId = params["networkId"];
+          }
+          if (params["networkCountryId"]) {
+            this.networkCountryId = params["networkCountryId"];
+          }
+          if (params["uid"]) {
+            this.uid = params["uid"];
+          }
+          if (params["systemId"]) {
+            this.systemAdminId = params["systemId"];
+          }
+          if (params["isViewing"]) {
+            this.isViewing = params["isViewing"];
+          }
+          if (this.networkId != null && this.networkCountryId != null && this.uid != null && this.systemAdminId) {
+            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, this.networkCountryId, () => {
+              console.log("Network map initialised (viewing");
+            }, (country) => {
+              this.showDialog(country);
+            });
+          }
+          else {
+            this.uid = user.uid;
+            this.networkService.getSelectedIdObj(this.uid)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(selection => {
+                this.networkId = selection['id'];
+                this.networkCountryId = selection['networkCountryId'];
 
-      //this.mapService = MapService.init(this.af, this.ngUnsubscribe);
-      //this.mapService.initBlankMap('global-map');
+                // TODO: Delete this method when page control does auth properly
+                this.getSystemAdmin(this.uid, (systemAdminId => {
+                  this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
+                    () => {
+                      // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
+                      console.log("Network map initialised");
+                    },
+                    (country) => {
+                      this.showDialog(country);
+                    });
+                }));
+              });
+          }
+        });
     });
   }
 
@@ -71,7 +107,12 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   }
 
   gotoMapList(): void {
-    this.router.navigateByUrl('network-country/network-global-map-list');
+    if (this.paramString == null) {
+      this.router.navigateByUrl('network-country/network-global-map-list');
+    }
+    else {
+      this.router.navigateByUrl('network-country/network-global-map-list' + this.paramString);
+    }
   }
 
   public getCountryCode(location: number) {
