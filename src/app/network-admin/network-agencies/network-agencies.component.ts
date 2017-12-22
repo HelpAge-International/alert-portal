@@ -6,7 +6,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../services/agency-service.service";
-import {FirebaseObjectObservable} from "angularfire2";
+import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {NetworkAgencyModel} from "./network-agency.model";
 import {UserService} from "../../services/user.service";
 
@@ -37,6 +37,7 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
 
 
   constructor(private pageControl: PageControlService,
+              private af: AngularFire,
               private networkService: NetworkService,
               private route: ActivatedRoute,
               private agencyService: AgencyService,
@@ -123,6 +124,52 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
       let validationPath = "/networkAgencyValidation/" + agencyId;
       this.networkService.deleteNetworkField(path);
       this.networkService.deleteNetworkField(validationPath);
+
+      //delete agency from network country as well
+      console.log(this.networkId)
+      this.networkService.getAllNetworkCountriesWithSameAgencyMember(this.networkId, agencyId)
+        .first()
+        .subscribe(networkCountries => {
+          console.log(networkCountries)
+          networkCountries.forEach(networkCountry => {
+            // delete network from normal country
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, networkCountry.$key)
+              .first()
+              .subscribe(map => {
+                console.log(map)
+                map.forEach((value, key) => {
+                  if (key === agencyId) {
+                    let networkPath = "/countryOffice/" + key + "/" + value + "/networks/" + this.networkId
+                    console.log(networkPath)
+                    this.networkService.deleteNetworkField(networkPath)
+                  }
+                })
+
+                //remove agency from network country
+                let path = "/networkCountry/" + this.networkId + "/" + networkCountry.$key + "/agencyCountries/" + agencyId
+                console.log(path)
+                this.networkService.deleteNetworkField(path)
+                //handle if deleting lead agency id for network country
+                if (networkCountry.leadAgencyId === agencyId) {
+                  //handle lead agency delete for network country
+                  let otherPossibleLeadAgencyIds = Object.keys(networkCountry.agencyCountries).filter(id => id !== agencyId)
+                  if (otherPossibleLeadAgencyIds.length > 0) {
+                    //set new lead agency id for network country
+                    let leadAgencyPath = "/networkCountry/" + this.networkId + "/" + networkCountry.$key + "/leadAgencyId/"
+                    console.log(leadAgencyPath)
+                    this.networkService.setNetworkField(leadAgencyPath, otherPossibleLeadAgencyIds[0])
+                  } else {
+                    //no other alternative, so delete lead agency id and agency countries nodes
+                    let leadAgencyPath = "/networkCountry/" + this.networkId + "/" + networkCountry.$key + "/leadAgencyId/"
+                    let agencyCountryPath = "/networkCountry/" + this.networkId + "/" + networkCountry.$key + "/agencyCountries/"
+                    console.log(`agency path: ${leadAgencyPath} /// countryAgency path: ${agencyCountryPath}`)
+                    this.networkService.deleteNetworkField(leadAgencyPath)
+                    this.networkService.deleteNetworkField(agencyCountryPath)
+                  }
+                }
+              })
+          })
+        })
     }
   }
 

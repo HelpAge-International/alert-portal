@@ -8,25 +8,67 @@
           class="Icon__square--transparent Icon__country--{{getCountryCodeFromLocation(countryLocation)?.toUpperCase()}} Icon--lg"></i>
       </div>
       <div>{{CountryNames[countryLocation] | translate}}</div>
-      <ul>
-        <li *ngIf="userAgencyId==agencyId || privacy?.officeProfile == Privacy.Public" [class.Active]="menuMap.get('officeProfile')" (click)="menuSelection('officeProfile')">
-         {{"COUNTRY_OFFICE_PROFILE" | translate}}
-        </li>
-        <li *ngIf="userAgencyId==agencyId || privacy?.riskMonitoring == Privacy.Public" [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">{{"RISK_MONITORING_TEXT" | translate}}</li>
-        <!--<li [class.Active]="menuMap.get('preparedness')" (click)="menuSelection('preparedness')">Preparedness</li>-->
-        <li *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public || privacy?.apa == Privacy.Public" [class.Active]="menuMap.get('preparedness')" routerLinkActive="active">
-          <div class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
-               aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
-            <div class="dropdown-menu">
-              <a *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-min')">{{"MINIMUM_PREPAREDNESS" | translate}}</a>
-              <a *ngIf="userAgencyId==agencyId || privacy?.apa == Privacy.Public" class="dropdown-item" (click)="menuSelection('preparedness-adv')">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
-              <a class="dropdown-item" (click)="menuSelection('preparedness-budget')">{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET" | translate}}</a>
+      <ng-container *ngIf="!isViewingFromExternal">
+        <ul>
+          <li *ngIf="userAgencyId==agencyId || privacy?.officeProfile == Privacy.Public"
+              [class.Active]="menuMap.get('officeProfile')" (click)="menuSelection('officeProfile')">
+            {{"COUNTRY_OFFICE_PROFILE" | translate}}
+          </li>
+          <li *ngIf="userAgencyId==agencyId || privacy?.riskMonitoring == Privacy.Public"
+              [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">{{"RISK_MONITORING_TEXT" |
+            translate}}
+          </li>
+          <!--<li [class.Active]="menuMap.get('preparedness')" (click)="menuSelection('preparedness')">Preparedness</li>-->
+          <li *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public || privacy?.apa == Privacy.Public"
+              [class.Active]="menuMap.get('preparedness')" routerLinkActive="active">
+            <div class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
+                 aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
+              <div class="dropdown-menu">
+                <a *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public" class="dropdown-item"
+                   (click)="menuSelection('preparedness-min')">{{"MINIMUM_PREPAREDNESS" | translate}}</a>
+                <a *ngIf="userAgencyId==agencyId || privacy?.apa == Privacy.Public" class="dropdown-item"
+                   (click)="menuSelection('preparedness-adv')">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
+                <a class="dropdown-item" (click)="menuSelection('preparedness-budget')">{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.PREP_BUDGET"
+                  | translate}}</a>
+              </div>
             </div>
-          </div>
-        </li>
-        <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public" [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"HEADERS.PLANS" | translate}}</li>
-      </ul>
+          </li>
+          <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public"
+              [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"HEADERS.PLANS" | translate}}
+          </li>
+        </ul>
+      </ng-container>
+      <ng-container *ngIf="isViewingFromExternal">
+        <ul>
+          <li
+            *ngIf="privacy?.officeProfile == Privacy.Public || (privacy?.officeProfile == Privacy.Network && withinNetwork)"
+            [class.Active]="menuMap.get('officeProfile')" (click)="menuSelection('officeProfile')">
+            {{"COUNTRY_OFFICE_PROFILE" | translate}}
+          </li>
+          <li
+            *ngIf="privacy?.riskMonitoring == Privacy.Public || (privacy?.riskMonitoring == Privacy.Network && withinNetwork)"
+            [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">{{"RISK_MONITORING_TEXT" | translate}}
+          </li>
+          <li *ngIf="privacy?.mpa == Privacy.Public || privacy?.apa == Privacy.Public || (privacy?.mpa == Privacy.Network && withinNetwork) || (privacy?.apa == Privacy.Network && withinNetwork)"
+              [class.Active]="menuMap.get('preparedness')" routerLinkActive="active">
+            <div class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
+                 aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
+              <div class="dropdown-menu">
+                <a *ngIf="privacy?.mpa == Privacy.Public || (privacy?.mpa == Privacy.Network && withinNetwork)" class="dropdown-item"
+                   (click)="menuSelection('preparedness-min')">{{"MINIMUM_PREPAREDNESS" | translate}}</a>
+                <a *ngIf="privacy?.apa == Privacy.Public || (privacy?.apa == Privacy.Network && withinNetwork)" class="dropdown-item"
+                   (click)="menuSelection('preparedness-adv')">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
+              </div>
+            </div>
+          </li>
+          <li *ngIf="privacy?.responsePlan == Privacy.Public || (privacy?.responsePlan == Privacy.Network && withinNetwork)"
+              [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"HEADERS.PLANS" | translate}}
+          </li>
+        </ul>
+      </ng-container>
+
     </div>
   </div>
 </div>

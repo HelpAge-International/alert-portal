@@ -1,7 +1,9 @@
-<ng-container *ngIf="!isViewing; else country">
-  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-    <app-network-country-header></app-network-country-header>
-    <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewingFromExternal">
+  <ng-container *ngIf="!isViewing; else country">
+    <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+      <app-network-country-header></app-network-country-header>
+      <app-network-country-menu></app-network-country-menu>
+    </ng-container>
   </ng-container>
 </ng-container>
 
@@ -78,7 +80,7 @@
       </tooltip>
 
       <div class="btn-group"
-           *ngIf="!userType || (isViewing && (permissionsAreEnabled.customMPA.New || userType == userTypes.CountryAdmin))">
+           *ngIf="(!userType || (isViewing && (permissionsAreEnabled.customMPA.New || userType == userTypes.CountryAdmin))) && !isViewingFromExternal">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{"CREATE_ACTION" | translate}}
         </button>
@@ -262,10 +264,11 @@
 
                         </div>
                         <div class="col-md-3 col-sm-4 btn-block"
-                             *ngIf="!countrySelected">
+                             *ngIf="!countrySelected && !isViewingFromExternal">
                           <div
                             *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
-                            <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
+                            <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)"
+                               aria-expanded="false"
                                aria-controls="popover_content"
                                class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                           </div>
@@ -279,14 +282,14 @@
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           <a
                             *ngIf="action.isComplete" (click)="undoCompleteAction(action)"
-                          class="btn btn-block link-color">Undo completion</a>
+                            class="btn btn-block link-color">Undo completion</a>
 
                         </div>
-                        <!--<div class="col-md-3 col-sm-4 btn-block"-->
-                        <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
-                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                        <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>-->
-                        <!--</div>-->
+                        <div class="col-md-3 col-sm-4 btn-block"
+                             *ngIf="isViewingFromExternal && !action.createdByAgencyId && userType != userTypes.Donor">
+                          <a href="javascript:void(0)" (click)="copyAction(action)"
+                             class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
+                        </div>
                       </div>
                       <div class="row">
                         <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
@@ -374,8 +377,9 @@
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                             translate) :
                             ("ADD_NOTE" | translate)}}</a>
-                          <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action); closePopover(action)"
-                             >{{"GLOBAL.CANCEL" |
+                          <a href="javascript:void(0)" class="btn btn-block"
+                             (click)="disableEditNote(action); closePopover(action)"
+                          >{{"GLOBAL.CANCEL" |
                             translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
                              *ngIf="action.noteId != null && action.noteId != ''">{{"STOP_EDITING" | translate}}</a>
@@ -478,7 +482,7 @@
                       <a href="javascript:void(0)" class="btn btn-primary btn-block"
                          (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                       <a href="javascript:void(0)" class="btn btn-block"
-                         (click)="closePopover(action)" >{{"GLOBAL.CANCEL" |
+                         (click)="closePopover(action)">{{"GLOBAL.CANCEL" |
                         translate}}</a>
                     </div>
                   </div>
@@ -564,7 +568,7 @@
 
                         </div>
                         <!--assign people-->
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected && !isViewingFromExternal">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                              aria-expanded="false" aria-controls="popover_content" *ngIf="!((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && isViewing))
                                     && !((action.type == ActionType.chs && action.level == actionLevelEnum.MPA && isViewing)) || (!((action.type == ActionType.mandated && action.level == actionLevelEnum.MPA && !isViewing && !permissionsAreEnabled.mandatedMPA.Assign))
@@ -802,7 +806,7 @@
                           </a>
 
                         </div>
-                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected">
+                        <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected && !isViewingFromExternal">
                           <a href="javascript:void(0)" data-toggle="collapse" data-target="#popover_content3"
                              aria-expanded="false" aria-controls="popover_content" (click)="reactivate(action)"
                              class="btn btn-outline-primary btn-block text-muted btn-outline-secondary">{{"GLOBAL.RE_ACTIVATE"
@@ -991,7 +995,7 @@
           <a class="col-sm-9 margin-top-one"
              (click)="closeModal()">{{"GLOBAL.CANCEL" | translate}}</a>
           <button
-            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">	{{"SAVE" | translate}}
+            class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()"> {{"SAVE" | translate}}
           </button>
         </div>
       </div>

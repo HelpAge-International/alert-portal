@@ -1,7 +1,9 @@
-<ng-container *ngIf="!isViewing; else country">
-  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-    <app-network-country-header></app-network-country-header>
-    <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewingFromExternal">
+  <ng-container *ngIf="!isViewing; else country">
+    <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+      <app-network-country-header></app-network-country-header>
+      <app-network-country-menu></app-network-country-menu>
+    </ng-container>
   </ng-container>
 </ng-container>
 
@@ -36,7 +38,7 @@
         [level1]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL1'"
         [level2]="'TOOLTIPS.RESPONSE_PLANS.TT1.LEVEL2'">
       </tooltip>
-      <button class="btn btn-primary"
+      <button *ngIf="!isViewingFromExternal" class="btn btn-primary"
               [routerLink]="isViewing ? ['/network-country/network-plans/create-edit-network-plan', networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-plans/create-edit-network-plan', {'isLocalNetworkAdmin':isLocalNetworkAdmin}]:['/network-country/network-plans/create-edit-network-plan']">
         {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.CREATE_NEW_RESPONSE_PLAN" | translate | uppercase}}
       </button>
@@ -200,7 +202,14 @@
             {{plan.startDate | date:'d/MM/y'}}
           </div>
           <div class="col-sm-3">
-            <div class="btn-group btn-block">
+            <!--view button-->
+            <button *ngIf="isViewingFromExternal" type="button" class="btn  btn-block btn-primary"
+                    [class.btn-success]="plan.status==2"
+                    [class.btn-primary]="plan.status!=2"
+                    (click)="viewResponsePlan(plan, isViewingFromExternal)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
+            </button>
+            <!--other buttons-->
+            <div *ngIf="!isViewingFromExternal" class="btn-group btn-block">
               <button type="button" class="btn  btn-block" [class.btn-success]="plan.status==2"
                       [class.btn-primary]="plan.status!=2" data-toggle="dropdown" aria-haspopup="true"
                       aria-expanded="false">{{"RESPONSE_PLANS.HOME.OPTIONS" | translate}}
@@ -283,11 +292,11 @@
               {{plan?.startDate | date:'d/MM/y'}}
             </div>
             <div class="col-sm-3">
-              <a class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
+              <a *ngIf="!isViewingFromExternal" class="btn btn-block text-muted btn-outline-secondary" (click)="activatePlan(plan)">{{"GLOBAL.RE_ACTIVATE"
                 | translate}}</a>
-              <!--<button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"-->
-                      <!--(click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}-->
-              <!--</button>-->
+              <button *ngIf="isViewingFromExternal" type="button" class="btn  btn-block btn-primary"
+                      (click)="viewResponsePlan(plan, isViewingFromExternal)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
+              </button>
             </div>
           </div>
         </div>

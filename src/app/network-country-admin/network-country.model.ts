@@ -10,6 +10,7 @@ export class NetworkCountryModel extends BaseModel {
   public clockSettings: any;
   public leadAgencyId: any;
   public agencyCountries: any;
+  public networkId: string
 
   validate(excludedFields): AlertMessageModel {
     return undefined;

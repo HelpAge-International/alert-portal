@@ -147,6 +147,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private privacy: ModelAgencyPrivacy;
   private userAgencyId: string;
   private isNetworkAccess: boolean;
+  private isViewingFromExternal: boolean;
+
 
   constructor(private pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -166,20 +168,35 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
 
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
-        this.isViewing = params["isViewing"];
-        this.systemAdminId = params["systemId"];
-        this.agencyId = params["agencyId"];
-        this.countryId = params["countryId"];
-        this.userType = params["userType"];
-        this.networkId = params["networkId"];
-        if (!this.isLocalNetworkAdmin) {
-          this.networkCountryId = params["networkCountryId"];
-        }
-        this.uid = params["uid"];
+      if (params['isViewing']) {
+        this.isViewing = params['isViewing'];
+      }
+      if (params['systemId']) {
+        this.systemAdminId = params['systemId'];
+      }
+      if (params['agencyId']) {
+        this.agencyId = params['agencyId'];
+      }
+      if (params['countryId']) {
+        this.countryId = params['countryId'];
+      }
+      if (params['userType']) {
+        this.userType = params['userType'];
+      }
+      if (params['networkId']) {
+        this.networkId = params['networkId'];
+      }
+      if (!this.isLocalNetworkAdmin) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      if (params['uid']) {
+        this.uid = params['uid'];
       }
       if (params['isCHS']) {
         this.filterType = 0;
+      }
+      if (params['isViewingFromExternal']) {
+        this.isViewingFromExternal = params['isViewingFromExternal'];
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalNetworkViewAccess() : this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
@@ -855,10 +872,10 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     jQuery("#" + elementId).collapse('hide');
   }
 
-  // protected copyAction(action) {
-  //   this.storage.set('selectedAction', action);
-  //   this.router.navigate(["/preparedness/create-edit-preparedness"]);
-  // }
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+  }
 
 
   /**

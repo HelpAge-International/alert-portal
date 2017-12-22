@@ -56,7 +56,7 @@
             <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
           </div>
           <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk Centered">
-            <i div
+            <i
                class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
             <div>
               <span>{{"ALERT.RISK" | translate}}:</span>
@@ -103,36 +103,75 @@
   </div>
 </div>
 
-<app-country-office-programme
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-country-office-programme>
-<app-country-office-capacity
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity')"></app-country-office-capacity>
-<app-country-office-partners
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('partners')"></app-country-office-partners>
-<app-country-office-equipment
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment')"></app-country-office-equipment>
-<app-country-office-coordination
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination')"></app-country-office-coordination>
-<app-country-office-stock-capacity
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity')"></app-country-office-stock-capacity>
-<app-country-office-documents
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-country-office-documents>
-<app-country-office-contacts
-  *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-country-office-contacts>
-<app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
-<app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
-                    [countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [canCopy]="canCopy"
-                    [agencyOverview]="agencyOverview"></app-response-plans>
-<app-minimum *ngIf="tabMap.get('preparedness-min')"></app-minimum>
-<app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
-<app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
+<ng-container *ngIf="!isViewingFromExternal">
+  <app-country-office-programme
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-country-office-programme>
+  <app-country-office-capacity
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity')"></app-country-office-capacity>
+  <app-country-office-partners
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('partners')"></app-country-office-partners>
+  <app-country-office-equipment
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment')"></app-country-office-equipment>
+  <app-country-office-coordination
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination')"></app-country-office-coordination>
+  <app-country-office-stock-capacity
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity')"></app-country-office-stock-capacity>
+  <app-country-office-documents
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-country-office-documents>
+  <app-country-office-contacts
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-country-office-contacts>
+  <app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
+  <app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
+                      [countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [canCopy]="canCopy"
+                      [agencyOverview]="agencyOverview"></app-response-plans>
+  <app-minimum *ngIf="tabMap.get('preparedness-min')"></app-minimum>
+  <app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
+  <app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
 
-<div
-  *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
-  class="Page-top__wrap--w_sub_header--no-paddng">
-  <div class="Full-page__wrap--inner">
-    <div class="Empty--ribbon">
-      No permission to view country details for this agency!
+  <div
+    *ngIf="agencyId!=userAgencyId && !tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
+    class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+      <div class="Empty--ribbon">
+        No permission to view country details for this agency!
+      </div>
     </div>
   </div>
-</div>
+</ng-container>
+
+<ng-container *ngIf="isViewingFromExternal">
+  <app-network-country-profile-programme
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-network-country-profile-programme>
+  <app-network-country-profile-office-capacity
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity')"></app-network-country-profile-office-capacity>
+  <app-network-country-profile-partners
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('partners')"></app-network-country-profile-partners>
+  <app-network-country-profile-equipment
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment')"></app-network-country-profile-equipment>
+  <app-network-country-profile-coordination
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination')"></app-network-country-profile-coordination>
+  <app-network-country-profile-stock-capacity
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity')"></app-network-country-profile-stock-capacity>
+  <app-network-country-profile-documents
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-network-country-profile-documents>
+  <app-network-country-profile-contacts
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-network-country-profile-contacts>
+  <app-network-risk-minitoring *ngIf="tabMap.get('risk')"></app-network-risk-minitoring>
+  <!--<app-network-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"-->
+                      <!--[countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [canCopy]="canCopy"-->
+                      <!--[agencyOverview]="agencyOverview"></app-network-plans>-->
+  <app-network-plans *ngIf="tabMap.get('plan')"></app-network-plans>
+  <app-network-country-mpa *ngIf="tabMap.get('preparedness-min')"></app-network-country-mpa>
+  <app-network-country-apa *ngIf="tabMap.get('preparedness-adv')"></app-network-country-apa>
+
+  <div
+    *ngIf="!tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
+    class="Page-top__wrap--w_sub_header--no-paddng">
+    <div class="Full-page__wrap--inner">
+      <div class="Empty--ribbon">
+        No permission to view office details for this network!
+      </div>
+    </div>
+  </div>
+</ng-container>
+

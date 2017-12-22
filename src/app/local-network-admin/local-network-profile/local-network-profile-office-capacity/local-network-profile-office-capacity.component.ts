@@ -96,6 +96,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private networkViewValues: {};
   private countryId: string;
   private agencyId: string;
+  private isViewingFromExternal: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -140,6 +141,9 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
         }
         if (params['uid']) {
           this.uid = params['uid'];
+        }
+        if (params['isViewingFromExternal']) {
+          this.isViewingFromExternal = params['isViewingFromExternal'];
         }
 
         this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();

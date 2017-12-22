@@ -6,7 +6,7 @@ import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
-import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
+import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {LocalStorageService} from "angular-2-local-storage";
 
@@ -64,6 +64,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   private agencyCountryMap: Map<string, string>;
   private networkViewValues: {};
   private countryId: string;
+  private isViewingFromExternal: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -103,6 +104,9 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
         if (params['uid']) {
           this.uid = params['uid'];
         }
+        if (params['isViewingFromExternal']) {
+          this.isViewingFromExternal = params['isViewingFromExternal'];
+        }
 
         this.isNetworkCountry ? this.networkCountryAccess() : this.localNetworkAdminAccess();
       })
@@ -111,7 +115,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
   private networkCountryAccess() {
 
-    if(this.isViewing){
+    if (this.isViewing) {
       this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(map => {
@@ -126,7 +130,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
           this._getProgramme(map);
         });
 
-    }else{
+    } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
 
@@ -156,7 +160,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   }
 
   private localNetworkAdminAccess() {
-    if(this.isViewing){
+    if (this.isViewing) {
       this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(officeAgencyMap => {
@@ -175,7 +179,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
           this._getProgramme(officeAgencyMap);
         })
 
-    }else{
+    } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
         this.networkService.getSelectedIdObj(user.uid)

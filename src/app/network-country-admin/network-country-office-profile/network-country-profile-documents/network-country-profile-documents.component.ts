@@ -60,6 +60,7 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private networkViewValues: {};
+  private isViewingFromExternal: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -110,6 +111,9 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
         }
         if (params['uid']) {
           this.uid = params['uid'];
+        }
+        if (params['isViewingFromExternal']) {
+          this.isViewingFromExternal = params['isViewingFromExternal'];
         }
 
         this.docFilterSubject.next();
