@@ -115,6 +115,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.alertMessage = this.programme.validate();
     if (!this.alertMessage) {
       var dataToSave = this.programme;
+      dataToSave.updatedAt = new Date().getTime();
 
       if (!this.programmeId) {
         if (this.countryID) {
@@ -132,7 +133,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
           this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR', AlertMessageType.Error);
         }
       } else {
-        dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
         this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
           .update(dataToSave)
