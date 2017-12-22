@@ -117,6 +117,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "programme",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId
@@ -146,6 +147,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "officeCapacity",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId
@@ -174,6 +176,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "partners",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId
@@ -202,6 +205,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "equipment",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId
@@ -230,6 +234,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "coordination",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId
@@ -258,6 +263,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "stockCapacity",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId
@@ -286,6 +292,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "documents",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId
@@ -314,6 +321,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         "from": "officeProfile",
         "officeTarget": "contacts",
         "canCopy": true,
+        "agencyOverview": true,
         "isViewingFromExternal": this.isViewingFromExternal,
         "networkId": this.networkId,
         "networkCountryId": this.networkCountryId

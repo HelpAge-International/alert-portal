@@ -870,10 +870,10 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     jQuery("#" + elementId).collapse('hide');
   }
 
-  // protected copyAction(action) {
-  //   this.storage.set('selectedAction', action);
-  //   this.router.navigate(["/preparedness/create-edit-preparedness"]);
-  // }
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+  }
 
 
   /**

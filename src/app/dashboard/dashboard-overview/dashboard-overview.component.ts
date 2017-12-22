@@ -157,6 +157,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
           //handle privacy settings
           if (this.isViewingFromExternal) {
+            console.log("isViewingFromExternal")
+            console.log(this.networkCountryId)
             this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(networkCountryMap => {

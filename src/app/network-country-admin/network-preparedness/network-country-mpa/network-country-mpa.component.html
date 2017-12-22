@@ -282,11 +282,11 @@
                             class="btn btn-block link-color">Undo completion</a>
 
                         </div>
-                        <!--<div class="col-md-3 col-sm-4 btn-block"-->
-                        <!--*ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">-->
-                        <!--<a href="javascript:void(0)" (click)="copyAction(action)"-->
-                        <!--class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>-->
-                        <!--</div>-->
+                        <div class="col-md-3 col-sm-4 btn-block"
+                             *ngIf="isViewingFromExternal && !action.createdByAgencyId && userType != userTypes.Donor">
+                          <a href="javascript:void(0)" (click)="copyAction(action)"
+                             class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
+                        </div>
                       </div>
                       <div class="row">
                         <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |

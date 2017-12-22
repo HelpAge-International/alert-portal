@@ -432,6 +432,11 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
     return this.prepActionService.findAction(id);
   }
 
+  protected copyAction(action) {
+    this.storageService.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+  }
+
   /**
    * Assigning an action to someone
    */
