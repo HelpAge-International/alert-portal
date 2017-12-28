@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, ElementRef, ViewChild} from "@angular/core";
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -12,7 +12,7 @@ import * as firebase from "firebase";
 import {NetworkService} from "../../services/network.service";
 import {ModelAgency} from "../../model/agency.model";
 
-declare const jQuery: any;
+declare var jQuery: any;
 
 @Component({
   selector: 'app-review-response-plan',
@@ -22,6 +22,7 @@ declare const jQuery: any;
 })
 
 export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
+  @ViewChild('rejectPlanScrollContainer') private rejectPlanScrollContainer: ElementRef;
 
   private isDirector: boolean;
 
@@ -303,9 +304,18 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     console.log("reject plan");
     let toggleValue = this.rejectToggleMap.get(this.responsePlanId);
     if (toggleValue) {
-      this.rejectToggleMap.set(this.responsePlanId, !toggleValue);
+      //this.rejectToggleMap.set(this.responsePlanId, !toggleValue);
     } else {
       this.rejectToggleMap.set(this.responsePlanId, true);
+      this.scrollToBottom();
+    }
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.rejectPlanScrollContainer.nativeElement.scrollTop = this.rejectPlanScrollContainer.nativeElement.scrollHeight;
+    } catch(err) {
+      console.log(err);
     }
   }
 

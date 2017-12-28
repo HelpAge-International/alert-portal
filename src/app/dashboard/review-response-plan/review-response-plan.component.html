@@ -127,7 +127,7 @@
         </div>
       </div>
     </div>
-    <div *ngIf="rejectToggleMap.get(responsePlanId)" class="Container Blue Bordered">
+    <div #rejectPlanScrollContainer *ngIf="rejectToggleMap.get(responsePlanId)" class="Container Blue Bordered">
       <b>{{"DIRECTOR_DASHBOARD.REJECT_PLAN_CONFIRMATION" | translate}}</b>
       <div class="row Small-spaced">
         <div class="col-sm-10">
