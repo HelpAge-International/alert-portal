@@ -1580,7 +1580,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   doublerCounting() {
-    //reset count
     this.numberFemaleLessThan18 = 0;
     this.numberFemale18To50 = 0;
     this.numberFemalegreaterThan50 = 0;
