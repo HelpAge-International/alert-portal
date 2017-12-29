@@ -1520,8 +1520,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
-      // this.doublerCounting();
-      this.continueButtonPressedOnSection9();
+      this.doublerCounting();
+      //this.continueButtonPressedOnSection9();
     } else {
       this.section7Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[6], false);
@@ -1580,7 +1580,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   doublerCounting() {
-    //reset count
     this.numberFemaleLessThan18 = 0;
     this.numberFemale18To50 = 0;
     this.numberFemalegreaterThan50 = 0;

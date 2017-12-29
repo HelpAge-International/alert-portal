@@ -1285,38 +1285,40 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   doublerCounting() {
-    //reset count
-    if (true) {
-      this.numberFemaleLessThan18 = 0;
-      this.numberFemale18To50 = 0;
-      this.numberFemalegreaterThan50 = 0;
-      this.numberMaleLessThan18 = 0;
-      this.numberMale18To50 = 0;
-      this.numberMalegreaterThan50 = 0;
-      let modelPlanList: ModelPlanActivity [] = [];
-      this.activityMap.forEach((v,) => {
-        modelPlanList = modelPlanList.concat(v);
-      });
-      let beneficiaryList = [];
-      modelPlanList.forEach(modelPlan => {
-        beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
-      });
-      beneficiaryList.forEach(item => {
-        if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
-          this.numberFemaleLessThan18 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
-          this.numberFemale18To50 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
-          this.numberFemalegreaterThan50 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
-          this.numberMaleLessThan18 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
-          this.numberMale18To50 += Number(item["value"]);
-        } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
-          this.numberMalegreaterThan50 += Number(item["value"]);
-        }
-      });
-    }
+    console.log("doubler counting");
+
+    this.numberFemaleLessThan18 = 0;
+    this.numberFemale18To50 = 0;
+    this.numberFemalegreaterThan50 = 0;
+    this.numberMaleLessThan18 = 0;
+    this.numberMale18To50 = 0;
+    this.numberMalegreaterThan50 = 0;
+    let modelPlanList: ModelPlanActivity [] = [];
+    this.activityMap.forEach((v,) => {
+      modelPlanList = modelPlanList.concat(v);
+    });
+    let beneficiaryList = [];
+    modelPlanList.forEach(modelPlan => {
+      beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
+    });
+    beneficiaryList.forEach(item => {
+      if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+        this.numberFemaleLessThan18 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+        this.numberFemale18To50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+        this.numberFemalegreaterThan50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+        this.numberMaleLessThan18 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+        this.numberMale18To50 += Number(item["value"]);
+      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+        this.numberMalegreaterThan50 += Number(item["value"]);
+      }
+    });
+
+    console.log("numberFemaleLessThan18:");
+    console.log(this.numberFemaleLessThan18);
 
     if (this.forEditing && !this.isDoubleCountingDone) {
       this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
