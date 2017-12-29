@@ -2,13 +2,18 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {UserService} from "../../../../services/user.service";
 import {Constants} from '../../../../utils/Constants';
-import {ResponsePlanSectors, AlertMessageType, Month} from '../../../../utils/Enums';
+import {ResponsePlanSectors, AlertMessageType, Month, GeoLocation} from '../../../../utils/Enums';
 import {AlertMessageModel} from '../../../../model/alert-message.model';
 import {ProgrammeMappingModel} from '../../../../model/programme-mapping.model';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import * as moment from "moment";
+import {OperationAreaModel} from "../../../../model/operation-area.model";
+import {Location} from "@angular/common";
+import {CommonService} from "../../../../services/common.service";
+import { CountryAdminHeaderComponent } from "../../../country-admin-header/country-admin-header.component";
+import {NetworkService} from "../../../../services/network.service";
 
 declare var jQuery: any;
 
@@ -51,6 +56,18 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private programmeId: string;
   private programme: any;
 
+  // Variables for ALT-2039
+  private copyIndicatorId: string;
+  public indicatorData: any;
+  private countries = Constants.COUNTRIES;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
+  private agencyId: string;
+  private countrySelection: any[] = [];
+  private curCountrySelection: any = this.countrySelection;
+  private countryLocation: number;
+  private countryLevels: any[] = [];
+  private countryLevelsValues: any[] = [];
+
   private when: any[] = [];
 
 
@@ -58,7 +75,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
               private router: Router,
               private route: ActivatedRoute,
               private _userService: UserService,
-              private af: AngularFire) {
+              private af: AngularFire,
+              private _location: Location,
+              private _commonService: CommonService,
+              private userService: UserService,) {
     this.programme = new ProgrammeMappingModel();
   }
 
@@ -68,6 +88,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       this.countryID = countryId;
       this.initData();
     });
+
+
   }
 
   initData() {
@@ -81,6 +103,18 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         }
         // });
       });
+
+    // get the country levels values
+    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(content => {
+        this.countryLevelsValues = content;
+        console.log(content[0]); // this displays the array of areas.
+        err => console.log(err);
+      });
+
+
+
   }
 
   _getProgramme(programmeID: string) {
@@ -172,6 +206,46 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       this.router.navigate(['/country-admin/country-office-profile/programme/']);
     });
   }
+
+
+  // Dan || ALT-2039 functions
+  // #start
+  addAnotherLocation() {
+    let modelArea = new OperationAreaModel();
+    modelArea.country = this.countryLocation;
+    this.indicatorData.affectedLocation.push(modelArea);
+    console.log(this.indicatorData)
+  }
+
+  // This function below is to determine the country selected *INCOMPLETE*
+  // TODO: Return the array of level1 areas in the country selected.
+  setCountryLevel(id: any){
+    console.log(id);
+    this.curCountrySelection(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(content => {
+        this.countryLevelsValues = content;
+        err => console.log(err);
+        // TODO: Below needs to return the level1 array of the id selected
+        this.curCountrySelection = this.countryLevelsValues.filter(value => value.id === parseInt(id));
+      });
+
+    console.log(this.curCountrySelection, 'end of countryLevel function'); // this displays the array of areas.
+
+  }
+
+  checkTypeof(param: any) {
+    if (typeof (param) == 'undefined') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  removeAnotherLocation(key: number,) {
+    this.indicatorData.affectedLocation.splice(key, 1);
+  }
+// #end
 
   _convertTimestampToDate(timestamp: number) {
     this.when = [];
