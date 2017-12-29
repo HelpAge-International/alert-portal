@@ -81,14 +81,15 @@ export class NetworkMapService {
         (agencyHasCountriesMap => {
           agencyHasCountriesMap.forEach((value, key) => {
             value.forEach(item => {
+              console.log("Agency Id: " + key + " >> " + item);
               // Fire off a request to get the countryOffice for every country
               this.getCountryOffice(key, item, () => {
                 /* ALL COUNTRY OFFICES FINISHED PULLING
                  *   Even though we're in a forEach, counter is maintained so this method fires when
                  *   they are all done */
+                console.log("GETTING COUNTRY OFFICES");
                 this.initHazards();
                 this.loadColoredLayers(countryClicked);
-                console.log('load target layers');
                 for (const x of this.countries) {
                   for (const agencyX of x.agencies) {
                     this.getAllMPAValuesToCountries(agencyX.countryId, agencyX.id, systemAdminId, () => {
@@ -118,9 +119,11 @@ export class NetworkMapService {
 
       this.getActionsFor(countryId, agencyId, systemId, (holder) => {
         const nMA: NetworkMapAgency = x.getAgency(agencyId);
-        console.log(holder);
+        console.log("Agency: " + agencyId + " | Country: " + countryId);
+        console.log(x);
         nMA.mpaTotal = holder.mpaTotal.size;
         nMA.mpaComplete = holder.mpaComplete.size;
+
 
         this.mpaCounter--;
         if (this.mpaCounter == 0) {
@@ -237,7 +240,6 @@ export class NetworkMapService {
                 if (lengthOfHazard != 1) {
                   this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
                     for (const x of element.val().affectedAreas) {
-                      console.log(x.country);
                       const obj = {
                         country: '',
                         areas: ''
@@ -252,7 +254,6 @@ export class NetworkMapService {
                         obj.areas = obj.areas + ', ' + value[x.country].levelOneValues[x.level1].levelTwoValues[x.level2].value;
                       }
                       raised.affectedAreas.push({country: obj.country, areas: obj.areas});
-                      console.log(networkMapHazard.instancesOfHazard.length, 'this one');
 
                     }
                     networkMapHazard.instancesOfHazard.push(raised);
@@ -301,7 +302,7 @@ export class NetworkMapService {
   }
 
   /**
-   * Will build a Map<string, Set<string>> mapping which countries are mapped to which agencies
+   * Will build a Map<string, Set<string>> mapping agencies have which countries
    * Environment variable this is stored in is countryHasAgenciesMap
    * @param networkId
    * @param networkCountryId
@@ -309,52 +310,98 @@ export class NetworkMapService {
    */
   private getAgencyCountriesOfNetwork(networkId: string, networkCountryId: string,
                                       done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
-    console.log('Accessing ' + Constants.APP_STATUS + '/networkCountry/' + networkId + '/');
-    this.af.database.object(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId,
-      {preserveSnapshot: true})
+    console.log("NetworkId: " + networkId);
+    console.log("CountryId: " + networkCountryId);
+    this.af.database
+      .object(Constants.APP_STATUS + "/network/" + networkId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        // snap.val() contains object under networkCountry/<networkId>/<networkCountryId>
-        if (snap.val() == null) {
-          console.log('TODO: Show an error here. No network countries found');
-        }
-        else {
-          const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
-          if (snap.val().hasOwnProperty('agencyCountries')) {
-            for (const agencyId in snap.val().agencyCountries) {
-              for (const countryId in snap.val().agencyCountries[agencyId]) {
-                if (snap.val().agencyCountries[agencyId][countryId].hasOwnProperty('isApproved')) {
-                  if (snap.val().agencyCountries[agencyId][countryId].isApproved) {
-                    let countriesSet: Set<string> = agencyHasCountriesMap.get(agencyId);
-                    if (countriesSet == null) {
-                      countriesSet = new Set<string>();
-                    }
-                    countriesSet.add(countryId);
-                    agencyHasCountriesMap.set(agencyId, countriesSet);
-                  }
-                  else {
-                    // Country is not approved. Leave it from the set
-                  }
-                }
-                else {
-                  // Reference doesn't have an 'isApproved' flag. We don't know if it's approved it not
-                  // - Assume not, leave the set
-                }
-              }
+        this.countryIdFromAgencyIdCounter = 0;
+        const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
+        if (snap.val().hasOwnProperty("agencies") != null) {
+          let validAgencyIds: string[] = [];
+          for (let x in snap.val().agencies) {
+            if (snap.val().agencies[x].isApproved) {
+              validAgencyIds.push(x);
             }
           }
-          else {
-            // Network country doesn't have any countries ! Set should remain empty
-            agencyHasCountriesMap.clear();
-          }
 
-          /* At the end of this method;
-            this.agencyHasCountriesMap should contain a list of agency -> [countries] that are approved!
-           */
-          done(agencyHasCountriesMap);
+          // Process the info
+          for (let x of validAgencyIds) {
+            this.countryIdFromAgencyIdCounter++;
+            this.getCountryIdsFromAgencyId(x, (countries) => {
+              this.countryIdFromAgencyIdCounter--;
+              agencyHasCountriesMap.set(x, countries);
+              if (this.countryIdFromAgencyIdCounter == 0) {
+                console.log(agencyHasCountriesMap);
+                done(agencyHasCountriesMap);
+              }
+            });
+          }
         }
       });
   }
+  private countryIdFromAgencyIdCounter = 0;
+  private getCountryIdsFromAgencyId(agencyId: string, done: (countries: Set<string>) => void) {
+    this.af.database
+      .list(Constants.APP_STATUS + "/countryOffice/" + agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        let keys: Set<string> = new Set<string>();
+        for (let x of snap) {
+          keys.add(x.key);
+        }
+        done(keys);
+      })
+  }
+  // private getAgencyCountriesOfNetwork(networkId: string, networkCountryId: string,
+  //                                     done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
+    // console.log('Accessing ' + Constants.APP_STATUS + '/networkCountry/' + networkId + '/');
+    // this.af.database.object(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId,
+    //   {preserveSnapshot: true})
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe((snap) => {
+    //     // snap.val() contains object under networkCountry/<networkId>/<networkCountryId>
+    //     if (snap.val() == null) {
+    //       console.log('TODO: Show an error here. No network countries found');
+    //     }
+    //     else {
+    //       const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
+    //       if (snap.val().hasOwnProperty('agencyCountries')) {
+    //         for (const agencyId in snap.val().agencyCountries) {
+    //           for (const countryId in snap.val().agencyCountries[agencyId]) {
+    //             if (snap.val().agencyCountries[agencyId][countryId].hasOwnProperty('isApproved')) {
+    //               if (snap.val().agencyCountries[agencyId][countryId].isApproved) {
+    //                 let countriesSet: Set<string> = agencyHasCountriesMap.get(agencyId);
+    //                 if (countriesSet == null) {
+    //                   countriesSet = new Set<string>();
+    //                 }
+    //                 countriesSet.add(countryId);
+    //                 agencyHasCountriesMap.set(agencyId, countriesSet);
+    //               }
+    //               else {
+    //                 // Country is not approved. Leave it from the set
+    //               }
+    //             }
+    //             else {
+    //               // Reference doesn't have an 'isApproved' flag. We don't know if it's approved it not
+    //               // - Assume not, leave the set
+    //             }
+    //           }
+    //         }
+    //       }
+    //       else {
+    //         // Network country doesn't have any countries ! Set should remain empty
+    //         agencyHasCountriesMap.clear();
+    //       }
+    //
+    //       /* At the end of this method;
+    //         this.agencyHasCountriesMap should contain a list of agency -> [countries] that are approved!
+    //        */
+    //       done(agencyHasCountriesMap);
+    //     }
+    //   });
+  // }
 
   /**
    * Get the country office of a given country id.

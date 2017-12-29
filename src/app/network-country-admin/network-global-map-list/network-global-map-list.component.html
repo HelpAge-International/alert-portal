@@ -1,5 +1,25 @@
-<app-network-country-header></app-network-country-header>
-<app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewing; else country">
+  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+    <app-network-country-header></app-network-country-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-container>
+</ng-container>
+
+<ng-template #localNetworkAdmin>
+  <app-local-network-header></app-local-network-header>
+  <app-local-network-menu></app-local-network-menu>
+</ng-template>
+
+<ng-template #country>
+  <ng-container *ngIf="!isLocalNetworkAdmin">
+    <app-country-admin-header></app-country-admin-header>
+    <app-network-country-menu [isViewing]="isViewing"></app-network-country-menu>
+  </ng-container>
+  <ng-container *ngIf="isLocalNetworkAdmin">
+    <app-country-admin-header></app-country-admin-header>
+    <app-local-network-menu [isViewing]="isViewing"></app-local-network-menu>
+  </ng-container>
+</ng-template>
 
 <div class="Page-top__wrap--w_sub_header">
   <div class="Full-page__wrap--inner">
