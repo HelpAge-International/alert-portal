@@ -1,15 +1,28 @@
 <script src="programme.component.ts"></script>
-<div *ngIf="!isViewing">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
-</div>
+<ng-container *ngIf="!isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </div>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-local-agency-header></app-local-agency-header>
+    <app-local-agency-menu></app-local-agency-menu>
+  </div>
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <app-country-office-profile-menu></app-country-office-profile-menu>
+    <ng-container *ngIf="!isLocalAgency">
+      <app-country-office-profile-menu></app-country-office-profile-menu>
+    </ng-container>
+    <ng-container *ngIf="isLocalAgency">
+      <app-local-agency-profile-menu></app-local-agency-profile-menu>
+    </ng-container>
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</h2>
@@ -83,7 +96,10 @@
         <div class="col-sm-2"><p>{{m.when | date:"MM/yyyy"}}</p></div> <!--When-->
 
         <div *ngIf="canEdit && isEdit" class="col-sm-1">
-          <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/', m.key]"
+          <button *ngIf="!isLocalAgency" [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/', m.key]"
+                  class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
+          </button>
+          <button *ngIf="isLocalAgency" [routerLink]="['/local-agency/profile/mapping-programme-add-edit/', m.key]"
                   class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
           </button>
         </div>
@@ -134,7 +150,10 @@
 
         <!--add Note button-->
         <div class="add_log mt-auto p-2 text-right float-right">
-          <div class="btn btn-primary text-uppercase" (click)="saveNote(m.key)">
+          <div class="btn btn-primary text-uppercase" *ngIf="!isLocalAgency" (click)="saveNote(m.key)">
+            {{"NOTES.ADD" | translate}}
+          </div>
+          <div class="btn btn-primary text-uppercase" *ngIf="isLocalAgency" (click)="saveNoteLocalAgency(m.key)">
             {{"NOTES.ADD" | translate}}
           </div>
           <br>
@@ -162,7 +181,10 @@
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
             <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
-            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase " (click)="saveLog()">
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase " *ngIf="!isLocalAgency" (click)="saveLog()">
+              {{"SAVE" | translate}}
+            </button>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase " *ngIf="isLocalAgency" (click)="saveLogLocalAgency()">
               {{"SAVE" | translate}}
             </button>
           </div>
@@ -191,7 +213,13 @@
           <div class="row Right-aligned Spaced col-sm-12">
             <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
             <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase "
+                    *ngIf="!isLocalAgency"
                     (click)="deleteLog()">
+              {{"GLOBAL.CONFIRM" | translate}}
+            </button>
+            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase "
+                    *ngIf="isLocalAgency"
+                    (click)="deleteLogLocalAgency()">
               {{"GLOBAL.CONFIRM" | translate}}
             </button>
           </div>
@@ -204,7 +232,10 @@
     <div class="Line-row margin-left"></div>
 
     <div class="row">
-      <button [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/']" data-toggle="modal"
+      <button *ngIf="!isLocalAgency" [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/']" data-toggle="modal"
+              class="btn btn-outline-primary text-uppercase">{{"GLOBAL.ADD" | translate}}
+      </button>
+      <button *ngIf="isLocalAgency" [routerLink]="['/local-agency/profile/mapping-programme-add-edit/']" data-toggle="modal"
               class="btn btn-outline-primary text-uppercase">{{"GLOBAL.ADD" | translate}}
       </button>
     </div>
@@ -248,7 +279,11 @@
 
       <div class="row Right-aligned Spaced col-sm-12">
         <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
-        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" (click)="saveSectors()">
+        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" *ngIf="!isLocalAgency" (click)="saveSectors()">
+          {{"SAVE" | translate}}
+        </button>
+
+        <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase" *ngIf="isLocalAgency" (click)="saveSectorsLocalAgency()">
           {{"SAVE" | translate}}
         </button>
       </div>

@@ -82,9 +82,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   private totalMale18To50: number;
   private totalMaleOver50: number;
 
+  private agencyId: string
   private networkCountryId: string;
   private isLocalNetworkAdmin: boolean;
   private isViewing: boolean;
+  public isLocalAgency: boolean;
   private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
@@ -102,61 +104,54 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isLocalNetworkAdmin"]) {
-        this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
-      }
-      if (params["excel"]) {
-        this.isExcel = params["excel"];
-        if (this.isExcel == 1) {
-          this.docType = "Excel";
-        } else {
-          this.docType = "Word";
-        }
-      }
-      if (params["id"] && params["networkCountryId"]) {
-        this.responsePlanId = params["id"];
-        this.networkCountryId = params["networkCountryId"];
-        if (params["isViewing"]) {
-          this.isViewing = params["isViewing"]
-          this.uid = params["uid"]
-          this.systemAdminUid = params["systemId"]
-          this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
-          this.downloadResponsePlanData();
-          this.downloadAgencyData(null);
-        } else {
-          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-            this.uid = user.uid;
-            this.downloadResponsePlanData();
-            this.downloadAgencyData(null);
-          });
-        }
-      } else {
-        this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      if(params['isLocalAgency']){
+        this.isLocalAgency = true;
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemAdminId) => {
           this.uid = user.uid;
           this.userPath = Constants.USER_PATHS[userType];
-          this.downloadData();
+          this.agencyId = agencyId
+          this.downloadDataLocalAgency();
         });
+      }else{
+        this.isLocalAgency = false;
+        if (params["isLocalNetworkAdmin"]) {
+          this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
+        }
+        if (params["excel"]) {
+          this.isExcel = params["excel"];
+          if (this.isExcel == 1) {
+            this.docType = "Excel";
+          } else {
+            this.docType = "Word";
+          }
+        }
+        if (params["id"] && params["networkCountryId"]) {
+          this.responsePlanId = params["id"];
+          this.networkCountryId = params["networkCountryId"];
+          if (params["isViewing"]) {
+            this.isViewing = params["isViewing"]
+            this.uid = params["uid"]
+            this.systemAdminUid = params["systemId"]
+            this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+            this.downloadResponsePlanData();
+            this.downloadAgencyData(null);
+          } else {
+            this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+              this.uid = user.uid;
+              this.downloadResponsePlanData();
+              this.downloadAgencyData(null);
+            });
+          }
+        } else {
+          this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+            this.uid = user.uid;
+            this.userPath = Constants.USER_PATHS[userType];
+            this.downloadData();
+          });
+        }
       }
     });
 
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   this.userPath = Constants.USER_PATHS[userType];
-    //   this.route.params
-    //     .takeUntil(this.ngUnsubscribe)
-    //     .subscribe((params: Params) => {
-    //       if (params["excel"]) {
-    //         this.isExcel = params["excel"];
-    //         if(this.isExcel == 1){
-    //           this.docType = "Excel";
-    //         }else{
-    //           this.docType = "Word";
-    //         }
-    //       }
-    //     });
-    //
-    //   this.downloadData();
-    // });
   }
 
   ngOnDestroy() {
@@ -192,6 +187,13 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
       });
   }
 
+  private downloadDataLocalAgency() {
+
+            this.downloadResponsePlanDataLocalAgency();
+            this.downloadAgencyDataLocalAgency();
+
+  }
+
   private downloadResponsePlanData() {
     if (!this.responsePlanId) {
       this.route.params
@@ -225,6 +227,39 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
       });
   }
 
+  private downloadResponsePlanDataLocalAgency() {
+    if (!this.responsePlanId) {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.responsePlanId = params["id"];
+          }
+        });
+    }
+    let id = this.agencyId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
+    this.af.database.object(responsePlansPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlan: ResponsePlan) => {
+        this.responsePlan = responsePlan;
+        console.log(responsePlan);
+        this.configGroups(responsePlan);
+
+        if (responsePlan.sectorsRelatedTo) {
+          responsePlan.sectorsRelatedTo.forEach(sector => {
+            this.sectorsRelatedToMap.set(sector, true);
+          });
+        }
+
+        this.bindProjectLeadDataLocalAgency(responsePlan);
+        this.bindPartnersData(responsePlan);
+        this.bindSourcePlanData(responsePlan);
+        this.bindProjectActivitiesData(responsePlan);
+        this.bindProjectBudgetData(responsePlan);
+      });
+  }
+
   private downloadAgencyData(userType) {
     const normalUser = () => {
       this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
@@ -248,6 +283,16 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
     this.networkCountryId ? networkUser() : normalUser();
   }
 
+  private downloadAgencyDataLocalAgency() {
+
+          this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+            if (name != null) {
+              this.memberAgencyName = name.$value;
+            }
+          });
+
+  }
+
   private bindProjectLeadData(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
       this.userService.getUser(responsePlan.planLead)
@@ -259,6 +304,25 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
           this.planLeadPhone = user.phone;
 
           this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
+            if (position != null) {
+              this.planLeadPosition = position.$value;
+            }
+          });
+        });
+    }
+  }
+
+  private bindProjectLeadDataLocalAgency(responsePlan: ResponsePlan) {
+    if (responsePlan.planLead) {
+      this.userService.getUser(responsePlan.planLead)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          console.log(user);
+          this.planLeadName = user.firstName + " " + user.lastName;
+          this.planLeadEmail = user.email;
+          this.planLeadPhone = user.phone;
+
+          this.af.database.object(Constants.APP_STATUS + "/staff/" + this.agencyId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
             if (position != null) {
               this.planLeadPosition = position.$value;
             }

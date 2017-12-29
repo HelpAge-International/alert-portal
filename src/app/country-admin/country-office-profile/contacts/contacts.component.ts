@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -47,6 +47,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _agencyService: AgencyService,
@@ -63,6 +64,53 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+  }
+
+  private initLocalAgency(){
+
+
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+      this.uid = user.uid;
+      this.userType = userType;
+
+        this._agencyService.getAgency(this.agencyId)
+          .map(agency => {
+            return agency as ModelAgency;
+          })
+          .subscribe(agency => {
+            this.agency = agency;
+
+            this._agencyService.getCountryOffice(this.countryId, this.agencyId)
+              .map(countryOffice => {
+                let countryOfficeAddress = new CountryOfficeAddressModel();
+                countryOfficeAddress.mapFromObject(countryOffice);
+
+                return countryOfficeAddress;
+              })
+              .subscribe(countryOfficeAddress => {
+                this.countryOfficeAddress = countryOfficeAddress;
+              });
+            this._contactService.getPointsOfContact(this.countryId)
+              .subscribe(pointsOfContact => {
+                this.pointsOfContact = pointsOfContact;
+                this.pointsOfContact.forEach(pointOfContact => {
+                  this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
+                    this.userPublicDetails[pointOfContact.staffMember] = user;
+                  });
+                  this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
+                    this.staffList[pointOfContact.staffMember] = staff;
+                  });
+                });
+              });
+          });
+
+    });
+  }
+
+  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {

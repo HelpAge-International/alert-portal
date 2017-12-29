@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {UserService} from "../../../../services/user.service";
 import {Constants} from '../../../../utils/Constants';
@@ -24,6 +24,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private alertMessage: AlertMessageModel = null;
   private uid: string;
   private countryID: string;
+  private agencyID: string;
   private userType;
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
   private ResponsePlanSectorsList: number[] = [
@@ -53,6 +54,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   private when: any[] = [];
 
+  @Input() isLocalAgency: boolean;
+
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -63,14 +66,39 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
-      this.countryID = countryId;
-      this.initData();
-    });
+
+    if (this.isLocalAgency) {
+      this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.uid = user.uid;
+        this.countryID = countryId;
+        this.agencyID = agencyId;
+        this.initLocalAgency();
+      });
+    } else {
+      this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.uid = user.uid;
+        this.countryID = countryId;
+        this.agencyID = agencyId;
+        this.initCountryOffice();
+      });
+    }
+
   }
 
-  initData() {
+  initLocalAgency(){
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+
+        if (params && params['programmeId']) {
+          this.programmeId = params['programmeId'];
+          this._getProgrammeLocalAgency(params['programmeId']);
+        }
+
+      });
+  }
+
+  initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -83,8 +111,20 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       });
   }
 
+
   _getProgramme(programmeID: string) {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + programmeID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((programme: any) => {
+        this.programme = new ProgrammeMappingModel();
+        programme.id = programme.$key;
+        this.programme.setData(programme);
+        this._convertTimestampToDate(programme.when);
+      });
+  }
+
+  _getProgrammeLocalAgency(programmeID: string) {
+    this.af.database.object(Constants.APP_STATUS + "/localAgencyProfile/programme/" + this.agencyID + '/4WMapping/' + programmeID)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((programme: any) => {
         this.programme = new ProgrammeMappingModel();
@@ -107,7 +147,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   backButton() {
-    this.router.navigate(['/country-admin/country-office-profile/programme']);
+    this.router.navigate(this.isLocalAgency ? ['/local-agency/profile/programme'] : ['/country-admin/country-office-profile/programme']);
   }
 
   saveMapping() {
@@ -146,6 +186,42 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     }
   }
 
+  saveMappingLocalAgency() {
+    this.setDate();
+    this.alertMessage = this.programme.validate();
+    if (!this.alertMessage) {
+      var dataToSave = this.programme;
+
+      if (!this.programmeId) {
+        if (this.agencyID) {
+          this.af.database.list(Constants.APP_STATUS + "/localAgencyProfile/programme/" + this.agencyID + '/4WMapping/')
+            .push(dataToSave)
+            .then(() => {
+              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
+              this.programme = new ProgrammeMappingModel();
+              this.when = [];
+              this.router.navigate(['/local-agency/profile/programme/']);
+            }).catch((error: any) => {
+            console.log(error, 'You do not have access!')
+          });
+        } else {
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR', AlertMessageType.Error);
+        }
+      } else {
+        dataToSave.updatedAt = new Date().getTime();
+        delete dataToSave.id;
+        this.af.database.object(Constants.APP_STATUS + "/localAgencyProfile/programme/" + this.agencyID + '/4WMapping/' + this.programmeId)
+          .update(dataToSave)
+          .then(() => {
+            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
+            this.router.navigate(['/local-agency/profile/programme/']);
+          }).catch((error: any) => {
+          console.log(error, 'You do not have access!')
+        });
+      }
+    }
+  }
+
   setMonth(event: any) {
     this.when['month'] = parseInt(event.target.value);
   }
@@ -170,6 +246,14 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
       .remove().then(() => {
       this.router.navigate(['/country-admin/country-office-profile/programme/']);
+    });
+  }
+
+  deleteMappingLocalAgency() {
+    jQuery("#deleteMapping").modal("hide");
+    this.af.database.object(Constants.APP_STATUS + "/localAgencyProfile/programme/" + this.agencyID + '/4WMapping/' + this.programmeId)
+      .remove().then(() => {
+      this.router.navigate(['/local-agency/profile/programme/']);
     });
   }
 

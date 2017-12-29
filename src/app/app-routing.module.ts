@@ -206,7 +206,7 @@ import {NetworkGlobalMapListComponent} from "./network-country-admin/network-glo
 
 /* Local Agency */
 
-import {LocalAgencyDashboardComponent} from "./local-agency/local-agency-dashboard/local-agency-dashboard.component";
+import { LocalAgencyDashboardComponent } from "./local-agency/local-agency-dashboard/local-agency-dashboard.component";
 import { LocalAgencyRiskMonitoringComponent } from './local-agency/local-agency-risk-monitoring/local-agency-risk-monitoring.component';
 import { LocalAgencyAddHazardComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-hazard/local-agency-add-hazard.component';
 import { LocalAgencyAddIndicatorComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-indicator/local-agency-add-indicator.component';
@@ -219,6 +219,24 @@ import { LocalAgencyAdevancedPreparednessComponent } from './local-agency/local-
 import { LocalAgencyBudgetComponent } from './local-agency/local-agency-preparedness/local-agency-budget/local-agency-budget.component';
 import { LocalAgencySelectPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-select-preparedness/local-agency-select-preparedness.component';
 import { LocalAgencyCreateEditPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-create-edit-preparedness/local-agency-create-edit-preparedness.component';
+import { LocalAgencyResponsePlansComponent } from "./local-agency/local-agency-response-plans/local-agency-response-plans.component";
+import { LocalAgencyCreateEditResponsePlansComponent } from "./local-agency/local-agency-response-plans/local-agency-create-edit-response-plans/local-agency-create-edit-response-plans.component";
+import { LocalAgencyAddPartnerOrganisationComponent } from "./local-agency/local-agency-response-plans/local-agency-add-partner-organisation/local-agency-add-partner-organisation.component";
+import { LocalAgencyExternalPartnerResponsePlanComponent } from "./local-agency/local-agency-response-plans/local-agency-external-partner-response-plan/local-agency-external-partner-response-plan.component";
+import { LocalAgencyViewPlanComponent } from "./local-agency/local-agency-response-plans/local-agency-view-plan/local-agency-view-plan.component";
+import { LocalAgencyProfileComponent } from "./local-agency/local-agency-profile/local-agency-profile.component";
+import { LocalAgencyContactsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-contacts.component';
+import { LocalAgencyCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-coordination.component';
+import { LocalAgencyDocumentsComponent } from './local-agency/local-agency-profile/local-agency-documents/local-agency-documents.component';
+import { LocalAgencyEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-equipment.component';
+import { LocalAgencyOfficeCapacityComponent } from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-office-capacity.component';
+import { LocalAgencyProfileMenuComponent } from './local-agency/local-agency-profile/local-agency-profile-menu/local-agency-profile-menu.component';
+import { LocalAgencyPartnersComponent } from './local-agency/local-agency-profile/local-agency-partners/local-agency-partners.component';
+import { LocalAgencyProgrammeComponent } from './local-agency/local-agency-profile/local-agency-programme/local-agency-programme.component';
+import { LocalAgencyStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-stock-capacity.component';
+import { LocalAgencyAddEditMappingComponent } from "./local-agency/local-agency-profile/local-agency-programme/local-agency-add-edit-mapping/local-agency-add-edit-mapping.component";
+import { LocalAgencyAddEditSurgeCapacityComponent } from "./local-agency/local-agency-profile/local-agency-office-capacity/local-agency-add-edit-surge-capacity/local-agency-add-edit-surge-capacity.component";
+
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -453,6 +471,7 @@ const routes: Routes = [
   {path: 'export-start-fund', component: ExportStartFundComponent},
   {path: 'export-proposal', component: ExportProposalComponent},
 
+
   /**
    * Partner Vlidation
    * */
@@ -590,9 +609,34 @@ const routes: Routes = [
   {path: 'local-agency/preparedness/select', component: LocalAgencySelectPreparednessComponent},
   {path: 'local-agency/preparedness/create-edit-preparedness', component: LocalAgencyCreateEditPreparednessComponent},
   {path: 'local-agency/preparedness/create-edit-preparedness/:id', component: LocalAgencyCreateEditPreparednessComponent},
+  {path: 'local-agency/response-plans', component: LocalAgencyResponsePlansComponent},
+  {path: 'local-agency/response-plans/create-edit-response-plan', component: LocalAgencyCreateEditResponsePlansComponent},
+  {path: 'local-agency/response-plans/create-edit-response-plan/:id', component: LocalAgencyCreateEditResponsePlansComponent},
+  {path: 'local-agency/response-plans/add-partner-organisation', component: LocalAgencyAddPartnerOrganisationComponent},
+  {path: 'local-agency/response-plans/add-partner-organisation/:fromResponsePlans', component: LocalAgencyAddPartnerOrganisationComponent},
+  {path: 'local-agency/response-plans/external-partner-response-plan/:countryID/:id/:token', component: LocalAgencyExternalPartnerResponsePlanComponent},
+  {path: 'local-agency/response-plans/view-plan', component: LocalAgencyViewPlanComponent},
+  {path: 'local-agency/response-plans/view-plan/:id', component: LocalAgencyViewPlanComponent},
+  {path: 'local-agency/profile', component: LocalAgencyProfileComponent},
 
 
-
+  {path: 'local-agency/profile/partners', component: LocalAgencyPartnersComponent},
+  {path: 'local-agency/profile/equipment', component: LocalAgencyEquipmentComponent},
+  // {path: 'local-agency/profile/equipment/add-edit-equipment', component: LocalAgencyAddEditEquipmentComponent},
+  // {path: 'local-agency/profile/equipment/add-edit-surge-equipment', component: LocalAgencyAddEditSurgeEquipmentComponent},
+  {path: 'local-agency/profile/coordination', component: LocalAgencyCoordinationComponent},
+  // {path: 'local-agency/profile/coordination/add-edit-coordination', component: LocalAgencyAddEditCoordinationComponent},
+  {path: 'local-agency/profile/stock-capacity', component: LocalAgencyStockCapacityComponent},
+  // {path: 'local-agency/profile/stock-capacity/add-edit-stock-capacity', component: LocalAgencyAddEditSurgeCapacityComponent},
+  {path: 'local-agency/profile/contacts', component: LocalAgencyContactsComponent},
+  // {path: 'local-agency/profile/contacts/edit-office-details', component: LocalAgencyEditOfficeDetailsComponent},
+  // {path: 'local-agency/profile/contacts/add-edit-point-of-contact', component: LocalAgencyAddEditPointOfContactComponent},
+  {path: 'local-agency/profile/programme', component: LocalAgencyProgrammeComponent},
+  {path: 'local-agency/profile/mapping-programme-add-edit', component: LocalAgencyAddEditMappingComponent},
+  {path: 'local-agency/profile/mapping-programme-add-edit/:programmeId', component: LocalAgencyAddEditMappingComponent},
+  {path: 'local-agency/profile/office-capacity', component: LocalAgencyOfficeCapacityComponent},
+  {path: 'local-agency/profile/office-capacity/add-edit-surge-capacity', component: LocalAgencyAddEditSurgeCapacityComponent},
+  {path: 'local-agency/profile/documents', component: LocalAgencyDocumentsComponent},
 
   /**
    * Maintanace page

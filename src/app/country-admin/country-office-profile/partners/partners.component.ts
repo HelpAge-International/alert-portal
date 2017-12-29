@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -61,6 +61,8 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
+  @Input() isLocalAgency: boolean;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
@@ -82,6 +84,51 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+
+  }
+
+  private initLocalAgency(){
+
+
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+          this.uid = user.uid;
+          this.userType = userType;
+
+
+            this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+              .subscribe(partnerOrganisations => {
+                this.partnerOrganisations = partnerOrganisations;
+
+                this.assignProjectsToDisplayPerPartnerOrg();
+
+                // Get the partner organisation notes
+                this.partnerOrganisations.forEach(partnerOrganisation => {
+                  const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                  this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                    partnerOrganisation.notes = notes;
+                  });
+
+                  // Create the new note model for partner organisation
+                  this.newNote[partnerOrganisation.id] = new NoteModel();
+                  this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                });
+              });
+
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .subscribe(content => {
+                this.countryLevelsValues = content;
+                err => console.log(err);
+              });
+
+
+        });
+  }
+
+  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {

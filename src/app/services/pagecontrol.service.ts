@@ -286,13 +286,17 @@ export class PageControlService {
   public static LocalAgencyAdmin = PageUserType.create(UserType.LocalAgencyAdmin, "local-agency/dashboard", [
     "local-agency*",
     "agency-admin/new-agency/new-agency-password",
-    "agency-admin/new-agency/new-agency-details"
+    "agency-admin/new-agency/new-agency-details",
+    "export-start-fund*",
+    "export-proposal*"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
     "local-agency*",
     "agency-admin/new-agency/new-agency-password",
-    "agency-admin/new-agency/new-agency-details"
+    "agency-admin/new-agency/new-agency-details",
+    "export-start-fund*",
+    "export-proposal*"
   ]);
 
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [

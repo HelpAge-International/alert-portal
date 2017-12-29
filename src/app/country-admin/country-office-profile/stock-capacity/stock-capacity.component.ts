@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, StockType, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -46,6 +46,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
+  @Input() isLocalAgency: boolean;
+
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
@@ -62,6 +64,42 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+
+  }
+
+  private initLocalAgency(){
+
+
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.userType = userType;
+
+            // this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
+            //   this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
+            //   this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+            //
+            //   // Get notes
+            //   stockCapacities.forEach(stockCapacity => {
+            //     const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+            //       .replace('{countryId}', this.countryId)
+            //       .replace('{id}', stockCapacity.id);
+            //     this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+            //       stockCapacity.notes = notes;
+            //
+            //       // Create the new note model for partner organisation
+            //       this.newNote[stockCapacity.id] = new NoteModel();
+            //       this.newNote[stockCapacity.id].uploadedBy = this.uid;
+            //     });
+            //   })
+            // });
+        });
+  }
+
+  private initCountryOffice(){
+
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {

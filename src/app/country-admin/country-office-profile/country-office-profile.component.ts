@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
+import {Component, OnInit, OnDestroy, Inject, Input} from '@angular/core';
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Observable} from 'rxjs';
@@ -28,6 +28,8 @@ export class CountryOfficeProfileComponent implements OnInit {
   protected agencyId = null;
   protected obsCountryId: Subject<string> = new Subject();
 
+  @Input() isLocalAgency: boolean;
+
 
   constructor(private pageControl: PageControlService,  protected router: Router, protected route: ActivatedRoute) {
     this.route.params.subscribe((params: Params) => {
@@ -47,7 +49,12 @@ export class CountryOfficeProfileComponent implements OnInit {
 	}
 
   ngOnInit() {
+    if(this.isLocalAgency){
+      this.router.navigate(['/local-agency/profile/programme/']);
+    }else{
       this.router.navigate(['/country-admin/country-office-profile/programme/']);
+    }
+
   }
 
 }

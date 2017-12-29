@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -40,6 +40,8 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private userType: UserType;
 
+  @Input() isLocalAgency: boolean;
+
   // Helpers
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _agencyService: AgencyService,
@@ -55,6 +57,33 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+  }
+
+  private initLocalAgency(){
+
+
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.userType = userType;
+
+            this._agencyService.getAgency(this.agencyId)
+              .map(agency => {
+                return agency as ModelAgency;
+              })
+              .subscribe(agency => {
+                this.agency = agency;
+
+                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
+                  .subscribe(coordinationArrangements => {
+                    this.coordinationArrangements = coordinationArrangements;
+                  });
+              });
+        });
+  }
+
+  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {

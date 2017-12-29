@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, Input} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors} from "../../utils/Enums";
@@ -53,6 +53,8 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private todayDayMonth = new Date(new Date().getFullYear(), new Date().getMonth());
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: Boolean;
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,

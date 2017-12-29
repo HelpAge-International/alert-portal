@@ -2174,5 +2174,17 @@
         "LEVEL1":"Where the stock is currently stored"
       }
     }
+  },
+  "LOCAL_AGENCY_ADMIN": {
+    "STAFF": {
+      "TITLE_TEXT": "Agency Staff",
+      "LOCAL_AGENCY": "Agency"
+    },
+    "SETTINGS":{
+      "TITLE_TEXT": "Agency Settings"
+    },
+    "MESSAGES":{
+      "TITLE_TEXT": "Agency Messages"
+    }
   }
 }
