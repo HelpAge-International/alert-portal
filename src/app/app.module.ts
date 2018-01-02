@@ -325,6 +325,10 @@ import { LocalAgencyProgrammeComponent } from './local-agency/local-agency-profi
 import { LocalAgencyStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-stock-capacity.component';
 import { LocalAgencyAddEditMappingComponent } from './local-agency/local-agency-profile/local-agency-programme/local-agency-add-edit-mapping/local-agency-add-edit-mapping.component';
 import { LocalAgencyAddEditSurgeCapacityComponent } from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-add-edit-surge-capacity/local-agency-add-edit-surge-capacity.component';
+import { LocalAgencyAddEditEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-equipment/local-agency-add-edit-equipment.component';
+import { LocalAgencyAddEditSurgeEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-surge-equipment/local-agency-add-edit-surge-equipment.component';
+import { LocalAgencyAddEditCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-add-edit-coordination/local-agency-add-edit-coordination.component';
+import { LocalAgencyAddEditStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
 
 
 
@@ -657,6 +661,10 @@ const firebaseAuthConfig = {
     LocalAgencyStockCapacityComponent,
     LocalAgencyAddEditMappingComponent,
     LocalAgencyAddEditSurgeCapacityComponent,
+    LocalAgencyAddEditEquipmentComponent,
+    LocalAgencyAddEditSurgeEquipmentComponent,
+    LocalAgencyAddEditCoordinationComponent,
+    LocalAgencyAddEditStockCapacityComponent,
 
   ],
   imports: [

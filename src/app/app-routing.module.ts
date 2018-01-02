@@ -236,7 +236,10 @@ import { LocalAgencyProgrammeComponent } from './local-agency/local-agency-profi
 import { LocalAgencyStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-stock-capacity.component';
 import { LocalAgencyAddEditMappingComponent } from "./local-agency/local-agency-profile/local-agency-programme/local-agency-add-edit-mapping/local-agency-add-edit-mapping.component";
 import { LocalAgencyAddEditSurgeCapacityComponent } from "./local-agency/local-agency-profile/local-agency-office-capacity/local-agency-add-edit-surge-capacity/local-agency-add-edit-surge-capacity.component";
-
+import { LocalAgencyAddEditEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-equipment/local-agency-add-edit-equipment.component';
+import { LocalAgencyAddEditSurgeEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-surge-equipment/local-agency-add-edit-surge-equipment.component';
+import { LocalAgencyAddEditCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-add-edit-coordination/local-agency-add-edit-coordination.component';
+import { LocalAgencyAddEditStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -622,12 +625,12 @@ const routes: Routes = [
 
   {path: 'local-agency/profile/partners', component: LocalAgencyPartnersComponent},
   {path: 'local-agency/profile/equipment', component: LocalAgencyEquipmentComponent},
-  // {path: 'local-agency/profile/equipment/add-edit-equipment', component: LocalAgencyAddEditEquipmentComponent},
-  // {path: 'local-agency/profile/equipment/add-edit-surge-equipment', component: LocalAgencyAddEditSurgeEquipmentComponent},
+  {path: 'local-agency/profile/equipment/add-edit-equipment', component: LocalAgencyAddEditEquipmentComponent},
+  {path: 'local-agency/profile/equipment/add-edit-surge-equipment', component: LocalAgencyAddEditSurgeEquipmentComponent},
   {path: 'local-agency/profile/coordination', component: LocalAgencyCoordinationComponent},
-  // {path: 'local-agency/profile/coordination/add-edit-coordination', component: LocalAgencyAddEditCoordinationComponent},
+  {path: 'local-agency/profile/coordination/add-edit-coordination', component: LocalAgencyAddEditCoordinationComponent},
   {path: 'local-agency/profile/stock-capacity', component: LocalAgencyStockCapacityComponent},
-  // {path: 'local-agency/profile/stock-capacity/add-edit-stock-capacity', component: LocalAgencyAddEditSurgeCapacityComponent},
+  {path: 'local-agency/profile/stock-capacity/add-edit-stock-capacity', component: LocalAgencyAddEditStockCapacityComponent},
   {path: 'local-agency/profile/contacts', component: LocalAgencyContactsComponent},
   // {path: 'local-agency/profile/contacts/edit-office-details', component: LocalAgencyEditOfficeDetailsComponent},
   // {path: 'local-agency/profile/contacts/add-edit-point-of-contact', component: LocalAgencyAddEditPointOfContactComponent},

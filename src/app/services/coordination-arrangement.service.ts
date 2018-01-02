@@ -30,6 +30,26 @@ export class CoordinationArrangementService {
     return getCoordinationArrangementsSubscription;
   }
 
+  public getCoordinationArrangementsLocalAgency(agencyId: string): Observable<CoordinationArrangementModel[]> {
+    if (!agencyId) {
+      return;
+    }
+
+    const getCoordinationArrangementsSubscription = this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId)
+      .map(items => {
+        const coordinationArrangements: CoordinationArrangementModel[] = [];
+        items.forEach(item => {
+          let coordinationArrangement = new CoordinationArrangementModel();
+          coordinationArrangement.mapFromObject(item);
+          coordinationArrangement.id = item.$key;
+          coordinationArrangements.push(coordinationArrangement);
+        });
+        return coordinationArrangements;
+      });
+
+    return getCoordinationArrangementsSubscription;
+  }
+
   public getCoordinationArrangementsNetwork(networkId: string): Observable<CoordinationArrangementNetworkModel[]> {
     if (!networkId) {
       return;
@@ -83,6 +103,23 @@ export class CoordinationArrangementService {
         coordinationArrangement.id = item.$key;
         return coordinationArrangement;
       });
+
+    return getCoordinationArrangementSubscription;
+  }
+
+  public getCoordinationArrangementLocalAgency(agencyId: string, coordinationArrangementId: string): Observable<CoordinationArrangementModel> {
+    if (!agencyId || !coordinationArrangementId) {
+      return;
+    }
+
+    const getCoordinationArrangementSubscription =
+      this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId + '/' + coordinationArrangementId)
+        .map(item => {
+          let coordinationArrangement = new CoordinationArrangementModel();
+          coordinationArrangement.mapFromObject(item);
+          coordinationArrangement.id = item.$key;
+          return coordinationArrangement;
+        });
 
     return getCoordinationArrangementSubscription;
   }
@@ -164,6 +201,25 @@ export class CoordinationArrangementService {
       return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
     }else{
       return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId).push(coordinationArrangement);
+    }
+  }
+
+  public saveCoordinationArrangementLocalAgency(agencyId: string, coordinationArrangement: CoordinationArrangementModel): firebase.Promise<any>{
+    if(!agencyId || !coordinationArrangement)
+    {
+      return Promise.reject('Missing countryId or coordinationArrangement');
+    }
+
+    // Update the timestamp
+    coordinationArrangement.updatedAt = new Date().getTime();
+
+    if(coordinationArrangement.id)
+    {
+      const equipmentData = {};
+      equipmentData['/localAgencyProfile/coordination/' + agencyId + '/' + coordinationArrangement.id] = coordinationArrangement;
+      return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+    }else{
+      return this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId).push(coordinationArrangement);
     }
   }
 
@@ -284,6 +340,19 @@ export class CoordinationArrangementService {
     const coordinationArrangementData = {};
 
     coordinationArrangementData['/countryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;
+
+    return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
+  }
+
+  public deleteCoordinationArrangementLocalAgency(agencyId: string, coordinationArrangement: CoordinationArrangementModel): firebase.Promise<any>{
+    if(!agencyId || !coordinationArrangement || !coordinationArrangement.id )
+    {
+      return Promise.reject('Missing countryId or coordinationArrangement');
+    }
+
+    const coordinationArrangementData = {};
+
+    coordinationArrangementData['/localAgencyProfile/coordination/' + agencyId + '/' + coordinationArrangement.id] = null;
 
     return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
   }

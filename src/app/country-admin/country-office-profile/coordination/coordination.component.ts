@@ -67,6 +67,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
+          this.agencyId = agencyId;
 
             this._agencyService.getAgency(this.agencyId)
               .map(agency => {
@@ -75,7 +76,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
               .subscribe(agency => {
                 this.agency = agency;
 
-                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
+                this._coordinationArrangementService.getCoordinationArrangementsLocalAgency(this.agencyId)
                   .subscribe(coordinationArrangements => {
                     this.coordinationArrangements = coordinationArrangements;
                   });
@@ -148,7 +149,11 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-staff');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/agency-staff');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-staff');
+    }
   }
 
   editCoordinationArrangement() {
@@ -176,11 +181,20 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   }
 
   addEditCoordinationArrangement(coordinationArrangementId?: string) {
-    if (coordinationArrangementId) {
-      this.router.navigate(['/country-admin/country-office-profile/coordination/add-edit-coordination',
-        {id: coordinationArrangementId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/coordination/add-edit-coordination');
+    if(this.isLocalAgency){
+      if (coordinationArrangementId) {
+        this.router.navigate(['/local-agency/profile/coordination/add-edit-coordination',
+          {id: coordinationArrangementId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/coordination/add-edit-coordination');
+      }
+    }else{
+      if (coordinationArrangementId) {
+        this.router.navigate(['/country-admin/country-office-profile/coordination/add-edit-coordination',
+          {id: coordinationArrangementId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/coordination/add-edit-coordination');
+      }
     }
   }
 }

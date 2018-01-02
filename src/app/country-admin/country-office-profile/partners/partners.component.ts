@@ -86,7 +86,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
 
-
   }
 
   private initLocalAgency(){
@@ -96,10 +95,12 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
           this.uid = user.uid;
           this.userType = userType;
+          this.agencyId = agencyId;
 
 
-            this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+            this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(this.agencyId)
               .subscribe(partnerOrganisations => {
+                console.log(partnerOrganisations)
                 this.partnerOrganisations = partnerOrganisations;
 
                 this.assignProjectsToDisplayPerPartnerOrg();

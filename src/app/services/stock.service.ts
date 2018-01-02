@@ -30,6 +30,27 @@ export class StockService {
     return stockCapacitiesSubscription;
   }
 
+  public getStockCapacitiesLocalAgency(agencyId: string): Observable<StockCapacityModel[]> {
+    if (!agencyId) {
+      return;
+    }
+
+    const stockCapacitiesSubscription =
+      this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/capacity/stockCapacity/' + agencyId)
+        .map(items => {
+          const stockCapacities: StockCapacityModel[] = [];
+          items.forEach(item => {
+            let stockCapacity = new StockCapacityModel();
+            stockCapacity.mapFromObject(item);
+            stockCapacity.id = item.$key;
+            stockCapacities.push(stockCapacity);
+          });
+          return stockCapacities;
+        });
+
+    return stockCapacitiesSubscription;
+  }
+
   public getStockCapacitiesLocalNetwork(networkId: string): Observable<StockCapacityModel[]> {
     if (!networkId) {
       return;
@@ -90,6 +111,23 @@ export class StockService {
     return getStockCapacitySubscription;
   }
 
+  public getStockCapacityLocalAgency(agencyId: string, stockCapacityId: string): Observable<StockCapacityModel> {
+    if (!agencyId || !stockCapacityId) {
+      return;
+    }
+
+    const getStockCapacitySubscription =
+      this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/capacity/stockCapacity/' + agencyId + '/' + stockCapacityId)
+        .map(item => {
+          let stockCapacity = new StockCapacityModel();
+          stockCapacity.mapFromObject(item);
+          stockCapacity.id = item.$key;
+          return stockCapacity;
+        });
+
+    return getStockCapacitySubscription;
+  }
+
   public getStockCapacityLocalNetwork(networkId: string, stockCapacityId: string): Observable<StockCapacityModel> {
     if (!networkId || !stockCapacityId) {
       return;
@@ -140,6 +178,25 @@ export class StockService {
       return this.af.database.object(Constants.APP_STATUS).update(stockCapacityData);
     }else{
       return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + countryId).push(stockCapacity);
+    }
+  }
+
+  public saveStockCapacityLocalAgency(agencyId: string, stockCapacity: StockCapacityModel): firebase.Promise<any>{
+    if(!agencyId || !stockCapacity)
+    {
+      return Promise.reject('Missing agencyId or stockCapacity');
+    }
+
+    // Update the timestamp
+    stockCapacity.updatedAt = new Date().getTime();
+
+    if(stockCapacity.id)
+    {
+      const stockCapacityData = {};
+      stockCapacityData['/localAgencyProfile/capacity/stockCapacity/' + agencyId + '/' + stockCapacity.id] = stockCapacity;
+      return this.af.database.object(Constants.APP_STATUS).update(stockCapacityData);
+    }else{
+      return this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/capacity/stockCapacity/' + agencyId).push(stockCapacity);
     }
   }
 
@@ -194,6 +251,19 @@ export class StockService {
     const stockCapacityData = {};
 
     stockCapacityData['/countryOfficeProfile/capacity/stockCapacity/' + countryId + '/' + stockCapacity.id] = null;
+
+    return this.af.database.object(Constants.APP_STATUS).update(stockCapacityData);
+  }
+
+  public deleteStockCapacityLocalAgency(agencyId: string, stockCapacity: StockCapacityModel): firebase.Promise<any>{
+    if(!agencyId || !stockCapacity || !stockCapacity.id )
+    {
+      return Promise.reject('Missing agencyId or coordinationArrangement');
+    }
+
+    const stockCapacityData = {};
+
+    stockCapacityData['/localAgencyProfile/capacity/stockCapacity/' + agencyId + '/' + stockCapacity.id] = null;
 
     return this.af.database.object(Constants.APP_STATUS).update(stockCapacityData);
   }

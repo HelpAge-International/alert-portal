@@ -1308,8 +1308,10 @@
         "ETA_OUT":"Lead time to warehouse",
         "GO_BACK_TITLE":"Edit Stock Capacity",
         "ADD_IN_TITLE":"Add in-country stock",
+        "ADD_IN_TITLE_LOCAL_AGENCY":"Add in-agency stock",
         "ADD_OUT_TITLE":"Add external country stock",
         "EDIT_IN_TITLE":"Edit in-country stock",
+        "EDIT_IN_TITLE_LOCAL_AGENCY":"Edit in-agency stock",
         "EDIT_OUT_TITLE":"Edit external country stock",
         "EMPTY_LIST":"Use the Add button to add stock",
         "NO_DESCRIPTION":"Please enter the stock description",
@@ -2185,6 +2187,13 @@
     },
     "MESSAGES":{
       "TITLE_TEXT": "Agency Messages"
+    },
+    "PROFILE":{
+      "STOCK_CAPACITY":{
+        "EDIT_IN_TITLE":"Edit in-country stock",
+        "ADD_IN_TITLE":"Add in-agency stock"
+      }
     }
+
   }
 }
