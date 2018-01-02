@@ -6,6 +6,8 @@ import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
 import {LocalStorageService} from "angular-2-local-storage";
+import {NetworkService} from "../services/network.service";
+import {current} from "codelyzer/util/syntaxKind";
 
 @Component({
   selector: 'app-login',
@@ -38,6 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(public af: AngularFire,
               private router: Router,
               private route: ActivatedRoute,
+              private networkService: NetworkService,
               private storageService: LocalStorageService,
               private agencyService: AgencyService) {
     this.mErrorCodes.set("password", "LOGIN.INCORRECT_PASSWORD");
@@ -90,9 +93,11 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.checkNetworkLogin(success.uid,
             (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
               //TODO:
+              console.log("network selection")
               this.router.navigateByUrl("network/network-account-selection")
             },
-            () => {                                                           // REGULAR LOGIN
+            () => {// REGULAR LOGIN
+              console.log("regular login")
               this.regularLogin(success.uid);
             })
 
@@ -141,11 +146,73 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/" + userNode + "/" + successUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
+        console.log(snap.val())
         if (userNode == this.NETWORK_NODE_ADMIN) {
-          this.networkAdmin = (snap.val() != null);
+          if (snap.val() && snap.val().networkIds) {
+            Object.keys(snap.val().networkIds).forEach(networkId => {
+              this.networkCount++
+              this.networkService.getNetworkDetail(networkId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(network => {
+                  if (network.isActive) {
+                    this.networkAdmin = true
+                  }
+                  this.checkNetworkAll(isNetwork, isNotNetwork);
+                })
+            })
+          } else {
+            this.networkCount++
+            this.checkNetworkAll(isNetwork, isNotNetwork);
+          }
+          // this.networkAdmin = (snap.val() != null);
+          console.log(this.networkAdmin)
         }
         else if (userNode == this.NETWORK_NODE_COUNTRY_ADMIN) {
-          this.networkCountryAdmin = (snap.val() != null);
+          if (snap.val() && snap.val().networkCountryIds) {
+            let countryList = Object.keys(snap.val().networkCountryIds).map(networkId => {
+              let obj = {}
+              let networkCountryIds = Object.keys(snap.val().networkCountryIds[networkId]);
+              obj["networkId"] = networkId
+              obj["networkCountryIds"] = networkCountryIds
+              return obj
+            }).map(obj => {
+              let tempList = []
+              obj["networkCountryIds"].forEach(networkCountryId => {
+                let subObj = {}
+                subObj["networkId"] = obj["networkId"]
+                subObj["networkCountryId"] = networkCountryId
+                tempList.push(subObj)
+              })
+              return tempList
+            }).reduce((accumulator, current) => {
+              return accumulator.concat(current)
+            })
+            countryList.forEach(obj => {
+              this.networkCount++
+
+              this.networkService.getNetworkDetail(obj["networkId"])
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(network => {
+                  if (network.isActive) {
+                    this.networkService.getNetworkCountry(obj["networkId"], obj["networkCountryId"])
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(networkCountry => {
+                        if (networkCountry.isActive) {
+                          this.networkCountryAdmin = true
+                        }
+                        this.checkNetworkAll(isNetwork, isNotNetwork);
+                      })
+                  } else {
+                    this.checkNetworkAll(isNetwork, isNotNetwork);
+                  }
+                })
+            })
+          } else {
+            this.networkCount++
+            this.checkNetworkAll(isNetwork, isNotNetwork);
+          }
+          // this.networkCountryAdmin = (snap.val() != null);
+          console.log(this.networkCountryAdmin)
         }
         this.checkNetworkAll(isNetwork, isNotNetwork);
       })
@@ -153,6 +220,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private checkNetworkAll(isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
     this.networkCount--;
+    console.log(this.networkCount)
     if (this.networkCount == 0) {
       // Final method!
       if (!this.networkAdmin && !this.networkCountryAdmin) {
@@ -327,10 +395,10 @@ export class LoginComponent implements OnInit, OnDestroy {
           .subscribe((snapshot) => {
             if (snapshot.val() != null) {
               if (snapshot.val().isActive != null && snapshot.val().isActive) {
-                if(snapshot.val().hasOwnProperty('isGlobalAgency')){
-                  if(snapshot.val().isGlobalAgency){
+                if (snapshot.val().hasOwnProperty('isGlobalAgency')) {
+                  if (snapshot.val().isGlobalAgency) {
                     this.router.navigateByUrl(directToIfSuccess);
-                  }else{
+                  } else {
                     this.router.navigateByUrl('/local-agency/dashboard');
                   }
                 } else {
@@ -351,7 +419,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(directToIfFirst);
       });
   }
-
 
 
   /**

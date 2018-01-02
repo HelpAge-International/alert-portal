@@ -20,6 +20,7 @@ export class Constants {
   static INFORM_WORKFLOW: number = 261;
 
   /*PATHS*/
+  //TODO CHANGE APP MODULE AS WELL FOR LIVE
   static APP_STATUS = "/sand";
   static LOGIN_PATH = "/login";
   // static COUNTRY_LEVELS_FILE = "/assets/json/country_levels.json";

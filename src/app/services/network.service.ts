@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
-import {ActionLevel, DurationType, NetworkMessageRecipientType, NetworkUserAccountType} from "../utils/Enums";
+import {ActionLevel, DurationType, NetworkMessageRecipientType, NetworkUserAccountType, Privacy} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network-admin/network-agencies/network-agency.model";
@@ -16,6 +16,8 @@ import {NetworkModulesEnabledModel} from "./pagecontrol.service";
 import {isEmptyObject} from "angularfire2/utils";
 import {NetworkWithCountryModel} from "../country-admin/country-admin-header/network-with-country.model";
 import {ClockSettingsModel} from "../model/clock-settings.model";
+import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
+import {NetworkPrivacyModel} from "../model/network-privacy.model";
 
 @Injectable()
 export class NetworkService {
@@ -37,26 +39,6 @@ export class NetworkService {
     }
   }
 
-  // checkNetworkUserSelection(uid: string): Observable<any> {
-  //   return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/selectedNetwork")
-  //     .flatMap(networkId => {
-  //       if (networkId.$value) {
-  //         let data = {};
-  //         data["isNetworkAdmin"] = true;
-  //         data["networkId"] = networkId.$value;
-  //         return Observable.of(data);
-  //       } else {
-  //         return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/selectedNetwork")
-  //           .map(networkCountryId => {
-  //             let data = {};
-  //             data["isNetworkAdmin"] = false;
-  //             data["networkCountryId"] = networkCountryId.$value;
-  //             return Observable.of(data);
-  //           })
-  //       }
-  //     })
-  // }
-
   getNetworkUserType(uid) {
     return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid, {preserveSnapshot: true})
       .map(snap => {
@@ -77,14 +59,6 @@ export class NetworkService {
   getNetworkAdmin(uid) {
     return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid)
   }
-
-  //TODO ADD FOR NETWORK COUNTRY
-  // getNetworkDetailByUid(uid) {
-  //   return this.checkNetworkUserSelection(uid)
-  //     .flatMap(data => {
-  //       return data.isNetworkAdmin ? this.getNetworkDetail(data.networkId) : null;
-  //     })
-  // }
 
   getSelectedIdObj(uid: string) {
     return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
@@ -133,12 +107,12 @@ export class NetworkService {
     let data = {};
     data["/network/" + networkId + "/leadAgencyId"] = leadAgencyId;
 
-      let item = {};
-      if (countryCode) {
-        item["countryCode"] = countryCode
-      }
-      item["isApproved"] = false;
-      data["/network/" + networkId + "/agencies/" + agencyId] = item;
+    let item = {};
+    if (countryCode) {
+      item["countryCode"] = countryCode
+    }
+    item["isApproved"] = false;
+    data["/network/" + networkId + "/agencies/" + agencyId] = item;
 
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
@@ -146,7 +120,6 @@ export class NetworkService {
 
   getCountryCodeForAgency(agencyId: string, networkId: number) {
     let data = ''
-    console.log(Constants.APP_STATUS + "/countryOffice/" + agencyId)
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
       .map(countryOffices => {
         countryOffices.forEach(office => {
@@ -216,7 +189,7 @@ export class NetworkService {
 
   }
 
-  deleteNetworks(countryOfficePath){
+  deleteNetworks(countryOfficePath) {
     return this.af.database.list(Constants.APP_STATUS + countryOfficePath).remove();
   }
 
@@ -423,7 +396,6 @@ export class NetworkService {
 
     this.af.database.list(messagePath).push(message)
       .then(msg => {
-        console.log("Message created successfully");
         this.createMessageReferences(context, uid, networkId, agencyIds, recipientTypes, msg.key, callback);
       })
       .catch(error => {
@@ -554,7 +526,6 @@ export class NetworkService {
       case NetworkMessageRecipientType.GlobalDirectors:
         return 'globaldirector';
       default:
-        console.log("No group name available for this type of user: " + recipientType);
         return null;
     }
   }
@@ -563,13 +534,13 @@ export class NetworkService {
     return this.af.database.list(Constants.APP_STATUS + "/module/" + networkId)
       .map(matrix => {
         let model = new NetworkModulesEnabledModel();
-        model.minimumPreparedness = matrix[0].status;
-        model.advancedPreparedness = matrix[1].status;
-        model.chsPreparedness = matrix[2].status;
-        model.riskMonitoring = matrix[3].status;
-        model.conflictIndicator = matrix[4].status;
-        model.networkOffice = matrix[5].status;
-        model.responsePlan = matrix[6].status;
+        model.minimumPreparedness = matrix[0].privacy;
+        model.advancedPreparedness = matrix[1].privacy;
+        model.chsPreparedness = matrix[2].privacy;
+        model.riskMonitoring = matrix[3].privacy;
+        model.conflictIndicator = matrix[4].privacy;
+        model.networkOffice = matrix[5].privacy;
+        model.responsePlan = matrix[6].privacy;
         return model;
       });
   }
@@ -642,12 +613,10 @@ export class NetworkService {
   getAllNetworkCountries(uid) {
     return this.af.database.list(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/networkCountryIds", {preserveSnapshot: true})
       .map(snaps => {
-        console.log(snaps)
         return snaps.map(snap => {
           let officeObj = {};
           officeObj["networkId"] = snap.key;
           officeObj["networkCountryIds"] = snap.val() ? Object.keys(snap.val()) : [];
-          console.log(officeObj);
           return officeObj;
         })
       })
@@ -659,6 +628,7 @@ export class NetworkService {
         let model = new NetworkCountryModel();
         model.mapFromObject(networkCountry);
         model.id = networkCountry.$key;
+        model.networkId = networkId
         return model;
       })
   }
@@ -676,11 +646,13 @@ export class NetworkService {
       })
   }
 
-  updateAgenciesForNetworkCountry(networkId: string, networkCountryId: string, leadAgencyId: string, selectedAgencyCountryMap: Map<string, string>) {
+  updateAgenciesForNetworkCountry(networkId: string, networkCountryId: string, leadAgencyId: string, agencyCountryMap: Map<string, string>, selectedAgencyMap: Map<string, boolean>) {
     let data = {};
     data["/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId"] = leadAgencyId;
-    selectedAgencyCountryMap.forEach((v, k) => {
-      data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + v + "/" + k + "/isApproved"] = false;
+    selectedAgencyMap.forEach((v, k) => {
+      if (v) {
+        data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + agencyCountryMap.get(k) + "/isApproved"] = false;
+      }
     });
     return this.af.database.object(Constants.APP_STATUS).update(data);
   }
@@ -698,10 +670,9 @@ export class NetworkService {
         if (agencies) {
           let agencyModels = [];
           agencies.forEach(agency => {
-            console.log(agency);
             let model = new NetworkAgencyModel();
             model.id = agency.$key;
-            model.isApproved = agencyCountryMap.get(agency.$key) && agency[agencyCountryMap.get(agency.$key)] ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : false;
+            model.isApproved = agency[agencyCountryMap.get(agency.$key)]["isApproved"]
             agencyModels.push(model);
           });
           return agencyModels;
@@ -740,13 +711,10 @@ export class NetworkService {
   mapAgencyCountryForLocalNetworkCountry(networkId) {
     return this.getLocalNetwork(networkId)
       .map(localNetwork => {
-        console.log(localNetwork)
         if (localNetwork.agencies) {
           let agencyCountries = localNetwork.agencies;
           let agencyCountryList = Object.keys(agencyCountries).map(key => {
-            console.log(agencyCountries)
             let obj = {};
-
             obj["agencyId"] = key;
             obj["countryId"] = agencyCountries[key].countryCode;
             return obj;
@@ -793,7 +761,7 @@ export class NetworkService {
         return networks.map(network => {
           let model = new NetworkWithCountryModel();
           model.networkId = network.$key;
-          model.networkCountryId = network.$value;
+          model.networkCountryId = network.networkCountryId;
           return model;
         })
       })
@@ -825,7 +793,7 @@ export class NetworkService {
   getLocalNetworksWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
       .map(networks => {
-        var networkKeys = []
+        let networkKeys = []
         networks.forEach(network => {
           networkKeys.push(network.$key)
         })
@@ -861,11 +829,9 @@ export class NetworkService {
   }
 
   getAgencyCountryOfficesByNetwork(networkId: string) {
-    console.log(networkId)
     let countryOfficeAgencyMap = new Map<string, string>()
     return this.af.database.list(Constants.APP_STATUS + '/network/' + networkId + '/agencies')
       .map(agencies => {
-        console.log(agencies)
         agencies.forEach(agency => {
           if (agency.countryCode && agency.isApproved) {
             countryOfficeAgencyMap.set(agency.$key, agency.countryCode)
@@ -891,9 +857,133 @@ export class NetworkService {
       })
   }
 
-  getNetworkCountryAgencies(networkId, networkCountryId){
-    return this.af.database.list( Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+  getNetworkCountryAgencies(networkId, networkCountryId) {
+    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
 
+  }
+
+  getNetworkCountriesForNetwork(networkId: string): Observable<string[]> {
+    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
+      .map(networkCountries => {
+        return networkCountries.map(country => country.$key)
+      })
+  }
+
+  getPrivacySettingForNetworkCountry(networkCountryId): Observable<NetworkPrivacyModel> {
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + networkCountryId, {preserveSnapshot: true})
+      .map(snap => {
+        if (snap.val()) {
+          let privacy = new NetworkPrivacyModel();
+          privacy.mpa = snap.val()[0].privacy;
+          privacy.apa = snap.val()[1].privacy;
+          privacy.chs = snap.val()[2].privacy;
+          privacy.riskMonitoring = snap.val()[3].privacy;
+          privacy.conflictIndicators = snap.val()[4].privacy
+          privacy.officeProfile = snap.val()[5].privacy;
+          privacy.responsePlan = snap.val()[6].privacy;
+          return privacy;
+        }
+      });
+  }
+
+  updateNetworkCountryPrivacy(countryId: string, module: NetworkPrivacyModel, countryPrivacy: NetworkPrivacyModel) {
+    if (module.mpa == Privacy.Private) {
+      countryPrivacy.mpa = Privacy.Private;
+    } else if (module.mpa == Privacy.Network && countryPrivacy.mpa == Privacy.Public) {
+      countryPrivacy.mpa = Privacy.Network;
+    }
+    if (module.apa == Privacy.Private) {
+      countryPrivacy.apa = Privacy.Private;
+    } else if (module.apa == Privacy.Network && countryPrivacy.apa == Privacy.Public) {
+      countryPrivacy.apa = Privacy.Network;
+    }
+    if (module.chs == Privacy.Private) {
+      countryPrivacy.chs = Privacy.Private;
+    } else if (module.chs == Privacy.Network && countryPrivacy.chs == Privacy.Public) {
+      countryPrivacy.chs = Privacy.Network;
+    }
+    if (module.riskMonitoring == Privacy.Private) {
+      countryPrivacy.riskMonitoring = Privacy.Private;
+    } else if (module.riskMonitoring == Privacy.Network && countryPrivacy.riskMonitoring == Privacy.Public) {
+      countryPrivacy.riskMonitoring = Privacy.Network;
+    }
+    if (module.conflictIndicators == Privacy.Private) {
+      countryPrivacy.conflictIndicators = Privacy.Private;
+    } else if (module.conflictIndicators == Privacy.Network && countryPrivacy.conflictIndicators == Privacy.Public) {
+      countryPrivacy.conflictIndicators = Privacy.Network;
+    }
+    if (module.responsePlan == Privacy.Private) {
+      countryPrivacy.responsePlan = Privacy.Private;
+    } else if (module.responsePlan == Privacy.Network && countryPrivacy.responsePlan == Privacy.Public) {
+      countryPrivacy.responsePlan = Privacy.Network;
+    }
+    if (module.officeProfile == Privacy.Private) {
+      countryPrivacy.officeProfile = Privacy.Private;
+    } else if (module.officeProfile == Privacy.Network && countryPrivacy.officeProfile == Privacy.Public) {
+      countryPrivacy.officeProfile = Privacy.Network;
+    }
+
+    let update = {};
+    update["/module/" + countryId + "/0/privacy"] = countryPrivacy.mpa;
+    update["/module/" + countryId + "/1/privacy"] = countryPrivacy.apa;
+    update["/module/" + countryId + "/2/privacy"] = countryPrivacy.chs;
+    update["/module/" + countryId + "/3/privacy"] = countryPrivacy.riskMonitoring;
+    update["/module/" + countryId + "/4/privacy"] = countryPrivacy.conflictIndicators;
+    update["/module/" + countryId + "/5/privacy"] = countryPrivacy.officeProfile;
+    update["/module/" + countryId + "/6/privacy"] = countryPrivacy.responsePlan;
+
+    this.af.database.object(Constants.APP_STATUS).update(update);
+  }
+
+  getPrivacySettingForNetwork(networkId: string): Observable<NetworkPrivacyModel> {
+    return this.af.database.object(Constants.APP_STATUS + "/module/" + networkId, {preserveSnapshot: true})
+      .map(snap => {
+        if (snap.val()) {
+          let privacy = new NetworkPrivacyModel();
+          privacy.mpa = snap.val()[0].privacy;
+          privacy.apa = snap.val()[1].privacy;
+          privacy.chs = snap.val()[2].privacy;
+          privacy.riskMonitoring = snap.val()[3].privacy;
+          privacy.conflictIndicators = snap.val()[4].privacy;
+          privacy.officeProfile = snap.val()[5].privacy;
+          privacy.responsePlan = snap.val()[6].privacy;
+          return privacy;
+        }
+      });
+  }
+
+  getAllNetworkCountriesWithSameAgencyMember(networkId, agencyId) {
+    return this.getAllNetworkCountriesByNetwork(networkId)
+      .map(networkCountries => {
+        return networkCountries.filter(networkCountry => networkCountry.agencyCountries && Object.keys(networkCountry.agencyCountries).indexOf(agencyId) != -1)
+      })
+  }
+
+  mapNetworkOfficesWithSameLocationsInOtherNetworks(location: number) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkCountry")
+      .map(allNetworksObj => {
+        let map = new Map()
+        if (allNetworksObj) {
+          let networkCountryObjs = Object.keys(allNetworksObj).map(networkId => {
+            let tempObj = {}
+            tempObj["networkCountries"] = Object.keys(allNetworksObj[networkId]).map(countryId => {
+              let tempCountryObj = allNetworksObj[networkId][countryId]
+              tempCountryObj["id"] = countryId
+              return tempCountryObj
+            }).filter(country => country.location == location)
+            tempObj["networkId"] = networkId
+            return tempObj
+          })
+          networkCountryObjs.forEach(obj => {
+            if (obj["networkCountries"].length > 0) {
+              obj["networkCountries"].forEach(country => {
+                map.set(obj["networkId"], country.id)
+              })
+            }
+          })
+        }
+        return map
+      })
   }
 
 }

@@ -26,14 +26,14 @@
         </div>
         <div class="row no-gutters">
           <label for="network-global" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-            <input type="radio" name="donor-agency" id="network-global" [checked]="isGlobal"
+            <input [disabled]="isEdit" type="radio" name="donor-agency" id="network-global" [checked]="isGlobal"
                    (change)="selectNetworkType(true)">
             Global Network
           </label>
         </div>
         <div class="row no-gutters">
           <label for="network-local" class="Checkbox--ribbon col-lg-2 col-md-4 col-sm-5">
-            <input type="radio" name="donor-agency" id="network-local" [checked]="!isGlobal"
+            <input [disabled]="isEdit" type="radio" name="donor-agency" id="network-local" [checked]="!isGlobal"
                    (change)="selectNetworkType(false)">
             Local Network
           </label>
@@ -43,7 +43,7 @@
           <div class="col-lg-4 col-md-6">
             <div class="form-group" [ngClass]="{'has-danger': alerts[networkName]}">
               <label>Country*</label>
-              <select class="form-control" [required]="!isGlobal" [(ngModel)]="country" name="country" (change)="selectCountry()">
+              <select [disabled]="isEdit" class="form-control" [required]="!isGlobal" [(ngModel)]="country" name="country" (change)="selectCountry()">
                 <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
                 <option *ngFor="let country of COUNTRY" [value]="country">
                   {{country | translate}}

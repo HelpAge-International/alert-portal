@@ -40,6 +40,7 @@ import {CommonUtils} from "../../../utils/CommonUtils";
 import {NetworkCountryModel} from "../../network-country.model";
 import * as firebase from "firebase";
 import {ModelAgency} from "../../../model/agency.model";
+import {ModelNetwork} from "../../../model/network.model";
 
 declare var jQuery: any;
 
@@ -145,6 +146,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private privacy: ModelAgencyPrivacy;
   private userAgencyId: string;
+  private isNetworkAccess: boolean;
+  private isViewingFromExternal: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -162,24 +165,39 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
-        this.isViewing = params["isViewing"];
-        this.systemAdminId = params["systemId"];
-        this.agencyId = params["agencyId"];
-        this.countryId = params["countryId"];
-        this.userType = params["userType"];
-        this.networkId = params["networkId"];
-        if (!this.isLocalNetworkAdmin) {
-          this.networkCountryId = params["networkCountryId"];
-        }
-        this.uid = params["uid"];
+      if (params['isViewing']) {
+        this.isViewing = params['isViewing'];
+      }
+      if (params['systemId']) {
+        this.systemAdminId = params['systemId'];
+      }
+      if (params['agencyId']) {
+        this.agencyId = params['agencyId'];
+      }
+      if (params['countryId']) {
+        this.countryId = params['countryId'];
+      }
+      if (params['userType']) {
+        this.userType = params['userType'];
+      }
+      if (params['networkId']) {
+        this.networkId = params['networkId'];
+      }
+      if (!this.isLocalNetworkAdmin) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      if (params['uid']) {
+        this.uid = params['uid'];
       }
       if (params['isCHS']) {
         this.filterType = 0;
       }
-      console.log(this.isViewing)
-      console.log(this.isLocalNetworkAdmin)
+      if (params['isViewingFromExternal']) {
+        this.isViewingFromExternal = params['isViewingFromExternal'];
+      }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalNetworkViewAccess() : this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
@@ -191,6 +209,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.assignActionAsignee = this.uid;
       this.filterAssigned = "0";
       this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+      this.isNetworkAccess = true;
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -219,7 +238,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyCountryMap => {
               this.initAgencies(agencyCountryMap)
-            })
+            });
 
           // Currency
           // this.calculateCurrency();
@@ -255,6 +274,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.modulesAreEnabled = matrix);
+
+          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyCountryMap => {
+              this.initAgencies(agencyCountryMap)
+            });
 
           // Currency
           // this.calculateCurrency();
@@ -313,12 +338,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
 
-    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+    this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(networkMap => {
-        if (networkMap) {
-          this.initNetworkAdmin(networkMap)
-          this.initAgenciesDetails(networkMap)
+      .subscribe(networkIds => {
+        if (networkIds && networkIds.length > 0) {
+          this.initLocalNetworkAdmin(networkIds)
+          this.initAgenciesDetailsForLocal(networkIds)
         }
       })
     this.initStaff(this.agencyId, this.countryId);
@@ -407,6 +432,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
   /**
    * Initialisation method for the staff under the country office
    */
@@ -441,6 +468,16 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     })
   }
 
+  private initLocalNetworkAdmin(networkIds) {
+    networkIds.forEach(networkId => {
+      this.networkService.getNetworkDetail(networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((model: ModelNetwork) => {
+          this.getStaffDetails(model.networkAdminId, false)
+        })
+    })
+  }
+
   /**
    * Assigning an action to someone
    */
@@ -452,6 +489,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODO: Check what's happening in this function below
   public saveAssignedUser() {
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
@@ -468,7 +506,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
             notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
             console.log(notification.content);
-
+            console.log(task, 'dan checking');
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
             });
@@ -657,7 +695,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
    */
 
   // (Dan) - this new function is for the undo completed MPA
-  protected undoCompleteAction(action: PreparednessAction){
+  protected undoCompleteAction(action: PreparednessAction) {
 
     // Call to firebase to update values to revert back to *In Progress*
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
@@ -669,7 +707,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   }
 
-   //Close documents popover
+  //Close documents popover
   protected closePopover(action: PreparednessAction) {
 
     let toggleDialog = jQuery("#popover_content_" + action.id);
@@ -678,7 +716,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
 
   }
-
 
 
   // Uploading a file to Firebase
@@ -752,7 +789,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
 
-
   // Delete document from firebase
   protected deleteDocument(action: PreparednessAction, docId: string) {
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
@@ -765,6 +801,15 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       }
     }
     // if we make it here we can't find the document requesting to be deleted
+    let actionIndex = this.prepActionService.actions.map(action => {
+      return action.id
+    }).indexOf(action.id);
+    if (actionIndex != -1) {
+      this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {
+        return doc.documentId != docId
+      })
+      this.closeDocumentsModal("documents_popover_" + action.id)
+    }
   }
 
   // Exporting all the documents
@@ -827,10 +872,10 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     jQuery("#" + elementId).collapse('hide');
   }
 
-  // protected copyAction(action) {
-  //   this.storage.set('selectedAction', action);
-  //   this.router.navigate(["/preparedness/create-edit-preparedness"]);
-  // }
+  protected copyAction(action) {
+    this.storage.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+  }
 
 
   /**
@@ -865,6 +910,28 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkService.mapAgencyCountryForNetworkCountry(networkId, networkMap.get(networkId))
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
+          agencyCountryMap.forEach((countryId, agencyId) => {
+            this.initStaff(agencyId, countryId);
+          })
+          CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
+            this.userService.getAgencyModel(agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((agency: ModelAgency) => {
+                this.agencyNamesMap.set(agencyId, agency)
+              })
+          })
+        })
+    })
+  }
+
+  private initAgenciesDetailsForLocal(networkIds) {
+    networkIds.forEach(networkId => {
+      this.networkService.mapAgencyCountryForLocalNetworkCountry(networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencyCountryMap => {
+          agencyCountryMap.forEach((countryId, agencyId) => {
+            this.initStaff(agencyId, countryId);
+          })
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
               .takeUntil(this.ngUnsubscribe)

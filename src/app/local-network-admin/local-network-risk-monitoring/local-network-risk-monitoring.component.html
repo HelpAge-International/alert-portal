@@ -254,7 +254,7 @@
                            (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"GLOBAL.UPDATE" | translate}}
                       </div>
-                      <div *ngIf="!indicatorC?.assignee">
+                      <div *ngIf="!indicatorC?.assignee && (!indicatorC.fromAgency || (indicatorC.fromAgency && indicatorC.countryOfficeCode === countryID))">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
                            aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
                           Assign to</a>
@@ -562,7 +562,7 @@
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"GLOBAL.UPDATE" | translate}}
                     </div>
-                    <div *ngIf="!indicator?.assignee">
+                    <div *ngIf="!indicator?.assignee && (!indicator.fromAgency || (indicator.fromAgency && indicator.countryOfficeCode === countryID))" >
                       <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
                          aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo(hazard.$key, indicator)">
                         Assign to</a>

@@ -485,7 +485,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   }
 
-  private getLocalNetworks(agencyId: string, countryId: any) {
+  getLocalNetworks(agencyId: string, countryId: any) {
     this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {

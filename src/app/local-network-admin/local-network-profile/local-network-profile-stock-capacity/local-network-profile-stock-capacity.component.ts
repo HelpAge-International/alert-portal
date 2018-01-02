@@ -65,6 +65,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
   //network country re-use
   @Input() isNetworkCountry: boolean;
   private networkCountryId: string;
+  private isViewingFromExternal: boolean;
 
 
   constructor(private pageControl: PageControlService, private _stockService: StockService,
@@ -105,6 +106,9 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
         }
         if (params['uid']) {
           this.uid = params['uid'];
+        }
+        if (params['isViewingFromExternal']) {
+          this.isViewingFromExternal = params['isViewingFromExternal'];
         }
 
 

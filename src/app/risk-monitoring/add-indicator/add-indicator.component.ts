@@ -25,6 +25,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {MessageModel} from "../../model/message.model";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
 
@@ -120,6 +121,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private networkId: string;
   private networkCountryId: string;
+  private isViewingFromExternal: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -139,7 +141,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        console.log(params)
+
         if (params["countryId"]) {
           this.copyCountryId = params["countryId"];
         }
@@ -168,12 +170,24 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.agencyOverview = params["agencyOverview"];
         }
 
+        if (params["userType"]) {
+          this.UserType = params["userType"];
+        }
+
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+
         if (params["networkId"]) {
           this.networkId = params["networkId"];
         }
 
         if (params["networkCountryId"]) {
           this.networkCountryId = params["networkCountryId"];
+        }
+
+        if (params["isViewingFromExternal"]) {
+          this.isViewingFromExternal = params["isViewingFromExternal"];
         }
 
         if (this.copyCountryId && this.copyIndicatorId) {
@@ -209,16 +223,29 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string, copyHazardId: string) {
+
     if (this.isContext && !copyHazardId) {
-      this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyCountryId + "/" + copyIndicatorId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(copyContextIndicator => {
-          let contextIndicator = new Indicator();
-          contextIndicator.mapFromObject(copyContextIndicator);
-          this.indicatorData = contextIndicator;
-          this.indicatorData.assignee = undefined;
-        });
+      if (this.networkCountryId) {
+        this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.networkCountryId + "/" + copyIndicatorId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(copyContextIndicator => {
+            let contextIndicator = new Indicator();
+            contextIndicator.mapFromObject(copyContextIndicator);
+            this.indicatorData = contextIndicator;
+            this.indicatorData.assignee = undefined;
+          });
+      } else {
+        this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyCountryId + "/" + copyIndicatorId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(copyContextIndicator => {
+            let contextIndicator = new Indicator();
+            contextIndicator.mapFromObject(copyContextIndicator);
+            this.indicatorData = contextIndicator;
+            this.indicatorData.assignee = undefined;
+          });
+      }
     } else {
+      console.log("hazard id:" + copyHazardId, "indicator id: " + copyIndicatorId)
       this.af.database.object(Constants.APP_STATUS + "/indicator/" + copyHazardId + "/" + copyIndicatorId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(indicator => {
@@ -247,7 +274,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         }
 
         this.hazardID = params['hazardID'];
-        console.log(this.hazardID);
 
         if (params['indicatorID']) {
           this.isEdit = true;
@@ -299,7 +325,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
     let modelArea = new OperationAreaModel();
     modelArea.country = this.countryLocation;
     this.indicatorData.affectedLocation.push(modelArea);
-    console.log(this.indicatorData)
   }
 
   removeAnotherLocation(key: number,) {
@@ -350,7 +375,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   showDeleteDialog(modalId) {
-    console.log("SHOWING!");
     jQuery('#' + modalId).modal("show");
   }
 
@@ -367,7 +391,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   saveIndicator() {
 
     if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
-      console.log(this.hazardsObject)
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {
@@ -439,7 +462,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           });
         } else {
           delete dataToSave.id;
-          console.log(dataToSave);
           this.af.database.object(urlToEdit)
             .update(dataToSave)
             .then(() => {
@@ -472,26 +494,29 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   cancel() {
     if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
-      if (this.agencyOverview) {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": this.copyCountryId,
-          "isViewing": true,
-          "agencyId": this.copyAgencyId,
-          "systemId": this.copySystemId,
-          "from": "risk",
-          "canCopy": true,
-          "agencyOverview": this.agencyOverview
-        }]);
-      } else {
-        this.router.navigate(["/dashboard/dashboard-overview", {
-          "countryId": this.copyCountryId,
-          "isViewing": true,
-          "agencyId": this.copyAgencyId,
-          "systemId": this.copySystemId,
-          "from": "risk",
-          "canCopy": true
-        }]);
+      let data = {
+        "countryId": this.copyCountryId,
+        "isViewing": true,
+        "agencyId": this.copyAgencyId,
+        "systemId": this.copySystemId,
+        "from": "risk",
+        "canCopy": true,
+        "userType": this.UserType,
+        "uid": this.uid
       }
+      if (this.isViewingFromExternal) {
+        data["isViewingFromExternal"] = true
+      }
+      if (this.networkId) {
+        data["networkId"] = this.networkId
+      }
+      if (this.networkCountryId) {
+        data["networkCountryId"] = this.networkCountryId
+      }
+      if (this.agencyOverview) {
+        data["agencyOverview"] = this.agencyOverview
+      }
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
       this._location.back();
     }
@@ -622,18 +647,14 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
     //this.indicatorData = new Indicator();
 
-
     if (this.hazardID == 'countryContext') {
       this.url = Constants.APP_STATUS + "/indicator/" + this.countryID + '/' + indicatorID;
     } else {
       this.url = Constants.APP_STATUS + "/indicator/" + hazardID + "/" + indicatorID;
     }
 
-    console.log(this.url);
-
     this.af.database.object(this.url).takeUntil(this.ngUnsubscribe).subscribe((indicator: any) => {
       if (indicator.$value === null) {
-        console.log(indicator)
         this.router.navigate(['/risk-monitoring']);
         return false;
       }
@@ -655,11 +676,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
       }
 
       if (!this.alertMessage) {
-        console.log(this.indicatorData.source)
         this.indicatorData.source.forEach((val, key) => {
           let modelSource = new IndicatorSourceModel();
           modelSource.mapFromObject(val);
-          console.log(modelSource.name)
           this.alertMessage = this._validateIndicatorSource(modelSource);
           if (this.alertMessage) {
             res(false);
@@ -699,9 +718,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _validateIndicatorSource(indicatorSource: IndicatorSourceModel): AlertMessageModel {
-    console.log(indicatorSource.name)
     this.alertMessage = indicatorSource.validate();
-    console.log(this.alertMessage)
     return this.alertMessage;
   }
 
@@ -803,22 +820,7 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   back() {
-    if (this.copyCountryId && this.copySystemId && this.copyAgencyId) {
-      let headers = {
-        "countryId": this.copyCountryId,
-        "isViewing": true,
-        "agencyId": this.copyAgencyId,
-        "systemId": this.copySystemId,
-        "from": "risk",
-        "canCopy": true
-      };
-      if (this.agencyOverview) {
-        headers["agencyOverview"] = this.agencyOverview;
-      }
-      this.router.navigate(["/dashboard/dashboard-overview", headers]);
-    } else {
-      this.backToRiskHome();
-    }
+    this.cancel()
   }
 
 }

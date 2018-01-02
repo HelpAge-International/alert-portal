@@ -22,17 +22,26 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div *ngIf="userType != UserType.Donor">
-      <div *ngIf="!isViewing" class="Back--button" [routerLink]="isLocalAgency ? ['/local-agency/response-plans'] : ['/response-plans']">{{"RESPONSE_PLANS.TITLE_TEXT" |
+    <div *ngIf="userType != UserType.Donor; else donorBack">
+      <div *ngIf="!isViewing; else internalView" class="Back--button" [routerLink]="isLocalAgency ? ['/local-agency/response-plans'] : ['/response-plans']">{{"RESPONSE_PLANS.TITLE_TEXT" |
         translate}}
       </div>
-      <div *ngIf="isViewing" class="Back--button" (click)="backToViewingPlan()">{{countryName |
+      <ng-template #internalView>
+        <div *ngIf="isViewing && !isViewingFromExternal; else externalView" class="Back--button" (click)="backToViewingPlan()">{{countryName |
+          translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
+        </div>
+      </ng-template>
+      <ng-template #externalView>
+        <div class="Back--button" (click)="backToExternalViewingPlan()">{{countryName |
+          translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
+        </div>
+      </ng-template>
+    </div>
+    <ng-template #donorBack>
+      <div *ngIf="userType == UserType.Donor" class="Back--button" (click)="backForDonor()">{{countryName |
         translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
       </div>
-    </div>
-    <div *ngIf="userType == UserType.Donor" class="Back--button" (click)="backForDonor()">{{countryName |
-      translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
-    </div>
+    </ng-template>
 
 
     <app-view-response-plan *ngIf="!isLocalAgency"></app-view-response-plan>

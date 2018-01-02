@@ -135,7 +135,9 @@ export class DonorHeaderComponent implements OnInit {
 
   logout() {
     console.log('countryId:' + this.countryId + ' userId:' + this.uid);
-    this.af.auth.logout();
+    this.af.auth.logout().then(() =>{
+      this.router.navigateByUrl('/login')
+    });
   }
 
 

@@ -1,12 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
-  ActionLevel,
-  ActionType,
-  AlertLevels,
-  AlertMessageType,
-  ApprovalStatus,
-  Countries,
-  HazardScenario
+  ActionLevel, AlertLevels, AlertMessageType, ApprovalStatus, Countries, HazardScenario, ModuleNameNetwork,
+  Privacy
 } from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
@@ -18,6 +13,8 @@ import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {NetworkService} from "../../services/network.service";
 import {LocalStorageService} from "angular-2-local-storage";
+import {SettingsService} from "../../services/settings.service";
+import {ModuleSettingsModel} from "../../model/module-settings.model";
 
 @Component({
   selector: 'app-network-country-statistics-ribbon',
@@ -31,6 +28,8 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   //constants and enums
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private ApprovalStatus = ApprovalStatus;
+  private PRIVACY = Privacy
+  private MODULE_NETWORK = ModuleNameNetwork
 
 
   // Models
@@ -88,14 +87,15 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   //for local network admin
   @Input() isLocalNetworkAdmin: boolean;
   private networkViewValues: {};
+  private networkModules: ModuleSettingsModel[];
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private networkService: NetworkService,
               private af: AngularFire,
               private router: Router,
-              private storageService: LocalStorageService,
-              private userService: UserService) {
+              private settingService: SettingsService,
+              private storageService: LocalStorageService) {
     this.Math = Math;
     this.userPermissions = new NetworkModulesEnabledModel();
   }
@@ -226,9 +226,20 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
         });
       })
 
-    this.networkService.getNetworkModuleMatrix(this.networkId)
+    this.networkService.getNetworkModuleMatrix(this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(matrix => this.userPermissions = matrix);
+      .subscribe(matrix => {
+        this.userPermissions = matrix
+        console.log(this.userPermissions)
+      });
+
+    //init module status
+    this.settingService.getCountryModulesSettings(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(modules => {
+        console.log(modules)
+        this.networkModules = modules
+      })
 
   }
 
@@ -259,6 +270,14 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
     this.networkService.getNetworkModuleMatrix(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.userPermissions = matrix);
+
+    //init module status
+    this.settingService.getCountryModulesSettings(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(modules => {
+        console.log(modules)
+        this.networkModules = modules
+      })
 
   }
 
@@ -516,7 +535,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   }
 
   goToCHS() {
-    if (this.userPermissions.minimumPreparedness) {
+    if ((this.networkViewValues && this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status) || !this.networkViewValues) {
       this.networkViewValues ? this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)]) : this.router.navigate(["/network-country/network-country-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)])
         :
         this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", {"isCHS": true}])

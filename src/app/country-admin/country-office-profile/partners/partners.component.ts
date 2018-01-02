@@ -225,7 +225,12 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-staff');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/agency-staff');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-staff');
+    }
+
   }
 
   private assignProjectsToDisplayPerPartnerOrg() {
@@ -298,11 +303,22 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   addPartnerOrganisation() {
-    this.router.navigateByUrl('/response-plans/add-partner-organisation');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/response-plans/add-partner-organisation');
+
+    }else{
+      this.router.navigateByUrl('/response-plans/add-partner-organisation');
+    }
+
   }
 
   editPartnerOrganisation(partnerOrganisationId) {
-    this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
+    if(this.isLocalAgency){
+      this.router.navigate(['/local-agency/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
+    }else{
+      this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
+    }
+
   }
 
   hideFilteredPartners(partnerOrganisation: PartnerOrganisationModel): boolean {

@@ -6,6 +6,7 @@ import {ActionLevel, ActionType, DurationType, HazardScenario, UserType} from ".
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
+import {ModelNetwork} from "../model/network.model";
 
 export class PrepActionService {
 
@@ -80,28 +81,30 @@ export class PrepActionService {
             .takeUntil(ngUnsubscribe)
             .subscribe(network => {
               //loop through each agency/country pair within network
-              Object.keys(network.agencyCountries).forEach(agencyCountry => {
-                //get the country office key
-                Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {
-                  //check if the country office has been approved
-                  if (network.agencyCountries[agencyCountry][countryKey].isApproved) {
-                    af.database.list(Constants.APP_STATUS + '/action/' + countryKey)
-                      .takeUntil(this.ngUnsubscribe)
-                      .subscribe(actions => { //get a list of the actions within a country office
-                        this.CHSkeys.forEach(key => {
-                          this.totalCHS++;
-                          actions.forEach(action => {
-                            if (action.$key == key) {
-                              if (action.isComplete) {
-                                this.completeCHS++;
+              if (network.agencyCountries) {
+                Object.keys(network.agencyCountries).forEach(agencyCountry => {
+                  //get the country office key
+                  Object.keys(network.agencyCountries[agencyCountry]).forEach(countryKey => {
+                    //check if the country office has been approved
+                    if (network.agencyCountries[agencyCountry][countryKey].isApproved) {
+                      af.database.list(Constants.APP_STATUS + '/action/' + countryKey)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(actions => { //get a list of the actions within a country office
+                          this.CHSkeys.forEach(key => {
+                            this.totalCHS++;
+                            actions.forEach(action => {
+                              if (action.$key == key) {
+                                if (action.isComplete) {
+                                  this.completeCHS++;
+                                }
                               }
-                            }
+                            })
                           })
                         })
-                      })
-                  }
+                    }
+                  })
                 })
-              })
+              }
             })
         } else {
           af.database.object(Constants.APP_STATUS + '/network/' + networkId)
@@ -198,13 +201,15 @@ export class PrepActionService {
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
       this.init(af, "action", this.countryId, isMPA, PrepSourceTypes.COUNTRY);
 
-      agencyCountryMap.forEach((countryId, agencyId) => {
-        if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
-          this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
-        }
-        this.init(af, "actionMandated", agencyId, isMPA, PrepSourceTypes.AGENCY);
-        this.init(af, "action", countryId, isMPA, PrepSourceTypes.COUNTRY);
-      })
+      if (agencyCountryMap) {
+        agencyCountryMap.forEach((countryId, agencyId) => {
+          if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+            this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+          }
+          this.init(af, "actionMandated", agencyId, isMPA, PrepSourceTypes.AGENCY);
+          this.init(af, "action", countryId, isMPA, PrepSourceTypes.COUNTRY);
+        })
+      }
     });
   }
 
@@ -250,6 +255,25 @@ export class PrepActionService {
       // }
       this.initNetwork(af, "actionMandated", networkId, isMPA, PrepSourceTypes.AGENCY, countryId, networkId, networkCountryId);
       this.initNetwork(af, "action", networkCountryId, isMPA, PrepSourceTypes.COUNTRY, countryId, networkId, networkCountryId);
+    })
+    // });
+  }
+
+  public initActionsWithInfoAllLocalNetworksInCountry(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
+                                                 countryId: string, agencyId: string, systemId: string, localNetworks: ModelNetwork[]) {
+    // this.uid = uid;
+    // this.ngUnsubscribe = ngUnsubscribe;
+    // this.isMPA = isMPA;
+    // this.countryId = countryId;
+    // this.agencyId = agencyId;
+    // this.systemAdminId = systemId;
+    // this.getDefaultClockSettings(af, agencyId, countryId, () => {
+    localNetworks.forEach((localNetwork) => {
+      // if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
+      //   this.initNetwork(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
+      // }
+      this.initNetwork(af, "actionMandated", localNetwork.id, isMPA, PrepSourceTypes.AGENCY, countryId, localNetwork.id, localNetwork.id);
+      this.initNetwork(af, "action", localNetwork.id, isMPA, PrepSourceTypes.COUNTRY, countryId, localNetwork.id, localNetwork.id);
     })
     // });
   }
@@ -332,14 +356,13 @@ export class PrepActionService {
    * We need these to do the bulk of the calculations with the preparedness actions in terms of the state
    */
   private getDefaultClockSettings(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
-    if(countryId == null){
+    if (countryId == null) {
       af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
         if(snap.val() != null){
           this.defaultClockValue = (+(snap.val().preparedness.value));
           this.defaultClockType = (+(snap.val().preparedness.durationType));
-          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
           if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
             defaultClockSettingsAquired();
             this.ranClockInitialiser = true;
@@ -347,13 +370,12 @@ export class PrepActionService {
         }
 
         });
-    }else{
+    } else {
       af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
           this.defaultClockValue = (+(snap.val().preparedness.value));
           this.defaultClockType = (+(snap.val().preparedness.durationType));
-          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
           if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
             defaultClockSettingsAquired();
             this.ranClockInitialiser = true;
@@ -413,20 +435,22 @@ export class PrepActionService {
     af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        snap.forEach((snapshot) => {
-          if (isMPA == null) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-          else if (isMPA && snapshot.val().level == ActionLevel.MPA) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-          else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-          else if (this.findAction(snapshot.key) != null) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-        });
+        if (snap) {
+          snap.forEach((snapshot) => {
+            if (isMPA == null) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+            else if (isMPA && snapshot.val().level == ActionLevel.MPA) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+            else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+            else if (this.findAction(snapshot.key) != null) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+          });
+        }
       });
   }
 
@@ -573,8 +597,6 @@ export class PrepActionService {
       updated(this.actions[i]);
     }
 
-    // console.log("Updating!");
-    // console.log(this.actions[i]);
 
     // Subscriber method
     if (this.updater != null) {
@@ -687,8 +709,6 @@ export class PrepActionService {
       updated(this.actionsNetwork[i]);
     }
 
-    // console.log("Updating!");
-    // console.log(this.actions[i]);
 
     // Subscriber method
     if (this.updater != null) {
@@ -801,8 +821,6 @@ export class PrepActionService {
       updated(this.actionsNetwork[i]);
     }
 
-    // console.log("Updating!");
-    // console.log(this.actions[i]);
 
     // Subscriber method
     if (this.updater != null) {

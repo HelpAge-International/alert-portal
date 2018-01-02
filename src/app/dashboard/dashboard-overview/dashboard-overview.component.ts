@@ -13,6 +13,9 @@ import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {SettingsService} from "../../services/settings.service";
 import {Location} from "@angular/common";
+import {NetworkPrivacyModel} from "../../model/network-privacy.model";
+import {NetworkService} from "../../services/network.service";
+import {CommonUtils} from "../../utils/CommonUtils";
 
 declare var jQuery: any;
 
@@ -51,15 +54,22 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private userType: number;
   private affectedAreasToShow: any [];
   private privacy: ModelAgencyPrivacy;
+  private privacyNetwork: NetworkPrivacyModel;
   private userAgencyId: string;
+  private userCountryId: string;
+  private isViewingFromExternal: boolean;
+  private networkId: string;
+  private networkCountryId: string;
+  private withinNetwork: boolean;
 
   constructor(private route: ActivatedRoute,
               private userService: UserService,
               private pageControl: PageControlService,
               private alertService: ActionsService,
               private agencyService: AgencyService,
-              private countryService:SettingsService,
-              private location:Location,
+              private countryService: SettingsService,
+              private networkService: NetworkService,
+              private location: Location,
               private router: Router) {
     this.initMainMenu();
     this.initOfficeSubMenu();
@@ -89,6 +99,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.userAgencyId = agencyId;
+      this.userCountryId = countryId
 
       this.route.params
         .takeUntil(this.ngUnsubscribe)
@@ -124,7 +135,17 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           if (params["userType"]) {
             this.userType = params["userType"];
           }
+          if (params["isViewingFromExternal"]) {
+            this.isViewingFromExternal = params["isViewingFromExternal"];
+          }
+          if (params["networkId"]) {
+            this.networkId = params["networkId"];
+          }
+          if (params["networkCountryId"]) {
+            this.networkCountryId = params["networkCountryId"];
+          }
 
+          //kick out to login if path not match
           if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
             console.log('navigating to dashboard')
             this.router.navigateByUrl("/dashboard").then(() => {
@@ -134,12 +155,31 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
             });
           }
 
-          this.countryService.getPrivacySettingForCountry(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(privacy => {
-              this.privacy = privacy;
-              this.updateMainMenu(this.privacy);
-            });
+          //handle privacy settings
+          if (this.isViewingFromExternal) {
+            console.log("isViewingFromExternal")
+            console.log(this.networkCountryId)
+            this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(networkCountryMap => {
+                let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+                this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
+
+                this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(privacy => {
+                    this.privacyNetwork = privacy
+                    this.updateMainMenuNetwork(this.privacyNetwork)
+                  })
+              })
+          } else {
+            this.countryService.getPrivacySettingForCountry(this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.privacy = privacy;
+                this.updateMainMenu(this.privacy);
+              });
+          }
 
           this.getAlerts();
 
@@ -174,6 +214,28 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  private updateMainMenuNetwork(privacy: NetworkPrivacyModel) {
+    if (privacy.officeProfile == Privacy.Public || (privacy.officeProfile == Privacy.Network && this.withinNetwork)) {
+      this.handleMainMenu("officeProfile");
+    } else {
+      if (privacy.riskMonitoring == Privacy.Public || (privacy.riskMonitoring == Privacy.Network && this.withinNetwork)) {
+        this.handleMainMenu("risk");
+      } else if (privacy.mpa == Privacy.Public || privacy.apa == Privacy.Public || (privacy.mpa == Privacy.Network && this.withinNetwork) || (privacy.apa == Privacy.Network && this.withinNetwork)) {
+        if (privacy.mpa == Privacy.Public || (privacy.mpa == Privacy.Network && this.withinNetwork)) {
+          this.handleMainMenu("preparedness-min");
+        } else {
+          this.handleMainMenu("preparedness-adv");
+        }
+      } else if (privacy.responsePlan == Privacy.Public || (privacy.responsePlan == Privacy.Network && this.withinNetwork)) {
+        this.handleMainMenu("plan");
+      } else {
+        this.tabMap.forEach((v, k) => {
+          this.tabMap.set(k, false);
+        });
+      }
+    }
+  }
+
   private handleMainMenu(key) {
     this.tabMap.forEach((v, k) => {
       this.tabMap.set(k, key == k);
@@ -186,7 +248,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   }
 
   private getAlerts() {
-    this.alerts = this.alertService.getAlerts(this.countryId)
+    let id = this.isViewingFromExternal ? this.networkCountryId : this.countryId
+    this.alerts = this.alertService.getAlerts(id)
       .map(alerts => {
         let alertList = [];
         alerts.forEach(alert => {

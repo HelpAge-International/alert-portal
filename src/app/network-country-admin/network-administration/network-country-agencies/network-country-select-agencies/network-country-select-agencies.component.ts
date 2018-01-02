@@ -7,6 +7,7 @@ import {NetworkService} from "../../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../../services/agency-service.service";
 import {ModelAgency} from "../../../../model/agency.model";
+import {ModelNetwork} from "../../../../model/network.model";
 
 declare const jQuery: any;
 
@@ -37,8 +38,9 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
   private leadAgencyId: string;
   private existingAgencyIds: string[];
   private showLoader: boolean;
-  private countryAgencyMap = new Map<string, string>();
-
+  private agencyCountryMap = new Map<string, string>();
+  private agencyObjMap = new Map<string, any>();
+  private networkModel: ModelNetwork;
 
 
   constructor(private pageControl: PageControlService,
@@ -60,6 +62,12 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
           this.networkCountryId = selection["networkCountryId"];
           this.showLoader = false;
 
+          this.networkService.getNetworkDetail(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network => {
+              this.networkModel = network
+            })
+
           //get network country object
           this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
@@ -72,16 +80,14 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
                   this.agencies = [];
                   approvedAgencies.forEach(agency => {
                     agency.takeUntil(this.ngUnsubscribe).subscribe(agencyObj => {
-
                       //filter agencies only with same country stay
                       this.agencyService.countryExistInAgency(networkCountry.location, agencyObj.id)
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(country => {
                           if (country) {
                             this.agencies.push(agencyObj);
-                            console.log(this.agencies, '1');
-                            console.log(country);
-                            this.countryAgencyMap.set(country.id, agencyObj.id);
+                            this.agencyObjMap.set(agencyObj.id, agencyObj)
+                            this.agencyCountryMap.set(agencyObj.id, country.id);
                           }
                         })
                     })
@@ -132,7 +138,6 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
   }
 
 
-
   confirmInvitation() {
     console.log("confirm invitation");
     if (!this.selectedAgencies || this.selectedAgencies.length == 0) {
@@ -141,20 +146,41 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
     }
     if (!this.leadAgencyId) {
       jQuery('#leadAgencySelection').modal('show');
-      //need to handle lead agency from upper level
+      console.log(this.networkModel)
+      if (this.agencies.filter(agency => {
+          return agency.id === this.networkModel.leadAgencyId
+        }).length != 0 && this.agencySelectionMap.get(this.networkModel.leadAgencyId)) {
+        this.leadAgencyId = this.networkModel.leadAgencyId
+      }
     } else {
       this.saveAgenciesAndLead();
     }
   }
 
+  emptyLead() {
+    this.leadAgencyId = null
+  }
+
   saveAgenciesAndLead() {
+    if (!this.leadAgencyId || this.leadAgencyId == undefined) {
+      this.alertMessage = new AlertMessageModel("Lead agency cannot be empty!")
+      return
+    }
     console.log("save agencies and lead agency");
-    this.networkService.updateAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.leadAgencyId, this.countryAgencyMap).then(() => {
+    console.log(this.leadAgencyId)
+    this.networkService.updateAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.leadAgencyId, this.agencyCountryMap, this.agencySelectionMap).then(() => {
       this.router.navigateByUrl("/network-country/network-country-agencies");
     }).catch(rej => {
       this.alertMessage = new AlertMessageModel(rej.message);
     });
 
+  }
+
+  checkHaveAvailableAgencies():boolean {
+    if (!this.existingAgencyIds) {
+      this.existingAgencyIds = []
+    }
+    return this.agencies.filter(agency => this.existingAgencyIds && this.existingAgencyIds.indexOf(agency.id) === -1).length === 0
   }
 
 }

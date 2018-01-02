@@ -11,10 +11,8 @@ import {Location} from "@angular/common";
 import {NetworkService} from "../../../services/network.service";
 import {SettingsService} from "../../../services/settings.service";
 import {ModuleSettingsModel} from "../../../model/module-settings.model";
-import {UUID} from "../../../utils/UUID";
 import {NetworkOfficeAdminModel} from "./network-office-admin.model";
 import {UserService} from "../../../services/user.service";
-import {first} from "rxjs/operator/first";
 import {NetworkCountryService} from "../../../services/network-country.service";
 
 @Component({
@@ -37,6 +35,7 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private networkOffice = new NetworkOfficeModel();
   private networkCountryUser = new ModelUserPublic("", "", undefined, "");
+  private oldEmail: string
   private networkCountryAdmin = new NetworkOfficeAdminModel();
   //logic info
   private uid: string;
@@ -49,6 +48,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
   private networkCountryId: string;
   private showLoader: boolean;
   private networkAdmin: any;
+  private oldNetworkCountryAdmin: any;
+  private oldUid: string
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -126,9 +127,18 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
         this.userService.getUser(networkOffice.adminId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(user => {
+            this.oldEmail = user.email;
+            this.oldUid = user.id
             this.networkCountryUser = user;
+            console.log("old email is: " + this.oldEmail)
             this.showLoader = false;
           });
+
+        this.networkService.getNetworkCountryAdminDetail(networkOffice.adminId)
+          .first()
+          .subscribe(admin => {
+            this.oldNetworkCountryAdmin = admin
+          })
 
       });
 
@@ -153,6 +163,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
         return;
       }
 
+      console.log("old email now is: " + this.oldEmail)
+      console.log("new email now is: " + this.networkCountryUser.email)
       this.userService.getUserByEmail(this.networkCountryUser.email)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((user: ModelUserPublic) => {
@@ -160,16 +172,20 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
           if (user) {
             this.existingUser = user;
           }
+          console.log("old email still: " + this.oldEmail)
           let data = this.isEditing ? this.updateNetworkOffice(user) : this.createNetworkOffice(user);
           console.log(data);
-
-          //actual database update
-          this.networkService.updateNetworkField(data).then(() => {
-            this.back();
-          }).catch(error => {
-            console.log(error.message);
-            this.alertMessage = new AlertMessageModel(error.message);
-          });
+          if (data) {
+            // actual database update
+            this.networkService.updateNetworkField(data).then(() => {
+              this.back();
+            }).catch(error => {
+              console.log(error.message);
+              this.alertMessage = new AlertMessageModel(error.message);
+            });
+          } else {
+            this.updateWithEmailChangeExistingUser(this.existingUser)
+          }
         });
     }
   }
@@ -213,9 +229,50 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     return data;
   }
 
-  //TODO UPDATE THIS METHOD WHEN DO EDITING
   private updateNetworkOffice(existingUser) {
     console.log("update");
+    if (this.oldEmail === this.networkCountryUser.email) {
+      console.log("update with no email change")
+      return this.updateWithNoEmailChange()
+    } else if (!existingUser) {
+      console.log("update with email changed and its new user!!")
+      return this.updateWithEmailChangeNewUser()
+    }
+
+  }
+
+  private updateWithEmailChangeNewUser() {
+    const keyNetworkCountry = this.networkCountryId;
+    const keyUser = this.networkService.generateKeyUserPublic();
+    this.networkOffice.adminId = keyUser;
+    let data = {};
+    data["/networkCountry/" + this.networkId + "/" + keyNetworkCountry] = this.networkOffice;
+    data["/userPublic/" + keyUser] = this.networkCountryUser;
+    // data["/administratorNetworkCountry/" + keyUser] = this.networkCountryAdmin;
+    data["/administratorNetworkCountry/" + keyUser + "/firstLogin"] = this.networkCountryAdmin.firstLogin ? this.networkCountryAdmin.firstLogin : false;
+    data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + this.networkId + "/" + keyNetworkCountry] = true;
+    data["/administratorNetworkCountry/" + keyUser + "/systemAdmin"] = this.networkAdmin.systemAdmin;
+    data["/group/network/" + this.networkId + "/networkallusersgroup/" + keyUser] = true;
+    data["/group/network/" + this.networkId + "/networkcountryadmins/" + keyUser] = true;
+
+    //delete previous admin checking
+    if (Object.keys(this.oldNetworkCountryAdmin.networkCountryIds).length === 1) {
+      if (Object.keys(this.oldNetworkCountryAdmin.networkCountryIds).map(key => {
+          return this.oldNetworkCountryAdmin.networkCountryIds[key]
+        }).length === 1) {
+        //delete whole admin node
+        data["/administratorNetworkCountry/" + this.oldUid] = null;
+        // data["/userPublic/" + this.oldUid] = null;
+      } else {
+        //delete network country id from list
+        data["/administratorNetworkCountry/" + this.oldUid + "/networkCountryIds/" + this.networkId + "/" + this.networkCountryId] = null
+      }
+    }
+
+    return data;
+  }
+
+  private updateWithNoEmailChange() {
     //generate all keys
     const keyNetworkCountry = this.networkCountryId;
     // const keyUser = existingUser ? existingUser.id : this.networkService.generateKeyUserPublic();
@@ -224,18 +281,10 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     //set network office data
     this.networkOffice.adminId = keyUser;
 
-    //set network office admin data
-    let networkCountryIds = {};
-    networkCountryIds[keyNetworkCountry] = true;
-    this.networkCountryAdmin.networkCountryIds = networkCountryIds;
-    this.networkCountryAdmin.networkId = this.networkId;
-
     //root update data
     let data = {};
     data["/networkCountry/" + this.networkId + "/" + keyNetworkCountry] = this.networkOffice;
     data["/userPublic/" + keyUser] = this.networkCountryUser;
-    // data["/networkCountryAdmin/" + keyUser] = this.networkCountryAdmin;
-    data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + keyNetworkCountry] = true;
 
     return data;
   }
@@ -244,4 +293,39 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
+  private updateWithEmailChangeExistingUser(existingUser) {
+    console.log("update with email change but user exist")
+    console.log(existingUser)
+    const keyNetworkCountry = this.networkCountryId;
+    const keyUser = existingUser.id;
+    this.networkOffice.adminId = keyUser;
+    let data = {};
+    data["/networkCountry/" + this.networkId + "/" + keyNetworkCountry] = this.networkOffice;
+    data["/administratorNetworkCountry/" + keyUser + "/firstLogin/"] = this.oldNetworkCountryAdmin.firstLogin ? this.oldNetworkCountryAdmin.firstLogin : false;
+    data["/administratorNetworkCountry/" + keyUser + "/systemAdmin/"] = this.oldNetworkCountryAdmin.systemAdmin;
+    data["/administratorNetworkCountry/" + keyUser + "/networkCountryIds/" + this.networkId + "/" + this.networkCountryId] = true;
+    data["/group/network/" + this.networkId + "/networkallusersgroup/" + keyUser] = true;
+    data["/group/network/" + this.networkId + "/networkcountryadmins/" + keyUser] = true;
+
+    //delete previous admin checking
+    if (Object.keys(this.oldNetworkCountryAdmin.networkCountryIds).length === 1) {
+      if (Object.keys(this.oldNetworkCountryAdmin.networkCountryIds).map(key => {
+          return this.oldNetworkCountryAdmin.networkCountryIds[key]
+        }).length === 1) {
+        //delete whole admin node
+        data["/administratorNetworkCountry/" + this.oldUid] = null;
+      } else {
+        //delete network country id from list
+        data["/administratorNetworkCountry/" + this.oldUid + "/networkCountryIds/" + this.networkId + "/" + this.networkCountryId] = null
+      }
+    }
+    console.log(data)
+
+    this.networkService.updateNetworkField(data).then(() => {
+      this.back();
+    }).catch(error => {
+      console.log(error.message);
+      this.alertMessage = new AlertMessageModel(error.message);
+    });
+  }
 }

@@ -1,7 +1,9 @@
-<ng-container *ngIf="!isViewing; else country">
-  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-    <app-network-country-header></app-network-country-header>
-    <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isViewingFromExternal">
+  <ng-container *ngIf="!isViewing; else country">
+    <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+      <app-network-country-header></app-network-country-header>
+      <app-network-country-menu></app-network-country-menu>
+    </ng-container>
   </ng-container>
 </ng-container>
 

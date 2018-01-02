@@ -8,29 +8,29 @@
         [routerLink]="networkViewValues ? ['/network-country/network-dashboard', networkViewValues] : ['/network-country/network-dashboard']">{{"GLOBAL.HOME"
         | translate}}</a>
     </li>
-    <li class="" [hidden]="permRiskMonitoring" routerLinkActive="active">
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.RiskMonitoring]?.status" routerLinkActive="active">
       <a [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring', networkViewValues] : ['/network-country/network-risk-monitoring']">{{"RISK_MONITORING_TEXT" | translate}}</a>
     </li>
 
-    <li class="" routerLinkActive="active">
+    <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status &&  !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" routerLinkActive="active">
       <div class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
            aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
         <div class="dropdown-menu">
-          <a  [hidden]="permMinimumPreparedness" class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-mpa', networkViewValues] : ['/network-country/network-country-mpa']">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA"
+          <a  [hidden]="networkModules && !networkModules[NETWORK_MODULE.MinimumPreparednessActions]?.status" class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-mpa', networkViewValues] : ['/network-country/network-country-mpa']">{{"GLOBAL.PREPAREDNESS_LEVEL.MPA"
             | translate}}</a>
-          <a  [hidden]="permAdvancedPreparedness" class="dropdown-item"
+          <a  [hidden]="networkModules && !networkModules[NETWORK_MODULE.AdvancedPreparednessActions]?.status" class="dropdown-item"
              [routerLink]="networkViewValues ? ['/network-country/network-country-apa', networkViewValues] : ['/network-country/network-country-apa']">{{"ADVANCED_PREPAREDNESS" | translate}}</a>
         </div>
       </div>
     </li>
 
-    <li class="" [hidden]="permResponsePlanning" routerLinkActive="active">
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.ResponsePlanning]?.status" routerLinkActive="active">
       <a
         [routerLink]="networkViewValues ? ['/network-country/network-plans', networkViewValues] : ['/network-country/network-plans']">
         {{"HEADERS.PLANS" | translate}}</a>
     </li>
-    <li class="" [hidden]="permCountryOffice" routerLinkActive="active">
+    <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.CountryOfficeProfile]?.status" routerLinkActive="active">
       <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE"
         | translate}}</a>
       <div class="dropdown-menu">
@@ -62,7 +62,7 @@
       <!--<a routerLink="/network-country/network-country-office-profile-programme">{{"NETWORK_OFFICE" | translate}}</a>-->
     </li>
     <li class="" routerLinkActive="active">
-      <a routerLink="/network-country/network-global-map">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
+      <a [routerLink]="networkViewValues ? ['/network-country/network-global-map', networkViewValues] : '/network-country/network-global-map'">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
     </li>
     <li *ngIf="!isViewing" class="" routerLinkActive="active">
       <div class="dropdown">

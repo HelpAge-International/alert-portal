@@ -119,22 +119,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.countryId = countryId;
       this.systemId = systemId;
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
-      //get networks for country
-      // this.networkService.getNetworksForCountry(this.agencyId, this.countryId)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(networkCountryId => {
-      //     if (networkCountryId) {
-      //       this.networkCountryId = networkCountryId[0];
-      //       console.log(this.networkCountryId)
-      //     }
 
-      // this.networkService.getNetworksForAgency(this.agencyId)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(networkIds => {
-      //     if (networkIds) {
-      //       this.networkId = networkIds[0];
-      //       console.log(this.networkId);
-      //     }
+      //get networks for country
       this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(networkMap => {
@@ -154,7 +140,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
             this.loadData();
           }
-
         })
 
       this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
@@ -176,15 +161,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
             this.loadData();
           }
-
         })
-
-
-      // })
-
-
-      // });
-
 
       PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
         this.moduleSettings = isEnabled;
@@ -447,7 +424,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
         })
       }
-      if(this.localNetworks){
+      if (this.localNetworks) {
         this.localNetworks.forEach(networkId => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
@@ -467,7 +444,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
         })
       }
-      if(this.localNetworks){
+      if (this.localNetworks) {
         this.localNetworks.forEach(networkId => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
@@ -561,6 +538,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.localNetworks) {
         this.alertsLocalNetwork = Observable.from([])
         this.localNetworks.forEach((networkId) => {
+          console.log("local network id: " + networkId)
           this.alertsLocalNetwork = Observable.merge(this.alertsLocalNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
         })
       }
@@ -607,17 +585,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.hazards = [];
         let tempList = [];
         list.forEach(hazard => {
-          if (hazard.hazardScenario == -1) {
-            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
-              .first()
-              .subscribe(nameObj => {
-                hazard.otherName = nameObj.name;
-                this.hazards.push(hazard);
-              });
-          } else {
-            this.hazards.push(hazard);
+          if (hazard.isActive) {
+            if (hazard.hazardScenario == -1) {
+              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
+                .first()
+                .subscribe(nameObj => {
+                  hazard.otherName = nameObj.name;
+                  this.hazards.push(hazard);
+                });
+            } else {
+              this.hazards.push(hazard);
+            }
+            tempList.push(hazard);
           }
-          tempList.push(hazard);
         });
         return Observable.from(tempList)
       })
@@ -684,7 +664,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlertNetwork(alert) {
-    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(()=>{
+    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(() => {
       this.networkService.mapAgencyCountryForNetworkCountry(alert.networkId, alert.networkCountryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
@@ -698,7 +678,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   approveRedAlertLocalNetwork(alert) {
-    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(()=>{
+    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(() => {
       this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
@@ -719,7 +699,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   rejectRedRequestNetwork(alert) {
-    this.actionService.rejectRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId);
+    this.actionService.rejectRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId ? alert.networkcountryId : alert.networkId);
   }
 
   planReview(plan, isLocal) {
@@ -787,6 +767,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
 
 
+
           this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
           this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
           this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
@@ -831,7 +812,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.actionService.getActionsDueInWeek(networkId, this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(actions => {
-
+          console.log('in subscribe for actions');
           // Display APA only if there is a red alert
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
 

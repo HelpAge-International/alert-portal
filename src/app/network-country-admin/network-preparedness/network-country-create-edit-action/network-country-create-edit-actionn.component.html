@@ -70,9 +70,7 @@
         <strong>{{"PREPAREDNESS.ACTION_SELECT_TEXT" | translate}}</strong>
         <div class="row no-gutters" *ngFor="let aLevel of actionLevelList">
           <label for="level_{{aLevel}}" class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
-            <input [disabled]="editDisableLoading || action.type != actionType.custom
-                              || (((aLevel == actionLevelEnum.MPA && (!moduleAccess.minimumPreparedness))
-                              || (aLevel == actionLevelEnum.APA && (!moduleAccess.advancedPreparedness))) && userType != userTypes.CountryAdmin)"
+            <input [disabled]="editDisableLoading || action.type != actionType.custom"
                    type="radio"
                    #pActionLevel="ngModel" required id="level_{{aLevel}}" [value]="aLevel"
                    (change)="removeFilterLockLevel()"
@@ -138,9 +136,9 @@
           </select>
           <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
           <!--<select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"-->
-                  <!--*ngIf="!userType || userType == userTypes.Ert || userType == userTypes.PartnerUser ">-->
-            <!--<option selected value="">{{"UNASSIGNED" | translate}}</option>-->
-            <!--<option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>-->
+          <!--*ngIf="!userType || userType == userTypes.Ert || userType == userTypes.PartnerUser ">-->
+          <!--<option selected value="">{{"UNASSIGNED" | translate}}</option>-->
+          <!--<option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>-->
           <!--</select>-->
           <!--<select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert || userType == userTypes.PartnerUser" [disabled]="((action.type == actionType.mandated && action.level == actionLevelEnum.MPA))-->
           <!--|| ((action.type == actionType.chs && action.level == actionLevelEnum.MPA))-->

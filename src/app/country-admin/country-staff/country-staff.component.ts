@@ -122,11 +122,13 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
                   this.partnerPublicUser[partner.id] = partnerPublicUser;
                 });
 
-              this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(partnerOrganisation => {
-                  this.partnerOrganisations[partner.id] = partnerOrganisation
-                });
+              if (partner.partnerOrganisationId) {
+                this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(partnerOrganisation => {
+                    this.partnerOrganisations[partner.id] = partnerOrganisation
+                  });
+              }
             });
         });
         // this.partnersList = partners;

@@ -6,6 +6,7 @@ import {Constants} from "../../utils/Constants";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {UserType} from "../../utils/Enums";
 import {Location} from "@angular/common";
+import {NetworkService} from "../../services/network.service";
 
 @Component({
   selector: 'app-view-plan',
@@ -25,6 +26,11 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
 
   private userType: UserType;
   private UserType = UserType;
+  private isViewingFromExternal: boolean;
+  private networkId: string;
+  private networkCountryId: string;
+  private systemId: string;
+  private uid: string;
 
   @Input() isLocalAgency: Boolean;
 
@@ -32,6 +38,7 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
               private router: Router,
               private pageControl: PageControlService,
               private location: Location,
+              private networkService: NetworkService,
               private userService: UserService) {
   }
 
@@ -59,15 +66,33 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
           if (params["agencyOverview"]) {
             this.agencyOverview = params["agencyOverview"];
           }
-          this.initData(this.countryId, this.agencyId);
+          if (params["isViewingFromExternal"]) {
+            this.isViewingFromExternal = params["isViewingFromExternal"];
+          }
+          if (params["networkId"]) {
+            this.networkId = params["networkId"];
+          }
+          if (params["networkCountryId"]) {
+            this.networkCountryId = params["networkCountryId"];
+          }
+          if (params["systemId"]) {
+            this.systemId = params["systemId"];
+          }
+          if (params["uid"]) {
+            this.uid = params["uid"];
+          }
+          if (this.networkId && this.networkCountryId) {
+            this.initNetworkData(this.networkCountryId, this.networkId)
+          } else {
+            this.initData(this.countryId, this.agencyId);
+          }
         });
-
     });
-
   }
 
   private initData(countryId, agencyId) {
-    if(this.isLocalAgency){
+
+    if (this.isLocalAgency) {
       this.userService.getAgencyDetail(agencyId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agency => {
@@ -83,6 +108,16 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
 
   }
 
+  private initNetworkData(networkCountryId, networkId) {
+    this.networkService.getNetworkCountry(networkId, networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkCountry => {
+        this.countryName = Constants.COUNTRIES[networkCountry.location]
+      })
+  }
+
+
+
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -96,6 +131,35 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
       "from": "plan"
     };
 
+    if (this.canCopy) {
+      headers["canCopy"] = this.canCopy;
+      if (this.agencyOverview) {
+        headers["agencyOverview"] = this.agencyOverview;
+      }
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/dashboard/dashboard-overview", headers] : ["/dashboard/dashboard-overview", headers]);
+    } else {
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/director/director-overview", headers] : ["/director/director-overview", headers]);
+    }
+  }
+
+  backToExternalViewingPlan() {
+    console.log("back to external view")
+    let headers = {
+      "countryId": this.countryId,
+      "isViewing": this.isViewing,
+      "isViewingFromExternal": this.isViewingFromExternal,
+      "agencyId": this.agencyId,
+      "systemId": this.systemId,
+      "userType": this.userType,
+      "uid": this.uid,
+      "from": "plan"
+    };
+    if (this.networkId) {
+      headers["networkId"] = this.networkId
+    }
+    if (this.networkCountryId) {
+      headers["networkCountryId"] = this.networkCountryId
+    }
     if (this.canCopy) {
       headers["canCopy"] = this.canCopy;
       if (this.agencyOverview) {

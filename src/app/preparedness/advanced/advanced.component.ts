@@ -954,6 +954,16 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         this.firebase.storage().ref().child('documents/' + this.countryId + "/" + x.documentId + "/" + x.fileName).delete();
       }
     }
+
+    let actionIndex = this.prepActionService.actions.map(action => {
+      return action.id
+    }).indexOf(action.id);
+    if (actionIndex != -1) {
+      this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {
+        return doc.documentId != docId
+      })
+      this.closeDocumentsModal("documents_popover_" + action.id)
+    }
   }
 
   protected deleteDocumentNetwork(action: PreparednessAction, docId: string) {

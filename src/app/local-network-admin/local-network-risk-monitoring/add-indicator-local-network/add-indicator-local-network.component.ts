@@ -792,32 +792,34 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
             res(false);
           }
         });
-        this.indicatorData.trigger.forEach((val, key) => {
-          let modelTrigger = new IndicatorTriggerModel();
-          modelTrigger.mapFromObject(val);
-          this._validateIndicatorTrigger(modelTrigger);
-          if (this.alertMessage) {
-            res(false);
-          }
-        });
 
         if (!this.alertMessage) {
-          if (this.indicatorData.geoLocation == 1) {
-            this.indicatorData.affectedLocation.forEach((val, key) => {
-              let modelArea = new OperationAreaModel();
-              modelArea.mapFromObject(val);
-              this._validateOperationArea(modelArea);
-              if (this.alertMessage) {
-                res(false);
-              }
-            });
+          this.indicatorData.trigger.forEach((val, key) => {
+            let modelTrigger = new IndicatorTriggerModel();
+            modelTrigger.mapFromObject(val);
+            this._validateIndicatorTrigger(modelTrigger);
+            if (this.alertMessage) {
+              res(false);
+            }
+          });
+
+          if (!this.alertMessage) {
+            if (this.indicatorData.geoLocation == 1) {
+              this.indicatorData.affectedLocation.forEach((val, key) => {
+                let modelArea = new OperationAreaModel();
+                modelArea.mapFromObject(val);
+                this._validateOperationArea(modelArea);
+                if (this.alertMessage) {
+                  res(false);
+                }
+              });
+            }
+          }
+
+          if (!this.alertMessage) {
+            res(true);
           }
         }
-
-        if (!this.alertMessage) {
-          res(true);
-        }
-
       }
     });
     return promise;

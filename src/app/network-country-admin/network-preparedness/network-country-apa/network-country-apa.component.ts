@@ -2,8 +2,7 @@ import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
 import {
-  CountryPermissionsMatrix,
-  NetworkModulesEnabledModel,
+  CountryPermissionsMatrix, NetworkModulesEnabledModel,
   PageControlService
 } from "../../../services/pagecontrol.service";
 import {AngularFire, FirebaseApp} from "angularfire2";
@@ -13,23 +12,11 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {WindowRefService} from "../../../services/window-ref.service";
 import {
-  ActionLevel,
-  ActionStatus,
-  ActionType,
-  AlertLevels,
-  AlertMessageType,
-  Currency,
-  DocumentType,
-  FileExtensionsEnding,
-  HazardScenario,
-  Privacy,
-  SizeType,
-  UserType
+  ActionLevel, ActionStatus, ActionType, AlertLevels, AlertMessageType, Currency, DocumentType,
+  FileExtensionsEnding, HazardScenario, Privacy, SizeType, UserType
 } from "../../../utils/Enums";
 import {
-  PrepActionService,
-  PreparednessAction,
-  PreparednessNotes,
+  PrepActionService, PreparednessAction, PreparednessNotes,
   PreparednessUser
 } from "../../../services/prepactions.service";
 import {AlertMessageModel} from "../../../model/alert-message.model";
@@ -136,6 +123,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   private privacy: NetworkModulesEnabledModel;
+  private isViewingFromExternal: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -154,17 +142,32 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
-        this.isViewing = params["isViewing"];
-        this.systemAdminId = params["systemId"];
-        this.agencyId = params["agencyId"];
-        this.countryId = params["countryId"];
-        this.userType = params["userType"];
-        this.networkId = params["networkId"];
-        if (!this.isLocalNetworkAdmin) {
-          this.networkCountryId = params["networkCountryId"];
-        }
-        this.uid = params["uid"];
+      if (params['isViewing']) {
+        this.isViewing = params['isViewing'];
+      }
+      if (params['systemId']) {
+        this.systemAdminId = params['systemId'];
+      }
+      if (params['agencyId']) {
+        this.agencyId = params['agencyId'];
+      }
+      if (params['countryId']) {
+        this.countryId = params['countryId'];
+      }
+      if (params['userType']) {
+        this.userType = params['userType'];
+      }
+      if (params['networkId']) {
+        this.networkId = params['networkId'];
+      }
+      if (!this.isLocalNetworkAdmin) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      if (params['uid']) {
+        this.uid = params['uid'];
+      }
+      if (params["isViewingFromExternal"]) {
+        this.isViewingFromExternal = params["isViewingFromExternal"]
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initViewLocalNetworkAccess() : this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
@@ -429,6 +432,11 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
     return this.prepActionService.findAction(id);
   }
 
+  protected copyAction(action) {
+    this.storageService.set('selectedAction', action);
+    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+  }
+
   /**
    * Assigning an action to someone
    */
@@ -654,7 +662,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
 
   // (Dan) - this new function is for the undo completed APA
-  protected undoCompleteAction(action: PreparednessAction){
+  protected undoCompleteAction(action: PreparednessAction) {
 
     console.log(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id, 'in undo');
     //Call to firebase to update values to revert back to *In Progress*

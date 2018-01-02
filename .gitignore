@@ -42,6 +42,6 @@ testem.log
 Thumbs.db
 alert-portal.iml
 
-# extras
-/cors
+# extra
 /documents
+/cors

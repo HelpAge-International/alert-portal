@@ -225,7 +225,7 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
+                          {{"DUE_ON" | translate}}<strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
                           ''yy")
                           : '-'}}</strong>
                         </div>
@@ -569,8 +569,7 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
-                          ''yy")
+                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM ''yy")
                           : '-'}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
@@ -616,8 +615,7 @@
                                                "></i>
                                         </span>
                               {{ACTION_STATUS[
-                              action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt
-                              +
+                              action.asignee != '' && action.asignee != null && !action.isComplete && (action.updatedAt +
                               action.computedClockSetting > getNow()) ? 1 :
                               ((action.asignee != '' && action.asignee != null && action.isComplete &&
                               (action.isCompleteAt + action.computedClockSetting > getNow())) ? 2 : 0)] | translate}}
@@ -2482,8 +2480,7 @@
                                   </div>
                                   <div class="row align-items-center">
                                     <div class="col-6 text-bold Small-spaced">
-                                      <p><span>{{"BY" | translate}}:</span> {{CURRENT_USERS.get(note.uploadedBy) != null
-                                        ?
+                                      <p><span>{{"BY" | translate}}:</span> {{CURRENT_USERS.get(note.uploadedBy) != null ?
                                         CURRENT_USERS.get(note.uploadedBy).firstName + ' ' +
                                         CURRENT_USERS.get(note.uploadedBy).lastName : ("UNASSIGNED" | translate)}}</p>
                                     </div>
@@ -2508,8 +2505,7 @@
                               <a *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || permissionsAreEnabled.notes.New || (action.noteId != null && action.noteId != '')"
                                  href="javascript:void(0)" class="btn btn-primary btn-block"
-                                 (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE"
-                                |
+                                 (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                                 translate) :
                                 ("ADD_NOTE" | translate)}}</a>
                               <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
