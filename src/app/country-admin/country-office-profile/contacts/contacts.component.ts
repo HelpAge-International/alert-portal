@@ -75,6 +75,7 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
 
       this.uid = user.uid;
       this.userType = userType;
+      this.agencyId = agencyId;
 
         this._agencyService.getAgency(this.agencyId)
           .map(agency => {
@@ -83,31 +84,25 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
           .subscribe(agency => {
             this.agency = agency;
 
-            this._agencyService.getCountryOffice(this.countryId, this.agencyId)
-              .map(countryOffice => {
                 let countryOfficeAddress = new CountryOfficeAddressModel();
-                countryOfficeAddress.mapFromObject(countryOffice);
+                countryOfficeAddress.mapFromObject(agency);
 
-                return countryOfficeAddress;
-              })
-              .subscribe(countryOfficeAddress => {
                 this.countryOfficeAddress = countryOfficeAddress;
               });
-            this._contactService.getPointsOfContact(this.countryId)
+            this._contactService.getPointsOfContactLocalAgency(this.agencyId)
               .subscribe(pointsOfContact => {
                 this.pointsOfContact = pointsOfContact;
                 this.pointsOfContact.forEach(pointOfContact => {
                   this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
                     this.userPublicDetails[pointOfContact.staffMember] = user;
                   });
-                  this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
+                  this._userService.getStaff(this.agencyId, pointOfContact.staffMember).subscribe(staff => {
                     this.staffList[pointOfContact.staffMember] = staff;
                   });
                 });
               });
           });
 
-    });
   }
 
   private initCountryOffice(){
@@ -264,15 +259,28 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   }
 
   editOfficeDetails() {
-    this.router.navigateByUrl('/country-admin/country-office-profile/contacts/edit-office-details');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/profile/contacts/edit-office-details');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-office-profile/contacts/edit-office-details');
+    }
   }
 
   addEditPointOfContact(pointOfContactId?: string) {
-    if (pointOfContactId) {
-      this.router.navigate(['/country-admin/country-office-profile/contacts/add-edit-point-of-contact',
-        {id: pointOfContactId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/contacts/add-edit-point-of-contact');
+    if(this.isLocalAgency){
+      if (pointOfContactId) {
+        this.router.navigate(['/local-agency/profile/contacts/add-edit-point-of-contact',
+          {id: pointOfContactId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/contacts/add-edit-point-of-contact');
+      }
+    }else{
+      if (pointOfContactId) {
+        this.router.navigate(['/country-admin/country-office-profile/contacts/add-edit-point-of-contact',
+          {id: pointOfContactId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/contacts/add-edit-point-of-contact');
+      }
     }
   }
 }

@@ -24,12 +24,20 @@
       <app-local-agency-profile-menu></app-local-agency-profile-menu>
     </ng-container>
 
-    <div class="Sub-header-title__wrap">
+    <div *ngIf="!isLocalAgency" class="Sub-header-title__wrap">
       <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
       <button *ngIf="countryPermissionsMatrix.other.DownloadDocuments" type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
               [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
       </button>
     </div>
+
+    <div *ngIf="isLocalAgency" class="Sub-header-title__wrap">
+      <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
+              [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
+      </button>
+    </div>
+
     <div class="row align-items-center Filter-form System-admin--form-wrap">
       <div class="col-lg-1 col-md-1">
         {{ 'GLOBAL.FILTER' | translate }}
@@ -79,7 +87,8 @@
               </label>
             </div>
             <div class="col-sm-11">
-              <h2>{{COUNTRIES[country.location] | translate}}</h2>
+              <h2 *ngIf="!isLocalAgency">{{COUNTRIES[country.location] | translate}}</h2>
+              <h2 *ngIf="isLocalAgency">{{COUNTRIES[country.country] | translate}}</h2>
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all"
                  *ngIf="country.hasDocs">{{ 'GLOBAL.HIDE_ADD' | translate }}</a>
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all"
@@ -94,7 +103,7 @@
             <div class="col-lg-3 col-md-3">{{ 'GLOBAL.TITLE' | translate }}</div>
             <div class="col-lg-2 col-md-2">{{ 'GLOBAL.NAME' | translate }}</div>
             <div class="col-lg-1 col-md-1">{{ 'GLOBAL.SIZE' | translate }}</div>
-            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS2.UPLOADED_BY' | translate }}</div>
+            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.UPLOADED_BY' | translate }}</div>
             <div class="col-lg-1 col-md-2">{{ 'GLOBAL.DATE' | translate }}</div>
           </div>
 

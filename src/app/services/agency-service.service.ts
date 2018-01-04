@@ -167,6 +167,14 @@ export class AgencyService {
     return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId).set(countryOfficeAddress);
   }
 
+  public saveLocalAgencyAddress(agencyId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
+    if (!agencyId || !countryOfficeAddress) {
+      return Promise.reject('Missing agencyId or countryOfficeAddress');
+    }
+
+    return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId).set(countryOfficeAddress);
+  }
+
   public getPrivacySettingForAgency(agencyId): Observable<any> {
     return this.af.database.object(Constants.APP_STATUS + "/module/" + agencyId, {preserveSnapshot: true})
       .map(snap => {

@@ -235,7 +235,7 @@
             {{ 'EDIT' | translate }}
           </button>
           <button *ngIf="isLocalAgency" class="btn btn-outline-primary text-uppercase"
-                  (click)="addEditStockCapacity(STOCK_TYPE.Agency, stockCapacity.id)">
+                  (click)="addEditStockCapacity(STOCK_TYPE.AgencyExternal, stockCapacity.id)">
             {{ 'EDIT' | translate }}
           </button>
         </div>
@@ -343,7 +343,7 @@
     <ng-container *ngIf="isLocalAgency">
       <button class="btn btn-outline-primary text-uppercase"
               *ngIf="canEdit && !isViewing"
-              (click)="addEditStockCapacity(STOCK_TYPE.Agency)">{{ 'GLOBAL.ADD' | translate }}
+              (click)="addEditStockCapacity(STOCK_TYPE.AgencyExternal)">{{ 'GLOBAL.ADD' | translate }}
       </button>
     </ng-container>
 

@@ -32,7 +32,7 @@ export class PartnerOrganisationService {
   getLocalAgencyPartnerOrganisations(agencyId: string): Observable<PartnerOrganisationModel[]> {
     let partnerOrganisationsList: PartnerOrganisationModel[] = [];
     const partnerOrganisationSubscription =
-      this.af.database.list(Constants.APP_STATUS + '/localAgency/' + agencyId + '/partnerOrganisations')
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partnerOrganisations')
         .flatMap(partnerOrganisations => {
           return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
         })
@@ -51,6 +51,26 @@ export class PartnerOrganisationService {
     let partnerOrganisationsList: PartnerOrganisationModel[] = [];
     const partnerOrganisationSubscription =
       this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
+        .flatMap(partnerOrganisations => {
+          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+        })
+        .flatMap( organisationId => {
+          return this.getPartnerOrganisation(organisationId as string);
+        })
+        .map( organisation => {
+          if (organisation.isApproved) {
+            partnerOrganisationsList.push(organisation);
+          }
+          return partnerOrganisationsList;
+        })
+
+    return partnerOrganisationSubscription;
+  }
+
+  getApprovedLocalAgencyPartnerOrganisations(agencyId: string): Observable<PartnerOrganisationModel[]> {
+    let partnerOrganisationsList: PartnerOrganisationModel[] = [];
+    const partnerOrganisationSubscription =
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partnerOrganisations')
         .flatMap(partnerOrganisations => {
           return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
         })
@@ -103,6 +123,8 @@ export class PartnerOrganisationService {
     return partnerOrganisationSubscription;
   }
 
+
+
   savePartnerOrganisation(agencyId: string, countryId: string, partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
     if(!agencyId || !countryId)
     {
@@ -144,7 +166,7 @@ export class PartnerOrganisationService {
       const partnerOrganisationData = {};
 
       // Add partner organisation to the countryOffice
-      partnerOrganisationData['/localAgency/' + agencyId  + '/partnerOrganisations/' + partnerOrganisation.id] = true;
+      partnerOrganisationData['/agency/' + agencyId  + '/partnerOrganisations/' + partnerOrganisation.id] = true;
 
       partnerOrganisationData['/partnerOrganisation/' + partnerOrganisation.id] = partnerOrganisation;
 

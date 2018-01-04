@@ -1523,6 +1523,7 @@ export enum StockType {
   Country = 0,
   External = 1,
   Network = 2,
-  Agency = 3
+  Agency = 3,
+  AgencyExternal = 4
 }
 

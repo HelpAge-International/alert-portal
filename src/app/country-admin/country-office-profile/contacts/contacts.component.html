@@ -24,9 +24,24 @@
       <app-local-agency-profile-menu></app-local-agency-profile-menu>
     </ng-container>
 
-    <div class="Header-title__wrap Spaced row">
+    <div *ngIf="!isLocalAgency" class="Header-title__wrap Spaced row">
       <h2 class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT' | translate }}</h2>
       <div *ngIf="!isViewing && countryPermissionsMatrix.countryContacts.Edit" class="col-sm-8 Right-aligned">
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && !isEdit"
+                (click)="editPointsOfContact()">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.GO_BACK_TITLE' | translate }}
+        </button>
+
+        <button type="button" class="btn btn-outline-primary text-uppercase"
+                *ngIf="canEdit && isEdit"
+                (click)="viewPointsOfContact()">{{ 'PERMISSIONS.VIEW_CONTACTS' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="isLocalAgency" class="Header-title__wrap Spaced row">
+      <h2 class="col-sm-4">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.TITLE_TEXT' | translate }}</h2>
+      <div class="col-sm-8 Right-aligned">
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="canEdit && !isEdit"
                 (click)="editPointsOfContact()">{{ 'COUNTRY_ADMIN.PROFILE.CONTACTS.GO_BACK_TITLE' | translate }}
@@ -123,7 +138,11 @@
 
 
     <button class="btn btn-outline-primary text-uppercase"
-            *ngIf="canEdit && !isViewing && countryPermissionsMatrix.countryContacts.New"
+            *ngIf="!isLocalAgency && (canEdit && !isViewing && countryPermissionsMatrix.countryContacts.New)"
+            (click)="addEditPointOfContact()">{{ 'GLOBAL.ADD' | translate }}
+    </button>
+
+    <button *ngIf="isLocalAgency" class="btn btn-outline-primary text-uppercase"
             (click)="addEditPointOfContact()">{{ 'GLOBAL.ADD' | translate }}
     </button>
 

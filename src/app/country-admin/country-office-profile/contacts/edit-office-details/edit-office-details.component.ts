@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Constants } from '../../../../utils/Constants';
 import { AlertMessageType, StockType } from '../../../../utils/Enums';
 import { RxHelper } from '../../../../utils/RxHelper';
@@ -33,6 +33,8 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  @Input() isLocalAgency: boolean;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _agencyService: AgencyService,
               private router: Router) {
@@ -44,6 +46,32 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
   }
 
   ngOnInit() {
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+  }
+
+  initLocalAgency(){
+    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+      this.uid = user.uid;
+
+      this._userService.getLocalAgencyAdminUser(this.uid).subscribe(countryAdminUser => {
+
+        this.agencyId = countryAdminUser.agencyId;
+
+        this._agencyService.getAgency(this.agencyId)
+          .map(agency => {
+            let countryOfficeAddress = new CountryOfficeAddressModel();
+            countryOfficeAddress.mapFromObject(agency);
+
+            return countryOfficeAddress;
+          })
+          .subscribe(countryOfficeAddress => {
+            this.countryOfficeAddress = countryOfficeAddress;
+          })
+      });
+    })
+  }
+
+  initCountryOffice(){
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
 
@@ -52,15 +80,15 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
         this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
 
         this._agencyService.getCountryOffice(this.countryId, this.agencyId)
-              .map(countryOffice => {
-                let countryOfficeAddress = new CountryOfficeAddressModel();
-                countryOfficeAddress.mapFromObject(countryOffice);
+          .map(countryOffice => {
+            let countryOfficeAddress = new CountryOfficeAddressModel();
+            countryOfficeAddress.mapFromObject(countryOffice);
 
-                return countryOfficeAddress;
-              })
-              .subscribe(countryOfficeAddress => {
-                this.countryOfficeAddress = countryOfficeAddress;
-              })
+            return countryOfficeAddress;
+          })
+          .subscribe(countryOfficeAddress => {
+            this.countryOfficeAddress = countryOfficeAddress;
+          })
       });
     })
   }
@@ -72,8 +100,9 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
   }
 
   submit() {
-      this._agencyService.saveCountryOfficeAddress(this.agencyId, this.countryId, this.countryOfficeAddress)
-            .then(() => {
+      if(this.isLocalAgency){
+        this._agencyService.saveLocalAgencyAddress(this.agencyId, this.countryOfficeAddress)
+          .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_OFFICE_DETAILS', AlertMessageType.Success);
               setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
             },
@@ -85,10 +114,29 @@ export class CountryOfficeEditOfficeDetailsComponent implements OnInit, OnDestro
                 this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
               }
             });
+      }else{
+        this._agencyService.saveCountryOfficeAddress(this.agencyId, this.countryId, this.countryOfficeAddress)
+          .then(() => {
+              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_OFFICE_DETAILS', AlertMessageType.Success);
+              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+            },
+            err =>
+            {
+              if(err instanceof DisplayError) {
+                this.alertMessage = new AlertMessageModel(err.message);
+              }else{
+                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+              }
+            });
+      }
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-office-profile/contacts');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/profile/contacts');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-office-profile/contacts');
+    }
   }
 
 }

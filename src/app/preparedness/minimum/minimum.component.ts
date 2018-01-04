@@ -833,43 +833,83 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       uploadedBy: this.uid
     };
 
-    this.af.database.list(Constants.APP_STATUS + '/document/' + this.countryId).push(document)
-      .then(_ => {
-        let docKey = _.key;
-        let doc = {};
-        doc[docKey] = true;
+    if(this.isLocalAgency){
+      this.af.database.list(Constants.APP_STATUS + '/document/' + this.agencyId).push(document)
+        .then(_ => {
+          let docKey = _.key;
+          let doc = {};
+          doc[docKey] = true;
 
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents').update(doc)
-          .then(_ => {
-            new Promise((res, rej) => {
-              var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + docKey + '/' + file.name);
-              var uploadTask = storageRef.put(file);
-              uploadTask.on('state_changed', function (snapshot) {
-              }, function (error) {
-                rej(error);
-              }, function () {
-                var downloadURL = uploadTask.snapshot.downloadURL;
-                res(downloadURL);
-              });
-            })
-              .then(result => {
-                document.filePath = "" + result;
-
-                this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + docKey).set(document);
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id + '/documents').update(doc)
+            .then(_ => {
+              new Promise((res, rej) => {
+                var storageRef = this.firebase.storage().ref().child('documents/' + this.agencyId + '/' + docKey + '/' + file.name);
+                var uploadTask = storageRef.put(file);
+                uploadTask.on('state_changed', function (snapshot) {
+                }, function (error) {
+                  rej(error);
+                }, function () {
+                  var downloadURL = uploadTask.snapshot.downloadURL;
+                  res(downloadURL);
+                });
               })
-              .catch(err => {
-                console.log(err, 'You do not have access!');
-                this.purgeDocumentReference(action, docKey);
-              });
-          })
-          .catch(err => {
-            console.log(err, 'You do not have access!');
-            this.purgeDocumentReference(action, docKey);
-          });
-      })
-      .catch(err => {
-        console.log(err, 'You do not have access!');
-      });
+                .then(result => {
+                  document.filePath = "" + result;
+
+                  this.af.database.object(Constants.APP_STATUS + '/document/' + this.agencyId + '/' + docKey).set(document);
+                })
+                .catch(err => {
+                  console.log(err, 'You do not have access!');
+                  this.purgeDocumentReference(action, docKey);
+                });
+            })
+            .catch(err => {
+              console.log(err, 'You do not have access!');
+              this.purgeDocumentReference(action, docKey);
+            });
+        })
+        .catch(err => {
+          console.log(err, 'You do not have access!');
+        });
+    }else{
+      this.af.database.list(Constants.APP_STATUS + '/document/' + this.countryId).push(document)
+        .then(_ => {
+          let docKey = _.key;
+          let doc = {};
+          doc[docKey] = true;
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents').update(doc)
+            .then(_ => {
+              new Promise((res, rej) => {
+                var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + docKey + '/' + file.name);
+                var uploadTask = storageRef.put(file);
+                uploadTask.on('state_changed', function (snapshot) {
+                }, function (error) {
+                  rej(error);
+                }, function () {
+                  var downloadURL = uploadTask.snapshot.downloadURL;
+                  res(downloadURL);
+                });
+              })
+                .then(result => {
+                  document.filePath = "" + result;
+
+                  this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + docKey).set(document);
+                })
+                .catch(err => {
+                  console.log(err, 'You do not have access!');
+                  this.purgeDocumentReference(action, docKey);
+                });
+            })
+            .catch(err => {
+              console.log(err, 'You do not have access!');
+              this.purgeDocumentReference(action, docKey);
+            });
+        })
+        .catch(err => {
+          console.log(err, 'You do not have access!');
+        });
+    }
   }
 
   protected uploadFileNetwork(action: PreparednessAction, file) {

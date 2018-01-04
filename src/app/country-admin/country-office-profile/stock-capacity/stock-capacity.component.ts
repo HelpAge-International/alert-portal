@@ -79,10 +79,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           this.agencyId = agencyId
 
             this._stockService.getStockCapacitiesLocalAgency(this.agencyId).subscribe(stockCapacities => {
-              console.log('---------------')
-              console.log(stockCapacities)
               this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Agency);
-              this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+              this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.AgencyExternal);
 
               // Get notes
               stockCapacities.forEach(stockCapacity => {
@@ -140,15 +138,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
               })
             });
           } else {
-            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-            //   .takeUntil(this.ngUnsubscribe)
-            //   .subscribe(agencyId => {
-            //     this.agencyId = agencyId;
-            //
-            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-            //       .takeUntil(this.ngUnsubscribe)
-            //       .subscribe(countryId => {
-            //         this.countryId = countryId;
             this.countryId = countryId;
             this.agencyId = agencyId;
 
@@ -216,9 +205,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditStockCapacity(stockType: StockType, stockCapacityId?: string) {
+    console.log(stockType)
     if(this.isLocalAgency){
-      console.log('8**************8')
-      console.log(stockType)
       if (stockCapacityId) {
         this.router.navigate(['/local-agency/profile/stock-capacity/add-edit-stock-capacity',
           {id: stockCapacityId, stockType: stockType}], {skipLocationChange: true});
@@ -245,9 +233,13 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
   addNote(stockCapacity: StockCapacityModel, note: NoteModel) {
     if (this.validateNote(note)) {
-      const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-        .replace('{countryId}', this.countryId)
-        .replace('{id}', stockCapacity.id);
+      const stockCapacityNode = this.isLocalAgency ? Constants.STOCK_CAPACITY_NODE_LOCAL_AGENCY
+        .replace('{agencyId}', this.agencyId)
+        .replace('{id}', stockCapacity.id) :
+        Constants.STOCK_CAPACITY_NODE
+          .replace('{countryId}', this.countryId)
+          .replace('{id}', stockCapacity.id);
+
       this._noteService.saveNote(stockCapacityNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })

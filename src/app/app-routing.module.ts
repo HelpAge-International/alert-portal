@@ -240,6 +240,9 @@ import { LocalAgencyAddEditEquipmentComponent } from './local-agency/local-agenc
 import { LocalAgencyAddEditSurgeEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-surge-equipment/local-agency-add-edit-surge-equipment.component';
 import { LocalAgencyAddEditCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-add-edit-coordination/local-agency-add-edit-coordination.component';
 import { LocalAgencyAddEditStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
+import { LocalAgencyAddEditPointOfContactComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-add-edit-point-of-contact/local-agency-add-edit-point-of-contact.component';
+import { LocalAgencyEditOfficeDetailsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-edit-office-details/local-agency-edit-office-details.component';
+
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -632,8 +635,8 @@ const routes: Routes = [
   {path: 'local-agency/profile/stock-capacity', component: LocalAgencyStockCapacityComponent},
   {path: 'local-agency/profile/stock-capacity/add-edit-stock-capacity', component: LocalAgencyAddEditStockCapacityComponent},
   {path: 'local-agency/profile/contacts', component: LocalAgencyContactsComponent},
-  // {path: 'local-agency/profile/contacts/edit-office-details', component: LocalAgencyEditOfficeDetailsComponent},
-  // {path: 'local-agency/profile/contacts/add-edit-point-of-contact', component: LocalAgencyAddEditPointOfContactComponent},
+  {path: 'local-agency/profile/contacts/edit-office-details', component: LocalAgencyEditOfficeDetailsComponent},
+  {path: 'local-agency/profile/contacts/add-edit-point-of-contact', component: LocalAgencyAddEditPointOfContactComponent},
   {path: 'local-agency/profile/programme', component: LocalAgencyProgrammeComponent},
   {path: 'local-agency/profile/mapping-programme-add-edit', component: LocalAgencyAddEditMappingComponent},
   {path: 'local-agency/profile/mapping-programme-add-edit/:programmeId', component: LocalAgencyAddEditMappingComponent},

@@ -55,7 +55,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       this.agencyId = agencyId;
 
 
-      this.isLocalAgency ? this.initLocalAgency : this.initCountryOffice()
+      this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
 
     });
   }
@@ -68,6 +68,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
             this.stockCapacity = stockCapacity;
           });
       }
+
       if (params['stockType']) {
         this.stockCapacity.stockType = Number(params['stockType']);
       }
@@ -96,8 +97,6 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
   submit() {
     if(this.isLocalAgency){
-      console.log(';.;.;.;.;.;.;.;.;.;.;.;.;.;;;.;')
-      console.log(this.stockCapacity)
       this._stockService.saveStockCapacityLocalAgency(this.agencyId, this.stockCapacity)
         .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
