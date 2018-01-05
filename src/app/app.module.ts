@@ -331,6 +331,14 @@ import { LocalAgencyAddEditCoordinationComponent } from './local-agency/local-ag
 import { LocalAgencyAddEditStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
 import { LocalAgencyAddEditPointOfContactComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-add-edit-point-of-contact/local-agency-add-edit-point-of-contact.component';
 import { LocalAgencyEditOfficeDetailsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-edit-office-details/local-agency-edit-office-details.component';
+import { LocalAgencySettingsResponsePlanComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-response-plan/local-agency-settings-response-plan.component';
+import { LocalAgencyClockSettingsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-clock-settings/local-agency-clock-settings.component';
+import { LocalAgencyDepartmentComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-department/local-agency-department.component';
+import { LocalAgencyModulesComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-modules/local-agency-modules.component';
+import { LocalAgencyNotificationComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-notification/local-agency-notification.component';
+import { LocalAgencySettingsMenuComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-menu/local-agency-settings-menu.component';
+import { LocalAgencySkillsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-skills/local-agency-skills.component';
+import { LocalAgencySettingsDocumentsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-documents/local-agency-settings-documents.component';
 
 
 
@@ -668,6 +676,14 @@ const firebaseAuthConfig = {
     LocalAgencyAddEditStockCapacityComponent,
     LocalAgencyEditOfficeDetailsComponent,
     LocalAgencyAddEditPointOfContactComponent,
+    LocalAgencySettingsResponsePlanComponent,
+    LocalAgencyClockSettingsComponent,
+    LocalAgencyDepartmentComponent,
+    LocalAgencyModulesComponent,
+    LocalAgencyNotificationComponent,
+    LocalAgencySettingsMenuComponent,
+    LocalAgencySkillsComponent,
+    LocalAgencySettingsDocumentsComponent,
 
   ],
   imports: [

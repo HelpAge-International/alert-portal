@@ -242,7 +242,14 @@ import { LocalAgencyAddEditCoordinationComponent } from './local-agency/local-ag
 import { LocalAgencyAddEditStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
 import { LocalAgencyAddEditPointOfContactComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-add-edit-point-of-contact/local-agency-add-edit-point-of-contact.component';
 import { LocalAgencyEditOfficeDetailsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-edit-office-details/local-agency-edit-office-details.component';
-
+import { LocalAgencySettingsResponsePlanComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-response-plan/local-agency-settings-response-plan.component';
+import { LocalAgencyClockSettingsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-clock-settings/local-agency-clock-settings.component';
+import { LocalAgencyDepartmentComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-department/local-agency-department.component';
+import { LocalAgencyModulesComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-modules/local-agency-modules.component';
+import { LocalAgencyNotificationComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-notification/local-agency-notification.component';
+import { LocalAgencySettingsMenuComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-menu/local-agency-settings-menu.component';
+import { LocalAgencySkillsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-skills/local-agency-skills.component';
+import { LocalAgencySettingsDocumentsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-documents/local-agency-settings-documents.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -606,7 +613,6 @@ const routes: Routes = [
   {path: 'local-agency/agency-staff', component: LocalAgencyAdministrationStaffComponent},
   {path: 'local-agency/agency-staff/add-edit-staff', component: LocalAgencyAddEditStaffComponent},
   {path: 'local-agency/agency-staff/add-edit-partner', component: LocalAgencyAddEditPartnerComponent},
-  {path: 'local-agency/settings/departments', component: DepartmentComponent},
   {path: 'local-agency/preparedness/minimum/:agencyId', component: LocalAgencyMinimumPreparednessComponent},
   {path: 'local-agency/preparedness/minimum', component: LocalAgencyMinimumPreparednessComponent},
   {path: 'local-agency/preparedness/advanced/:agencyId', component: LocalAgencyAdevancedPreparednessComponent},
@@ -624,7 +630,7 @@ const routes: Routes = [
   {path: 'local-agency/response-plans/view-plan', component: LocalAgencyViewPlanComponent},
   {path: 'local-agency/response-plans/view-plan/:id', component: LocalAgencyViewPlanComponent},
   {path: 'local-agency/profile', component: LocalAgencyProfileComponent},
-
+ 
 
   {path: 'local-agency/profile/partners', component: LocalAgencyPartnersComponent},
   {path: 'local-agency/profile/equipment', component: LocalAgencyEquipmentComponent},
@@ -643,7 +649,14 @@ const routes: Routes = [
   {path: 'local-agency/profile/office-capacity', component: LocalAgencyOfficeCapacityComponent},
   {path: 'local-agency/profile/office-capacity/add-edit-surge-capacity', component: LocalAgencyAddEditSurgeCapacityComponent},
   {path: 'local-agency/profile/documents', component: LocalAgencyDocumentsComponent},
-
+  {path: 'local-agency/settings/departments', component: LocalAgencyDepartmentComponent},
+  {path: 'local-agency/settings/skills', component: LocalAgencySkillsComponent},
+  {path: 'local-agency/settings/modules', component: LocalAgencyModulesComponent},
+  {path: 'local-agency/settings/clock-settings', component: LocalAgencyClockSettingsComponent},
+  {path: 'local-agency/settings/response-plans', component: LocalAgencySettingsResponsePlanComponent},
+  {path: 'local-agency/settings/documents', component: LocalAgencyDocumentsComponent},
+  {path: 'local-agency/settings/notifications', component: LocalAgencyNotificationComponent},
+  {path: 'local-agency/settings', redirectTo: 'local-agency/settings/departments', pathMatch: 'full'},
   /**
    * Maintanace page
    * */

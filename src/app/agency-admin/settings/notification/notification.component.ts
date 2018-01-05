@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {NotificationSettingEvents, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -47,6 +47,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
   private agencyId: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService) {
   }

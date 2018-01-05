@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
@@ -36,6 +36,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   public listOfEnabledEnableButtons: Map<PermissionsAgency, boolean>;
   private disableMap: Map<PermissionsAgency, PermissionsAgency[]>;
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,

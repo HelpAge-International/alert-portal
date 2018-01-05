@@ -1,12 +1,19 @@
-<app-agency-admin-header></app-agency-admin-header>
-<app-agency-admin-menu></app-agency-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 <app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
                   (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <app-settings-menu></app-settings-menu>
+    <app-settings-menu *ngIf="!isLocalAgency"></app-settings-menu>
+    <app-local-agency-settings-menu *ngIf="isLocalAgency"></app-local-agency-settings-menu>
 
     <div class="Sub-header-title__wrap">
       <h2>{{"COUNTRY_ADMIN.SETTINGS.CLOCK_SETTINGS.TITLE_TEXT" | translate}}</h2>
