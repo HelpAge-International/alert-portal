@@ -986,4 +986,20 @@ export class NetworkService {
       })
   }
 
+  getLocalNetworksWithSameLocationsInOtherNetworks(location: number) {
+    return this.af.database.object(Constants.APP_STATUS + "/network")
+      .map(allNetworksObj => {
+        let localNetworks = []
+        if (allNetworksObj) {
+          let networkObjs = Object.keys(allNetworksObj).map(networkId => {
+            let tempObj = allNetworksObj[networkId]
+            tempObj["networkId"] = networkId
+            return tempObj
+          }).filter(network => network.countryCode == location)
+          localNetworks = networkObjs
+        }
+        return localNetworks
+      })
+  }
+
 }

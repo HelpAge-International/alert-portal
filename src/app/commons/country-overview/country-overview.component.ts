@@ -43,6 +43,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private privacyMapCountry = new Map<string, ModelAgencyPrivacy>();
   private privacyMapNetworkCountry = new Map<string, NetworkPrivacyModel>();
   private _networkCountryData: any;
+  private _localNetworks: any;
 
 
   @Input()
@@ -64,6 +65,13 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     this._globalNetworks = globalNetworks;
     this._loadData();
     // this._loadDataForNetworkCountries()
+  }
+
+  @Input()
+  set localNetworks(localNetworks: any) {
+    this._localNetworks = localNetworks;
+    this._loadData();
+    this._loadDataForLocalNetworks()
   }
 
   @Input()
@@ -112,6 +120,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   private countries = Constants.COUNTRIES;
   private filteredCountryOfficeData: any = [];
   private filteredNetworkCountryData: any = [];
+  private filteredLocalNetworkData: any = [];
   protected CountriesEnum = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
 
   private countResponsePlans: any = [];
@@ -271,6 +280,70 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
             })
 
           this.filteredNetworkCountryData = this._networkCountryData;
+        });
+      });
+    }
+  }
+
+  _loadDataForLocalNetworks() {
+
+    if (this._userId && this._userType && this._systemId && (this._agencyId || this._agencies) && this._localNetworks) {
+
+      this._getSystemThreshold('minThreshold').then((minTreshold: any) => {
+        this.minTreshold = minTreshold;
+
+        this._getSystemThreshold('advThreshold').then((advTreshold: any) => {
+          this.advTreshold = advTreshold;
+
+          console.log(this._localNetworks)
+
+          this.networkService.getLocalNetworkModelsForCountry(this.userAgencyId, this.userCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(localNetworks =>{
+
+            })
+
+          // this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe(networkCountryMap => {
+          //
+          //     let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+          //
+          //     this._networkCountryData.forEach(networkCountry => {
+          //
+          //       if (!networkCountry.globalNetworkId) {
+          //         networkCountry.globalNetworkId = this._agencyId;
+          //       }
+          //
+          //       let networkCountryId = networkCountry.id ? networkCountry.id : networkCountry.$key
+          //       let networkId = networkCountry.networkId ? networkCountry.networkId : networkCountry.globalNetworkId
+          //
+          //       if (networkCountryIds.includes(networkCountryId)) {
+          //         this.withinNetworkMap.set(networkCountryId, true)
+          //       } else {
+          //         this.withinNetworkMap.set(networkCountryId, false)
+          //       }
+          //
+          //       this.prepActionService[networkCountryId] = new PrepActionService();
+          //
+          //       this.hazardRedAlert[networkCountryId] = new Map<HazardScenario, boolean>();
+          //       this._getResponsePlansNetworkCountry(networkCountry);
+          //       this._getAlertLevelNetworkCountry(networkCountry).then(() => {
+          //         this.prepActionService[networkCountryId].initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this._userId, null, networkCountryId, networkId, this._systemId);
+          //         this.prepActionService[networkCountryId].addUpdater(() => {
+          //           this.recalculateAllNetworkCountry(networkCountry);
+          //         });
+          //       });
+          //
+          //       this.networkService.getPrivacySettingForNetworkCountry(networkCountryId)
+          //         .takeUntil(this.ngUnsubscribe)
+          //         .subscribe((privacy: NetworkPrivacyModel) => {
+          //           this.privacyMapNetworkCountry.set(networkCountryId, privacy);
+          //         });
+          //     });
+          //   })
+          //
+          // this.filteredNetworkCountryData = this._networkCountryData;
         });
       });
     }
