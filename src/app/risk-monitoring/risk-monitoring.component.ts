@@ -1267,6 +1267,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       console.log("Message creation unsuccessful" + error);
     });
 
+
   }
 
   saveLog(indicatorID: string, triggerSelected: number) {

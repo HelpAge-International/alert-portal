@@ -10,6 +10,9 @@ import {UserService} from "../../services/user.service";
 import {Observable} from "rxjs/Observable";
 import {NetworkActionModel} from "./network-create-edit-mpa/network-mpa.model";
 import {Constants} from "../../utils/Constants";
+import {AngularFire} from "angularfire2";
+import {isNumber} from "util";
+
 
 @Component({
   selector: 'app-network-mpa',
@@ -35,13 +38,17 @@ export class NetworkMpaComponent implements OnInit, OnDestroy {
   private initFilterSelection = ActionLevel.ALL;
   private actionIdToDelete: string;
 
+  /** Dan variable for bug fix ALT-2185 **/
+   private actionLevels: any[] = Constants.ACTION_LEVEL;
+
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
               private agencyService: AgencyService,
               private userService: UserService,
-              private router: Router) {
+              private router: Router,
+              private af: AngularFire) {
   }
 
   ngOnInit() {
@@ -58,6 +65,8 @@ export class NetworkMpaComponent implements OnInit, OnDestroy {
         })
     });
   }
+
+
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
