@@ -79,7 +79,6 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
         this.networkCountryData = []
-        this.globalNetworks = []
         networkMap.forEach((networkCountryId, networkId) => {
           this.networkService.getNetworkCountry(networkId, networkCountryId)
             .takeUntil(this.ngUnsubscribe)
@@ -100,6 +99,9 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(localNetworks => {
         this.localNetworkData = localNetworks
+        localNetworks.forEach(localNetwork =>{
+          this.globalNetworks[localNetwork.networkId] = localNetwork
+        })
       })
   }
 

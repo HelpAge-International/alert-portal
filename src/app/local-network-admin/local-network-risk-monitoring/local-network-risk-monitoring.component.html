@@ -1,9 +1,10 @@
 
-
-<div *ngIf="!isViewing; else local">
-  <app-local-network-header></app-local-network-header>
-  <app-local-network-menu></app-local-network-menu>
-</div>
+<ng-container *ngIf="!agencyOverview">
+  <div *ngIf="!isViewing; else local">
+    <app-local-network-header></app-local-network-header>
+    <app-local-network-menu></app-local-network-menu>
+  </div>
+</ng-container>
 
 <ng-template #local>
   <app-country-admin-header></app-country-admin-header>

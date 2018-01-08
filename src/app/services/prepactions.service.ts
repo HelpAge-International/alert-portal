@@ -268,7 +268,6 @@ export class PrepActionService {
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
     this.agencyId = agencyId;
-    this.countryId = agencyId;
     this.systemAdminId = systemId;
     this.getDefaultClockSettingsNetworkLocal(af, this.agencyId, () => {
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);

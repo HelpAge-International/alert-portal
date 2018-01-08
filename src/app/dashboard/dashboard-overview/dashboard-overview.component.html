@@ -156,7 +156,8 @@
     *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-network-country-profile-documents>
   <app-network-country-profile-contacts
     *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-network-country-profile-contacts>
-  <app-network-risk-minitoring *ngIf="tabMap.get('risk')"></app-network-risk-minitoring>
+  <app-network-risk-minitoring *ngIf="tabMap.get('risk') && networkCountryId"></app-network-risk-minitoring>
+  <app-local-network-risk-monitoring *ngIf="tabMap.get('risk') && !networkCountryId"></app-local-network-risk-monitoring>
   <!--<app-network-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"-->
                       <!--[countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [canCopy]="canCopy"-->
                       <!--[agencyOverview]="agencyOverview"></app-network-plans>-->

@@ -116,19 +116,35 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   private networkCountryAccess() {
 
     if (this.isViewing) {
-      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(map => {
-          console.log(map);
-          this.agencies = [];
-          this.agencyCountryMap = map;
-          map.forEach((v, k) => {
-            this.agencyService.getAgency(k)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(agency => this.agencies.push(agency));
+      if (this.networkCountryId) {
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(map => {
+            console.log(map);
+            this.agencies = [];
+            this.agencyCountryMap = map;
+            map.forEach((v, k) => {
+              this.agencyService.getAgency(k)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => this.agencies.push(agency));
+            });
+            this._getProgramme(map);
           });
-          this._getProgramme(map);
-        });
+      } else {
+        this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(map => {
+            console.log(map);
+            this.agencies = [];
+            this.agencyCountryMap = map;
+            map.forEach((v, k) => {
+              this.agencyService.getAgency(k)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => this.agencies.push(agency));
+            });
+            this._getProgramme(map);
+          })
+      }
 
     } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {

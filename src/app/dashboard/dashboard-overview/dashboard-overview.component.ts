@@ -159,19 +159,34 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           if (this.isViewingFromExternal) {
             console.log("isViewingFromExternal")
             console.log(this.networkCountryId)
-            this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(networkCountryMap => {
-                let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
-                this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
+            if (this.networkId && this.networkCountryId) {
+              this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(networkCountryMap => {
+                  let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+                  this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
 
-                this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(privacy => {
-                    this.privacyNetwork = privacy
-                    this.updateMainMenuNetwork(this.privacyNetwork)
-                  })
-              })
+                  this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.privacyNetwork = privacy
+                      this.updateMainMenuNetwork(this.privacyNetwork)
+                    })
+                })
+            } else if (this.networkId && !this.networkCountryId) {
+              this.networkService.getLocalNetworkModelsForCountry(this.userAgencyId, this.userCountryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(localNetworks => {
+                  this.withinNetwork = localNetworks.map(network => network.id).includes(this.networkId)
+                  this.networkService.getPrivacySettingForNetwork(this.networkId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.privacyNetwork = privacy
+                      this.updateMainMenuNetwork(this.privacyNetwork)
+                    })
+                })
+            }
+
           } else {
             this.countryService.getPrivacySettingForCountry(this.countryId)
               .takeUntil(this.ngUnsubscribe)
