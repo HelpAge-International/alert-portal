@@ -171,6 +171,9 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditStockCapacity(stockType: StockType, stockCapacityId?: string) {
+
+
+    console.log(Constants.APP_STATUS + '/countryOfficeProfile/capacity/' + stockType);
     if (stockCapacityId) {
       this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
         {id: stockCapacityId, stockType: stockType}], {skipLocationChange: true});

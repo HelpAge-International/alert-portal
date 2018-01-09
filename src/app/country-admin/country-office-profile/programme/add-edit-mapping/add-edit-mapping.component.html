@@ -40,58 +40,68 @@
                 [(ngModel)]="programme.what"></textarea>
     </div>
     <br>
-    <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" |
-      translate}}</h6>
-       <tooltip
-      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT2.LEVEL1'"
-      ></tooltip>
-      </div>
-    <div class="row">
 
-      <!--START TODO: resume setCountryLevel function with relevant HTML-->
-      <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above">
-      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
-        <div class="col-sm-12 row">
-          <div class="col-sm-3">
-            <div class="form-group-risk-frequency ">
-              <select #selectElem (change)="setCountryLevel(selectElem.value)" class="form-control" name="CountryArea">
-                <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-                <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
-                  translate}}
-                </option>
-              </select>
-            </div>
+
+
+    <!--START-->
+
+      <h6 class="font-weight-bold row Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" | translate}}</h6><br>
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="form-group-risk-frequency row">
+            <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
+              <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
+              <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
+                translate}}
+              </option>
+            </select>
           </div>
-
-          <!--LEVEL 1 START-->
-
-          <div class="col-sm-3" >
-            <div class="form-group-risk-frequency ">
-              <select class="form-control" name="CountryAreaLevelOne">
-                <option value="undefined" disabled selected hidden >
-                  {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
-                </option>
-                <option>
-                  <!--List in here-->
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <!--LEVEL 1 END-->
-
         </div>
 
 
-      <!--<input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.where">-->
-        <a class="col-sm-12 Spaced-above" href="javascript:void(0)" (click)="addAnotherLocation()">+
-          {{"ADD_PARTNER.ADD_ANOTHER_LOCATION" | translate}}</a>
+        <!--LEVEL 1 START-->
+
+        <div class="col-sm-3">
+          <div class="form-group-risk-frequency">
+            <select  class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
+              <option value="undefined" disabled selected hidden >
+                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
+              </option>
+              <option *ngFor="let x of levelOneDisplay" [value]="x.id"> {{x.value}}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!--==LEVEL 1 END==-->
+
+        <!--==LEVEL 2 START==-->
+
+        <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3" >
+          <div class="form-group-risk-frequency ">
+            <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2" >
+              <option value="undefined" disabled selected hidden >
+                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
+              </option>
+              <option *ngFor="let y of levelTwoDisplay" [value]="y.id">{{y.value}}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!--==LEVEL 2 END==-->
+
 
 
       </div>
-      <!--END-->
 
-    </div>
+
+    <!--END-->
+
+
+
+
+
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" |
       translate}}</h6>

@@ -12,6 +12,8 @@ export class ProgrammeMappingModel extends BaseModel {
     public toWho: string;
     public when: number;
     public where: number;
+    public level1: number;
+    public level2: string;
 
     validate(excludedFields = []): AlertMessageModel {
 
@@ -23,9 +25,9 @@ export class ProgrammeMappingModel extends BaseModel {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_WHAT');
         }
 
-        if (!this.where && !this.isExcluded('where', excludedFields)) {
+        /*if (!this.where && !this.isExcluded('where', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_WHERE');
-        }
+        }*/
 
         if (!this.toWho && !this.isExcluded('toWho', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_TO_WHO');
@@ -40,12 +42,14 @@ export class ProgrammeMappingModel extends BaseModel {
 
 
     setData(programmeMapping) {
-        this.id = programmeMapping.id
+        this.id = programmeMapping.id;
         this.sector = programmeMapping.sector;
         this.what = programmeMapping.what;
         this.toWho = programmeMapping.toWho;
         this.when = programmeMapping.when;
         this.where = programmeMapping.where;
+        this.level1 = programmeMapping.level1;
+        this.level2 = programmeMapping.level2;
     }
 
 }
