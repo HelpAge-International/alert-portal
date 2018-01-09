@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
@@ -7,6 +7,10 @@ import {Subject} from "rxjs";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {UserService} from "../../../services/user.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
+import {NetworkService} from "../../../services/network.service";
+import {NetworkUserAccountType} from "../../../utils/Enums";
+import {NetworkOfficeModel} from "../../../network-admin/network-offices/add-edit-network-office/network-office.model";
+import {Observable} from "rxjs/Observable";
 declare var jQuery: any;
 
 @Component({
@@ -49,12 +53,19 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   private docsSize = 0;
   private firebase;
 
+  private networkAdmin: any;
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
+  @Input() isNetworkAdmin: boolean;
+  private networkId: any;
 
 
   constructor(private pageControl: PageControlService,
               private _userService: UserService,
+              private networkService: NetworkService,
+              private userService: UserService,
               private route: ActivatedRoute,
               private af: AngularFire,
               private router: Router) {
@@ -78,6 +89,102 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
+    this.isNetworkAdmin ?  this.initNetworkAdmin() : this.initCountryOffice()
+  }
+
+  initNetworkAdmin(){
+
+    this.docFilterSubject.next();
+
+
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.uid = user.uid;
+
+      this.networkService.getNetworkAdmin(this.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(networkAdmin => {
+
+          this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + this.uid, {preserveSnapshot: true})
+            .map(snap => {
+              console.log('here')
+              if (snap.val()) {
+                let selection = snap.val();
+                let selectData = {};
+                if (!selection.selectedNetworkCountry) {
+                  selectData["userType"] = NetworkUserAccountType.NetworkAdmin;
+                  selectData["id"] = selection.selectedNetwork;
+                } else {
+                  selectData["userType"] = NetworkUserAccountType.NetworkCountryAdmin;
+                  selectData["id"] = selection.selectedNetwork;
+                  selectData["networkCountryId"] = selection.selectedNetworkCountry;
+                }
+                return Observable.of(selectData)
+              }
+            }).subscribe( idObj => {
+
+              this.networkId = idObj["value"]["id"]
+            this.af.database.list(Constants.APP_STATUS + '/group/network/' + this.networkId + '/networkallusersgroup')
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                let users = _;
+
+                Object.keys(users).map(user => {
+                  let userKey = users[user].$key;
+                  this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(_ => {
+
+                      this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+                    });
+                });
+              });
+
+
+            this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + idObj["value"]["id"])
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+              this.countries = _;
+
+              Object.keys(this.countries).map(country => {
+                console.log(this.countries[country])
+                let key = this.countries[country].$key;
+
+                this.locationId = this.countries[country].location;
+
+
+                this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(_ => {
+                    let docs = _;
+                    docs = docs.filter(doc => {
+                      if (this.userSelected == "-1")
+                        return true;
+
+                      return doc.uploadedBy == this.userSelected;
+                    });
+                    Object.keys(docs).map(doc => {
+                      let uploadedBy = docs[doc].uploadedBy;
+                      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(_ => {
+                          docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+                        });
+                    });
+                    this.countries[country]['docs'] = docs;
+                    this.countries[country]['docsfiltered'] = docs;
+                    this.countries[country]['hasDocs'] = (docs.length > 0);
+                  });
+
+              })
+            })
+
+          })
+
+        });
+    })
+  }
+
+  initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -104,6 +211,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
               .subscribe(_ => {
                 this.countries = _;
                 Object.keys(this.countries).map(country => {
+                  console.log(country)
                   let key = this.countries[country].$key;
 
                   if (key == this.countryId) {
@@ -305,15 +413,18 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   private countryDocsSelected(country, target) {
     country.docsfiltered = country.docsfiltered.map(doc => {
       doc.selected = country.selected;
+      this.selectDocument()
       return doc;
     });
   }
 
   private filter() {
+    console.log(Countries[this.countrySelected])
     // if there is "-1" in the this.docTypeSelected, DocumentType will return undefined, so next(undefined) returns no filter
     // the same logic is applied for other filters
     this.docFilterSubject.next(DocumentType[this.docTypeSelected]);
     // the filtering based on User is done client side, because FireBase supports orderBy only on one parameter
+
 
     this.countriesFilterSubject.next(Countries[this.countrySelected]);
   }

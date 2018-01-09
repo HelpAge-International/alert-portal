@@ -724,7 +724,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     let document = {
       fileName: file.name,
       filePath: "", //this needs to be updated once the file is uploaded
-      module: DocumentType.MPA,
+      module: 0,
       size: file.size * 0.001,
       sizeType: SizeType.KB,
       title: file.name,

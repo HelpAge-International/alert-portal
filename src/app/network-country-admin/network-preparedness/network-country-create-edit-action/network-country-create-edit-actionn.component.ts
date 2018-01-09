@@ -287,7 +287,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private initViewNetworkAccess() {
-    console.log('shouldnt be doing thisss')
+
     this.getStaffDetails(this.uid, true);
 
     this.networkService.getNetworkModuleMatrix(this.networkCountryId)
