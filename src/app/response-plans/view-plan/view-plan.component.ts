@@ -81,6 +81,8 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
           }
           if (this.networkId && this.networkCountryId) {
             this.initNetworkData(this.networkCountryId, this.networkId)
+          } else if (this.networkId && !this.networkCountryId) {
+            this.initLocalNetworkData(this.networkId)
           } else {
             this.initData(this.countryId, this.agencyId);
           }
@@ -102,6 +104,14 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkCountry => {
         this.countryName = Constants.COUNTRIES[networkCountry.location]
+      })
+  }
+
+  private initLocalNetworkData(networkId) {
+    this.networkService.getLocalNetwork(networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(local => {
+        this.countryName = Constants.COUNTRIES[local.countryCode]
       })
   }
 

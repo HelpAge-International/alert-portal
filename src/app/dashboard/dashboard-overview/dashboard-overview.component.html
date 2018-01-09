@@ -57,7 +57,7 @@
           </div>
           <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk Centered">
             <i
-               class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
+              class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
             <div>
               <span>{{"ALERT.RISK" | translate}}:</span>
               {{alert.hazardScenario != -1 ? (HazardScenariosList[alert.hazardScenario] | translate) : alert.otherName}}
@@ -141,29 +141,58 @@
 
 <ng-container *ngIf="isViewingFromExternal">
   <app-network-country-profile-programme
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-network-country-profile-programme>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('programme') && networkCountryId"></app-network-country-profile-programme>
+  <app-local-network-profile-programme
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('programme') && !networkCountryId"></app-local-network-profile-programme>
+
   <app-network-country-profile-office-capacity
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity')"></app-network-country-profile-office-capacity>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity') && networkCountryId"></app-network-country-profile-office-capacity>
+  <app-local-network-profile-office-capacity
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity') && !networkCountryId"></app-local-network-profile-office-capacity>
+
   <app-network-country-profile-partners
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('partners')"></app-network-country-profile-partners>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('partners') && networkCountryId"></app-network-country-profile-partners>
+  <app-local-network-profile-partners
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('partners') && !networkCountryId"></app-local-network-profile-partners>
+
   <app-network-country-profile-equipment
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment')"></app-network-country-profile-equipment>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment') && networkCountryId"></app-network-country-profile-equipment>
+  <app-local-network-profile-equipment
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment') && !networkCountryId"></app-local-network-profile-equipment>
+
   <app-network-country-profile-coordination
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination')"></app-network-country-profile-coordination>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination') && networkCountryId"></app-network-country-profile-coordination>
+  <app-local-network-profile-coordination
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination') && !networkCountryId"></app-local-network-profile-coordination>
+
   <app-network-country-profile-stock-capacity
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity')"></app-network-country-profile-stock-capacity>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity') && networkCountryId"></app-network-country-profile-stock-capacity>
+  <app-local-network-profile-stock-capacity
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity') && !networkCountryId"></app-local-network-profile-stock-capacity>
+
   <app-network-country-profile-documents
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-network-country-profile-documents>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('documents') && networkCountryId"></app-network-country-profile-documents>
+  <app-local-network-profile-documents
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('documents') && !networkCountryId"></app-local-network-profile-documents>
+
   <app-network-country-profile-contacts
-    *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-network-country-profile-contacts>
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts') && networkCountryId"></app-network-country-profile-contacts>
+  <app-local-network-profile-contacts
+    *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts') && !networkCountryId"></app-local-network-profile-contacts>
+
   <app-network-risk-minitoring *ngIf="tabMap.get('risk') && networkCountryId"></app-network-risk-minitoring>
-  <app-local-network-risk-monitoring *ngIf="tabMap.get('risk') && !networkCountryId"></app-local-network-risk-monitoring>
+  <app-local-network-risk-monitoring
+    *ngIf="tabMap.get('risk') && !networkCountryId"></app-local-network-risk-monitoring>
   <!--<app-network-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"-->
-                      <!--[countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [canCopy]="canCopy"-->
-                      <!--[agencyOverview]="agencyOverview"></app-network-plans>-->
-  <app-network-plans *ngIf="tabMap.get('plan')"></app-network-plans>
-  <app-network-country-mpa *ngIf="tabMap.get('preparedness-min')"></app-network-country-mpa>
-  <app-network-country-apa *ngIf="tabMap.get('preparedness-adv')"></app-network-country-apa>
+  <!--[countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [canCopy]="canCopy"-->
+  <!--[agencyOverview]="agencyOverview"></app-network-plans>-->
+  <app-network-plans [isLocalNetworkAdmin]="!networkCountryId" *ngIf="tabMap.get('plan')"></app-network-plans>
+
+  <app-network-country-mpa [isLocalNetworkAdmin]="!networkCountryId"
+                           *ngIf="tabMap.get('preparedness-min')"></app-network-country-mpa>
+
+  <app-network-country-apa [isLocalNetworkAdmin]="!networkCountryId"
+                           *ngIf="tabMap.get('preparedness-adv')"></app-network-country-apa>
 
   <div
     *ngIf="!tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "

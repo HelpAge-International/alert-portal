@@ -13,6 +13,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {LocalStorageService} from "angular-2-local-storage";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
 
@@ -276,83 +277,155 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
 
 
   private localNetworkAdminAccess() {
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.uid = user.uid;
+    if (this.isViewingFromExternal) {
+      console.log("local viewing from external")
+      this._stockService.getStockCapacitiesLocalNetwork(this.networkId).subscribe(stockCapacities => {
+        this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Network);
+        this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
 
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
-          this.networkId = selection["id"];
+        console.log('hi' + this.stockCapacitiesIN)
+        console.log(this.stockCapacitiesOUT)
+        // Get notes
+        stockCapacities.forEach(stockCapacity => {
+          const stockCapacityNode = "/localNetworkProfile/capacity/stockCapacity/" + this.networkId + "/" + stockCapacity.id + "/notes"
+          this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+            stockCapacity.notes = notes;
 
-
-          this._stockService.getStockCapacitiesLocalNetwork(this.networkId).subscribe(stockCapacities => {
-            this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Network);
-            this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
-
-            console.log('hi' + this.stockCapacitiesIN)
-            console.log(this.stockCapacitiesOUT)
-            // Get notes
-            stockCapacities.forEach(stockCapacity => {
-              const stockCapacityNode = "/localNetworkProfile/capacity/stockCapacity/" + this.networkId + "/" + stockCapacity.id + "/notes"
-              this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
-                stockCapacity.notes = notes;
-
-                // Create the new note model for partner organisation
-                this.newNote[stockCapacity.id] = new NoteModel();
-                this.newNote[stockCapacity.id].uploadedBy = this.uid;
-              });
-            })
+            // Create the new note model for partner organisation
+            this.newNote[stockCapacity.id] = new NoteModel();
+            this.newNote[stockCapacity.id].uploadedBy = this.uid;
           });
+        })
+      });
 
-          this.af.database.list(Constants.APP_STATUS + "/network/" + this.networkId + "/agencies")
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(agencies => {
-              let i = 0;
-              agencies.forEach(agency => {
-                this.agencyCountryMap.set(agency.$key, agency.countryCode);
-                console.log(this.agencyCountryMap)
-                this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    this.agencies.push(agency)
+      this.af.database.list(Constants.APP_STATUS + "/network/" + this.networkId + "/agencies")
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agencies => {
+          let i = 0;
+          agencies.forEach(agency => {
+            this.agencyCountryMap.set(agency.$key, agency.countryCode);
+            console.log(this.agencyCountryMap)
+            this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agency => {
+                this.agencies.push(agency)
 
-                  })
-                this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agencyStocks => {
-                    this.agencyStocksIN[i] = []
-                    agencyStocks.forEach(stock => {
-                      if (stock.stockType == StockType.Country) {
+              })
+            this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencyStocks => {
+                this.agencyStocksIN[i] = []
+                agencyStocks.forEach(stock => {
+                  if (stock.stockType == StockType.Country) {
 
-                        this.agencyStocksIN[i].push(stock)
-                        this.countryInMap.set(agency.countryCode, this.agencyStocksIN[i]);
-                        console.log(this.countryInMap.get(agency.countryCode));
-                        console.log(this.agencyStocksIN[i]);
-                      } else if (stock.stockType == StockType.External) {
-                        this.agencyStocksOUT[i] = []
-                        this.agencyStocksOUT[i].push(stock)
-                        this.countryExtMap.set(agency.countryCode, this.agencyStocksOUT[i]);
-                        console.log(this.countryExtMap);
-                      }
+                    this.agencyStocksIN[i].push(stock)
+                    this.countryInMap.set(agency.countryCode, this.agencyStocksIN[i]);
+                    console.log(this.countryInMap.get(agency.countryCode));
+                    console.log(this.agencyStocksIN[i]);
+                  } else if (stock.stockType == StockType.External) {
+                    this.agencyStocksOUT[i] = []
+                    this.agencyStocksOUT[i].push(stock)
+                    this.countryExtMap.set(agency.countryCode, this.agencyStocksOUT[i]);
+                    console.log(this.countryExtMap);
+                  }
 
-                      this._noteService.getNotes("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes").subscribe(notes => {
+                  this._noteService.getNotes("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes").subscribe(notes => {
 
-                        console.log("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes")
-                        stock.notes = notes;
+                    console.log("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes")
+                    stock.notes = notes;
 
-                        // Create the new note model for partner organisation
-                        this.newNote[stock.$key] = new NoteModel();
-                        this.newNote[stock.$key].uploadedBy = this.uid;
+                    // Create the new note model for partner organisation
+                    this.newNote[stock.$key] = new NoteModel();
+                    this.newNote[stock.$key].uploadedBy = this.uid;
+
+                  });
+
+                });
+                i++;
+              })
+          })
+        })
+
+    } else {
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
+
+        this.networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
+
+
+            this._stockService.getStockCapacitiesLocalNetwork(this.networkId).subscribe(stockCapacities => {
+              this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Network);
+              this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+
+              console.log('hi' + this.stockCapacitiesIN)
+              console.log(this.stockCapacitiesOUT)
+              // Get notes
+              stockCapacities.forEach(stockCapacity => {
+                const stockCapacityNode = "/localNetworkProfile/capacity/stockCapacity/" + this.networkId + "/" + stockCapacity.id + "/notes"
+                this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                  stockCapacity.notes = notes;
+
+                  // Create the new note model for partner organisation
+                  this.newNote[stockCapacity.id] = new NoteModel();
+                  this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                });
+              })
+            });
+
+            this.af.database.list(Constants.APP_STATUS + "/network/" + this.networkId + "/agencies")
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(agencies => {
+                let i = 0;
+                agencies.forEach(agency => {
+                  this.agencyCountryMap.set(agency.$key, agency.countryCode);
+                  console.log(this.agencyCountryMap)
+                  this.af.database.object(Constants.APP_STATUS + "/agency/" + agency.$key)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agency => {
+                      this.agencies.push(agency)
+
+                    })
+                  this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(agencyStocks => {
+                      this.agencyStocksIN[i] = []
+                      agencyStocks.forEach(stock => {
+                        if (stock.stockType == StockType.Country) {
+
+                          this.agencyStocksIN[i].push(stock)
+                          this.countryInMap.set(agency.countryCode, this.agencyStocksIN[i]);
+                          console.log(this.countryInMap.get(agency.countryCode));
+                          console.log(this.agencyStocksIN[i]);
+                        } else if (stock.stockType == StockType.External) {
+                          this.agencyStocksOUT[i] = []
+                          this.agencyStocksOUT[i].push(stock)
+                          this.countryExtMap.set(agency.countryCode, this.agencyStocksOUT[i]);
+                          console.log(this.countryExtMap);
+                        }
+
+                        this._noteService.getNotes("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes").subscribe(notes => {
+
+                          console.log("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes")
+                          stock.notes = notes;
+
+                          // Create the new note model for partner organisation
+                          this.newNote[stock.$key] = new NoteModel();
+                          this.newNote[stock.$key].uploadedBy = this.uid;
+
+                        });
 
                       });
-
-                    });
-                    i++;
-                  })
+                      i++;
+                    })
+                })
               })
-            })
-        });
-    })
+          });
+      })
+    }
+
   }
 
   editStockCapacity() {

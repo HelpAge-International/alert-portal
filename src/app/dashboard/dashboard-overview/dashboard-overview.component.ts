@@ -158,8 +158,10 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           //handle privacy settings
           if (this.isViewingFromExternal) {
             console.log("isViewingFromExternal")
+            console.log(this.networkId)
             console.log(this.networkCountryId)
-            if (this.networkId && this.networkCountryId) {
+            if (this.networkId && this.networkCountryId && this.networkCountryId != undefined) {
+              console.log("network country")
               this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(networkCountryMap => {
@@ -173,7 +175,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                       this.updateMainMenuNetwork(this.privacyNetwork)
                     })
                 })
-            } else if (this.networkId && !this.networkCountryId) {
+            } else {
+              console.log("local network")
               this.networkService.getLocalNetworkModelsForCountry(this.userAgencyId, this.userCountryId)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(localNetworks => {
