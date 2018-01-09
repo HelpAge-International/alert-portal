@@ -7,6 +7,8 @@ export class StockCapacityModel extends BaseModel {
     public description: string;
     public quantity: number;
     public location: string;
+    public level1: number;
+    public level2: string;
     public leadTime: string;
     public stockType: number;
     public notes: NoteModel[];
@@ -19,9 +21,9 @@ export class StockCapacityModel extends BaseModel {
         if (!this.quantity && !this.isExcluded('quantity', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NO_QUANTITY');
         }
-        if (!this.location && !this.isExcluded('location', excludedFields)) {
+        /*if (!this.location && !this.isExcluded('location', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NO_LOCATION');
-        }
+        }*/
         if (!this.leadTime && !this.isExcluded('leadTime', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.NO_ETA');
         }

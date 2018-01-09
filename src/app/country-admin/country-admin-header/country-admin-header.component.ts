@@ -20,6 +20,7 @@ import {LocalNetworkViewModel} from "./local-network-view.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Location} from "@angular/common";
 import {NetworkCountryAgenciesComponent} from "../../network-country-admin/network-administration/network-country-agencies/network-country-agencies.component";
+import {NetworkWithCountryModel} from "./network-with-country.model";
 
 declare const jQuery: any;
 
@@ -137,17 +138,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
         if (!user.anonymous) {
           this.uid = user.auth.uid;
 
-          //load selected network if any
-          // this.userService.getUserNetworkSelection(this.uid, this.userType)
-          //   .takeUntil(this.ngUnsubscribe)
-          //   .subscribe(networkId => {
-          //     if (networkId) {
-          //       this.isViewingNetwork = true;
-          //       this.networkService.getNetworkDetail(networkId)
-          //         .takeUntil(this.ngUnsubscribe)
-          //         .subscribe(network => this.selectedNetwork = network)
-          //     }
-          //   })
           let networkId = this.storageService.get(Constants.NETWORK_VIEW_SELECTED_ID);
           if (networkId) {
             this.isViewingNetwork = true;
@@ -211,7 +201,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           }
 
           //get networks
-          console.log('getting stuff');
           this.getNetworks(agencyId, countryId);
 
           this.getLocalNetworks(agencyId, countryId)
@@ -233,7 +222,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(agencyCountries => {
-        console.log(agencyCountries);
         // this.agencyId = agencyCountries[0].$key;
         // this.countryId = agencyCountries[0].$value;
         this.agencyId = agencyId;
@@ -344,7 +332,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.isViewingNetwork = true;
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
-    console.log(network)
     //build emit value
     let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, this.networkCountryMap.get(this.selectedNetwork.id), true)
     // this.networkRequest.emit(model)
@@ -360,7 +347,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.isViewingNetwork = true;
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
-    console.log(network);
     //build emit value
     let model = new LocalNetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, true)
     // this.networkRequest.emit(model)
@@ -411,7 +397,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   changeLanguage(language: string) {
     this.language = language;
-    console.log(this.uid);
 
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
 
@@ -463,7 +448,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       .subscribe(map => this.networkCountryMap = map);
     this.networkService.getNetworkWithCountryModelsForCountry(agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(networkModels => {
+      .subscribe((networkModels: NetworkWithCountryModel[]) => {
         this.networks = [];
         networkModels.map(model => {
           return this.networkService.getNetworkDetail(model.networkId)
@@ -472,10 +457,15 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           .forEach(item => {
             item.takeUntil(this.ngUnsubscribe).subscribe(network => {
               if (!CommonUtils.itemExistInList(network.id, this.networks)) {
-                if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
-                  this.networks.push(network);
-                  console.log(this.networks, 'dan');
-
+                if (!(this.selectedNetwork && network.id == this.selectedNetwork.id) && network.isActive) {
+                  let networkCountryId = networkModels.filter(model => model.networkId === network.id)[0].networkCountryId;
+                  this.networkService.getNetworkCountry(network.id, networkCountryId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(networkCountry => {
+                      if (networkCountry.isActive) {
+                        this.networks.push(network);
+                      }
+                    })
                 }
               }
             })
@@ -485,12 +475,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   }
 
-  getLocalNetworks(agencyId: string, countryId: any) {
+  private getLocalNetworks(agencyId: string, countryId: any) {
+
     this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         this.localNetworkList = list
-        console.log(this.localNetworkList)
       })
 
     this.networkService.getLocalNetworkModelsForCountry(agencyId, countryId)
@@ -503,13 +493,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           .forEach(item => {
             item.takeUntil(this.ngUnsubscribe).subscribe(network => {
               if (!CommonUtils.itemExistInList(network.id, this.localNetworks)) {
-                if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
+                if (!(this.selectedNetwork && network.id == this.selectedNetwork.id) && network.isActive) {
                   this.localNetworks.push(network);
                 }
               }
             })
           })
-
       })
   }
 }

@@ -2,11 +2,13 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
+import {AlertMessageType, Countries, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import { AddEditMappingProgrammeComponent } from "./add-edit-mapping/add-edit-mapping.component";
+import {CommonService} from "../../../services/common.service";
 
 declare var jQuery: any;
 
@@ -42,6 +44,13 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   private agencyId: string;
 
 
+  private levelOneDisplay: any[] = [];
+
+  private selectedCountry: any;
+  private programmeId: any;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
+  private countries = Constants.COUNTRIES;
+
   private TmpSectorExpertise: any[] = [];
   private ResponsePlanSectorsList: number[] = [
     ResponsePlanSectors.wash,
@@ -57,6 +66,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
   constructor(private pageControl: PageControlService,
+              private _commonService: CommonService,
               private route: ActivatedRoute,
               private router: Router,
               private userService: UserService,
@@ -82,7 +92,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
         }
-
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
@@ -93,16 +102,20 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             // this._getCountryID().then(() => {
             this._getProgramme();
             // });
+
           }
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;
           }));
-
         });
       });
 
+
   }
+
+
+
 
   saveNote(programmeID: any) {
     if (!this.logContent[programmeID]) {
@@ -145,12 +158,10 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           mapping[m].notes = [];
           var notes = mapping[m].programmeNotes;
           var arrayNotes = [];
-
           for (let n in notes) {
             notes[n].key = n;
             arrayNotes.push(notes[n]);
           }
-
           arrayNotes.forEach((note, key) => {
             this.getUsers(note.uploadBy)
               .takeUntil(this.ngUnsubscribe)
@@ -161,8 +172,9 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           arrayNotes = this._sortLogsByDate(arrayNotes);
           mapping[m].notes = arrayNotes;
           this.mapping.push(mapping[m]);
+          this.programmeId = this.mapping[0].key;
         }
-
+        this.convertCountryNumber();
         var sectorExpertise = programms['sectorExpertise'];
         for (let s in sectorExpertise) {
           var obj = {key: parseInt(s), val: sectorExpertise[s]};
@@ -209,6 +221,35 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       return obj[key];
     });
     return arr;
+  }
+
+  convertCountryNumber(){
+
+
+    /**
+     * Convert number from Firebase into country name
+     */
+    this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/4WMapping/' + this.programmeId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getCountry => {
+        console.log(getCountry);
+        this.selectedCountry = getCountry.where;
+        console.log(getCountry.where, 'Country Name');
+
+        for (let key in Countries) {
+
+          if (key.includes(this.selectedCountry))
+          {
+            console.log('true');
+            this.selectedCountry = Countries[key];
+            console.log(this.selectedCountry);
+          }
+        }
+
+
+      });
+
+
   }
 
   _getCountryID() {
