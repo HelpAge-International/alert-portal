@@ -80,6 +80,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private partnersApprovalMap = new Map<string, string>();
   private responsePlanToEdit: any;
   private networkPlanExpireDuration: number;
+  private isViewingFromExternal: boolean;
+  private agencyOverview: boolean;
+  private canCopy: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -98,19 +101,43 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
-        this.isViewing = params["isViewing"];
-        this.systemId = params["systemId"];
-        this.agencyId = params["agencyId"];
+      if (params["countryId"]) {
         this.countryId = params["countryId"];
-        this.userType = params["userType"];
+      }
+      if (params["networkCountryId"]) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      if (params["networkId"]) {
         this.networkId = params["networkId"];
-        if (!this.isLocalNetworkAdmin) {
-          this.networkCountryId = params["networkCountryId"];
-        }
+      }
+      if (params["isViewing"]) {
+        this.isViewing = params["isViewing"];
+      }
+      if (params["agencyId"]) {
+        this.agencyId = params["agencyId"];
+      }
+      if (params["systemId"]) {
+        this.systemId = params["systemId"];
+      }
+      if (params["canCopy"]) {
+        this.canCopy = params["canCopy"];
+      }
+      if (params["uid"]) {
         this.uid = params["uid"];
       }
-      this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess()  : this.initViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
+      if (params["userType"]) {
+        this.userType = params["userType"];
+      }
+      if (params["agencyOverview"]) {
+        this.agencyOverview = params["agencyOverview"];
+      }
+      if (params["isViewingFromExternal"]) {
+        this.isViewingFromExternal = params["isViewingFromExternal"];
+      }
+      if (!this.isLocalNetworkAdmin && params["networkCountryId"]) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
     })
   }
 
@@ -755,8 +782,66 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     return text;
   }
 
-  viewResponsePlan(plan) {
-    if (this.isViewing) {
+  viewResponsePlan(plan, isViewingFromExternal) {
+    // if (params["countryId"]) {
+    //   this.countryId = params["countryId"];
+    // }
+    // if (params["networkCountryId"]) {
+    //   this.networkCountryId = params["networkCountryId"];
+    // }
+    // if (params["networkId"]) {
+    //   this.networkId = params["networkId"];
+    // }
+    // if (params["isViewing"]) {
+    //   this.isViewing = params["isViewing"];
+    // }
+    // if (params["agencyId"]) {
+    //   this.agencyId = params["agencyId"];
+    // }
+    // if (params["systemId"]) {
+    //   this.systemId = params["systemId"];
+    // }
+    // if (params["canCopy"]) {
+    //   this.canCopy = params["canCopy"];
+    // }
+    // if (params["uid"]) {
+    //   this.uid = params["uid"];
+    // }
+    // if (params["userType"]) {
+    //   this.userType = params["userType"];
+    // }
+    // if (params["agencyOverview"]) {
+    //   this.agencyOverview = params["agencyOverview"];
+    // }
+    // if (params["isViewingFromExternal"]) {
+    //   this.isViewingFromExternal = params["isViewingFromExternal"];
+    // }
+    // if (!this.isLocalNetworkAdmin && params["networkCountryId"]) {
+    //   this.networkCountryId = params["networkCountryId"];
+    // }
+    if (this.isViewingFromExternal) {
+      let headers = {
+        "id": plan.$key,
+        "isViewingFromExternal": isViewingFromExternal,
+        "isViewing": this.isViewing,
+        "countryId": this.countryId,
+        "agencyId": this.agencyId,
+        "networkId": this.networkId,
+        "systemId": this.systemId,
+        "uid": this.uid,
+        "userType": this.userType
+      };
+      if(!this.isLocalNetworkAdmin && this.networkCountryId) {
+        headers["networkCountryId"] = this.networkCountryId
+      }
+      if (this.agencyOverview) {
+        headers["agencyOverview"] = this.agencyOverview;
+      }
+      if (this.canCopy) {
+        headers["canCopy"] = this.canCopy;
+      }
+      this.router.navigate(["/response-plans/view-plan", headers]);
+    } else if (this.isViewing) {
       let obj = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
       obj["id"] = plan.$key
       this.router.navigate(["/network-country/network-plans/view-network-plan", obj]);

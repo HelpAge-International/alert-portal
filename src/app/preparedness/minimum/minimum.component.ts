@@ -835,9 +835,18 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     }
 
     //remove deleted doc from list
-    let actionIndex = this.prepActionService.actions.map(a => {return a.id}).indexOf(action.id);
-    this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {return doc.documentId != docId})
-    this.closeDocumentsModal('documents_popover_' + action.id)
+    let actionIndex = this.prepActionService.actions.map(action => {
+      return action.id
+    }).indexOf(action.id);
+    if (actionIndex != -1) {
+      this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {
+        return doc.documentId != docId
+      })
+      this.closeDocumentsModal("documents_popover_" + action.id)
+    }
+    // let actionIndex = this.prepActionService.actions.map(a => {return a.id}).indexOf(action.id);
+    // this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {return doc.documentId != docId})
+    // this.closeDocumentsModal('documents_popover_' + action.id)
 
     // if we make it here we can't find the document requesting to be deleted
   }
@@ -856,6 +865,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       }
     }
     // if we make it here we can't find the document requesting to be deleted
+    let actionIndex = this.prepActionService.actions.map(action => {
+      return action.id
+    }).indexOf(action.id);
+    if (actionIndex != -1) {
+      this.prepActionService.actions[actionIndex].documents = this.prepActionService.actions[actionIndex].documents.filter(doc => {
+        return doc.documentId != docId
+      })
+      this.closeDocumentsModal("documents_popover_" + action.id)
+    }
   }
 
   // Exporting all the documents

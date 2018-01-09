@@ -161,6 +161,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
         }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+        if (params["userType"]) {
+          this.UserType = params["userType"];
+        }
 
         if (this.agencyId && this.countryID) {
           this._getHazards();
@@ -1400,7 +1406,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           "systemId": this.systemId,
           "indicatorId": indicator.$key,
           "isContext": isContext,
-          "agencyOverview": true
+          "agencyOverview": true,
+          "userType": this.UserType,
+          "uid": this.uid
         }]);
       } else {
         this.router.navigate(["/risk-monitoring/add-indicator/countryContext", {
@@ -1408,12 +1416,15 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           "agencyId": this.agencyId,
           "systemId": this.systemId,
           "indicatorId": indicator.$key,
-          "isContext": isContext
+          "isContext": isContext,
+          "userType": this.UserType,
+          "uid": this.uid
         }]);
       }
 
     } else {
       let hazardScenario = hazard.hazardScenario;
+      console.log(this.UserType)
       this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
         .take(1)
         .subscribe(ownCountryId => {
@@ -1441,7 +1452,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                     "indicatorId": indicator.$key,
                     "hazardId": hazard.$key,
                     "isContext": isContext,
-                    "agencyOverview": true
+                    "agencyOverview": true,
+                    "userType": this.UserType,
+                    "uid": this.uid
                   }]);
                 } else {
                   this.router.navigate(["/risk-monitoring/add-indicator/" + hazards[0].$key, {
@@ -1450,7 +1463,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                     "systemId": this.systemId,
                     "indicatorId": indicator.$key,
                     "hazardId": hazard.$key,
-                    "isContext": isContext
+                    "isContext": isContext,
+                    "userType": this.UserType,
+                    "uid": this.uid
                   }]);
                 }
               }

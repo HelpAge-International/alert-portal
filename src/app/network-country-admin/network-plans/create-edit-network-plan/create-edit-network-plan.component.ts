@@ -579,11 +579,21 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   private getCompleteSectionNumber() {
     let counter = 0;
-    this.sectionsCompleted.forEach((v,) => {
-      if (v) {
-        counter++;
-      }
-    });
+    if(this.forEditing){
+      let index = 0;
+      this.sections.forEach(section => {
+        if(this.sectionsCompleted.get(section) == true && this.responsePlanSettings[index] == true){
+          counter++;
+        }
+        index++;
+      });
+    }else{
+      this.sectionsCompleted.forEach((v,) => {
+        if (v) {
+          counter++;
+        }
+      });
+    }
     //because agency selection section is a must, so here we always return +1
     return counter+1;
   }

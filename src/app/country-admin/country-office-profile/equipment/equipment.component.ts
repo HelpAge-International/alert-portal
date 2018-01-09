@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, UserType} from "../../../utils/Enums";
+import {AlertMessageType, Countries, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {NoteModel} from "../../../model/note.model";
@@ -12,6 +12,8 @@ import {SurgeEquipmentModel} from "../../../model/equipment-surge.model";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
+import { CountryOfficeAddEditEquipmentComponent } from "./add-edit-equipment/add-edit-equipment.component";
+
 declare var jQuery: any;
 
 @Component({
@@ -30,6 +32,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private isViewing: boolean;
 
+  // For ALT-2039
+
+  private levelOneDisplay: any[] = [];
+
+  private selectedCountry: any;
+  private programmeId: any;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
+  private countries = Constants.COUNTRIES;
+  private equipmentId: any;
   // Constants and enums
   private alertMessageType = AlertMessageType;
 
@@ -76,10 +87,12 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
+
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
-
+          this.countryId = countryId;
+          this.programmeId = systemId;
           if (this.countryId && this.agencyId && this.isViewing) {
             this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
@@ -91,12 +104,13 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   this._noteService.getNotes(equipmentNode).subscribe(notes => {
                     equipment.notes = notes;
                   });
-
                   // Create the new note model
                   this.newNote[equipment.id] = new NoteModel();
                   this.newNote[equipment.id].uploadedBy = this.uid;
+
                 });
               });
+
 
             this._equipmentService.getSurgeEquipments(this.countryId)
               .subscribe(surgeEquipments => {
@@ -132,7 +146,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
             this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
                 this.equipments = equipments;
-
+                this.selectedCountry = equipments[0].location;
                 this.equipments.forEach(equipment => {
                   const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
 
@@ -161,19 +175,20 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   this.newNote[surgeEquipment.id] = new NoteModel();
                   this.newNote[surgeEquipment.id].uploadedBy = this.uid;
                 });
-
               });
-
             //     })
             // });
-          }
 
+          }
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;
           }));
 
         });
+
       });
+
+
 
 
   }
@@ -206,6 +221,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
     }
 
   }
+
 
   getUserName(userId) {
     let userName = "";

@@ -12,6 +12,7 @@ import {
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Network} from "../../network-admin/network-account-selection/models/network";
 import {NetworkService} from "../../services/network.service";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-export-start-fund-project-budget',
@@ -32,6 +33,26 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
   private totalInputs: number;
   private totalOfAllCosts: number;
   private total: number;
+
+  private inputWaSHBudget: number = 0;
+  private inputWaSHNarrative: string;
+  private inputHealthBudget: number = 0;
+  private inputHealthNarrative: string;
+  private inputShelterBudget: number = 0;
+  private inputShelterNarrative: string;
+  private inputNutritionBudget: number = 0;
+  private inputNutritionNarrative: string;
+  private inputCampBudget: number = 0;
+  private inputCampNarrative: string;
+  private inputProtectionBudget: number = 0;
+  private inputProtectionNarrative: string;
+  private inputEduBudget: number = 0;
+  private inputEduNarrative: string;
+  private inputFoodSecBudget: number = 0;
+  private inputFoodSecNarrative: string;
+  private inputOtherBudget: number = 0;
+  private inputOtherNarrative: string;
+
   private transportBudget: number;
   private transportNarrative: string;
   private securityBudget: number;
@@ -188,6 +209,26 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
       this.total = responsePlan.budget['total'] ? responsePlan.budget['total'] : 0;
 
       if (responsePlan.budget['item']) {
+        if(isNullOrUndefined(responsePlan.budget['item'][BudgetCategory.Inputs]) == false) {
+          this.inputWaSHBudget = responsePlan.budget['item'][BudgetCategory.Inputs][0] ? responsePlan.budget['item'][BudgetCategory.Inputs][0]['budget'] : 0;
+          this.inputWaSHNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][0] ? responsePlan.budget['item'][BudgetCategory.Inputs][0]['narrative'] : '';
+          this.inputHealthBudget = responsePlan.budget['item'][BudgetCategory.Inputs][1] ? responsePlan.budget['item'][BudgetCategory.Inputs][1]['budget'] : 0;
+          this.inputHealthNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][1] ? responsePlan.budget['item'][BudgetCategory.Inputs][1]['narrative'] : '';
+          this.inputShelterBudget = responsePlan.budget['item'][BudgetCategory.Inputs][2] ? responsePlan.budget['item'][BudgetCategory.Inputs][2]['budget'] : 0;
+          this.inputShelterNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][2] ? responsePlan.budget['item'][BudgetCategory.Inputs][2]['narrative'] : '';
+          this.inputNutritionBudget = responsePlan.budget['item'][BudgetCategory.Inputs][3] ? responsePlan.budget['item'][BudgetCategory.Inputs][3]['budget'] : 0;
+          this.inputNutritionNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][3] ? responsePlan.budget['item'][BudgetCategory.Inputs][3]['narrative'] : '';
+          this.inputCampBudget = responsePlan.budget['item'][BudgetCategory.Inputs][7] ? responsePlan.budget['item'][BudgetCategory.Inputs][7]['budget'] : 0;
+          this.inputCampNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][7] ? responsePlan.budget['item'][BudgetCategory.Inputs][7]['narrative'] : '';
+          this.inputProtectionBudget = responsePlan.budget['item'][BudgetCategory.Inputs][5] ? responsePlan.budget['item'][BudgetCategory.Inputs][5]['budget'] : 0;
+          this.inputProtectionNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][5] ? responsePlan.budget['item'][BudgetCategory.Inputs][5]['narrative'] : '';
+          this.inputEduBudget = responsePlan.budget['item'][BudgetCategory.Inputs][6] ? responsePlan.budget['item'][BudgetCategory.Inputs][6]['budget'] : 0;
+          this.inputEduNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][6] ? responsePlan.budget['item'][BudgetCategory.Inputs][6]['narrative'] : '';
+          this.inputFoodSecBudget = responsePlan.budget['item'][BudgetCategory.Inputs][4] ? responsePlan.budget['item'][BudgetCategory.Inputs][4]['budget'] : 0;
+          this.inputFoodSecNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][4] ? responsePlan.budget['item'][BudgetCategory.Inputs][4]['narrative'] : '';
+          this.inputOtherBudget = responsePlan.budget['item'][BudgetCategory.Inputs][8] ? responsePlan.budget['item'][BudgetCategory.Inputs][8]['budget'] : 0;
+          this.inputOtherNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][8] ? responsePlan.budget['item'][BudgetCategory.Inputs][8]['narrative'] : '';
+        }
         this.transportBudget = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['budget'] : 0;
         this.transportNarrative = responsePlan.budget['item'][BudgetCategory.Transport] ? responsePlan.budget['item'][BudgetCategory.Transport]['narrative'] : '';
 

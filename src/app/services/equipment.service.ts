@@ -4,13 +4,14 @@ import {Constants} from '../utils/Constants';
 import {Observable, Subject} from 'rxjs';
 import { EquipmentModel } from "../model/equipment.model";
 import { SurgeEquipmentModel } from "../model/equipment-surge.model";
+import { AddEditMappingProgrammeComponent } from "../country-admin/country-office-profile/programme/add-edit-mapping/add-edit-mapping.component";
 
 @Injectable()
 export class EquipmentService {
 
   constructor(private af: AngularFire) { }
 
-    public getEquipments(countryId: string): Observable<EquipmentModel[]> {
+  public getEquipments(countryId: string): Observable<EquipmentModel[]> {
       if (!countryId) {
         return;
       }
@@ -23,6 +24,7 @@ export class EquipmentService {
           equipment.mapFromObject(item);
           equipment.id = item.$key;
           equipments.push(equipment);
+
         });
         return equipments;
       });
@@ -47,6 +49,8 @@ export class EquipmentService {
   }
 
   public saveEquipment(countryId: string, equipment: EquipmentModel): firebase.Promise<any>{
+
+
     if(!countryId || !equipment)
     {
       return Promise.reject('Missing countryId or equipment');
@@ -57,12 +61,15 @@ export class EquipmentService {
 
     if(equipment.id)
     {
+      console.log('true');
       const equipmentData = {};
       equipmentData['/countryOfficeProfile/equipment/' + countryId + '/' + equipment.id] = equipment;
       return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
-    }else{
+
+    }/*else{
+      console.log('false');
       return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + countryId).push(equipment);
-    }
+    }*/
   }
 
   public deleteEquipment(countryId: string, equipment: EquipmentModel): firebase.Promise<any>{

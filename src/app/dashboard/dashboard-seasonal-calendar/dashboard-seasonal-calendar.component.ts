@@ -371,13 +371,15 @@ export class ChronolineEvent {
     event.attrs.fill = season.colorCode;
     event.attrs.stroke = season.colorCode;
     event.click = function () {
-      component.addSeasonName = season.name;
-      component.addSeasonStart = season.startTime;
-      component.addSeasonEnd = season.endTime;
-      component.addSeasonColour = season.colorCode;
-      component.edit = true;
-      component.editSeasonKey = seasonKey;
-      jQuery("#add_calendar").modal("show");
+      if(component != null){
+        component.addSeasonName = season.name;
+        component.addSeasonStart = season.startTime;
+        component.addSeasonEnd = season.endTime;
+        component.addSeasonColour = season.colorCode;
+        component.edit = true;
+        component.editSeasonKey = seasonKey;
+        jQuery("#add_calendar").modal("show");
+      }
     };
     return event;
   }

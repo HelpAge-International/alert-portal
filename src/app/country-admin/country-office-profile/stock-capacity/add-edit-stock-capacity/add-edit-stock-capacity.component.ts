@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
-import {AlertMessageType, StockType} from "../../../../utils/Enums";
+import {AlertMessageType, GeoLocation, StockType} from "../../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 import {DisplayError} from "../../../../errors/display.error";
@@ -9,6 +9,10 @@ import {StockCapacityModel} from "../../../../model/stock-capacity.model";
 import {StockService} from "../../../../services/stock.service";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+import {Indicator} from "../../../../model/indicator";
+import {CommonService} from "../../../../services/common.service";
+import {AngularFire} from "angularfire2";
+import {NoteService} from "../../../../services/note.service";
 declare var jQuery: any;
 
 @Component({
@@ -31,12 +35,44 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  // Variables for ALT-2039
+  private copyIndicatorId: string;
+  public indicatorData: Indicator;
+  private countries = Constants.COUNTRIES;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
+
+  private countrySelection: any[] = [];
+  private curCountrySelection: any[] = this.countrySelection;
+  private countryLocation: number;
+  private countryLevels: any[] = [];
+  private countryLevelsValues: any[] = [];
+  private levelOneDisplay: any[] = [];
+  private levelTwoDisplay: any[] = [];
+  private levelOneShow: any;
+  private selectedCountry: any;
+  private selectedCountryArr: any[] = [];
+  private geoLocation = Constants.GEO_LOCATION;
+  private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
+  private isEdit: boolean = false;
+  private selectedValue: any;
+  private selectedValueL2: any;
+  private presetId: any;
+  private isPreset: boolean = true;
+  private isPresetValue: any;
+
+
+  private activeStockCapacity: StockCapacityModel;
+
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private router: Router,
-              private route: ActivatedRoute) {
+              private af: AngularFire,
+              private route: ActivatedRoute,
+              private _commonService: CommonService,
+              private _noteService: NoteService) {
     this.stockCapacity = new StockCapacityModel();
     this.stockCapacity.stockType = StockType.Country; // set default stock type
+
   }
 
   ngOnDestroy() {
@@ -50,17 +86,20 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       this.countryId = countryId;
       this.agencyId = agencyId;
 
-      // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+            // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
       //   this.countryId = countryAdminUser.countryId;
       //   this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
-
+      this.initCountrySelection();
       this.route.params.subscribe((params: Params) => {
         if (params['id']) {
           this._stockService.getStockCapacity(this.countryId, params['id'])
             .subscribe(stockCapacity => {
               this.stockCapacity = stockCapacity;
+
+
             });
         }
+
         if (params['stockType']) {
           this.stockCapacity.stockType = Number(params['stockType']);
         }
@@ -76,7 +115,18 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   submit() {
-    this._stockService.saveStockCapacity(this.countryId, this.stockCapacity)
+
+    var postData = {
+      location: this.selectedCountry,
+      level1: this.levelOneDisplay[this.selectedValue].id,
+      level2: this.selectedValueL2,
+      agencyId: this.agencyId
+    };
+
+    this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
+    this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/')
+      .push(this.stockCapacity)
+      .update(postData)
       .then(() => {
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
           setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
@@ -112,4 +162,70 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   closeModal() {
     jQuery('#delete-action').modal('hide');
   }
+  initCountrySelection() {
+
+
+    /**
+     * Get the Stock level
+     */
+  console.log(this.stockCapacity, this.activeStockCapacity, this._stockService);
+
+    /**
+     * Preset the first drop down box to the country office
+     */
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/location")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getCountry => {
+        this.selectedCountry = getCountry.$value;
+        console.log(getCountry.$value, 'initCountrySelection');
+
+        /**
+         * Pass country to the level one values for selection
+         */
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(pre => {
+            this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
+
+
+          })
+
+      });
+
+
+  }
+
+  // This function below is to determine the country selected
+  // TODO: Return the array of level1 areas in the country selected.
+  setCountryLevel(){
+    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(content => {
+        err => console.log(err);
+        // TODO: Below needs to return the level1 array of the id selected
+        this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
+
+
+      });
+
+  }
+
+
+  resetValue(){
+
+    console.log('reset selection');
+    // Reset Values to remove level 2 drop down
+    this.levelTwoDisplay.length = 0;
+
+  }
+
+  setLevel1Value(){
+
+    console.log(this.selectedValue, 'preset value');
+    this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
+
+  }
+
+
+
 }

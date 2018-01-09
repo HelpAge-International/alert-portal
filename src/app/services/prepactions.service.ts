@@ -327,7 +327,6 @@ export class PrepActionService {
         .subscribe((snap) => {
           this.defaultClockValue = (+(snap.val().preparedness.value));
           this.defaultClockType = (+(snap.val().preparedness.durationType));
-          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
           if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
             defaultClockSettingsAquired();
             this.ranClockInitialiser = true;
@@ -339,7 +338,6 @@ export class PrepActionService {
         .subscribe((snap) => {
           this.defaultClockValue = (+(snap.val().preparedness.value));
           this.defaultClockType = (+(snap.val().preparedness.durationType));
-          console.log(`default value: ${this.defaultClockValue}, default type: ${this.defaultClockType}`)
           if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
             defaultClockSettingsAquired();
             this.ranClockInitialiser = true;
@@ -399,20 +397,22 @@ export class PrepActionService {
     af.database.list(Constants.APP_STATUS + "/" + path + "/" + userId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        snap.forEach((snapshot) => {
-          if (isMPA == null) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-          else if (isMPA && snapshot.val().level == ActionLevel.MPA) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-          else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-          else if (this.findAction(snapshot.key) != null) {
-            this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
-          }
-        });
+        if (snap) {
+          snap.forEach((snapshot) => {
+            if (isMPA == null) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+            else if (isMPA && snapshot.val().level == ActionLevel.MPA) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+            else if (!isMPA && snapshot.val().level == ActionLevel.APA) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+            else if (this.findAction(snapshot.key) != null) {
+              this.updateAction(af, snapshot.key, snapshot.val(), userId, source, updated);
+            }
+          });
+        }
       });
   }
 
@@ -559,8 +559,6 @@ export class PrepActionService {
       updated(this.actions[i]);
     }
 
-    // console.log("Updating!");
-    // console.log(this.actions[i]);
 
     // Subscriber method
     if (this.updater != null) {
@@ -673,8 +671,6 @@ export class PrepActionService {
       updated(this.actionsNetwork[i]);
     }
 
-    // console.log("Updating!");
-    // console.log(this.actions[i]);
 
     // Subscriber method
     if (this.updater != null) {
@@ -787,8 +783,6 @@ export class PrepActionService {
       updated(this.actionsNetwork[i]);
     }
 
-    // console.log("Updating!");
-    // console.log(this.actions[i]);
 
     // Subscriber method
     if (this.updater != null) {
