@@ -348,10 +348,10 @@
                                     <div class="col-6 text-bold text-right"
                                          *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                      <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
+                                      <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                          href="javascript:void(0);" class="text-primary"
                                          (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                      | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
+                                      | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                            href="javascript:void(0);" class="text-danger"
                                            (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                     </div>
@@ -1021,10 +1021,10 @@
                                     <div class="col-6 text-bold text-right"
                                          *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                      <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
+                                      <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                          href="javascript:void(0);" class="text-primary"
                                          (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                      | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
+                                      | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                            href="javascript:void(0);" class="text-danger"
                                            (click)="deleteNoteNetwork(note, action)">{{"DELETE" | translate}}</a>
                                     </div>
@@ -1318,10 +1318,10 @@
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                  <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
+                                  <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                      href="javascript:void(0);" class="text-primary"
                                      (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                  | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
+                                  | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                        href="javascript:void(0);" class="text-danger"
                                        (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                 </div>
@@ -1770,10 +1770,10 @@
                                   <div class="col-6 text-bold text-right"
                                        *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                    <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
+                                    <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                        href="javascript:void(0);" class="text-primary"
                                        (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                    | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
+                                    | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                          href="javascript:void(0);" class="text-danger"
                                          (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                   </div>
@@ -1972,10 +1972,10 @@
                                   <div class="col-6 text-bold text-right"
                                        *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                    <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit)"
+                                    <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                        href="javascript:void(0);" class="text-primary"
                                        (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                    | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete)"
+                                    | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
                                          href="javascript:void(0);" class="text-danger"
                                          (click)="deleteNoteNetwork(note, action)">{{"DELETE" | translate}}</a>
                                   </div>

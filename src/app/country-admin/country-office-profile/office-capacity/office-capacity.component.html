@@ -32,13 +32,13 @@
       <div class="form-group-country-office-profile col-sm-3">
         <select class="form-control" (change)="filterData($event, 'sSkills')">
           <option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_SUPPORT_SKILLS" | translate}}</option>
-          <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>
+          <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.$key">{{sSkill.name}}</option>
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
         <select class="form-control" (change)="filterData($event, 'tSkills')">
           <option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_TECHNICAL_SKILLS" | translate}}</option>
-          <option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>
+          <option *ngFor="let tSkill of techSkills" [value]="tSkill.$key">{{tSkill.name}}</option>
         </select>
       </div>
       <div class="col-sm-4"></div>

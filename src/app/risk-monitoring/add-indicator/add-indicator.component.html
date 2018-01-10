@@ -142,7 +142,7 @@
     <div class="row" *ngFor="let geoLocationKey of geoLocationList">
       <label for="geoLocation_{{geoLocationKey}}" class="Checkbox--ribbon col-sm-5">
         <input (change)="stateGeoLocation($event)" type="radio" name="RT" id="geoLocation_{{geoLocationKey}}"
-               value="{{geoLocationKey}}" [checked]="indicatorData.geoLocation == geoLocationKey">Check where{{geoLocation[geoLocationKey]
+               value="{{geoLocationKey}}" [checked]="indicatorData.geoLocation == geoLocationKey">{{geoLocation[geoLocationKey]
         | translate}}
         <span class="col-sm-9"></span>
       </label>

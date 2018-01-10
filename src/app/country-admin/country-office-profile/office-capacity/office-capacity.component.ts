@@ -11,6 +11,7 @@ import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import * as moment from "moment";
+import {AgencyService} from "../../../services/agency-service.service";
 declare var jQuery: any;
 
 @Component({
@@ -90,6 +91,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
               private surgeService: SurgeCapacityService,
               private route: ActivatedRoute,
               private _userService: UserService,
+              private _agencyService:AgencyService,
               private af: AngularFire) {
 
   }
@@ -380,9 +382,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         break;
     }
 
-    console.log(filterType)
-    console.log(filterVal);
-
     var result = [];
 
     this.responseStaffsOrigin.forEach(staff => {
@@ -437,19 +436,28 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   _getSkills() {
-    this.af.database.object(Constants.APP_STATUS + '/skill/').takeUntil(this.ngUnsubscribe)
-      .subscribe((skills: any) => {
-        for (let skill in skills) {
-          if (skill.indexOf("$") < 0) {
-            var objSkill = {key: skill, name: skills[skill].name};
-            if (!skills[skill].type) {
-              this.suportedSkills.push(objSkill);
-            } else {
-              this.techSkills.push(objSkill);
-            }
-          }
+    this._agencyService.getSkillsForAgency(this.agencyID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(skill => {
+        if (skill.type == SkillType.Support && !this.suportedSkills.map(item => item.$key).includes(skill.$key)) {
+          this.suportedSkills.push(skill);
+        } else if (skill.type == SkillType.Tech && !this.techSkills.map(item => item.$key).includes(skill.$key)) {
+          this.techSkills.push(skill);
         }
-      });
+      })
+    // this.af.database.object(Constants.APP_STATUS + '/skill/').takeUntil(this.ngUnsubscribe)
+    //   .subscribe((skills: any) => {
+    //     for (let skill in skills) {
+    //       if (skill.indexOf("$") < 0) {
+    //         var objSkill = {key: skill, name: skills[skill].name};
+    //         if (!skills[skill].type) {
+    //           this.suportedSkills.push(objSkill);
+    //         } else {
+    //           this.techSkills.push(objSkill);
+    //         }
+    //       }
+    //     }
+    //   });
   }
 
   _convertObjectToArray(obj: any) {
