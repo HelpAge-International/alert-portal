@@ -199,7 +199,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.isViewingFromExternal = params['isViewingFromExternal'];
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalNetworkViewAccess() : this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
-    })
+    });
   }
 
   private initNetworkAccess() {
@@ -244,6 +244,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           // this.calculateCurrency();
         });
     });
+
   }
 
   private initLocalNetworkAccess() {

@@ -35,9 +35,22 @@
           <div class="col-sm-1">
             <button class="btn btn-primary text-capitalize" (click)="editAction(action.id)">{{"EDIT" | translate}}</button>
           </div>
+          <div class="container">
+            <div class="row text-left">
+              <div class="col-md-2">
+              <p>{{"GLOBAL.TYPE" | translate}} <strong>{{"GLOBAL.ACTION_TYPE.MANDATED" | translate}}</strong></p>
+              </div>
+              <div class="col-md-3">
+                <p>Level: <strong>{{actionLevels[action.level] | translate}}</strong></p>
+              </div>
+            </div>
+          </div>
+
         </div>
-        <div class="text-left col-sm-12"><p>{{"GLOBAL.TYPE" | translate}}: <strong>{{"GLOBAL.ACTION_TYPE.MANDATED" | translate}}</strong></p></div>
-      </div>
+        </div>
+
+
+
 
       <div *ngIf="mpaActions.length == 0" class="bg-grey Spaced text-center">
         <p class="font-weight-bold padding-two">{{"NETWORK.NO_MPA" | translate}}</p>

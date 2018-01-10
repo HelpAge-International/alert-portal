@@ -3,3 +3,7 @@ tooltip{
    display: inline-block;
    z-index: 1;
 }
+
+.col-sm-11.row{
+  margin-top: -20px;
+}

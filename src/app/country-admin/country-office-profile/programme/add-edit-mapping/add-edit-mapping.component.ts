@@ -9,11 +9,16 @@ import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import * as moment from "moment";
+import {CommonService} from "../../../../services/common.service";
 import {OperationAreaModel} from "../../../../model/operation-area.model";
 import {Location} from "@angular/common";
-import {CommonService} from "../../../../services/common.service";
 import { CountryAdminHeaderComponent } from "../../../country-admin-header/country-admin-header.component";
 import {NetworkService} from "../../../../services/network.service";
+import {Indicator} from "../../../../model/indicator";
+import {TranslateService} from "@ngx-translate/core";
+import {ModelJsonLocation
+} from "../../../../model/json-location.model";
+
 
 declare var jQuery: any;
 
@@ -31,6 +36,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private countryID: string;
   private userType;
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
+  public ResponsePlansEnum = ResponsePlanSectors;
   private ResponsePlanSectorsList: number[] = [
     ResponsePlanSectors.wash,
     ResponsePlanSectors.health,
@@ -58,15 +64,29 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   // Variables for ALT-2039
   private copyIndicatorId: string;
-  public indicatorData: any;
+  public indicatorData: Indicator;
   private countries = Constants.COUNTRIES;
   private countriesList: number[] = Constants.COUNTRY_SELECTION;
   private agencyId: string;
   private countrySelection: any[] = [];
-  private curCountrySelection: any = this.countrySelection;
+  private curCountrySelection: any[] = this.countrySelection;
   private countryLocation: number;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
+  private levelOneDisplay: any[] = [];
+  private levelTwoDisplay: any[] = [];
+  private levelOneShow: any;
+  private selectedCountry: any;
+  private selectedCountryArr: any[] = [];
+  private geoLocation = Constants.GEO_LOCATION;
+  private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
+  private isEdit: boolean = false;
+  private selectedValue: any;
+  private selectedValueL2: any;
+  private presetId: any;
+  private isPreset: boolean = true;
+  private isPresetValue: any;
+
 
   private when: any[] = [];
 
@@ -78,7 +98,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private _location: Location,
               private _commonService: CommonService,
-              private userService: UserService,) {
+              private _translate: TranslateService,
+              private userService: UserService) {
     this.programme = new ProgrammeMappingModel();
   }
 
@@ -86,10 +107,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.countryID = countryId;
+      this.agencyId = agencyId;
       this.initData();
+      this.initCountrySelection();
     });
-
-
   }
 
   initData() {
@@ -104,20 +125,43 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         // });
       });
 
-    // get the country levels values
-    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(content => {
-        this.countryLevelsValues = content;
-        console.log(content[0]); // this displays the array of areas.
-        err => console.log(err);
-      });
+  }
 
+  initCountrySelection() {
+    /**
+     * Preset the first drop down box to the country office
+     */
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID + "/location")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getCountry => {
+        this.selectedCountry = getCountry.$value;
+        console.log(getCountry.$value, 'initCountrySelection');
+
+        /**
+         * Pass country to the level one values for selection
+         */
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(pre => {
+            this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
+
+
+          })
+
+      });
 
 
   }
 
-  _getProgramme(programmeID: string) {
+  checkLevel2() {
+
+    if (this.levelTwoDisplay.length == 1){
+         console.log('do nothing');
+      } else {
+         jQuery('#level2Show').hide();
+    }
+}
+_getProgramme(programmeID: string) {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + programmeID)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((programme: any) => {
@@ -149,12 +193,19 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.alertMessage = this.programme.validate();
     if (!this.alertMessage) {
       var dataToSave = this.programme;
+      var postData = {
+        where: this.selectedCountry,
+        level1: this.levelOneDisplay[this.selectedValue].id,
+        level2: this.selectedValueL2,
+        agencyId: this.agencyId
+      };
       dataToSave.updatedAt = new Date().getTime();
 
       if (!this.programmeId) {
         if (this.countryID) {
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
             .push(dataToSave)
+            .update(postData)
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
@@ -167,6 +218,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
           this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR', AlertMessageType.Error);
         }
       } else {
+        dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
         this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
           .update(dataToSave)
@@ -207,31 +259,57 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     });
   }
 
-
   // Dan || ALT-2039 functions
+
   // #start
+
   addAnotherLocation() {
     let modelArea = new OperationAreaModel();
     modelArea.country = this.countryLocation;
     this.indicatorData.affectedLocation.push(modelArea);
-    console.log(this.indicatorData)
+    console.log(this.indicatorData, 'check');
   }
 
-  // This function below is to determine the country selected *INCOMPLETE*
+  // This function below is to determine the country selected
   // TODO: Return the array of level1 areas in the country selected.
-  setCountryLevel(id: any){
-    console.log(id);
-    this.curCountrySelection(Constants.COUNTRY_LEVELS_VALUES_FILE)
+  setCountryLevel(){
+    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
-        this.countryLevelsValues = content;
         err => console.log(err);
         // TODO: Below needs to return the level1 array of the id selected
-        this.curCountrySelection = this.countryLevelsValues.filter(value => value.id === parseInt(id));
+        this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
+
+
       });
 
-    console.log(this.curCountrySelection, 'end of countryLevel function'); // this displays the array of areas.
+  }
 
+
+  resetValue(){
+
+    console.log('reset selection');
+    // Reset Values to remove level 2 drop down
+    this.levelTwoDisplay.length = 0;
+
+  }
+
+  setLevel1Value(){
+
+      console.log(this.selectedValue, 'preset value');
+      this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
+
+  }
+
+
+
+
+  stateGeoLocation(event: any) {
+    var geoLocation = parseInt(event.target.value);
+    this.indicatorData.geoLocation = geoLocation;
+    if (geoLocation == GeoLocation.subnational && this.indicatorData.affectedLocation.length == 0) {
+      this.addAnotherLocation();
+    }
   }
 
   checkTypeof(param: any) {
@@ -242,11 +320,11 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     }
   }
 
+
   removeAnotherLocation(key: number,) {
     this.indicatorData.affectedLocation.splice(key, 1);
   }
 // #end
-
   _convertTimestampToDate(timestamp: number) {
     this.when = [];
     let date = moment(timestamp);

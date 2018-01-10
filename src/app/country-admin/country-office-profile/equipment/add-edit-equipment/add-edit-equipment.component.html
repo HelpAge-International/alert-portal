@@ -24,16 +24,59 @@
                         [(ngModel)]="equipment && equipment.name"></div>
             </div>
 
-            <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</strong></h6>
-                <div class="col-sm-4">
-                    <input type="text" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="location"
-                        [(ngModel)]="equipment && equipment.location">
-                </div>
+
+
+          <!--START-->
+          <h6 class="col-sm-12 font-weight-bold row">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' | translate }}</h6><br>
+          <div class="col-sm-11 row">
+            <div class="col-sm-3">
+              <div class="form-group-risk-frequency row">
+                <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
+                  <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
+                  <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
+                    translate}}
+                  </option>
+                </select>
+              </div>
             </div>
 
+
+            <!--LEVEL 1 START-->
+
+            <div class="col-sm-3">
+              <div class="form-group-risk-frequency">
+                <select  class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
+                  <option value="undefined" disabled selected hidden >
+                    {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
+                  </option>
+                  <option *ngFor="let x of levelOneDisplay" [value]="x.id"> {{x.value}}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!--==LEVEL 1 END==-->
+
+            <!--==LEVEL 2 START==-->
+
+            <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3" >
+              <div class="form-group-risk-frequency ">
+                <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2" >
+                  <option value="undefined" disabled selected hidden >
+                    {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
+                  </option>
+                  <option *ngFor="let y of levelTwoDisplay" [value]="y.id">{{y.value}}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!--==LEVEL 2 END==-->
+          </div>
+          <!--END-->
+
             <div class="row form-group">
-                <h6 class="col-sm-12"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></h6>
+                <h6 class="col-sm-12 Spaced-above"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' | translate }}</strong></h6>
                 <div class="col-sm-4">
                     <input type="number" min="1" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" class="col-sm-12 form-control" name="quantity"
                         [(ngModel)]="equipment && equipment.quantity">

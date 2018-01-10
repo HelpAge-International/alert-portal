@@ -510,7 +510,7 @@
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
+                    <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save" id="hideSave"
                          *ngIf="indicator.fromNetwork"
                          (click)="updateIndicatorStatus(indicator.hazardId, indicator, indicatorKey)">
                       {{"GLOBAL.SAVE_CHANGES" | translate}}

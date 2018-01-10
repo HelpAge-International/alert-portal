@@ -5,7 +5,9 @@ import { NoteModel } from "./note.model";
 export class EquipmentModel extends BaseModel {
     public id: string;
     public name: string;
-    public location: string;
+    public location: number;
+    public level1: number;
+    public level2: string;
     public quantity: number;
     public status: string;
     public notes: NoteModel[];
@@ -15,9 +17,9 @@ export class EquipmentModel extends BaseModel {
         if (!this.name && !this.isExcluded('name', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_NAME');
         }
-        if (!this.location && !this.isExcluded('location', excludedFields)) {
+        /*if (!this.location && !this.isExcluded('location', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_LOCATION');
-        }
+        }*/
         if ((!this.quantity || this.quantity < 1) && !this.isExcluded('quantity', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.NO_QUANTITY');
         }
