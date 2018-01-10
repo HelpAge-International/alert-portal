@@ -239,7 +239,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   }
 
   private localNetworkAdminAccess() {
-    if(this.networkViewValues){
+    if(this.networkViewValues || this.isViewingFromExternal){
+      console.log("networkViewValues")
             this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(officeAgencyMap => {
@@ -292,6 +293,7 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
               })
 
     }else{
+      console.log("normal login")
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
         this._networkService.getSelectedIdObj(user.uid)

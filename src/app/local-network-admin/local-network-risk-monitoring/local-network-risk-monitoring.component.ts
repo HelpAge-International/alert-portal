@@ -125,6 +125,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private networkId: any;
   private countryLevelsValues: any;
   private networkViewValues: {};
+  private isViewingFromExternal: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -185,6 +186,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["userType"]) {
           this.UserType = params["userType"];
+        }
+        if (params["isViewingFromExternal"]) {
+          this.isViewingFromExternal = params["isViewingFromExternal"];
         }
 
 
@@ -862,23 +866,22 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     console.log("isContext: " + isContext);
     console.log(hazard);
     if (isContext) {
+      let data = {
+        "countryId": this.countryID,
+        "agencyId": this.agencyId,
+        "systemId": this.systemId,
+        "indicatorId": indicator.$key,
+        "isContext": isContext,
+        "networkId": this.networkId
+      }
+      if (this.isViewingFromExternal) {
+        data["isViewingFromExternal"] = true
+      }
       if (this.agencyOverview) {
-        this.router.navigate(["/network/local-network-risk-monitoring/add-indicator/countryContext", {
-          "countryId": this.countryID,
-          "agencyId": this.agencyId,
-          "systemId": this.systemId,
-          "indicatorId": indicator.$key,
-          "isContext": isContext,
-          "agencyOverview": true
-        }]);
+        data["agencyOverview"] = true
+        this.router.navigate(["/risk-monitoring/add-indicator/countryContext", data]);
       } else {
-        this.router.navigate(["/network/local-network-risk-monitoring/add-indicator/countryContext", {
-          "countryId": this.countryID,
-          "agencyId": this.agencyId,
-          "systemId": this.systemId,
-          "indicatorId": indicator.$key,
-          "isContext": isContext
-        }]);
+        this.router.navigate(["/risk-monitoring/add-indicator/countryContext", data]);
       }
 
     } else {
@@ -902,25 +905,20 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                 this.alertMessage = new AlertMessageModel("No same active hazard exist in your country !");
               } else {
                 console.log("do the hazard copy action");
+                let passData = {
+                  "countryId": this.countryID,
+                  "agencyId": this.agencyId,
+                  "systemId": this.systemId,
+                  "indicatorId": indicator.$key,
+                  "hazardId": hazard.$key,
+                  "isContext": isContext,
+                  "networkId": this.networkId
+                }
                 if (this.agencyOverview) {
-                  this.router.navigate(["/network/local-network-risk-monitoring/add-indicator/" + hazards[0].$key, {
-                    "countryId": this.countryID,
-                    "agencyId": this.agencyId,
-                    "systemId": this.systemId,
-                    "indicatorId": indicator.$key,
-                    "hazardId": hazard.$key,
-                    "isContext": isContext,
-                    "agencyOverview": true
-                  }]);
+                  passData["isViewingFromExternal"] = true
+                  this.router.navigate(["/network/local-network-risk-monitoring/add-indicator/" + hazards[0].$key, passData]);
                 } else {
-                  this.router.navigate(["/network/local-network-risk-monitoring/add-indicator/" + hazards[0].$key, {
-                    "countryId": this.countryID,
-                    "agencyId": this.agencyId,
-                    "systemId": this.systemId,
-                    "indicatorId": indicator.$key,
-                    "hazardId": hazard.$key,
-                    "isContext": isContext
-                  }]);
+                  this.router.navigate(["/network/local-network-risk-monitoring/add-indicator/" + hazards[0].$key, passData]);
                 }
               }
             });

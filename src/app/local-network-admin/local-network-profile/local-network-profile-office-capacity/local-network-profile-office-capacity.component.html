@@ -36,27 +36,27 @@
     </div>
 
     <!--filter-->
-    <!--<div *ngIf="!isEditingCapacity" class="row Spaced padding-left-two">-->
-      <!--<label class="col-sm-0 Spaced-above">{{"GLOBAL.FILTER" | translate}}:</label>-->
-      <!--<div class="form-group-country-office-profile col-sm-3">-->
-        <!--<select class="form-control" (change)="filterDataAll($event, 'office')">-->
-          <!--<option *ngFor="let key of officeTypeList" [value]="key">{{officeType[key] | translate}}</option>-->
-        <!--</select>-->
-      <!--</div>-->
-      <!--<div class="form-group-country-office-profile col-sm-3">-->
-        <!--<select class="form-control" (change)="filterDataAll($event, 'sSkills')">-->
-          <!--<option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_SUPPORT_SKILLS" | translate}}</option>-->
-          <!--<option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>-->
-        <!--</select>-->
-      <!--</div>-->
-      <!--<div class="form-group-country-office-profile col-sm-3">-->
-        <!--<select class="form-control" (change)="filterDataAll($event, 'tSkills')">-->
-          <!--<option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_TECHNICAL_SKILLS" | translate}}</option>-->
-          <!--<option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>-->
-        <!--</select>-->
-      <!--</div>-->
-      <!--<div class="col-sm-4"></div>-->
-    <!--</div>-->
+    <div *ngIf="!isEditingCapacity" class="row Spaced padding-left-two">
+      <label class="col-sm-0 Spaced-above">{{"GLOBAL.FILTER" | translate}}:</label>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" (change)="filterDataAll($event, 'office')">
+          <option *ngFor="let key of officeTypeList" [value]="key">{{officeType[key] | translate}}</option>
+        </select>
+      </div>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" (change)="filterDataAll($event, 'sSkills')">
+          <option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_SUPPORT_SKILLS" | translate}}</option>
+          <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>
+        </select>
+      </div>
+      <div class="form-group-country-office-profile col-sm-3">
+        <select class="form-control" (change)="filterDataAll($event, 'tSkills')">
+          <option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_TECHNICAL_SKILLS" | translate}}</option>
+          <option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>
+        </select>
+      </div>
+      <div class="col-sm-4"></div>
+    </div>
 
     <div *ngFor="let agency of agencies">
 

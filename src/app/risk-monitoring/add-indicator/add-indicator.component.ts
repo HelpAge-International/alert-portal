@@ -225,8 +225,9 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string, copyHazardId: string) {
 
     if (this.isContext && !copyHazardId) {
-      if (this.networkCountryId) {
-        this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.networkCountryId + "/" + copyIndicatorId)
+      if (this.networkId) {
+        let id = this.networkCountryId ? this.networkCountryId : this.networkId
+        this.af.database.object(Constants.APP_STATUS + "/indicator/" + id + "/" + copyIndicatorId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(copyContextIndicator => {
             let contextIndicator = new Indicator();

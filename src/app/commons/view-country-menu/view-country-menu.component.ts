@@ -82,31 +82,71 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
             this.isViewingFromExternal = params["isViewingFromExternal"];
           }
 
-          if (this.agencyId && this.countryId && !this.isViewingFromExternal) {
-            this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(networkCountryMap => {
-                let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
-                this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
-                this.loadCountry(this.agencyId, this.countryId);
+          this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(networkCountryMap => {
+              let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+              this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
 
+              if (this.agencyId && this.countryId && !this.isViewingFromExternal) {
+                this.loadCountry(this.agencyId, this.countryId);
                 this.countryService.getPrivacySettingForCountry(this.countryId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(privacy => {
                     this.privacy = privacy;
                     this.updateMainMenu(this.privacy);
                   });
-              })
 
-          } else if (this.networkId && this.networkCountryId && this.isViewingFromExternal) {
-            this.loadNetworkCountry(this.networkId, this.networkCountryId)
-            this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(privacy => {
-                this.privacy = privacy
-                this.updateMainMenuNetwork(this.privacy)
-              })
-          }
+              } else if (this.networkId && this.networkCountryId && this.isViewingFromExternal) {
+                this.loadNetworkCountry(this.networkId, this.networkCountryId)
+                this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(privacy => {
+                    this.privacy = privacy
+                    this.updateMainMenuNetwork(this.privacy)
+                  })
+              } else if (this.networkId && !this.networkCountryId && this.isViewingFromExternal) {
+                this.loadNetwork(this.networkId)
+                this.networkService.getPrivacySettingForNetwork(this.networkId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(privacy => {
+                    this.privacy = privacy
+                    this.updateMainMenuNetwork(this.privacy)
+                  })
+                this.networkService.getLocalNetworkModelsForCountry(this.userAgencyId, this.userCountryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(localNetworks =>{
+                    this.withinNetwork = localNetworks.map(network => network.id).includes(this.networkId)
+                  })
+              }
+
+            })
+
+          // if (this.agencyId && this.countryId && !this.isViewingFromExternal) {
+          //   this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+          //     .takeUntil(this.ngUnsubscribe)
+          //     .subscribe(networkCountryMap => {
+          //       let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+          //       this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
+          //       this.loadCountry(this.agencyId, this.countryId);
+          //
+          //       this.countryService.getPrivacySettingForCountry(this.countryId)
+          //         .takeUntil(this.ngUnsubscribe)
+          //         .subscribe(privacy => {
+          //           this.privacy = privacy;
+          //           this.updateMainMenu(this.privacy);
+          //         });
+          //     })
+          //
+          // } else if (this.networkId && this.networkCountryId && this.isViewingFromExternal) {
+          //   this.loadNetworkCountry(this.networkId, this.networkCountryId)
+          //   this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
+          //     .takeUntil(this.ngUnsubscribe)
+          //     .subscribe(privacy => {
+          //       this.privacy = privacy
+          //       this.updateMainMenuNetwork(this.privacy)
+          //     })
+          // }
 
         });
 
@@ -167,6 +207,14 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkCountry => {
         this.countryLocation = networkCountry.location
+      })
+  }
+
+  private loadNetwork(networkId: string) {
+    this.networkService.getLocalNetwork(networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(localNetwork => {
+        this.countryLocation = localNetwork.countryCode
       })
   }
 

@@ -186,6 +186,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         }
 
         if (this.copyCountryId && this.copyIndicatorId) {
+          console.log("triggered")
           this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 

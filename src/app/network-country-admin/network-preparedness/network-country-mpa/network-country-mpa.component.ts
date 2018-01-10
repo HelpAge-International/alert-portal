@@ -424,6 +424,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         let index = 0;
+        console.log(snap)
         for (let x of snap.val().fileSettings) {
           this.fileExtensions[index].allowed = snap.val().fileSettings[index];
           index++;

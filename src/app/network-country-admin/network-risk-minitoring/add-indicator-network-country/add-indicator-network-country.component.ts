@@ -177,8 +177,15 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         if (params["systemId"]) {
           this.systemId = params["systemId"];
         }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+        if (params["userType"]) {
+          this.UserType = params["userType"];
+        }
 
         if (this.copyCountryId && this.copyIndicatorId) {
+          console.log("triggered")
           this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 

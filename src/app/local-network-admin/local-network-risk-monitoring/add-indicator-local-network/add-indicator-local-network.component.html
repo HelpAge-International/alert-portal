@@ -1,11 +1,11 @@
-<div *ngIf="!isViewing; else local">
+<ng-container *ngIf="!isViewing; else local">
   <app-local-network-header></app-local-network-header>
   <app-local-network-menu></app-local-network-menu>
-</div>
+</ng-container>
 
 <ng-template #local>
   <app-country-admin-header></app-country-admin-header>
-  <app-local-network-menu></app-local-network-menu>
+  <app-local-network-menu [isViewing]="true"></app-local-network-menu>
 </ng-template>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"

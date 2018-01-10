@@ -157,8 +157,76 @@
     </div>
   </div>
 
+  <div class="Ribbon__section__wrap Spaced" *ngIf="filteredLocalNetworkData && filteredLocalNetworkData.length > 0">
+    <div class="Accordion Preparedness__agency-list" *ngFor="let networkCountryData of filteredLocalNetworkData">
+      <div class="row"
+           (click)="overviewLocalNetwork(networkCountryData.networkId)">
+        <!--<div class="col-sm-2 col-6 Preparedness__agency-list__item border-right" *ngIf="!_globalNetworks">-->
+          <!--<div class="Icon&#45;&#45;md Icon&#45;&#45;align-center Icon__country"-->
+               <!--[style.background-image]="getBackground(networkCountryData.countryCode)"></div>-->
+          <!--<span>{{countries[networkCountryData.countryCode] | translate}}</span>-->
+        <!--</div>-->
+        <div class="col-sm-2 col-6 Preparedness__agency-list__item border-right" *ngIf="_globalNetworks">
+          <div class="Agency-logo--no-border Agency-logo--md Icon--align-center"
+               [ngStyle]="_globalNetworks && _globalNetworks[networkCountryData.networkId]?.logoPath ? { 'background-image': 'url(' + _globalNetworks[networkCountryData.networkId].logoPath + ')'} : { 'background-image': 'url(' + defaultAgencyLogo + ')'}"></div>
+          <span>{{_globalNetworks && _globalNetworks[networkCountryData.networkId]?.name}}</span>
+        </div>
+        <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+          <div
+            class="Icon--md Icon__circle Icon--align-center Icon--alert Icon--b-{{alertColors[networkCountryData.alertLevel] ? alertColors[networkCountryData.alertLevel] : 'green'}}"></div>
+          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.ALERT_LEVEL" | translate}}</span>
+        </div>
+        <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+          <div class="Icon">
+            <div
+              class="Icon__circle Icon--align-center Icon--{{userAgencyId==networkCountryData.globalNetworkId ? 'blue' : getIconLocalNetwork('plan', networkCountryData.networkId)}} Icon--md">
+              {{(privacyMapNetworkCountry?.get(networkCountryData.networkId)?.responsePlan === Privacy.Public ||
+              (privacyMapNetworkCountry?.get(networkCountryData.networkId)?.responsePlan === Privacy.Network &&
+              withinNetworkMap?.get(networkCountryData.networkId))) ?
+              countResponsePlans[networkCountryData.networkId] ?
+              countResponsePlans[networkCountryData.networkId] : 0 : 'N/A'}}
+            </div>
+          </div>
+          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.RESPONSE_PLANS" | translate}}</span>
+        </div>
+        <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+          <div class="Icon">
+            <div
+              class="Icon__circle Icon--align-center Icon--b-{{getActionIconLocalNetwork(true, networkCountryData.networkId, mpaStatusColors[networkCountryData.networkId])}} Icon--md">
+              <i
+                class="fa {{mpaStatusIcons[networkCountryData.networkId]}} fa-inverse fa-2x"
+                aria-hidden="true"></i></div>
+          </div>
+          <span>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}}</span>
+        </div>
+        <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+          <div class="Icon">
+            <div
+              class="Icon__circle Icon--align-center Icon--b-{{getActionIconLocalNetwork(false, networkCountryData.networkId, advStatusColors[networkCountryData.networkId])}} Icon--md">
+              <i
+                class="fa {{advStatusIcons[networkCountryData.networkId]}} fa-inverse fa-2x"
+                aria-hidden="true"></i>
+            </div>
+          </div>
+          <span>{{"ADVANCED_PREPAREDNESS" | translate}}</span>
+        </div>
+        <div class="col-sm-2 col-6 Preparedness__agency-list__item">
+          <div class="Icon">
+            <div
+              class="Icon__circle Icon--align-center Icon--{{getIconNetwork('chs', (networkCountryData.networkId ? networkCountryData.networkId : networkCountryData.globalNetworkId), (networkCountryData.id ? networkCountryData.id : networkCountryData.networkCountryId))}} Icon--md">
+              {{userAgencyId==networkCountryData.globalNetworkId ? (percentageCHS[networkCountryData.id ?
+              networkCountryData.id : networkCountryData.$key] ? percentageCHS[networkCountryData.id ?
+              networkCountryData.id : networkCountryData.$key] + '%' : '0%') : 'N/A'}}
+            </div>
+          </div>
+          <span>{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.CHS" | translate}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="Ribbon__section__wrap Spaced Empty--ribbon"
-       *ngIf="!filteredNetworkCountryData || filteredNetworkCountryData.length === 0">
+       *ngIf="(!filteredNetworkCountryData || filteredNetworkCountryData.length === 0) && (!filteredLocalNetworkData || filteredLocalNetworkData.length === 0)">
     <p *ngIf="filter != 'all'" style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_COUNTRIES_BY" | translate}}
       {{alertLevels[filter] | translate}}</p>
     <p *ngIf="filter == 'all'" style="text-align:center;">{{"COUNTRY_ADMIN.VIEW_MY_AGENCY.NO_COUNTRIES" |

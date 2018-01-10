@@ -36,6 +36,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   // //add network and network country offices
   private globalNetworks = [];
   private networkCountryData = [];
+  private localNetworkData = []
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute,
               private af: AngularFire, private router: Router, private userService: UserService,
@@ -68,6 +69,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
         this.countryKey = country.location;
         this.getCountryOfficesWithSameLocationsInOtherAgencies();
         this.getNetworkAndNetworkCountries()
+        this.getLocalNetworks()
       });
   }
 
@@ -77,7 +79,6 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
         this.networkCountryData = []
-        this.globalNetworks = []
         networkMap.forEach((networkCountryId, networkId) => {
           this.networkService.getNetworkCountry(networkId, networkCountryId)
             .takeUntil(this.ngUnsubscribe)
@@ -89,6 +90,17 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
             .subscribe(network => {
               this.globalNetworks[networkCountryId] = network
             })
+        })
+      })
+  }
+
+  private getLocalNetworks() {
+    this.networkService.getLocalNetworksWithSameLocationsInOtherNetworks(this.countryToShow.location)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(localNetworks => {
+        this.localNetworkData = localNetworks
+        localNetworks.forEach(localNetwork =>{
+          this.globalNetworks[localNetwork.networkId] = localNetwork
         })
       })
   }
@@ -128,4 +140,5 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
         });
       });
   }
+
 }

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
-import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
+import {AngularFire, AuthMethods, AuthProviders, FirebaseAuthState} from 'angularfire2';
 import {Constants} from '../utils/Constants';
-import {RxHelper} from '../utils/RxHelper';
 import {Observable, Subject} from 'rxjs';
 import {firebaseConfig} from '../app.module';
 import {UUID} from '../utils/UUID';
@@ -12,11 +11,8 @@ import {PartnerModel} from "../model/partner.model";
 import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
-import {Subscription} from "rxjs/Subscription";
 import {ChangePasswordModel} from "../model/change-password.model";
-import {recognize} from "@angular/router/src/recognize";
 import {ModelStaff} from "../model/staff.model";
-import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {ModelAgency} from "../model/agency.model";
 
 @Injectable()
@@ -452,9 +448,9 @@ export class UserService {
             .flatMap((mySnap) => {
               if (mySnap.val() != null) {
 
-                      console.log('local agency return')
+                console.log('local agency return')
 
-                      return Observable.of(UserType.LocalAgencyAdmin);
+                return Observable.of(UserType.LocalAgencyAdmin);
 
               }
               else {
@@ -637,7 +633,7 @@ export class UserService {
 
   getAgencyModel(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
-      .map(agency =>{
+      .map(agency => {
         let model = new ModelAgency(null);
         model.mapFromObject(agency);
         model.id = agency.$key;
@@ -664,16 +660,16 @@ export class UserService {
   }
 
   saveUserNetworkSelection(uid, userType, networkId) {
-    return this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").set(networkId);
+    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork").set(networkId);
   }
 
   deleteUserNetworkSelection(uid, userType) {
-    return this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork").remove();
+    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork").remove();
   }
 
   getUserNetworkSelection(uid, userType) {
-    return this.af.database.object(Constants.APP_STATUS +"/"+Constants.USER_PATHS[userType]+"/"+uid+"/selectedNetwork")
-      .map(selectedObj =>{
+    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork")
+      .map(selectedObj => {
         if (selectedObj.$value) {
           return selectedObj.$value;
         }
