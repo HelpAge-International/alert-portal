@@ -525,19 +525,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                         }
 
                       })
-                      if (hazard.isSeasonal) {
-                        if (hazard.isActive) {
-                          this.activeHazards.push(hazard);
-                          if (hazard.hazardScenario == -1) {
-                            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
-                              .takeUntil(this.ngUnsubscribe)
-                              .subscribe((snap) => {
-                                hazard.hazardName = snap.val().name;
-                              });
-                          }
-                        }
-
-                      } else if (containsHazard) {
+                      if (containsHazard) {
                         if (hazard.hasOwnProperty('indicators') && hasIndicators) {
 
 
@@ -594,11 +582,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                         }
 
                       })
-                      if (hazard.isSeasonal) {
-                        if (hazard.isActive) {
-                          this.archivedHazards.push(hazard);
-                        }
-                      } else if (containsHazard) {
+                      if (containsHazard) {
                         if (hazard.hasOwnProperty('indicators') && hasIndicators) {
 
 
