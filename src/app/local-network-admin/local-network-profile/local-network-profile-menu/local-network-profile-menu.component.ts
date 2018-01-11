@@ -80,34 +80,42 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
   }
 
   goToProgrammes() {
+    this.networkViewValues["officeTarget"] = "programme"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-programme', this.networkViewValues] : ['/network/local-network-office-profile/programme', this.networkViewValues])
   }
 
   goToOfficeCapacity() {
+    this.networkViewValues["officeTarget"] = "officeCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-office-capacity', this.networkViewValues] : ['/network/local-network-office-profile/office-capacity', this.networkViewValues])
   }
 
   goToPartners() {
+    this.networkViewValues["officeTarget"] = "partners"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-partners', this.networkViewValues] : ['/network/local-network-office-profile/partners', this.networkViewValues])
   }
 
   goToEquipment() {
+    this.networkViewValues["officeTarget"] = "equipment"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-equipment', this.networkViewValues] : ['/network/local-network-office-profile/equipment', this.networkViewValues])
   }
 
   goToCoordination() {
+    this.networkViewValues["officeTarget"] = "coordination"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-coordination', this.networkViewValues] : ['/network/local-network-office-profile/coordination', this.networkViewValues])
   }
 
   goToStockCapacity() {
+    this.networkViewValues["officeTarget"] = "stockCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-stock-capacity', this.networkViewValues] : ['/network/local-network-office-profile/stock-capacity', this.networkViewValues])
   }
 
   goToDocuments() {
+    this.networkViewValues["officeTarget"] = "documents"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-documents', this.networkViewValues] : ['/network/local-network-office-profile/documents', this.networkViewValues])
   }
 
   goToContacts() {
+    this.networkViewValues["officeTarget"] = "contacts"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-contacts', this.networkViewValues] : ['/network/local-network-office-profile/contacts', this.networkViewValues])
   }
 

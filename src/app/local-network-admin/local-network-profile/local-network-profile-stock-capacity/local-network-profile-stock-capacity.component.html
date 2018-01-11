@@ -47,7 +47,6 @@
     </div>
 
 
-
     <div class="row">
       <h3 class="col-sm-3">Network Owned Stock</h3>
       <button type="button" class="btn-ghost btn-primary"
@@ -70,7 +69,8 @@
       </div>
 
       <div class="row Spaced-above" *ngIf="stockCapacitiesIN">
-        <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
+        <div class="col-sm-1"><p class="margin-top-three"><strong>{{
+          'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
           translate }}</strong></p></div>
         <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
           translate }}</strong></p></div>
@@ -155,7 +155,8 @@
                   {{ 'NOTES.ADD' | translate }}
                 </button>
                 <br>
-                <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
+                <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+                translate
                 }}</a>
               </div>
             </form>
@@ -177,7 +178,8 @@
       </div>
 
       <div class="row" *ngIf="stockCapacitiesOUT">
-        <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
+        <div class="col-sm-1"><p class="margin-top-three"><strong>{{
+          'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
           translate }}</strong></p></div>
         <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
           translate }}</strong></p></div>
@@ -295,217 +297,242 @@
     <div class="row Line-row"></div>
     <div *ngIf="showAgency">
       <div *ngFor="let agency of agencies">
-        <div class="Ribbon__response grey margin-bottom-one">
-          <div class="Ribbon__header__wrap lnetwork">
-            <div class="Ribbon__leftwrap">
-              <img src="{{agency.logoPath}}" class="circle-image" alt="">
-              <h4>{{agency.name}}</h4>
-            </div>
-            <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-          </div>
-        </div>
-        <div class="Response__content spaced-top-bottom lnetwork">
-          <div *ngIf="showNetwork">
-            <h4 class="Spaced-sm"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.STOCK_IN' | translate }}</strong></h4>
-
-            <div class="row" *ngIf="!agencyStocksIN">
-              <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EMPTY_LIST' | translate }}</p>
-            </div>
-
-            <div class="row Spaced-above" *ngIf="agencyStocksIN">
-              <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
-                translate }}</strong></p></div>
-              <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
-                translate }}</strong></p></div>
-              <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' |
-                translate }}</strong></p></div>
-              <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
-                translate }}</strong></p></div>
-              <div class="col-sm-2"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p>
+        <ng-container
+          *ngIf="agency.$key == agencyId || agencyCountryPrivacyMap.get(agency.$key)?.officeProfile != Privacy.Private">
+          <div class="Ribbon__response grey margin-bottom-one">
+            <div class="Ribbon__header__wrap lnetwork">
+              <div class="Ribbon__leftwrap">
+                <img src="{{agency?.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}" class="circle-image" alt="">
+                <h4>{{agency.name}}</h4>
               </div>
+              <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
             </div>
-            <div class="row Line-row"></div>
-            <br>
+          </div>
+          <div class="Response__content spaced-top-bottom">
+            <div *ngIf="showNetwork">
+              <h4 class="Spaced-sm"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.STOCK_IN' | translate }}</strong>
+              </h4>
 
-            <div *ngFor="let stockCapacity of countryInMap.get(agencyCountryMap.get(agency.$key)); let i = index">
-              <div class="row margin-bottom-one">
-                <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
-                <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
-                <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
-                <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
-                <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
-                <!--Lead time for delivery to affected population-->
-                <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one"
-                                                           style="width:2em;" alt="Notes">
-                  <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
-                  <a href="#notes_{{agency.$key}}_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-                    {{ 'GLOBAL.NOTES' | translate }}
-                  </a>
-                </div> <!--Notes-->
+              <div class="row" *ngIf="!agencyStocksIN">
+                <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EMPTY_LIST' | translate
+                  }}</p>
+              </div>
+
+              <div class="row Spaced-above" *ngIf="agencyStocksIN">
+                <div class="col-sm-1"><p class="margin-top-three"><strong>{{
+                  'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
+                  translate }}</strong></p></div>
+                <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
+                  translate }}</strong></p></div>
+                <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY'
+                  |
+                  translate }}</strong></p></div>
+                <div class="col-sm-2"><p class="margin-top-three"><strong>{{
+                  'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
+                  translate }}</strong></p></div>
+                <div class="col-sm-2"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate
+                  }}</strong></p>
+                </div>
               </div>
               <div class="row Line-row"></div>
               <br>
-              <!-- Notes Drop Down -->
-              <div id="notes_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
-                <div class="log_left p-3">
-                  <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
-                  <hr class="d-inline-flex">
-                  <form (ngSubmit)="addNoteAgency(stockCapacity, newNote[stockCapacity.$key], agencyCountryMap.get(agency.$key))">
-                    <input type="text"
-                           name="new_note"
-                           placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
-                           [(ngModel)]="newNote[stockCapacity.$key] && newNote[stockCapacity.$key].content">
 
-                    <!--Note post -->
-                    <div class="row Spaced log-post__wrap--risk"
-                         *ngFor="let note of stockCapacity.notes">
-                      <div class="log-date__wrap--risk col-lg-1">
-                        <p>{{ note.time | date: 'dd MMM y' }}</p>
-                      </div>
-                      <div class="col-lg-6">
-                        <p>{{ note.content }}</p>
-                        <br>
-                        <div class="row">
-                          <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
-                          </p>
-                          <a
+              <div *ngFor="let stockCapacity of countryInMap.get(agencyCountryMap.get(agency.$key)); let i = index">
+                <div class="row margin-bottom-one">
+                  <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
+                  <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
+                  <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
+                  <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
+                  <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
+                  <!--Lead time for delivery to affected population-->
+                  <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg"
+                                                             class="margin-left-one"
+                                                             style="width:2em;" alt="Notes">
+                    <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0
+                      }}</p>
+                    <a href="#notes_{{agency.$key}}_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+                      {{ 'GLOBAL.NOTES' | translate }}
+                    </a>
+                  </div> <!--Notes-->
+                </div>
+                <div class="row Line-row"></div>
+                <br>
+                <!-- Notes Drop Down -->
+                <div id="notes_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+                  <div class="log_left p-3">
+                    <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
+                    <hr class="d-inline-flex">
+                    <form
+                      (ngSubmit)="addNoteAgency(stockCapacity, newNote[stockCapacity.$key], agencyCountryMap.get(agency.$key))">
+                      <input type="text"
+                             name="new_note"
+                             placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                             [(ngModel)]="newNote[stockCapacity.$key] && newNote[stockCapacity.$key].content">
 
-                            href="javascript:void(0)"
-                            class="col-sm-0 margin-right-none"
-                            (click)="editNoteAgency(stockCapacity, note, agency)">{{ 'EDIT' | translate }}</a>
-                          <p
+                      <!--Note post -->
+                      <div class="row Spaced log-post__wrap--risk"
+                           *ngFor="let note of stockCapacity.notes">
+                        <div class="log-date__wrap--risk col-lg-1">
+                          <p>{{ note.time | date: 'dd MMM y' }}</p>
+                        </div>
+                        <div class="col-lg-6">
+                          <p>{{ note.content }}</p>
+                          <br>
+                          <div class="row">
+                            <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy)
+                              }}</strong>
+                            </p>
+                            <a
 
-                            href="javascript:void(0)" class="padding-left-one">|</p>
-                          <a
+                              href="javascript:void(0)"
+                              class="col-sm-0 margin-right-none"
+                              (click)="editNoteAgency(stockCapacity, note, agency)">{{ 'EDIT' | translate }}</a>
+                            <p
 
-                            href="javascript:void(0)"
-                            class="padding-left-one col-sm-0 text-danger"
-                            (click)="deleteNoteAgency(stockCapacity, note, agency)">{{ 'DELETE' | translate }}</a>
+                              href="javascript:void(0)" class="padding-left-one">|</p>
+                            <a
+
+                              href="javascript:void(0)"
+                              class="padding-left-one col-sm-0 text-danger"
+                              (click)="deleteNoteAgency(stockCapacity, note, agency)">{{ 'DELETE' | translate }}</a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <hr>
+                      <hr>
 
-                    <!--add Note button-->
-                    <div class="add_log mt-auto p-2 text-right float-right">
-                      <button type="submit"
-                              class="btn btn-primary text-uppercase">{{
-                        'NOTES.ADD' | translate }}
-                      </button>
-                      <br>
-                      <br><a href="#notes_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
-                      translate
-                      }}</a>
-                    </div>
-                  </form>
+                      <!--add Note button-->
+                      <div class="add_log mt-auto p-2 text-right float-right">
+                        <button type="submit"
+                                class="btn btn-primary text-uppercase">{{
+                          'NOTES.ADD' | translate }}
+                        </button>
+                        <br>
+                        <br><a href="#notes_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{
+                        'GLOBAL.CANCEL' |
+                        translate
+                        }}</a>
+                      </div>
+                    </form>
+                  </div>
                 </div>
+                <!--Notes Drop Down End-->
               </div>
-              <!--Notes Drop Down End-->
-            </div>
 
-            <h4 class="Spaced-sm"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.STOCK_OUT' | translate }}</strong></h4>
+              <h4 class="Spaced-sm"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.STOCK_OUT' | translate }}</strong>
+              </h4>
 
-            <div class="row" *ngIf="!agencyStocksOUT">
-              <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EMPTY_LIST' | translate }}</p>
-            </div>
-
-            <div class="row Spaced-above" *ngIf="agencyStocksOUT">
-              <div class="col-sm-1"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
-                translate }}</strong></p></div>
-              <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
-                translate }}</strong></p></div>
-              <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY' |
-                translate }}</strong></p></div>
-              <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
-                translate }}</strong></p></div>
-              <div class="col-sm-2"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p>
+              <div class="row" *ngIf="!agencyStocksOUT">
+                <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EMPTY_LIST' | translate
+                  }}</p>
               </div>
-            </div>
-            <div class="row Line-row"></div>
-            <br>
 
-            <div *ngFor="let stockCapacity of countryExtMap.get(agencyCountryMap.get(agency.$key)); let i = index">
-              <div class="row margin-bottom-one">
-                <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
-                <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
-                <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
-                <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
-                <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
-                <!--Lead time for delivery to affected population-->
-                <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one"
-                                                           style="width:2em;" alt="Notes">
-                  <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0 }}</p>
-                  <a href="#notes_{{agency.$key}}-ext_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-                    {{ 'GLOBAL.NOTES' | translate }}
-                  </a>
-                </div> <!--Notes-->
+              <div class="row Spaced-above" *ngIf="agencyStocksOUT">
+                <div class="col-sm-1"><p class="margin-top-three"><strong>{{
+                  'COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED' |
+                  translate }}</strong></p></div>
+                <div class="col-sm-3"><p class="margin-top-three"><strong>{{ 'GLOBAL.DESCRIPTION' |
+                  translate }}</strong></p></div>
+                <div class="col-sm-2"><p class="margin-top-three"><strong>{{ 'COUNTRY_ADMIN.PROFILE.EQUIPMENT.QUANTITY'
+                  |
+                  translate }}</strong></p></div>
+                <div class="col-sm-2"><p class="margin-top-three"><strong>{{
+                  'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION' |
+                  translate }}</strong></p></div>
+                <div class="col-sm-2"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate
+                  }}</strong></p>
+                </div>
               </div>
               <div class="row Line-row"></div>
               <br>
-              <!-- Notes Drop Down -->
-              <div id="notes_{{agency.$key}}-ext_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
-                <div class="log_left p-3">
-                  <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
-                  <hr class="d-inline-flex">
-                  <form (ngSubmit)="addNoteAgency(stockCapacity, newNote[stockCapacity.$key], agencyCountryMap.get(agency.$key))">
-                    <input type="text"
-                           name="new_note"
-                           placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
-                           [(ngModel)]="newNote[stockCapacity.$key] && newNote[stockCapacity.$key].content">
 
-                    <!--Note post -->
-                    <div class="row Spaced log-post__wrap--risk"
-                         *ngFor="let note of stockCapacity.notes">
-                      <div class="log-date__wrap--risk col-lg-1">
-                        <p>{{ note.time | date: 'dd MMM y' }}</p>
-                      </div>
-                      <div class="col-lg-6">
-                        <p>{{ note.content }}</p>
-                        <br>
-                        <div class="row">
-                          <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
-                          </p>
-                          <a
+              <div *ngFor="let stockCapacity of countryExtMap.get(agencyCountryMap.get(agency.$key)); let i = index">
+                <div class="row margin-bottom-one">
+                  <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
+                  <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
+                  <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
+                  <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
+                  <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
+                  <!--Lead time for delivery to affected population-->
+                  <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg"
+                                                             class="margin-left-one"
+                                                             style="width:2em;" alt="Notes">
+                    <p class="notes-number__components--country-office-profile">{{ stockCapacity.notes?.length || 0
+                      }}</p>
+                    <a href="#notes_{{agency.$key}}-ext_{{ i }}" data-toggle="collapse"
+                       class="row margin-left-one-half">
+                      {{ 'GLOBAL.NOTES' | translate }}
+                    </a>
+                  </div> <!--Notes-->
+                </div>
+                <div class="row Line-row"></div>
+                <br>
+                <!-- Notes Drop Down -->
+                <div id="notes_{{agency.$key}}-ext_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+                  <div class="log_left p-3">
+                    <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
+                    <hr class="d-inline-flex">
+                    <form
+                      (ngSubmit)="addNoteAgency(stockCapacity, newNote[stockCapacity.$key], agencyCountryMap.get(agency.$key))">
+                      <input type="text"
+                             name="new_note"
+                             placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                             [(ngModel)]="newNote[stockCapacity.$key] && newNote[stockCapacity.$key].content">
 
-                            href="javascript:void(0)"
-                            class="col-sm-0 margin-right-none"
-                            (click)="editNoteAgency(stockCapacity, note, agency)">{{ 'EDIT' | translate }}</a>
-                          <p
+                      <!--Note post -->
+                      <div class="row Spaced log-post__wrap--risk"
+                           *ngFor="let note of stockCapacity.notes">
+                        <div class="log-date__wrap--risk col-lg-1">
+                          <p>{{ note.time | date: 'dd MMM y' }}</p>
+                        </div>
+                        <div class="col-lg-6">
+                          <p>{{ note.content }}</p>
+                          <br>
+                          <div class="row">
+                            <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy)
+                              }}</strong>
+                            </p>
+                            <a
 
-                            href="javascript:void(0)" class="padding-left-one">|</p>
-                          <a
+                              href="javascript:void(0)"
+                              class="col-sm-0 margin-right-none"
+                              (click)="editNoteAgency(stockCapacity, note, agency)">{{ 'EDIT' | translate }}</a>
+                            <p
 
-                            href="javascript:void(0)"
-                            class="padding-left-one col-sm-0 text-danger"
-                            (click)="deleteNoteAgency(stockCapacity, note, agency)">{{ 'DELETE' | translate }}</a>
+                              href="javascript:void(0)" class="padding-left-one">|</p>
+                            <a
+
+                              href="javascript:void(0)"
+                              class="padding-left-one col-sm-0 text-danger"
+                              (click)="deleteNoteAgency(stockCapacity, note, agency)">{{ 'DELETE' | translate }}</a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <hr>
+                      <hr>
 
-                    <!--add Note button-->
-                    <div class="add_log mt-auto p-2 text-right float-right">
-                      <button type="submit"
-                              class="btn btn-primary text-uppercase">{{
-                        'NOTES.ADD' | translate }}
-                      </button>
-                      <br>
-                      <br><a href="#notes_{{agency.$key}}-ext_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
-                      translate
-                      }}</a>
-                    </div>
-                  </form>
+                      <!--add Note button-->
+                      <div class="add_log mt-auto p-2 text-right float-right">
+                        <button type="submit"
+                                class="btn btn-primary text-uppercase">{{
+                          'NOTES.ADD' | translate }}
+                        </button>
+                        <br>
+                        <br><a href="#notes_{{agency.$key}}-ext_{{ i }}" class="margin-left-two" data-toggle="collapse">{{
+                        'GLOBAL.CANCEL' |
+                        translate
+                        }}</a>
+                      </div>
+                    </form>
+                  </div>
                 </div>
+                <!--Notes Drop Down End-->
               </div>
-              <!--Notes Drop Down End-->
             </div>
           </div>
-        </div>
+        </ng-container>
       </div>
     </div>
   </div>
 </div>
-
 
 
 <!-- Delete note modal -->
@@ -518,7 +545,8 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" |
+          translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal()">{{"GLOBAL.CANCEL"|
@@ -542,7 +570,8 @@
           translate}}</strong></h5>
       </div>
       <div class="modal-body">
-        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
+        <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" |
+          translate}}</p></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModalAgency()">{{"GLOBAL.CANCEL"|
@@ -582,7 +611,8 @@
 </div>
 
 <!--Edit Note Modal Agency-->
-<div class="modal fade" id="edit-action-agency" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+<div class="modal fade" id="edit-action-agency" tabindex="-1" role="dialog" aria-labelledby="editNote"
+     aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -596,7 +626,8 @@
                   [(ngModel)]="activeNote && activeNote.content"></textarea>
       </div>
       <div class="row Right-aligned Spaced col-sm-12">
-        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModalAgency()">{{"GLOBAL.CANCEL" |
+        <a href="#" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModalAgency()">{{"GLOBAL.CANCEL"
+          |
           translate}}</a>
         <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
                 (click)="editActionAgency(activeStockCapacity, activeNote)">{{"SAVE" | translate}}

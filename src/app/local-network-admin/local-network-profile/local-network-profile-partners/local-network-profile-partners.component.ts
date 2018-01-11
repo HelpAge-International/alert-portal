@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
+import {AlertMessageType, Privacy, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {PartnerOrganisationService} from "../../../services/partner-organisation.service";
@@ -19,6 +19,8 @@ import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {OperationAreaModel} from "../../../model/operation-area.model";
 import {LocalStorageService} from "angular-2-local-storage";
+import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
+import {SettingsService} from "../../../services/settings.service";
 
 declare var jQuery: any;
 
@@ -75,7 +77,12 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   private networkViewValues: {};
   private isViewingFromExternal: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
+  private agencyCountryPrivacyMap = new Map<string, ModelAgencyPrivacy>()
+  private Privacy = Privacy
+
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _noteService: NoteService,
@@ -84,6 +91,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
               private _networkService: NetworkService,
               private networkService: NetworkService,
               private storageService: LocalStorageService,
+              private settingService: SettingsService,
               private af: AngularFire,
               private router: Router) {
     this.areasOfOperation = [];
@@ -168,6 +176,13 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                   .subscribe(content => {
                     this.countryLevelsValues = content;
                   });
+              })
+
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
               })
           });
 
@@ -267,6 +282,13 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                   .subscribe(content => {
                     this.countryLevelsValues = content;
                   });
+              })
+
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
               })
           })
         });

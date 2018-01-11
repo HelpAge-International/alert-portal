@@ -4,7 +4,7 @@ import {UserService} from "../../../services/user.service";
 import {NetworkService} from "../../../services/network.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType, UserType} from "../../../utils/Enums";
+import {AlertMessageType, OfficeType, Privacy, ResponsePlanSectors, SkillType, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
@@ -14,6 +14,8 @@ import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import * as moment from "moment";
 import {LocalStorageService} from "angular-2-local-storage";
+import {SettingsService} from "../../../services/settings.service";
+import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 
 declare var jQuery: any;
 
@@ -98,6 +100,9 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private agencyId: string;
   private isViewingFromExternal: boolean;
 
+  private agencyCountryPrivacyMap = new Map<string, ModelAgencyPrivacy>()
+  private Privacy = Privacy
+
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -109,6 +114,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               private _agencyService: AgencyService,
               private networkService: NetworkService,
               private storageService: LocalStorageService,
+              private settingService: SettingsService,
               private af: AngularFire) {
 
   }
@@ -166,6 +172,12 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agency => {
                 this.agencies.push(agency)
+              })
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
               })
           });
 
