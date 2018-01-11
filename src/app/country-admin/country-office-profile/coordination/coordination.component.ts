@@ -39,6 +39,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private userType: UserType;
+  private userAgencyId: string;
 
   // Helpers
   constructor(private pageControl: PageControlService, private _userService: UserService,
@@ -71,6 +72,7 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
+          this.userAgencyId = agencyId;
 
           if (this.countryId && this.agencyId && this.isViewing) {
             this._agencyService.getAgency(this.agencyId)

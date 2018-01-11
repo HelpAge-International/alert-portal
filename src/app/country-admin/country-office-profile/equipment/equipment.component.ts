@@ -13,6 +13,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import { CountryOfficeAddEditEquipmentComponent } from "./add-edit-equipment/add-edit-equipment.component";
+import {AgencyService} from "../../../services/agency-service.service";
 
 declare var jQuery: any;
 
@@ -57,10 +58,12 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private userAgencyId: string;
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
               private _noteService: NoteService,
+              private agencyService: AgencyService,
               private router: Router,
               private af: AngularFire,
               private route: ActivatedRoute) {
@@ -93,6 +96,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
           this.userType = userType;
           this.countryId = countryId;
           this.programmeId = systemId;
+          this.userAgencyId = agencyId;
+
           if (this.countryId && this.agencyId && this.isViewing) {
             this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
@@ -102,6 +107,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
 
                   this._noteService.getNotes(equipmentNode).subscribe(notes => {
+                    notes.forEach( note => {
+                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                        this.agencyService.getAgency(note.agencyId)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe( agency => {
+                            note.agencyName = agency.name;
+                          })
+                      }
+                    })
                     equipment.notes = notes;
                   });
                   // Create the new note model
@@ -120,6 +134,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
 
                   this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
+                    notes.forEach( note => {
+                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                        this.agencyService.getAgency(note.agencyId)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe( agency => {
+                            note.agencyName = agency.name;
+                          })
+                      }
+                    })
                     surgeEquipment.notes = notes;
                   });
 
@@ -151,6 +174,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
 
                   this._noteService.getNotes(equipmentNode).subscribe(notes => {
+                    notes.forEach( note => {
+                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                        this.agencyService.getAgency(note.agencyId)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe( agency => {
+                            note.agencyName = agency.name;
+                          })
+                      }
+                    })
                     equipment.notes = notes;
                   });
 
@@ -168,6 +200,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
 
                   this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
+                    notes.forEach( note => {
+                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                        this.agencyService.getAgency(note.agencyId)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe( agency => {
+                            note.agencyName = agency.name;
+                          })
+                      }
+                    })
                     surgeEquipment.notes = notes;
                   });
 
@@ -245,6 +286,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   addNote(equipmentType: string, equipmentId: string, note: NoteModel) {
     if (this.validateNote(note)) {
       let equipmentNode = "";
+      note.agencyId = this.userAgencyId
 
       if (equipmentType == 'equipment') {
         equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);

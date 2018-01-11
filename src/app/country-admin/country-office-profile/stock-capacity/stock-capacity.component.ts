@@ -11,6 +11,7 @@ import {NoteService} from "../../../services/note.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
+import {AgencyService} from "../../../services/agency-service.service";
 declare var jQuery: any;
 
 @Component({
@@ -45,11 +46,13 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private userAgencyId: string;
 
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private _noteService: NoteService,
+              private agencyService: AgencyService,
               private router: Router,
               private af: AngularFire,
               private route: ActivatedRoute) {
@@ -78,6 +81,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
+          this.userAgencyId = agencyId;
 
           if (this.countryId && this.agencyId && this.isViewing) {
             this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
@@ -90,6 +94,15 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
                   .replace('{countryId}', this.countryId)
                   .replace('{id}', stockCapacity.id);
                 this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                  notes.forEach( note => {
+                    if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                      this.agencyService.getAgency(note.agencyId)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe( agency => {
+                          note.agencyName = agency.name;
+                        })
+                    }
+                  })
                   stockCapacity.notes = notes;
 
                   // Create the new note model for partner organisation
@@ -121,6 +134,15 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
                   .replace('{countryId}', this.countryId)
                   .replace('{id}', stockCapacity.id);
                 this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                  notes.forEach( note => {
+                    if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                      this.agencyService.getAgency(note.agencyId)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe( agency => {
+                          note.agencyName = agency.name;
+                        })
+                    }
+                  })
                   stockCapacity.notes = notes;
 
                   // Create the new note model for partner organisation
@@ -191,6 +213,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
   addNote(stockCapacity: StockCapacityModel, note: NoteModel) {
     if (this.validateNote(note)) {
+      note.agencyId = this.userAgencyId
       const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
         .replace('{countryId}', this.countryId)
         .replace('{id}', stockCapacity.id);

@@ -12,6 +12,7 @@ import {SessionService} from "../../../services/session.service";
 import {CommonService} from "../../../services/common.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
+import {AgencyService} from "../../../services/agency-service.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
@@ -60,12 +61,14 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private userAgencyId: string;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private _commonService: CommonService,
               private _noteService: NoteService,
               private _sessionService: SessionService,
+              private agencyService: AgencyService,
               private af: AngularFire,
               private router: Router) {
     this.areasOfOperation = [];
@@ -99,6 +102,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
           this.uid = user.uid;
           this.userType = userType;
+          this.userAgencyId = agencyId;
 
           if (this.agencyId && this.countryId && this.isViewing) {
             this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
@@ -111,6 +115,15 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 this.partnerOrganisations.forEach(partnerOrganisation => {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
                   this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                    notes.forEach( note => {
+                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                        this.agencyService.getAgency(note.agencyId)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe( agency => {
+                            note.agencyName = agency.name;
+                          })
+                      }
+                    })
                     partnerOrganisation.notes = notes;
                   });
 
@@ -150,6 +163,15 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 this.partnerOrganisations.forEach(partnerOrganisation => {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
                   this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                    notes.forEach(note => {
+                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                        this.agencyService.getAgency(note.agencyId)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe( agency => {
+                            note.agencyName = agency.name;
+                          })
+                      }
+                    })
                     partnerOrganisation.notes = notes;
                   });
 
@@ -288,6 +310,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   addNote(partnerOrganisation: PartnerOrganisationModel, note: NoteModel) {
+    note.agencyId = this.userAgencyId
     if (this.validateNote(note)) {
       const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
       this._noteService.saveNote(partnerOrganisationNode, note).then(() => {

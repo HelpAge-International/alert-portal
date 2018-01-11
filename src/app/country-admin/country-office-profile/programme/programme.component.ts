@@ -9,6 +9,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import { AddEditMappingProgrammeComponent } from "./add-edit-mapping/add-edit-mapping.component";
 import {CommonService} from "../../../services/common.service";
+import {AgencyService} from "../../../services/agency-service.service";
 
 declare var jQuery: any;
 
@@ -66,12 +67,14 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   ];
 
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private userAgencyId: string;
 
   constructor(private pageControl: PageControlService,
               private _commonService: CommonService,
               private route: ActivatedRoute,
               private router: Router,
               private userService: UserService,
+              private agencyService: AgencyService,
               private af: AngularFire) {
 
   }
@@ -97,6 +100,9 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
+          this.userAgencyId = agencyId;
+          console.log('agencyId: ' + this.agencyId)
+          console.log('userAgencyId: ' + this.userAgencyId)
           if (this.isViewing) {
             this._getProgramme();
           } else {
@@ -129,6 +135,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     logData.content = this.logContent[programmeID];
     logData.uploadBy = this.uid;
     logData.time = this._getCurrentTimestamp();
+    logData.agencyId = this.userAgencyId
 
     this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/4WMapping/' + programmeID + '/programmeNotes')
       .push(logData)
@@ -168,6 +175,15 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             this.getUsers(note.uploadBy)
               .takeUntil(this.ngUnsubscribe)
               .subscribe((user: any) => {
+
+                if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                  this.agencyService.getAgency(note.agencyId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe( agency => {
+                      note.agencyName = agency.name;
+                    })
+                }
+
                 note.uploadByFullName = user.firstName + ' ' + user.lastName;
               });
           });

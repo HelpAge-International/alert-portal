@@ -252,10 +252,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     this.alerts = this.alertService.getAlerts(id)
       .map(alerts => {
         let alertList = [];
+        console.log(alerts)
         alerts.forEach(alert => {
-          if (alert.approvalStatus == AlertStatus.Approved) {
             alertList.push(alert);
-          }
         });
         return alertList;
       });
