@@ -931,6 +931,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     if (!this.hasUsers) {
       this.hasUsers = true
       if (this.networkUserType == NetworkUserAccountType.NetworkCountryAdmin) {
+        console.log('net country admin')
         this.userService.getUser(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((user) => {
@@ -977,6 +978,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           })
 
       } else if (this.networkUserType == NetworkUserAccountType.NetworkAdmin) {
+        console.log('net  admin')
         this.userService.getUser(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((user) => {
@@ -984,6 +986,42 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
             let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
             this.usersForAssign.push(userToPush);
           })
+
+        this.networkService.getLocalNetwork(this.networkId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(network => {
+            console.log(network)
+            if (network.agencies) {
+              Object.keys(network.agencies).forEach(agencyKey => {
+                console.log(agencyKey)
+                if(network.agencies[agencyKey].isApproved) {
+                  this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + '/' + network.agencies[agencyKey].countryCode)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(data => {
+
+                      if (data.adminId) {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+                          var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                          this.usersForAssign.push(userToPush);
+                        });
+                      }
+                    });
+                  //Obtaining other staff data
+                  this.af.database.object(Constants.APP_STATUS + "/staff/" + network.agencies[agencyKey].countryCode).subscribe((data: {}) => {
+                    for (let userID in data) {
+                      if (!userID.startsWith('$')) {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+                          var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                          this.usersForAssign.push(userToPush);
+                        });
+                      }
+                    }
+                  })
+                }
+              })
+            }
+          })
+
       } else if (this.userType == UserType.GlobalDirector) {
         console.log('globalDirector')
         this.userService.getUser(this.uid)
@@ -1005,6 +1043,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               });
           });
       } else {
+
+        console.log('last else')
 
         this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
           .takeUntil(this.ngUnsubscribe)
