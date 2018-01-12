@@ -16,7 +16,7 @@ import {
   AlertStatus,
   ApprovalStatus,
   Countries,
-  DashboardType, ModuleNameNetwork,
+  DashboardType, ModuleNameNetwork, Privacy,
   UserType
 } from "../../utils/Enums";
 import {ModelAlert} from "../../model/alert.model";
@@ -245,6 +245,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(modules => {
         this.networkModules = modules
+        console.log(this.networkModules)
       })
 
   }
@@ -256,12 +257,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     } else {
       this.DashboardTypeUsed = DashboardType.default
     }
-
-    console.log(this.DashboardTypeUsed)
-
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
-    console.log('hereeeee')
-    console.log(this.networkViewValues)
     if (!this.networkViewValues) {
       this.router.navigateByUrl("/dashboard")
       return
@@ -282,6 +278,12 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.networkService.getNetworkModuleMatrix(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.moduleSettings = matrix);
+
+    this.settingService.getCountryModulesSettings(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(modules => {
+        this.networkModules = modules
+      })
   }
 
   ngOnDestroy() {
@@ -652,43 +654,52 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   private getHazardsForCountriesInNetwork() {
     CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
-      this.af.database.list(Constants.APP_STATUS + '/hazard/' + countryId)
+      this.settingService.getPrivacySettingForCountry(countryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(list => {
-          list.forEach(hazard => {
-            if (hazard.isActive) {
-              if (hazard.hazardScenario == -1) {
-                this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
-                  .first()
-                  .subscribe(nameObj => {
-                    hazard.otherName = nameObj.name;
-                    this.hazards.push(hazard);
-                  });
-              } else {
-                if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
-                  this.hazards.push(hazard);
-                  this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(object => {
-                      if (object) {
-                        this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
-                      }
-                    });
-                } else {
-                  this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(object => {
-                      if (object) {
+        .subscribe(privacy => {
+          console.log(privacy)
+          let agencyKey = CommonUtils.reverseMap(this.agencyCountryMap).get(countryId)
+          if (agencyKey == this.agencyId || privacy.riskMonitoring != Privacy.Private) {
+            this.af.database.list(Constants.APP_STATUS + '/hazard/' + countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(list => {
+                list.forEach(hazard => {
+                  if (hazard.isActive) {
+                    if (hazard.hazardScenario == -1) {
+                      this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
+                        .first()
+                        .subscribe(nameObj => {
+                          hazard.otherName = nameObj.name;
+                          this.hazards.push(hazard);
+                        });
+                    } else {
+                      if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
+                        this.hazards.push(hazard);
+                        this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(object => {
+                            if (object) {
+                              this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                            }
+                          });
+                      } else {
+                        this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(object => {
+                            if (object) {
 
-                        let key = this.getHazardIdIfExist(hazard, this.hazards)
-                        this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                              let key = this.getHazardIdIfExist(hazard, this.hazards)
+                              this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                            }
+                          });
                       }
-                    });
-                }
-              }
-            }
-          });
+                    }
+                  }
+                });
+              })
+          }
         })
+
     })
   }
 
@@ -713,15 +724,23 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
     //get other countries in network
     CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
-      this.af.database.list(Constants.APP_STATUS + '/indicator/' + countryId)
+      this.settingService.getPrivacySettingForCountry(countryId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(list => {
-          list.forEach(indicator => {
-            if (!CommonUtils.itemExistInList(indicator.$key, this.countryContextIndicators)) {
-              this.countryContextIndicators.push(indicator);
-            }
-          });
-        });
+        .subscribe(privacy => {
+          let agencyKey = CommonUtils.reverseMap(this.agencyCountryMap).get(countryId)
+          if (agencyKey == this.agencyId || privacy.riskMonitoring != Privacy.Private) {
+            this.af.database.list(Constants.APP_STATUS + '/indicator/' + countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(list => {
+                list.forEach(indicator => {
+                  if (!CommonUtils.itemExistInList(indicator.$key, this.countryContextIndicators)) {
+                    this.countryContextIndicators.push(indicator);
+                  }
+                });
+              });
+          }
+        })
+
     })
   }
 

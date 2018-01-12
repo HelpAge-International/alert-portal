@@ -409,7 +409,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
             this.settingService.getPrivacySettingForCountry(value)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(privacy => {
-                if (agencyKey == this.agencyId || (privacy.officeProfile != Privacy.Private && this.isViewing)) {
+                if (agencyKey == this.agencyId || privacy.riskMonitoring != Privacy.Private) {
                   this.af.database.list(Constants.APP_STATUS + "/indicator/" + value).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
                     indicators.forEach(indicator => {
                       indicator.fromAgency = true;
@@ -486,14 +486,14 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         this.networkService.getAgencyCountryOfficesByNetworkCountry(this.networkCountryId, this.networkId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(officeAgencyMap => {
-            console.log(officeAgencyMap)
+
             officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
               //get privacy for country
               this.settingService.getPrivacySettingForCountry(value)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(privacy => {
-                  if (agencyKey == this.agencyId || (this.isViewing && privacy.officeProfile != Privacy.Private)) {
+                  if (agencyKey == this.agencyId || privacy.riskMonitoring != Privacy.Private) {
                     this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
                       hazards.forEach((hazard: any, key) => {
                         hazard.id = hazard.$key;
