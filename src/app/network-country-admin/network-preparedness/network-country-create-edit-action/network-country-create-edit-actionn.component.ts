@@ -130,6 +130,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               private userService: UserService,
               private storage: LocalStorageService,
               private _agencyService: AgencyService,
+              private _userService: UserService,
               private route: ActivatedRoute,
               private translate: TranslateService,
               private router: Router) {
@@ -590,10 +591,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       updateObj.budget = this.action.budget;
       if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
         updateObj.asignee = this.action.asignee;
-        if (this.isViewing) {
-          updateObj.createdByAgencyId = this.agencyId;
-          updateObj.createdByCountryId = this.countryId;
-        }
+        // if (this.isViewing) {
+        //   updateObj.createdByAgencyId = this.agencyId;
+        //   updateObj.createdByCountryId = this.countryId;
+        // }
       }
       if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
         updateObj.assignHazard = [];
@@ -624,53 +625,134 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         updateObj.calculatedIsComplete = null;
       }
 
-      let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-      if (this.action.id != null) {
-        // Updating
-        console.log(updateObj);
-        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+      let id;
 
-          if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
-            console.log("Updating:");
-            console.log(notification.content);
-
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
-              this._location.back();
-            });
-          }
-        });
+      if(this.isViewing){
+        id = this.networkCountryId ? this.networkCountryId : this.networkId
+      }else{
+        id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
       }
-      else {
-        // Saving
-        updateObj.createdAt = new Date().getTime();
-        updateObj.networkId = this.networkId;
-        console.log(updateObj);
-        this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
-
-          if (updateObj.asignee) {
-            console.log('there is an assignee')
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
-
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
-              this._location.back();
-            });
-          }
 
 
-        });
+      //where to put this?
+      // this._userService.getUserType(this.action.asignee)
+      //   .map(x => {
+      //     let userType = x;
+      //     if(userType != NetworkUserAccountType.NetworkAdmin || userType != NetworkUserAccountType.NetworkCountryAdmin) {
+      //       const userTypePath = Constants.USER_PATHS[userType];
+      //       console.log(userTypePath)
+      //       console.log(userTypePath);
+      //       this._userService.getAgencyId(userTypePath, this.action.asignee)
+      //         .subscribe(agency => {
+      //
+      //           let agencyId = agency;
+      //           this._userService.getCountryId(userTypePath, this.action.asignee)
+      //             .subscribe(country => {
+      //               let countryId = country;
+      //               updateObj.createdByAgencyId = agencyId;
+      //               updateObj.createdByCountryId = countryId;
+      //             });
+      //         })
+      //     }
+      //   })
+
+      if (updateObj.asignee) {
+        console.log('there is an assignee')
+        console.log(updateObj.asignee)
+        this._userService.getUserType(updateObj.asignee)
+          .subscribe(x => {
+            console.log('mapping x to user type')
+            let userType = x;
+              const userTypePath = Constants.USER_PATHS[userType];
+              console.log(userTypePath)
+              console.log(userTypePath);
+              this._userService.getAgencyId(userTypePath, updateObj.asignee)
+                .subscribe(agency => {
+
+                  let agencyId = agency;
+                  this._userService.getCountryId(userTypePath, updateObj.asignee)
+                    .subscribe(country => {
+
+                      if(userType != NetworkUserAccountType.NetworkAdmin || userType != NetworkUserAccountType.NetworkCountryAdmin) {
+
+                        let countryId = country;
+                        updateObj.createdByAgencyId = agencyId;
+                        updateObj.createdByCountryId = countryId;
+
+                      }else{
+                        updateObj.createdByAgencyId = null
+                        updateObj.createdByCountryId = null
+                      }
+
+                      if (this.action.id != null) {
+                        console.log('action is is not null')
+                        // Updating
+                        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+
+                          if (updateObj.asignee != this.oldAction.asignee) {
+
+                            // Send notification to the assignee
+                            let notification = new MessageModel();
+                            const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+                            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+                            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+                            console.log("Updating:");
+                            console.log(notification.content);
+
+                            notification.time = new Date().getTime();
+                            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+                              this._location.back();
+                            });
+                          }else{
+                            this._location.back()
+                          }
+
+                        });
+                      } else {
+                        console.log('action id is null')
+                        // Saving
+                        updateObj.createdAt = new Date().getTime();
+                        updateObj.networkId = this.networkId;
+                        console.log(updateObj);
+                        this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
+
+                          // Send notification to the assignee
+                          let notification = new MessageModel();
+                          notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                            : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+                          notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                            : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+
+                          notification.time = new Date().getTime();
+                          this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+                            this._location.back();
+                          });
+                        });
+                      }
+                    })
+                })
+            })
+
+      }else{
+
+        if (this.action.id != null) {
+          // Updating
+          console.log(updateObj);
+          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+            this._location.back();
+          });
+        } else {
+          // Saving
+          updateObj.createdAt = new Date().getTime();
+          updateObj.networkId = this.networkId;
+          console.log(updateObj);
+          this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
+            this._location.back();
+          });
+        }
+
       }
+
     }
   }
 

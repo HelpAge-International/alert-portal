@@ -234,6 +234,7 @@ export class PrepActionService {
     // this.systemAdminId = systemId;
     // this.getDefaultClockSettings(af, agencyId, countryId, () => {
     networkMap.forEach((networkCountryId, networkId) => {
+      console.log(networkId)
       // if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
       //   this.initNetwork(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
       // }
