@@ -12,7 +12,6 @@ import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import * as moment from "moment";
-import {AgencyService} from "../../../services/agency-service.service";
 declare var jQuery: any;
 
 @Component({
@@ -92,7 +91,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
               private _noteService: NoteService,
               private surgeService: SurgeCapacityService,
               private route: ActivatedRoute,
-              private agencyService: AgencyService,
               private _userService: UserService,
               private _agencyService:AgencyService,
               private af: AngularFire) {
@@ -180,7 +178,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         note.id = key;
         note.mapFromObject(tempNote);
         if(this.agencyID && (note.agencyId && note.agencyId != this.agencyID) || !this.agencyID && (note.agencyId != this.userAgencyId)){
-          this.agencyService.getAgency(note.agencyId)
+          this._agencyService.getAgency(note.agencyId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe( agency => {
               note.agencyName = agency.name;
