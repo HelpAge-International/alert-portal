@@ -184,6 +184,13 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
                   this.agencyService.getAgency(k)
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agency => this.agencies.push(agency));
+
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(v)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(k, privacy)
+                    })
                 });
                 this._getProgramme(map);
               });
@@ -207,7 +214,13 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
               .subscribe(agency => {
                 this.agencies.push(agency)
               })
-            console.log(this.agencies)
+
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
+              })
           })
 
           this._getProgramme(officeAgencyMap);
@@ -230,6 +243,12 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agency => {
                       this.agencies.push(agency)
+                    })
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
                     })
                 })
 

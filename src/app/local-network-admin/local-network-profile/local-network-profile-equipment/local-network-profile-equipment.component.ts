@@ -241,6 +241,13 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
 
                         });
                     })
+
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
+                    })
                 });
 
 
@@ -332,6 +339,13 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                     .subscribe(agency => {
                       this.agencies.push(agency)
 
+                    })
+
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
                     })
 
                   this._equipmentService.getEquipments(value)

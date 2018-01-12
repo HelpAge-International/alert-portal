@@ -227,6 +227,14 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                     .subscribe(agency => {
                       this.agencies.push(agency)
                     })
+
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(countryId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(agencyId, privacy)
+                    })
+
                   this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + countryId)
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agencyStocks => {
@@ -408,6 +416,14 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                       this.agencies.push(agency)
 
                     })
+
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(agency.countryCode)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(agency.$key, privacy)
+                    })
+
                   this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode)
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agencyStocks => {

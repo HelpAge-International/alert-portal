@@ -212,6 +212,12 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                       this.agencies.push(agency)
                       this._getSkills();
                     })
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
+                    })
                 });
 
                 this._getTotalStaff(map);
@@ -239,6 +245,12 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agency => {
                 this.agencies.push(agency)
+              })
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
               })
           })
 
@@ -277,6 +289,12 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agency => {
                       this.agencies.push(agency)
+                    })
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
                     })
                 })
 
