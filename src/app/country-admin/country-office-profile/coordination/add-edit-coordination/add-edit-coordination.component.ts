@@ -27,8 +27,9 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
-  responsePlansSectors = ResponsePlanSectors;
+  public responsePlansSectors = ResponsePlanSectors;
   responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
+
 
   // Models
   private alertMessage: AlertMessageModel = null;

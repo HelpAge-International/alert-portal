@@ -10,6 +10,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
+import {AgencyService} from "../../../services/agency-service.service";
 import * as moment from "moment";
 import {AgencyService} from "../../../services/agency-service.service";
 declare var jQuery: any;
@@ -84,12 +85,14 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   private surgeCapacities = [];
 
   public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private userAgencyId: string;
 
   constructor(private pageControl: PageControlService,
               private router: Router,
               private _noteService: NoteService,
               private surgeService: SurgeCapacityService,
               private route: ActivatedRoute,
+              private agencyService: AgencyService,
               private _userService: UserService,
               private _agencyService:AgencyService,
               private af: AngularFire) {
@@ -118,6 +121,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
+          this.userAgencyId = agencyId;
 
           if (this.agencyID && this.countryID) {
             this._getTotalStaff();
@@ -175,6 +179,15 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         let tempNote = surge.notes[key];
         note.id = key;
         note.mapFromObject(tempNote);
+        if(this.agencyID && (note.agencyId && note.agencyId != this.agencyID) || !this.agencyID && (note.agencyId != this.userAgencyId)){
+          this.agencyService.getAgency(note.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe( agency => {
+              note.agencyName = agency.name;
+            })
+        }else{
+          note.agencyName = null;
+        }
         return note;
       })
     }
@@ -492,6 +505,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
       } else {
         node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.countryID).replace('{id}', id);
       }
+
+      note.agencyId = this.userAgencyId
 
       this._noteService.saveNote(node, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);

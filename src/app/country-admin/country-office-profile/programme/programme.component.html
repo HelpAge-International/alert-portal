@@ -122,7 +122,7 @@
               <p>{{note.content}}</p>
               <br>
               <div class="row">
-                <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
+                <p class="col-sm-8"><strong>by {{note.uploadByFullName}}<span *ngIf="note.agencyName">, {{note.agencyName}} </span></strong></p>
                 <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote"
                    class="col-sm-0 margin-right-none" (click)="setTmpNote(m.key, note)">{{"EDIT" |
                   translate}}</a>

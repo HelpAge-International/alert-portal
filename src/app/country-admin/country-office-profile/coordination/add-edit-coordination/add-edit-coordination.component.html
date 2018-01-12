@@ -27,6 +27,15 @@
                 </div>
             </div><br>
 
+          <ng-container *ngIf="coordinationArrangement.sector == responsePlansSectors.other">
+            <div class="row form-group">
+              <p class="col-sm-12"><strong>Sector Name</strong></p>
+              <div class="col-sm-12">
+                <input class="col-sm-4 form-control" type="text" name="otherSectorName" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="coordinationArrangement.otherName">
+              </div>
+            </div>
+          </ng-container>
+
             <div class="row form-group margin-bottom-none">
                 <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD' | translate }}</strong></p></div>
                 <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.CONTACT_NAME' | translate }}</strong></p></div>

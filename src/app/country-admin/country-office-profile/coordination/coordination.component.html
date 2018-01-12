@@ -52,8 +52,10 @@
           <div class="row">
             <img src="assets/images/icons/{{ responsePlansSectors[coordinationArrangement.sector] }}.svg"
                  class="margin-bottom-one" alt="Health">
-            <p class="margin-top-one-half margin-left-two">{{
+            <p *ngIf="coordinationArrangement.sector != responsePlansSectors.other || coordinationArrangement.otherName == null" class="margin-top-one-half margin-left-two">{{
               responsePlansSectorsSelection[coordinationArrangement.sector] | translate }}</p>
+            <p *ngIf="coordinationArrangement.sector == responsePlansSectors.other && coordinationArrangement.otherName != null" class="margin-top-one-half margin-left-two">{{
+              coordinationArrangement.otherName | translate }}</p>
           </div>
         </div>
         <div class="col-sm-5">

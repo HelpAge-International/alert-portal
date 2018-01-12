@@ -6,6 +6,8 @@ export class NoteModel extends BaseModel {
     public content: string;
     public time: number;
     public uploadedBy: string;
+    public agencyId?: string;
+    public agencyName?: string;
 
     validate(excludedFields = []): AlertMessageModel {
         if (!this.content && !this.isExcluded('content', excludedFields)) {
