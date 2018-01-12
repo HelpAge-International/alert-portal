@@ -91,7 +91,7 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
 
     this._settingsService.saveCountryModuleSettings(this.countryId, this.moduleSettings)
       .then(() => {
-        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.SETTINGS.MODULES.SAVED_SUCCESS', AlertMessageType.Success);
+        this.alertMessage = new AlertMessageModel('AGENCY_ADMIN.SETTINGS.MODULE_NAME.SAVE_SUCCESS', AlertMessageType.Success);
       })
       .catch(err => {
         if (err instanceof DisplayError) {

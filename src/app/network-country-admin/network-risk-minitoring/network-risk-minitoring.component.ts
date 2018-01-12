@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../../utils/Enums";
+import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -22,6 +22,8 @@ import * as firebase from "firebase/app";
 
 import App = firebase.app.App;
 import {NetworkCountryModel} from "../network-country.model";
+import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
+import {SettingsService} from "../../services/settings.service";
 
 declare var jQuery: any;
 
@@ -135,6 +137,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               private commonService: CommonService,
               private agencyService: AgencyService,
               private networkService: NetworkService,
+              private settingService: SettingsService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
@@ -205,6 +208,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                   .subscribe(agency => {
                     this.agencies.push(agency)
                   })
+
               })
             })
 
@@ -401,27 +405,34 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
           console.log(officeAgencyMap)
           officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
-            this.af.database.list(Constants.APP_STATUS + "/indicator/" + value).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
-              indicators.forEach(indicator => {
-                indicator.fromAgency = true;
-                indicator.countryOfficeCode = value
-                this.agencyService.getAgency(agencyKey)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    indicator.agency = agency;
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                if (agencyKey == this.agencyId || (privacy.officeProfile != Privacy.Private && this.isViewing)) {
+                  this.af.database.list(Constants.APP_STATUS + "/indicator/" + value).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
+                    indicators.forEach(indicator => {
+                      indicator.fromAgency = true;
+                      indicator.countryOfficeCode = value
+                      this.agencyService.getAgency(agencyKey)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(agency => {
+                          indicator.agency = agency;
 
-                  })
-                this.getLogs(indicator.$key).subscribe((logs: any) => {
-                  logs.forEach((log, key) => {
-                    this.getUsers(log.addedBy).subscribe((user: any) => {
-                      log.addedByFullName = user.firstName + ' ' + user.lastName;
-                    })
+                        })
+                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                        logs.forEach((log, key) => {
+                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                            log.addedByFullName = user.firstName + ' ' + user.lastName;
+                          })
+                        });
+                        indicator.logs = this._sortLogsByDate(logs);
+                        this.indicatorsCC.push(indicator)
+                      });
+                    });
                   });
-                  indicator.logs = this._sortLogsByDate(logs);
-                  this.indicatorsCC.push(indicator)
-                });
-              });
-            });
+                }
+              })
           })
         })
     });
@@ -478,152 +489,158 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
             console.log(officeAgencyMap)
             officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
+              //get privacy for country
+              this.settingService.getPrivacySettingForCountry(value)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(privacy => {
+                  if (agencyKey == this.agencyId || (this.isViewing && privacy.officeProfile != Privacy.Private)) {
+                    this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
+                      hazards.forEach((hazard: any, key) => {
+                        hazard.id = hazard.$key;
+                        if (hazard.hazardScenario != -1) {
+                          hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
+                        }
+                        this.getIndicators(hazard.id).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
+                          indicators.forEach((indicator, key) => {
 
-              this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
-                hazards.forEach((hazard: any, key) => {
-                  hazard.id = hazard.$key;
-                  if (hazard.hazardScenario != -1) {
-                    hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
-                  }
-                  this.getIndicators(hazard.id).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
-                    indicators.forEach((indicator, key) => {
+
+                            indicator.fromAgency = true;
+                            indicator.countryOfficeCode = value
+                            this.agencyService.getAgency(agencyKey)
+                              .takeUntil(this.ngUnsubscribe)
+                              .subscribe(agency => {
+                                indicator.agency = agency;
+                              })
+                            this.getLogs(indicator.$key).subscribe((logs: any) => {
+                              logs.forEach((log, key) => {
+                                this.getUsers(log.addedBy).subscribe((user: any) => {
+                                  log.addedByFullName = user.firstName + ' ' + user.lastName;
+                                })
+                              });
+                              indicator.logs = this._sortLogsByDate(logs);
+                            });
+                          });
+                          hazard.indicators = indicators;
+                          hazard.existsOnNetwork = false;
 
 
-                      indicator.fromAgency = true;
-                      indicator.countryOfficeCode = value
-                      this.agencyService.getAgency(agencyKey)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(agency => {
-                          indicator.agency = agency;
-                        })
-                      this.getLogs(indicator.$key).subscribe((logs: any) => {
-                        logs.forEach((log, key) => {
-                          this.getUsers(log.addedBy).subscribe((user: any) => {
-                            log.addedByFullName = user.firstName + ' ' + user.lastName;
-                          })
+                          if (hazard.isActive) {
+
+                            var containsHazard = false;
+                            var hasIndicators = false;
+                            var activeHazardIndex = null;
+                            this.activeHazards.forEach((activeHazard, index) => {
+                              if (activeHazard.hazardScenario == hazard.hazardScenario) {
+                                if (hazard.hasOwnProperty('indicators') && activeHazard.hasOwnProperty('indicators')) {
+                                  containsHazard = true;
+                                  hasIndicators = true;
+                                  activeHazardIndex = index
+                                } else if (hazard.hasOwnProperty('indicators') && !activeHazard.hasOwnProperty('indicators')) {
+                                  containsHazard = true;
+                                  activeHazardIndex = index
+                                }
+                              }
+
+                            })
+                            if (containsHazard) {
+                              if (hazard.hasOwnProperty('indicators') && hasIndicators) {
+
+
+                                hazard.indicators.forEach(indicator => {
+
+                                  if (this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key) == -1) {
+                                    this.activeHazards[activeHazardIndex].indicators.push(indicator)
+                                  } else {
+                                    this.activeHazards[activeHazardIndex].indicators.splice(this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key), 1)
+                                    this.activeHazards[activeHazardIndex].indicators.push(indicator)
+                                  }
+
+
+                                })
+                              } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
+                                hazard.indicators = []
+                                hazard.indicators.forEach(indicator => {
+
+                                  this.activeHazards[activeHazardIndex].indicators.push(indicator)
+                                })
+                              }
+                              containsHazard = false;
+                              hasIndicators = false;
+                              activeHazardIndex = null;
+
+                            } else {
+                              this.activeHazards.push(hazard);
+                              if (hazard.hazardScenario == -1) {
+                                this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
+                                  .takeUntil(this.ngUnsubscribe)
+                                  .subscribe((snap) => {
+                                    hazard.hazardName = snap.val().name;
+                                  });
+                              }
+                              containsHazard = false;
+                              hasIndicators = false;
+                              activeHazardIndex = null;
+                            }
+                          } else {
+
+                            var containsHazard = false;
+                            var hasIndicators = false;
+                            var archivedHazardIndex = null;
+                            this.archivedHazards.forEach((archivedHazard, index) => {
+                              if (archivedHazard.hazardScenario == hazard.hazardScenario) {
+                                if (hazard.hasOwnProperty('indicators') && archivedHazard.hasOwnProperty('indicators')) {
+                                  containsHazard = true;
+                                  hasIndicators = true;
+                                  archivedHazardIndex = index
+                                } else if (hazard.hasOwnProperty('indicators') && !archivedHazard.hasOwnProperty('indicators')) {
+                                  containsHazard = true;
+                                  archivedHazardIndex = index
+                                }
+                              }
+
+                            })
+                            if (containsHazard) {
+                              if (hazard.hasOwnProperty('indicators') && hasIndicators) {
+
+
+                                hazard.indicators.forEach(indicator => {
+
+                                  this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
+                                })
+                              } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
+                                hazard.indicators = []
+                                hazard.indicators.forEach(indicator => {
+
+                                  this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
+                                })
+                              }
+                              containsHazard = false;
+                              hasIndicators = false;
+                              archivedHazardIndex = null;
+
+                            } else {
+                              if (hazard.isActive) {
+                                this.archivedHazards.push(hazard);
+                                if (hazard.hazardScenario == -1) {
+                                  this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
+                                    .takeUntil(this.ngUnsubscribe)
+                                    .subscribe((snap) => {
+                                      hazard.hazardName = snap.val().name;
+                                    });
+                                }
+                              } else {
+                                this.archivedHazards.push(hazard);
+                              }
+                              containsHazard = false;
+                              hasIndicators = false;
+                              activeHazardIndex = null;
+                            }
+                          }
                         });
-                        indicator.logs = this._sortLogsByDate(logs);
                       });
                     });
-                    hazard.indicators = indicators;
-                    hazard.existsOnNetwork = false;
-
-
-                    if (hazard.isActive) {
-
-                      var containsHazard = false;
-                      var hasIndicators = false;
-                      var activeHazardIndex = null;
-                      this.activeHazards.forEach((activeHazard, index) => {
-                        if (activeHazard.hazardScenario == hazard.hazardScenario) {
-                          if (hazard.hasOwnProperty('indicators') && activeHazard.hasOwnProperty('indicators')) {
-                            containsHazard = true;
-                            hasIndicators = true;
-                            activeHazardIndex = index
-                          } else if (hazard.hasOwnProperty('indicators') && !activeHazard.hasOwnProperty('indicators')) {
-                            containsHazard = true;
-                            activeHazardIndex = index
-                          }
-                        }
-
-                      })
-                      if (containsHazard) {
-                        if (hazard.hasOwnProperty('indicators') && hasIndicators) {
-
-
-                          hazard.indicators.forEach(indicator => {
-
-                            if (this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key) == -1) {
-                              this.activeHazards[activeHazardIndex].indicators.push(indicator)
-                            } else {
-                              this.activeHazards[activeHazardIndex].indicators.splice(this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key), 1)
-                              this.activeHazards[activeHazardIndex].indicators.push(indicator)
-                            }
-
-
-                          })
-                        } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
-                          hazard.indicators = []
-                          hazard.indicators.forEach(indicator => {
-
-                            this.activeHazards[activeHazardIndex].indicators.push(indicator)
-                          })
-                        }
-                        containsHazard = false;
-                        hasIndicators = false;
-                        activeHazardIndex = null;
-
-                      } else {
-                        this.activeHazards.push(hazard);
-                        if (hazard.hazardScenario == -1) {
-                          this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe((snap) => {
-                              hazard.hazardName = snap.val().name;
-                            });
-                        }
-                        containsHazard = false;
-                        hasIndicators = false;
-                        activeHazardIndex = null;
-                      }
-                    } else {
-
-                      var containsHazard = false;
-                      var hasIndicators = false;
-                      var archivedHazardIndex = null;
-                      this.archivedHazards.forEach((archivedHazard, index) => {
-                        if (archivedHazard.hazardScenario == hazard.hazardScenario) {
-                          if (hazard.hasOwnProperty('indicators') && archivedHazard.hasOwnProperty('indicators')) {
-                            containsHazard = true;
-                            hasIndicators = true;
-                            archivedHazardIndex = index
-                          } else if (hazard.hasOwnProperty('indicators') && !archivedHazard.hasOwnProperty('indicators')) {
-                            containsHazard = true;
-                            archivedHazardIndex = index
-                          }
-                        }
-
-                      })
-                      if (containsHazard) {
-                        if (hazard.hasOwnProperty('indicators') && hasIndicators) {
-
-
-                          hazard.indicators.forEach(indicator => {
-
-                            this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
-                          })
-                        } else if (hazard.hasOwnProperty('indicators') && !hasIndicators) {
-                          hazard.indicators = []
-                          hazard.indicators.forEach(indicator => {
-
-                            this.archivedHazards[archivedHazardIndex].indicators.push(indicator)
-                          })
-                        }
-                        containsHazard = false;
-                        hasIndicators = false;
-                        archivedHazardIndex = null;
-
-                      } else {
-                        if (hazard.isActive) {
-                          this.archivedHazards.push(hazard);
-                          if (hazard.hazardScenario == -1) {
-                            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName, {preserveSnapshot: true})
-                              .takeUntil(this.ngUnsubscribe)
-                              .subscribe((snap) => {
-                                hazard.hazardName = snap.val().name;
-                              });
-                          }
-                        } else {
-                          this.archivedHazards.push(hazard);
-                        }
-                        containsHazard = false;
-                        hasIndicators = false;
-                        activeHazardIndex = null;
-                      }
-                    }
-                  });
-                });
-              });
+                  }
+                })
             })
           })
         res(true);
