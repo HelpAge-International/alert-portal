@@ -530,10 +530,8 @@ export class UserService {
                 return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
                   .flatMap((snap) => {
                     if (snap.val() != null) {
-                      console.log('agency return')
                       return Observable.of(UserType.AgencyAdmin);
                     } else {
-                      console.log('returning the other thing')
                       return UserService.recursiveUserMap(this.af, paths, 0);
                     }
                   })

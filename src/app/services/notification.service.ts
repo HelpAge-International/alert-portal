@@ -213,15 +213,20 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
     return this._userService.getUserType(userId)
         .map(x => {
           let userType = x;
+          console.log(userType)
+          console.log(userId)
 
           const userTypePath = Constants.USER_PATHS[userType];
+          console.log(userTypePath)
           console.log(userTypePath);
           return this._userService.getAgencyId(userTypePath, userId)
             .subscribe(agency => {
+              console.log('first subscribe')
               let agencyId = agency;
               return this._userService.getCountryId(userTypePath, userId)
                 .subscribe(country => {
                   let countryId = country;
+                  console.log('final return')
                   return this.saveUserNotification(userId, message, userType, agencyId, countryId);
                 });
             });
@@ -287,6 +292,7 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
           let messageRefData = {};
           node = node.replace("{messageId}", msg.key);
           messageRefData[node] = true;
+          console.log(messageRefData)
           this.af.database.object(Constants.APP_STATUS).update(messageRefData);
       }
     );

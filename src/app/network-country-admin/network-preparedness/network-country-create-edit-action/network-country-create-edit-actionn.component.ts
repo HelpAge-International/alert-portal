@@ -641,10 +641,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+              this._location.back();
             });
           }
-
-          this._location.back();
         });
       }
       else {
@@ -655,6 +654,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
 
           if (updateObj.asignee) {
+            console.log('there is an assignee')
             // Send notification to the assignee
             let notification = new MessageModel();
             notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
@@ -664,10 +664,11 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+              this._location.back();
             });
           }
 
-          this._location.back();
+
         });
       }
     }

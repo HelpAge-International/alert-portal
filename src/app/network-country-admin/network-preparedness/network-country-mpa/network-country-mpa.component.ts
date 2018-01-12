@@ -601,8 +601,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             let notification = new MessageModel();
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
             notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-            console.log(notification.content);
-            console.log(task, 'dan checking');
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
             });
