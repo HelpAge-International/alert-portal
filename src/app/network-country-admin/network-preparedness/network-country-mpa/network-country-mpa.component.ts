@@ -289,6 +289,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   private initNetworkViewAccess() {
+    console.log("initNetworkViewAccess")
     this.assignActionAsignee = this.uid;
     this.filterAssigned = "0";
     this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
@@ -338,6 +339,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .subscribe(matrix => this.modulesAreEnabled = matrix);
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+    if (this.isLocalNetworkAdmin) {
+      this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
+    }
 
     this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)

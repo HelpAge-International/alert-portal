@@ -234,6 +234,27 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
                 })
                 this.prepActionService.initActionsWithInfoAllNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, false, this.countryId, this.agencyId, this.systemAdminId, networkMap)
               })
+            // Get all local network Id for this country
+            this.networkService.getLocalNetworkModelsForCountry(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(localNetworks => {
+                localNetworks.forEach((networkCountryId) => {
+                  this.networkService.getNetworkModuleMatrix(networkCountryId.id)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(matrix => {
+                      this.networkModuleMap.set(networkCountryId.id, matrix)
+                    })
+
+                  this.networkService.getNetworkDetail(networkCountryId.id)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(network => {
+                      this.networkModelMap.set(networkCountryId.id, network)
+                    })
+                })
+
+                this.prepActionService.initActionsWithInfoAllLocalNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, false, this.countryId, this.agencyId, this.systemAdminId, localNetworks)
+
+              })
           }
         });
       });
@@ -951,7 +972,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   editNetworkAction(action) {
     this.switchToNetwork(action)
-    this.router.navigate(['/network-country/network-country-create-edit-action/' + action.id, this.storage.get(Constants.NETWORK_VIEW_VALUES)])
+    let networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES)
+    if (action.networkCountryId === action.networkId) {
+      networkViewValues["isLocalNetworkAdmin"] = true
+    }
+    this.router.navigate(['/network-country/network-country-create-edit-action/' + action.id, networkViewValues])
   }
 
   private switchToNetwork(action: PreparednessAction) {

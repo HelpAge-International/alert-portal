@@ -675,6 +675,7 @@ export class PrepActionService {
     if (this.updater != null) {
       this.updater();
     }
+    console.log(this.actionsNetwork[i])
 
   }
 

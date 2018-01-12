@@ -981,7 +981,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   editNetworkAction(action) {
     this.switchToNetwork(action)
-    this.router.navigate(['/network-country/network-country-create-edit-action/' + action.id, this.storage.get(Constants.NETWORK_VIEW_VALUES)])
+    let networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES)
+    console.log(action)
+    if (action.networkCountryId === action.networkId) {
+      networkViewValues["isLocalNetworkAdmin"] = true
+    }
+    this.router.navigate(['/network-country/network-country-create-edit-action/' + action.id, networkViewValues])
   }
 
   private switchToNetwork(action: PreparednessAction) {

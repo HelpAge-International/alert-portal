@@ -290,7 +290,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
     this.getStaffDetails(this.uid, true);
 
-    this.networkService.getNetworkModuleMatrix(this.networkCountryId)
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId
+
+    this.networkService.getNetworkModuleMatrix(id)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(modules => this.moduleAccess = modules);
 
@@ -651,6 +653,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         // Saving
         updateObj.createdAt = new Date().getTime();
         updateObj.networkId = this.networkId;
+        console.log(id)
         console.log(updateObj);
         this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
 
