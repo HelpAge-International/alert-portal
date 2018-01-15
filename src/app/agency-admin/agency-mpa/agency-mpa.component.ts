@@ -20,6 +20,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private agencyId: string;
+  private networkId: string;
 
   private departments: ModelDepartment[] = [];
   private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
@@ -65,7 +66,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
       );
   }
 
-  protected getMandatedPrepActions() {
+  getMandatedPrepActions() {
     this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId + "/", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
@@ -77,6 +78,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
           x.level = snapshot.val().level;
           x.department = snapshot.val().department;
           this.actions.push(x);
+
         });
       });
   }

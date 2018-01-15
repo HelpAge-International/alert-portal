@@ -41,6 +41,7 @@ import {NetworkCountryModel} from "../../network-country.model";
 import * as firebase from "firebase";
 import {ModelAgency} from "../../../model/agency.model";
 import {ModelNetwork} from "../../../model/network.model";
+import {MandatedListModel} from "../../../agency-admin/agency-mpa/agency-mpa.component";
 
 declare var jQuery: any;
 
@@ -131,6 +132,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   //Dan Variable
   private dialogOpen: boolean;
+  private actions: MandatedListModel[] = [];
+
 
   // Assigning action
   private assignActionId: string = "0";
@@ -199,7 +202,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.isViewingFromExternal = params['isViewingFromExternal'];
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalNetworkViewAccess() : this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+
     });
+
   }
 
   private initNetworkAccess() {
@@ -239,7 +244,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .subscribe(agencyCountryMap => {
               this.initAgencies(agencyCountryMap)
             });
-
+        this.getMandatedPrepActions();
           // Currency
           // this.calculateCurrency();
         });
@@ -382,6 +387,24 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           }
         });
     }
+  }
+
+  getMandatedPrepActions() {
+    console.log(Constants.APP_STATUS + "/actionMandated/" + this.networkId + "/");
+    this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.networkId + "/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.actions = [];
+        snap.forEach((snapshot) => {
+          let x: MandatedListModel = new MandatedListModel();
+          x.id = snapshot.key;
+          x.task = snapshot.val().task;
+          x.level = snapshot.val().level;
+          x.department = snapshot.val().department;
+          this.actions.push(x);
+          console.log(x);
+        });
+      });
   }
 
   /**

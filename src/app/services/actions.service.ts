@@ -44,6 +44,7 @@ export class ActionsService {
       }
     })
       .map(actions => {
+        console.log(actions);
         let filteredActions = [];
         actions.forEach(action => {
           if (action.asignee === uid && !action.isComplete) {
@@ -130,13 +131,20 @@ export class ActionsService {
       });
   }
 
+
+
   getActionTitle(action): string {
     let title = "";
     let today = moment().startOf('day').valueOf();
 
     if (action.type == ActionType.chs) {
       title = this.translate.instant("A_CHS_PREP_ACTION")
-    } else if (action.level == ActionLevel.MPA) {
+    }
+    else if (action.type == ActionType.mandated)
+    {
+      title = this.translate.instant("A_MANDATED_PREP_ACTION" )
+    }
+    else if (action.level == ActionLevel.MPA) {
       title = this.translate.instant("A_MIN_PREP_ACTION")
     } else if (action.level == ActionLevel.APA) {
       title = this.translate.instant("AN_ADVANCED_PREP_ACTION")

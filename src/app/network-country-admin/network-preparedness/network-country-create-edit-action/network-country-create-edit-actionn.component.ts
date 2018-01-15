@@ -142,7 +142,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
       this.action.budget = (typeof (this.actionSelected.budget) != 'undefined') ? this.actionSelected.budget : 0;
       this.copyDepartmentId = (typeof (this.actionSelected.department) != 'undefined') ? this.actionSelected.department : 0;
-      console.log(this.actionSelected);
+      console.log(this.actionSelected, 'check here');
       // TODO: Check if this is being used anywhere else and potentially remove it?
       // TODO: This causes a bug with going back and forth on the page
       this.storage.remove('selectedAction');
@@ -190,7 +190,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
       this.isViewing ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
-
+  console.log(this.actionSelected, this.action.task,'action selected');
   }
 
   private initNetworkAccess() {
@@ -287,7 +287,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private initViewNetworkAccess() {
-    console.log('shouldnt be doing thisss')
     this.getStaffDetails(this.uid, true);
 
     this.networkService.getNetworkModuleMatrix(this.networkCountryId)
@@ -369,7 +368,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       }
 
       console.log(action);
-      console.log(this.action);
+      console.log(this.action.task, 'action task');
     });
   }
 
