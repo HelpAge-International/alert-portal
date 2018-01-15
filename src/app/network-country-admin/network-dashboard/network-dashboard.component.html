@@ -589,6 +589,28 @@
          *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
       <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
       <br>
+      <div *ngIf="userType == UserType.CountryDirector">
+        <div *ngIf="responsePlansForApproval | async as plans">
+          <div *ngFor="let plan of plans" class="row Spaced">
+            <div class="col-sm-9" col-md-1>
+              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                {{plan.timeUpdated ?
+                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+            </div>
+            <div class="col-md-3">
+              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+              <!--</button>-->
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
       <!--partner users-->
       <div *ngIf="userType == UserType.PartnerUser">
         <div *ngIf="responsePlansForApproval | async as plans">
@@ -681,8 +703,10 @@
               <i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i>
             </div>
             <div class="col-md-8">
-              <p>{{getActionTitle(action)}}<strong> {{"TODAY" | translate}}</strong>.<br/>
-                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
+              <p> {{(getActionTitle(action))}}<strong> {{"TODAY" | translate}}</strong>.<br/>
+                <span> {{getCHSActionTask(action)}} {{action.task}}</span>
+                <span>{{action.type == actionType.mandated ? mandatedMap.get(action.$key)?.task : ''}}</span>
+
               </p>
             </div>
             <div class="col-md-3">
@@ -723,8 +747,11 @@
             </div>
             <div class="col-md-8">
               <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.<br/>
-                <span>{{getCHSActionTask(action)}} {{action.task}}</span>
+                  <span> {{getCHSActionTask(action)}} {{action.task}}</span>
+                  <span>{{action.type == actionType.mandated ? mandatedMap.get(action.$key)?.task : ''}}</span>
+
               </p>
+
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-primary btn-block"

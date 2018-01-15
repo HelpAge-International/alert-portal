@@ -288,7 +288,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private initViewNetworkAccess() {
-
     this.getStaffDetails(this.uid, true);
 
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId
@@ -372,7 +371,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       }
 
       console.log(action);
-      console.log(this.action);
+      console.log(this.action.task, 'action task');
     });
   }
 

@@ -326,6 +326,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
 
+        console.log(this.actionsThisWeekNetwork)
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
             if (action) {
@@ -450,9 +451,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
         })
       }
-      // if (this.networkId) {
-      //   this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
-      // }
+      //if (this.networkId) {
+       // this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
+       //}
     }
     if (this.responsePlansForApproval) {
       this.responsePlansForApproval
@@ -747,7 +748,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToNetworkIndicators(indicator) {
-    console.log(indicator)
+    console.log(indicator);
+    this.router.navigate(['/risk-monitoring']);
   }
 
   private navigateToLogin() {
@@ -771,6 +773,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
           this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
           this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
+          console.log(this.actionsThisWeekNetwork, 'yoyo');
 
           for (let x of this.actionsOverdueNetwork) {
             this.updateTaskDataForActionsNetwork(x.$key, x, networkCountryId, (action) => {

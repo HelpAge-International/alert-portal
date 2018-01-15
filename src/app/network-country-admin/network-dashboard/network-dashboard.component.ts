@@ -32,6 +32,13 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {SettingsService} from "../../services/settings.service";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
+import { NetworkCountryCreateEditActionComponent } from "../network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
+import {NetworkCountryMpaComponent} from "../network-preparedness/network-country-mpa/network-country-mpa.component";
+import {PrepActionService} from "../../services/prepactions.service";
+import {MandatedListModel} from "../../agency-admin/agency-mpa/agency-mpa.component";
+import {map} from "rxjs/operator/map";
+
+
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -115,7 +122,17 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private affectedAreasToShow: any [];
   private userPaths = Constants.USER_PATHS;
 
+  private taskName: string;
+  private taskLevel: number;
+  private idToday: string;
+  private idThisWeek: string;
+  private idOverdue: string;
+  protected prepActionService: PrepActionService = new PrepActionService();
+
   private userType: UserType;
+  private actions: MandatedListModel[] = [];
+  private mandatedMap = new Map();
+  private actionType = ActionType;
 
   // Module settings
   private moduleSettings: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
@@ -152,7 +169,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
-
   }
 
   private initNetworkAccess() {
@@ -168,13 +184,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
 
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(agencyCountryMap => {
-              console.log(agencyCountryMap)
-              this.agencyCountryMap = agencyCountryMap
-              this.loadData();
-            })
+          this.getMandatedPrepActions();
+
+
 
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -183,6 +195,33 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
         });
     });
+  }
+
+  getMandatedPrepActions() {
+    console.log(Constants.APP_STATUS + "/actionMandated/" + this.networkId + "/");
+    this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.networkId + "/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.actions = [];
+        snap.forEach((snapshot) => {
+          let x: MandatedListModel = new MandatedListModel();
+          x.id = snapshot.key;
+          x.task = snapshot.val().task;
+          x.level = snapshot.val().level;
+          x.department = snapshot.val().department;
+          this.mandatedMap.set(x.id, x);
+          console.log(this.mandatedMap);
+
+        });
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agencyCountryMap => {
+            console.log(agencyCountryMap)
+            this.agencyCountryMap = agencyCountryMap
+            this.loadData();
+          })
+      });
+
   }
 
   private initLocalNetworkAccess() {
@@ -273,6 +312,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         } else {
           this.loadData();
         }
+
       })
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -311,7 +351,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.getHazards(id);
     this.initData(id);
     this.getCountryDataNetwork(this.networkId, id, this.isLocalNetworkAdmin);
+    console.log(this.actionsThisWeek.length, 'actions length');
   }
+
 
   private loadDataForPartnerUser(agencyId, countryId) {
     console.log('loading for partner user')
@@ -397,7 +439,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.actionService.getActionsDueInWeek(id, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
-
+        console.log(actions, 'actions');
         // Display APA only if there is a red alert
         actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
 
@@ -408,6 +450,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
 
+
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
             if (action) {
@@ -416,7 +459,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             }
           });
         }
-
         for (let x of this.actionsToday) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
             if (action) {
@@ -433,7 +475,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             }
           });
         }
+        console.log(this.actionsThisWeek, 'YO')
+        //this.loadMandated();
       });
+
 
     this.actionService.getIndicatorsDueInWeek(id, this.uid)
       .takeUntil(this.ngUnsubscribe)
@@ -490,11 +535,11 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     } else if (this.userType == UserType.CountryDirector) {
       console.log('getting response plans c d ')
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
-      console.log(this.responsePlansForApproval)
+
       if (this.networkCountryId) {
         console.log('now net country')
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkCountryId);
-        console.log(this.responsePlansForApprovalNetwork)
+
       }
     }
     if (this.responsePlansForApproval) {
@@ -512,7 +557,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.approvalPlansNetwork = plans
         });
     }
+    console.log(this.approvalPlansNetwork, 'approval plan')
   }
+
 
   private updateTaskDataForActions(actionId: string, action: any, fun: (action) => void) {
     let node: string = "";
@@ -562,11 +609,15 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       this.alerts = this.actionService.getAlerts(id);
 
     } else if (this.DashboardTypeUsed == DashboardType.director) {
-      // this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id, true);
-      // console.log(this.alerts)
+
+      //this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, id);
+      //console.log(this.alerts, 'in alerts')
       if (this.networkCountryId) {
-        this.alertsNetwork = this.actionService.getAlertsForDirectorToApproveNetwork(this.countryId, this.networkCountryId, this.networkId)
+        this.alertsNetwork = this.actionService.getAlertsForDirectorToApproveNetwork(this.countryId, this.networkCountryId, this.networkId);
+        console.log(this.alertsNetwork, 'logging alerts');
       } else {
+
+        console.log('not network country id');
         this.alertsNetworkLocal = this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, this.networkId)
       }
 
@@ -757,6 +808,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       this.actionService.getCHSActionTask(action, this.systemId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(task => {
+          console.log(task, 'logging task')
           action.task = task;
         })
     }

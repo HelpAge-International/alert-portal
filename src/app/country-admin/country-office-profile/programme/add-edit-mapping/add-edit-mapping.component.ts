@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {UserService} from "../../../../services/user.service";
 import {Constants} from '../../../../utils/Constants';
-import {ResponsePlanSectors, AlertMessageType, Month, GeoLocation} from '../../../../utils/Enums';
+import {ResponsePlanSectors, AlertMessageType, Month} from '../../../../utils/Enums';
 import {AlertMessageModel} from '../../../../model/alert-message.model';
 import {ProgrammeMappingModel} from '../../../../model/programme-mapping.model';
 import {AngularFire} from "angularfire2";
@@ -79,7 +79,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private selectedCountry: any;
   private selectedCountryArr: any[] = [];
   private geoLocation = Constants.GEO_LOCATION;
-  private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
   private isEdit: boolean = false;
   private selectedValue: any;
   private selectedValueL2: any;
@@ -303,14 +302,6 @@ _getProgramme(programmeID: string) {
 
 
 
-
-  stateGeoLocation(event: any) {
-    var geoLocation = parseInt(event.target.value);
-    this.indicatorData.geoLocation = geoLocation;
-    if (geoLocation == GeoLocation.subnational && this.indicatorData.affectedLocation.length == 0) {
-      this.addAnotherLocation();
-    }
-  }
 
   checkTypeof(param: any) {
     if (typeof (param) == 'undefined') {
