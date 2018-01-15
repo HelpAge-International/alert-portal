@@ -250,6 +250,13 @@ import { LocalAgencyNotificationComponent } from './local-agency/local-agency-ad
 import { LocalAgencySettingsMenuComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-menu/local-agency-settings-menu.component';
 import { LocalAgencySkillsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-skills/local-agency-skills.component';
 import { LocalAgencySettingsDocumentsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-documents/local-agency-settings-documents.component';
+import {LocalAgencyMessagesComponent} from "./local-agency/local-agency-messages/local-agency-messages.component";
+import {LocalAgencyCreateEditMessageComponent} from "./local-agency/local-agency-messages/local-agency-create-edit-message/local-agency-create-edit-message.component";
+import {LocalAgencyAccountSettingsComponent} from "./local-agency/local-agency-account-settings/local-agency-account-settings.component";
+import {LocalAgencyChangePasswordComponent} from "./local-agency/local-agency-account-settings/local-agency-change-password/local-agency-change-password.component";
+import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-account-details/local-agency-account-details.component';
+import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/local-agency-dashboard/local-agency-dashboard-seasonal-calendar/local-agency-dashboard-seasonal-calendar.component";
+
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -630,7 +637,7 @@ const routes: Routes = [
   {path: 'local-agency/response-plans/view-plan', component: LocalAgencyViewPlanComponent},
   {path: 'local-agency/response-plans/view-plan/:id', component: LocalAgencyViewPlanComponent},
   {path: 'local-agency/profile', component: LocalAgencyProfileComponent},
- 
+
 
   {path: 'local-agency/profile/partners', component: LocalAgencyPartnersComponent},
   {path: 'local-agency/profile/equipment', component: LocalAgencyEquipmentComponent},
@@ -657,6 +664,13 @@ const routes: Routes = [
   {path: 'local-agency/settings/documents', component: LocalAgencyDocumentsComponent},
   {path: 'local-agency/settings/notifications', component: LocalAgencyNotificationComponent},
   {path: 'local-agency/settings', redirectTo: 'local-agency/settings/departments', pathMatch: 'full'},
+  {path: 'local-agency/agency-messages/create-edit-message', component: LocalAgencyCreateEditMessageComponent},
+  {path: 'local-agency/agency-messages/create-edit-message/:id', component: LocalAgencyCreateEditMessageComponent},
+  {path: 'local-agency/agency-messages', component: LocalAgencyMessagesComponent},
+  {path: 'local-agency/agency-account-settings', component: LocalAgencyAccountSettingsComponent},
+  {path: 'local-agency/agency-account-settings/agency-change-password', component: LocalAgencyChangePasswordComponent},
+  {path: 'local-agency/agency-account-details', component: LocalAgencyAccountDetailsComponent},
+  {path: 'local-agency/dashboard/dashboard-seasonal-calendar', component: LocalAgencyDashboardSeasonalCalendarComponent},
   /**
    * Maintanace page
    * */

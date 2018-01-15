@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, AuthMethods, AuthProviders, FirebaseAuthState} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
@@ -26,6 +26,8 @@ export class AgencyChangePasswordComponent implements OnInit, OnDestroy {
   authState: FirebaseAuthState;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router, private af: AngularFire) {
   }

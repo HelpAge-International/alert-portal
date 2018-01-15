@@ -339,6 +339,11 @@ import { LocalAgencyNotificationComponent } from './local-agency/local-agency-ad
 import { LocalAgencySettingsMenuComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-menu/local-agency-settings-menu.component';
 import { LocalAgencySkillsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-skills/local-agency-skills.component';
 import { LocalAgencySettingsDocumentsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-documents/local-agency-settings-documents.component';
+import { LocalAgencyMessagesComponent } from './local-agency/local-agency-messages/local-agency-messages.component';
+import { LocalAgencyCreateEditMessageComponent } from './local-agency/local-agency-messages/local-agency-create-edit-message/local-agency-create-edit-message.component';
+import { LocalAgencyAccountSettingsComponent } from './local-agency/local-agency-account-settings/local-agency-account-settings.component';
+import { LocalAgencyChangePasswordComponent } from './local-agency/local-agency-account-settings/local-agency-change-password/local-agency-change-password.component';
+import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-account-details/local-agency-account-details.component';
 
 
 
@@ -684,6 +689,11 @@ const firebaseAuthConfig = {
     LocalAgencySettingsMenuComponent,
     LocalAgencySkillsComponent,
     LocalAgencySettingsDocumentsComponent,
+    LocalAgencyMessagesComponent,
+    LocalAgencyCreateEditMessageComponent,
+    LocalAgencyAccountSettingsComponent,
+    LocalAgencyChangePasswordComponent,
+    LocalAgencyAccountDetailsComponent,
 
   ],
   imports: [

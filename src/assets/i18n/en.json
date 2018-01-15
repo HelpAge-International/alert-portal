@@ -407,6 +407,7 @@
       "ALL_USERS":"All Users",
       "NETWORK_ADMINS":"Network Administrators",
       "AGENCY_ADMINS":"Agency Administrators",
+      "AGENCY_USER":"Agency User",
       "GLOBAL_DIRECTOR":"Global Directors",
       "GLOBAL_DIRECTOR_SINGLE":"Global Director",
       "COUNTRY_USER":"Country User",

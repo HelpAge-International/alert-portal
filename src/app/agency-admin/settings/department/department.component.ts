@@ -47,7 +47,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.userType = userType;
-      if(userType == UserType.AgencyAdmin){
+      if(this.isLocalAgency){
         this.initDepartments();
       } else{
         this.initDepartmentsLocalAgency();

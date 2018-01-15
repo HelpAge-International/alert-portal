@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Message} from "../../../model/message";
@@ -37,6 +37,8 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   private agencyMessageRefPath: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
@@ -109,7 +111,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
 
           this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
             console.log("Message Ref successfully added to all nodes");
-            this.router.navigate(['/agency-admin/agency-messages']);
+            this.router.navigate(this.isLocalAgency ? ['/local-agency/agency-messages'] : ['/agency-admin/agency-messages']);
           }).catch(error => {
             console.log("Message creation unsuccessful" + error);
           });
@@ -158,7 +160,7 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
           if (this.groups.indexOf(group) == this.groups.length - 1) {
             this.af.database.object(Constants.APP_STATUS).update(this.msgData).then(_ => {
               console.log("Message Ref successfully added to all nodes");
-              this.router.navigate(['/agency-admin/agency-messages']);
+              this.router.navigate(this.isLocalAgency ? ['/local-agency/agency-messages'] : ['/agency-admin/agency-messages']);
             }).catch(error => {
               console.log("Message creation unsuccessful" + error);
             });
