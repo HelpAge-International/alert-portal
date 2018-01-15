@@ -150,9 +150,8 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
 
   private loadData() {
 
-    if (this.DashboardTypeUsed == DashboardType.default) {
-      this.getAllSeasonsForCountryId(this.countryId);
-    }
+    this.getAllSeasonsForCountryId(this.agencyId);
+
     this.getAlerts();
     this.getCountryContextIndicators();
     this.getHazards();
@@ -197,6 +196,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         ];
         let i = 2;
         snapshot.forEach((seasonInfo) => {
+          console.log(seasonInfo)
           let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
           this.seasonEvents.push(x);
           i++;

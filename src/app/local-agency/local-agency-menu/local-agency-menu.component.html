@@ -29,9 +29,6 @@
     <li class="" [hidden]="permCountryOffice" routerLinkActive="active">
       <a routerLink="/local-agency/profile">{{"LOCAL_AGENCY_ADMIN.STAFF.LOCAL_AGENCY" | translate}}</a>
     </li>
-    <li class="" routerLinkActive="active">
-      <a routerLink="/map">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
-    </li>
     <li *ngIf="userType == UserType.LocalAgencyAdmin" class="" routerLinkActive="active">
       <div class="dropdown">
         <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true"
