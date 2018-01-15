@@ -172,6 +172,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agency => {
                 this.agencies.push(agency)
+                this._getSkills();
               })
             //get privacy for country
             this.settingService.getPrivacySettingForCountry(value)
@@ -185,7 +186,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
           this.getStaff(map);
           this.getSurgeCapacity(map);
           this._getCountryOfficeCapacity(map).then();
-          this._getSkills();
+
 
         });
 
@@ -245,6 +246,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agency => {
                 this.agencies.push(agency)
+                this._getSkills();
               })
             //get privacy for country
             this.settingService.getPrivacySettingForCountry(value)
@@ -265,10 +267,6 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               console.log(this.surgeCapacities)
             })
           });
-
-          this._getSkills();
-
-
         })
 
     } else {
@@ -289,6 +287,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agency => {
                       this.agencies.push(agency)
+                      this._getSkills();
                     })
                   //get privacy for country
                   this.settingService.getPrivacySettingForCountry(value)
@@ -309,9 +308,6 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                     console.log(this.surgeCapacities)
                   })
                 });
-
-                this._getSkills();
-
 
               })
           });
@@ -554,6 +550,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
       this._agencyService.getSkillsForAgency(agency.$key)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(skill => {
+          console.log(skill)
           if (skill.type == SkillType.Support && !this.suportedSkills.map(item => item.$key).includes(skill.$key)) {
             this.suportedSkills.push(skill);
           } else if (skill.type == SkillType.Tech && !this.techSkills.map(item => item.$key).includes(skill.$key)) {
