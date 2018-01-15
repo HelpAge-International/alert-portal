@@ -214,6 +214,7 @@ import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-ris
 import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
 import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
 import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
+import {CountryDepartmentsComponent} from "./country-admin/settings/country-departments/country-departments.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -306,6 +307,7 @@ const routes: Routes = [
   {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
   {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},
   {path: 'country-admin/settings/country-notification-settings', component: CountryNotificationSettingsComponent},
+  {path: 'country-admin/settings/country-departments', component: CountryDepartmentsComponent},
   {
     path: 'country-admin/settings/country-notification-settings/country-add-external-recipient',
     component: CountryAddExternalRecipientComponent

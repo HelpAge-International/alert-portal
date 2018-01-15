@@ -304,6 +304,7 @@ import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-ris
 import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
 import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
 import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
+import { CountryDepartmentsComponent } from './country-admin/settings/country-departments/country-departments.component';
 
 
 
@@ -613,7 +614,8 @@ const firebaseAuthConfig = {
     LocalAgencyCreateAlertComponent,
     LocalAgencyAdministrationStaffComponent,
     LocalAgencyAddEditStaffComponent,
-    LocalAgencyAddEditPartnerComponent
+    LocalAgencyAddEditPartnerComponent,
+    CountryDepartmentsComponent
   ],
   imports: [
     BrowserModule,
