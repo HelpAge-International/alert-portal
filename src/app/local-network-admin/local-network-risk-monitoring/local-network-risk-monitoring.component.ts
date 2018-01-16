@@ -127,6 +127,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private countryLevelsValues: any;
   private networkViewValues: {};
   private isViewingFromExternal: boolean;
+  private staffMap = new Map()
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -208,6 +209,8 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                             console.log(agency)
                             this.agencies.push(agency)
                           })
+                        //get all staffs
+                        this.initStaffs(key)
                       });
                     }
                   })
@@ -254,6 +257,8 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                             console.log(agency)
                             this.agencies.push(agency)
                           })
+                        //get all staffs
+                        this.initStaffs(key)
                       });
                     }
                   })
@@ -1109,6 +1114,36 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
       .then((hazard) => {
 
         this.router.navigate(['/network/local-network-risk-monitoring/add-indicator/' + hazard.key])
+      })
+  }
+
+  private initStaffs(agencyId) {
+    this.agencyService.getAllCountryIdsForAgency(agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(ids => {
+        ids.forEach(id => {
+          //get normal staffs
+          this.userService.getStaffList(id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(staffs => {
+              staffs.forEach(staff => {
+                this.userService.getUser(staff.id)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(user => {
+                    this.staffMap.set(user.id, user)
+                  })
+              })
+            })
+          //get country admin
+          this.agencyService.getCountryOffice(id, agencyId)
+            .flatMap(office => {
+              return this.userService.getUser(office.adminId)
+            })
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryAdmin => {
+              this.staffMap.set(countryAdmin.id, countryAdmin)
+            })
+        })
       })
   }
 

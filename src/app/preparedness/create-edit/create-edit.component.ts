@@ -222,6 +222,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -229,7 +230,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.currency = snap.val();
       });
   }
-
 
 
   /**
@@ -292,10 +292,30 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Initialising departments
    */
   private getDepartments() {
+    this.departments = []
+    //for agency level
     this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        this.departments = [];
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+        });
+        if (this.copyDepartmentId != null) {
+          this.departments.forEach((value, key) => {
+            if (this.copyDepartmentId == value.id) {
+              // Copied Department exists in Action - Set current selection to it!
+              this.action.department = this.copyDepartmentId;
+            }
+          })
+        }
+      });
+    //for country level
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
         snap.forEach((snapshot) => {
           let x: ModelDepartment = new ModelDepartment();
           x.id = snapshot.key;

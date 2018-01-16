@@ -78,11 +78,28 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private initData() {
     this.getStaffData();
     this.getPartnerData();
+    this.initDepartments();
+  }
+
+  private initDepartments() {
+    this.departments = [];
+    this.departmentMap.clear();
+    //agency level
     this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snap => {
-        this.departments = [];
-        this.departmentMap.clear();
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        })
+      });
+    //country level
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments', {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
         snap.forEach((snapshot) => {
           let x: ModelDepartment = new ModelDepartment();
           x.id = snapshot.key;

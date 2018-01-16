@@ -8,6 +8,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../../utils/Constants";
 import {SettingsService} from "../../../services/settings.service";
+import {AlertMessageModel} from "../../../model/alert-message.model";
 
 @Component({
   selector: 'app-country-departments',
@@ -17,7 +18,7 @@ import {SettingsService} from "../../../services/settings.service";
 export class CountryDepartmentsComponent implements OnInit, OnDestroy {
 
   // Models
-  private alertMessageType = AlertMessageType
+  // private alertMessage = null
   private deleting: boolean;
   private depts = [];
 
@@ -76,23 +77,6 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
         this.editDepts = departments
         this.initCanDeleteDepartments()
       })
-
-    // this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe((snapshot) => {
-    //     this.depts = [];
-    //     this.editDepts = [];
-    //     console.log(snapshot.val());
-    //     snapshot.forEach((snap) => {
-    //       let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.val().name);
-    //       this.depts.push(x);
-    //       let y: ModelDepartment = new ModelDepartment();
-    //       y.id = snap.key;
-    //       y.name = snap.val().name;
-    //       this.editDepts.push(y);
-    //     });
-    //     this.initCanDeleteDepartments();
-    //   });
   }
 
   private initCanDeleteDepartments() {
@@ -109,8 +93,6 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
 
   deleteDepartments() {
     this.deleting = !this.deleting;
-    console.log(this.canDeleteItem);
-    console.log(this.canDeleteItem.get('Dep21'));
   }
 
   cancelDeleteDepartments() {
@@ -121,7 +103,7 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
   deleteSelectedDepartments() {
     this.deleting = !this.deleting;
     for (let x in this.deleteCandidates) {
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/" + x).set(null).then(_ => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments/" + x).set(null).then(_ => {
         if (!this.alertShow) {
           this.saved = true;
           this.alertSuccess = true;
@@ -173,7 +155,7 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
       let updateObj = {
         name: temps[i].name
       };
-      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + "/departments/" + temps[i].id).update(updateObj).then(_ => {
+      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + "/" + this.countryId + "/departments/" + temps[i].id).update(updateObj).then(_ => {
         if (!this.alertShow) {
           this.flipEditDepartments();
           this.saved = true;
@@ -190,7 +172,7 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
       let updateObj = {
         name: this.departmentName
       };
-      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/departments').push(updateObj).then(_ => {
+      this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryId + '/departments').push(updateObj).then(_ => {
         if (!this.alertShow) {
           this.saved = true;
           this.alertSuccess = true;

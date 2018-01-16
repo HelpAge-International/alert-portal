@@ -1,8 +1,8 @@
 <app-country-admin-header></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
-                  [show]="alertMessage"></app-status-alert>
+<app-status-alert [message]="alertMessage" [success]="alertSuccess"
+                  [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -41,7 +41,7 @@
     <div class="Departments">
 
       <div *ngIf="!depts || depts.length == 0">
-        {{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.NO_DEPARTMENTS" | translate}}
+        {{"NO_DEPARTMENTS_COUNTRY" | translate}}
       </div>
 
       <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of depts">

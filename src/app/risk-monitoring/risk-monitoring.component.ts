@@ -15,9 +15,9 @@ import {HazardImages} from "../utils/HazardImages";
 import {WindowRefService} from "../services/window-ref.service";
 import * as jsPDF from 'jspdf'
 import {ModelUserPublic} from "../model/user-public.model";
-import * as firebase from "firebase/app";
-import App = firebase.app.App;
-import {subscribeOn} from "rxjs/operator/subscribeOn";
+import {ModelStaff} from "../model/staff.model";
+import {Observable} from "rxjs/Observable";
+import {AgencyService} from "../services/agency-service.service";
 
 declare var jQuery: any;
 
@@ -111,6 +111,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private assignedIndicator: any;
   private assignedHazard: any;
   private assignedUser: string;
+  private staffMap = new Map()
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -119,6 +120,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               private storage: LocalStorageService,
               private translate: TranslateService,
               private userService: UserService,
+              private agencyService: AgencyService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
@@ -186,6 +188,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
               this.countryPermissionsMatrix = isEnabled;
             }));
+            this.initStaffs()
           });
         }
       })
@@ -302,7 +305,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         this.getLocalNetworkIndicators()
 
 
-
       });
     });
     return promise;
@@ -357,9 +359,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.networkName = localNetworkDetails.name
                                               indicator.fromNetwork = true
                                               indicator.networkId = localNetwork.$key
-                                              if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))){
+                                              if (!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                                 this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                              } else{
+                                              } else {
                                                 var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
                                                 console.log(indicatorIndex)
                                                 this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
@@ -390,9 +392,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.networkId = localNetwork.$key
 
                                             })
-                                            if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                            if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                               hazard.indicators.push(indicator)
-                                            }else{
+                                            } else {
                                               var indicatorIndex = hazard.indicators.indexOf(indicator)
                                               console.log(indicatorIndex)
                                               hazard.indicators.splice(indicatorIndex, 1)
@@ -437,9 +439,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.networkName = localNetworkDetails.name
                                               indicator.fromNetwork = true
                                               indicator.networkId = localNetwork.$key
-                                              if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                              if (!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                                 this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                              }else{
+                                              } else {
                                                 var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
                                                 console.log(indicatorIndex)
                                                 this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
@@ -468,9 +470,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.fromNetwork = true
                                               indicator.networkId = localNetwork.$key
                                             })
-                                            if(!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                            if (!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                               hazard.indicators.push(indicator)
-                                            }else{
+                                            } else {
                                               var indicatorIndex = hazard.indicators.indexOf(indicator)
                                               console.log(indicatorIndex)
                                               hazard.indicators.splice(indicatorIndex, 1)
@@ -520,9 +522,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         indicator.networkName = localNetworkDetails.name
                                         indicator.fromNetwork = true
                                         indicator.networkId = localNetwork.$key
-                                        if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                        if (!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                           this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                        }else{
+                                        } else {
                                           var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
                                           console.log(indicatorIndex)
                                           this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
@@ -553,9 +555,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         indicator.networkId = localNetwork.$key
 
                                       })
-                                      if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                      if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                         hazard.indicators.push(indicator)
-                                      }else{
+                                      } else {
                                         var indicatorIndex = hazard.indicators.indexOf(indicator)
                                         console.log(indicatorIndex)
                                         hazard.indicators.splice(indicatorIndex, 1)
@@ -564,7 +566,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     }
                                   })
                                   console.log(this.activeHazards.some(activeHazard => activeHazard.$key == hazard.$key))
-                                  if ( hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
+                                  if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
                                     hazard.fromNetwork = true;
                                     hazard.networkId = localNetwork.$key
                                     hazard.existsOnAgency = false
@@ -598,9 +600,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         indicator.networkName = localNetworkDetails.name
                                         indicator.fromNetwork = true
                                         indicator.networkId = localNetwork.$key
-                                        if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                        if (!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                           this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                        }else{
+                                        } else {
                                           var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
                                           console.log(indicatorIndex)
                                           this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
@@ -630,9 +632,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         indicator.networkId = localNetwork.$key
 
                                       })
-                                      if(!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                      if (!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                         hazard.indicators.push(indicator)
-                                      }else{
+                                      } else {
                                         var indicatorIndex = hazard.indicators.indexOf(indicator)
                                         console.log(indicatorIndex)
                                         hazard.indicators.splice(indicatorIndex, 1)
@@ -675,9 +677,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     indicator.networkId = localNetwork.$key
 
                                   })
-                                  if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                  if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                     hazard.indicators.push(indicator)
-                                  }else{
+                                  } else {
                                     var indicatorIndex = hazard.indicators.indexOf(indicator)
                                     console.log(indicatorIndex)
                                     hazard.indicators.splice(indicatorIndex, 1)
@@ -713,9 +715,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     indicator.networkId = localNetwork.$key
 
                                   })
-                                  if(!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                  if (!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                     hazard.indicators.push(indicator)
-                                  }else{
+                                  } else {
                                     var indicatorIndex = hazard.indicators.indexOf(indicator)
                                     console.log(indicatorIndex)
                                     hazard.indicators.splice(indicatorIndex, 1)
@@ -789,9 +791,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.fromNetwork = true
                                               indicator.networkId = network.$key
                                               indicator.networkCountryId = network.networkCountryId
-                                              if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                              if (!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                                 this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                              }else{
+                                              } else {
                                                 var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
                                                 console.log(indicatorIndex)
                                                 this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
@@ -821,9 +823,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.networkId = network.$key
                                               indicator.networkCountryId = network.networkCountryId
                                             })
-                                            if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                            if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                               hazard.indicators.push(indicator)
-                                            }else{
+                                            } else {
                                               var indicatorIndex = hazard.indicators.indexOf(indicator)
                                               console.log(indicatorIndex)
                                               hazard.indicators.splice(indicatorIndex, 1)
@@ -870,9 +872,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.fromNetwork = true
                                               indicator.networkId = network.$key
                                               indicator.networkCountryId = network.networkCountryId
-                                              if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                              if (!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                                 this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                              }else{
+                                              } else {
                                                 var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
                                                 console.log(indicatorIndex)
                                                 this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
@@ -903,9 +905,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               indicator.networkCountryId = network.networkCountryId
 
                                             })
-                                            if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                            if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                               hazard.indicators.push(indicator)
-                                            }else{
+                                            } else {
                                               var indicatorIndex = hazard.indicators.indexOf(indicator)
                                               console.log(indicatorIndex)
                                               hazard.indicators.splice(indicatorIndex, 1)
@@ -956,9 +958,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         indicator.fromNetwork = true
                                         indicator.networkId = network.$key
                                         indicator.networkCountryId = network.networkCountryId
-                                        if(!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                        if (!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                           this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                        }else{
+                                        } else {
                                           var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
                                           console.log(indicatorIndex)
                                           this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
@@ -989,9 +991,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         indicator.networkCountryId = network.networkCountryId
 
                                       })
-                                      if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                      if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                         hazard.indicators.push(indicator)
-                                      }else{
+                                      } else {
                                         var indicatorIndex = hazard.indicators.indexOf(indicator)
                                         console.log(indicatorIndex)
                                         hazard.indicators.splice(indicatorIndex, 1)
@@ -1035,9 +1037,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         indicator.fromNetwork = true
                                         indicator.networkId = network.$key
                                         indicator.networkCountryId = network.networkCountryId
-                                        if(!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
+                                        if (!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                           this.archivedHazards[archivedHazard].indicators.push(indicator)
-                                        }else{
+                                        } else {
                                           var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
                                           console.log(indicatorIndex)
                                           this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
@@ -1106,9 +1108,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     indicator.networkCountryId = network.networkCountryId
 
                                   })
-                                  if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                  if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                     hazard.indicators.push(indicator)
-                                  }else{
+                                  } else {
                                     var indicatorIndex = hazard.indicators.indexOf(indicator)
                                     console.log(indicatorIndex)
                                     hazard.indicators.splice(indicatorIndex, 1)
@@ -1144,9 +1146,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                     indicator.networkId = network.$key
                                     indicator.networkCountryId = network.networkCountryId
                                   })
-                                  if(!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
+                                  if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                     hazard.indicators.push(indicator)
-                                  }else{
+                                  } else {
                                     var indicatorIndex = hazard.indicators.indexOf(indicator)
                                     console.log(indicatorIndex)
                                     hazard.indicators.splice(indicatorIndex, 1)
@@ -1507,7 +1509,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     let y = 10;
 
     logs.forEach(log => {
-      if ((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp  ) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp )) {
+      if ((!this.fromDate || log['timeStamp'] >= this.fromDateTimeStamp) && (!this.toDate || log['timeStamp'] <= this.toDateTimeStamp)) {
         if (y > pageHeight) {
           y = 10;
           doc.addPage();
@@ -1622,4 +1624,27 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     });
   }
 
+  private initStaffs() {
+    this.userService.getStaffList(this.countryID)
+      .flatMap(staffList => {
+        return Observable.from(staffList.map(staff => staff.id))
+      })
+      .flatMap(staffId => {
+        return this.userService.getUser(staffId)
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(user => {
+        this.staffMap.set(user.id, user)
+      })
+
+    //get country admin
+    this.agencyService.getCountryOffice(this.countryID, this.agencyId)
+      .flatMap(office => {
+        return this.userService.getUser(office.adminId)
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(countryAdmin => {
+        this.staffMap.set(countryAdmin.id, countryAdmin)
+      })
+  }
 }

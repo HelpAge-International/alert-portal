@@ -248,6 +248,13 @@ export class AgencyService {
       })
   }
 
+  getAllCountryIdsForAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(offices =>{
+        return offices.map(office => office.$key)
+      })
+  }
+
   unSubscribeNow() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

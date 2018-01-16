@@ -127,6 +127,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   private countryLevelsValues: any;
   private isViewingFromExternal: boolean;
 
+  private staffMap = new Map()
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -208,7 +210,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                   .subscribe(agency => {
                     this.agencies.push(agency)
                   })
-
+                //get all staffs
+                this.initStaffs(agency);
               })
             })
 
@@ -253,6 +256,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                         .subscribe(agency => {
                           this.agencies.push(agency)
                         })
+                      //get all staffs
+                      this.initStaffs(agency);
                     })
                   })
 
@@ -279,6 +284,36 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         }
       })
 
+  }
+
+  private initStaffs(agency) {
+    this.agencyService.getAllCountryIdsForAgency(agency.$key)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(ids => {
+        ids.forEach(id => {
+          //get normal staffs
+          this.userService.getStaffList(id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(staffs => {
+              staffs.forEach(staff => {
+                this.userService.getUser(staff.id)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(user => {
+                    this.staffMap.set(user.id, user)
+                  })
+              })
+            })
+          //get country admin
+          this.agencyService.getCountryOffice(id, agency.$key)
+            .flatMap(office => {
+              return this.userService.getUser(office.adminId)
+            })
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryAdmin => {
+              this.staffMap.set(countryAdmin.id, countryAdmin)
+            })
+        })
+      })
   }
 
   ngOnDestroy(): void {

@@ -89,12 +89,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this._getHazards();
       this._getDirectorCountryID();
 
-      // this._getCountryID().then(() => {
-      //   this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-      //   this._getHazards();
-      //   this._getDirectorCountryID();
-      // });
-
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe).subscribe(content => {
@@ -103,23 +97,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       });
     });
 
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   this.UserType = userType;
-    //
-    //   this._getCountryID().then(() => {
-    //     this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-    //     this._getHazards();
-    //     this._getDirectorCountryID();
-    //   });
-    //
-    //   // get the country levels values
-    //   this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-    //     .takeUntil(this.ngUnsubscribe).subscribe(content => {
-    //     this.countryLevelsValues = content;
-    //     err => console.log(err);
-    //   });
-    // });
+    //init country location
+    this.userService.getCountryDetail(this.countryID, this.agencyId)
   }
 
   ngOnDestroy(): void {

@@ -148,16 +148,43 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       });
 
     this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId);
-    this.departmentList = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
+
+    //agency level dep
+    this.departmentList = Observable.combineLatest(this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true}),
+      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments', {preserveSnapshot: true}))
       .map(departments => {
         let names: ModelDepartment[] = [];
         departments.forEach(department => {
-          names.push(ModelDepartment.create(department.key, department.val().name));
+          if (department.val()) {
+            Object.keys(department.val()).forEach(key => {
+              names.push(ModelDepartment.create(key, department.val()[key]["name"]));
+            })
+          }
+          // names.push(ModelDepartment.create(department.key, department.val().name));
         });
         return names;
-      });
+      })
 
+    // //agency level dep
+    // this.departmentList = Observable.combineLatest(this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
+    //     .map(departments => {
+    //       let names: ModelDepartment[] = [];
+    //       departments.forEach(department => {
+    //         names.push(ModelDepartment.create(department.key, department.val().name));
+    //       });
+    //       return names;
+    //     }),
+    //   //country level dep
+    //   this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments', {preserveSnapshot: true})
+    //     .map(departments => {
+    //       let names: ModelDepartment[] = [];
+    //       departments.forEach(department => {
+    //         names.push(ModelDepartment.create(department.key, department.val().name));
+    //       });
+    //       return names;
+    //     })
 
+    //get skills
     this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/skills')
       .takeUntil(this.ngUnsubscribe)
       .subscribe(_ => {
@@ -452,8 +479,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.hideWarning = true;
       this.hideSuccess = false;
       Observable.timer(1500).subscribe(() => {
-          this.router.navigateByUrl('/country-admin/country-staff');
-        });
+        this.router.navigateByUrl('/country-admin/country-staff');
+      });
     }, error => {
       this.warningMessage = error.message;
       this.showAlert();

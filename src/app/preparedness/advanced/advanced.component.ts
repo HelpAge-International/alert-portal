@@ -301,11 +301,24 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
+    this.DEPARTMENTS = [];
+    this.DEPARTMENT_MAP.clear();
+    //for agency level
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        this.DEPARTMENTS = [];
-        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
+          let mD: ModelDepartment = new ModelDepartment();
+          mD.id = snapshot.key;
+          mD.name = snapshot.val().name;
+          this.DEPARTMENTS.push(mD);
+          this.DEPARTMENT_MAP.set(mD.id, mD.name);
+        });
+      });
+    //for country level
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
         snap.forEach((snapshot) => {
           let mD: ModelDepartment = new ModelDepartment();
           mD.id = snapshot.key;

@@ -285,11 +285,24 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
+    this.DEPARTMENTS = [];
+    this.DEPARTMENT_MAP.clear();
+    //for agency level
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        this.DEPARTMENTS = [];
-        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.DEPARTMENTS.push(x);
+          this.DEPARTMENT_MAP.set(x.id, x.name);
+        });
+      });
+    //for country level
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
         snap.forEach((snapshot) => {
           let x: ModelDepartment = new ModelDepartment();
           x.id = snapshot.key;

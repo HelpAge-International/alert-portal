@@ -284,7 +284,7 @@ export class SettingsService {
   getCountryLocalDepartments(agencyId, countryId) {
     return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/departments", {preserveSnapshot: true})
       .map((snapshot) => {
-        let depts = [];
+        let depts:ModelDepartment[] = [];
         snapshot.forEach((snap) => {
           let y: ModelDepartment = new ModelDepartment();
           y.id = snap.key;
