@@ -354,11 +354,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       });
   }
 
-  initLocalDisplay(){
+  initLocalDisplay() {
     console.log(this.prepActionService.actionsNetworkLocal, 'initLocalDisplay');
-
-
-
 
 
   }
@@ -616,33 +613,34 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
           this.addNote(action);
           this.closePopover(action);
         }
         else {
           this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
         }
-      }
-      else {
+      } else {
         // Doesn't require doc
         if (action.attachments != null) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
         this.addNote(action);
         this.closePopover(action);
       }
@@ -654,15 +652,19 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFileNetwork(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
           this.addNoteNetwork(action);
           this.closePopover(action);
         }
@@ -677,15 +679,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFileNetwork(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
-
-        isComplete: true,
-        isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
         this.addNoteNetwork(action);
         this.closePopover(action);
       }
     }
+  }
+
+  cancelComplete(action) {
+    action.actualCost = null
   }
 
   /**
@@ -694,13 +696,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 
   // (Dan) - this new function is for the undo completed MPA
-  protected undoCompleteAction(action: PreparednessAction){
+  protected undoCompleteAction(action: PreparednessAction) {
+
+    action.actualCost = null
 
     // Call to firebase to update values to revert back to *In Progress*
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
       isComplete: false,
       isCompleteAt: null,
-      updatedAt: new Date().getTime()
+      updatedAt: new Date().getTime(),
+      actualCost : null
     });
 
   }
@@ -709,11 +714,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected closePopover(action: PreparednessAction) {
 
     let toggleDialog = jQuery("#popover_content_" + action.id);
-
     toggleDialog.toggle();
 
 
   }
+
   // Uploading a file to Firebase
   protected uploadFile(action: PreparednessAction, file) {
     let document = {

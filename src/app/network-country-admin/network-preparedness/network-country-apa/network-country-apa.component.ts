@@ -341,6 +341,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
               this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
             }
           }
+          console.log(this.hazardRedAlert)
         });
       });
 

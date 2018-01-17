@@ -790,8 +790,8 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
-                              translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                            <div class="subrow-line">{{action.actualCost ? ("Cost") : ("AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                              translate)}}: <strong>{{CURRENCIES[currency]}}{{action.actualCost ? action.actualCost : action.budget}}</strong></div>
                             <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
                               translate}}</strong></div>
                             <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
@@ -933,6 +933,16 @@
                               placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                             </div>
                           </div>
+                          <!--actual cost-->
+                          <div class="row">
+                            <div class="col-lg-8 col-md-10">
+                              <div class="form-group">
+                                <label for="n-Budget">Actual Cost</label>
+                                <input type="number" required name="budget" [(ngModel)]="action.actualCost"
+                                       class="form-control col-sm-5" id="n-Budget" min="0" placeholder="{{CURRENCIES[currency]}}">
+                              </div>
+                            </div>
+                          </div>
                           <div class="row">
                             <div class="col-12">
                               <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span>
@@ -964,7 +974,7 @@
                           <a href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
-                             (click)="closePopover(action)">{{"GLOBAL.CANCEL" |
+                             (click)="cancelComplete(action)">{{"GLOBAL.CANCEL" |
                             translate}}</a>
                         </div>
                       </div>
@@ -1439,8 +1449,8 @@
 
                           </div>
                           <div class="row">
-                            <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
-                              translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                            <div class="subrow-line">{{action.actualCost ? ("Cost") : ("AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                              translate)}}: <strong>{{CURRENCIES[currency]}}{{action.actualCost ? action.actualCost : action.budget}}</strong></div>
                             <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
                               translate}}</strong></div>
 
@@ -1583,6 +1593,16 @@
                               placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
                             </div>
                           </div>
+                          <!--actual cost-->
+                          <div class="row">
+                            <div class="col-lg-8 col-md-10">
+                              <div class="form-group">
+                                <label for="n-Budget">Actual Cost</label>
+                                <input type="number" required name="budget" [(ngModel)]="action.actualCost"
+                                       class="form-control col-sm-5" id="n-Budget" min="0" placeholder="{{CURRENCIES[currency]}}">
+                              </div>
+                            </div>
+                          </div>
                           <div class="row">
                             <div class="col-12">
                               <p><span>{{"ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION" | translate}}</span>
@@ -1614,7 +1634,7 @@
                           <a href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="completeActionNetwork(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
-                             onClick="$(this).parent().parent().parent().collapse('hide')">{{"GLOBAL.CANCEL" |
+                             (click)="cancelComplete(action)">{{"GLOBAL.CANCEL" |
                             translate}}</a>
                         </div>
                       </div>

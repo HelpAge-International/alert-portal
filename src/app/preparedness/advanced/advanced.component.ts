@@ -621,15 +621,19 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
           this.addNote(action);
           this.closePopover(action);
         }
@@ -644,10 +648,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
         this.addNote(action);
         this.closePopover(action);
       }
@@ -658,15 +659,19 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFileNetwork(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
           this.addNoteNetwork(action);
           this.closePopover(action);
         }
@@ -681,10 +686,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFileNetwork(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
         console.log(Constants.APP_STATUS + '/action/' + action.networkCountryId  + '/' + action.id, 'in complete');
         this.addNoteNetwork(action);
 
@@ -997,5 +999,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
     let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
+  }
+
+  cancelComplete(action) {
+    action.actualCost = null
+    this.closePopover(action)
   }
 }

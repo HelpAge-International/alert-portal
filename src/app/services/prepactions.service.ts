@@ -498,6 +498,8 @@ export class PrepActionService {
     else if (action.type == ActionType.custom) action.isArchived = null;
     if (action.hasOwnProperty('budget')) this.actions[i].budget = action.budget;
     else if (action.type == ActionType.custom) action.budget = null;
+    if (action.hasOwnProperty('actualCost')) this.actions[i].actualCost = action.actualCost;
+    else if (action.type == ActionType.custom) action.actualCost = null;
     if (action.hasOwnProperty('department')) this.actions[i].department = action.department; // else action.department = null;
     if (action.hasOwnProperty('level')) this.actions[i].level = action.level; // else action.level = null;
     if (action.hasOwnProperty('calculatedIsComplete')) this.actions[i].isComplete = action.calculatedIsComplete;
@@ -1031,6 +1033,8 @@ export class PreparednessAction {
   public networkCountryId: string;
 
   public computedClockSetting: number;
+
+  public actualCost: number
 
   public setComputedClockSetting(value: number, type: number) {
     this.computedClockSetting = PrepActionService.clockCalculation(value, type);

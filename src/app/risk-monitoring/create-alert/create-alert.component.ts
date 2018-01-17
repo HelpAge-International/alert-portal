@@ -54,6 +54,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private hazardScenario = Constants.HAZARD_SCENARIOS;
 
   private hazards: any[] = [];
+  private preSelectedCountry: number;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -72,7 +73,11 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    let model = new OperationAreaModel()
+    if (this.preSelectedCountry >= 0) {
+      model.country = this.preSelectedCountry
+    }
+    this.alertData.affectedAreas.push(model);
   }
 
   removeAnotherArea(key: number,) {
@@ -95,10 +100,18 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         this.countryLevelsValues = content;
         err => console.log(err);
       });
-    });
 
-    //init country location
-    this.userService.getCountryDetail(this.countryID, this.agencyId)
+      //init country location
+      this.userService.getCountryDetail(this.countryID, this.agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(country =>{
+          this.preSelectedCountry = country.location
+          this.alertData.affectedAreas.forEach(area => {
+            area.country = country.location
+          })
+        })
+    })
+
   }
 
   ngOnDestroy(): void {
