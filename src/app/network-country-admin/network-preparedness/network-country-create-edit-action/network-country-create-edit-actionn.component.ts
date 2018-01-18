@@ -637,6 +637,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       if (updateObj.asignee) {
         console.log('there is an assignee')
         console.log(updateObj.asignee)
+        this.showLoader = true
         this._userService.getUserType(updateObj.asignee)
           .subscribe(x => {
             console.log('mapping x to user type')
@@ -647,13 +648,13 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               this._userService.getAgencyId(userTypePath, updateObj.asignee)
                 .subscribe(agency => {
 
-                  let agencyId = agency;
+                  let agencyId = agency && agency != "undefined" && agency != undefined ? agency : null;
                   this._userService.getCountryId(userTypePath, updateObj.asignee)
                     .subscribe(country => {
 
                       if(userType != NetworkUserAccountType.NetworkAdmin || userType != NetworkUserAccountType.NetworkCountryAdmin) {
 
-                        let countryId = country;
+                        let countryId = country && country != "undefined" && country != undefined ? country : null;
                         updateObj.createdByAgencyId = agencyId;
                         updateObj.createdByCountryId = countryId;
 
@@ -685,6 +686,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                             this._location.back()
                           }
 
+                        }, error =>{
+                          console.log(error.message)
+                          this.showLoader = false
                         });
                       } else {
                         console.log('action id is null')
@@ -705,6 +709,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                           this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
                             this._location.back();
                           });
+                        }, error =>{
+                          console.log(error.message)
+                          this.showLoader = false
                         });
                       }
                     })
