@@ -92,70 +92,29 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
   private initData() {
 
     //get agencies
-    // this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
-    //   .map(snap => {
-    //     let locations = [];
-    //     if (snap && snap.val()) {
-    //       let countryObjects = Object.keys(snap.val()).map(key => {
-    //         let countryWithAgencyId = snap.val()[key];
-    //         countryWithAgencyId["agencyId"] = key;
-    //         return countryWithAgencyId;
-    //       });
-    //       countryObjects.forEach(item => {
-    //         let countries = Object.keys(item).filter(key => key != "agencyId").map(key => {
-    //           let country = item[key];
-    //           country["countryId"] = key;
-    //           country["agencyId"] = item.agencyId;
-    //           return country;
-    //         });
-    //         countries.forEach(country => {
-    //           locations.push(country.location);
-    //           this.hazardMap.set(Number(country.location), new Set<number>());
-    //           this.countryAgencyRefMap.set(Number(country.location), country);
-    //         });
-    //         countries.forEach(country => {
-    //           this.getHazardInfo(country);
-    //         });
-    //       });
-    //     }
-    //     return locations;
-    //   })
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(allLocations => {
-    //     this.doneWithEmbeddedStyles(country => {
-    //       let navRef = this.countryAgencyRefMap.get(Countries[country]);
-    //
-    //       this.router.navigate(["donor-module/donor-country-index", {
-    //         "countryId": navRef.countryId,
-    //         "agencyId": navRef.agencyId
-    //       }]);
-    //     }, allLocations);
-    //   });
-
-    //get network country offices
-    this.af.database.object(Constants.APP_STATUS + "/networkCountry/", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/", {preserveSnapshot: true})
       .map(snap => {
         let locations = [];
         if (snap && snap.val()) {
-          let networkCountryObjects = Object.keys(snap.val()).map(key => {
-            let countryWithGlobalNetworkId = snap.val()[key];
-            countryWithGlobalNetworkId["globalNetworkId"] = key;
-            return countryWithGlobalNetworkId;
+          let countryObjects = Object.keys(snap.val()).map(key => {
+            let countryWithAgencyId = snap.val()[key];
+            countryWithAgencyId["agencyId"] = key;
+            return countryWithAgencyId;
           });
-          networkCountryObjects.forEach(item => {
-            let networkCountries = Object.keys(item).filter(key => key != "globalNetworkId").map(key => {
-              let networkCountry = item[key];
-              networkCountry["networkCountryId"] = key;
-              networkCountry["globalNetworkId"] = item.globalNetworkId;
-              return networkCountry;
+          countryObjects.forEach(item => {
+            let countries = Object.keys(item).filter(key => key != "agencyId").map(key => {
+              let country = item[key];
+              country["countryId"] = key;
+              country["agencyId"] = item.agencyId;
+              return country;
             });
-            networkCountries.forEach(networkCountry => {
-              locations.push(networkCountry.location);
-              this.hazardMap.set(Number(networkCountry.location), new Set<number>());
-              this.networkCountryGlobalNetworkRefMap.set(Number(networkCountry.location), networkCountry);
+            countries.forEach(country => {
+              locations.push(country.location);
+              this.hazardMap.set(Number(country.location), new Set<number>());
+              this.countryAgencyRefMap.set(Number(country.location), country);
             });
-            networkCountries.forEach(networkCountry => {
-              this.getHazardInfoNetworkCountry(networkCountry);
+            countries.forEach(country => {
+              this.getHazardInfo(country);
             });
           });
         }
@@ -163,15 +122,56 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(allLocations => {
-        this.doneWithEmbeddedStylesNetworkCountry(networkCountry => {
+        this.doneWithEmbeddedStyles(country => {
+          let navRef = this.countryAgencyRefMap.get(Countries[country]);
 
-          let navRef = this.networkCountryGlobalNetworkRefMap.get(Countries[networkCountry]);
           this.router.navigate(["donor-module/donor-country-index", {
-            "networkCountryId": navRef.networkCountryId,
-            "globalNetworkId": navRef.globalNetworkId
+            "countryId": navRef.countryId,
+            "agencyId": navRef.agencyId
           }]);
         }, allLocations);
       });
+
+    //get network country offices
+    // this.af.database.object(Constants.APP_STATUS + "/networkCountry/", {preserveSnapshot: true})
+    //   .map(snap => {
+    //     let locations = [];
+    //     if (snap && snap.val()) {
+    //       let networkCountryObjects = Object.keys(snap.val()).map(key => {
+    //         let countryWithGlobalNetworkId = snap.val()[key];
+    //         countryWithGlobalNetworkId["globalNetworkId"] = key;
+    //         return countryWithGlobalNetworkId;
+    //       });
+    //       networkCountryObjects.forEach(item => {
+    //         let networkCountries = Object.keys(item).filter(key => key != "globalNetworkId").map(key => {
+    //           let networkCountry = item[key];
+    //           networkCountry["networkCountryId"] = key;
+    //           networkCountry["globalNetworkId"] = item.globalNetworkId;
+    //           return networkCountry;
+    //         });
+    //         networkCountries.forEach(networkCountry => {
+    //           locations.push(networkCountry.location);
+    //           this.hazardMap.set(Number(networkCountry.location), new Set<number>());
+    //           this.networkCountryGlobalNetworkRefMap.set(Number(networkCountry.location), networkCountry);
+    //         });
+    //         networkCountries.forEach(networkCountry => {
+    //           this.getHazardInfoNetworkCountry(networkCountry);
+    //         });
+    //       });
+    //     }
+    //     return locations;
+    //   })
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(allLocations => {
+    //     this.doneWithEmbeddedStylesNetworkCountry(networkCountry => {
+    //
+    //       let navRef = this.networkCountryGlobalNetworkRefMap.get(Countries[networkCountry]);
+    //       this.router.navigate(["donor-module/donor-country-index", {
+    //         "networkCountryId": navRef.networkCountryId,
+    //         "globalNetworkId": navRef.globalNetworkId
+    //       }]);
+    //     }, allLocations);
+    //   });
   }
 
   private getHazardInfo(country: any) {
