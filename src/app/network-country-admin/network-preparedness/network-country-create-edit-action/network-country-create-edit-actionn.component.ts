@@ -646,14 +646,13 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               console.log(userTypePath);
               this._userService.getAgencyId(userTypePath, updateObj.asignee)
                 .subscribe(agency => {
-
-                  let agencyId = agency;
+                  let agencyId = agency && agency != "undefined" ? agency : null;
                   this._userService.getCountryId(userTypePath, updateObj.asignee)
                     .subscribe(country => {
 
                       if(userType != NetworkUserAccountType.NetworkAdmin || userType != NetworkUserAccountType.NetworkCountryAdmin) {
 
-                        let countryId = country;
+                        let countryId = country && country != "undefined" && country != undefined ? country : null;
                         updateObj.createdByAgencyId = agencyId;
                         updateObj.createdByCountryId = countryId;
 
@@ -665,6 +664,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                       if (this.action.id != null) {
                         console.log('action is is not null')
                         // Updating
+                        console.log(updateObj)
                         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
 
                           if (updateObj.asignee != this.oldAction.asignee) {
