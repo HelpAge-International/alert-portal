@@ -1,5 +1,12 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</ng-container>
+
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -150,11 +157,14 @@
 
     <br><br><br>
     <div class="row Spaced-above">
-      <button class="btn btn-primary text-uppercase col-sm-2" (click)="saveMapping()">
+      <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="!isLocalAgency" (click)="saveMapping()">
+        {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SAVE_CHANGES" | translate}}
+      </button>
+      <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="isLocalAgency"(click)="saveMappingLocalAgency()">
         {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SAVE_CHANGES" | translate}}
       </button>
       <a class="padding-left-two margin-top-one" href="javascript:void(0)"
-         routerLink="/country-admin/country-office-profile">{{"GLOBAL.CANCEL" | translate}}</a>
+         [routerLink]="isLocalAgency ? ['/local-agency/profile'] : ['/country-admin/country-office-profile']">{{"GLOBAL.CANCEL" | translate}}</a>
     </div>
 
     <!--Delete 4W Mapping Modal-->
@@ -176,8 +186,11 @@
           </div>
           <div class="row Right-aligned Spaced col-sm-12">
             <a href="#" data-dismiss="modal" class="col-sm-6 margin-top-one">{{"GLOBAL.CANCEL" | translate}}</a>
-            <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+            <button href="#" *ngIf="!isLocalAgency" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
                     (click)="deleteMapping()">{{"GLOBAL.CONFIRM" | translate}}
+            </button>
+            <button href="#" *ngIf="isLocalAgency" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                    (click)="deleteMappingLocalAgency()">{{"GLOBAL.CONFIRM" | translate}}
             </button>
           </div>
         </div>

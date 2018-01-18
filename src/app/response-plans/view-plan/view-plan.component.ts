@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Subject} from "rxjs/Subject";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
@@ -31,6 +31,8 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   private networkCountryId: string;
   private systemId: string;
   private uid: string;
+
+  @Input() isLocalAgency: Boolean;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -91,12 +93,21 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   }
 
   private initData(countryId, agencyId) {
-    this.userService.getCountryDetail(countryId, agencyId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(country => {
-        console.log(country)
-        this.countryName = Constants.COUNTRIES[country.location];
-      });
+
+    if (this.isLocalAgency) {
+      this.userService.getAgencyDetail(agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agency => {
+          this.countryName = Constants.COUNTRIES[agency.country];
+        });
+    } else {
+      this.userService.getCountryDetail(countryId, agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(country => {
+          this.countryName = Constants.COUNTRIES[country.location];
+        });
+    }
+
   }
 
   private initNetworkData(networkCountryId, networkId) {
@@ -133,9 +144,9 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
       if (this.agencyOverview) {
         headers["agencyOverview"] = this.agencyOverview;
       }
-      this.router.navigate(["/dashboard/dashboard-overview", headers]);
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/dashboard/dashboard-overview", headers] : ["/dashboard/dashboard-overview", headers]);
     } else {
-      this.router.navigate(["/director/director-overview", headers]);
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/director/director-overview", headers] : ["/director/director-overview", headers]);
     }
   }
 
@@ -162,9 +173,9 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
       if (this.agencyOverview) {
         headers["agencyOverview"] = this.agencyOverview;
       }
-      this.router.navigate(["/dashboard/dashboard-overview", headers]);
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/dashboard/dashboard-overview", headers] : ["/dashboard/dashboard-overview", headers]);
     } else {
-      this.router.navigate(["/director/director-overview", headers]);
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/director/director-overview", headers] : ["/director/director-overview", headers]);
     }
   }
 

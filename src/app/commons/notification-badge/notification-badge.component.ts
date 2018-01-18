@@ -370,6 +370,28 @@ export class NotificationBadgeComponent implements OnInit, OnDestroy {
             });
           }
           break;
+        case 'administratorLocalAgency':
+          let nodesAdministratorLocalAgency = this._notificationService.getAgencyAdministratorNodes(this._agencyId);
+
+          for (let node of nodesAdministratorLocalAgency) {
+            this.af.database.list(Constants.APP_STATUS + node)
+              .takeUntil(this.ngUnsubscribe).subscribe(list => {
+              list.forEach((x) => {
+                if (x.$value === true) { // only unread messages
+                  this._notificationService.getNotificationMessage(x.$key)
+                    .takeUntil(this.ngUnsubscribe).subscribe(message => {
+                    if (!CommonUtils.messageExistInList(message.id, this.unreadMessages)) {
+                      this.unreadMessages.push(message);
+                    }
+                    this.unreadMessages.sort(function (a, b) {
+                      return b.time - a.time;
+                    });
+                  });
+                }
+              });
+            });
+          }
+          break;
         case 'administratorCountry':
           let nodesAdministratorCountry = this._notificationService.getCountryAdministratorNodes(this._agencyId, this._countryId, this._userId);
 

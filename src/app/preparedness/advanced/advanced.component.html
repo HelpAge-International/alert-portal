@@ -1,7 +1,13 @@
-<div *ngIf="!isViewing">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
-</div>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
+<ng-container *ngIf="!isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </div>
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -51,28 +57,55 @@
       </ng-template>
     </div>
 
-    <div class="Header-title__wrap">
-      <h1>{{"ADVANCED_PREP_ACTIONS" | translate}}</h1>
-      <!--tooltip-->
-      <tooltip
-        [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'">
-      </tooltip>
-      <div *ngIf="!isViewing && (permissionsAreEnabled.customAPA.New || userType == userTypes.CountryAdmin)"
-           class="btn-group">
-        <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{"CREATE_ACTION" | translate}}
-        </button>
-        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-          <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
-        </button>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/preparedness/create-edit-preparedness">{{"CREATE_CUSTOM_ACTIONS" |
-            translate}}</a>
-          <a class="dropdown-item" routerLink="/preparedness/select">{{"SELECT_FROM_GENERIC_ACTIONS" | translate}}</a>
+    <ng-container *ngIf="isLocalAgency">
+      <div class="Header-title__wrap">
+        <h1>{{"ADVANCED_PREP_ACTIONS" | translate}}</h1>
+        <!--tooltip-->
+        <tooltip
+          [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'">
+        </tooltip>
+        <div *ngIf="userType == userTypes.LocalAgencyAdmin"
+             class="btn-group">
+          <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{"CREATE_ACTION" | translate}}
+          </button>
+          <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" routerLink="/local-agency/preparedness/create-edit-preparedness">{{"CREATE_CUSTOM_ACTIONS" |
+              translate}}</a>
+            <a class="dropdown-item" routerLink="/local-agency/preparedness/select">{{"SELECT_FROM_GENERIC_ACTIONS" | translate}}</a>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-container>
+
+    <ng-container *ngIf="!isLocalAgency">
+      <div class="Header-title__wrap">
+        <h1>{{"ADVANCED_PREP_ACTIONS" | translate}}</h1>
+        <!--tooltip-->
+        <tooltip
+          [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'">
+        </tooltip>
+        <div *ngIf="!isViewing && (permissionsAreEnabled.customAPA.New || userType == userTypes.CountryAdmin)"
+             class="btn-group">
+          <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{"CREATE_ACTION" | translate}}
+          </button>
+          <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" routerLink="/preparedness/create-edit-preparedness">{{"CREATE_CUSTOM_ACTIONS" |
+              translate}}</a>
+            <a class="dropdown-item" routerLink="/preparedness/select">{{"SELECT_FROM_GENERIC_ACTIONS" | translate}}</a>
+          </div>
+        </div>
+      </div>
+    </ng-container>
 
 
     <!--
@@ -192,8 +225,12 @@
                         | translate}}
 
                         <a
-                          *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                          *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                           [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">{{"EDIT_ACTION"
+                          | translate}}</a>
+                        <a
+                          *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
+                          [routerLink]="['/local-agency/local-agency/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">{{"EDIT_ACTION"
                           | translate}}</a>
                       </div>
                       <div class="col-md-3 col-sm-4 btn-block"
@@ -439,7 +476,12 @@
                         {{"INACTIVE_UNTIL_RED_ALERT_LEVEL" | translate}}
 
                         <a
-                          *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                          *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                          (click)="editNetworkAction(action)"
+                          class="btn btn-block">
+                          {{"EDIT_ACTION" | translate}}</a>
+                        <a
+                          *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
                           (click)="editNetworkAction(action)"
                           class="btn btn-block">
                           {{"EDIT_ACTION" | translate}}</a>
@@ -776,8 +818,12 @@
                               </div>
 
                               <a
-                                *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                                 [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                              <a
+                                *ngIf="isLocalAgency && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                               <a
                                 *ngIf="action.isComplete" (click)="undoCompleteAction(action)"
@@ -1119,6 +1165,11 @@
                                 *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                                 [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+
+                              <a
+                                *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                             </div>
                             <div class="col-md-3 col-sm-4 btn-block"
                                  *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
@@ -1442,7 +1493,11 @@
                               </div>
 
                               <a
-                                *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                (click)="editNetworkAction(action)"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                              <a
+                                *ngIf="isLocalAgency && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom ))"
                                 (click)="editNetworkAction(action)"
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                             </div>
@@ -1722,19 +1777,46 @@
                             </a>
 
                           </div>
-                          <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
+                          <ng-container *ngIf="isLocalAgency">
+
+                            <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
+                                                && !(action.type == ActionType.mandated)
+                                                && ((action.level == actionLevelEnum.MPA) || (action.level == actionLevelEnum.APA))">
+                              <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
+                                 aria-expanded="false" aria-controls="popover_content"
+                                 class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                                | translate}}</a>
+
+                              <a
+                                *ngIf="((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
+                                [routerLink]="isLocalAgency ? ['/local-agency/preparedness/create-edit-preparedness', action.id] : ['/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+
+                            </div>
+
+                          </ng-container>
+
+                          <ng-container *ngIf="!isLocalAgency">
+
+                            <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
                                                 && !((action.type == ActionType.mandated && !permissionsAreEnabled.mandatedAPA))
                                                 && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Assign))">
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
-                               aria-expanded="false" aria-controls="popover_content"
-                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
-                              | translate}}</a>
+                              <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
+                                 aria-expanded="false" aria-controls="popover_content"
+                                 class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                                | translate}}</a>
 
-                            <a
-                              *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
-                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
-                              class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
-                          </div>
+                              <a
+                                *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                              <a
+                                *ngIf="isLocalAgency && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
+                                [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                            </div>
+
+                          </ng-container>
                           <div class="col-md-3 col-sm-4 btn-block"
                                *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
@@ -1929,19 +2011,45 @@
                             </a>
 
                           </div>
-                          <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
+
+                          <ng-container *ngIf="isLocalAgency">
+                            <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
+                                                && !((action.type == ActionType.mandated))
+                                                && ((action.level == actionLevelEnum.MPA ) || (action.level == actionLevelEnum.APA ))">
+                              <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
+                                 aria-expanded="false" aria-controls="popover_content"
+                                 class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                                | translate}}</a>
+
+                              <a
+                                *ngIf="((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
+                                [routerLink]="isLocalAgency ? ['/local-agency/preparedness/create-edit-preparedness', action.id] : ['/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                            </div>
+
+                          </ng-container>
+
+                          <ng-container *ngIf="!isLocalAgency">
+                            <div class="col-md-3 col-sm-4 btn-block" *ngIf="!countrySelected
                                                 && !((action.type == ActionType.mandated && !permissionsAreEnabled.mandatedAPA))
                                                 && !((action.level == actionLevelEnum.MPA && !permissionsAreEnabled.customMPA.Assign) || (action.level == actionLevelEnum.APA && !permissionsAreEnabled.customAPA.Assign))">
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
-                               aria-expanded="false" aria-controls="popover_content"
-                               class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
-                              | translate}}</a>
+                              <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
+                                 aria-expanded="false" aria-controls="popover_content"
+                                 class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
+                                | translate}}</a>
 
-                            <a
-                              *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
-                              [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
-                              class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
-                          </div>
+                              <a
+                                *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+
+                              <a
+                                *ngIf="isLocalAgency && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
+                                class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                            </div>
+
+                          </ng-container>
                           <div class="col-md-3 col-sm-4 btn-block"
                                *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
@@ -2164,8 +2272,12 @@
                               | translate}}</a>
 
                             <a
-                              *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                              *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                               [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
+                              class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+                            <a
+                              *ngIf="isLocalAgency && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom ))"
+                              [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
                           <div class="col-md-3 col-sm-4 btn-block"
@@ -2369,7 +2481,12 @@
                               | translate}}</a>
 
                             <a
-                              *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                              *ngIf="!isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                              (click)="editNetworkAction(action)"
+                              class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
+
+                            <a
+                              *ngIf="isLocalAgency && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom ) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                               (click)="editNetworkAction(action)"
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
@@ -2533,7 +2650,7 @@
         <p class="col-sm-12"><strong>Assign to</strong></p>
         <div class="col-sm-12">
           <select name="" id="" class="form-control" [(ngModel)]="assignActionAsignee"
-                  *ngIf="userType == UserType.CountryDirector || userType == UserType.CountryAdmin || userType == UserType.ErtLeader">
+                  *ngIf="userType == UserType.CountryDirector || userType == UserType.CountryAdmin || userType == UserType.ErtLeader || UserType.LocalAgencyAdmin || UserType.LocalAgencyDirector">
             <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.firstName +
               ' ' + x.lastName}}

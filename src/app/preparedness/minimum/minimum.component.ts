@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
+import {Component, Inject, OnDestroy, OnInit, Input} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {Constants} from "../../utils/Constants";
@@ -129,6 +129,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private networkModelMap = new Map<string, ModelNetwork>();
   private networkIdList: string [] = [];
 
+  //Local Agency
+  @Input() isLocalAgency: boolean;
+
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -163,6 +166,46 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+  }
+
+  initLocalAgency(){
+
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.assignActionAsignee = this.uid;
+          this.userType = userType;
+          this.filterAssigned = "0";
+          this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+
+          this.systemAdminId = systemId;
+
+          this.agencyId = agencyId;
+          this.countryId = countryId;
+
+          this.getStaffDetails(this.uid, true);
+
+
+          //overview
+          this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
+            this.agencyId, this.systemAdminId);
+          this.initStaff();
+          this.initDepartments();
+          this.initDocumentTypes();
+
+          // Initialise the page control information
+          PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+            this.modulesAreEnabled = isEnabled;
+          });
+
+
+          // Currency
+          this.calculateCurrency();
+        })
+
+  }
+
+  initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -343,6 +386,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       });
   }
 
+  private initCountryAdminLocalAgency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
+
   private initStaff() {
     this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
@@ -358,6 +411,17 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     console.log(this.prepActionService.actionsNetworkLocal, 'initLocalDisplay');
 
 
+  }
+
+  private initStaffLocalAgency() {
+    this.initCountryAdminLocalAgency();
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          this.getStaffDetails(snapshot.key, false);
+        });
+      });
   }
 
   /**
@@ -402,7 +466,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   public assignActionDialogAdv(action: PreparednessAction) {
     if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
-      this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
+      this.isLocalAgency ? this.router.navigateByUrl("/local-agency/preparedness/create-edit-preparedness/" + action.id) : this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
     } else {
       this.assignActionId = action.id;
     }
@@ -413,22 +477,42 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-      .then(() => {
+    if (this.isLocalAgency) {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+        .then(() => {
 
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-          .subscribe(task => {
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-            console.log(notification.content);
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+            .subscribe(task => {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+              console.log(notification.content);
 
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              });
             });
-          });
-      });
+        });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+        .then(() => {
+
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+            .subscribe(task => {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+              console.log(notification.content);
+
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              });
+            });
+        });
+    }
+
     this.closeModal();
   }
 
@@ -501,10 +585,18 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     action.noteId = '';
 
     if (noteId != null && noteId !== '') {
-      this.af.database.object(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + noteId).set(note);
+      if (this.isLocalAgency) {
+        this.af.database.object(Constants.APP_STATUS + '/note/' + this.agencyId + '/' + action.id + '/' + noteId).set(note);
+      } else {
+        this.af.database.object(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + noteId).set(note);
+      }
     }
     else {
-      this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id).push(note);
+      if (this.isLocalAgency) {
+        this.af.database.list(Constants.APP_STATUS + '/note/' + this.agencyId + '/' + action.id).push(note);
+      } else {
+        this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id).push(note);
+      }
     }
   }
 
@@ -539,7 +631,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   // Delete note
   protected deleteNote(note: PreparednessUser, action: PreparednessAction) {
-    this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + note.id).remove();
+    if (this.isLocalAgency) {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + this.agencyId + '/' + action.id + '/' + note.id).remove();
+    } else {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + note.id).remove();
+    }
   }
 
   protected deleteNoteNetwork(note: PreparednessUser, action: PreparednessAction) {
@@ -625,22 +721,30 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
+          if(this.isLocalAgency){
+            this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id).update(data);
+          } else {
+            this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
+          }
           this.addNote(action);
           this.closePopover(action);
         }
         else {
           this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
         }
-      } else {
+      }
+      else {
         // Doesn't require doc
         if (action.attachments != null) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
+        if (this.isLocalAgency) {
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id).update(data);
+        } else {
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
+        }
         this.addNote(action);
         this.closePopover(action);
       }
@@ -699,14 +803,20 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   protected undoCompleteAction(action: PreparednessAction) {
 
     action.actualCost = null
-
-    // Call to firebase to update values to revert back to *In Progress*
-    this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
-      isComplete: false,
-      isCompleteAt: null,
-      updatedAt: new Date().getTime(),
-      actualCost : null
-    });
+    // Call to firebase to update values to revert back to
+    if (this.isLocalAgency) {
+      this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyUid + '/' + action.id).update({
+        isComplete: false,
+        isCompleteAt: null,
+        updatedAt: new Date().getTime()
+      });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
+        isComplete: false,
+        isCompleteAt: null,
+        updatedAt: new Date().getTime()
+      });
+    }
 
   }
 
@@ -718,7 +828,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 
   }
-
   // Uploading a file to Firebase
   protected uploadFile(action: PreparednessAction, file) {
     let document = {
@@ -732,43 +841,83 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       uploadedBy: this.uid
     };
 
-    this.af.database.list(Constants.APP_STATUS + '/document/' + this.countryId).push(document)
-      .then(_ => {
-        let docKey = _.key;
-        let doc = {};
-        doc[docKey] = true;
+    if(this.isLocalAgency){
+      this.af.database.list(Constants.APP_STATUS + '/document/' + this.agencyId).push(document)
+        .then(_ => {
+          let docKey = _.key;
+          let doc = {};
+          doc[docKey] = true;
 
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents').update(doc)
-          .then(_ => {
-            new Promise((res, rej) => {
-              var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + docKey + '/' + file.name);
-              var uploadTask = storageRef.put(file);
-              uploadTask.on('state_changed', function (snapshot) {
-              }, function (error) {
-                rej(error);
-              }, function () {
-                var downloadURL = uploadTask.snapshot.downloadURL;
-                res(downloadURL);
-              });
-            })
-              .then(result => {
-                document.filePath = "" + result;
-
-                this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + docKey).set(document);
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id + '/documents').update(doc)
+            .then(_ => {
+              new Promise((res, rej) => {
+                var storageRef = this.firebase.storage().ref().child('documents/' + this.agencyId + '/' + docKey + '/' + file.name);
+                var uploadTask = storageRef.put(file);
+                uploadTask.on('state_changed', function (snapshot) {
+                }, function (error) {
+                  rej(error);
+                }, function () {
+                  var downloadURL = uploadTask.snapshot.downloadURL;
+                  res(downloadURL);
+                });
               })
-              .catch(err => {
-                console.log(err, 'You do not have access!');
-                this.purgeDocumentReference(action, docKey);
-              });
-          })
-          .catch(err => {
-            console.log(err, 'You do not have access!');
-            this.purgeDocumentReference(action, docKey);
-          });
-      })
-      .catch(err => {
-        console.log(err, 'You do not have access!');
-      });
+                .then(result => {
+                  document.filePath = "" + result;
+
+                  this.af.database.object(Constants.APP_STATUS + '/document/' + this.agencyId + '/' + docKey).set(document);
+                })
+                .catch(err => {
+                  console.log(err, 'You do not have access!');
+                  this.purgeDocumentReference(action, docKey);
+                });
+            })
+            .catch(err => {
+              console.log(err, 'You do not have access!');
+              this.purgeDocumentReference(action, docKey);
+            });
+        })
+        .catch(err => {
+          console.log(err, 'You do not have access!');
+        });
+    }else{
+      this.af.database.list(Constants.APP_STATUS + '/document/' + this.countryId).push(document)
+        .then(_ => {
+          let docKey = _.key;
+          let doc = {};
+          doc[docKey] = true;
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id + '/documents').update(doc)
+            .then(_ => {
+              new Promise((res, rej) => {
+                var storageRef = this.firebase.storage().ref().child('documents/' + this.countryId + '/' + docKey + '/' + file.name);
+                var uploadTask = storageRef.put(file);
+                uploadTask.on('state_changed', function (snapshot) {
+                }, function (error) {
+                  rej(error);
+                }, function () {
+                  var downloadURL = uploadTask.snapshot.downloadURL;
+                  res(downloadURL);
+                });
+              })
+                .then(result => {
+                  document.filePath = "" + result;
+
+                  this.af.database.object(Constants.APP_STATUS + '/document/' + this.countryId + '/' + docKey).set(document);
+                })
+                .catch(err => {
+                  console.log(err, 'You do not have access!');
+                  this.purgeDocumentReference(action, docKey);
+                });
+            })
+            .catch(err => {
+              console.log(err, 'You do not have access!');
+              this.purgeDocumentReference(action, docKey);
+            });
+        })
+        .catch(err => {
+          console.log(err, 'You do not have access!');
+        });
+    }
   }
 
   protected uploadFileNetwork(action: PreparednessAction, file) {
@@ -956,7 +1105,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   protected copyAction(action) {
     this.storage.set('selectedAction', action);
-    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+    this.isLocalAgency ? this.router.navigate(["/local-agency/preparedness/create-edit-preparedness"]) : this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
 
@@ -967,7 +1116,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     let update = {
       isArchived: false
     };
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id).update(update);
+    if (this.isLocalAgency) {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + action.id).update(update);
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id).update(update);
+    }
   }
 
   public reactivateNetwork(action: PreparednessAction) {

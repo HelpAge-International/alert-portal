@@ -1,19 +1,37 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+
+</ng-container>
+
+<ng-container *ngIf="isLocalAgency">
+
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
 
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-  	<ng-template [ngIf]="countrySelected && !agencySelected">
+  	<ng-container *ngIf="!isLocalAgency">
+      <ng-template [ngIf]="countrySelected && !agencySelected">
         <app-agency-submenu [countryId]="countryId"></app-agency-submenu>
         <app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
-    <ng-template [ngIf]="agencySelected">
+      </ng-template>
+      <ng-template [ngIf]="agencySelected">
         <app-country-submenu [agencyId]="agencyId" [countryId]="countryId"></app-country-submenu>
         <app-alert-widget [countryId]="countryId"></app-alert-widget>
-    </ng-template>
+      </ng-template>
+    </ng-container>
+
+    <ng-container *ngIf="isLocalAgency">
+      <app-agency-submenu [isLocalAgency]="true"></app-agency-submenu>
+      <app-alert-widget [isLocalAgency]="true"></app-alert-widget>
+    </ng-container>
 
     <app-country-office-profile-menu></app-country-office-profile-menu>
 

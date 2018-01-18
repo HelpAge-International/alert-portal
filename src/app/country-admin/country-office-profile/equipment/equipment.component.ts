@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, Countries, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -60,6 +60,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private userAgencyId: string;
 
+  @Input() isLocalAgency: boolean;
+
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
               private _noteService: NoteService,
@@ -77,6 +79,58 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+
+  }
+
+  private initLocalAgency(){
+
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.userType = userType;
+          this.agencyId = agencyId;
+
+            this._equipmentService.getEquipmentsLocalAgency(this.agencyId)
+              .subscribe(equipments => {
+                this.equipments = equipments;
+
+                this.equipments.forEach(equipment => {
+                  const equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipment.id);
+
+                  console.log(equipmentNode)
+                  this._noteService.getNotes(equipmentNode).subscribe(notes => {
+                    equipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[equipment.id] = new NoteModel();
+                  this.newNote[equipment.id].uploadedBy = this.uid;
+                });
+              });
+
+            this._equipmentService.getSurgeEquipmentsLocalAgency(this.agencyId)
+              .subscribe(surgeEquipments => {
+                this.surgeEquipments = surgeEquipments;
+
+                this.surgeEquipments.forEach(surgeEquipment => {
+                  const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', surgeEquipment.id);
+
+                  console.log(surgeEquipmentNode)
+                  this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
+                    surgeEquipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[surgeEquipment.id] = new NoteModel();
+                  this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+                });
+
+              });
+        });
+  }
+
+  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -89,7 +143,6 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
         }
-
 
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
@@ -121,10 +174,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   // Create the new note model
                   this.newNote[equipment.id] = new NoteModel();
                   this.newNote[equipment.id].uploadedBy = this.uid;
-
                 });
               });
-
 
             this._equipmentService.getSurgeEquipments(this.countryId)
               .subscribe(surgeEquipments => {
@@ -216,26 +267,28 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   this.newNote[surgeEquipment.id] = new NoteModel();
                   this.newNote[surgeEquipment.id].uploadedBy = this.uid;
                 });
+
               });
+
             //     })
             // });
-
           }
+
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;
           }));
 
         });
-
       });
-
-
-
-
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-staff');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/agency-staff');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-staff');
+    }
+
   }
 
   editEquipment() {
@@ -247,22 +300,37 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   addEditEquipment(equipmentId?: string) {
-    if (equipmentId) {
-      this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-equipment');
+    if(this.isLocalAgency){
+      if (equipmentId) {
+        this.router.navigate(['/local-agency/profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/equipment/add-edit-equipment');
+      }
+    }else{
+      if (equipmentId) {
+        this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-equipment');
+      }
     }
   }
 
   addEditSurgeEquipment(surgeEquipmentId?: string) {
-    if (surgeEquipmentId) {
-      this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-surge-equipment');
+    if(this.isLocalAgency){
+      if (surgeEquipmentId) {
+        this.router.navigate(['/local-agency/profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/equipment/add-edit-surge-equipment');
+      }
+    }else{
+      if (surgeEquipmentId) {
+        this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-surge-equipment');
+      }
     }
 
   }
-
 
   getUserName(userId) {
     let userName = "";
@@ -288,10 +356,18 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
       let equipmentNode = "";
       note.agencyId = this.userAgencyId
 
-      if (equipmentType == 'equipment') {
-        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      } else {
-        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      if(this.isLocalAgency){
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        }
+      }else{
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        }
       }
 
       this._noteService.saveNote(equipmentNode, note).then(() => {
@@ -314,10 +390,18 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
     if (this.validateNote(note)) {
       let equipmentNode = "";
 
-      if (equipmentType == 'equipment') {
-        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      } else {
-        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      if(this.isLocalAgency){
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        }
+      }else{
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        }
       }
 
       this._noteService.saveNote(equipmentNode, note).then(() => {
@@ -343,10 +427,18 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
     let equipmentNode = '';
 
-    if (equipmentType == 'equipment') {
-      equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-    } else {
-      equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+    if(this.isLocalAgency){
+      if (equipmentType == 'equipment') {
+        equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+      } else {
+        equipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+      }
+    }else{
+      if (equipmentType == 'equipment') {
+        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      } else {
+        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }
     }
 
     this._noteService.deleteNote(equipmentNode, note)

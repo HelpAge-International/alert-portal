@@ -38,6 +38,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private temp = [];
   private preAlertLevel: AlertLevels;
   private isDirector: boolean;
+  private isLocalAgency: boolean = false;
 
   private countries = Constants.COUNTRIES;
   private countriesList = Constants.COUNTRY_SELECTION;
@@ -75,12 +76,17 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((param: Params) => {
+          if (param['agencyId']) {
+            this.agencyId = param['agencyId'];
+            this.isLocalAgency = true;
+          }
           if (param['id']) {
             this.alertId = param['id'];
             this.countryId = param['countryId'];
             this.isDirector = param['isDirector'];
-            this.loadAlert(this.alertId, this.countryId);
+            this.isLocalAgency ? this.loadAlertLocalAgency(this.alertId, this.agencyId) : this.loadAlert(this.alertId, this.countryId);
           }
+
         });
 
       // get the country levels values
@@ -125,47 +131,43 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
       });
   }
 
-  // addNewArea() {
-  //   let area: ModelAffectedArea = new ModelAffectedArea();
-  //   this.loadedAlert.affectedAreas.push(area);
-  // }
-  //
-  // removeArea(index) {
-  //   console.log(index);
-  //   let temp: ModelAffectedArea[] = [];
-  //   for (let i = 0; i < this.loadedAlert.affectedAreas.length; i++) {
-  //     if (i != index) {
-  //       temp.push(this.loadedAlert.affectedAreas[i]);
-  //     }
-  //   }
-  //   this.loadedAlert.affectedAreas = temp;
-  // }
+  private loadAlertLocalAgency(alertId: string, agencyId: string) {
+
+    this.alertService.getAlertLocalAgency(alertId, agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((alert: ModelAlert) => {
+        this.loadedAlert = alert;
+        this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
+        this.infoNotes = this.loadedAlert.infoNotes;
+        this.reasonForRedAlert = this.loadedAlert.reasonForRedAlert;
+        this.preAlertLevel = this.loadedAlert.alertLevel;
+        let x: any[] = [];
+        for (let y of this.loadedAlert.affectedAreas) {
+          let operationArea: OperationAreaModel = new OperationAreaModel();
+          operationArea.country = y.affectedCountry;
+          operationArea.level1 = y.affectedLevel1;
+          operationArea.level2 = y.affectedLevel2;
+          x.push(operationArea);
+        }
+
+        this.loadedAlert.affectedAreas.forEach(area => {
+          this.alertService.getAllLevelInfo(area.affectedCountry)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(geoInfo => {
+              this.geoMap.set(area.affectedCountry, geoInfo);
+            });
+        });
+
+        this.loadedAlert.affectedAreas = x;
+
+      });
+  }
+
 
   selectedAlertLevel(selection) {
     this.loadedAlert.alertLevel = selection;
   }
 
-  // changeCountry(index, value) {
-  //   if (this.loadedAlert.affectedAreas[index].affectedCountry != this.COUNTRIES.indexOf(value)) {
-  //     this.loadedAlert.affectedAreas[index].affectedLevel1 = null;
-  //     this.loadedAlert.affectedAreas[index].affectedLevel2 = null;
-  //   }
-  //   this.loadedAlert.affectedAreas[index].affectedCountry = this.COUNTRIES.indexOf(value);
-  //   console.log(this.loadedAlert);
-  // }
-  //
-  // changeLevel1(index, value) {
-  //   this.loadedAlert.affectedAreas[index].affectedLevel1 = Number(value);
-  //   if (this.loadedAlert.affectedAreas[index].affectedLevel1 != Number(value)) {
-  //     this.loadedAlert.affectedAreas[index].affectedLevel2 = null;
-  //   }
-  //   console.log(this.loadedAlert);
-  // }
-  //
-  // changeLevel2(index, value) {
-  //   this.loadedAlert.affectedAreas[index].affectedLevel2 = Number(value);
-  //   console.log(this.loadedAlert);
-  // }
 
   submit() {
     console.log(this.loadedAlert);
@@ -192,7 +194,12 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
     console.log(this.loadedAlert);
 
-    this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.countryId, this.agencyId);
+    if(this.isLocalAgency){
+      this.alertService.updateAlertLocalAgency(this.loadedAlert, this.preAlertLevel, this.agencyId);
+    }else{
+      this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.countryId, this.agencyId);
+    }
+
   }
 
   ngOnDestroy() {

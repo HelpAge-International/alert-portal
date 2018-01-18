@@ -59,14 +59,14 @@ export class Constants {
 
   // local agency administrator
 
-  static LOCAL_AGENCY_ADMIN_HOME = "/dashboard";
-  static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
+  static LOCAL_AGENCY_ADMIN_HOME = "/local-agency/dashboard";
+  static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.LOCAL_AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
     "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
-  static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.AgencyDirector, UserType.AgencyUser,
+  static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.LocalAgencyDirector, UserType.AgencyUser,
     UserType.ErtLeader, UserType.Ert];
-  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.AgencyDirector, UserType.LocalAgencyAdmin,
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.LocalAgencyDirector, UserType.LocalAgencyAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
-  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "agencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "localagencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
 
 
 
@@ -976,16 +976,23 @@ export class Constants {
     'countryUser',
     'administratorAgency',
     ,
-    'partnerUser'
+    'partnerUser',
+    ,
+    'administratorLocalAgency',
+    'localAgencyDirector'
   ];
 
   // Nodes List, used for saving Notes
   static PARTNER_ORGANISATION_NODE = '/partnerOrganisation/{id}/notes';
   static EQUIPMENT_NODE = '/countryOfficeProfile/equipment/{countryId}/{id}/notes';
+  static EQUIPMENT_NODE_LOCAL_AGENCY = '/localAgencyProfile/equipment/{agencyId}/{id}/notes';
   static SURGE_EQUIPMENT_NODE = '/countryOfficeProfile/surgeEquipment/{countryId}/{id}/notes';
+  static SURGE_EQUIPMENT_NODE_LOCAL_AGENCY = '/localAgencyProfile/surgeEquipment/{agencyId}/{id}/notes';
   static STOCK_CAPACITY_NODE = '/countryOfficeProfile/capacity/stockCapacity/{countryId}/{id}/notes';
+  static STOCK_CAPACITY_NODE_LOCAL_AGENCY = '/localAgencyProfile/capacity/stockCapacity/{agencyId}/{id}/notes';
   static STAFF_NODE = '/staff/{countryId}/{staffId}/notes';
   static SURGE_CAPACITY_NODE = '/countryOfficeProfile/capacity/surgeCapacity/{countryId}/{id}/notes';
+  static SURGE_CAPACITY_NODE_LOCAL_AGENCY = '/localAgencyProfile/capacity/surgeCapacity/{agencyId}/{id}/notes';
 
   static MONTH = [
     null,

@@ -45,6 +45,9 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   private countriesFilterSubject: Subject<any>;
   private countriesFilter: any = {};
 
+  private agenciesFilterSubject: Subject<any>;
+  private agenciesFilter: any = {};
+
   private docFilterSubject: Subject<any>;
   private docFilter: any = {};
 
@@ -60,6 +63,8 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
 
   @Input() isNetworkAdmin: boolean;
   private networkId: any;
+
+  @Input() isLocalAgency: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -85,11 +90,19 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
         equalTo: this.countriesFilterSubject
       }
     }
+
+    this.agenciesFilterSubject = new BehaviorSubject(undefined);
+    this.agenciesFilter = {
+      query: {
+        orderByChild: "country",
+        equalTo: this.agenciesFilterSubject
+      }
+    }
   }
 
 
   ngOnInit() {
-    this.isNetworkAdmin ?  this.initNetworkAdmin() : this.initCountryOffice()
+    this.isNetworkAdmin ?  this.initNetworkAdmin() : this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
   initNetworkAdmin(){
@@ -184,6 +197,72 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
     })
   }
 
+  private initLocalAgency(){
+
+    this.docFilterSubject.next();
+
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.userType = userType;
+      this.agencyId = agencyId;
+
+      this.af.database.list(Constants.APP_STATUS + '/agency/', this.agenciesFilter)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(countries => {
+          this.countries = [];
+          Object.keys(countries).map(country => {
+
+            let key = countries[country].$key;
+            if (key == this.agencyId) {
+              this.locationId = countries[country].country;
+              this.countries.push(countries[country])
+              //this.countriesFilterSubject.next(Countries[this.locationId]);
+
+
+              this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(_ => {
+                  let docs = _;
+                  docs = docs.filter(doc => {
+                    if (this.userSelected == "-1")
+                      return true;
+
+                    return doc.uploadedBy == this.userSelected;
+                  });
+                  Object.keys(docs).map(doc => {
+                    let uploadedBy = docs[doc].uploadedBy;
+                    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(_ => {
+                        docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
+                      });
+                  });
+                  console.log(this.countries)
+                  console.log(this.countries[countries[country]])
+                  this.countries[0]['docs'] = docs;
+                  this.countries[0]['docsfiltered'] = docs;
+                  this.countries[0]['hasDocs'] = (docs.length > 0);
+                });
+            }
+          });
+        });
+
+      this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(_ => {
+          let users = _;
+          Object.keys(users).map(user => {
+            let userKey = users[user].$key;
+            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
+              });
+          });
+        })
+    });
+  }
+
   initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -211,7 +290,6 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
               .subscribe(_ => {
                 this.countries = _;
                 Object.keys(this.countries).map(country => {
-                  console.log(country)
                   let key = this.countries[country].$key;
 
                   if (key == this.countryId) {
@@ -419,12 +497,10 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   }
 
   private filter() {
-    console.log(Countries[this.countrySelected])
     // if there is "-1" in the this.docTypeSelected, DocumentType will return undefined, so next(undefined) returns no filter
     // the same logic is applied for other filters
     this.docFilterSubject.next(DocumentType[this.docTypeSelected]);
     // the filtering based on User is done client side, because FireBase supports orderBy only on one parameter
-
 
     this.countriesFilterSubject.next(Countries[this.countrySelected]);
   }

@@ -1,5 +1,12 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</ng-container>
+
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success" [show] = "alertMessage"></app-status-alert>
 
@@ -9,10 +16,13 @@
         <div class="Header-title__wrap">
             <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_IN_TITLE' | translate }}</h1>
             <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_OUT_TITLE' | translate }}</h1>
+            <h1 *ngIf="!stockCapacity.id && stockCapacity.stockType == 3">{{ 'LOCAL_AGENCY_ADMIN.PROFILE.STOCK_CAPACITY.ADD_IN_TITLE' | translate }}</h1>
 
             <div class="col-sm-11" *ngIf="stockCapacity.id">
                 <h1 *ngIf="stockCapacity.stockType == 0">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_IN_TITLE' | translate }}</h1>
                 <h1 *ngIf="stockCapacity.stockType == 1">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_OUT_TITLE' | translate }}</h1>
+                <h1 *ngIf="stockCapacity.stockType == 3">{{ 'LOCAL_AGENCY_ADMIN.PROFILE.STOCK_CAPACITY.EDIT_IN_TITLE' | translate }}</h1>
+
             </div>
 
             <div class="col-sm-1 Right-aligned" *ngIf="stockCapacity.id">

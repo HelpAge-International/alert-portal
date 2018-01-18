@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Router, Params, ActivatedRoute} from "@angular/router";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
@@ -38,6 +38,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private countryId: string;
+  private agencyId: string;
   private agencyAdminUid: string;
   private systemAdminUid: string;
   private idOfResponsePlanToEdit: string;
@@ -264,10 +265,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
+  //local agency
+  @Input() isLocalAgency: Boolean;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
 
   ngOnInit() {
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
+  }
+
+  private initCountryOffice(){
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.auth.uid;
       this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
@@ -289,10 +297,33 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     });
   }
 
+  private initLocalAgency(){
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.auth.uid;
+      this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
+      let userpath = Constants.USER_PATHS[userType];
+
+
+        this.agencyId = agencyId;
+        this.systemAdminUid = systemId;
+        this.prepareDataLocalAgency();
+
+    });
+  }
+
   private prepareData() {
     this.getStaff();
     this.setupForEdit();
     this.getSettings();
+    this.getPartners();
+    this.getGroups();
+    this.calculateCurrency();
+  }
+
+  private prepareDataLocalAgency() {
+    this.getStaffLocalAgency();
+    this.setupForEdit();
+    this.getSettingsLocalAgency();
     this.getPartners();
     this.getGroups();
     this.calculateCurrency();
@@ -390,6 +421,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
 
     //section 4
+    console.log('setting this')
     this.newResponsePlan.activitySummary["q1"] = this.proposedResponseText;
     this.newResponsePlan.activitySummary["q2"] = this.progressOfActivitiesPlanText;
     this.newResponsePlan.activitySummary["q3"] = this.coordinationPlanText;
@@ -902,7 +934,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   setPartnerOrganisation(partnerOrganisationSelected, dropDown) {
     if (partnerOrganisationSelected == 'addNewPartnerOrganisation') {
-      this.router.navigate(['/response-plans/add-partner-organisation', {fromResponsePlans: true}]);
+      this.router.navigate(this.isLocalAgency ? ['/local-agency/response-plans/add-partner-organisation', {fromResponsePlans: true}] : ['/response-plans/add-partner-organisation', {fromResponsePlans: true}]);
     } else {
       this.partnerOrganisationsSelected[dropDown] = partnerOrganisationSelected;
     }
@@ -1466,13 +1498,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
       jQuery("#navigate-back").modal("show");
     } else {
-      this.router.navigateByUrl('response-plans');
+      this.router.navigateByUrl(this.isLocalAgency ? 'local-agency/response-plans' : 'response-plans');
     }
   }
 
   closeModalAndNavigate() {
     jQuery("#navigate-back").modal("hide");
-    this.router.navigateByUrl('response-plans');
+    this.router.navigateByUrl(this.isLocalAgency ? 'local-agency/response-plans' : 'response-plans');
   }
 
   /**
@@ -1500,6 +1532,24 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  private getSettingsLocalAgency() {
+
+      this.responsePlanSettings = {};
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(list => {
+          this.totalSections = 0;
+          list.forEach(item => {
+            this.responsePlanSettings[item.$key] = item.$value;
+
+            if (item.$value) {
+              this.totalSections++;
+            }
+          });
+          this.storeAvailableSettingSections();
+        });
+  }
+
   private setupForEdit() {
 
     this.route.params
@@ -1509,8 +1559,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.forEditing = true;
           this.pageTitle = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.EDIT_RESPONSE_PLAN";
           this.idOfResponsePlanToEdit = params["id"];
-          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(true);
-          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(this.uid);
+          if(this.isLocalAgency){
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(true);
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(this.uid);
+
+          } else {
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(true);
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(this.uid);
+
+          }
 
           this.loadResponsePlanInfo(this.idOfResponsePlanToEdit);
         }
@@ -1518,8 +1575,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadResponsePlanInfo(responsePlanId: string) {
+    let responsePlansPath: string
+    if(this.isLocalAgency){
+      responsePlansPath = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + responsePlanId;
+    }else{
+      responsePlansPath = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + responsePlanId;
+    }
 
-    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
@@ -1647,6 +1709,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection4(responsePlan: ResponsePlan) {
+    console.log(responsePlan)
     this.proposedResponseText = responsePlan.activitySummary['q1'];
     this.progressOfActivitiesPlanText = responsePlan.activitySummary['q2'];
     this.coordinationPlanText = responsePlan.activitySummary['q3'];
@@ -1654,6 +1717,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadSection5(responsePlan: ResponsePlan) {
     this.numOfPeoplePerHouseHold = responsePlan.peoplePerHousehold;
+    this.numOfHouseHolds = responsePlan.numOfHouseholds;
     this.numOfHouseHolds = responsePlan.numOfHouseholds;
     this.calculateBeneficiaries();
     this.howBeneficiariesCalculatedText = responsePlan.beneficiariesNote;
@@ -1827,6 +1891,32 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
   }
 
+  private getStaffLocalAgency() {
+    console.log('test')
+    this.af.database.list(Constants.APP_STATUS + '/staff/' + this.agencyId)
+      .flatMap(list => {
+        console.log(list)
+        this.staffMembers = [];
+        let tempList = [];
+        // If country admin add user to the list as country admin is not listed under staff
+        if (this.isCountryAdmin) {
+          tempList.push(this.uid);
+        }
+        list.forEach(x => {
+          tempList.push(x.$key)
+        });
+        return Observable.from(tempList)
+      })
+      .flatMap(item => {
+        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item)
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .distinctUntilChanged()
+      .subscribe(x => {
+        this.staffMembers.push(x);
+      });
+  }
+
   // private getPartners() {
   //
   //   this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminUid + '/' + this.countryId + '/partners')
@@ -1929,33 +2019,64 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (numOfSectionsCompleted > 0) {
 
-      if (this.forEditing) {
-        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
-        newResponsePlan.isEditing = false;
-        newResponsePlan.editingUserId = null;
-        this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
-          console.log("Response plan successfully updated");
-          //if edit, delete approval data and any validation token
-          let resetData = {};
-          resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
-          resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
-          this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
-           this.router.navigateByUrl('response-plans');
-          }, error => {
-            console.log(error.message);
+      if(this.isLocalAgency){
+        if (this.forEditing) {
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + this.idOfResponsePlanToEdit;
+          newResponsePlan.isEditing = false;
+          newResponsePlan.editingUserId = null;
+          this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+            console.log("Response plan successfully updated");
+            //if edit, delete approval data and any validation token
+            let resetData = {};
+            resetData["/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+            resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
+            this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
+              this.router.navigateByUrl('local-agency/response-plans');
+            }, error => {
+              console.log(error.message);
+            });
+          }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
           });
-        }).catch(error => {
-          console.log("Response plan creation unsuccessful with error --> " + error.message);
-        });
 
-      } else {
-        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
-        this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
-          console.log("Response plan creation successful");
-        this.router.navigateByUrl('response-plans');
-        }).catch(error => {
-          console.log("Response plan creation unsuccessful with error --> " + error.message);
-        });
+        } else {
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.agencyId;
+          this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+            console.log("Response plan creation successful");
+            this.router.navigateByUrl('local-agency/response-plans');
+          }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
+          });
+        }
+      }else{
+        if (this.forEditing) {
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
+          newResponsePlan.isEditing = false;
+          newResponsePlan.editingUserId = null;
+          this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+            console.log("Response plan successfully updated");
+            //if edit, delete approval data and any validation token
+            let resetData = {};
+            resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+            resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
+            this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
+              this.router.navigateByUrl( 'response-plans');
+            }, error => {
+              console.log(error.message);
+            });
+          }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
+          });
+
+        } else {
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+          this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+            console.log("Response plan creation successful");
+            this.router.navigateByUrl( 'response-plans');
+          }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
+          });
+        }
       }
     } else {
       console.log(numOfSectionsCompleted);

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, StockType, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -48,6 +48,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private userAgencyId: string;
 
+  @Input() isLocalAgency: boolean;
+
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
@@ -65,6 +67,43 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+
+  }
+
+  private initLocalAgency(){
+
+
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.userType = userType;
+          this.agencyId = agencyId
+
+            this._stockService.getStockCapacitiesLocalAgency(this.agencyId).subscribe(stockCapacities => {
+              this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Agency);
+              this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.AgencyExternal);
+
+              // Get notes
+              stockCapacities.forEach(stockCapacity => {
+                const stockCapacityNode = Constants.STOCK_CAPACITY_NODE_LOCAL_AGENCY
+                  .replace('{agencyId}', this.agencyId)
+                  .replace('{id}', stockCapacity.id);
+                this._noteService.getNotes(stockCapacityNode).subscribe(notes => {
+                  stockCapacity.notes = notes;
+
+                  // Create the new note model for partner organisation
+                  this.newNote[stockCapacity.id] = new NoteModel();
+                  this.newNote[stockCapacity.id].uploadedBy = this.uid;
+                });
+              })
+            });
+        });
+  }
+
+  private initCountryOffice(){
+
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -112,15 +151,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
               })
             });
           } else {
-            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-            //   .takeUntil(this.ngUnsubscribe)
-            //   .subscribe(agencyId => {
-            //     this.agencyId = agencyId;
-            //
-            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-            //       .takeUntil(this.ngUnsubscribe)
-            //       .subscribe(countryId => {
-            //         this.countryId = countryId;
             this.countryId = countryId;
             this.agencyId = agencyId;
 
@@ -165,7 +195,11 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-office-profile/stock-capacity');
+    if (this.isLocalAgency) {
+      this.router.navigateByUrl('/local-agency/profile/stock-capacity');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-office-profile/stock-capacity');
+    }
   }
 
   editCoordinationArrangement() {
@@ -193,15 +227,23 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditStockCapacity(stockType: StockType, stockCapacityId?: string) {
-
-
-    console.log(Constants.APP_STATUS + '/countryOfficeProfile/capacity/' + stockType);
-    if (stockCapacityId) {
-      this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
-        {id: stockCapacityId, stockType: stockType}], {skipLocationChange: true});
-    } else {
-      this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
-        {stockType: stockType}], {skipLocationChange: true});
+    console.log(stockType)
+    if(this.isLocalAgency){
+      if (stockCapacityId) {
+        this.router.navigate(['/local-agency/profile/stock-capacity/add-edit-stock-capacity',
+          {id: stockCapacityId, stockType: stockType}], {skipLocationChange: true});
+      } else {
+        this.router.navigate(['/local-agency/profile/stock-capacity/add-edit-stock-capacity',
+          {stockType: stockType}], {skipLocationChange: true});
+      }
+    }else{
+      if (stockCapacityId) {
+        this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
+          {id: stockCapacityId, stockType: stockType}], {skipLocationChange: true});
+      } else {
+        this.router.navigate(['/country-admin/country-office-profile/stock-capacity/add-edit-stock-capacity',
+          {stockType: stockType}], {skipLocationChange: true});
+      }
     }
   }
 
@@ -214,9 +256,13 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   addNote(stockCapacity: StockCapacityModel, note: NoteModel) {
     if (this.validateNote(note)) {
       note.agencyId = this.userAgencyId
-      const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-        .replace('{countryId}', this.countryId)
-        .replace('{id}', stockCapacity.id);
+      const stockCapacityNode = this.isLocalAgency ? Constants.STOCK_CAPACITY_NODE_LOCAL_AGENCY
+        .replace('{agencyId}', this.agencyId)
+        .replace('{id}', stockCapacity.id) :
+        Constants.STOCK_CAPACITY_NODE
+          .replace('{countryId}', this.countryId)
+          .replace('{id}', stockCapacity.id);
+
       this._noteService.saveNote(stockCapacityNode, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
       })
@@ -233,14 +279,26 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   editAction(stockCapacity: StockCapacityModel, note: NoteModel) {
     this.closeEditModal();
 
-    if (this.validateNote(note)) {
-      const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-        .replace('{countryId}', this.countryId)
-        .replace('{id}', stockCapacity.id);
-      this._noteService.saveNote(stockCapacityNode, note).then(() => {
-        this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
-      })
-        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+    if(this.isLocalAgency){
+      if (this.validateNote(note)) {
+        const stockCapacityNode = Constants.STOCK_CAPACITY_NODE_LOCAL_AGENCY
+          .replace('{agencyId}', this.agencyId)
+          .replace('{id}', stockCapacity.id);
+        this._noteService.saveNote(stockCapacityNode, note).then(() => {
+          this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+        })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+      }
+    }else{
+      if (this.validateNote(note)) {
+        const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
+          .replace('{countryId}', this.countryId)
+          .replace('{id}', stockCapacity.id);
+        this._noteService.saveNote(stockCapacityNode, note).then(() => {
+          this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+        })
+          .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+      }
     }
   }
 
@@ -257,9 +315,12 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   deleteAction(stockCapacity: StockCapacityModel, note: NoteModel) {
     this.closeDeleteModal();
 
-    const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-      .replace('{countryId}', this.countryId)
-      .replace('{id}', stockCapacity.id);
+    const stockCapacityNode = this.isLocalAgency ? Constants.STOCK_CAPACITY_NODE_LOCAL_AGENCY
+      .replace('{agencyId}', this.agencyId)
+      .replace('{id}', stockCapacity.id) :
+      Constants.STOCK_CAPACITY_NODE
+        .replace('{countryId}', this.countryId)
+        .replace('{id}', stockCapacity.id)
 
     this._noteService.deleteNote(stockCapacityNode, note)
       .then(() => {

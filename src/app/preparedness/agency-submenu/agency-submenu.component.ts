@@ -22,22 +22,31 @@ export class AgencySubmenuComponent implements OnInit, OnDestroy {
   protected ngUnsubscribe: Subject<void> = new Subject<void>();
 
   @Input() countryId: string;
+  @Input() isLocalAgency: boolean;
 
   constructor(protected pageControl: PageControlService, protected route: ActivatedRoute, protected router: Router, protected af: AngularFire, protected _sanitizer: DomSanitizer) {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, type) => {
-      this.af.database.list(Constants.APP_STATUS + '/countryOffice/')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(offices => {
-          offices.map(office => {
-            Object.keys(office).map(countryId => {
-              if (this.countryId == countryId)
-                this.location = office[countryId].location;
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, type, countryId, agencyId, systemId) => {
+      if(this.isLocalAgency){
+        this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agency => {
+            this.location = agency.country;
+          });
+      }else{
+        this.af.database.list(Constants.APP_STATUS + '/countryOffice/')
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(offices => {
+            offices.map(office => {
+              Object.keys(office).map(countryId => {
+                if (this.countryId == countryId)
+                  this.location = office[countryId].location;
+              });
             });
           });
-        });
+      }
     });
   }
 

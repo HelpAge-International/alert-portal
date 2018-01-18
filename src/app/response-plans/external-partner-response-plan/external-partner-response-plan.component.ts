@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 // import {RxHelper} from "../../utils/RxHelper";
@@ -36,6 +36,8 @@ export class ExternalPartnerResponsePlan implements OnInit, OnDestroy {
     private partnerEmail:any;
     private whoApprove:any;
     private whoApproveId:any;
+
+    @Input() isLocalAgency: Boolean;
 
     constructor(private pageControl: PageControlService, // private subscriptions: RxHelper,
         private af:AngularFire,

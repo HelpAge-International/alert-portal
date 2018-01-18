@@ -27,21 +27,18 @@
       <a routerLink="/local-agency/response-plans">{{"HEADERS.PLANS" | translate}}</a>
     </li>
     <li class="" [hidden]="permCountryOffice" routerLinkActive="active">
-      <a routerLink="/local-agency/profile">{{"COUNTRY_ADMIN.STAFF.COUNTRY_OFFICE" | translate}}</a>
-    </li>
-    <li class="" routerLinkActive="active">
-      <a routerLink="/map">{{"HEADERS.GLOBAL_MAP" | translate}}</a>
+      <a routerLink="/local-agency/profile">{{"LOCAL_AGENCY_ADMIN.STAFF.LOCAL_AGENCY" | translate}}</a>
     </li>
     <li *ngIf="userType == UserType.LocalAgencyAdmin" class="" routerLinkActive="active">
       <div class="dropdown">
         <a class="dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true"
            aria-expanded="false">Agency Administrator</a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" routerLink="/local-agency/agency-staff">{{"COUNTRY_ADMIN.STAFF.TITLE_TEXT" |
+          <a class="dropdown-item" routerLink="/local-agency/agency-staff">{{"LOCAL_AGENCY_ADMIN.STAFF.TITLE_TEXT" |
             translate}}</a>
-          <a class="dropdown-item" routerLink="/local-agency/settings/agency-permission-settings">{{"COUNTRY_ADMIN.SETTINGS.TITLE_TEXT"
+          <a class="dropdown-item" routerLink="/local-agency/settings/departments">{{"LOCAL_AGENCY_ADMIN.SETTINGS.TITLE_TEXT"
             | translate}}</a>
-          <a class="dropdown-item" routerLink="/local-agency/agency-messages">{{"COUNTRY_ADMIN.MESSAGES.TITLE_TEXT" |
+          <a class="dropdown-item" routerLink="/local-agency/agency-messages">{{"LOCAL_AGENCY_ADMIN.MESSAGES.TITLE_TEXT" |
             translate}}</a>
         </div>
       </div>

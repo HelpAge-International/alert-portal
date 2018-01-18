@@ -409,6 +409,7 @@
       "ALL_USERS":"All Users",
       "NETWORK_ADMINS":"Network Administrators",
       "AGENCY_ADMINS":"Agency Administrators",
+      "AGENCY_USER":"Agency User",
       "GLOBAL_DIRECTOR":"Global Directors",
       "GLOBAL_DIRECTOR_SINGLE":"Global Director",
       "COUNTRY_USER":"Country User",
@@ -421,7 +422,8 @@
       "ERT":"ERTs",
       "DONOR":"Donors",
       "PARTNER":"Partners",
-      "NON_ALERT":"Non-Alert User"
+      "NON_ALERT":"Non-Alert User",
+      "LOCAL_AGENCY_DIRECTORS":"Local Agency Directors"
     },
     "ACCOUNT_SETTINGS":{
       "TITLE":"Account Settings",
@@ -1309,8 +1311,10 @@
         "ETA_OUT":"Lead time to warehouse",
         "GO_BACK_TITLE":"Edit Stock Capacity",
         "ADD_IN_TITLE":"Add in-country stock",
+        "ADD_IN_TITLE_LOCAL_AGENCY":"Add in-agency stock",
         "ADD_OUT_TITLE":"Add external country stock",
         "EDIT_IN_TITLE":"Edit in-country stock",
+        "EDIT_IN_TITLE_LOCAL_AGENCY":"Edit in-agency stock",
         "EDIT_OUT_TITLE":"Edit external country stock",
         "EMPTY_LIST":"Use the Add button to add stock",
         "NO_DESCRIPTION":"Please enter the stock description",
@@ -2175,5 +2179,24 @@
         "LEVEL1":"Where the stock is currently stored"
       }
     }
+  },
+  "LOCAL_AGENCY_ADMIN": {
+    "STAFF": {
+      "TITLE_TEXT": "Agency Staff",
+      "LOCAL_AGENCY": "Agency"
+    },
+    "SETTINGS":{
+      "TITLE_TEXT": "Agency Settings"
+    },
+    "MESSAGES":{
+      "TITLE_TEXT": "Agency Messages"
+    },
+    "PROFILE":{
+      "STOCK_CAPACITY":{
+        "EDIT_IN_TITLE":"Edit in-country stock",
+        "ADD_IN_TITLE":"Add in-agency stock"
+      }
+    }
+
   }
 }
