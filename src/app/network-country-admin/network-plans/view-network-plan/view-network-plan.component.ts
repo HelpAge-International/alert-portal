@@ -29,16 +29,41 @@ export class ViewNetworkPlanComponent implements OnInit {
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
       }
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
-        this.systemId = params["systemId"];
-        this.agencyId = params["agencyId"];
-        this.countryId = params["countryId"];
-        this.userType = params["userType"];
-        this.networkId = params["networkId"];
-        this.networkCountryId = params["networkCountryId"];
-        this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
       }
+      if (params["systemId"]) {
+        this.systemId = params["systemId"];
+      }
+      if (params["agencyId"]) {
+        this.agencyId = params["agencyId"];
+      }
+      if (params["countryId"]) {
+        this.countryId = params["countryId"];
+      }
+      if (params["userType"]) {
+        this.userType = params["userType"];
+      }
+      if (params["networkId"]) {
+        this.networkId = params["networkId"];
+      }
+      if (params["networkCountryId"]) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      if (this.isLocalNetworkAdmin) {
+        this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
+      }
+      // if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      //   this.isViewing = params["isViewing"];
+      //   this.systemId = params["systemId"];
+      //   this.agencyId = params["agencyId"];
+      //   this.countryId = params["countryId"];
+      //   this.userType = params["userType"];
+      //   this.networkId = params["networkId"];
+      //   this.networkCountryId = params["networkCountryId"];
+      //   this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      // }
     })
   }
 

@@ -247,16 +247,40 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
       }
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
+      }
+      if (params["systemId"]) {
         this.systemAdminUid = params["systemId"];
+      }
+      if (params["agencyId"]) {
         this.agencyId = params["agencyId"];
+      }
+      if (params["countryId"]) {
         this.countryId = params["countryId"];
+      }
+      if (params["userType"]) {
         this.userType = params["userType"];
+      }
+      if (params["networkId"]) {
         this.networkId = params["networkId"];
-        this.networkCountryId = params["networkCountryId"];
+      }
+      if (params["uid"]) {
         this.uid = params["uid"];
       }
+      if (params["networkCountryId"]) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      // if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      //   this.isViewing = params["isViewing"];
+      //   this.systemAdminUid = params["systemId"];
+      //   this.agencyId = params["agencyId"];
+      //   this.countryId = params["countryId"];
+      //   this.userType = params["userType"];
+      //   this.networkId = params["networkId"];
+      //   this.networkCountryId = params["networkCountryId"];
+      //   this.uid = params["uid"];
+      // }
       this.isViewing ? this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
     })
 
@@ -336,7 +360,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private setupForEdit() {
-    this.isLocalNetworkAdmin ? this.setupEditForLocalNetwork() : this.setupEditForNetworkCountry();
+    this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined" ? this.setupEditForLocalNetwork() : this.setupEditForNetworkCountry();
   }
 
   private setupEditForLocalNetwork() {
@@ -489,7 +513,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private getParticipatingAgencies() {
-    this.isLocalNetworkAdmin ? this.getAgenciesForLocalNetwork() : this.getAgenciesForNetworkCountry();
+    this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined" ? this.getAgenciesForLocalNetwork() : this.getAgenciesForNetworkCountry();
   }
 
   private getAgenciesForLocalNetwork() {
@@ -543,7 +567,10 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     //   jQuery("#navigate-back").modal("show");
     // } else {
     this.isViewing ?
-      this.router.navigate(['/network-country/network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+      this.networkCountryId && this.networkCountryId != "undefined" ?
+        this.router.navigate(['/network-country/network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+        :
+        this.router.navigate(['/network/local-network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
       :
       this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
     // }
