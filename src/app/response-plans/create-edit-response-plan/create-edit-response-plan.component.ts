@@ -268,6 +268,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   //local agency
   @Input() isLocalAgency: Boolean;
 
+  public disaggregateAge = false;
+  public disaggregateDisability = false;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
 
