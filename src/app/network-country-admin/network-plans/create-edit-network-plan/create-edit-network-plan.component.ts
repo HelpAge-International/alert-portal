@@ -231,6 +231,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   private moduleAccess: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
 
+  public disaggregateAge = false;
+  public disaggregateDisability = false;
+
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
