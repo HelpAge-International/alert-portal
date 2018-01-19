@@ -1158,6 +1158,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   // }
 
   saveActivity(sector, activity: ModelPlanActivity, index) {
+    console.log(activity)
     let error = activity.validate();
     if (!error) {
       this.activeActivity[sector] = null;
@@ -1178,12 +1179,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   addActivity(sector) {
     let activity = new ModelPlanActivity(null, null, null, null);
+    console.log(activity)
     if (this.activityMap.get(sector)) {
       this.activityMap.get(sector).push(activity);
     } else {
       this.activityMap.set(sector, [activity]);
     }
     this.activeActivity[sector] = activity;
+    console.log(this.activityMap)
   }
 
   getNumberOfActivities(sector) {
@@ -1713,9 +1716,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadSection4(responsePlan: ResponsePlan) {
     console.log(responsePlan)
-    this.proposedResponseText = responsePlan.activitySummary['q1'];
-    this.progressOfActivitiesPlanText = responsePlan.activitySummary['q2'];
-    this.coordinationPlanText = responsePlan.activitySummary['q3'];
+    if (responsePlan.activitySummary) {
+      this.proposedResponseText = responsePlan.activitySummary['q1'];
+      this.progressOfActivitiesPlanText = responsePlan.activitySummary['q2'];
+      this.coordinationPlanText = responsePlan.activitySummary['q3'];
+    }
   }
 
   private loadSection5(responsePlan: ResponsePlan) {
@@ -1798,23 +1803,25 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection8(responsePlan: ResponsePlan) {
-
-    this.mALSystemsDescriptionText = responsePlan.monAccLearning['mALSystemsDescription'];
-    this.intentToVisuallyDocument = responsePlan.monAccLearning['isMedia'];
-    this.mediaFormat = responsePlan.monAccLearning['mediaFormat'];
+    if (responsePlan.monAccLearning) {
+      this.mALSystemsDescriptionText = responsePlan.monAccLearning['mALSystemsDescription'];
+      this.intentToVisuallyDocument = responsePlan.monAccLearning['isMedia'];
+      this.mediaFormat = responsePlan.monAccLearning['mediaFormat'];
+    }
   }
 
   private loadSection9(responsePlan: ResponsePlan) {
+    if (responsePlan.doubleCounting) {
+      this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
+      this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
+      this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
+      this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
+      this.numberMale18To50 = responsePlan.doubleCounting[4].value;
+      this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
 
-    this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
-    this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
-    this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
-    this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
-    this.numberMale18To50 = responsePlan.doubleCounting[4].value;
-    this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
-
-    this.section9Status = "GLOBAL.COMPLETE";
-    this.sectionsCompleted.set(this.sections[8], true);
+      this.section9Status = "GLOBAL.COMPLETE";
+      this.sectionsCompleted.set(this.sections[8], true);
+    }
   }
 
   private loadSection10(responsePlan: ResponsePlan) {
