@@ -247,14 +247,28 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
       }
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
+      }
+      if (params["systemId"]) {
         this.systemAdminUid = params["systemId"];
+      }
+      if (params["agencyId"]) {
         this.agencyId = params["agencyId"];
+      }
+      if (params["countryId"]) {
         this.countryId = params["countryId"];
+      }
+      if (params["userType"]) {
         this.userType = params["userType"];
+      }
+      if (params["networkId"]) {
         this.networkId = params["networkId"];
+      }
+      if (params["networkCountryId"]) {
         this.networkCountryId = params["networkCountryId"];
+      }
+      if (params["uid"]) {
         this.uid = params["uid"];
       }
       this.isViewing ? this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();

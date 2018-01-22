@@ -317,30 +317,100 @@
           <div class="Response__rule__seperator col-sm-12">
             <p><b>{{"BENEFICIARIES_OF_THIS_ACTIVITY"
               | translate}}</b></p>
-            <div class="row">
-              <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} < 18</p>
-              <p class="col-sm-3">{{activity.beneficiary &&
-                activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p>
-              <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} < 18</p>
-              <p class="col-sm-3">{{activity.beneficiary &&
-                activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p>
-            </div>
-            <div class="row">
-              <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 18-50</p>
-              <p class="col-sm-3">{{activity.beneficiary &&
-                activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p>
-              <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 18-50</p>
-              <p class="col-sm-3">{{activity.beneficiary &&
-                activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p>
-            </div>
-            <div class="row">
-              <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} > 50</p>
-              <p class="col-sm-3">{{activity.beneficiary &&
-                activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p>
-              <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} > 50</p>
-              <p class="col-sm-3">{{activity.beneficiary &&
-                activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p>
-            </div>
+            <!--beneficiary-->
+            <ng-container *ngIf="!activity.hasFurtherBeneficiary">
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} < 18</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} < 18</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 18-50</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 18-50</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} > 50</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} > 50</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p>
+              </div>
+            </ng-container>
+            <!--further beneficiary-->
+            <ng-container *ngIf="activity.hasFurtherBeneficiary">
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 0-5</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[0]?activity.furtherBeneficiary[0]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 0-5</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[8]?activity.furtherBeneficiary[3]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 6-12</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[1]?activity.furtherBeneficiary[1]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 6-12</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[9]?activity.furtherBeneficiary[9]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 13-17</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[2]?activity.furtherBeneficiary[2]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 13-17</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[10]?activity.furtherBeneficiary[10]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 18-50</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[3]?activity.furtherBeneficiary[3]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 18-50</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[11]?activity.furtherBeneficiary[11]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 51-59</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 51-59</p>
+                <p class="col-sm-3">{{activity.beneficiary &&
+                  activity.beneficiary[12]?activity.beneficiary[12]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 60-69</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[5]?activity.furtherBeneficiary[5]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 60-69</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[13]?activity.furtherBeneficiary[13]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 70-79</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[6]?activity.furtherBeneficiary[6]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 70-79</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[14]?activity.furtherBeneficiary[14]["value"]:0}}</p>
+              </div>
+              <div class="row">
+                <p class="col-sm-3">{{"GLOBAL.FEMALE" | translate}} 80+</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[7]?activity.furtherBeneficiary[7]["value"]:0}}</p>
+                <p class="col-sm-3">{{"GLOBAL.MALE" | translate}} 80+</p>
+                <p class="col-sm-3">{{activity.furtherBeneficiary &&
+                  activity.furtherBeneficiary[15]?activity.furtherBeneficiary[15]["value"]:0}}</p>
+              </div>
+            </ng-container>
           </div>
           <hr>
         </div>

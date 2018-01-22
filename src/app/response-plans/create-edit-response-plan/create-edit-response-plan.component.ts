@@ -22,6 +22,7 @@ import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontr
 import * as moment from "moment";
 import {isNull, isNullOrUndefined} from "util";
 import {forEach} from "@angular/router/src/utils/collection";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 // import {jQuery} from "../../network-country-admin/network-plans/network-plans.component";
 
 declare var jQuery: any;
@@ -1159,6 +1160,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     let error = activity.validate();
     if (!error) {
       this.activeActivity[sector] = null;
+      this.activityError[sector] = []
     } else {
       this.activityError[sector] = [];
       this.activityError[sector][index] = error.message;
@@ -1166,6 +1168,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   viewActivity(sector, activity) {
+    console.log(this.activityError[sector])
     this.activeActivity[sector] = activity;
   }
 
@@ -1332,25 +1335,62 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.activityMap.forEach((v,) => {
       modelPlanList = modelPlanList.concat(v);
     });
-    let beneficiaryList = [];
+    // let beneficiaryList = [];
+    // let furtherBeneficiaryList = [];
     modelPlanList.forEach(modelPlan => {
-      beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
-    });
-    beneficiaryList.forEach(item => {
-      if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
-        this.numberFemaleLessThan18 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
-        this.numberFemale18To50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
-        this.numberFemalegreaterThan50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
-        this.numberMaleLessThan18 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
-        this.numberMale18To50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
-        this.numberMalegreaterThan50 += Number(item["value"]);
+      // beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
+      // furtherBeneficiaryList = furtherBeneficiaryList.concat(modelPlan.furtherBeneficiary);
+      if (!modelPlan.hasFurtherBeneficiary) {
+        modelPlan.beneficiary.forEach(item => {
+          if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+            this.numberFemaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+            this.numberFemale18To50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+            this.numberFemalegreaterThan50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+            this.numberMaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+            this.numberMale18To50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+            this.numberMalegreaterThan50 += Number(item["value"]);
+          }
+        })
+
+      } else {
+        modelPlan.furtherBeneficiary.forEach(item => {
+          if (item["age"] < 3 && item["gender"] == Gender.feMale) {
+            this.numberFemaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == 3 && item["gender"] == Gender.feMale) {
+            this.numberFemale18To50 += Number(item["value"]);
+          } else if (item["age"] > 3 && item["gender"] == Gender.feMale) {
+            this.numberFemalegreaterThan50 += Number(item["value"]);
+          } else if (item["age"] < 3 && item["gender"] == Gender.male) {
+            this.numberMaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == 3 && item["gender"] == Gender.male) {
+            this.numberMale18To50 += Number(item["value"]);
+          } else if (item["age"] > 3 && item["gender"] == Gender.male) {
+            this.numberMalegreaterThan50 += Number(item["value"]);
+          }
+        })
+
       }
     });
+    // beneficiaryList.forEach(item => {
+    //   if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+    //     this.numberFemaleLessThan18 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+    //     this.numberFemale18To50 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+    //     this.numberFemalegreaterThan50 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+    //     this.numberMaleLessThan18 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+    //     this.numberMale18To50 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+    //     this.numberMalegreaterThan50 += Number(item["value"]);
+    //   }
+    // });
 
     console.log("numberFemaleLessThan18:");
     console.log(this.numberFemaleLessThan18);
@@ -1791,7 +1831,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
               activitiesData[key]["hasFurtherBeneficiary"],
               activitiesData[key]["hasDisability"],
               activitiesData[key]["hasFurtherBeneficiary"] ? activitiesData[key]["furtherBeneficiary"] : null,
-              activitiesData[key]["hasDisability"] ? activitiesData[key]["disability"] : null,
+              !activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["disability"] : null,
               activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["furtherDisability"] : null);
 
             moreData.push(model);

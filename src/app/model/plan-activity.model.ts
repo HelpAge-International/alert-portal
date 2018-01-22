@@ -18,7 +18,7 @@ export class ModelPlanActivity extends BaseModel {
   public furtherDisability = []
 
   constructor(name: string, output: string, indicator: string,
-              beneficiary: {}[],  hasFurtherBeneficiary: boolean = false, hasDisability: boolean = false,
+              beneficiary: {}[], hasFurtherBeneficiary: boolean = false, hasDisability: boolean = false,
               furtherBeneficiary?: {}[], disability?: number[], furtherDisability?: number[]) {
     super();
     this.name = name;
@@ -61,7 +61,7 @@ export class ModelPlanActivity extends BaseModel {
     }
 
     if (!disability) {
-      this.disability = [0,0,0,0,0,0];
+      this.disability = [0, 0, 0, 0, 0, 0];
     } else {
       for (let i = 0; i < 6; i++) {
         this.disability.push(disability[i]);
@@ -69,7 +69,7 @@ export class ModelPlanActivity extends BaseModel {
     }
 
     if (!furtherDisability) {
-      this.furtherDisability = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+      this.furtherDisability = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     } else {
       for (let i = 0; i < 16; i++) {
@@ -88,6 +88,22 @@ export class ModelPlanActivity extends BaseModel {
     if (!this.indicator && !this.isExcluded('indicator', excludedFields)) {
       return new AlertMessageModel('RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.NO_INDICATOR');
     }
+
+    let error = 'Number of disability cannot exceed beneficiary!'
+    if (this.hasDisability && this.hasFurtherBeneficiary) {
+      for (let x in this.furtherBeneficiary) {
+        if (this.furtherDisability[x] > this.furtherBeneficiary.map(x => x.value)[x]) {
+          return new AlertMessageModel(error)
+        }
+      }
+    } else if (this.hasDisability && !this.hasFurtherBeneficiary) {
+      for (let x in this.beneficiary) {
+        if (this.disability[x] > this.beneficiary.map(x => x.value)[x]) {
+          return new AlertMessageModel(error)
+        }
+      }
+    }
+
     return null;
   }
 
