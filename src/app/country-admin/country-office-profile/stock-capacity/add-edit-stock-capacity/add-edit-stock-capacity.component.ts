@@ -89,7 +89,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
             // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
       //   this.countryId = countryAdminUser.countryId;
       //   this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
-      this.initCountrySelection();
+
       this.route.params.subscribe((params: Params) => {
         if (params['id']) {
           this._stockService.getStockCapacity(this.countryId, params['id'])
@@ -105,6 +105,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
         }
       });
       // });
+      this.initCountrySelection();
     });
   }
 
@@ -116,15 +117,21 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
   submit() {
 
+    // Make object to push to Fire base
     var postData = {
+      updatedAt: new Date().getTime(),
       location: this.selectedCountry,
       level1: this.levelOneDisplay[this.selectedValue].id,
-      level2: this.selectedValueL2,
+      level2: this.selectedValueL2.toString(),
       agencyId: this.agencyId
     };
 
-    this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
-    this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/')
+    // This is not ideal but time constraints were in place. If I had more time would of routed through model
+    // TODO: If refactor remember here to go through model this works either way just a note if and when ...
+
+
+    //this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
+    this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + this.countryId)
       .push(this.stockCapacity)
       .update(postData)
       .then(() => {
@@ -164,12 +171,6 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
   initCountrySelection() {
 
-
-    /**
-     * Get the Stock level
-     */
-  console.log(this.stockCapacity, this.activeStockCapacity, this._stockService);
-
     /**
      * Preset the first drop down box to the country office
      */
@@ -196,13 +197,13 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   // This function below is to determine the country selected
-  // TODO: Return the array of level1 areas in the country selected.
+  // Return the array of level1 areas in the country selected.
   setCountryLevel(){
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
-        // TODO: Below needs to return the level1 array of the id selected
+        // Below needs to return the level1 array of the id selected
         this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
 
 
@@ -220,6 +221,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   setLevel1Value(){
+
 
     console.log(this.selectedValue, 'preset value');
     this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;

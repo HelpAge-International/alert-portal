@@ -307,6 +307,7 @@ import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-
 
 
 
+
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
 }
@@ -660,7 +661,8 @@ const firebaseAuthConfig = {
     NetworkService,
     NetworkMapService,
     NetworkCountryService,
-    ActionsService],
+    ActionsService
+    ],
   bootstrap: [AppComponent]
 })
 

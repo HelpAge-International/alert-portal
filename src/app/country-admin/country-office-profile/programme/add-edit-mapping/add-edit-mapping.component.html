@@ -45,18 +45,18 @@
 
     <!--START-->
 
-      <h6 class="font-weight-bold row Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" | translate}}</h6><br>
-      <div class="row">
-        <div class="col-sm-3">
-          <div class="form-group-risk-frequency row">
-            <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
-              <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
-              <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
-                translate}}
-              </option>
-            </select>
-          </div>
+    <h6 class="font-weight-bold row Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" | translate}}</h6><br>
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="form-group-risk-frequency row">
+          <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
+            <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
+            <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
+              translate}}
+            </option>
+          </select>
         </div>
+      </div>
 
 
         <!--LEVEL 1 START-->

@@ -16,6 +16,7 @@ import {ResponsePlan} from "../model/responsePlan";
 import {observable} from "rxjs/symbol/observable";
 import {AgencyService} from "../services/agency-service.service";
 import * as moment from "moment";
+import { CreateEditCountryComponent } from "../agency-admin/country-office/create-edit-country/create-edit-country.component";
 
 declare const jQuery: any;
 
@@ -279,6 +280,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   checkEditingAllowed(responsePlan) {
+
     this.responsePlanToEdit = responsePlan;
     if (responsePlan.status == ApprovalStatus.Approved) {
       jQuery("#dialog-responseplan-editing").modal("show");

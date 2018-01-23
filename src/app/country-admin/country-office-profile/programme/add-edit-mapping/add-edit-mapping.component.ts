@@ -189,15 +189,17 @@ _getProgramme(programmeID: string) {
   saveMapping() {
     this.setDate();
     this.alertMessage = this.programme.validate();
+    var dataToSave = this.programme;
+    var postData = {
+      where: this.selectedCountry,
+      level1: this.levelOneDisplay[this.selectedValue].id,
+      level2: this.selectedValueL2,
+      agencyId: this.agencyId
+    };
+    dataToSave.updatedAt = new Date().getTime();
+
     if (!this.alertMessage) {
-      var dataToSave = this.programme;
-      var postData = {
-        where: this.selectedCountry,
-        level1: this.levelOneDisplay[this.selectedValue].id,
-        level2: this.selectedValueL2,
-        agencyId: this.agencyId
-      };
-      dataToSave.updatedAt = new Date().getTime();
+
 
       if (!this.programmeId) {
         if (this.countryID) {
@@ -218,7 +220,7 @@ _getProgramme(programmeID: string) {
       } else {
         delete dataToSave.id;
         this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
-          .update(dataToSave)
+          .update(dataToSave && postData)
           .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
             this.router.navigate(['/country-admin/country-office-profile/programme/']);

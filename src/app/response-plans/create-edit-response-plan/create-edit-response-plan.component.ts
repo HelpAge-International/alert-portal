@@ -24,6 +24,7 @@ import {isNull, isNullOrUndefined} from "util";
 import {forEach} from "@angular/router/src/utils/collection";
 // import {jQuery} from "../../network-country-admin/network-plans/network-plans.component";
 
+
 declare var jQuery: any;
 
 @Component({
@@ -602,8 +603,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
 
     jQuery("#navigate-back").modal("hide");
-
-    this.saveToFirebase(this.newResponsePlan);
+    this.router.navigateByUrl('response-plans');
+    //this.saveToFirebase(this.newResponsePlan);
   }
 
   /**
@@ -628,6 +629,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection1();
 
     this.handleContinueSave();
+
+    this.autoSaveSection1();
   }
 
 
@@ -639,6 +642,30 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section1Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[0], false);
     }
+
+  }
+
+  private autoSaveSection1() {
+    //section 1
+
+    this.newResponsePlan.name = this.planName;
+    this.newResponsePlan.location = this.geographicalLocation;
+    if (this.staffMemberSelected) {
+      this.newResponsePlan.planLead = this.staffMemberSelected;
+    }
+    if (this.hazardScenarioSelected) {
+      this.newResponsePlan.hazardScenario = this.hazardScenarioSelected;
+    }
+    this.newResponsePlan.isActive = true;
+    this.newResponsePlan.status = ApprovalStatus.InProgress;
+    this.newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
+    this.newResponsePlan.totalSections = 10;
+    this.newResponsePlan.timeCreated = moment.utc().valueOf();
+    this.newResponsePlan.startDate = moment.utc().valueOf();
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 1 Complete');
   }
 
   /**
@@ -778,6 +805,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection2();
 
     this.handleContinueSave();
+
+    this.autoSaveSection2();
   }
 
   private checkSection2() {
@@ -794,6 +823,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  private autoSaveSection2() {
+
+    this.newResponsePlan.scenarioCrisisList = this.convertTolist(this.scenarioCrisisObject);
+    this.newResponsePlan.impactOfCrisisList = this.convertTolist(this.impactOfCrisisObject);
+    this.newResponsePlan.availabilityOfFundsList = this.convertTolist(this.availabilityOfFundsObject);
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 2 Complete');
+  }
   /**
    * Section 3/10
    */
@@ -913,6 +952,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection3();
 
     this.handleContinueSave();
+
+    this.autoSaveSection3();
+
   }
 
   private checkSection3() {
@@ -928,6 +970,32 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section3Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[2], false);
     }
+
+  }
+
+  private autoSaveSection3() {
+
+    this.newResponsePlan.sectorsRelatedTo = this.sectorsRelatedTo;
+    this.newResponsePlan.otherRelatedSector = this.otherRelatedSector;
+    this.newResponsePlan.presenceInTheCountry = this.presenceInTheCountry ? this.presenceInTheCountry : -1;
+
+    if (this.isDirectlyThroughFieldStaff) {
+      this.newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
+      this.newResponsePlan.partnerOrganisations = null;
+    } else {
+      if (Object.keys(this.partnerOrganisationsSelected).length != 0) {
+
+        this.isWorkingWithPartners ? this.newResponsePlan.methodOfImplementation = MethodOfImplementation.withPartner : this.newResponsePlan.methodOfImplementation = MethodOfImplementation.both;
+
+        this.newResponsePlan.partnerOrganisations = this.convertTolist(this.partnerOrganisationsSelected);
+      } else {
+        this.newResponsePlan.methodOfImplementation = MethodOfImplementation.fieldStaff;
+      }
+    }
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 3 Complete');
   }
 
   /**
@@ -939,6 +1007,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection4();
 
     this.handleContinueSave();
+
+    this.autoSaveSection4();
   }
 
   private checkSection4() {
@@ -949,6 +1019,17 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section4Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[3], false);
     }
+  }
+
+  private autoSaveSection4(){
+    this.newResponsePlan.activitySummary["q1"] = this.proposedResponseText;
+    this.newResponsePlan.activitySummary["q2"] = this.progressOfActivitiesPlanText;
+    this.newResponsePlan.activitySummary["q3"] = this.coordinationPlanText;
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 4 Complete');
+
   }
 
   /**
@@ -1024,6 +1105,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection5();
 
     this.handleContinueSave();
+
+    this.autoSaveSection5();
   }
 
   private checkSection5() {
@@ -1039,6 +1122,24 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  private autoSaveSection5() {
+
+    if (this.numOfPeoplePerHouseHold) {
+      this.newResponsePlan.peoplePerHousehold = this.numOfPeoplePerHouseHold;
+    }
+    if (this.numOfHouseHolds) {
+      this.newResponsePlan.numOfHouseholds = this.numOfHouseHolds;
+    }
+    this.newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
+    this.newResponsePlan.vulnerableGroups = this.selectedVulnerableGroups;
+    this.newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
+    this.newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 5 Complete');
+  }
+
   /**
    * Section 6/10
    */
@@ -1048,6 +1149,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection6();
 
     this.handleContinueSave();
+
+    this.autoSaveSection6();
   }
 
   private checkSection6() {
@@ -1060,6 +1163,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  private autoSaveSection6(){
+    this.newResponsePlan.riskManagementPlan = this.riskManagementPlanText;
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 6 Complete');
+  }
   /**
    * Section 7/10
    */
@@ -1215,9 +1326,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   continueButtonPressedOnSection7() {
+
     this.checkSection7();
 
     this.handleContinueSave();
+
+    this.autoSaveSection7();
   }
 
   private checkSection7() {
@@ -1225,12 +1339,52 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
-      this.doublerCounting();
+      //this.doublerCounting(); <= check doubler
       //this.continueButtonPressedOnSection9();
     } else {
       this.section7Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[6], false);
     }
+  }
+
+  private autoSaveSection7(){
+    this.sectorsRelatedTo.forEach(sector => {
+      let sectorInfo = {};
+      sectorInfo["sourcePlan"] = -1;
+      sectorInfo["bullet1"] = " ";
+      sectorInfo["bullet2"] = " ";
+      sectorInfo["activities"] = false;
+
+      let activities = this.activityMap.get(sector);
+      if (activities) {
+        activities.forEach(activity => {
+          if (activity.isEmpty()) {
+            activities = activities.filter(x => x != activity);
+          }
+        });
+
+        sectorInfo["activities"] = activities;
+      }
+
+      let activityInfo = this.activityInfoMap.get(sector);
+      if (activityInfo) {
+        if (activityInfo["sourcePlan"]) {
+          sectorInfo["sourcePlan"] = activityInfo["sourcePlan"];
+        }
+        if (activityInfo["bullet1"]) {
+          sectorInfo["bullet1"] = activityInfo["bullet1"];
+        }
+        if (activityInfo["bullet2"]) {
+          sectorInfo["bullet2"] = activityInfo["bullet2"];
+        }
+      }
+
+      this.newResponsePlan.sectors[sector] = sectorInfo;
+    });
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 7 Complete');
   }
 
   /**
@@ -1254,6 +1408,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection8();
 
     this.handleContinueSave();
+
+    this.autoSaveSection8()
   }
 
   private checkSection8() {
@@ -1267,13 +1423,37 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  private autoSaveSection8(){
+
+    this.newResponsePlan.monAccLearning['mALSystemsDescription'] = this.mALSystemsDescriptionText;
+    if (this.mediaFormat != null) {
+      if (this.intentToVisuallyDocument) {
+        this.newResponsePlan.monAccLearning['mediaFormat'] = this.mediaFormat;
+        this.newResponsePlan.monAccLearning['isMedia'] = true;
+      } else {
+        this.newResponsePlan.monAccLearning['mediaFormat'] = null;
+        this.newResponsePlan.monAccLearning['isMedia'] = true;
+      }
+    } else {
+      this.intentToVisuallyDocument = false;
+      this.newResponsePlan.monAccLearning['isMedia'] = false;
+    }
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 8 Complete');
+  }
   /**
    * Section 9/10
    */
   continueButtonPressedOnSection9() {
+
+    this.doublerCounting();
+
     this.checkSection9();
 
     this.handleContinueSave();
+
+    this.autoSaveSection9();
   }
 
   private checkSection9() {
@@ -1337,6 +1517,47 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
       }
     }
+  }
+
+  private autoSaveSection9(){
+
+    const doubleCounting = {};
+    const data = {};
+    for (let i = 0; i < 6; i++) {
+
+      if (i < 3) {
+        data["gender"] = Gender.feMale;
+        if (i == 0) {
+          data["value"] = this.adjustedFemaleLessThan18;
+        } else if (i == 1) {
+          data["value"] = this.adjustedFemale18To50;
+        } else {
+          data["value"] = this.adjustedFemalegreaterThan50;
+        }
+      } else {
+        data["gender"] = Gender.male;
+        if (i == 3) {
+          data["value"] = this.adjustedMaleLessThan18;
+        } else if (i == 4) {
+          data["value"] = this.adjustedMale18To50;
+        } else {
+          data["value"] = this.adjustedMalegreaterThan50;
+        }
+      }
+      if (i == 0 || i == 3) {
+        data["age"] = AgeRange.Less18;
+      } else if (i == 1 || i == 4) {
+        data["age"] = AgeRange.Between18To50;
+      } else {
+        data["age"] = AgeRange.More50;
+      }
+      doubleCounting[i] = data;
+    }
+    this.newResponsePlan.doubleCounting = doubleCounting;
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 9 Complete');
   }
 
   /**
@@ -1422,9 +1643,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   checkSection10Status() {
+
     this.checkSection10();
 
     this.handleContinueSave();
+
+    this.autoSaveSection10();
   }
 
   private checkSection10() {
@@ -1437,6 +1661,110 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section10Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[9], false);
     }
+  }
+
+  private autoSaveSection10(){
+
+    let budgetData = {};
+    let inputs = {};
+
+
+    let diff = [];
+    this.sectorsRelatedTo.forEach(item => {
+
+      console.log("*****************");
+      console.log(this.sectorBudget);
+      console.log("*****************");
+      console.log(item);
+      if (!this.sectorBudget.get(item)) {
+        diff.push(item);
+        console.log("*****************");
+        console.log(item);
+      }
+    });
+
+    diff.forEach(item => {
+      this.sectorBudget.set(Number(item), 0);
+      this.sectorNarrative.set(Number(item), "");
+    });
+
+    this.sectorBudget.forEach((v, k) => {
+      let item = new ModelBudgetItem();
+      item.budget = this.sectorBudget && this.sectorBudget.get(k) ? this.sectorBudget.get(k) : 0;
+      item.narrative = this.sectorNarrative && this.sectorNarrative.get(k) ? this.sectorNarrative.get(k) : "";
+      // inputs.push(item);
+      inputs[k] = item;
+    });
+
+    let allBudgetValues = {};
+    allBudgetValues[1] = this.transportBudget ? this.transportBudget : 0;
+    allBudgetValues[2] = this.securityBudget ? this.securityBudget : 0;
+    allBudgetValues[3] = this.logisticsAndOverheadsBudget ? this.logisticsAndOverheadsBudget : 0;
+    allBudgetValues[4] = this.staffingAndSupportBudget ? this.staffingAndSupportBudget : 0;
+    allBudgetValues[5] = this.monitoringAndEvolutionBudget ? this.monitoringAndEvolutionBudget : 0;
+    allBudgetValues[6] = this.capitalItemsBudget ? this.capitalItemsBudget : 0;
+    allBudgetValues[7] = this.managementSupportPercentage ? this.managementSupportPercentage : 0;
+
+    let allBudgetNarratives = {};
+    allBudgetNarratives[1] = this.transportNarrative;
+    allBudgetNarratives[2] = this.securityNarrative;
+    allBudgetNarratives[3] = this.logisticsAndOverheadsNarrative;
+    allBudgetNarratives[4] = this.staffingAndSupportNarrative;
+    allBudgetNarratives[5] = this.monitoringAndEvolutionNarrative;
+    allBudgetNarratives[6] = this.capitalItemsNarrative;
+    allBudgetNarratives[7] = this.managementSupportNarrative;
+
+    for (let i = 0; i < 8; i++) {
+      if (i == 0) {
+        budgetData[0] = inputs;
+      } else {
+        let tempItem = new ModelBudgetItem();
+        tempItem.budget = allBudgetValues[i];
+        tempItem.narrative = allBudgetNarratives[i];
+        budgetData[i] = tempItem;
+      }
+    }
+    this.newResponsePlan.budget["item"] = budgetData;
+
+    if (this.capitalsExist) {
+      this.newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
+      let itemsOver1000 = [];
+      this.budgetOver1000.forEach((v, k) => {
+        let tempItem = new ModelBudgetItem();
+        tempItem.budget = v;
+        tempItem.narrative = this.budgetOver1000Desc && this.budgetOver1000Desc.get(k) ? this.budgetOver1000Desc.get(k) : "";
+        itemsOver1000.push(tempItem);
+      });
+      this.newResponsePlan.budget["itemsOver1000"] = itemsOver1000;
+    } else {
+      this.newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
+    }
+
+    this.newResponsePlan.budget["totalInputs"] = this.totalInputs;
+    this.newResponsePlan.budget["totalOfAllCosts"] = this.totalOfAllCosts;
+    this.newResponsePlan.budget["total"] = this.totalBudget;
+
+    this.newResponsePlan.totalSections = this.totalSections;
+
+    this.newResponsePlan.isActive = true;
+    this.newResponsePlan.isEditing = false;
+    this.newResponsePlan.editingUserId = null;
+    this.newResponsePlan.status = ApprovalStatus.InProgress;
+    this.newResponsePlan.sectionsCompleted = this.getCompleteSectionNumber();
+    if (!this.forEditing) {
+      this.newResponsePlan.startDate = moment.utc().valueOf();
+      this.newResponsePlan.timeCreated = moment.utc().valueOf();
+      this.newResponsePlan.createdBy = this.uid;
+    }
+    if (this.forEditing) {
+      this.newResponsePlan.timeUpdated = moment.utc().valueOf();
+      this.newResponsePlan.updatedBy = this.uid;
+    }
+
+    this.autoSaveToFirebase(this.newResponsePlan);
+
+    console.log('Auto-Save for Section 10 Complete');
+
   }
 
   /**
@@ -1461,13 +1789,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   goBack() {
 
     let numberOfCompletedSections = this.getCompleteSectionNumber();
-
+    this.router.navigateByUrl('response-plans');
+    /*
     if (numberOfCompletedSections > 0) {
       console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
       jQuery("#navigate-back").modal("show");
     } else {
       this.router.navigateByUrl('response-plans');
-    }
+    }*/
   }
 
   closeModalAndNavigate() {
@@ -1918,7 +2247,53 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
-  private saveToFirebase(newResponsePlan: ResponsePlan) {
+  autoSaveToFirebase(newResponsePlan: ResponsePlan){
+
+    let numOfSectionsCompleted: number = 0;
+    this.sectionsCompleted.forEach((v, k) => {
+      if (v) {
+        numOfSectionsCompleted++;
+      }
+    });
+
+    if (numOfSectionsCompleted > 0) {
+
+      if (this.forEditing) {
+        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
+
+        newResponsePlan.editingUserId = null;
+        this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+          console.log("Response plan successfully updated");
+          //if edit, delete approval data and any validation token
+          let resetData = {};
+          resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+          resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
+          this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
+
+          }, error => {
+            console.log(error.message);
+          });
+        }).catch(error => {
+          console.log("Response plan creation unsuccessful with error --> " + error.message);
+        });
+
+      } else {
+        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+        this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+          console.log("Response plan creation successful");
+          }).catch(error => {
+          console.log("Response plan creation unsuccessful with error --> " + error.message);
+        });
+      }
+    } else {
+      console.log(numOfSectionsCompleted);
+      this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
+    }
+    newResponsePlan.isEditing = false;
+    console.log('push data to firebase');
+  }
+
+  saveToFirebase(newResponsePlan: ResponsePlan) {
 
     let numOfSectionsCompleted: number = 0;
     this.sectionsCompleted.forEach((v, k) => {
@@ -2103,5 +2478,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       console.log("create new mode");
     }
+
+
+
   }
+
 }
