@@ -16,6 +16,7 @@ import {ResponsePlan} from "../model/responsePlan";
 import {observable} from "rxjs/symbol/observable";
 import {AgencyService} from "../services/agency-service.service";
 import * as moment from "moment";
+import {ModelUserPublic} from "../model/user-public.model";
 
 declare const jQuery: any;
 
@@ -68,8 +69,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private agencyPlanExpireDuration: number;
 
   //phase 2 approval
-  private directorIdMap = new Map()
-  private countryRegionIdMap = new Map()
+  private directorIdMap = new Map<string,string>()
+  private directorModelMap = new Map<string,ModelUserPublic>()
+  private countryRegionAgencyIdMap = new Map<string,string>()
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -396,13 +398,22 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         console.log(result);
         if (counter === 1 && result.$value && result.$value != null) {
           this.directorSubmissionRequireMap.set(1, true);
+          this.directorIdMap.set("countryDirector", result.$value)
+          this.countryRegionAgencyIdMap.set("countryDirector", this.countryId)
         }
         if (counter === 2 && result.$value && result.$value != null) {
           this.directorSubmissionRequireMap.set(2, true);
+          this.directorIdMap.set("regionDirector", result.$value)
+          this.countryRegionAgencyIdMap.set("regionDirector", result.$key)
         }
         if (counter === 3 && result.length > 0) {
           this.directorSubmissionRequireMap.set(3, true);
+          this.directorIdMap.set("globalDirector", result[0].$key)
+          this.countryRegionAgencyIdMap.set("globalDirector", this.agencyId)
         }
+        console.log(this.directorIdMap)
+        console.log(this.countryRegionAgencyIdMap)
+        this.initDirectorsModel(this.directorIdMap)
       });
   }
 
@@ -815,4 +826,13 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     return parseInt(value);
   }
 
+  private initDirectorsModel(directorIdMap: Map<string, string>) {
+    directorIdMap.forEach((v,k) => {
+      this.userService.getUser(directorIdMap.get(k))
+        .first()
+        .subscribe(director => {
+          this.directorModelMap.set(k, director)
+        } )
+    })
+  }
 }
