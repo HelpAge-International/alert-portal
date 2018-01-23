@@ -67,6 +67,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private directorSubmissionRequireMap = new Map<number, boolean>();
   private agencyPlanExpireDuration: number;
 
+  //phase 2 approval
+  private directorIdMap = new Map()
+  private countryRegionIdMap = new Map()
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
@@ -80,22 +84,22 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      if(this.isLocalAgency){
+      if (this.isLocalAgency) {
         this.uid = user.auth.uid;
-          this.userType = userType;
-          this.agencyId = agencyId;
-          let userPath = Constants.USER_PATHS[userType];
+        this.userType = userType;
+        this.agencyId = agencyId;
+        let userPath = Constants.USER_PATHS[userType];
 
-          this.agencyService.getAgencyResponsePlanClockSettingsDuration(agencyId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(duration => {
-              console.log(duration);
-              this.agencyPlanExpireDuration = duration;
+        this.agencyService.getAgencyResponsePlanClockSettingsDuration(agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(duration => {
+            console.log(duration);
+            this.agencyPlanExpireDuration = duration;
 
-                this.getResponsePlans(this.agencyId);
+            this.getResponsePlans(this.agencyId);
 
-            });
-      }else{
+          });
+      } else {
         this.uid = user.auth.uid;
         if (this.isViewing) {
           this.countryId = this.countryIdForViewing;
@@ -269,7 +273,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   viewResponsePlan(plan, isViewing) {
     if (isViewing) {
-      let headers = {"id": plan.$key, "isViewing": isViewing, "countryId": this.countryIdForViewing, "agencyId": this.agencyId};
+      let headers = {
+        "id": plan.$key,
+        "isViewing": isViewing,
+        "countryId": this.countryIdForViewing,
+        "agencyId": this.agencyId
+      };
       if (this.agencyOverview) {
         headers["agencyOverview"] = this.agencyOverview;
         // this.router.navigate(["/response-plans/view-plan", {
@@ -333,14 +342,25 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   exportStartFund(responsePlan) {
-    this.router.navigate( this.isLocalAgency ? ['/export-start-fund', {id: responsePlan.$key, isLocalAgency: true}] : ['/export-start-fund', {id: responsePlan.$key}] );
+    this.router.navigate(this.isLocalAgency ? ['/export-start-fund', {
+      id: responsePlan.$key,
+      isLocalAgency: true
+    }] : ['/export-start-fund', {id: responsePlan.$key}]);
   }
 
   exportProposal(responsePlan, isExcel: boolean) {
     if (isExcel) {
-      this.router.navigate(this.isLocalAgency ? ['/export-proposal', {id: responsePlan.$key, excel: 1, isLocalAgency: true}] : ['/export-proposal', {id: responsePlan.$key, excel: 1}]);
+      this.router.navigate(this.isLocalAgency ? ['/export-proposal', {
+        id: responsePlan.$key,
+        excel: 1,
+        isLocalAgency: true
+      }] : ['/export-proposal', {id: responsePlan.$key, excel: 1}]);
     } else {
-      this.router.navigate(this.isLocalAgency ? ['/export-proposal', {id: responsePlan.$key, excel: 0, isLocalAgency: true}] : ['/export-proposal', {id: responsePlan.$key, excel: 0}]);
+      this.router.navigate(this.isLocalAgency ? ['/export-proposal', {
+        id: responsePlan.$key,
+        excel: 0,
+        isLocalAgency: true
+      }] : ['/export-proposal', {id: responsePlan.$key, excel: 0}]);
     }
   }
 
@@ -352,7 +372,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
       this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
     } else {
-      this.isLocalAgency ?  this.confirmDialogLocalAgency() : this.confirmDialog();
+      this.isLocalAgency ? this.confirmDialogLocalAgency() : this.confirmDialog();
     }
   }
 
@@ -389,10 +409,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   archivePlan(plan) {
     //same as edit, need to reset approval status and validation process
     let updateData = {};
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       updateData["/responsePlan/" + this.agencyId + "/" + plan.$key + "/approval"] = null;
       updateData["/responsePlan/" + this.agencyId + "/" + plan.$key + "/isActive"] = false;
-    }else{
+    } else {
       updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/approval"] = null;
       updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive"] = false;
     }
@@ -702,10 +722,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/status"] = ApprovalStatus.NeedsReviewing;
     // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/timeUpdated"] = moment().utc().valueOf();
     // this.af.database.object(Constants.APP_STATUS).update(activateData);
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/isActive").set(true);
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
-    }else{
+    } else {
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
     }
@@ -721,7 +741,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       })
       .first()
       .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
-      if(this.isLocalAgency){
+      if (this.isLocalAgency) {
         for (let approval of approvalList) {
           if (approval["localAgencyDirector"]) {
             this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/approval/countryDirector/" + approval["localAgencyDirector"])
@@ -736,7 +756,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               .set(ApprovalStatus.NeedsReviewing);
           }
         }
-      }else{
+      } else {
         for (let approval of approvalList) {
           if (approval["countryDirector"]) {
             this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
