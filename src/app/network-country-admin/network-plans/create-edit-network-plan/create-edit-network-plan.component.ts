@@ -338,7 +338,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    let id = this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined" ? this.networkId : this.networkCountryId;
     if (this.forEditing) {
       this.networkService.setNetworkField("/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/isEditing", false);
       this.networkService.setNetworkField("/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/editingUserId", null);
@@ -353,6 +353,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private setupForEdit() {
+    console.log(this.networkCountryId)
     this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined" ? this.setupEditForLocalNetwork() : this.setupEditForNetworkCountry();
   }
 

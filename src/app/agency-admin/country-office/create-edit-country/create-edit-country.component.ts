@@ -443,7 +443,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     countryAdmin.addressLine1 = this.countryAdminAddress1 ? this.countryAdminAddress1 : "";
     countryAdmin.addressLine2 = this.countryAdminAddress2 ? this.countryAdminAddress2 : "";
     countryAdmin.addressLine3 = this.countryAdminAddress3 ? this.countryAdminAddress3 : "";
-    countryAdmin.country = this.countryAdminCountry ? this.countryAdminCountry : -1;
+    countryAdmin.country = this.countryAdminCountry ? Number(this.countryAdminCountry) : -1;
     countryAdmin.city = this.countryAdminCity ? this.countryAdminCity : "";
     countryAdmin.postCode = this.countryAdminPostcode ? this.countryAdminPostcode : "";
     this.countryData["/userPublic/" + countryId] = countryAdmin;
