@@ -373,6 +373,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitForApproval(plan) {
+    this.getPartnersToApprove(plan)
     this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
     if (this.needShowDialog) {
@@ -1043,5 +1044,79 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private getApprovalStatus(directorType: string) {
     return this.planToApproval.approval && this.planToApproval.approval[directorType] &&
     this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] ? this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] : -1
+  }
+
+  private getPartnersToApprove(plan) {
+    const orgUserMap = new Map<string, string>();
+    // const needValidResponsePlanId = plan.$key;
+
+    let partnerOrgIds = [];
+    plan.partnerOrganisations.forEach(partnerOrg => {
+      partnerOrgIds.push(partnerOrg);
+    });
+
+    let noPartnerUserOrg;
+
+    Observable.from(partnerOrgIds)
+      .flatMap(partnerOrgId => {
+        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId, {preserveSnapshot: true});
+      })
+      .do(snap => {
+        if (snap && snap.val()) {
+          noPartnerUserOrg = snap.val();
+          noPartnerUserOrg["key"] = snap.key;
+          // this.validPartnerMap.set(snap.key, snap.val().isApproved);
+        }
+      })
+      .flatMap(snap => {
+        if (snap && snap.val()) {
+          orgUserMap.set(snap.key, "");
+          return this.af.database.object(Constants.APP_STATUS + "/partner/" + snap.val().validationPartnerUserId, {preserveSnapshot: true})
+            .map(snap => {
+              if (snap && snap.val()) {
+                snap.val()["orgId"] = snap.key;
+                return snap;
+              }
+            });
+        }
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        if (snap && snap.val()) {
+          orgUserMap.set(snap.val().partnerOrganisationId, snap.key);
+          console.log(orgUserMap)
+
+          // let updateData = {};
+          // updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + snap.key] = ApprovalStatus.WaitingApproval;
+          // console.log(updateData);
+          // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+          //   console.log("update success")
+          // }, error => {
+          //   console.log(error.message);
+          // });
+        } else {
+          console.log("no partner user found!!!!!!!");
+          console.log(noPartnerUserOrg);
+          console.log(orgUserMap);
+          // let updateData = {};
+          // orgUserMap.forEach((v, k) => {
+          //   if (!v) {
+          //     updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval;
+          //   }
+          // });
+          // console.log(updateData);
+          // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+          //   console.log("update success")
+          // }, error => {
+          //   console.log(error.message);
+          // });
+        }
+
+        // //update response plan status
+        // if (orgUserMap.size === partnerOrgIds.length) {
+        //   this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key + "/status").set(ApprovalStatus.WaitingApproval);
+        // }
+
+      });
   }
 }
