@@ -444,17 +444,17 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       jQuery("#directorSelection").modal("show");
       console.log(this.planToApproval)
-      if (this.planToApproval.approval["countryDirector"]) {
+      if (this.planToApproval.approval && this.planToApproval.approval["countryDirector"]) {
         if (Object.keys(this.planToApproval.approval["countryDirector"]).map(key => this.planToApproval.approval["countryDirector"][key])[0] != ApprovalStatus.InProgress) {
           this.countryDirectorSelected = true
         }
       }
-      if (this.planToApproval.approval["regionDirector"]) {
+      if (this.planToApproval.approval && this.planToApproval.approval["regionDirector"]) {
         if (Object.keys(this.planToApproval.approval["regionDirector"]).map(key => this.planToApproval.approval["regionDirector"][key])[0] != ApprovalStatus.InProgress) {
           this.regionDirectorSelected = true
         }
       }
-      if (this.planToApproval.approval["globalDirector"]) {
+      if (this.planToApproval.approval && this.planToApproval.approval["globalDirector"]) {
         if (Object.keys(this.planToApproval.approval["globalDirector"]).map(key => this.planToApproval.approval["globalDirector"][key])[0] != ApprovalStatus.InProgress) {
           this.globalDirectorSelected = true
         }
@@ -850,6 +850,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           showSubmit = true
         }
       })
+    } else {
+      showSubmit = true
     }
     return showSubmit;
   }
@@ -866,7 +868,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     console.log(this.getApprovalStatus("globalDirector"))
 
     if (this.countryDirectorSelected) {
-      if ((this.getApprovalStatus("countryDirector") != ApprovalStatus.Approved || this.getApprovalStatus("countryDirector") != ApprovalStatus.NeedsReviewing)) {
+      if ((this.getApprovalStatus("countryDirector") != ApprovalStatus.Approved && this.getApprovalStatus("countryDirector") != ApprovalStatus.NeedsReviewing)) {
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.WaitingApproval;
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
 
@@ -883,7 +885,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
 
     if (this.regionDirectorSelected) {
-      if ((this.getApprovalStatus("regionDirector") != ApprovalStatus.Approved || this.getApprovalStatus("regionDirector") != ApprovalStatus.NeedsReviewing)) {
+      if ((this.getApprovalStatus("regionDirector") != ApprovalStatus.Approved && this.getApprovalStatus("regionDirector") != ApprovalStatus.NeedsReviewing)) {
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + this.countryRegionAgencyIdMap.get("regionDirector")] = ApprovalStatus.WaitingApproval
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
 
@@ -902,7 +904,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
 
     if (this.globalDirectorSelected) {
-      if (((this.getApprovalStatus("globalDirector") != ApprovalStatus.Approved || this.getApprovalStatus("globalDirector") != ApprovalStatus.NeedsReviewing))) {
+      if (((this.getApprovalStatus("globalDirector") != ApprovalStatus.Approved && this.getApprovalStatus("globalDirector") != ApprovalStatus.NeedsReviewing))) {
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
 
@@ -1039,6 +1041,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private getApprovalStatus(directorType: string) {
-    return this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] ? this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] : -1
+    return this.planToApproval.approval && this.planToApproval.approval[directorType] &&
+    this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] ? this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] : -1
   }
 }
