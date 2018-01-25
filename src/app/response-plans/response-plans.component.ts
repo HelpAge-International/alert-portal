@@ -379,15 +379,15 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   submitForApproval(plan) {
     this.getPartnersToApprove(plan)
-    this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
+    // this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
-    if (this.needShowDialog) {
-      jQuery("#dialog-action").modal("show");
-      this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
-      this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
-    } else {
+    // if (this.needShowDialog) {
+    //   jQuery("#dialog-action").modal("show");
+    //   this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
+    //   this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
+    // } else {
       this.isLocalAgency ? this.confirmDialogLocalAgency() : this.confirmDialog();
-    }
+    // }
   }
 
   submitForPartnerValidation(plan) {
@@ -444,9 +444,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   confirmDialog() {
-    if (this.needShowDialog) {
-      jQuery("#dialog-action").modal("hide");
-    }
+    // if (this.needShowDialog) {
+    //   jQuery("#dialog-action").modal("hide");
+    // }
     if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       jQuery("#directorSelection").modal("show");
       console.log(this.planToApproval)
@@ -867,11 +867,13 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitPlanToApproval() {
-    console.log(this.countryDirectorSelected)
     let approvalData = {};
     console.log(this.getApprovalStatus("countryDirector"))
     console.log(this.getApprovalStatus("regionDirector"))
     console.log(this.getApprovalStatus("globalDirector"))
+    console.log(this.countryDirectorSelected)
+    console.log(this.regionDirectorSelected)
+    console.log(this.globalDirectorSelected)
 
     if (this.countryDirectorSelected) {
       if ((this.getApprovalStatus("countryDirector") != ApprovalStatus.Approved && this.getApprovalStatus("countryDirector") != ApprovalStatus.NeedsReviewing)) {
@@ -887,6 +889,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       }
     }
     else {
+      console.log("reach else")
       approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.InProgress;
     }
 

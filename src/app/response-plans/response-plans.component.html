@@ -318,10 +318,10 @@
                 <!--<a class="dropdown-item" *ngIf="plan.status!=1 && plan.status!=2"-->
                 <a class="dropdown-item" *ngIf="checkStatus(plan)"
                    (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
-                <a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner && partnersMap.get(plan.$key)"
-                   class="dropdown-item"
-                   (click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |
-                  translate}}</a>
+                <!--<a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner && partnersMap.get(plan.$key)"-->
+                   <!--class="dropdown-item"-->
+                   <!--(click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |-->
+                  <!--translate}}</a>-->
                 <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_START_FUND" |
                   translate}}<br/>(.xls, 78Kb)</a>
                 <a class="dropdown-item" (click)="exportProposal(plan, true)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL"
