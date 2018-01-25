@@ -526,15 +526,13 @@
           <div class="row Small-spaced">
             <div class="col-sm-2"></div>
             <div class="col-sm-10 ">
-              <!--<div class="row" *ngFor="let userType of USER_TYPE_SELECTION; let i = index;">-->
-              <div class="row">
+              <div class="row" *ngFor="let partnerId of partnerList; index as i">
                 <label class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="countryDirector"
                          >
-                  Partner example
+                  Partner {{i}}: {{partnerOrgMap.get(partnerId) ? partnerOrgMap.get(partnerId).organisationName : (partnerUserMap.get(partnerId).lastName + ' ' + partnerUserMap.get(partnerId).firstName)}}
                 </label>
               </div>
-              <!--</div>-->
             </div>
           </div>
         </ng-container>

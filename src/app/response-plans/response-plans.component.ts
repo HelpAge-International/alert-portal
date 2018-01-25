@@ -15,6 +15,7 @@ import {AgencyService} from "../services/agency-service.service";
 import * as moment from "moment";
 import {ModelUserPublic} from "../model/user-public.model";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
+import {CommonUtils} from "../utils/CommonUtils";
 
 declare const jQuery: any;
 
@@ -76,6 +77,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private globalDirectorSelected: boolean
   private ApprovalStatus = ApprovalStatus
   private ResponsePlansApprovalSettings = ResponsePlansApprovalSettings
+  private extPartnerOrgMap = new Map()
+  private intPartnerOrgMap = new Map()
+  private partnerList = []
 
 
   constructor(private pageControl: PageControlService,
@@ -1084,8 +1088,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe(snap => {
         if (snap && snap.val()) {
           orgUserMap.set(snap.val().partnerOrganisationId, snap.key);
-          console.log(orgUserMap)
-
+          // console.log(orgUserMap)
           // let updateData = {};
           // updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + snap.key] = ApprovalStatus.WaitingApproval;
           // console.log(updateData);
@@ -1095,9 +1098,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           //   console.log(error.message);
           // });
         } else {
-          console.log("no partner user found!!!!!!!");
-          console.log(noPartnerUserOrg);
-          console.log(orgUserMap);
+          // console.log("no partner user found!!!!!!!");
+          // console.log(noPartnerUserOrg);
+          // console.log(orgUserMap);
+
           // let updateData = {};
           // orgUserMap.forEach((v, k) => {
           //   if (!v) {
@@ -1111,12 +1115,28 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           //   console.log(error.message);
           // });
         }
-
+        this.getPartnerDetail(orgUserMap)
+        this.partnerList = CommonUtils.convertMapToKeysInArray(orgUserMap)
+        console.log(this.partnerList)
         // //update response plan status
         // if (orgUserMap.size === partnerOrgIds.length) {
         //   this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key + "/status").set(ApprovalStatus.WaitingApproval);
         // }
 
       });
+  }
+
+  private getPartnerDetail(orgUserMap) {
+    orgUserMap.forEach((v, k) => {
+      if (!v) {
+        this.service.getPartnerOrgnisation(k)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(org => this.extPartnerOrgMap.set(k, org))
+      } else {
+        this.service.getPartnerOrgnisation(k)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(org => this.intPartnerOrgMap.set(k, org))
+      }
+    });
   }
 }
