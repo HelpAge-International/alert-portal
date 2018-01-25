@@ -80,6 +80,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private extPartnerOrgMap = new Map()
   private intPartnerOrgMap = new Map()
   private partnerList = []
+  private validPartnerMap = new Map<string, boolean>()
 
 
   constructor(private pageControl: PageControlService,
@@ -1069,7 +1070,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         if (snap && snap.val()) {
           noPartnerUserOrg = snap.val();
           noPartnerUserOrg["key"] = snap.key;
-          // this.validPartnerMap.set(snap.key, snap.val().isApproved);
+          this.validPartnerMap.set(snap.key, snap.val().isApproved);
         }
       })
       .flatMap(snap => {

@@ -530,7 +530,7 @@
                 <label class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="countryDirector"
                          >
-                  Partner {{i}}: {{partnerOrgMap.get(partnerId) ? partnerOrgMap.get(partnerId).organisationName : (partnerUserMap.get(partnerId).lastName + ' ' + partnerUserMap.get(partnerId).firstName)}}
+                  Partner {{i}}: {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId).organisationName : (intPartnerOrgMap.get(partnerId).lastName + ' ' + intPartnerOrgMap.get(partnerId).firstName)}}
                 </label>
               </div>
             </div>
