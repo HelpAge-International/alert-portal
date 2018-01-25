@@ -116,7 +116,6 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    this.clearStorage()
   }
 
 
@@ -331,10 +330,6 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     this.edit = false;
     this.editSeasonKey = undefined;
     jQuery("#add_calendar").modal("show");
-  }
-
-  clearStorage() {
-    this.storageService.remove(Constants.NETWORK_CALENDAR)
   }
 }
 
