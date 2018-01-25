@@ -2,15 +2,17 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {NotificationSettingEvents, SkillType, UserType} from "../../../utils/Enums";
+import {NotificationSettingEvents, SkillType, UserType, OfficeType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
 import {UUID} from "../../../utils/UUID";
 import * as firebase from "firebase";
 import {ModelUserPublic} from "../../../model/user-public.model";
+import {fieldOffice} from "../../../model/fieldOffice.model";
 import {ModelStaff} from "../../../model/staff.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {FieldOfficeService} from "../../../services/field-office.service";
 import {ModelDepartment} from "../../../model/department.model";
 
 declare var jQuery: any;
@@ -47,6 +49,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private officeTypeSelection = Constants.OFFICE_TYPE_SELECTION;
   private notificationsSettingsSelection = Constants.NOTIFICATION_SETTINGS;
   private UserType = UserType;
+  public officeTypeEnum = OfficeType;
 
   private countryList: FirebaseListObservable<any[]>;
   private departmentList: Observable<any[]>;
@@ -87,15 +90,29 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private SupportSkill = SkillType.Support;
   private TechSkill = SkillType.Tech;
 
+  public fieldOffices: Array<fieldOffice>
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute) {
+  public fieldOffice;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private fieldOfficeService: FieldOfficeService) {
   }
 
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.uid = user.uid;
+
+      this.fieldOfficeService.getFieldOffices(countryId)
+        .subscribe( fieldOffices => {
+          console.log(fieldOffices)
+          this.fieldOffices = fieldOffices;
+        })
 
       this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
         .takeUntil(this.ngUnsubscribe)
@@ -270,6 +287,10 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_EMAIL';
       return false;
     }
+    if (!this.fieldOffice && this.officeType == this.officeTypeEnum.FieldOffice) {
+      this.warningMessage = 'Please select a field office.';
+      return false;
+    }
     if (!CustomerValidator.PhoneNumberValidator(this.phone)) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_PHONE';
       return false;
@@ -399,6 +420,12 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     staff.notification = this.staffNotifications;
     staff.isResponseMember = this.isResponseMember;
     staff.updatedAt = Date.now();
+    if(this.fieldOffice && this.officeType == this.officeTypeEnum.FieldOffice){
+      staff.fieldOffice = this.fieldOffice;
+    }else{
+      staff.fieldOffice = null;
+    }
+
 
     if (this.isUpdateOfficeOnly) {
       staffData['/staff/' + this.selectedOfficeId + '/' + uid + '/'] = null;
@@ -497,6 +524,9 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         this.email = user.email;
         this.emailInDatabase = user.email;
         this.phone = user.phone;
+
+
+        console.log(this.fieldOffice)
       });
 
     let path = officeId !== 'null'
@@ -512,6 +542,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         this.department = staff.department;
         this.position = staff.position;
         this.officeType = staff.officeType;
+        this.fieldOffice = staff.fieldOffice;
         if (staff.skill && staff.skill.length > 0) {
           for (let skill of staff.skill) {
             this.skillsMap.set(skill, true);
