@@ -5,6 +5,8 @@ import {Observable, Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {PageControlService} from "../../../services/pagecontrol.service";
 
+declare var jQuery: any;
+
 @Component({
   selector: 'app-system-settings-response-plans',
   templateUrl: './system-settings-response-plans.component.html',
@@ -24,6 +26,7 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   private groups: FirebaseListObservable<any>;
   private newGroupName: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  public groupToDelete: string;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
@@ -60,8 +63,8 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteGroup(groupId){
-    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid + '/groups/' + groupId)
+  deleteGroup(){
+    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid + '/groups/' + this.groupToDelete)
       .remove()
       .then(_ => {
         this.successMessage = "Group successfully deleted.";
@@ -139,5 +142,19 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
+  }
+
+
+  openModal(id) {
+    jQuery('#delete-action').modal('show');
+    this.groupToDelete = id;
+  }
+  closeModal() {
+    jQuery('#delete-action').modal('hide');
+  }
+
+  deleteAction() {
+    this.deleteGroup()
+    jQuery('#delete-action').modal('hide');
   }
 }
