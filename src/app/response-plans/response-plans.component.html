@@ -519,7 +519,7 @@
           </div>
         </ng-container>
         <!--partners-->
-        <ng-container>
+        <ng-container *ngIf="planToApproval?.partnerOrganisations">
           <div class="row">
             <div class="col-sm-4">Partners</div>
           </div>
@@ -528,9 +528,10 @@
             <div class="col-sm-10 ">
               <div class="row" *ngFor="let partnerId of partnerList; index as i">
                 <label class="form-check-label">
-                  <input type="checkbox" class="form-check-input" name="countryDirector"
-                         >
-                  Partner {{i}}: {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId).organisationName : (intPartnerOrgMap.get(partnerId).lastName + ' ' + intPartnerOrgMap.get(partnerId).firstName)}}
+                  <input type="checkbox" class="form-check-input" name="countryDirector" #selectedPaetnerId
+                         (change)="selectPartner(partnerId, selectedPaetnerId.checked)"
+                         [checked]="partnerApprovalIdMap.get(partnerId)">
+                  Partner {{i}}: {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId)?.organisationName : intPartnerOrgMap.get(partnerId)?.organisationName}}
                 </label>
               </div>
             </div>

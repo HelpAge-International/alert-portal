@@ -81,6 +81,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private intPartnerOrgMap = new Map()
   private partnerList = []
   private validPartnerMap = new Map<string, boolean>()
+  private partnerApprovalIdMap = new Map()
+  private partnerUserMap = new Map()
 
 
   constructor(private pageControl: PageControlService,
@@ -378,7 +380,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitForApproval(plan) {
-    this.getPartnersToApprove(plan)
+    this.resetDirectorSelection()
+    if (plan.partnerOrganisations) {
+      this.getPartnersToApprove(plan)
+    }
     // this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
     // if (this.needShowDialog) {
@@ -386,7 +391,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     //   this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
     //   this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
     // } else {
-      this.isLocalAgency ? this.confirmDialogLocalAgency() : this.confirmDialog();
+    this.isLocalAgency ? this.confirmDialogLocalAgency() : this.confirmDialog();
     // }
   }
 
@@ -465,6 +470,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.globalDirectorSelected = true
         }
       }
+      //logic for partners
+      this.updatePartnerApprovalSelection(this.planToApproval);
+
       // let approvalData = {};
       // let countryId = "";
       // let agencyId = "";
@@ -523,6 +531,32 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       //       this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
       //     }
       //   });
+    }
+  }
+
+  private updatePartnerApprovalSelection(plan) {
+    if (plan.approval && plan.approval["partner"]) {
+      Object.keys(plan.approval["partner"])
+        .map(key => {
+          let obj = {}
+          obj["value"] = plan.approval["partner"][key]
+          obj["key"] = key
+          return obj
+        })
+        .forEach(item => {
+          console.log(item)
+          if (item["value"] == ApprovalStatus.InProgress) {
+            this.partnerApprovalIdMap.set(item["key"], false)
+          } else {
+            this.partnerApprovalIdMap.set(item["key"], true)
+          }
+          // if (item["value"] == ApprovalStatus.WaitingApproval) {
+          //   this.partnerApprovalIdMap.set(item["key"], true)
+          // } else if (item["value"] == ApprovalStatus.InProgress) {
+          //   this.partnerApprovalIdMap.set(item["key"], false)
+          // }
+          console.log(this.partnerApprovalIdMap)
+        })
     }
   }
 
@@ -850,12 +884,27 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   checkStatus(plan): boolean {
     let showSubmit = false;
     if (plan.approval) {
-      showSubmit = !Object.keys(plan.approval).includes("countryDirector");
-      Object.keys(plan.approval).map(key => plan.approval[key]).forEach(item => {
-        if (Object.keys(item).map(key => item[key])[0] == ApprovalStatus.InProgress) {
+      Object.keys(plan.approval)
+        .map(key => plan.approval[key])
+        .forEach(item => {
+          Object.keys(item).map(id => item[id])
+            .forEach(value => {
+              if (value == ApprovalStatus.InProgress) {
+                showSubmit = true
+              }
+            })
+        })
+      if (!showSubmit && plan.partnerOrganisations) {
+        if (!plan.approval["partner"]) {
           showSubmit = true
+        } else {
+          let orgNumber = Object.keys(plan.partnerOrganisations).length
+          let approveNum = Object.keys(plan.approval["partner"]).length
+          if (orgNumber != approveNum) {
+            showSubmit = true
+          }
         }
-      })
+      }
     } else {
       showSubmit = true
     }
@@ -864,6 +913,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   convertToInt(value): number {
     return parseInt(value);
+  }
+
+  selectPartner(partnerId, hasChecked) {
+    console.log((this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId) + "/" + hasChecked)
+    let id = this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId
+    this.partnerApprovalIdMap.set(id, hasChecked)
   }
 
   submitPlanToApproval() {
@@ -875,6 +930,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     console.log(this.regionDirectorSelected)
     console.log(this.globalDirectorSelected)
 
+    //check country director
     if (this.countryDirectorSelected) {
       if ((this.getApprovalStatus("countryDirector") != ApprovalStatus.Approved && this.getApprovalStatus("countryDirector") != ApprovalStatus.NeedsReviewing)) {
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.WaitingApproval;
@@ -893,6 +949,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.InProgress;
     }
 
+    //check region director
     if (this.regionDirectorSelected) {
       if ((this.getApprovalStatus("regionDirector") != ApprovalStatus.Approved && this.getApprovalStatus("regionDirector") != ApprovalStatus.NeedsReviewing)) {
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + this.countryRegionAgencyIdMap.get("regionDirector")] = ApprovalStatus.WaitingApproval
@@ -912,6 +969,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       }
     }
 
+    //check global director
     if (this.globalDirectorSelected) {
       if (((this.getApprovalStatus("globalDirector") != ApprovalStatus.Approved && this.getApprovalStatus("globalDirector") != ApprovalStatus.NeedsReviewing))) {
         approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
@@ -931,15 +989,34 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.countryDirectorSelected || this.regionDirectorSelected || this.globalDirectorSelected) {
+    //logic for partners
+    let atLeastOnePartnerSelected = false
+    if (this.partnerApprovalIdMap) {
+      this.partnerApprovalIdMap.forEach((v, k) => {
+        if (v) {
+          atLeastOnePartnerSelected = true
+          if (!(this.planToApproval.approval && this.planToApproval.approval["partner"] &&
+              this.planToApproval.approval["partner"][k] &&
+              (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
+            approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval
+          }
+        } else {
+          approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.InProgress
+        }
+      })
+    }
+
+    if (this.countryDirectorSelected || this.regionDirectorSelected || this.globalDirectorSelected || atLeastOnePartnerSelected) {
       approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+    } else {
+      approvalData["/responsePlan/" + this.countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.InProgress
     }
 
     if (approvalData) {
       this.updatePartnerValidation(null, approvalData)
     }
 
-    this.resetDirectorSelection()
+    // this.resetDirectorSelection()
 
 
     // let countryId = "";
@@ -1047,6 +1124,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.countryDirectorSelected = false
     this.regionDirectorSelected = false
     this.globalDirectorSelected = false
+    this.partnerApprovalIdMap.clear()
+    this.partnerList = []
   }
 
   private getApprovalStatus(directorType: string) {
@@ -1131,6 +1210,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private getPartnerDetail(orgUserMap) {
+    console.log(orgUserMap)
     orgUserMap.forEach((v, k) => {
       if (!v) {
         this.service.getPartnerOrgnisation(k)
@@ -1139,7 +1219,16 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       } else {
         this.service.getPartnerOrgnisation(k)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe(org => this.intPartnerOrgMap.set(k, org))
+          .subscribe(org => {
+            this.intPartnerOrgMap.set(k, org)
+            this.service.getPartnerBasedOnOrgId(k)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(userId => {
+                if (userId) {
+                  this.partnerUserMap.set(k, userId)
+                }
+              })
+          })
       }
     });
   }
