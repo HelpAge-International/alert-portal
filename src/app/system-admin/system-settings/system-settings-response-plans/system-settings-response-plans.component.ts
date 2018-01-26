@@ -60,6 +60,15 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
     }
   }
 
+  deleteGroup(groupId){
+    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid + '/groups/' + groupId)
+      .remove()
+      .then(_ => {
+        this.successMessage = "Group successfully deleted.";
+        this.showAlert(false);
+      })
+  }
+
   editGroups(event) {
     this.isEditing = true;
   }
