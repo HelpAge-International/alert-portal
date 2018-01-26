@@ -377,8 +377,12 @@
                              (click)="addNote(action)">{{action.noteId != null && action.noteId != ''? ("SAVE_NOTE" |
                             translate) :
                             ("ADD_NOTE" | translate)}}</a>
+
                           <a href="javascript:void(0)" class="btn btn-block"
-                             (click)="disableEditNote(action); closePopover(action)"
+                             data-toggle="collapse"
+                             [attr.data-target]="'#notes_popover_' + action.id" aria-expanded="false"
+                             [attr.aria-controls]="'notes_popover_' + action.id"
+                             (click)="disableEditNote(action)"
                           >{{"GLOBAL.CANCEL" |
                             translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block" (click)="disableEditNote(action)"
