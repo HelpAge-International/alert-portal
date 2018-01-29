@@ -380,9 +380,23 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitForApproval(plan) {
-    this.resetDirectorSelection()
+    // this.resetDirectorSelection()
     if (plan.partnerOrganisations) {
       this.getPartnersToApprove(plan)
+    }
+
+    if (plan.approval && plan.approval["partner"]) {
+      Object.keys(plan.approval["partner"]).map(key => {
+        let obj = {}
+        obj["value"] = plan.approval["partner"][key]
+        obj["key"] = key
+        return obj
+      }).forEach(item =>{
+        console.log(item)
+        if (item["value"] != ApprovalStatus.InProgress) {
+          this.partnerApprovalIdMap.set(item["key"], true)
+        }
+      })
     }
     // this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
@@ -919,6 +933,34 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     console.log((this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId) + "/" + hasChecked)
     let id = this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId
     this.partnerApprovalIdMap.set(id, hasChecked)
+  }
+
+  optionClick(plan) {
+    console.log("option clicked")
+    this.resetDirectorSelection()
+    if (plan.partnerOrganisations) {
+      this.getPartnersToApprove(plan)
+    }
+    if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
+      if (plan.approval && plan.approval["countryDirector"]) {
+        if (Object.keys(plan.approval["countryDirector"]).map(key => plan.approval["countryDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.countryDirectorSelected = true
+        }
+      }
+      if (plan.approval && plan.approval["regionDirector"]) {
+        if (Object.keys(plan.approval["regionDirector"]).map(key => plan.approval["regionDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.regionDirectorSelected = true
+        }
+      }
+      if (plan.approval && plan.approval["globalDirector"]) {
+        if (Object.keys(plan.approval["globalDirector"]).map(key => plan.approval["globalDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.globalDirectorSelected = true
+        }
+      }
+      //logic for partners
+      // this.updatePartnerApprovalSelection(this.planToApproval);
+
+    }
   }
 
   submitPlanToApproval() {

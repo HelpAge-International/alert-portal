@@ -297,7 +297,7 @@
             {{plan.startDate | date:'d/MM/y'}}
           </div>
           <div class="col-sm-3">
-            <div class="btn-group btn-block">
+            <div class="btn-group btn-block" (click)="optionClick(plan)">
               <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
                       (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
               </button>
