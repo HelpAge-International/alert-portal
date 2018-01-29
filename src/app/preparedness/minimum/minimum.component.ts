@@ -931,7 +931,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     let document = {
       fileName: file.name,
       filePath: "", //this needs to be updated once the file is uploaded
-      module: DocumentType.APA,
+      module: DocumentType.MPA,
       size: file.size * 0.001,
       sizeType: SizeType.KB,
       title: file.name,

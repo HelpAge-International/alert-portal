@@ -12,6 +12,7 @@ export class ModelStaff extends BaseModel {
   public department: string;
   public position: string;
   public officeType: number;
+  public fieldOffice: string;
   public skill: string[] =[];
   public training: string;
   public notification: number[] =[];

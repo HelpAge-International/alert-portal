@@ -1,0 +1,42 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Back--button" routerLink="/country-admin/settings/field-offices/">Field Offices</div>
+
+    <div class="Sub-header-title__wrap">
+      <h2 *ngIf="!fieldOfficeId">{{"COUNTRY_ADMIN.SETTINGS.FIELD_OFFICE.ADD_OFFICE" | translate}}</h2>
+      <h2 *ngIf="fieldOfficeId">{{"COUNTRY_ADMIN.SETTINGS.FIELD_OFFICE.EDIT_OFFICE" | translate}}</h2>
+    </div>
+
+    <div class="row Spaced no-margin-bottom bold"><label for="fieldOfficeName">Name</label></div>
+    <div class="row Spaced">
+      <input type="text" id="fieldOfficeName" class="form-control col-sm-3" placeholder="Field office name" name="fieldOfficeName" [(ngModel)]="fieldOffice.name">
+    </div>
+    <div class="row Spaced no-margin-bottom bold"><label>Location</label></div>
+    <div class="row Spaced">
+
+      <select class="form-control form-control-sm col-sm-2" *ngIf="countryLevelsValues" [(ngModel)]="fieldOffice.locationLevel1">
+        <option value="null" selected>Select a region</option>
+        <option *ngFor="let level1 of countryLevelsValues[country]?.levelOneValues" [ngValue]="level1.id">{{level1.value}}</option>
+      </select>
+
+      <select class="form-control form-control-sm col-sm-2" *ngIf="fieldOffice.locationLevel1 != null && countryLevelsValues"  [(ngModel)]="fieldOffice.locationLevel2">
+        <option value="null" selected>Select a sub-region</option>
+        <option *ngFor="let level1 of countryLevelsValues[country]?.levelOneValues[fieldOffice.locationLevel1]?.levelTwoValues" [ngValue]="level1.id">{{level1.value}}</option>
+      </select>
+    </div>
+
+
+    <div class="Form-submit__wrapper">
+      <button class="btn btn btn-primary Inline-editable--enable" (click)="submit()">Save</button>
+      <a class="btn btn-outline-secondary" routerLink="/country-admin/settings/field-offices/">Cancel</a>
+    </div>
+
+  </div>
+</div>

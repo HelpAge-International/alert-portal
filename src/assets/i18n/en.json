@@ -261,6 +261,7 @@
   "TRAINING_NEEDS":"Training Needs",
   "TECHNICAL_SKILLS":"Technical Skills",
   "SUPPORT_SKILLS":"Support Skills",
+  "FIELD_OFFICE":"Field Office",
   "TELEPHONE_NUMBER":"Telephone Number",
   "A_CHS_PREP_ACTION":"A CHS preparedness action",
   "A_MIN_PREP_ACTION":"A minimum preparedness action",
@@ -1152,6 +1153,11 @@
       "MENU":{
         "MODULES":"Modules"
       },
+    "FIELD_OFFICE":{
+      "TITLE_TEXT": "Field Office Settings",
+      "ADD_OFFICE": "Add Field Office",
+      "EDIT_OFFICE": "Edit Field Office"
+    },
       "PERMISSIONS":{
         "TITLE_TEXT":"Permission settings",
         "SAVE_PERMISSIONS":"SAVE PERMISSION SETTINGS",
