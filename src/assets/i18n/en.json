@@ -376,7 +376,8 @@
       "EXPIRED":"Expired",
       "IN_PROGRESS":"In Progress",
       "COMPLETED":"Completed",
-      "ARCHIVED":"Archived"
+      "ARCHIVED":"Archived",
+      "UNASSIGNED":"Unassigned"
     },
     "ACTION_TYPE":{
       "CHS":"CHS",
