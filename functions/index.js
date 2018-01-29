@@ -3027,7 +3027,7 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
                   mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
-                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
+                          \n http://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
                           \n Thanks
                           \n Your ALERT team `;
                   console.log('we are executing code here');
@@ -3125,7 +3125,7 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
                   mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
-                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
+                          \n http://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
                           \n Thanks
                           \n Your ALERT team `;
                   console.log('we are executing code here');

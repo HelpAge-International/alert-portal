@@ -665,24 +665,28 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   // (Dan) - this new function is for the undo completed APA
   protected undoCompleteAction(action: PreparednessAction) {
 
+    action.actualCost = null
+
     console.log(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id, 'in undo');
     //Call to firebase to update values to revert back to *In Progress*
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
       isComplete: false,
       isCompleteAt: null,
-      updatedAt: new Date().getTime()
+      updatedAt: new Date().getTime(),
+      actualCost : null
     });
 
   }
 
   //Close documents popover
   protected closePopover(action: PreparednessAction) {
-
     let toggleDialog = jQuery("#popover_content_" + action.id);
-
     toggleDialog.toggle();
+  }
 
-
+  cancelComplete(action) {
+    action.actualCost = null
+    this.closePopover(action)
   }
 
   // Uploading a file to Firebase

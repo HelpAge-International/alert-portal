@@ -764,9 +764,21 @@
                           </div>
                         </div>
                         <div class="row col-lg-12 Spaced form-group">
-                          <label class="col-lg-12">{{"BENEFICIARIES_OF_THIS_ACTIVITY"
+                          <label class="col-lg-6">{{"BENEFICIARIES_OF_THIS_ACTIVITY"
                             | translate}}</label>
-                          <div class="row no-gutters Demographic__text">
+
+                          <!--phase 2 stuff-->
+                          <p class="col-lg-6">Disaggregate:
+                            <span><label class="no-bold margin-left-one">Age</label> <input type="checkbox"
+                                                                                            name="disaggregateAge"
+                                                                                            [(ngModel)]="activity.hasFurtherBeneficiary"> </span>|
+                            <span><label class="no-bold">Disability</label>
+                              <input type="checkbox" [(ngModel)]="activity.hasDisability"> </span>
+                            <!--type="checkbox" [(ngModel)]="active.hasDisability"> </span>-->
+                          </p>
+
+
+                          <div class="row no-gutters Demographic__text" *ngIf="!activity.hasFurtherBeneficiary">
                             <div class="col-lg-2 tier">
                               <div class="row align-items-center">
                                 <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
@@ -831,6 +843,270 @@
                               </div>
                             </div>
                           </div>
+
+                          <p class="beneficiary-text" *ngIf="activity.hasDisability && !activity.hasFurtherBeneficiary">Of the above
+                            beneficiaries, how many are: </p>
+
+                          <div class="row no-gutters Demographic__text" *ngIf="activity.hasFurtherBeneficiary">
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[0] && activity.furtherBeneficiary[0].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[1] && activity.furtherBeneficiary[1].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[2] && activity.furtherBeneficiary[2].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[3] && activity.furtherBeneficiary[3].value">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[4] && activity.furtherBeneficiary[4].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[5] && activity.furtherBeneficiary[5].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[6] && activity.furtherBeneficiary[6].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[7] && activity.furtherBeneficiary[7].value">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[8] && activity.furtherBeneficiary[8].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[9] && activity.furtherBeneficiary[9].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[10] && activity.furtherBeneficiary[10].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[11] && activity.furtherBeneficiary[11].value">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[12] && activity.furtherBeneficiary[12].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[13] && activity.furtherBeneficiary[13].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[14] && activity.furtherBeneficiary[14].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[15] && activity.furtherBeneficiary[15].value">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <p class="beneficiary-text" *ngIf="activity.hasFurtherBeneficiary && activity.hasDisability">Of the above
+                            beneficiaries, how many are: </p>
+
+                          <div class="row no-gutters Demographic__text"
+                               *ngIf="activity.hasDisability && !activity.hasFurtherBeneficiary">
+
+
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.FEMALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-4">
+                                  <div class="col-12 no-padding"><18</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[0]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[1]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">>50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[2]">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.MALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-4">
+                                  <div class="col-12 no-padding"><18</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[3]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[4]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">>50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[5]">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row no-gutters Demographic__text"
+                               *ngIf="activity.hasDisability && activity.hasFurtherBeneficiary">
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.FEMALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[0]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[1]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[2]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[3]">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[4]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[5]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[6]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[7]">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.MALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[8]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[9]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[10]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[11]">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[12]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[13]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[14]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[15]">
+                                </div>
+                              </div>
+                            </div>
+
+
+                          </div>
+                          <!--*************************-->
+
+
                           <div class="row col-lg-12">
                             <div class="col-lg-10">
                               <p class="text-danger"

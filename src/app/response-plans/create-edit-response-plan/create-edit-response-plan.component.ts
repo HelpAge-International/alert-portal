@@ -22,6 +22,7 @@ import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontr
 import * as moment from "moment";
 import {isNull, isNullOrUndefined} from "util";
 import {forEach} from "@angular/router/src/utils/collection";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 // import {jQuery} from "../../network-country-admin/network-plans/network-plans.component";
 
 declare var jQuery: any;
@@ -268,6 +269,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   //local agency
   @Input() isLocalAgency: Boolean;
 
+  public disaggregateAge = false;
+  public disaggregateDisability = false;
+
   constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService) {
   }
 
@@ -275,7 +279,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
   }
 
-  private initCountryOffice(){
+  private initCountryOffice() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.auth.uid;
       this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
@@ -297,16 +301,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initLocalAgency(){
+  private initLocalAgency() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.auth.uid;
       this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
       let userpath = Constants.USER_PATHS[userType];
 
 
-        this.agencyId = agencyId;
-        this.systemAdminUid = systemId;
-        this.prepareDataLocalAgency();
+      this.agencyId = agencyId;
+      this.systemAdminUid = systemId;
+      this.prepareDataLocalAgency();
 
     });
   }
@@ -370,7 +374,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
 
 
-  onSave(){
+  onSave() {
     let numberOfCompletedSections = this.getCompleteSectionNumber();
 
     if (numberOfCompletedSections > 0) {
@@ -643,6 +647,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyAdminUid + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -694,61 +699,57 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.summarizeBP = this.summarizeScenarioBulletPoints;
     this.summarizeScenarioBulletPointsCounter = this.summarizeBP.length;
 
-    if(this.summarizeScenarioBulletPoints.length > 4) {
+    if (this.summarizeScenarioBulletPoints.length > 4) {
       console.log('stop adding bullet points');
     } else {
 
-      if (this.summarizeBP.length){
+      if (this.summarizeBP.length) {
         this.summarizeBP.length = this.summarizeScenarioBulletPointsCounter;
 
         this.summarizeBP.push(this.summarizeScenarioBulletPointsCounter + 1);
         this.summarizeScenarioBulletPointsCounter++;
 
 
-
       }
     }
 
 
-
   }
 
-   removeSummarizeScenarioBulletPoint(bulletPoint) {
+  removeSummarizeScenarioBulletPoint(bulletPoint) {
 
 
-
-     this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
-     this.summarizeScenarioBulletPointsCounter--;
-
-
-     /*if(this.summarizeScenarioBulletPoints.length < 4 ) {
-       jQuery('.Add__row__cta').show();
-     }*/
+    this.summarizeScenarioBulletPoints = this.summarizeScenarioBulletPoints.filter(item => item !== bulletPoint);
+    this.summarizeScenarioBulletPointsCounter--;
 
 
-
-     // Removing bullet point from list if exists
-     if (this.scenarioCrisisObject[bulletPoint]) {
-
-       // Removes object from bullet point list
-       console.log('bullet point in list');
+    /*if(this.summarizeScenarioBulletPoints.length < 4 ) {
+      jQuery('.Add__row__cta').show();
+    }*/
 
 
-     } else {
+    // Removing bullet point from list if exists
+    if (this.scenarioCrisisObject[bulletPoint]) {
 
-       // this will remove if input field is empty
-       console.log("Bullet point not in list");
+      // Removes object from bullet point list
+      console.log('bullet point in list');
 
-     }
 
-     // loop the bullet points to get correct number in span tag
-     for (let i = 0; i < this.summarizeScenarioBulletPoints.length; i++){
+    } else {
 
-       this.summarizeScenarioBulletPoints[i] = i + 1;
-       console.log(i + 1);
+      // this will remove if input field is empty
+      console.log("Bullet point not in list");
 
-     }
-     //delete this.scenarioCrisisObject[bulletPoint];
+    }
+
+    // loop the bullet points to get correct number in span tag
+    for (let i = 0; i < this.summarizeScenarioBulletPoints.length; i++) {
+
+      this.summarizeScenarioBulletPoints[i] = i + 1;
+      console.log(i + 1);
+
+    }
+    //delete this.scenarioCrisisObject[bulletPoint];
   }
 
   addToImpactOfCrisisObject(bulletPoint, textEntered) {
@@ -1155,9 +1156,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   // }
 
   saveActivity(sector, activity: ModelPlanActivity, index) {
+    console.log(activity)
     let error = activity.validate();
     if (!error) {
       this.activeActivity[sector] = null;
+      this.activityError[sector] = []
     } else {
       this.activityError[sector] = [];
       this.activityError[sector][index] = error.message;
@@ -1165,6 +1168,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   viewActivity(sector, activity) {
+    console.log(this.activityError[sector])
     this.activeActivity[sector] = activity;
   }
 
@@ -1175,12 +1179,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   addActivity(sector) {
     let activity = new ModelPlanActivity(null, null, null, null);
+    console.log(activity)
     if (this.activityMap.get(sector)) {
       this.activityMap.get(sector).push(activity);
     } else {
       this.activityMap.set(sector, [activity]);
     }
     this.activeActivity[sector] = activity;
+    console.log(this.activityMap)
   }
 
   getNumberOfActivities(sector) {
@@ -1329,25 +1335,62 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.activityMap.forEach((v,) => {
       modelPlanList = modelPlanList.concat(v);
     });
-    let beneficiaryList = [];
+    // let beneficiaryList = [];
+    // let furtherBeneficiaryList = [];
     modelPlanList.forEach(modelPlan => {
-      beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
-    });
-    beneficiaryList.forEach(item => {
-      if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
-        this.numberFemaleLessThan18 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
-        this.numberFemale18To50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
-        this.numberFemalegreaterThan50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
-        this.numberMaleLessThan18 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
-        this.numberMale18To50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
-        this.numberMalegreaterThan50 += Number(item["value"]);
+      // beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
+      // furtherBeneficiaryList = furtherBeneficiaryList.concat(modelPlan.furtherBeneficiary);
+      if (!modelPlan.hasFurtherBeneficiary) {
+        modelPlan.beneficiary.forEach(item => {
+          if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+            this.numberFemaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+            this.numberFemale18To50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+            this.numberFemalegreaterThan50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+            this.numberMaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+            this.numberMale18To50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+            this.numberMalegreaterThan50 += Number(item["value"]);
+          }
+        })
+
+      } else {
+        modelPlan.furtherBeneficiary.forEach(item => {
+          if (item["age"] < 3 && item["gender"] == Gender.feMale) {
+            this.numberFemaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == 3 && item["gender"] == Gender.feMale) {
+            this.numberFemale18To50 += Number(item["value"]);
+          } else if (item["age"] > 3 && item["gender"] == Gender.feMale) {
+            this.numberFemalegreaterThan50 += Number(item["value"]);
+          } else if (item["age"] < 3 && item["gender"] == Gender.male) {
+            this.numberMaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == 3 && item["gender"] == Gender.male) {
+            this.numberMale18To50 += Number(item["value"]);
+          } else if (item["age"] > 3 && item["gender"] == Gender.male) {
+            this.numberMalegreaterThan50 += Number(item["value"]);
+          }
+        })
+
       }
     });
+    // beneficiaryList.forEach(item => {
+    //   if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+    //     this.numberFemaleLessThan18 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+    //     this.numberFemale18To50 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+    //     this.numberFemalegreaterThan50 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+    //     this.numberMaleLessThan18 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+    //     this.numberMale18To50 += Number(item["value"]);
+    //   } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+    //     this.numberMalegreaterThan50 += Number(item["value"]);
+    //   }
+    // });
 
     console.log("numberFemaleLessThan18:");
     console.log(this.numberFemaleLessThan18);
@@ -1534,20 +1577,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private getSettingsLocalAgency() {
 
-      this.responsePlanSettings = {};
-      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(list => {
-          this.totalSections = 0;
-          list.forEach(item => {
-            this.responsePlanSettings[item.$key] = item.$value;
+    this.responsePlanSettings = {};
+    this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(list => {
+        this.totalSections = 0;
+        list.forEach(item => {
+          this.responsePlanSettings[item.$key] = item.$value;
 
-            if (item.$value) {
-              this.totalSections++;
-            }
-          });
-          this.storeAvailableSettingSections();
+          if (item.$value) {
+            this.totalSections++;
+          }
         });
+        this.storeAvailableSettingSections();
+      });
   }
 
   private setupForEdit() {
@@ -1559,7 +1602,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           this.forEditing = true;
           this.pageTitle = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.EDIT_RESPONSE_PLAN";
           this.idOfResponsePlanToEdit = params["id"];
-          if(this.isLocalAgency){
+          if (this.isLocalAgency) {
             this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(true);
             this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(this.uid);
 
@@ -1576,9 +1619,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlanInfo(responsePlanId: string) {
     let responsePlansPath: string
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       responsePlansPath = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + responsePlanId;
-    }else{
+    } else {
       responsePlansPath = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + responsePlanId;
     }
 
@@ -1710,9 +1753,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadSection4(responsePlan: ResponsePlan) {
     console.log(responsePlan)
-    this.proposedResponseText = responsePlan.activitySummary['q1'];
-    this.progressOfActivitiesPlanText = responsePlan.activitySummary['q2'];
-    this.coordinationPlanText = responsePlan.activitySummary['q3'];
+    if (responsePlan.activitySummary) {
+      this.proposedResponseText = responsePlan.activitySummary['q1'];
+      this.progressOfActivitiesPlanText = responsePlan.activitySummary['q2'];
+      this.coordinationPlanText = responsePlan.activitySummary['q3'];
+    }
   }
 
   private loadSection5(responsePlan: ResponsePlan) {
@@ -1780,7 +1825,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
             activitiesData[key]["beneficiary"].forEach(item => {
               beneficiary.push(item);
             });
-            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"],
+              activitiesData[key]["indicator"],
+              !activitiesData[key]["hasFurtherBeneficiary"] ? beneficiary : null,
+              activitiesData[key]["hasFurtherBeneficiary"],
+              activitiesData[key]["hasDisability"],
+              activitiesData[key]["hasFurtherBeneficiary"] ? activitiesData[key]["furtherBeneficiary"] : null,
+              !activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["disability"] : null,
+              activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["furtherDisability"] : null);
+
             moreData.push(model);
             if (!this.activityMap.get(Number(sectorKey))) {
               this.activityMap.set(Number(sectorKey), moreData);
@@ -1795,23 +1848,25 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection8(responsePlan: ResponsePlan) {
-
-    this.mALSystemsDescriptionText = responsePlan.monAccLearning['mALSystemsDescription'];
-    this.intentToVisuallyDocument = responsePlan.monAccLearning['isMedia'];
-    this.mediaFormat = responsePlan.monAccLearning['mediaFormat'];
+    if (responsePlan.monAccLearning) {
+      this.mALSystemsDescriptionText = responsePlan.monAccLearning['mALSystemsDescription'];
+      this.intentToVisuallyDocument = responsePlan.monAccLearning['isMedia'];
+      this.mediaFormat = responsePlan.monAccLearning['mediaFormat'];
+    }
   }
 
   private loadSection9(responsePlan: ResponsePlan) {
+    if (responsePlan.doubleCounting) {
+      this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
+      this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
+      this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
+      this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
+      this.numberMale18To50 = responsePlan.doubleCounting[4].value;
+      this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
 
-    this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
-    this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
-    this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
-    this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
-    this.numberMale18To50 = responsePlan.doubleCounting[4].value;
-    this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
-
-    this.section9Status = "GLOBAL.COMPLETE";
-    this.sectionsCompleted.set(this.sections[8], true);
+      this.section9Status = "GLOBAL.COMPLETE";
+      this.sectionsCompleted.set(this.sections[8], true);
+    }
   }
 
   private loadSection10(responsePlan: ResponsePlan) {
@@ -2019,7 +2074,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (numOfSectionsCompleted > 0) {
 
-      if(this.isLocalAgency){
+      if (this.isLocalAgency) {
         if (this.forEditing) {
           let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + this.idOfResponsePlanToEdit;
           newResponsePlan.isEditing = false;
@@ -2048,7 +2103,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
             console.log("Response plan creation unsuccessful with error --> " + error.message);
           });
         }
-      }else{
+      } else {
         if (this.forEditing) {
           let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
           newResponsePlan.isEditing = false;
@@ -2060,7 +2115,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
             resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
             resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
             this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
-              this.router.navigateByUrl( 'response-plans');
+              this.router.navigateByUrl('response-plans');
             }, error => {
               console.log(error.message);
             });
@@ -2072,7 +2127,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
           this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
             console.log("Response plan creation successful");
-            this.router.navigateByUrl( 'response-plans');
+            this.router.navigateByUrl('response-plans');
           }).catch(error => {
             console.log("Response plan creation unsuccessful with error --> " + error.message);
           });
@@ -2095,7 +2150,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       value.forEach(obj => {
         console.log('start of foreach');
 
-        if ( !obj.indicator || !obj.name || !obj.output ) {
+        if (!obj.indicator || !obj.name || !obj.output) {
           console.log('check null values');
           console.log(obj.indicator);
           console.log(obj.name);
@@ -2105,26 +2160,25 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
       });
 
-/* Dan - I have commented out just in case needed to be used
+      /* Dan - I have commented out just in case needed to be used
 
-      if (!this.activityInfoMap) {
-        console.log('Return False, CheckSectorInfo');
+            if (!this.activityInfoMap) {
+              console.log('Return False, CheckSectorInfo');
 
-        return false;
-      }
+              return false;
+            }
 
+          });
+
+          Object.keys(this.activityMap).forEach(key => {
+
+          if (!this.activityInfoMap.get(key) || this.activityInfoMap.get(key).indicator == null || !this.activityInfoMap.get(key).name == null || !this.activityInfoMap.get(key).output == null) {
+              console.log('Return False, activityInfoMap');
+
+              return false;
+            }
+      */
     });
-
-    Object.keys(this.activityMap).forEach(key => {
-
-    if (!this.activityInfoMap.get(key) || this.activityInfoMap.get(key).indicator == null || !this.activityInfoMap.get(key).name == null || !this.activityInfoMap.get(key).output == null) {
-        console.log('Return False, activityInfoMap');
-
-        return false;
-      }
-*/
-    });
-
 
 
     return checkValue;
@@ -2144,16 +2198,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private getCompleteSectionNumber() {
     let counter = 0;
-    if(this.forEditing){
+    if (this.forEditing) {
       let index = 0;
       this.sections.forEach(section => {
-        if(this.sectionsCompleted.get(section) == true && this.responsePlanSettings[index] == true){
+        if (this.sectionsCompleted.get(section) == true && this.responsePlanSettings[index] == true) {
           counter++;
         }
         index++;
       });
       return counter;
-    }else{
+    } else {
       this.sectionsCompleted.forEach((v,) => {
         if (v) {
           counter++;

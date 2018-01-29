@@ -106,12 +106,32 @@
         <td colspan="2" style="background: #f8f8f8; text-align: left;">{{activity.name}}<p></p></td>
         <td colspan="2" style="background-color: #f8f8f8; text-align: left;"><p>{{activity.output}}</p></td>
         <td colspan="2" style="background-color: #f8f8f8; text-align: left;"><p></p></td>
-        <td colspan="2" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
-        <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
-        <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
-        <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
-        <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
-        <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
+        <ng-container *ngIf="!activity.hasFurtherBeneficiary">
+          <td colspan="2" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.beneficiary && activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
+        </ng-container>
+        <ng-container *ngIf="activity.hasFurtherBeneficiary">
+          <td colspan="2" style="background-color: #f8f8f8; text-align: center;"><p>{{(activity.furtherBeneficiary && activity.furtherBeneficiary[0]?activity.furtherBeneficiary[0]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[1]?activity.furtherBeneficiary[1]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[2]?activity.furtherBeneficiary[2]["value"]:0)}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.furtherBeneficiary && activity.furtherBeneficiary[3]?activity.furtherBeneficiary[3]["value"]:0}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{(activity.furtherBeneficiary && activity.furtherBeneficiary[4]?activity.furtherBeneficiary[4]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[5]?activity.furtherBeneficiary[5]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[6]?activity.furtherBeneficiary[6]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[7]?activity.furtherBeneficiary[7]["value"]:0)}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{(activity.furtherBeneficiary && activity.furtherBeneficiary[8]?activity.furtherBeneficiary[8]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[9]?activity.furtherBeneficiary[9]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[10]?activity.furtherBeneficiary[10]["value"]:0)}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{activity.furtherBeneficiary && activity.furtherBeneficiary[11]?activity.furtherBeneficiary[11]["value"]:0}}</p></td>
+          <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{(activity.furtherBeneficiary && activity.furtherBeneficiary[12]?activity.furtherBeneficiary[12]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[13]?activity.furtherBeneficiary[13]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[14]?activity.furtherBeneficiary[14]["value"]:0) +
+            (activity.furtherBeneficiary && activity.furtherBeneficiary[15]?activity.furtherBeneficiary[15]["value"]:0)}}</p></td>
+        </ng-container>
         <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{getTotalFemalePopulation(activity)}}</p></td>
         <td colspan="1" style="background-color: #f8f8f8; text-align: center;"><p>{{getTotalMalePopulation(activity)}}</p></td>
         <td colspan="4" style="background-color: #f8f8f8; text-align: center;"><p>{{getOverallTotalPopulation(activity)}}</p></td>
