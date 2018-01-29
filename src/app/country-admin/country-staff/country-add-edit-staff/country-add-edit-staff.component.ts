@@ -14,6 +14,7 @@ import {ModelStaff} from "../../../model/staff.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {FieldOfficeService} from "../../../services/field-office.service";
 import {ModelDepartment} from "../../../model/department.model";
+import {NetworkService} from "../../../services/network.service";
 
 declare var jQuery: any;
 
@@ -100,6 +101,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private route: ActivatedRoute,
+              private networkService:NetworkService,
               private fieldOfficeService: FieldOfficeService) {
   }
 
@@ -374,13 +376,17 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private createNewUser() {
-    this.secondApp.auth().createUserWithEmailAndPassword(this.email, Constants.TEMP_PASSWORD).then(newUser => {
-      this.updateFirebase(newUser.uid);
-      this.secondApp.auth().signOut();
-    }, error => {
-      this.warningMessage = error.message;
-      this.showAlert();
-    });
+
+    let userId = this.networkService.generateKeyUserPublic()
+    this.updateFirebase(userId);
+
+    // this.secondApp.auth().createUserWithEmailAndPassword(this.email, Constants.TEMP_PASSWORD).then(newUser => {
+    //   this.updateFirebase(newUser.uid);
+    //   this.secondApp.auth().signOut();
+    // }, error => {
+    //   this.warningMessage = error.message;
+    //   this.showAlert();
+    // });
   }
 
   private updateFirebase(uid) {
