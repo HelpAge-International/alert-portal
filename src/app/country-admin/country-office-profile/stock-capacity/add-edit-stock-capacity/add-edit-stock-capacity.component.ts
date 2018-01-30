@@ -88,10 +88,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       this.uid = user.uid;
       this.countryId = countryId;
       this.agencyId = agencyId;
-
-
       this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
     });
   }
 
@@ -152,6 +149,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
         level2: this.selectedValueL2 ? this.selectedValueL2 : null,
         agencyId: this.agencyId
       };
+      console.log("Post Data:", postData);
 
       this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
       this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/')

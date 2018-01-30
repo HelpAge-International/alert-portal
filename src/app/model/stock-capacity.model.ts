@@ -6,7 +6,7 @@ export class StockCapacityModel extends BaseModel {
     public id: string;
     public description: string;
     public quantity: number;
-    public location: string;
+    public location: number;
     public level1: number;
     public level2: string;
     public leadTime: string;
