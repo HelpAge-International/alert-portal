@@ -15,6 +15,7 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 import {FieldOfficeService} from "../../../services/field-office.service";
 import {ModelDepartment} from "../../../model/department.model";
 import {NetworkService} from "../../../services/network.service";
+import {UserService} from "../../../services/user.service";
 
 declare var jQuery: any;
 
@@ -101,7 +102,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private route: ActivatedRoute,
-              private networkService:NetworkService,
+              private networkService: NetworkService,
+              private userService: UserService,
               private fieldOfficeService: FieldOfficeService) {
   }
 
@@ -111,7 +113,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
 
       this.fieldOfficeService.getFieldOffices(countryId)
-        .subscribe( fieldOffices => {
+        .subscribe(fieldOffices => {
           console.log(fieldOffices)
           this.fieldOffices = fieldOffices;
         })
@@ -377,8 +379,21 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   private createNewUser() {
 
-    let userId = this.networkService.generateKeyUserPublic()
-    this.updateFirebase(userId);
+    this.userService.getUserByEmail(this.email)
+      .first()
+      .subscribe(existUser => {
+        if (!existUser) {
+          let userId = this.networkService.generateKeyUserPublic()
+          this.updateFirebase(userId);
+        } else {
+          this.warningMessage = "Email is already exist!"
+          this.showAlert();
+        }
+      }, err => {
+        this.warningMessage = err.message;
+        this.showAlert()
+      })
+
 
     // this.secondApp.auth().createUserWithEmailAndPassword(this.email, Constants.TEMP_PASSWORD).then(newUser => {
     //   this.updateFirebase(newUser.uid);
@@ -426,9 +441,9 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     staff.notification = this.staffNotifications;
     staff.isResponseMember = this.isResponseMember;
     staff.updatedAt = Date.now();
-    if(this.fieldOffice && this.officeType == this.officeTypeEnum.FieldOffice){
+    if (this.fieldOffice && this.officeType == this.officeTypeEnum.FieldOffice) {
       staff.fieldOffice = this.fieldOffice;
-    }else{
+    } else {
       staff.fieldOffice = null;
     }
 
