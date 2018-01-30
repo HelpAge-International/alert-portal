@@ -85,11 +85,11 @@
         </div> <!--Updated-->
         <div class="col-sm-2">
           <p *ngIf="m.sector == ResponsePlansEnum.other && m.otherName != null">
-            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | translate | lowercase}}.svg"
+            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | lowercase}}.svg"
                  alt="{{ResponsePlanSectorsIcons[m.sector] | translate}}"> {{m.otherName | translate}}
           </p>
           <p *ngIf="m.sector != ResponsePlansEnum.other || m.otherName == null">
-            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | translate | lowercase}}.svg"
+            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | lowercase}}.svg"
                  alt="{{ResponsePlanSectorsIcons[m.sector] | translate}}"> {{ResponsePlanSectors[m.sector] | translate}}
           </p>
         </div>
