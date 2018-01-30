@@ -148,8 +148,8 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
     }else{
       var postData = {
         location: this.selectedCountry,
-        level1: this.levelOneDisplay[this.selectedValue].id,
-        level2: this.selectedValueL2,
+        level1: this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null,
+        level2: this.selectedValueL2 ? this.selectedValueL2 : null,
         agencyId: this.agencyId
       };
 
