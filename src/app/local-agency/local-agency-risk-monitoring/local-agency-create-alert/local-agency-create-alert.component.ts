@@ -55,6 +55,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
 
   private hazards: any[] = [];
 
+  //phase 2
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
@@ -220,6 +223,11 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               .subscribe((snap) => {
                 value.hazardName = snap.val().name;
               });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
           }
           this.hazards.push(value);
         }

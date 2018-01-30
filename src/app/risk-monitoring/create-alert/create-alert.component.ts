@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, Output} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -14,6 +14,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
 import {HazardImages} from "../../utils/HazardImages";
+
 declare var jQuery: any;
 
 @Component({
@@ -52,9 +53,14 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private countryLevelsValues: any[] = [];
 
   private hazardScenario = Constants.HAZARD_SCENARIOS;
+  private hazardScenarioEnum = Constants.HAZARD_SCENARIO_ENUM_LIST;
 
   private hazards: any[] = [];
   private preSelectedCountry: number;
+
+  //phase 2
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
+
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -104,7 +110,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       //init country location
       this.userService.getCountryDetail(this.countryID, this.agencyId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(country =>{
+        .subscribe(country => {
           this.preSelectedCountry = country.location
           this.alertData.affectedAreas.forEach(area => {
             area.country = country.location
@@ -142,6 +148,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
           dataToSave.otherName = this.alertData.hazardScenario;
           dataToSave.hazardScenario = -1;
         }
+        dataToSave.hazardScenario = parseInt(dataToSave.hazardScenario)
         console.log(dataToSave);
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
@@ -186,7 +193,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  highlightRadio(){
+  highlightRadio() {
 
 
     console.log(this.alertData.alertLevel);
@@ -241,6 +248,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getHazards() {
+
     this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snapshot) => {
@@ -252,6 +260,11 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
               .subscribe((snap) => {
                 value.hazardName = snap.val().name;
               });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
           }
           this.hazards.push(value);
         }
