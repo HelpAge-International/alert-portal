@@ -18,7 +18,7 @@
     <div class="Departments">
 
       <div *ngIf="!agencyDepts || agencyDepts.length == 0">
-        {{"NO_DEPARTMENTS_AGENCY" | translate}}
+        No departments are added to your agency.
       </div>
 
       <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of agencyDepts">
