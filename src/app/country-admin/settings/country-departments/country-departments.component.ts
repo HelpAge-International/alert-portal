@@ -21,6 +21,7 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
   // private alertMessage = null
   private deleting: boolean;
   private depts = [];
+  public agencyDepts = [];
 
   //copied over
   private uid: string = "";
@@ -59,6 +60,7 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.systemId = systemId;
       this.initDepartments();
+      this.initAgencyDepartments();
     });
   }
 
@@ -76,6 +78,19 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
         this.depts = departments
         this.editDepts = departments
         this.initCanDeleteDepartments()
+      })
+  }
+
+  private initAgencyDepartments(){
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        console.log(snapshot.val());
+        snapshot.forEach((snap) => {
+          let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.val().name);
+          this.agencyDepts.push(x);
+
+        });
       })
   }
 
@@ -168,22 +183,30 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
   }
 
   addDepartment() {
-    if (this.validateNewDepartment()) {
-      let updateObj = {
-        name: this.departmentName
-      };
-      this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryId + '/departments').push(updateObj).then(_ => {
-        if (!this.alertShow) {
-          this.saved = true;
-          this.alertSuccess = true;
-          this.alertShow = true;
-          this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
-        }
-        this.departmentName = "";
-      });
-    } else {
-      this.showAlert();
+
+    if(this.depts.filter(x => x.name == this.departmentName).length > 0 || this.agencyDepts.filter(x => x.name == this.departmentName).length > 0){
+      this.alertSuccess = false;
+      this.alertShow = true;
+      this.alertMessage = "Department already exists!";
+    }else{
+      if (this.validateNewDepartment()) {
+        let updateObj = {
+          name: this.departmentName
+        };
+        this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryId + '/departments').push(updateObj).then(_ => {
+          if (!this.alertShow) {
+            this.saved = true;
+            this.alertSuccess = true;
+            this.alertShow = true;
+            this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
+          }
+          this.departmentName = "";
+        });
+      } else {
+        this.showAlert();
+      }
     }
+
   }
 
   private showAlert() {

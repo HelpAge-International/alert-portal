@@ -11,6 +11,34 @@
     <app-country-admin-settings-menu></app-country-admin-settings-menu>
 
     <div class="Sub-header-title__wrap">
+      <h2>Agency Departments</h2>
+
+    </div>
+
+    <div class="Departments">
+
+      <div *ngIf="!agencyDepts || agencyDepts.length == 0">
+        {{"NO_DEPARTMENTS_AGENCY" | translate}}
+      </div>
+
+      <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of agencyDepts">
+        <!-- Check box for deletion -->
+        <label for="{{department.id}}" *ngIf="deleting && !canDeleteItem.get(department.id)">
+          <input class="form-check-input" type="checkbox" id="{{department.id}}" [value]="department.id"
+                 (change)="onDepartmentSelected(department.id)">
+        </label>
+        <!-- Regular label -->
+        <ng-container *ngIf="(!deleting || department.name) && !editing">
+          {{department.name}}
+        </ng-container>
+        <!-- Editing input -->
+        <input type="text" class="form-control col-md-4" *ngIf="editing" [(ngModel)]="department.name">
+      </div>
+    </div>
+
+    <div class="Sub-header-title__wrap">
+
+
       <h2>{{"MAPS.DEPARTMENTS" | translate}}</h2>
       <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting"
               (click)="deleteSelectedDepartments($event)">{{"DELETE" | translate | uppercase}}
