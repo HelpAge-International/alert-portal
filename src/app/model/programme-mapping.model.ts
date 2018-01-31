@@ -14,6 +14,7 @@ export class ProgrammeMappingModel extends BaseModel {
     public where: number;
     public level1: number;
     public level2: string;
+    public otherName?: string;
 
     validate(excludedFields = []): AlertMessageModel {
 
@@ -50,6 +51,7 @@ export class ProgrammeMappingModel extends BaseModel {
         this.where = programmeMapping.where;
         this.level1 = programmeMapping.level1;
         this.level2 = programmeMapping.level2;
+        programmeMapping.otherName ? this.otherName = programmeMapping.otherName : this.otherName = null;
     }
 
 }

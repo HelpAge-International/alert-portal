@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
+import {Component, Inject, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -124,6 +124,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private networkModelMap = new Map<string, ModelNetwork>();
   private networkIdList: string [] = [];
 
+
+  //Local Agency
+  @Input() isLocalAgency: boolean;
+
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               protected af: AngularFire,
@@ -154,6 +158,35 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+  }
+
+  initLocalAgency(){
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+      this.uid = user.uid;
+      this.userType = userType;
+      this.filterAssigned = "0";
+      this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+      this.getStaffDetails(this.uid, true);
+
+      this.countryId = countryId;
+      this.agencyId = agencyId;
+      this.systemAdminId = systemId;
+      // Initialise everything here but we need to get countryId, agencyId, systemId
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
+        this.agencyId, this.systemAdminId);
+      this.initStaffLocalAgency();
+      this.initDepartments();
+      this.initDocumentTypes();
+      this.initAlertsLocalAgency();
+      this.calculateCurrency();
+
+    });
+  }
+
+  initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -234,6 +267,27 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
                 })
                 this.prepActionService.initActionsWithInfoAllNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, false, this.countryId, this.agencyId, this.systemAdminId, networkMap)
               })
+            // Get all local network Id for this country
+            this.networkService.getLocalNetworkModelsForCountry(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(localNetworks => {
+                localNetworks.forEach((networkCountryId) => {
+                  this.networkService.getNetworkModuleMatrix(networkCountryId.id)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(matrix => {
+                      this.networkModuleMap.set(networkCountryId.id, matrix)
+                    })
+
+                  this.networkService.getNetworkDetail(networkCountryId.id)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(network => {
+                      this.networkModelMap.set(networkCountryId.id, network)
+                    })
+                })
+
+                this.prepActionService.initActionsWithInfoAllLocalNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, false, this.countryId, this.agencyId, this.systemAdminId, localNetworks)
+
+              })
           }
         });
       });
@@ -276,15 +330,57 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     // Populate actions
   }
 
+  private initAlertsLocalAgency() {
+    this.af.database.list(Constants.APP_STATUS + "/alert/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          if (snapshot.val().alertLevel == AlertLevels.Red) {
+            let res: boolean = false;
+            for (const userTypes in snapshot.val().approval) {
+              for (const thisUid in snapshot.val().approval[userTypes]) {
+                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+                  res = true;
+                }
+              }
+            }
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, res);
+            }
+          }
+          else {
+            if (this.hazardRedAlert.get(snapshot.val().hazardScenario) != true) {
+              this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
+            }
+          }
+        });
+      });
+
+    // Populate actions
+  }
+
   /**
    * Initialisation method for the departments of the agency
    */
   private initDepartments() {
+    this.DEPARTMENTS = [];
+    this.DEPARTMENT_MAP.clear();
+    //for agency level
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        this.DEPARTMENTS = [];
-        this.DEPARTMENT_MAP.clear();
+        snap.forEach((snapshot) => {
+          let mD: ModelDepartment = new ModelDepartment();
+          mD.id = snapshot.key;
+          mD.name = snapshot.val().name;
+          this.DEPARTMENTS.push(mD);
+          this.DEPARTMENT_MAP.set(mD.id, mD.name);
+        });
+      });
+    //for country level
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
         snap.forEach((snapshot) => {
           let mD: ModelDepartment = new ModelDepartment();
           mD.id = snapshot.key;
@@ -324,10 +420,30 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
       });
   }
+  private initCountryAdminLocalAgency() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
+
 
   private initStaff() {
     this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        snap.forEach((snapshot) => {
+          this.getStaffDetails(snapshot.key, false);
+        });
+      });
+  }
+  private initStaffLocalAgency() {
+    this.initCountryAdminLocalAgency();
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
@@ -386,7 +502,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   public assignActionDialogAdv(action: PreparednessAction) {
     if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
       // TODO: FIGURE OUT HOW THIS IS GOING TO BE EDITING
-      this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
+
+      this.isLocalAgency ? this.router.navigateByUrl("/local-agency/preparedness/create-edit-preparedness/" + action.id) : this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
     } else {
       this.assignActionId = action.id;
     }
@@ -397,21 +514,40 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-      .then(() => {
-        this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-          .subscribe(task => {
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-            console.log(notification.content);
+    if(this.isLocalAgency){
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+        .then(() => {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+            .subscribe(task => {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+              console.log(notification.content);
 
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              });
             });
-          });
-      });
+        });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+        .then(() => {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+            .subscribe(task => {
+              // Send notification to the assignee
+              let notification = new MessageModel();
+              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+              console.log(notification.content);
+
+              notification.time = new Date().getTime();
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              });
+            });
+        });
+    }
+
     this.closeModal();
   }
 
@@ -475,10 +611,18 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     action.noteId = '';
 
     if (noteId != null && noteId !== '') {
-      this.af.database.object(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + noteId).set(note);
+      if (this.isLocalAgency) {
+        this.af.database.object(Constants.APP_STATUS + '/note/' + this.agencyId + '/' + action.id + '/' + noteId).set(note);
+      } else {
+        this.af.database.object(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + noteId).set(note);
+      }
     }
     else {
-      this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id).push(note);
+      if (this.isLocalAgency) {
+        this.af.database.list(Constants.APP_STATUS + '/note/' + this.agencyId + '/' + action.id).push(note);
+      } else {
+        this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id).push(note);
+      }
     }
   }
 
@@ -513,7 +657,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   // Delete note
   protected deleteNote(note: PreparednessUser, action: PreparednessAction) {
-    this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + note.id).remove();
+    if (this.isLocalAgency) {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + this.agencyId + '/' + action.id + '/' + note.id).remove();
+    } else {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + this.countryId + '/' + action.id + '/' + note.id).remove();
+    }
   }
 
   protected deleteNoteNetwork(note: PreparednessUser, action: PreparednessAction) {
@@ -587,15 +735,23 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          if(this.isLocalAgency){
+            this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id).update(data);
+          } else {
+            this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
+          }
           this.addNote(action);
           this.closePopover(action);
         }
@@ -610,10 +766,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        if (this.isLocalAgency) {
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id).update(data);
+        } else {
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
+        }
         this.addNote(action);
         this.closePopover(action);
       }
@@ -624,15 +781,19 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFileNetwork(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
           this.addNoteNetwork(action);
           this.closePopover(action);
         }
@@ -647,10 +808,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.uploadFileNetwork(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
         console.log(Constants.APP_STATUS + '/action/' + action.networkCountryId  + '/' + action.id, 'in complete');
         this.addNoteNetwork(action);
 
@@ -667,12 +825,20 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   // (Dan) - this new function is for the undo completed APA
   protected undoCompleteAction(action: PreparednessAction){
-    // Call to firebase to update values to revert back to *In Progress*
-    this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
-      isComplete: false,
-      isCompleteAt: null,
-      updatedAt: new Date().getTime()
-    });
+    // Call to firebase to update values to revert back to
+    if (this.isLocalAgency) {
+      this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyUid + '/' + action.id).update({
+        isComplete: false,
+        isCompleteAt: null,
+        updatedAt: new Date().getTime()
+      });
+    } else {
+      this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
+        isComplete: false,
+        isCompleteAt: null,
+        updatedAt: new Date().getTime()
+      });
+    }
 
   }
 
@@ -908,7 +1074,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   protected copyAction(action) {
     this.storage.set('selectedAction', action);
-    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+
+    this.isLocalAgency ? this.router.navigate(["/local-agency/preparedness/create-edit-preparedness"]) : this.router.navigate(["/preparedness/create-edit-preparedness"]);
   }
 
 
@@ -919,7 +1086,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     let update = {
       isArchived: false
     };
-    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id).update(update);
+    if (this.isLocalAgency) {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + action.id).update(update);
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id).update(update);
+    }
   }
 
   public reactivateNetwork(action: PreparednessAction) {
@@ -951,7 +1122,11 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   editNetworkAction(action) {
     this.switchToNetwork(action)
-    this.router.navigate(['/network-country/network-country-create-edit-action/' + action.id, this.storage.get(Constants.NETWORK_VIEW_VALUES)])
+    let networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES)
+    if (action.networkCountryId === action.networkId) {
+      networkViewValues["isLocalNetworkAdmin"] = true
+    }
+    this.router.navigate(['/network-country/network-country-create-edit-action/' + action.id, networkViewValues])
   }
 
   private switchToNetwork(action: PreparednessAction) {
@@ -959,5 +1134,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
     let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
+  }
+
+  cancelComplete(action) {
+    action.actualCost = null
+    this.closePopover(action)
   }
 }

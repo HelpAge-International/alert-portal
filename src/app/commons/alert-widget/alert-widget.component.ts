@@ -18,6 +18,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class AlertWidgetComponent implements OnInit {
 
 	@Input() countryId: string;
+	@Input() isLocalAgency: boolean;
 	private RedAlertStatus = ThresholdName.Red;
 	private AmberAlertStatus = ThresholdName.Amber;
 	private alertLevels = Constants.ALERTS;
@@ -31,16 +32,28 @@ export class AlertWidgetComponent implements OnInit {
 	}
 
 	ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryId).takeUntil(this.ngUnsubscribe).subscribe(alerts => {
-        this.alerts = alerts.map(alert => {
-          console.log(alert.alertLevel);
-          console.log(ThresholdName.Red);
-          if (alert.alertLevel == ThresholdName.Red || alert.alertLevel == ThresholdName.Amber) {
-            return alert;
-          }
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      if(this.isLocalAgency){
+        this.af.database.list(Constants.APP_STATUS + '/alert/' + agencyId).takeUntil(this.ngUnsubscribe).subscribe(alerts => {
+          this.alerts = alerts.map(alert => {
+            console.log(alert.alertLevel);
+            console.log(ThresholdName.Red);
+            if (alert.alertLevel == ThresholdName.Red || alert.alertLevel == ThresholdName.Amber) {
+              return alert;
+            }
+          });
         });
-      });
+      }else{
+        this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryId).takeUntil(this.ngUnsubscribe).subscribe(alerts => {
+          this.alerts = alerts.map(alert => {
+            console.log(alert.alertLevel);
+            console.log(ThresholdName.Red);
+            if (alert.alertLevel == ThresholdName.Red || alert.alertLevel == ThresholdName.Amber) {
+              return alert;
+            }
+          });
+        });
+      }
     });
 	}
 

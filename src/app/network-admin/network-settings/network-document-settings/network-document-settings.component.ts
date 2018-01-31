@@ -7,6 +7,7 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {SettingsService} from "../../../services/settings.service";
+import { Countries, DocumentType } from "../../../utils/Enums"
 
 @Component({
   selector: 'app-network-document-settings',
@@ -18,6 +19,8 @@ export class NetworkDocumentSettingsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
   //constants and enums
+  private COUNTRIES = Constants.COUNTRIES;
+  private COUNTRY_SELECTION = Constants.COUNTRY_SELECTION;
 
   // Models
   private alertMessage: AlertMessageModel = null;

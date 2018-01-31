@@ -1,3 +1,12 @@
 tooltip{
   z-index: 1;
 }
+
+input[type=number]{
+  width: 100%;
+}
+
+.wide__number{
+  width: 55px !important;
+}
+

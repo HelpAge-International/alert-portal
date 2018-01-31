@@ -8,12 +8,16 @@ import {ModelStaff} from "../../model/staff.model";
 import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
+import {AgencyService} from "../../services/agency-service.service";
+import {SettingsService} from "../../services/settings.service";
+
 declare var jQuery: any;
 
 @Component({
   selector: 'app-staff',
   templateUrl: 'staff.component.html',
-  styleUrls: ['staff.component.css']
+  styleUrls: ['staff.component.css'],
+  providers: [AgencyService]
 })
 
 export class StaffComponent implements OnInit, OnDestroy {
@@ -62,7 +66,12 @@ export class StaffComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private agencyService: AgencyService,
+              private settingService: SettingsService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -80,21 +89,41 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-        this.getStaffData();
+    this.getStaffData();
+    this.initDepartments();
+  }
 
-        this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(snap => {
-            this.departmentMap.clear();
-            this.departments = [];
-            snap.forEach((snapshot) => {
-              let x: ModelDepartment = new ModelDepartment();
-              x.id = snapshot.key;
-              x.name = snapshot.val().name;
-              this.departments.push(x);
-              this.departmentMap.set(x.id, x.name);
-            });
-          });
+  private initDepartments() {
+    this.departmentMap.clear();
+    this.departments = [];
+    //agency level
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        });
+      });
+    //all country level for this agency
+    this.agencyService.getAllCountryIdsForAgency(this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(countryIds => {
+        countryIds.forEach(id => {
+          this.settingService.getCountryLocalDepartments(this.agencyId, id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((countryDepts: ModelDepartment[]) => {
+              countryDepts.forEach(dep => {
+                this.departments.push(dep)
+                this.departmentMap.set(dep.id, dep.name)
+              })
+            })
+        })
+      })
+
   }
 
   private getStaffData() {

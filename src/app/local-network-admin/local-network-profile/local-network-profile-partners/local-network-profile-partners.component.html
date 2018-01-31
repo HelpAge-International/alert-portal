@@ -73,53 +73,20 @@
 
       <ng-container *ngIf="hasOrganisationProjectSectorFilter(partnerOrganisations.get(agency.$key), filterSector) &&
                             hasAreaOfOperationFilter(partnerOrganisations.get(agency.$key), filterLocation) &&
-                            hasOrganisationNameFilter(partnerOrganisations.get(agency.$key), filterOrganisation)">
+                            hasOrganisationNameFilter(partnerOrganisations.get(agency.$key), filterOrganisation) &&
+                            (agency.$key == agencyId || agencyCountryPrivacyMap.get(agency.$key)?.officeProfile != Privacy.Private)">
 
         <div class="Ribbon__response grey margin-bottom-one">
           <div class="Ribbon__header__wrap lnetwork">
             <div class="Ribbon__leftwrap">
-              <img src="{{agency.logoPath}}" class="circle-image" alt="">
+              <img src="{{agency?.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}" class="circle-image" alt="">
               <h4>{{agency.name}}</h4>
             </div>
             <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
 
-        <div class="Response__content spaced-top-bottom lnetwork">
-
-          <!--Filter-->
-          <!--<h3 class="Spaced-above">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.IMPLEMENTING_PARTNERS' | translate }}</h3>-->
-          <!--<div class="row Spaced padding-left-two">-->
-            <!--<label class="col-sm-0 Spaced-above">{{ 'GLOBAL.FILTER' | translate }}</label>-->
-            <!--<div class="form-group-country-office-profile col-sm-3">-->
-              <!--<select class="form-control" name="filterSector"-->
-                      <!--[(ngModel)]="filterSector">-->
-                <!--<option value="null">{{ 'ADD_PARTNER.SECTOR' | translate }}</option>-->
-                <!--<option *ngFor="let sector of RESPONSE_PLAN_SECTORS | enumKeyValues"-->
-                        <!--[value]="sector.key">{{ RESPONSE_PLAN_SECTORS_SELECTION[sector.key] | translate}}-->
-                <!--</option>-->
-              <!--</select>-->
-            <!--</div>-->
-            <!--<div class="form-group-country-office-profile col-sm-3">-->
-              <!--<select class="form-control" name="areasOfOperation"-->
-                      <!--[(ngModel)]="filterLocation">-->
-                <!--<option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>-->
-                <!--<option *ngFor="let location of areasOfOperation"-->
-                        <!--[value]="location">{{ location | translate }}-->
-                <!--</option>-->
-              <!--</select>-->
-            <!--</div>-->
-            <!--<div class="form-group-country-office-profile col-sm-3">-->
-              <!--<select class="form-control" name="filterOrganisation"-->
-                      <!--[(ngModel)]="filterOrganisation">-->
-                <!--<option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>-->
-                <!--<option *ngFor="let partnerOrganisation of partnerOrganisations.get(agency.$key)"-->
-                        <!--[value]="partnerOrganisation.id">{{ partnerOrganisation?.organisationName }}-->
-                <!--</option>-->
-              <!--</select>-->
-            <!--</div>-->
-            <!--<div class="col-sm-4"></div>-->
-          <!--</div>-->
+        <div class="Response__content spaced-top-bottom">
 
           <div class="row" *ngIf="!partnerOrganisations.get(agency.$key)">
             <p class="text-gray-v-light col-sm-9">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.EMPTY_LIST' | translate }}</p>

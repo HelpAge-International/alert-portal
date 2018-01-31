@@ -4,7 +4,7 @@ import {UserService} from "../../../services/user.service";
 import {NetworkService} from "../../../services/network.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType, UserType} from "../../../utils/Enums";
+import {AlertMessageType, OfficeType, Privacy, ResponsePlanSectors, SkillType, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
@@ -14,6 +14,8 @@ import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import * as moment from "moment";
 import {LocalStorageService} from "angular-2-local-storage";
+import {SettingsService} from "../../../services/settings.service";
+import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 
 declare var jQuery: any;
 
@@ -98,6 +100,9 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private agencyId: string;
   private isViewingFromExternal: boolean;
 
+  private agencyCountryPrivacyMap = new Map<string, ModelAgencyPrivacy>()
+  private Privacy = Privacy
+
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -109,6 +114,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               private _agencyService: AgencyService,
               private networkService: NetworkService,
               private storageService: LocalStorageService,
+              private settingService: SettingsService,
               private af: AngularFire) {
 
   }
@@ -153,31 +159,38 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
   private networkCountryAccess() {
 
-    if(this.isViewing){
+    if (this.isViewing) {
 
-            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(map => {
+          console.log(map);
+          this.officeAgencyMap = map;
+
+          map.forEach((value: string, key: string) => {
+            this._agencyService.getAgency(key)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(map => {
-                console.log(map);
-                this.officeAgencyMap = map;
-
-                map.forEach((value: string, key: string) => {
-                  this._agencyService.getAgency(key)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(agency => {
-                      this.agencies.push(agency)
-                    })
-                });
-
-                this._getTotalStaff(map);
-                this.getStaff(map);
-                this.getSurgeCapacity(map);
-                this._getCountryOfficeCapacity(map).then();
+              .subscribe(agency => {
+                this.agencies.push(agency)
                 this._getSkills();
+              })
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
+              })
+          });
 
-              });
+          this._getTotalStaff(map);
+          this.getStaff(map);
+          this.getSurgeCapacity(map);
+          this._getCountryOfficeCapacity(map).then();
 
-    }else{
+
+        });
+
+    } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
 
@@ -198,6 +211,13 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agency => {
                       this.agencies.push(agency)
+                      this._getSkills();
+                    })
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
                     })
                 });
 
@@ -205,7 +225,6 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                 this.getStaff(map);
                 this.getSurgeCapacity(map);
                 this._getCountryOfficeCapacity(map).then();
-                this._getSkills();
 
               });
           });
@@ -215,39 +234,42 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   }
 
   private localNetworkAdminAccess() {
-    if(this.isViewing){
+    if (this.isViewing) {
 
-            this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
+      this._networkService.getAgencyCountryOfficesByNetwork(this.networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(officeAgencyMap => {
+          this.officeAgencyMap = officeAgencyMap
+
+          officeAgencyMap.forEach((value: string, key: string) => {
+            this._agencyService.getAgency(key)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(officeAgencyMap => {
-                this.officeAgencyMap = officeAgencyMap
-
-                officeAgencyMap.forEach((value: string, key: string) => {
-                  this._agencyService.getAgency(key)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(agency => {
-                      this.agencies.push(agency)
-                    })
-                })
-
-                this._getTotalStaff(officeAgencyMap);
-                this.getStaff(officeAgencyMap);
-                this.getSurgeCapacity(officeAgencyMap);
-                this._getCountryOfficeCapacity(officeAgencyMap).then(() => {
-
-
-                  console.log(this.agencies)
-                  officeAgencyMap.forEach((value: string, key: string) => {
-                    console.log(this.surgeCapacities)
-                  })
-                });
-
+              .subscribe(agency => {
+                this.agencies.push(agency)
                 this._getSkills();
-
-
               })
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
+              })
+          })
 
-    }else{
+          this._getTotalStaff(officeAgencyMap);
+          this.getStaff(officeAgencyMap);
+          this.getSurgeCapacity(officeAgencyMap);
+          this._getCountryOfficeCapacity(officeAgencyMap).then(() => {
+
+
+            console.log(this.agencies)
+            officeAgencyMap.forEach((value: string, key: string) => {
+              console.log(this.surgeCapacities)
+            })
+          });
+        })
+
+    } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
         this._networkService.getSelectedIdObj(user.uid)
@@ -265,6 +287,13 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(agency => {
                       this.agencies.push(agency)
+                      this._getSkills();
+                    })
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
                     })
                 })
 
@@ -279,9 +308,6 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                     console.log(this.surgeCapacities)
                   })
                 });
-
-                this._getSkills();
-
 
               })
           });
@@ -493,79 +519,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
     return promise;
   }
 
-  //
-  filterData(event: any, filterType: any, agency) {
-    var filterVal = event.target.value;
-
-    // this.officeFilter = filterType == 'office' ? filterVal : 0;
-    // this.sSkillsFilter = filterType == 'sSkills' ? filterVal : 0;
-    // this.tSkillsFilter = filterType == 'tSkills' ? filterVal : 0;
-    switch (filterType) {
-      case "office":
-        this.officeFilter = filterVal;
-        break;
-      case "sSkills":
-        this.sSkillsFilter = filterVal;
-        break;
-      case "tSkills":
-        this.tSkillsFilter = filterVal;
-        break;
-    }
-
-    console.log(filterType)
-    console.log(filterVal);
-
-    var result = [];
-
-    this.responseStaffsOrigin.get(agency.$key).forEach(staff => {
-
-      var isSkillsFilter = false;
-      var iStSkillsFilter = false;
-
-      staff.skill.forEach((val, key) => {
-        if (this.sSkillsFilter == val) {
-          isSkillsFilter = true;
-        }
-        if (this.tSkillsFilter == val) {
-          iStSkillsFilter = true;
-        }
-      });
-      // if (
-      //   (this.officeFilter == staff.officeType || this.officeFilter == 0) &&
-      //   (isSkillsFilter || this.sSkillsFilter == 0) &&
-      //   (iStSkillsFilter || this.tSkillsFilter == 0)
-      // ) {
-      //   result.push(staff);
-      // }
-      if (this.officeFilter == 0 && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
-        result = this.responseStaffsOrigin.get(agency.$key);
-      } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
-        result.push(staff);
-      } else if (this.officeFilter == 0 && isSkillsFilter && this.tSkillsFilter == 0) {
-        result.push(staff);
-      } else if (this.officeFilter == 0 && this.sSkillsFilter == 0 && iStSkillsFilter) {
-        result.push(staff);
-      } else if (this.officeFilter == staff.officeType && isSkillsFilter && this.tSkillsFilter == 0) {
-        result.push(staff);
-      } else if (this.officeFilter == 0 && isSkillsFilter && iStSkillsFilter) {
-        result.push(staff);
-      } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && iStSkillsFilter) {
-        result.push(staff);
-      } else if (this.officeFilter == staff.officeType && isSkillsFilter && iStSkillsFilter) {
-        result.push(staff);
-      }
-    });
-
-    this.responseStaffs.set(agency.$key, result)
-
-  }
-
   filterDataAll(event: any, filterType: any) {
     var filterVal = event.target.value;
-
-    // this.officeFilter = filterType == 'office' ? filterVal : 0;
-    // this.sSkillsFilter = filterType == 'sSkills' ? filterVal : 0;
-    // this.tSkillsFilter = filterType == 'tSkills' ? filterVal : 0;
     switch (filterType) {
       case "office":
         this.officeFilter = filterVal;
@@ -577,53 +532,6 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
         this.tSkillsFilter = filterVal;
         break;
     }
-
-    console.log(filterType)
-    console.log(filterVal);
-
-    // var result = [];
-    //
-    // this.responseStaffsOrigin.get(agency.$key).forEach(staff => {
-    //
-    //   var isSkillsFilter = false;
-    //   var iStSkillsFilter = false;
-    //
-    //   staff.skill.forEach((val, key) => {
-    //     if (this.sSkillsFilter == val) {
-    //       isSkillsFilter = true;
-    //     }
-    //     if (this.tSkillsFilter == val) {
-    //       iStSkillsFilter = true;
-    //     }
-    //   });
-    //   // if (
-    //   //   (this.officeFilter == staff.officeType || this.officeFilter == 0) &&
-    //   //   (isSkillsFilter || this.sSkillsFilter == 0) &&
-    //   //   (iStSkillsFilter || this.tSkillsFilter == 0)
-    //   // ) {
-    //   //   result.push(staff);
-    //   // }
-    //   if (this.officeFilter == 0 && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
-    //     result = this.responseStaffsOrigin.get(agency.$key);
-    //   } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && this.tSkillsFilter == 0) {
-    //     result.push(staff);
-    //   } else if (this.officeFilter == 0 && isSkillsFilter && this.tSkillsFilter == 0) {
-    //     result.push(staff);
-    //   } else if (this.officeFilter == 0 && this.sSkillsFilter == 0 && iStSkillsFilter) {
-    //     result.push(staff);
-    //   } else if (this.officeFilter == staff.officeType && isSkillsFilter && this.tSkillsFilter == 0) {
-    //     result.push(staff);
-    //   } else if (this.officeFilter == 0 && isSkillsFilter && iStSkillsFilter) {
-    //     result.push(staff);
-    //   } else if (this.officeFilter == staff.officeType && this.sSkillsFilter == 0 && iStSkillsFilter) {
-    //     result.push(staff);
-    //   } else if (this.officeFilter == staff.officeType && isSkillsFilter && iStSkillsFilter) {
-    //     result.push(staff);
-    //   }
-    // });
-    //
-    // this.responseStaffs.set(agency.$key, result)
-
   }
 
   //
@@ -638,21 +546,18 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
   //
   _getSkills() {
-
-    this.af.database.object(Constants.APP_STATUS + '/skill/').takeUntil(this.ngUnsubscribe)
-      .subscribe((skills: any) => {
-        for (let skill in skills) {
-          if (skill.indexOf("$") < 0) {
-            var objSkill = {key: skill, name: skills[skill].name};
-            if (!skills[skill].type) {
-              this.suportedSkills.push(objSkill);
-            } else {
-              this.techSkills.push(objSkill);
-            }
+    this.agencies.forEach(agency => {
+      this._agencyService.getSkillsForAgency(agency.$key)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(skill => {
+          console.log(skill)
+          if (skill.type == SkillType.Support && !this.suportedSkills.map(item => item.$key).includes(skill.$key)) {
+            this.suportedSkills.push(skill);
+          } else if (skill.type == SkillType.Tech && !this.techSkills.map(item => item.$key).includes(skill.$key)) {
+            this.techSkills.push(skill);
           }
-        }
-      });
-
+        })
+    })
   }
 
   //

@@ -29,10 +29,48 @@ export class PartnerOrganisationService {
       return partnerOrganisationSubscription;
   }
 
+  getLocalAgencyPartnerOrganisations(agencyId: string): Observable<PartnerOrganisationModel[]> {
+    let partnerOrganisationsList: PartnerOrganisationModel[] = [];
+    const partnerOrganisationSubscription =
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partnerOrganisations')
+        .flatMap(partnerOrganisations => {
+          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+        })
+        .flatMap( organisationId => {
+          return this.getPartnerOrganisation(organisationId as string);
+        })
+        .map( organisation => {
+          partnerOrganisationsList.push(organisation);
+          return partnerOrganisationsList;
+        })
+
+    return partnerOrganisationSubscription;
+  }
+
   getApprovedCountryOfficePartnerOrganisations(agencyId: string, countryId: string): Observable<PartnerOrganisationModel[]> {
     let partnerOrganisationsList: PartnerOrganisationModel[] = [];
     const partnerOrganisationSubscription =
       this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
+        .flatMap(partnerOrganisations => {
+          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+        })
+        .flatMap( organisationId => {
+          return this.getPartnerOrganisation(organisationId as string);
+        })
+        .map( organisation => {
+          if (organisation.isApproved) {
+            partnerOrganisationsList.push(organisation);
+          }
+          return partnerOrganisationsList;
+        })
+
+    return partnerOrganisationSubscription;
+  }
+
+  getApprovedLocalAgencyPartnerOrganisations(agencyId: string): Observable<PartnerOrganisationModel[]> {
+    let partnerOrganisationsList: PartnerOrganisationModel[] = [];
+    const partnerOrganisationSubscription =
+      this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partnerOrganisations')
         .flatMap(partnerOrganisations => {
           return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
         })
@@ -85,6 +123,8 @@ export class PartnerOrganisationService {
     return partnerOrganisationSubscription;
   }
 
+
+
   savePartnerOrganisation(agencyId: string, countryId: string, partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
     if(!agencyId || !countryId)
     {
@@ -109,6 +149,34 @@ export class PartnerOrganisationService {
         partnerOrganisation.id = organisation.key;
 
         return this.savePartnerOrganisation(agencyId, countryId, partnerOrganisation);
+      });
+    }
+  }
+
+  savePartnerOrganisationLocalAgency(agencyId: string, partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
+    if(!agencyId)
+    {
+      throw new Error('Missing agencyId');
+    }
+
+    partnerOrganisation.modifiedAt = new Date().getTime();
+
+    if(partnerOrganisation.id)
+    {
+      const partnerOrganisationData = {};
+
+      // Add partner organisation to the countryOffice
+      partnerOrganisationData['/agency/' + agencyId  + '/partnerOrganisations/' + partnerOrganisation.id] = true;
+
+      partnerOrganisationData['/partnerOrganisation/' + partnerOrganisation.id] = partnerOrganisation;
+
+      return this.af.database.object(Constants.APP_STATUS).update(partnerOrganisationData);
+    } else {
+      return this.af.database.list(Constants.APP_STATUS + '/partnerOrganisation').push(partnerOrganisation).then(organisation => {
+        // update organisation Id
+        partnerOrganisation.id = organisation.key;
+
+        return this.savePartnerOrganisationLocalAgency(agencyId, partnerOrganisation);
       });
     }
   }

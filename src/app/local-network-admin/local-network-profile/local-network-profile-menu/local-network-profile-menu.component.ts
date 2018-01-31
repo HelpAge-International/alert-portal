@@ -21,6 +21,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
   private canCopy: boolean;
   private networkId: string;
   private networkCountryId: string;
+  private agencyOverview: boolean;
 
   constructor(private route: ActivatedRoute, private storageService: LocalStorageService, private router: Router) {
     this.initMenuActive();
@@ -55,6 +56,9 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
       if (params["networkCountryId"]) {
         this.networkCountryId = params["networkCountryId"];
       }
+      if (params["agencyOverview"]) {
+        this.agencyOverview = params["agencyOverview"];
+      }
     })
   }
 
@@ -76,267 +80,252 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
   }
 
   goToProgrammes() {
+    this.networkViewValues["officeTarget"] = "programme"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-programme', this.networkViewValues] : ['/network/local-network-office-profile/programme', this.networkViewValues])
   }
 
   goToOfficeCapacity() {
+    this.networkViewValues["officeTarget"] = "officeCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-office-capacity', this.networkViewValues] : ['/network/local-network-office-profile/office-capacity', this.networkViewValues])
   }
 
   goToPartners() {
+    this.networkViewValues["officeTarget"] = "partners"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-partners', this.networkViewValues] : ['/network/local-network-office-profile/partners', this.networkViewValues])
   }
 
   goToEquipment() {
+    this.networkViewValues["officeTarget"] = "equipment"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-equipment', this.networkViewValues] : ['/network/local-network-office-profile/equipment', this.networkViewValues])
   }
 
   goToCoordination() {
+    this.networkViewValues["officeTarget"] = "coordination"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-coordination', this.networkViewValues] : ['/network/local-network-office-profile/coordination', this.networkViewValues])
   }
 
   goToStockCapacity() {
+    this.networkViewValues["officeTarget"] = "stockCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-stock-capacity', this.networkViewValues] : ['/network/local-network-office-profile/stock-capacity', this.networkViewValues])
   }
 
   goToDocuments() {
+    this.networkViewValues["officeTarget"] = "documents"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-documents', this.networkViewValues] : ['/network/local-network-office-profile/documents', this.networkViewValues])
   }
 
   goToContacts() {
+    this.networkViewValues["officeTarget"] = "contacts"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-contacts', this.networkViewValues] : ['/network/local-network-office-profile/contacts', this.networkViewValues])
   }
 
   viewingToProgramme() {
     console.log("view programme");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "programme"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "programme",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "programme",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
     // /director/director-overview;countryId=tPB9g8EwCLMceutAeAyWlYQUh8V2;isViewing=true;agencyId=qbyONHp4xqZy2eUw0kQHU7BAcov1;from=plan
   }
 
   viewingToOfficeCapacity() {
     console.log("view office capacity");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "officeCapacity"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "officeCapacity",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "officeCapacity",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
   }
 
   viewingToPartners() {
     console.log("view partners");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "partners"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "partners",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "partners",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
   }
 
   viewingToEquipment() {
-    console.log("view partners");
+    console.log("view equipment");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "equipment"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "equipment",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "equipment",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
   }
 
   viewingToCoordination() {
     console.log("view coordination");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "coordination"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "coordination",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "coordination",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
   }
 
   viewingToStockCapacity() {
     console.log("view stock capacity");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "stockCapacity"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "stockCapacity",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "stockCapacity",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
   }
 
   viewingToDocuments() {
     console.log("view documents");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "documents"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "documents",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "documents",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
   }
 
   viewingToContacts() {
     console.log("view contacts");
+    let data = {}
+    data["countryId"] = this.countryID
+    data["isViewing"] = this.isViewing
+    data["agencyId"] = this.agencyId
+    data["from"] = "officeProfile"
+    data["officeTarget"] = "contacts"
+    data["isViewingFromExternal"] = this.isViewingFromExternal
+    data["networkId"] = this.networkId
     if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "contacts",
-        "canCopy": true,
-        "agencyOverview": true,
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      data["canCopy"] = this.canCopy
+    }
+    if (this.agencyOverview) {
+      data["agencyOverview"] = this.agencyOverview
+    }
+    if (this.networkCountryId) {
+      data["networkCountryId"] = this.networkCountryId
+    }
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "contacts",
-        "isViewingFromExternal": this.isViewingFromExternal,
-        "networkId": this.networkId,
-        "networkCountryId": this.networkCountryId
-      }]);
+      this.router.navigate(["/director/director-overview", data]);
     }
   }
 }

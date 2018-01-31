@@ -1,14 +1,22 @@
-<div *ngIf="!isViewing">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
-</div>
+<ng-container *ngIf="!isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </div>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+
+    <app-local-agency-header></app-local-agency-header>
+    <app-local-agency-menu></app-local-agency-menu>
+
+</ng-container>
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div *ngIf="!isViewing" class="Back--button" routerLink="/preparedness/minimum">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
+    <div *ngIf="!isViewing" class="Back--button" [routerLink]="isLocalAgency ? ['/local-agency/preparedness/minimum'] : ['/preparedness/minimum']">{{"PREPAREDNESS.BACK_BUTTON" | translate}}</div>
     <div class="Ribbon__section__wrap col-lg-8 Spaced">
       <div class="Header-title__wrap Small-spaced">
         <h2>{{"GLOBAL.PREPAREDNESS_LEVEL.MPA" | translate}} {{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}</h2>
@@ -63,9 +71,14 @@
         <div class="col-sm-3 col-6">{{CURRENCIES[currency]}} {{minTotal + advTotal}}</div>
       </div>
     </div>
-    <div *ngIf="!isViewing" class="Form-submit__wrapper">
+    <div *ngIf="!isViewing && !isLocalAgency" class="Form-submit__wrapper">
       <div class="btn btn-primary" (click)="saveNarratives()">{{"SAVE" | translate}}</div>
       <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}
+      </div>
+    </div>
+    <div *ngIf="isLocalAgency" class="Form-submit__wrapper">
+      <div class="btn btn-primary" (click)="saveNarrativesLocalAgency()">{{"SAVE" | translate}}</div>
+      <div class="btn btn-outline-secondary" routerLink="/local-agency/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}
       </div>
     </div>
   </div>

@@ -19,6 +19,7 @@ import {NetworkViewModel} from "./network-view.model";
 import {LocalNetworkViewModel} from "./local-network-view.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Location} from "@angular/common";
+import {NetworkCountryAgenciesComponent} from "../../network-country-admin/network-administration/network-country-agencies/network-country-agencies.component";
 import {NetworkWithCountryModel} from "./network-with-country.model";
 
 declare const jQuery: any;
@@ -250,7 +251,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       });
   }
 
-
   getPartnerAgencies(agencies: Map<any, any>) {
     let data = [];
     agencies.forEach((v) => {
@@ -343,7 +343,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
 
   selectLocalNetwork(network: ModelNetwork) {
-
     this.selectedNetwork = network;
     this.isViewingNetwork = true;
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
@@ -372,7 +371,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   selectAgency() {
-    console.log('toggling to agency');
     this.isViewingNetwork = false;
     this.selectedNetwork = null;
     this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)

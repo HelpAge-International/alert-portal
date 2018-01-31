@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
 import {Constants} from "../../../utils/Constants";
@@ -9,6 +9,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import { AddEditMappingProgrammeComponent } from "./add-edit-mapping/add-edit-mapping.component";
 import {CommonService} from "../../../services/common.service";
+import {AgencyService} from "../../../services/agency-service.service";
 
 declare var jQuery: any;
 
@@ -43,6 +44,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private agencyId: string;
 
+  public ResponsePlansEnum = ResponsePlanSectors;
+
 
   private levelOneDisplay: any[] = [];
 
@@ -64,12 +67,16 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   ];
 
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  private userAgencyId: string;
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private _commonService: CommonService,
               private route: ActivatedRoute,
               private router: Router,
               private userService: UserService,
+              private agencyService: AgencyService,
               private af: AngularFire) {
 
   }
@@ -80,6 +87,21 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+
+  }
+
+  initLocalAgency(){
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          this.agencyId = agencyId;
+          this._getProgrammeLocalAgency();
+        });
+  }
+
+  initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -95,6 +117,9 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
+          this.userAgencyId = agencyId;
+          console.log('agencyId: ' + this.agencyId)
+          console.log('userAgencyId: ' + this.userAgencyId)
           if (this.isViewing) {
             this._getProgramme();
           } else {
@@ -127,8 +152,30 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     logData.content = this.logContent[programmeID];
     logData.uploadBy = this.uid;
     logData.time = this._getCurrentTimestamp();
+    logData.agencyId = this.userAgencyId
 
     this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/4WMapping/' + programmeID + '/programmeNotes')
+      .push(logData)
+      .then(() => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_NOTE', AlertMessageType.Success);
+        this.logContent[programmeID] = '';
+      }).catch((error: any) => {
+      console.log(error, 'You do not have access!')
+    });
+  }
+
+  saveNoteLocalAgency(programmeID: any) {
+    if (!this.logContent[programmeID]) {
+      this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_NOTE', AlertMessageType.Error);
+      return false;
+    }
+
+    var logData: any = {};
+    logData.content = this.logContent[programmeID];
+    logData.uploadBy = this.uid;
+    logData.time = this._getCurrentTimestamp();
+
+    this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/programme/' + this.agencyId + '/4WMapping/' + programmeID + '/programmeNotes')
       .push(logData)
       .then(() => {
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_NOTE', AlertMessageType.Success);
@@ -166,6 +213,15 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             this.getUsers(note.uploadBy)
               .takeUntil(this.ngUnsubscribe)
               .subscribe((user: any) => {
+
+                if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                  this.agencyService.getAgency(note.agencyId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe( agency => {
+                      note.agencyName = agency.name;
+                    })
+                }
+
                 note.uploadByFullName = user.firstName + ' ' + user.lastName;
               });
           });
@@ -175,6 +231,51 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           this.programmeId = this.mapping[0].key;
         }
         this.convertCountryNumber();
+        var sectorExpertise = programms['sectorExpertise'];
+        for (let s in sectorExpertise) {
+          var obj = {key: parseInt(s), val: sectorExpertise[s]};
+          this.sectorExpertise.push(obj);
+        }
+
+        // Adding to select sector expertise pop up list
+        if (this.sectorExpertise && this.sectorExpertise.length > 0) {
+          this.sectorExpertise.forEach((val, key) => {
+            this.TmpSectorExpertise[val.key] = true;
+          });
+        }
+      });
+  }
+
+  _getProgrammeLocalAgency() {
+    this.af.database.object(Constants.APP_STATUS + "/localAgencyProfile/programme/" + this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((programms: any) => {
+        this.mapping = [];
+        this.sectorExpertise = [];
+        var mapping = programms['4WMapping'];
+        for (let m in mapping) {
+          mapping[m].key = m;
+          mapping[m].notes = [];
+          var notes = mapping[m].programmeNotes;
+          var arrayNotes = [];
+
+          for (let n in notes) {
+            notes[n].key = n;
+            arrayNotes.push(notes[n]);
+          }
+
+          arrayNotes.forEach((note, key) => {
+            this.getUsers(note.uploadBy)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((user: any) => {
+                note.uploadByFullName = user.firstName + ' ' + user.lastName;
+              });
+          });
+          arrayNotes = this._sortLogsByDate(arrayNotes);
+          mapping[m].notes = arrayNotes;
+          this.mapping.push(mapping[m]);
+        }
+
         var sectorExpertise = programms['sectorExpertise'];
         for (let s in sectorExpertise) {
           var obj = {key: parseInt(s), val: sectorExpertise[s]};
@@ -209,8 +310,28 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     });
   }
 
+  saveLogLocalAgency() {
+    var dataToUpdate = {content: this.noteTmp['content']};
+
+    this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/programme/' + this.agencyId + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID'])
+      .update(dataToUpdate)
+      .then(_ => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_NOTE', AlertMessageType.Success);
+        this.noteTmp = [];
+      }).catch(error => {
+      console.log("Message creation unsuccessful" + error);
+    });
+  }
+
   deleteLog() {
     this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID']).remove().then(() => {
+      this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_DELETE_NOTE', AlertMessageType.Success);
+      this.noteTmp = [];
+    });
+  }
+
+  deleteLogLocalAgency() {
+    this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/programme/' + this.agencyId + '/4WMapping/' + this.noteTmp['programmeID'] + '/programmeNotes/' + this.noteTmp['noteID']).remove().then(() => {
       this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_DELETE_NOTE', AlertMessageType.Success);
       this.noteTmp = [];
     });
@@ -317,6 +438,27 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       }
     });
     this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/programme/' + this.countryID + '/sectorExpertise/')
+      .set(dataToUpdate)
+      .then(_ => {
+        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_SELECTORS', AlertMessageType.Success);
+      }).catch(error => {
+      console.log("Message creation unsuccessful" + error);
+    });
+  }
+
+  saveSectorsLocalAgency() {
+
+    if (!this.TmpSectorExpertise || !this.TmpSectorExpertise.length) {
+      this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SAVE_SELECTORS', AlertMessageType.Error);
+      return false;
+    }
+    var dataToUpdate = {};
+    this.TmpSectorExpertise.forEach((val, key) => {
+      if (val) {
+        dataToUpdate[key] = val;
+      }
+    });
+    this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/programme/' + this.agencyId + '/sectorExpertise/')
       .set(dataToUpdate)
       .then(_ => {
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_SELECTORS', AlertMessageType.Success);

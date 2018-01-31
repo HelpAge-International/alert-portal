@@ -1,5 +1,11 @@
-<app-agency-admin-header></app-agency-admin-header>
-<app-agency-admin-menu></app-agency-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <div class="Alert-success" [hidden]="successInactive">
   {{successMessage | translate}}
@@ -16,9 +22,9 @@
     </div>
 
     <ul class="section-nav">
-      <li class="section-nav__item active"><a [routerLink]="['/agency-admin/agency-account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
+      <li class="section-nav__item active"><a [routerLink]="this.isLocalAgency ? ['/local-agency/agency-account-settings'] : ['/agency-admin/agency-account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
         | translate}}</a></li>
-      <li class="section-nav__item"><a [routerLink]="['/agency-admin/agency-account-settings/agency-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
+      <li class="section-nav__item"><a [routerLink]="this.isLocalAgency ?  ['/local-agency/agency-account-settings/agency-change-password'] : ['/agency-admin/agency-account-settings/agency-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
         | translate}}</a></li>
     </ul>
 

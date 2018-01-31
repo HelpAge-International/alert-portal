@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router, NavigationExtras, ActivatedRoute} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -11,10 +11,12 @@ import {LocalStorageService} from 'angular-2-local-storage';
 import {PageControlService} from "../../services/pagecontrol.service";
 import {UserService} from "../../services/user.service";
 
+
+
 declare var jQuery: any;
 
 @Component({
-  selector: 'app-preparedness',
+  selector: 'app-select-preparedness',
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.css']
 })
@@ -43,6 +45,9 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  //Local Agency
+  @Input() isLocalAgency: boolean;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService) {
   }
 
@@ -65,7 +70,8 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
 
   protected continueEvent() {
     this.storage.set('selectedAction', this.actionSelected);
-    this.router.navigate(["/preparedness/create-edit-preparedness"]);
+
+    this.router.navigate(this.isLocalAgency ? ["/local-agency/preparedness/create-edit-preparedness"] : ["/preparedness/create-edit-preparedness"]);
   }
 
   protected selectAction(action: GenericToCustomListModel) {

@@ -31,433 +31,441 @@
 
     <app-local-network-profile-menu [isNetworkCountry]="isNetworkCountry"></app-local-network-profile-menu>
 
-    <div  class="Header-title__wrap Spaced row">
+    <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TITLE_TEXT" | translate}}</h2>
     </div>
 
     <!--filter-->
-    <!--<div *ngIf="!isEditingCapacity" class="row Spaced padding-left-two">-->
-      <!--<label class="col-sm-0 Spaced-above">{{"GLOBAL.FILTER" | translate}}:</label>-->
-      <!--<div class="form-group-country-office-profile col-sm-3">-->
-        <!--<select class="form-control" (change)="filterDataAll($event, 'office')">-->
-          <!--<option *ngFor="let key of officeTypeList" [value]="key">{{officeType[key] | translate}}</option>-->
-        <!--</select>-->
-      <!--</div>-->
-      <!--<div class="form-group-country-office-profile col-sm-3">-->
-        <!--<select class="form-control" (change)="filterDataAll($event, 'sSkills')">-->
-          <!--<option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_SUPPORT_SKILLS" | translate}}</option>-->
-          <!--<option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>-->
-        <!--</select>-->
-      <!--</div>-->
-      <!--<div class="form-group-country-office-profile col-sm-3">-->
-        <!--<select class="form-control" (change)="filterDataAll($event, 'tSkills')">-->
-          <!--<option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_TECHNICAL_SKILLS" | translate}}</option>-->
-          <!--<option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>-->
-        <!--</select>-->
-      <!--</div>-->
-      <!--<div class="col-sm-4"></div>-->
-    <!--</div>-->
-
-    <div *ngFor="let agency of agencies">
-
-      <div class="Ribbon__response grey margin-bottom-one">
-        <div class="Ribbon__header__wrap lnetwork">
-          <div class="Ribbon__leftwrap">
-            <img src="{{agency.logoPath}}" class="circle-image" alt="">
-            <h4>{{agency.name}}</h4>
-          </div>
-          <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
-        </div>
-      </div>
-
-      <div class="Response__content spaced-top-bottom lnetwork">
-
-    <h3 class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.COUNTRY_OFFICE_CAPACITY" | translate}}</h3>
-        <!--filter-->
     <div *ngIf="!isEditingCapacity" class="row Spaced padding-left-two">
       <label class="col-sm-0 Spaced-above">{{"GLOBAL.FILTER" | translate}}:</label>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" (change)="filterData($event, 'office', agency)">
+        <select class="form-control" (change)="filterDataAll($event, 'office')">
           <option *ngFor="let key of officeTypeList" [value]="key">{{officeType[key] | translate}}</option>
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" (change)="filterData($event, 'sSkills', agency)">
+        <select class="form-control" (change)="filterDataAll($event, 'sSkills')">
           <option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_SUPPORT_SKILLS" | translate}}</option>
-          <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.key">{{sSkill.name}}</option>
+          <option *ngFor="let sSkill of suportedSkills" [value]="sSkill.$key">{{sSkill.name}}</option>
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" (change)="filterData($event, 'tSkills', agency)">
+        <select class="form-control" (change)="filterDataAll($event, 'tSkills')">
           <option value="0">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ALL_TECHNICAL_SKILLS" | translate}}</option>
-          <option *ngFor="let tSkill of techSkills" [value]="tSkill.key">{{tSkill.name}}</option>
+          <option *ngFor="let tSkill of techSkills" [value]="tSkill.$key">{{tSkill.name}}</option>
         </select>
       </div>
       <div class="col-sm-4"></div>
     </div>
 
-    <!--Staff count-->
-    <div class="row Spaced">
-      <div class="col-sm-0 padding-left-two"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_STAFF" | translate}}: {{totalStaff.get(agency.$key)}}</strong></div>
-      <div class="col-sm-0">
-        <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT5.LEVEL1'"></tooltip>
-      </div>
-      <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-three">
-        <button href="#edit-total-staff" data-toggle="modal"
-                class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
-        </button>
-        <!--<a href="#edit-total-staff" data-toggle="modal">Edit</a>-->
-      </div>
-      <div *ngIf="!isEditingCapacity" class="col-sm-7">
-        <strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_RESPONSE_STAFF" | translate}}:
-          {{totalResponseStaff.get(agency.$key)}}</strong>
-      </div>
-    </div>
+    <div *ngFor="let agency of agencies">
 
-    <!--Staff table headers-->
-    <div *ngIf="!isEditingCapacity">
-      <div class="row">
-        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
-        <div class="col-sm-2"><strong>{{"GLOBAL.NAME" | translate}}</strong></div>
-        <div class="col-sm-1"><strong>{{"GLOBAL.USER_INFO.POSITION" | translate}}</strong></div>
-        <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.STAFF.OFFICE_TYPE" | translate}}</strong></div>
-        <div class="col-sm-2"><strong>{{"GLOBAL.SKILLS" | translate}}</strong></div>
-        <div class="col-sm-4"><strong>{{"TRAINING_NEEDS" | translate}}</strong></div>
-      </div>
-      <div class="row Line-row margin-top-two"></div>
+      <ng-container *ngIf="agency.$key == agencyId || agencyCountryPrivacyMap.get(agency.$key)?.officeProfile != Privacy.Private">
+        <div class="Ribbon__response grey margin-bottom-one">
+          <div class="Ribbon__header__wrap lnetwork">
+            <div class="Ribbon__leftwrap">
+              <img src="{{agency?.logoPath ? agency?.logoPath : 'assets/images/alert_logo--grey.svg'}}"
+                   class="circle-image" alt="">
+              <h4>{{agency.name}}</h4>
+            </div>
+            <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+          </div>
+        </div>
 
-      <div *ngFor="let staff of responseStaffs.get(agency.$key); index as i">
-        <div class="row">
-          <div class="col-sm-1">{{staff.updatedAt | date:"MM/yy"}}</div> <!--Updated-->
-          <div class="col-sm-2">{{userMap.get(staff.id)}}</div> <!--Name-->
-          <div class="col-sm-1">{{staff.position}}</div> <!--Position-->
-          <div class="col-sm-2">{{officeType[staff.officeType] | translate}}</div> <!--Office Type-->
+        <div class="Response__content spaced-top-bottom">
 
-          <!--Skills-->
-          <div class="col-sm-2">
+          <h3 class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.COUNTRY_OFFICE_CAPACITY" | translate}}</h3>
+          <!--Staff count-->
+          <div class="row Spaced">
+            <div class="col-sm-0 padding-left-two"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_STAFF" |
+              translate}}: {{totalStaff.get(agency.$key)}}</strong></div>
+            <div class="col-sm-0">
+              <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT5.LEVEL1'"></tooltip>
+            </div>
+            <div *ngIf="canEdit && isEditingCapacity" class="col-sm-0 padding-left-three">
+              <button href="#edit-total-staff" data-toggle="modal"
+                      class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
+              </button>
+              <!--<a href="#edit-total-staff" data-toggle="modal">Edit</a>-->
+            </div>
+            <div *ngIf="!isEditingCapacity" class="col-sm-7">
+              <strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TOTAL_RESPONSE_STAFF" | translate}}:
+                {{totalResponseStaff.get(agency.$key)}}</strong>
+            </div>
+          </div>
+
+          <!--Staff table headers-->
+          <div *ngIf="!isEditingCapacity">
             <div class="row">
-              <div class="col-sm-1">
-                <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
-                     alt="Skills">
-                <p class="notes-number__components--country-office-profile skills">
-                  {{skillTechMap.get(staff.id).length}}
-                </p>
-                <a href="#tech_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
-                  {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
-                </a>
-              </div>
-
-              <div class="col-sm-1 margin-left-six">
-                <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
-                     alt="Skills">
-                <p class="notes-number__components--country-office-profile skills">
-                  {{skillSupoMap.get(staff.id).length}}
-                </p>
-                <a href="#support_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
-                  {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-3">{{staff.trainingNeeds}}</div> <!--Training Needs-->
-          <div class="col-sm-1">
-            <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-            <p class="notes-number__components--country-office-profile">{{getNotesNumber(staff)}}</p>
-            <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
-            <a href="#notes_{{agency.$key}}_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
-              {{ 'GLOBAL.NOTES' | translate }}
-            </a>
-          </div>
-        </div>
-        <div class="row Line-row"></div>
-
-        <!-- Technical Skills Drop Down -->
-        <div id="tech_{{i}}" class="Tooltip__bubble container-fluid notes log collapse">
-          <div class="log_left p-3">
-            <div class="Spaced row">
-              <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}} {{"GLOBAL.SKILLS" | translate}}</h3>
-              <a href="#tech_{{i}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' | translate}}</a>
-            </div>
-            <p *ngIf="skillTechMap.get(staff.id).length == 0">
-              {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.NO_TECHNICAL_SKILLS" | translate}}
-            </p>
-            <ul *ngIf="skillTechMap.get(staff.id).length > 0">
-              <li *ngFor="let skill of skillTechMap.get(staff.id)">
-                {{skill.toString()}}
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Support Skills Drop Down -->
-        <div id="support_{{i}}" class="Tooltip__bubble container-fluid notes log collapse">
-          <div class="log_left p-3">
-            <div class="Spaced row">
-              <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}} {{"GLOBAL.SKILLS" | translate}}</h3>
-              <a href="#support_{{i}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' | translate}}</a>
-            </div>
-            <p *ngIf="skillSupoMap.get(staff.id)?.length == 0">
-              {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.NO_SUPPORT_SKILLS" | translate}}
-            </p>
-            <ul *ngIf="skillSupoMap.get(staff.id)?.length > 0">
-              <li *ngFor="let skill of skillSupoMap.get(staff.id)">
-                {{skill.toString()}}
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Notes Drop Down -->
-        <div id="notes_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
-          <div class="log_left p-3">
-            <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
-            <hr class="d-inline-flex">
-
-            <form (ngSubmit)="addNote('staff', staff.id, newNote[staff.id], agency)">
-              <input type="text"
-                     name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
-                     [(ngModel)]="newNote[staff.id] && newNote[staff.id].content">
-
-              <!--Note post-->
-              <div class="row Spaced log-post__wrap--risk"
-                   *ngFor="let note of staffNoteMap.get(staff.id)">
-                <div class="log-date__wrap--risk col-lg-1">
-                  <p>{{ note.time | date: 'dd MMM y' }}</p>
-                </div>
-                <div class="col-lg-6">
-                  <p>{{ note.content }}</p>
-                  <br>
-                  <div class="row">
-                    <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
-                    </p>
-                    <a
-                      *ngIf="uid==note.uploadedBy"
-                      href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('staff', staff.id, note, agency)">{{ 'EDIT' | translate }}</a>
-                    <p
-                      *ngIf="uid==note.uploadedBy"
-                      href="javascript:void(0)" class="padding-left-one">|</p>
-                    <a
-                      *ngIf="uid==note.uploadedBy"
-                      href="javascript:void(0)"
-                      class="padding-left-one col-sm-0 text-danger"
-                      (click)="deleteNote('staff', staff.id, note, agency)">{{ 'DELETE' | translate }}</a>
-                  </div>
-                </div>
-              </div>
-              <hr>
-
-              <!--add Note button-->
-              <div class="add_log mt-auto p-2 text-right float-right">
-                <button type="submit"
-                        class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
-                </button>
-                <br>
-                <br><a href="#notes_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
-                translate
-                }}</a>
-              </div>
-            </form>
-          </div>
-        </div>
-        <!--Notes Drop Down End-->
-
-      </div>
-    </div>
-
-    <!--Surge Capacity Section-->
-    <h3 class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SURGE_CAPACITY" | translate}}</h3>
-    <div *ngIf="surgeCapacities.get(agency.$key)?.length != 0">
-      <div class="row">
-        <!--Surge capacity table headers-->
-        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
-        <div class="col-sm-2"><strong>{{"GLOBAL.USER_INFO.POSITION" | translate}}</strong></div>
-        <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SECTOR_OF_EXPERTISE" |
-          translate}}</strong></div>
-        <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION" | translate}}</strong></div>
-        <div class="col-sm-5"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ETA" | translate}}</strong></div>
-      </div>
-      <div class="row Line-row"></div>
-
-      <!--Emergency Doctor-->
-      <div *ngFor="let surge of surgeCapacities.get(agency.$key)">
-        <div class="row">
-          <div class="col-sm-1 margin-top-one">{{surge.updatedAt | date:"MM/yy" }}</div> <!--Updated-->
-          <div class="col-sm-2 margin-top-one">{{surge.position}}</div> <!--Position-->
-          <div class="col-sm-2 margin-top-one"><img
-            src="assets/images/select_icon/{{sectorImgPathMap.get(surge.$key)}}" alt="Health"><span
-             class="padding-left-one"></span>{{ResponsePlanSectors[surge.sectors[0]] | translate}}
-          </div> <!--Sector of expertise-->
-          <div class="col-sm-1 margin-top-one">{{surge.location}}</div> <!--Location-->
-          <div class="col-sm-1 "><p class="margin-top-one margin-top-one">{{surge.arrivalTimeValue}}
-            {{ArrivalTimeType[surge.arrivalTimeType]}}</p></div>
-          <span class="col-sm-1 padding-left-two"></span>
-          <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"
-               src="assets/images/icons/info_source.svg" alt="Surge capacity details">
-          <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse" href="#detail_{{surge.$key}}">
-            {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SURGE_CAP_DETAILS" | translate}}</a>
-          <span class="col-sm-1"></span>
-          <div *ngIf="!isEditingCapacity" class="margin-left-five col-sm-0">
-            <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
-            <p class="notes-number__components--country-office-profile">{{getSurgeNotesNumber(surge)}}</p>
-            <a href="#notes_surge_{{agency.$key}}_{{surge.$key}}" data-toggle="collapse" class="row margin-left-one-half">
-              {{"GLOBAL.NOTES" | translate}}</a>
-          </div>
-          <button type="button" class="btn btn-outline-primary text-uppercase"
-                  *ngIf="canEdit && isEditingCapacity"
-                  (click)="editSurgeCapacity(surge.$key)">{{"EDIT" | translate}}
-          </button>
-        </div> <!--Estimated time of arrival-->
-        <div class="row Line-row"></div>
-
-        <!--Surge Capacity Dropdown tooltip-->
-        <div class="Tooltip__bubble container-fluid Blue info log collapse" id="detail_{{surge.$key}}"
-        >
-          <div class="log_left p-3 row col-sm-12">
-            <h3 class="">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SURGE_CAP_DETAILS" | translate}}</h3>
-            <a href="#detail_{{surge.$key}}" class="margin-left-five text-right col-sm-7 closealltooltips"
-               data-toggle="collapse">
-              {{"GLOBAL.CLOSE" | translate}}</a>
-          </div>
-          <div class="Spaced">
-            <div class="row">
-              <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION" | translate}}</strong></div>
-              <div class="col-sm-2">{{surge.orgnization}}</div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TYPE_OF_RELATIONSHIP" |
+              <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" |
                 translate}}</strong></div>
-              <div class="col-sm-2">{{surge.relationship}}</div>
-            </div>
-
-            <div class="row">
               <div class="col-sm-2"><strong>{{"GLOBAL.NAME" | translate}}</strong></div>
-              <div class="col-sm-2">{{surge.name}}</div>
+              <div class="col-sm-1"><strong>{{"GLOBAL.USER_INFO.POSITION" | translate}}</strong></div>
+              <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.STAFF.OFFICE_TYPE" | translate}}</strong></div>
+              <div class="col-sm-2"><strong>{{"GLOBAL.SKILLS" | translate}}</strong></div>
+              <div class="col-sm-4"><strong>{{"TRAINING_NEEDS" | translate}}</strong></div>
             </div>
+            <div class="row Line-row margin-top-two"></div>
 
-            <div class="row">
-              <div class="col-sm-2"><strong>{{"EMAIL_ADDRESS" | translate}}</strong></div>
-              <div class="col-sm-2">{{surge.email}}</div>
-            </div>
+            <div *ngFor="let staff of responseStaffs.get(agency.$key); index as i">
+              <div class="row"
+                   *ngIf="((staff?.skill.indexOf(sSkillsFilter) != -1 && tSkillsFilter == 0)  ||
+                 (sSkillsFilter == 0 && tSkillsFilter == 0) ||
+                 (staff?.skill.indexOf(tSkillsFilter) != -1 && sSkillsFilter ==0) ||
+                 (staff?.skill.indexOf(sSkillsFilter) != -1 && staff?.skill.indexOf(tSkillsFilter) != -1)) &&
+                 (staff.officeType == officeFilter || officeFilter == 0)">
+                <div class="col-sm-1">{{staff.updatedAt | date:"MM/yy"}}</div> <!--Updated-->
+                <div class="col-sm-2">{{userMap.get(staff.id)}}</div> <!--Name-->
+                <div class="col-sm-1">{{staff.position}}</div> <!--Position-->
+                <div class="col-sm-2">{{officeType[staff.officeType] | translate}}</div> <!--Office Type-->
 
-            <div class="row">
-              <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.LENGTH_OF_DEPLOYMENT" |
-                translate}}</strong></div>
-              <div class="col-sm-2">{{surge.durationOfDeployment}}</div>
+                <!--Skills-->
+                <div class="col-sm-2">
+                  <div class="row">
+                    <div class="col-sm-1">
+                      <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                           alt="Skills">
+                      <p class="notes-number__components--country-office-profile skills">
+                        {{skillTechMap.get(staff.id).length}}
+                      </p>
+                      <a href="#tech_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
+                        {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
+                      </a>
+                    </div>
+
+                    <div class="col-sm-1 margin-left-six">
+                      <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                           alt="Skills">
+                      <p class="notes-number__components--country-office-profile skills">
+                        {{skillSupoMap.get(staff.id).length}}
+                      </p>
+                      <a href="#support_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
+                        {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-sm-3">{{staff.trainingNeeds}}</div> <!--Training Needs-->
+                <div class="col-sm-1">
+                  <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+                  <p class="notes-number__components--country-office-profile">{{getNotesNumber(staff)}}</p>
+                  <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
+                  <a href="#notes_{{agency.$key}}_{{ i }}" data-toggle="collapse" class="row margin-left-one-half">
+                    {{ 'GLOBAL.NOTES' | translate }}
+                  </a>
+                </div>
+                <div class="row Line-row"></div>
+              </div>
+
+              <!-- Technical Skills Drop Down -->
+              <div id="tech_{{i}}" class="Tooltip__bubble container-fluid notes log collapse">
+                <div class="log_left p-3">
+                  <div class="Spaced row">
+                    <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
+                      {{"GLOBAL.SKILLS" | translate}}</h3>
+                    <a href="#tech_{{i}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' |
+                      translate}}</a>
+                  </div>
+                  <p *ngIf="skillTechMap.get(staff.id).length == 0">
+                    {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.NO_TECHNICAL_SKILLS" | translate}}
+                  </p>
+                  <ul *ngIf="skillTechMap.get(staff.id).length > 0">
+                    <li *ngFor="let skill of skillTechMap.get(staff.id)">
+                      {{skill.toString()}}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Support Skills Drop Down -->
+              <div id="support_{{i}}" class="Tooltip__bubble container-fluid notes log collapse">
+                <div class="log_left p-3">
+                  <div class="Spaced row">
+                    <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}
+                      {{"GLOBAL.SKILLS"
+                      | translate}}</h3>
+                    <a href="#support_{{i}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' |
+                      translate}}</a>
+                  </div>
+                  <p *ngIf="skillSupoMap.get(staff.id)?.length == 0">
+                    {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.NO_SUPPORT_SKILLS" | translate}}
+                  </p>
+                  <ul *ngIf="skillSupoMap.get(staff.id)?.length > 0">
+                    <li *ngFor="let skill of skillSupoMap.get(staff.id)">
+                      {{skill.toString()}}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Notes Drop Down -->
+              <div id="notes_{{agency.$key}}_{{ i }}" class="Tooltip__bubble container-fluid notes log collapse">
+                <div class="log_left p-3">
+                  <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
+                  <hr class="d-inline-flex">
+
+                  <form (ngSubmit)="addNote('staff', staff.id, newNote[staff.id], agency)">
+                    <input type="text"
+                           name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                           [(ngModel)]="newNote[staff.id] && newNote[staff.id].content">
+
+                    <!--Note post-->
+                    <div class="row Spaced log-post__wrap--risk"
+                         *ngFor="let note of staffNoteMap.get(staff.id)">
+                      <div class="log-date__wrap--risk col-lg-1">
+                        <p>{{ note.time | date: 'dd MMM y' }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <p>{{ note.content }}</p>
+                        <br>
+                        <div class="row">
+                          <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                          </p>
+                          <a
+                            *ngIf="uid==note.uploadedBy"
+                            href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                            (click)="editNote('staff', staff.id, note, agency)">{{ 'EDIT' | translate }}</a>
+                          <p
+                            *ngIf="uid==note.uploadedBy"
+                            href="javascript:void(0)" class="padding-left-one">|</p>
+                          <a
+                            *ngIf="uid==note.uploadedBy"
+                            href="javascript:void(0)"
+                            class="padding-left-one col-sm-0 text-danger"
+                            (click)="deleteNote('staff', staff.id, note, agency)">{{ 'DELETE' | translate }}</a>
+                        </div>
+                      </div>
+                    </div>
+                    <hr>
+
+                    <!--add Note button-->
+                    <div class="add_log mt-auto p-2 text-right float-right">
+                      <button type="submit"
+                              class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
+                      </button>
+                      <br>
+                      <br><a href="#notes_{{agency.$key}}_{{ i }}" class="margin-left-two" data-toggle="collapse">{{
+                      'GLOBAL.CANCEL' |
+                      translate
+                      }}</a>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!--Notes Drop Down End-->
+
             </div>
           </div>
-        </div>
 
-        <!-- Notes Drop Down -->
-        <div id="notes_surge_{{agency.$key}}_{{surge.$key}}" class="Tooltip__bubble container-fluid notes log collapse">
-          <div class="log_left p-3">
-            <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
-            <hr class="d-inline-flex">
+          <!--Surge Capacity Section-->
+          <h3 class="Spaced-above">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SURGE_CAPACITY" | translate}}</h3>
+          <div *ngIf="surgeCapacities.get(agency.$key)?.length != 0">
+            <div class="row">
+              <!--Surge capacity table headers-->
+              <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" |
+                translate}}</strong></div>
+              <div class="col-sm-2"><strong>{{"GLOBAL.USER_INFO.POSITION" | translate}}</strong></div>
+              <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SECTOR_OF_EXPERTISE" |
+                translate}}</strong></div>
+              <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.LOCATION" | translate}}</strong>
+              </div>
+              <div class="col-sm-5"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.ETA" | translate}}</strong></div>
+            </div>
+            <div class="row Line-row"></div>
 
-            <form (ngSubmit)="addNote('surge', surge.$key, newNote[surge.$key], agency)">
-              <input type="text"
-                     name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
-                     [(ngModel)]="newNote[surge.$key] && newNote[surge.$key].content">
-
-              Note post
-              <div class="row Spaced log-post__wrap--risk"
-                   *ngFor="let note of surge.notes">
-                <div class="log-date__wrap--risk col-lg-1">
-                  <p>{{ note.time | date: 'dd MMM y' }}</p>
+            <!--Emergency Doctor-->
+            <div *ngFor="let surge of surgeCapacities.get(agency.$key)">
+              <div class="row">
+                <div class="col-sm-1 margin-top-one">{{surge.updatedAt | date:"MM/yy" }}</div> <!--Updated-->
+                <div class="col-sm-2 margin-top-one">{{surge.position}}</div> <!--Position-->
+                <div class="col-sm-2 margin-top-one"><img
+                  src="assets/images/select_icon/{{sectorImgPathMap.get(surge.$key)}}" alt="Health"><span
+                  class="padding-left-one"></span>{{ResponsePlanSectors[surge.sectors[0]] | translate}}
+                </div> <!--Sector of expertise-->
+                <div class="col-sm-1 margin-top-one">{{surge.location}}</div> <!--Location-->
+                <div class="col-sm-1 "><p class="margin-top-one margin-top-one">{{surge.arrivalTimeValue}}
+                  {{ArrivalTimeType[surge.arrivalTimeType]}}</p></div>
+                <span class="col-sm-1 padding-left-two"></span>
+                <img class="col-sm-0 align-top" style="width: 1.8em; margin-bottom: 0.5em;"
+                     src="assets/images/icons/info_source.svg" alt="Surge capacity details">
+                <a class="col-sm-0 margin-top-one padding-left-one" data-toggle="collapse"
+                   href="#detail_{{surge.$key}}">
+                  {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SURGE_CAP_DETAILS" | translate}}</a>
+                <span class="col-sm-1"></span>
+                <div *ngIf="!isEditingCapacity" class="margin-left-five col-sm-0">
+                  <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+                  <p class="notes-number__components--country-office-profile">{{getSurgeNotesNumber(surge)}}</p>
+                  <a href="#notes_surge_{{agency.$key}}_{{surge.$key}}" data-toggle="collapse"
+                     class="row margin-left-one-half">
+                    {{"GLOBAL.NOTES" | translate}}</a>
                 </div>
-                <div class="col-lg-6">
-                  <p>{{ note.content }}</p>
-                  <br>
+                <button type="button" class="btn btn-outline-primary text-uppercase"
+                        *ngIf="canEdit && isEditingCapacity"
+                        (click)="editSurgeCapacity(surge.$key)">{{"EDIT" | translate}}
+                </button>
+              </div> <!--Estimated time of arrival-->
+              <div class="row Line-row"></div>
+
+              <!--Surge Capacity Dropdown tooltip-->
+              <div class="Tooltip__bubble container-fluid Blue info log collapse" id="detail_{{surge.$key}}"
+              >
+                <div class="log_left p-3 row col-sm-12">
+                  <h3 class="">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SURGE_CAP_DETAILS" | translate}}</h3>
+                  <a href="#detail_{{surge.$key}}" class="margin-left-five text-right col-sm-7 closealltooltips"
+                     data-toggle="collapse">
+                    {{"GLOBAL.CLOSE" | translate}}</a>
+                </div>
+                <div class="Spaced">
                   <div class="row">
-                    <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
-                    </p>
-                    <a
-                      *ngIf="uid==note.uploadedBy"
-                      href="javascript:void(0)" class="col-sm-0 margin-right-none"
-                      (click)="editNote('surge', surge.$key, note, agency)">{{ 'EDIT' | translate }}</a>
-                    <p
-                      *ngIf="uid==note.uploadedBy"
-                      href="javascript:void(0)" class="padding-left-one">|</p>
-                    <a
-                      *ngIf="uid==note.uploadedBy"
-                      href="javascript:void(0)"
-                      class="padding-left-one col-sm-0 text-danger"
-                      (click)="deleteNote('surge', surge.$key, note, agency)">{{ 'DELETE' | translate }}</a>
+                    <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION" | translate}}</strong>
+                    </div>
+                    <div class="col-sm-2">{{surge.orgnization}}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TYPE_OF_RELATIONSHIP" |
+                      translate}}</strong></div>
+                    <div class="col-sm-2">{{surge.relationship}}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-2"><strong>{{"GLOBAL.NAME" | translate}}</strong></div>
+                    <div class="col-sm-2">{{surge.name}}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-2"><strong>{{"EMAIL_ADDRESS" | translate}}</strong></div>
+                    <div class="col-sm-2">{{surge.email}}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.LENGTH_OF_DEPLOYMENT" |
+                      translate}}</strong></div>
+                    <div class="col-sm-2">{{surge.durationOfDeployment}}</div>
                   </div>
                 </div>
               </div>
-              <hr>
 
-              <!--add Note button-->
-              <div class="add_log mt-auto p-2 text-right float-right">
-                <button type="submit"
-                        class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
-                </button>
-                <br>
-                <br><a href="#notes_surge_{{agency.$key}}_{{surge.$key}}" class="margin-left-two" data-toggle="collapse">{{
-                'GLOBAL.CANCEL' |
-                translate
-                }}</a>
+              <!-- Notes Drop Down -->
+              <div id="notes_surge_{{agency.$key}}_{{surge.$key}}"
+                   class="Tooltip__bubble container-fluid notes log collapse">
+                <div class="log_left p-3">
+                  <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
+                  <hr class="d-inline-flex">
+
+                  <form (ngSubmit)="addNote('surge', surge.$key, newNote[surge.$key], agency)">
+                    <input type="text"
+                           name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                           [(ngModel)]="newNote[surge.$key] && newNote[surge.$key].content">
+
+                    Note post
+                    <div class="row Spaced log-post__wrap--risk"
+                         *ngFor="let note of surge.notes">
+                      <div class="log-date__wrap--risk col-lg-1">
+                        <p>{{ note.time | date: 'dd MMM y' }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <p>{{ note.content }}</p>
+                        <br>
+                        <div class="row">
+                          <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                          </p>
+                          <a
+                            *ngIf="uid==note.uploadedBy"
+                            href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                            (click)="editNote('surge', surge.$key, note, agency)">{{ 'EDIT' | translate }}</a>
+                          <p
+                            *ngIf="uid==note.uploadedBy"
+                            href="javascript:void(0)" class="padding-left-one">|</p>
+                          <a
+                            *ngIf="uid==note.uploadedBy"
+                            href="javascript:void(0)"
+                            class="padding-left-one col-sm-0 text-danger"
+                            (click)="deleteNote('surge', surge.$key, note, agency)">{{ 'DELETE' | translate }}</a>
+                        </div>
+                      </div>
+                    </div>
+                    <hr>
+
+                    <!--add Note button-->
+                    <div class="add_log mt-auto p-2 text-right float-right">
+                      <button type="submit"
+                              class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
+                      </button>
+                      <br>
+                      <br><a href="#notes_surge_{{agency.$key}}_{{surge.$key}}" class="margin-left-two"
+                             data-toggle="collapse">{{
+                      'GLOBAL.CANCEL' |
+                      translate
+                      }}</a>
+                    </div>
+                  </form>
+                </div>
               </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-      </div>
-      <!-- Delete note modal -->
-      <div class="modal fade" id="delete-action-{{agency.$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-           aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
-                translate}}</strong></h5>
-            </div>
-            <div class="modal-body">
-              <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" | translate}}</p></div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal(agency)">{{"GLOBAL.CANCEL"|
-                translate}}
-              </button>
-              <button type="button" class="btn btn-primary" (click)="deleteAction(activeType, activeId, activeNote, agency)">
-                {{"GLOBAL.CONFIRM" | translate}}
-              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!--Edit Note Modal-->
-      <div class="modal fade" id="edit-action-{{agency.$key}}" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+
+        </div>
+        <!-- Delete note modal -->
+        <div class="modal fade" id="delete-action-{{agency.$key}}" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><strong>{{"NOTES.DELETE_DIALOG_TITLE" |
+                  translate}}</strong></h5>
+              </div>
+              <div class="modal-body">
+                <div class="text-center"><p>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.MODALS.DELETE_NOTE_TEXT_PART_ONE" |
+                  translate}}</p></div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" (click)="closeDeleteModal(agency)">
+                  {{"GLOBAL.CANCEL"|
+                  translate}}
+                </button>
+                <button type="button" class="btn btn-primary"
+                        (click)="deleteAction(activeType, activeId, activeNote, agency)">
+                  {{"GLOBAL.CONFIRM" | translate}}
+                </button>
+              </div>
             </div>
-            <div class="modal-body text-center form-group input-lg">
+          </div>
+        </div>
+
+        <!--Edit Note Modal-->
+        <div class="modal fade" id="edit-action-{{agency.$key}}" tabindex="-1" role="dialog" aria-labelledby="editNote"
+
+             aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title" class="Spaced-above">{{"NOTES.EDIT_DIALOG_TITLE" | translate}}</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body text-center form-group input-lg">
         <textarea type="text" rows="6" class="form-text form-control"
                   [(ngModel)]="activeNote && activeNote.content"></textarea>
-            </div>
-            <div class="row Right-aligned Spaced col-sm-12">
-              <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one" (click)="closeEditModal(agency)">{{"GLOBAL.CANCEL"
-                |
-                translate}}</a>
-              <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
-                      (click)="editAction(activeType, activeId, activeNote, agency)">{{"SAVE" | translate}}
-              </button>
+              </div>
+              <div class="row Right-aligned Spaced col-sm-12">
+                <a href="javascript:void(0)" data-dismiss="modal" class="col-sm-9 margin-top-one"
+                   (click)="closeEditModal(agency)">{{"GLOBAL.CANCEL"
+                  |
+                  translate}}</a>
+                <button href="#" data-dismiss="modal" class="btn btn-primary col-sm-3 text-uppercase"
+                        (click)="editAction(activeType, activeId, activeNote, agency)">{{"SAVE" | translate}}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-    </div>
+      </ng-container>
+
     </div>
   </div>
 </div>

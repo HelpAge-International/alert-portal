@@ -12,6 +12,7 @@ export class CoordinationArrangementModel extends BaseModel {
     public contactEmail: string;
     public contactPhone: string;
     public updatedAt: number;
+    public otherName?: string;
 
     validate(excludedFields = []): AlertMessageModel {
         if (!this.sector && !this.isExcluded('sector', excludedFields)) {

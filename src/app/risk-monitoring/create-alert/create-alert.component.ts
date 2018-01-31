@@ -54,6 +54,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private hazardScenario = Constants.HAZARD_SCENARIOS;
 
   private hazards: any[] = [];
+  private preSelectedCountry: number;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -72,7 +73,11 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    let model = new OperationAreaModel()
+    if (this.preSelectedCountry >= 0) {
+      model.country = this.preSelectedCountry
+    }
+    this.alertData.affectedAreas.push(model);
   }
 
   removeAnotherArea(key: number,) {
@@ -89,37 +94,24 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this._getHazards();
       this._getDirectorCountryID();
 
-      // this._getCountryID().then(() => {
-      //   this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-      //   this._getHazards();
-      //   this._getDirectorCountryID();
-      // });
-
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe).subscribe(content => {
         this.countryLevelsValues = content;
         err => console.log(err);
       });
-    });
 
-    // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-    //   this.uid = user.uid;
-    //   this.UserType = userType;
-    //
-    //   this._getCountryID().then(() => {
-    //     this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).subscribe(agencyId => { this.agencyId = agencyId});
-    //     this._getHazards();
-    //     this._getDirectorCountryID();
-    //   });
-    //
-    //   // get the country levels values
-    //   this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-    //     .takeUntil(this.ngUnsubscribe).subscribe(content => {
-    //     this.countryLevelsValues = content;
-    //     err => console.log(err);
-    //   });
-    // });
+      //init country location
+      this.userService.getCountryDetail(this.countryID, this.agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(country =>{
+          this.preSelectedCountry = country.location
+          this.alertData.affectedAreas.forEach(area => {
+            area.country = country.location
+          })
+        })
+    })
+
   }
 
   ngOnDestroy(): void {

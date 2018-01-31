@@ -57,7 +57,7 @@
         </div>
         <div class="col-lg-4 col-md-6 form-group" [hidden]="hideCountry">
           <label for="c-Office">{{"AGENCY_ADMIN.STAFF.COUNTRY_OFFICE"| translate}}</label>
-          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice"
+          <select class="form-control" id="c-Office" [(ngModel)]="countryOffice" name="countryOffice" (change)="selectedCountryOffice(countryOffice)"
                   [required]="!hideCountry">
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let country of countryList" [ngValue]="country"
@@ -70,6 +70,7 @@
           <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
+            <option *ngFor="let dep of selectedDepartments" [ngValue]="dep.id">{{dep.name}}</option>
           </select>
         </div>
 

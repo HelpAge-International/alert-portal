@@ -158,20 +158,38 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           //handle privacy settings
           if (this.isViewingFromExternal) {
             console.log("isViewingFromExternal")
+            console.log(this.networkId)
             console.log(this.networkCountryId)
-            this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(networkCountryMap => {
-                let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
-                this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
+            if (this.networkId && this.networkCountryId && this.networkCountryId != undefined) {
+              console.log("network country")
+              this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(networkCountryMap => {
+                  let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+                  this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
 
-                this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(privacy => {
-                    this.privacyNetwork = privacy
-                    this.updateMainMenuNetwork(this.privacyNetwork)
-                  })
-              })
+                  this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.privacyNetwork = privacy
+                      this.updateMainMenuNetwork(this.privacyNetwork)
+                    })
+                })
+            } else {
+              console.log("local network")
+              this.networkService.getLocalNetworkModelsForCountry(this.userAgencyId, this.userCountryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(localNetworks => {
+                  this.withinNetwork = localNetworks.map(network => network.id).includes(this.networkId)
+                  this.networkService.getPrivacySettingForNetwork(this.networkId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.privacyNetwork = privacy
+                      this.updateMainMenuNetwork(this.privacyNetwork)
+                    })
+                })
+            }
+
           } else {
             this.countryService.getPrivacySettingForCountry(this.countryId)
               .takeUntil(this.ngUnsubscribe)
@@ -252,10 +270,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     this.alerts = this.alertService.getAlerts(id)
       .map(alerts => {
         let alertList = [];
+        console.log(alerts)
         alerts.forEach(alert => {
-          if (alert.approvalStatus == AlertStatus.Approved) {
             alertList.push(alert);
-          }
         });
         return alertList;
       });

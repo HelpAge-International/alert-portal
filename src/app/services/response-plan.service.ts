@@ -133,11 +133,12 @@ export class ResponsePlanService {
 
       this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
 
-
+        console.log("update after status change")
         this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
           .take(1)
           .subscribe(result => {
             if (result) {
+              console.log(result)
               let hasCountryDirector = Object.keys(result).includes("countryDirector");
               let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
               let waitingApprovalList = [];
@@ -146,7 +147,9 @@ export class ResponsePlanService {
                 waitingApprovalList = waitingApprovalList.concat(waiting);
               });
 
-              if (waitingApprovalList.length == 0 && hasCountryDirector) {
+              console.log(waitingApprovalList)
+
+              if (waitingApprovalList.length == 0 && hasCountryDirector && isApproved) {
                 // updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
                 let approveUpdateData = {};
                 approveUpdateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;

@@ -1,5 +1,12 @@
-<app-country-admin-header *ngIf="!isViewing"></app-country-admin-header>
-<app-country-admin-menu *ngIf="!isViewing"></app-country-admin-menu>
+*<ng-container *ngIf="!isLocalAgency">
+  <app-country-admin-header *ngIf="!isViewing"></app-country-admin-header>
+  <app-country-admin-menu *ngIf="!isViewing"></app-country-admin-menu>
+</ng-container>
+
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <div class="Alert-error" [hidden]="hideWarning">{{waringMessage | translate}}</div>
 

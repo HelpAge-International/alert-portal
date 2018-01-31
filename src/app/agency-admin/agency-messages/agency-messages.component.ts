@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -20,6 +20,8 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
   private messageToDelete;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }

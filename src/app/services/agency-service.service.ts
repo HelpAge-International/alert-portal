@@ -33,7 +33,7 @@ export class AgencyService {
 
   getAgencyModel(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
-      .map(agency =>{
+      .map(agency => {
         let model = new ModelAgency(agency.name);
         model.mapFromObject(agency);
         model.id = agency.$key;
@@ -121,10 +121,10 @@ export class AgencyService {
     return displayList;
   }
 
-  getAllAgencyByNetworkCountry( countryCode, agencyId) {
+  getAllAgencyByNetworkCountry(countryCode, agencyId) {
 
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/"+agencyId, {
-      query:{
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId, {
+      query: {
         orderByChild: "location",
         equalTo: countryCode
       }
@@ -165,6 +165,14 @@ export class AgencyService {
     }
 
     return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId).set(countryOfficeAddress);
+  }
+
+  public saveLocalAgencyAddress(agencyId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
+    if (!agencyId || !countryOfficeAddress) {
+      return Promise.reject('Missing agencyId or countryOfficeAddress');
+    }
+
+    return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId).set(countryOfficeAddress);
   }
 
   public getPrivacySettingForAgency(agencyId): Observable<any> {
@@ -232,6 +240,27 @@ export class AgencyService {
           return null;
         }
       });
+  }
+
+  getSkillsForAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/skills")
+      .flatMap(skills => {
+        let mapedSkills = skills.map(item => {
+          item["id"] = item.$key
+          return item
+        })
+        return Observable.from(mapedSkills)
+      })
+      .flatMap(skill =>{
+        return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill["id"])
+      })
+  }
+
+  getAllCountryIdsForAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .map(offices =>{
+        return offices.map(office => office.$key)
+      })
   }
 
   unSubscribeNow() {

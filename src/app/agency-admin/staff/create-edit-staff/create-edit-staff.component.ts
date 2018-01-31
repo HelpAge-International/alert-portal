@@ -98,6 +98,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private editInitialUserType: UserType;
   private isUserTypeChange: boolean;
+  private selectedDepartments = []
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -712,6 +713,14 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       .subscribe(region => {
         this.regionOfficeList = Object.keys(region.countries);
       });
+  }
+
+  selectedCountryOffice(countryOffice) {
+    if (countryOffice.departments) {
+      this.selectedDepartments = Object.keys(countryOffice.departments).map(key => {
+        return ModelDepartment.create(key, countryOffice.departments[key].name)
+      })
+    }
   }
 
   private updateDirectorRegion(regionalDirectorId: string, officeList: Array<any>) {

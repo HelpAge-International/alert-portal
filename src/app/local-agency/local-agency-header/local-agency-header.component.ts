@@ -257,8 +257,8 @@ export class LocalAgencyHeaderComponent implements OnInit {
     }
 
     private checkAlerts() {
-      let id = this.isViewingNetwork && this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.countryId;
-      this.alertService.getAlerts(id)
+      let id = this.isViewingNetwork && this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.agencyId;
+      this.alertService.getAlerts(id, true)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((alerts: ModelAlert[]) => {
           this.isRed = false;

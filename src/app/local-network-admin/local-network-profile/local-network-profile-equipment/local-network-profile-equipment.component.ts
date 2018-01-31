@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
-import {AlertMessageType, UserType} from "../../../utils/Enums";
+import {AlertMessageType, Privacy, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {NoteModel} from "../../../model/note.model";
@@ -15,6 +15,8 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {LocalStorageService} from "angular-2-local-storage";
+import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
+import {SettingsService} from "../../../services/settings.service";
 
 declare var jQuery: any;
 
@@ -62,6 +64,9 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   private networkViewValues: {};
   private isViewingFromExternal: boolean;
 
+  private agencyCountryPrivacyMap = new Map<string, ModelAgencyPrivacy>()
+  private Privacy = Privacy
+
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
@@ -71,6 +76,7 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
               private router: Router,
               private af: AngularFire,
               private storageService: LocalStorageService,
+              private settingService: SettingsService,
               private route: ActivatedRoute) {
     this.newNote = [];
   }
@@ -114,62 +120,69 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   }
 
   private networkCountryAccess() {
-    if(this.isViewing){
+    if (this.isViewing) {
 
-            this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId)
+      this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(map => {
+          this.officeAgencyMap = map;
+
+          map.forEach((value: string, key: string) => {
+            this._agencyService.getAgency(key)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(map => {
-                this.officeAgencyMap = map;
+              .subscribe(agency => {
+                this.agencies.push(agency);
 
-                map.forEach((value: string, key: string) => {
-                  this._agencyService.getAgency(key)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(agency => {
-                      this.agencies.push(agency);
+                this._equipmentService.getEquipments(value)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(equipments => {
+                    this.equipments.set(key, equipments);
 
-                      this._equipmentService.getEquipments(value)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(equipments => {
-                          this.equipments.set(key, equipments);
+                    this.equipments.get(key).forEach(equipment => {
+                      const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
 
-                          this.equipments.get(key).forEach(equipment => {
-                            const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
+                      this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                        equipment.notes = notes;
+                      });
 
-                            this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                              equipment.notes = notes;
-                            });
+                      // Create the new note model
+                      this.newNote[equipment.id] = new NoteModel();
+                      this.newNote[equipment.id].uploadedBy = this.uid;
+                    });
+                  });
 
-                            // Create the new note model
-                            this.newNote[equipment.id] = new NoteModel();
-                            this.newNote[equipment.id].uploadedBy = this.uid;
-                          });
-                        });
+                this._equipmentService.getSurgeEquipments(value)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(surgeEquipments => {
+                    this.surgeEquipments.set(key, surgeEquipments);
 
-                      this._equipmentService.getSurgeEquipments(value)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(surgeEquipments => {
-                          this.surgeEquipments.set(key, surgeEquipments);
+                    this.surgeEquipments.get(key).forEach(surgeEquipment => {
+                      const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
 
-                          this.surgeEquipments.get(key).forEach(surgeEquipment => {
-                            const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
+                      this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                        surgeEquipment.notes = notes;
+                      });
 
-                            this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                              surgeEquipment.notes = notes;
-                            });
+                      // Create the new note model
+                      this.newNote[surgeEquipment.id] = new NoteModel();
+                      this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+                    });
 
-                            // Create the new note model
-                            this.newNote[surgeEquipment.id] = new NoteModel();
-                            this.newNote[surgeEquipment.id].uploadedBy = this.uid;
-                          });
+                  });
+              })
 
-                        });
-                    })
-                });
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
+              })
+          });
 
 
-              });
+        });
 
-    }else{
+    } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
 
@@ -228,6 +241,13 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
 
                         });
                     })
+
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
+                    })
                 });
 
 
@@ -239,59 +259,68 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   }
 
   private localNetworkAdminAccess() {
-    if(this.networkViewValues){
-            this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+    if (this.networkViewValues || this.isViewingFromExternal) {
+      console.log("networkViewValues")
+      this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(officeAgencyMap => {
+          this.officeAgencyMap = officeAgencyMap
+          this.agencies = []
+
+          officeAgencyMap.forEach((value: string, key: string) => {
+            this._agencyService.getAgency(key)
               .takeUntil(this.ngUnsubscribe)
-              .subscribe(officeAgencyMap => {
-                this.officeAgencyMap = officeAgencyMap
-                this.agencies = []
+              .subscribe(agency => {
+                this.agencies.push(agency)
 
-                officeAgencyMap.forEach((value: string, key: string) => {
-                  this._agencyService.getAgency(key)
-                    .takeUntil(this.ngUnsubscribe)
-                    .subscribe(agency => {
-                      this.agencies.push(agency)
-
-                    })
-
-                  this._equipmentService.getEquipments(value)
-                    .subscribe(equipments => {
-                      this.equipments.set(key, equipments)
-
-                      this.equipments.get(key).forEach(equipment => {
-                        const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
-
-                        this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                          equipment.notes = notes;
-                        });
-
-                        // Create the new note model
-                        this.newNote[equipment.id] = new NoteModel();
-                        this.newNote[equipment.id].uploadedBy = this.uid;
-                      });
-                    });
-
-                  this._equipmentService.getSurgeEquipments(value)
-                    .subscribe(surgeEquipments => {
-                      this.surgeEquipments.set(key, surgeEquipments)
-
-                      this.surgeEquipments.get(key).forEach(surgeEquipment => {
-                        const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
-
-                        this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                          surgeEquipment.notes = notes;
-                        });
-
-                        // Create the new note model
-                        this.newNote[surgeEquipment.id] = new NoteModel();
-                        this.newNote[surgeEquipment.id].uploadedBy = this.uid;
-                      });
-
-                    });
-                })
               })
 
-    }else{
+            //get privacy for country
+            this.settingService.getPrivacySettingForCountry(value)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(privacy => {
+                this.agencyCountryPrivacyMap.set(key, privacy)
+              })
+
+            this._equipmentService.getEquipments(value)
+              .subscribe(equipments => {
+                this.equipments.set(key, equipments)
+
+                this.equipments.get(key).forEach(equipment => {
+                  const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
+
+                  this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                    equipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[equipment.id] = new NoteModel();
+                  this.newNote[equipment.id].uploadedBy = this.uid;
+                });
+              });
+
+            this._equipmentService.getSurgeEquipments(value)
+              .subscribe(surgeEquipments => {
+                this.surgeEquipments.set(key, surgeEquipments)
+
+                this.surgeEquipments.get(key).forEach(surgeEquipment => {
+                  const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
+
+                  this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                    surgeEquipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[surgeEquipment.id] = new NoteModel();
+                  this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+                });
+
+              });
+          })
+        })
+
+    } else {
+      console.log("normal login")
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;
         this._networkService.getSelectedIdObj(user.uid)
@@ -310,6 +339,13 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                     .subscribe(agency => {
                       this.agencies.push(agency)
 
+                    })
+
+                  //get privacy for country
+                  this.settingService.getPrivacySettingForCountry(value)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(privacy => {
+                      this.agencyCountryPrivacyMap.set(key, privacy)
                     })
 
                   this._equipmentService.getEquipments(value)

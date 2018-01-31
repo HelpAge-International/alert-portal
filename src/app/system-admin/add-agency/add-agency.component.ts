@@ -331,6 +331,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
     if (this.isEdit) {
       if (!this.isGlobalAgency) {
+        console.log('global agency??')
         agencyData["/administratorLocalAgency/" + uid + "/agencyId"] = this.agencyId;
       }
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
@@ -345,6 +346,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
       agencyData["/agency/" + this.agencyId + "/isGlobalAgency"] = this.isGlobalAgency;
       if (!this.isGlobalAgency) {
+        console.log('global agency??')
         agencyData["/agency/" + this.agencyId + "/countryCode"] = this.COUNTRY.indexOf(this.country);
       } else {
         agencyData["/agency/" + this.agencyId + "/countryCode"] = null;
@@ -363,6 +365,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
     } else {
       if (!this.isGlobalAgency) {
+        console.log('global agency??')
         agencyData["/administratorLocalAgency/" + uid + "/agencyId"] = uid;
       }
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;

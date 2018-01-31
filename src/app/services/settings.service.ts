@@ -8,6 +8,8 @@ import {ClockSettingsModel} from "../model/clock-settings.model";
 import {NotificationSettingsModel} from "../model/notification-settings.model";
 import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
 import {Privacy} from "../utils/Enums";
+import {ModelDepartmentCanDelete} from "../agency-admin/settings/department/department.component";
+import {ModelDepartment} from "../model/department.model";
 
 @Injectable()
 export class SettingsService {
@@ -277,6 +279,20 @@ export class SettingsService {
     const planSettings = {};
     planSettings['/network/' + networkId + '/responsePlanSettings/sections'] = sections;
     return this.af.database.object(Constants.APP_STATUS).update(planSettings);
+  }
+
+  getCountryLocalDepartments(agencyId, countryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/departments", {preserveSnapshot: true})
+      .map((snapshot) => {
+        let depts:ModelDepartment[] = [];
+        snapshot.forEach((snap) => {
+          let y: ModelDepartment = new ModelDepartment();
+          y.id = snap.key;
+          y.name = snap.val().name;
+          depts.push(y);
+        });
+        return depts
+      });
   }
 
 }

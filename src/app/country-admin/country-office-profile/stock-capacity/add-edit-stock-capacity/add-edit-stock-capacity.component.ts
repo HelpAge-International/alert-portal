@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageType, GeoLocation, StockType} from "../../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -63,6 +63,8 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
   private activeStockCapacity: StockCapacityModel;
 
+  @Input() isLocalAgency: boolean;
+
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private router: Router,
@@ -86,27 +88,41 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       this.countryId = countryId;
       this.agencyId = agencyId;
 
-            // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
-      //   this.countryId = countryAdminUser.countryId;
-      //   this.agencyId = countryAdminUser.agencyAdmin ? Object.keys(countryAdminUser.agencyAdmin)[0] : '';
 
-      this.route.params.subscribe((params: Params) => {
-        if (params['id']) {
-          this._stockService.getStockCapacity(this.countryId, params['id'])
-            .subscribe(stockCapacity => {
-              this.stockCapacity = stockCapacity;
+      this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
 
-
-            });
-        }
-
-        if (params['stockType']) {
-          this.stockCapacity.stockType = Number(params['stockType']);
-        }
-      });
-      // });
-      this.initCountrySelection();
     });
+  }
+
+  initLocalAgency(){
+    this.route.params.subscribe((params: Params) => {
+      if (params['id']) {
+        this._stockService.getStockCapacityLocalAgency(this.agencyId, params['id'])
+          .subscribe(stockCapacity => {
+            this.stockCapacity = stockCapacity;
+          });
+      }
+
+      if (params['stockType']) {
+        this.stockCapacity.stockType = Number(params['stockType']);
+      }
+    });
+  }
+
+  initCountryOffice(){
+
+    this.route.params.subscribe((params: Params) => {
+      if (params['id']) {
+        this._stockService.getStockCapacity(this.countryId, params['id'])
+          .subscribe(stockCapacity => {
+            this.stockCapacity = stockCapacity;
+          });
+      }
+      if (params['stockType']) {
+        this.stockCapacity.stockType = Number(params['stockType']);
+      }
+    });
+    this.initCountrySelection();
   }
 
   validateForm(): boolean {
@@ -116,39 +132,51 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   submit() {
+    if(this.isLocalAgency){
+      this._stockService.saveStockCapacityLocalAgency(this.agencyId, this.stockCapacity)
+        .then(() => {
+            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
+            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+          },
+          err => {
+            if (err instanceof DisplayError) {
+              this.alertMessage = new AlertMessageModel(err.message);
+            } else {
+              this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+            }
+          });
+    }else{
+      var postData = {
+        location: this.selectedCountry,
+        level1: this.levelOneDisplay[this.selectedValue].id,
+        level2: this.selectedValueL2,
+        agencyId: this.agencyId
+      };
 
-    // Make object to push to Fire base
-    var postData = {
-      updatedAt: new Date().getTime(),
-      location: this.selectedCountry,
-      level1: this.levelOneDisplay[this.selectedValue].id,
-      level2: this.selectedValueL2.toString(),
-      agencyId: this.agencyId
-    };
-
-    // This is not ideal but time constraints were in place. If I had more time would of routed through model
-    // TODO: If refactor remember here to go through model this works either way just a note if and when ...
-
-
-    //this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
-    this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/stockCapacity/' + this.countryId)
-      .push(this.stockCapacity)
-      .update(postData)
-      .then(() => {
-          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
-          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-        },
-        err => {
-          if (err instanceof DisplayError) {
-            this.alertMessage = new AlertMessageModel(err.message);
-          } else {
-            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-          }
-        });
+      this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
+      this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/')
+        .push(this.stockCapacity)
+        .update(postData)
+        .then(() => {
+            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
+            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+          },
+          err => {
+            if (err instanceof DisplayError) {
+              this.alertMessage = new AlertMessageModel(err.message);
+            } else {
+              this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+            }
+          });
+    }
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-office-profile/stock-capacity');
+    if (this.isLocalAgency) {
+      this.router.navigateByUrl('/local-agency/profile/stock-capacity');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-office-profile/stock-capacity');
+    }
   }
 
   deleteStockCapacity() {
@@ -158,12 +186,21 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   deleteAction() {
     this.closeModal();
 
-    this._stockService.deleteStockCapacity(this.countryId, this.stockCapacity)
-      .then(() => {
-        this.goBack();
-        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_DELETED', AlertMessageType.Success);
-      })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    if(this.isLocalAgency){
+      this._stockService.deleteStockCapacityLocalAgency(this.agencyId, this.stockCapacity)
+        .then(() => {
+          this.goBack();
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    }else{
+      this._stockService.deleteStockCapacity(this.countryId, this.stockCapacity)
+        .then(() => {
+          this.goBack();
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    }
   }
 
   closeModal() {
@@ -221,7 +258,6 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   setLevel1Value(){
-
 
     console.log(this.selectedValue, 'preset value');
     this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;

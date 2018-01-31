@@ -12,7 +12,8 @@ import {
   FileExtensionsEnding,
   Privacy,
   SizeType,
-  UserType
+  UserType,
+  NetworkUserAccountType
 } from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {
@@ -82,6 +83,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   // IDs
   private userType: UserType;
   private UserType = UserType;
+  public NetworkUserAccountType = NetworkUserAccountType;
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
@@ -101,7 +103,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private DEPARTMENTS: ModelDepartment[] = [];
   private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
-  private ASSIGNED_TOO: PreparednessUser[] = [];
+  private ASSIGNED_TOO = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
   private actionLevelEnum = ActionLevel;
@@ -151,6 +153,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private userAgencyId: string;
   private isNetworkAccess: boolean;
   private isViewingFromExternal: boolean;
+  private networkUserType: any;
 
 
   constructor(private pageControl: PageControlService,
@@ -216,11 +219,19 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
       this.isNetworkAccess = true;
 
+      console.log(user)
+
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkId = selection["id"];
+
+          this.networkUserType = selection["userType"]
+          if(selection["userType"] == NetworkUserAccountType.NetworkCountryAdmin){
+            this.getNetworkCountryAdminAssignees()
+          }
+
           this.networkCountryId = selection["networkCountryId"];
           this.getStaffDetails(this.uid, true);
 
@@ -264,6 +275,10 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
+          this.networkUserType = selection["userType"]
+          if(selection["userType"] == NetworkUserAccountType.NetworkAdmin){
+            this.getLocalNetworkAdminAssignees()
+          }
           this.networkId = selection["id"];
           this.getStaffDetails(this.uid, true);
 
@@ -294,6 +309,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   private initNetworkViewAccess() {
+    console.log("initNetworkViewAccess")
     this.assignActionAsignee = this.uid;
     this.filterAssigned = "0";
     this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
@@ -343,6 +359,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .subscribe(matrix => this.modulesAreEnabled = matrix);
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+    if (this.isLocalNetworkAdmin) {
+      this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
+    }
 
     this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
@@ -365,6 +384,85 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
+
+  private getLocalNetworkAdminAssignees(){
+      this.networkService.getLocalNetwork(this.networkId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(network => {
+          console.log(network)
+          if (network.agencies) {
+            Object.keys(network.agencies).forEach(agencyKey => {
+              console.log(agencyKey)
+              if(network.agencies[agencyKey].isApproved) {
+                this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + '/' + network.agencies[agencyKey].countryCode)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(data => {
+
+                    if (data.adminId) {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+                        var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                        console.log(userToPush)
+                        this.ASSIGNED_TOO.push(userToPush);
+                      });
+                    }
+                  });
+                //Obtaining other staff data
+                this.af.database.object(Constants.APP_STATUS + "/staff/" + network.agencies[agencyKey].countryCode).subscribe((data: {}) => {
+                  for (let userID in data) {
+                    if (!userID.startsWith('$')) {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+                        var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                        this.ASSIGNED_TOO.push(userToPush);
+                      });
+                    }
+                  }
+                })
+              }
+            })
+          }
+        })
+  }
+
+
+  private getNetworkCountryAdminAssignees(){
+    this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(network => {
+        if (network.agencyCountries) {
+          Object.keys(network.agencyCountries).forEach(agencyKey => {
+            this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(countryOffices => {
+                countryOffices.forEach(countryOffice => {
+                  if (network.agencyCountries[agencyKey][countryOffice.$key]) {
+                    // Obtaining the country admin data
+                    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
+                      if (data.adminId) {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+                          var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                          this.ASSIGNED_TOO.push(userToPush);
+                        });
+                      }
+                    });
+                    //Obtaining other staff data
+                    this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
+                      for (let userID in data) {
+                        if (!userID.startsWith('$')) {
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+                            var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                            this.ASSIGNED_TOO.push(userToPush);
+                          });
+                        }
+                      }
+                    });
+                  }
+                })
+              })
+          })
+        }
+      })
+  }
+
 
   /**
    * Get staff member public user data (names, etc.)
@@ -422,6 +520,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     if (!ran) {
       user.isMe = (user.id == this.uid);
       this.ASSIGNED_TOO.push(user);
+
     }
   }
 
@@ -447,6 +546,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         let index = 0;
+        console.log(snap)
         for (let x of snap.val().fileSettings) {
           this.fileExtensions[index].allowed = snap.val().fileSettings[index];
           index++;
@@ -529,8 +629,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             let notification = new MessageModel();
             notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
             notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-            console.log(notification.content);
-            console.log(task, 'dan checking');
             notification.time = new Date().getTime();
             this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
             });
@@ -748,7 +846,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     let document = {
       fileName: file.name,
       filePath: "", //this needs to be updated once the file is uploaded
-      module: DocumentType.MPA,
+      module: 0,
       size: file.size * 0.001,
       sizeType: SizeType.KB,
       title: file.name,

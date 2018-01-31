@@ -1,20 +1,29 @@
-<div *ngIf="userType != UserType.Donor">
-  <app-country-admin-header *ngIf="!isViewing || canCopy"></app-country-admin-header>
-  <app-country-admin-menu *ngIf="!isViewing || canCopy"></app-country-admin-menu>
-  <app-director-header *ngIf="isViewing && !canCopy"></app-director-header>
-  <app-director-menu *ngIf="isViewing && !canCopy"></app-director-menu>
-</div>
+<ng-container *ngIf="!isLocalAgency">
+  <div *ngIf="userType != UserType.Donor">
+    <app-country-admin-header *ngIf="!isViewing || canCopy"></app-country-admin-header>
+    <app-country-admin-menu *ngIf="!isViewing || canCopy"></app-country-admin-menu>
+    <app-director-header *ngIf="isViewing && !canCopy"></app-director-header>
+    <app-director-menu *ngIf="isViewing && !canCopy"></app-director-menu>
+  </div>
 
-<div *ngIf="userType == UserType.Donor">
-  <app-donor-header></app-donor-header>
-  <app-donor-menu></app-donor-menu>
-</div>
+  <div *ngIf="userType == UserType.Donor">
+    <app-donor-header></app-donor-header>
+    <app-donor-menu></app-donor-menu>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="isLocalAgency">
+
+    <app-local-agency-header></app-local-agency-header>
+    <app-local-agency-menu></app-local-agency-menu>
+
+</ng-container>
 
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div *ngIf="userType != UserType.Donor; else donorBack">
-      <div *ngIf="!isViewing; else internalView" class="Back--button" routerLink="/response-plans">{{"RESPONSE_PLANS.TITLE_TEXT" |
+      <div *ngIf="!isViewing; else internalView" class="Back--button" [routerLink]="isLocalAgency ? ['/local-agency/response-plans'] : ['/response-plans']">{{"RESPONSE_PLANS.TITLE_TEXT" |
         translate}}
       </div>
       <ng-template #internalView>
@@ -35,6 +44,7 @@
     </ng-template>
 
 
-    <app-view-response-plan></app-view-response-plan>
+    <app-view-response-plan *ngIf="!isLocalAgency"></app-view-response-plan>
+    <app-view-response-plan *ngIf="isLocalAgency" [isLocalAgency]="true"></app-view-response-plan>
   </div>
 </div>

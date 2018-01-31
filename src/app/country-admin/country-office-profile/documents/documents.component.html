@@ -1,7 +1,21 @@
-<div *ngIf="!isViewing">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
-</div>
+<ng-container *ngIf="!isNetworkAdmin">
+  <ng-container *ngIf="!isLocalAgency">
+    <div *ngIf="!isViewing">
+      <app-country-admin-header></app-country-admin-header>
+      <app-country-admin-menu></app-country-admin-menu>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="isLocalAgency">
+    <div *ngIf="!isViewing">
+      <app-local-agency-header></app-local-agency-header>
+      <app-local-agency-menu></app-local-agency-menu>
+    </div>
+  </ng-container>
+</ng-container>
+<ng-container *ngIf="isNetworkAdmin">
+  <app-network-header></app-network-header>
+  <app-network-menu></app-network-menu>
+</ng-container>
 
 <app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow"
                   (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
@@ -9,24 +23,57 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <app-country-office-profile-menu></app-country-office-profile-menu>
+    <ng-container *ngIf="!isNetworkAdmin">
+      <ng-container *ngIf="!isLocalAgency">
+        <app-country-office-profile-menu></app-country-office-profile-menu>
+      </ng-container>
+      <ng-container *ngIf="isLocalAgency">
+        <app-local-agency-profile-menu></app-local-agency-profile-menu>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="isNetworkAdmin">
+      <app-network-setting-menus></app-network-setting-menus>
+    </ng-container>
 
-    <div class="Sub-header-title__wrap">
+    <div *ngIf="!isNetworkAdmin && !isLocalAgency" class="Sub-header-title__wrap">
       <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
       <button *ngIf="countryPermissionsMatrix.other.DownloadDocuments" type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
               [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
       </button>
     </div>
+    <div *ngIf="isNetworkAdmin" class="Sub-header-title__wrap">
+      <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
+              [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
+      </button>
+    </div>
+
+    <div *ngIf="isLocalAgency" class="Sub-header-title__wrap">
+      <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
+              [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
+      </button>
+    </div>
+
     <div class="row align-items-center Filter-form System-admin--form-wrap">
       <div class="col-lg-1 col-md-1">
         {{ 'GLOBAL.FILTER' | translate }}
       </div>
-      <div class="col-lg-2 col-md-2">
+      <div *ngIf="!isNetworkAdmin && !isLocalAgency" class="col-lg-2 col-md-2">
         <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
           <option value="-1" selected>{{ 'DOCUMENTS.ALL_COUNTRIES' | translate }}</option>
           <option *ngFor="let country of CountriesEnum; let i = index"
                   [value]="country"
                   [selected]="locationId == i">{{COUNTRIES[i] | translate}}
+          </option>
+        </select>
+      </div>
+
+      <div *ngIf="isNetworkAdmin" class="col-lg-2 col-md-2">
+        <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
+          <option value="-1" selected>{{ 'DOCUMENTS.ALL_COUNTRIES' | translate }}</option>
+          <option *ngFor="let country of CountriesEnum; let i = index"
+                  [value]="i">{{COUNTRIES[i] | translate}}
           </option>
         </select>
       </div>
@@ -55,7 +102,7 @@
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
-      <template ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
+      <template *ngIf="!isNetworkAdmin" ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
 
         <div class="Accordion--b-white Accordion__hide-links">
           <div class="row align-items-center no-gutters">
@@ -66,7 +113,8 @@
               </label>
             </div>
             <div class="col-sm-11">
-              <h2>{{COUNTRIES[country.location] | translate}}</h2>
+              <h2 *ngIf="!isLocalAgency">{{COUNTRIES[country.location] | translate}}</h2>
+              <h2 *ngIf="isLocalAgency">{{COUNTRIES[country.country] | translate}}</h2>
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all"
                  *ngIf="country.hasDocs">{{ 'GLOBAL.HIDE_ADD' | translate }}</a>
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all"
@@ -81,7 +129,7 @@
             <div class="col-lg-3 col-md-3">{{ 'GLOBAL.TITLE' | translate }}</div>
             <div class="col-lg-2 col-md-2">{{ 'GLOBAL.NAME' | translate }}</div>
             <div class="col-lg-1 col-md-1">{{ 'GLOBAL.SIZE' | translate }}</div>
-            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS2.UPLOADED_BY' | translate }}</div>
+            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.UPLOADED_BY' | translate }}</div>
             <div class="col-lg-1 col-md-2">{{ 'GLOBAL.DATE' | translate }}</div>
           </div>
 
@@ -101,6 +149,56 @@
             <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>
           </div>
         </div>
+      </template>
+
+      <template *ngIf="isNetworkAdmin" ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
+
+        <ng-container *ngIf="countrySelected == -1 || country.location == countrySelected">
+          <div class="Accordion--b-white Accordion__hide-links">
+            <div class="row align-items-center no-gutters">
+              <div class="col-sm-1 text-center">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" id="check_{{country.$key}}"
+                         [(ngModel)]="country.selected" (change)="countryDocsSelected(country, $event.target)" value="">
+                </label>
+              </div>
+              <div class="col-sm-11">
+                <h2>{{COUNTRIES[country.location] | translate}}</h2>
+                <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all"
+                   *ngIf="country.hasDocs">{{ 'GLOBAL.HIDE_ADD' | translate }}</a>
+                <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all"
+                   *ngIf="country.hasDocs">{{ 'SHOW_ALL' | translate }}</a>
+              </div>
+            </div>
+          </div>
+          <div class="Accordion__Content collapse" id="collapse{{country.$key}}">
+            <div class="row Line-row Small-spaced Header">
+              <div class="col-lg-1 col-md-1"></div>
+              <div class="col-lg-1 col-md-1">{{ 'DOCUMENTS.MODULE' | translate }}</div>
+              <div class="col-lg-3 col-md-3">{{ 'GLOBAL.TITLE' | translate }}</div>
+              <div class="col-lg-2 col-md-2">{{ 'GLOBAL.NAME' | translate }}</div>
+              <div class="col-lg-1 col-md-1">{{ 'GLOBAL.SIZE' | translate }}</div>
+              <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.UPLOADED_BY' | translate }}</div>
+              <div class="col-lg-1 col-md-2">{{ 'GLOBAL.DATE' | translate }}</div>
+            </div>
+
+            <div class="row Line-row Small-spaced" *ngFor="let doc of country.docsfiltered; let docIdx=index">
+              <div class="col-lg-1 col-md-1 text-center">
+                <label class="form-check-label">
+                  <input class="form-check-input check_{{country.$key}}" name="" type="checkbox" id="" value=""
+                         [(ngModel)]="doc.selected"
+                         (change)="selectDocument()">
+                </label>
+              </div>
+              <div class="col-lg-1 col-md-1">{{DOCUMENT_TYPE[doc.module] | translate}}</div>
+              <div class="col-lg-3 col-md-3">{{doc.title}}</div>
+              <div class="col-lg-2 col-md-2">{{doc.fileName}}</div>
+              <div class="col-lg-1 col-md-1">{{doc.size}}</div>
+              <div class="col-lg-2 col-md-2">{{doc.uploadedBy}}</div>
+              <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>
+            </div>
+          </div>
+        </ng-container>
       </template>
     </div>
   </div>

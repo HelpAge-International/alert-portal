@@ -85,6 +85,9 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
         if (params['isViewingFromExternal']) {
           this.isViewingFromExternal = params['isViewingFromExternal'];
         }
+        if (params['uid']) {
+          this.uid = params['uid'];
+        }
 
 
       })
@@ -96,9 +99,9 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
   private networkCountryAccess() {
 
     if (this.isViewing) {
-      this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-        this.uid = user.uid;
-        console.log(this.uid)
+      // this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      //   this.uid = user.uid;
+      //   console.log(this.uid)
 
         this._coordinationArrangementService.getCoordinationArrangementsNetworkCountry(this.networkCountryId)
           .takeUntil(this.ngUnsubscribe)
@@ -135,7 +138,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
           });
 
-      });
+      // });
     } else {
       this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
         this.uid = user.uid;

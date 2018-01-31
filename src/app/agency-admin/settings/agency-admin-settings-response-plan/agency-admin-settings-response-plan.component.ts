@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
@@ -29,6 +29,8 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
   private alertShow: boolean = false;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }

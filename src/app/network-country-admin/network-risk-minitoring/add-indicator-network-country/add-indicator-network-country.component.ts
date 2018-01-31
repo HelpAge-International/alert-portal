@@ -177,8 +177,15 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         if (params["systemId"]) {
           this.systemId = params["systemId"];
         }
+        if (params["uid"]) {
+          this.uid = params["uid"];
+        }
+        if (params["userType"]) {
+          this.UserType = params["userType"];
+        }
 
         if (this.copyCountryId && this.copyIndicatorId) {
+          console.log("triggered")
           this.loadCopyContextIndicatorInfo(this.copyCountryId, this.copyIndicatorId, this.copyHazardId);
         }
 
@@ -195,6 +202,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
               this.countryLevelsValues = content;
               err => console.log(err);
             });
+
+          this.initPreSelection()
 
         } else {
           this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
@@ -222,12 +231,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
                     err => console.log(err);
                   });
 
-                // //get country location enum
-                // this.userService.getCountryDetail(this.countryID, this.agencyId)
-                //   .first()
-                //   .subscribe(country => {
-                //     this.countryLocation = country.location;
-                //   });
+                //get country location enum
+                this.initPreSelection();
 
               })
 
@@ -235,6 +240,14 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         }
 
       });
+  }
+
+  private initPreSelection() {
+    this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
+      .first()
+      .subscribe(networkCountry => {
+        this.countryLocation = networkCountry.location
+      })
   }
 
   private loadCopyContextIndicatorInfo(copyCountryId: string, copyIndicatorId: string, copyHazardId: string) {
@@ -337,9 +350,10 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
 
   addAnotherLocation() {
     let modelArea = new OperationAreaModel();
-    modelArea.country = this.countryLocation;
+    if (this.countryLocation >= 0) {
+      modelArea.country = this.countryLocation;
+    }
     this.indicatorData.affectedLocation.push(modelArea);
-    console.log(this.indicatorData)
   }
 
   removeAnotherLocation(key: number,) {

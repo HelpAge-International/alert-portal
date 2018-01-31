@@ -160,7 +160,7 @@ export enum UserType {
   PartnerUser = 13,
   PartnerOrganisation = 14,
   LocalAgencyAdmin = 15,
-  AgencyDirector = 16,
+  LocalAgencyDirector = 16,
   AgencyUser = 17
 }
 export enum OfficeType {
@@ -1522,6 +1522,8 @@ export enum Month {
 export enum StockType {
   Country = 0,
   External = 1,
-  Network = 2
+  Network = 2,
+  Agency = 3,
+  AgencyExternal = 4
 }
 
