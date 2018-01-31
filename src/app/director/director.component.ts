@@ -162,6 +162,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(countryOffices => {
         this.countryOffices = countryOffices;
+        console.log(this.countryOffices)
         this.initData();
       });
   }
@@ -319,6 +320,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   }
 
   private getAllRegionsAndCountries(): Promise<any> {
+    console.log("called here%%%%%")
     let promise = new Promise((res, rej) => {
       this.otherRegion = new RegionHolder();
       this.otherRegion.regionId = "Unassigned";
