@@ -48,6 +48,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
   private didOpenInitialSection: boolean = false;
+  private isAutoSave: boolean = false;
 
   private pageTitle: string = "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TITLE_TEXT";
 
@@ -66,6 +67,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   // Section 1/10
   private planName: string = '';
+  private planNameChange: string;
   private geographicalLocation: string = '';
   // private staffMembers: FirebaseObjectObservable<any>[] = [];
   private staffMembers: any[] = [];
@@ -379,7 +381,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (numberOfCompletedSections > 0) {
       console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
-      jQuery("#navigate-back").modal("show");
+      //jQuery("#navigate-back").modal("show");
     } else {
       console.log('in false of if ');
       this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
@@ -425,7 +427,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
 
     //section 4
-    console.log('setting this')
     this.newResponsePlan.activitySummary["q1"] = this.proposedResponseText;
     this.newResponsePlan.activitySummary["q2"] = this.progressOfActivitiesPlanText;
     this.newResponsePlan.activitySummary["q3"] = this.coordinationPlanText;
@@ -626,6 +627,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.newResponsePlan.timeUpdated = moment.utc().valueOf();
       this.newResponsePlan.updatedBy = this.uid;
     }
+    this.autoSaveToFirebase(this.newResponsePlan);
   }
 
 
@@ -637,9 +639,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     // Here we need to ensure the save Y/N is shown when > 0 sections are complete
 
 
-    jQuery("#navigate-back").modal("hide");
-
-    this.saveToFirebase(this.newResponsePlan);
+    //jQuery("#navigate-back").modal("hide");
+    //this.router.navigateByUrl('response-plans');
+    this.autoSaveToFirebase(this.newResponsePlan);
   }
 
   /**
@@ -647,7 +649,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
-
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyAdminUid + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -662,9 +663,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection1() {
 
-    this.checkSection1();
+      this.checkSection1();
 
     this.handleContinueSave();
+
+
+
+    console.log(this.loadResponsePlan, 'load response plan');
+    console.log(this.newResponsePlan, 'new response plan');
+
+      //this.autoSaveSection1();
+
+      this.onSave();
+
+
   }
 
 
@@ -676,7 +688,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section1Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[0], false);
     }
+
   }
+
 
   /**
    * Section 2/10
@@ -712,6 +726,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
       }
     }
+
 
 
   }
@@ -811,6 +826,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection2();
 
     this.handleContinueSave();
+
+    console.log(this.newResponsePlan, 'new response plan');
+    console.log(this.loadResponsePlan, 'load response plan');
+
+    this.onSave();
   }
 
   private checkSection2() {
@@ -946,6 +966,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection3();
 
     this.handleContinueSave();
+
+
+    console.log(this.newResponsePlan, 'new response plan');
+    console.log(this.loadResponsePlan, 'load response plan');
+
+    this.onSave();
+
   }
 
   private checkSection3() {
@@ -961,7 +988,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.section3Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[2], false);
     }
+
   }
+
 
   /**
    * Section 4/10
@@ -972,6 +1001,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection4();
 
     this.handleContinueSave();
+
+    console.log(this.newResponsePlan, 'new response plan');
+    console.log(this.loadResponsePlan, 'load response plan');
+
+    this.onSave();
+
+
   }
 
   private checkSection4() {
@@ -1057,6 +1093,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection5();
 
     this.handleContinueSave();
+
+    this.onSave();
   }
 
   private checkSection5() {
@@ -1081,6 +1119,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection6();
 
     this.handleContinueSave();
+
+    this.onSave();
   }
 
   private checkSection6() {
@@ -1156,7 +1196,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   // }
 
   saveActivity(sector, activity: ModelPlanActivity, index) {
-    console.log(activity)
     let error = activity.validate();
     if (!error) {
       this.activeActivity[sector] = null;
@@ -1168,7 +1207,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   viewActivity(sector, activity) {
-    console.log(this.activityError[sector])
     this.activeActivity[sector] = activity;
   }
 
@@ -1179,14 +1217,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   addActivity(sector) {
     let activity = new ModelPlanActivity(null, null, null, null);
-    console.log(activity)
     if (this.activityMap.get(sector)) {
       this.activityMap.get(sector).push(activity);
     } else {
       this.activityMap.set(sector, [activity]);
     }
     this.activeActivity[sector] = activity;
-    console.log(this.activityMap)
   }
 
   getNumberOfActivities(sector) {
@@ -1253,9 +1289,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   continueButtonPressedOnSection7() {
+
     this.checkSection7();
 
     this.handleContinueSave();
+
+    this.onSave();
   }
 
   private checkSection7() {
@@ -1292,6 +1331,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection8();
 
     this.handleContinueSave();
+
+    this.onSave();
   }
 
   private checkSection8() {
@@ -1309,9 +1350,14 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
    * Section 9/10
    */
   continueButtonPressedOnSection9() {
+
+    this.doublerCounting();
+
     this.checkSection9();
 
     this.handleContinueSave();
+
+    this.onSave();
   }
 
   private checkSection9() {
@@ -1497,9 +1543,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   checkSection10Status() {
+
     this.checkSection10();
 
     this.handleContinueSave();
+
+    this.onSave();
   }
 
   private checkSection10() {
@@ -1513,6 +1562,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.sectionsCompleted.set(this.sections[9], false);
     }
   }
+
 
   /**
    * Functions
@@ -1535,14 +1585,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   goBack() {
 
-    let numberOfCompletedSections = this.getCompleteSectionNumber();
 
+
+    this.router.navigateByUrl('response-plans');
+    /*
     if (numberOfCompletedSections > 0) {
       console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
       jQuery("#navigate-back").modal("show");
     } else {
-      this.router.navigateByUrl(this.isLocalAgency ? 'local-agency/response-plans' : 'response-plans');
-    }
+      this.router.navigateByUrl('response-plans');
+    }*/
   }
 
   closeModalAndNavigate() {
@@ -1593,8 +1645,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       });
   }
 
-  private setupForEdit() {
 
+  private setupForEdit() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -1618,12 +1670,16 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadResponsePlanInfo(responsePlanId: string) {
-    let responsePlansPath: string
-    if (this.isLocalAgency) {
+
+
+    let responsePlansPath: string;
+    if(this.isLocalAgency){
       responsePlansPath = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + responsePlanId;
     } else {
       responsePlansPath = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + responsePlanId;
     }
+
+
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
@@ -1762,7 +1818,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadSection5(responsePlan: ResponsePlan) {
     this.numOfPeoplePerHouseHold = responsePlan.peoplePerHousehold;
-    this.numOfHouseHolds = responsePlan.numOfHouseholds;
     this.numOfHouseHolds = responsePlan.numOfHouseholds;
     this.calculateBeneficiaries();
     this.howBeneficiariesCalculatedText = responsePlan.beneficiariesNote;
@@ -2040,7 +2095,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     let keys = Object.keys(object);
     let tempList = [];
     for (let key of keys) {
-      tempList.push(object[key]);
+      if (tempList.indexOf(object[key]) == -1) {
+        tempList.push(object[key]);
+      }
     }
     return tempList;
   }
@@ -2062,8 +2119,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       }
     }
   }
-
-  private saveToFirebase(newResponsePlan: ResponsePlan) {
+/*
+  autoSaveToFirebase(newResponsePlan: ResponsePlan){
 
     let numOfSectionsCompleted: number = 0;
     this.sectionsCompleted.forEach((v, k) => {
@@ -2074,7 +2131,56 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     if (numOfSectionsCompleted > 0) {
 
-      if (this.isLocalAgency) {
+      if (this.forEditing) {
+        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
+
+        newResponsePlan.editingUserId = null;
+        this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+          console.log("Response plan successfully updated");
+          //if edit, delete approval data and any validation token
+          let resetData = {};
+          resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+          resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
+          this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
+
+          }, error => {
+            console.log(error.message);
+          });
+        }).catch(error => {
+          console.log("Response plan creation unsuccessful with error --> " + error.message);
+        });
+
+      } else {
+        let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+        this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
+          console.log("Response plan creation successful");
+          }).catch(error => {
+          console.log("Response plan creation unsuccessful with error --> " + error.message);
+        });
+      }
+    } else {
+      console.log(numOfSectionsCompleted);
+      this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
+    }
+    newResponsePlan.isEditing = false;
+    console.log('push data to firebase');
+  }
+*/
+
+  autoSaveToFirebase(newResponsePlan: ResponsePlan) {
+
+
+    console.log(this.planName, 'plan name ');
+    let numOfSectionsCompleted: number = 0;
+    this.sectionsCompleted.forEach((v, k) => {
+      if (v) {
+        numOfSectionsCompleted++;
+      }
+    });
+
+    if (numOfSectionsCompleted > 0) {
+
+      if(this.isLocalAgency){
         if (this.forEditing) {
           let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + this.idOfResponsePlanToEdit;
           newResponsePlan.isEditing = false;
@@ -2086,7 +2192,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
             resetData["/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
             resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
             this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
-              this.router.navigateByUrl('local-agency/response-plans');
+              //this.router.navigateByUrl('local-agency/response-plans');
             }, error => {
               console.log(error.message);
             });
@@ -2095,27 +2201,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           });
 
         } else {
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.agencyId;
-          this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
-            console.log("Response plan creation successful");
-            this.router.navigateByUrl('local-agency/response-plans');
-          }).catch(error => {
-            console.log("Response plan creation unsuccessful with error --> " + error.message);
-          });
+          this.pushToFirebase();
         }
-      } else {
+      }else{
         if (this.forEditing) {
           let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
-          newResponsePlan.isEditing = false;
-          newResponsePlan.editingUserId = null;
-          this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+
+             this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
             console.log("Response plan successfully updated");
             //if edit, delete approval data and any validation token
             let resetData = {};
             resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
             resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
             this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
-              this.router.navigateByUrl('response-plans');
+              //this.router.navigateByUrl( 'response-plans');
             }, error => {
               console.log(error.message);
             });
@@ -2124,20 +2223,49 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           });
 
         } else {
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
-          this.af.database.list(responsePlansPath).push(newResponsePlan).then(() => {
-            console.log("Response plan creation successful");
-            this.router.navigateByUrl('response-plans');
-          }).catch(error => {
-            console.log("Response plan creation unsuccessful with error --> " + error.message);
-          });
+
+          this.pushToFirebase();
         }
       }
     } else {
       console.log(numOfSectionsCompleted);
       this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
     }
+    //newResponsePlan.isEditing = false;
   }
+
+  pushToFirebase(){
+
+    console.log(this.newResponsePlan);
+
+    if (this.idOfResponsePlanToEdit)
+    {
+      let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + "/"+ this.idOfResponsePlanToEdit;
+      this.af.database.object(responsePlansPath)
+        .update(this.newResponsePlan)
+        .then(()=> {
+          console.log('update');
+        }).catch(error => {
+        console.log("Response plan creation unsuccessful with error --> " + error.message);
+      });
+
+    } else {
+
+      let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+      this.af.database.list(responsePlansPath)
+        .push(this.newResponsePlan)
+        .then(plan => {
+          // set variable in here
+          this.idOfResponsePlanToEdit = plan.path.pieces_[3];
+          console.log('push');
+        }).catch(error => {
+        console.log("Response plan creation unsuccessful with error --> " + error.message);
+      });
+
+    }
+
+  }
+
 
   private checkSectorInfo() {
     console.log(this.activityMap);
@@ -2150,7 +2278,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       value.forEach(obj => {
         console.log('start of foreach');
 
-        if (!obj.indicator || !obj.name || !obj.output) {
+        if ( !obj.indicator || !obj.name || !obj.output ) {
           console.log('check null values');
           console.log(obj.indicator);
           console.log(obj.name);
@@ -2160,24 +2288,24 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
       });
 
-      /* Dan - I have commented out just in case needed to be used
+/* Dan - I have commented out just in case needed to be used
 
-            if (!this.activityInfoMap) {
-              console.log('Return False, CheckSectorInfo');
+      if (!this.activityInfoMap) {
+        console.log('Return False, CheckSectorInfo');
 
-              return false;
-            }
+        return false;
+      }
 
-          });
+    });
 
-          Object.keys(this.activityMap).forEach(key => {
+    Object.keys(this.activityMap).forEach(key => {
 
-          if (!this.activityInfoMap.get(key) || this.activityInfoMap.get(key).indicator == null || !this.activityInfoMap.get(key).name == null || !this.activityInfoMap.get(key).output == null) {
-              console.log('Return False, activityInfoMap');
+    if (!this.activityInfoMap.get(key) || this.activityInfoMap.get(key).indicator == null || !this.activityInfoMap.get(key).name == null || !this.activityInfoMap.get(key).output == null) {
+        console.log('Return False, activityInfoMap');
 
-              return false;
-            }
-      */
+        return false;
+      }
+*/
     });
 
 

@@ -143,6 +143,8 @@
   "OR_REJECT_THIS_REQUEST":"Or reject this request",
   "TODAY":"today",
   "RESPONSE_PLAN":"Response Plan",
+  "RESPONSE_PLAN_CONTINUE": "Save and Continue",
+  "RESPONSE_PLAN_DONE": "Done",
   "EXPORT_PROPOSAL_SEC_1_TITLE":"1 of 10 Plan Details",
   "PLAN_NAME":"Plan Name",
   "GEOGRAPHICAL_LOCATION":"Geographical Location",
@@ -376,7 +378,8 @@
       "EXPIRED":"Expired",
       "IN_PROGRESS":"In Progress",
       "COMPLETED":"Completed",
-      "ARCHIVED":"Archived"
+      "ARCHIVED":"Archived",
+      "UNASSIGNED":"Unassigned"
     },
     "ACTION_TYPE":{
       "CHS":"CHS",

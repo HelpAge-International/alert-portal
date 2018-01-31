@@ -949,7 +949,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
           resetData["/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
           resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
           this.networkService.updateNetworkField(resetData).then(() => {
-            this.router.navigate(this.isViewing ? this.networkCountryId ? ['network-country/network-plans', this.networkViewValues] : ['network/local-network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
+            //this.router.navigate(this.isViewing ? ['network-country/network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
           }, error => {
             console.log(error.message);
           });
@@ -958,12 +958,35 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         });
 
       } else {
-        this.planService.pushNewResponsePlan(id, newResponsePlan).then(() => {
-          console.log("Response plan creation successful");
-          this.router.navigate(this.isViewing ? this.networkCountryId ? ['network-country/network-plans', this.networkViewValues] : ['network/local-network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
-      }).catch(error => {
-          console.log("Response plan creation unsuccessful with error --> " + error.message);
-        });
+
+        //Make sure we aren't creating new node on autosave
+        if (this.idOfResponsePlanToEdit)
+        {
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkCountryId + "/"+ this.idOfResponsePlanToEdit;
+          this.af.database.object(responsePlansPath)
+            .update(newResponsePlan)
+            .then(()=> {
+              console.log('update');
+            }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
+          });
+
+        } else {
+
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkCountryId;
+          this.af.database.list(responsePlansPath)
+            .push(newResponsePlan)
+            .then(plan => {
+              // set variable in here
+              this.idOfResponsePlanToEdit = plan.path.pieces_[3];
+              console.log('push');
+            }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
+          });
+
+        }
+
+        // end
       }
     } else {
 
@@ -971,6 +994,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
     }
   }
+
 
   /**
    * Section 1/10
@@ -981,6 +1005,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection1();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
 
@@ -1081,7 +1107,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       delete this.availabilityOfFundsObject[bulletPoint];
 
     } else {
-      console.log(bulletPoint, this.availabilityOfFundsBulletPointsCounter, this.availabilityOfFundsBulletPoints.filter);
+      console.log(bulletPoint, this.availabilityOfFundsBulletPointsCounter,  this.availabilityOfFundsBulletPoints.filter);
       console.log("Bullet point not in list");
     }
   }
@@ -1091,6 +1117,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection2();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection2() {
@@ -1226,6 +1254,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection3();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection3() {
@@ -1252,6 +1282,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection4();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection4() {
@@ -1337,6 +1369,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection5();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection5() {
@@ -1361,6 +1395,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection6();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection6() {
@@ -1567,6 +1603,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection8();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection8() {
@@ -1587,6 +1625,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection9();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection9() {
@@ -1754,6 +1794,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection10();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection10() {

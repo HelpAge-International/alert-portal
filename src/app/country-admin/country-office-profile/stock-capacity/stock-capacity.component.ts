@@ -12,6 +12,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {AgencyService} from "../../../services/agency-service.service";
+import {CommonService} from "../../../services/common.service";
 declare var jQuery: any;
 
 @Component({
@@ -29,11 +30,12 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private isViewing: boolean;
-
+  private selectedCountry: any;
   // Constants and enums
   private alertMessageType = AlertMessageType;
   STOCK_TYPE = StockType;
-
+  private countries = Constants.COUNTRIES;
+  private countriesList: number[] = Constants.COUNTRY_SELECTION;
   // Models
   private alertMessage: AlertMessageModel = null;
   private stockCapacitiesIN: StockCapacityModel[];
@@ -57,6 +59,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
               private agencyService: AgencyService,
               private router: Router,
               private af: AngularFire,
+              private _commonService: CommonService,
               private route: ActivatedRoute) {
     this.newNote = [];
   }
@@ -184,6 +187,22 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
             //     });
             // });
           }
+
+          this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/location")
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(getCountry => {
+              this.selectedCountry = getCountry.$value;
+              console.log(getCountry.$value, 'initCountrySelection');
+
+              this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(pre => {
+                  console.log(pre[this.selectedCountry], 'in here');
+
+
+                })
+
+            });
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;

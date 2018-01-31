@@ -14,6 +14,7 @@ import {Constants} from "../../utils/Constants";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import {MapCountry, MapService} from "../../services/map.service";
 import {TranslateService} from "@ngx-translate/core";
+import {SettingsService} from "../../services/settings.service";
 
 @Component({
   selector: 'app-map-countries-list',
@@ -46,7 +47,15 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
 
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private translate : TranslateService) {
+  private countryId: string;
+
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private userService: UserService,
+              private settingService:SettingsService,
+              private translate : TranslateService) {
     this.regions = [];
     this.mapService = MapService.init(this.af, this.ngUnsubscribe);
   }
@@ -55,6 +64,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
+      this.countryId = countryId
 
       this.route.params
         .takeUntil(this.ngUnsubscribe)
@@ -73,7 +83,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
       this.initDepartments();
 
       // Initialise the countries
-      this.mapService.initCountries(this.uid, userType, agencyId, systemId, (countries, minGreen, minYellow) => {
+      this.mapService.initCountries(this.uid, userType, countryId, agencyId, systemId, (countries, minGreen, minYellow) => {
         this.countries = countries;
         this.minThreshGreen = minGreen;
         this.minThreshYellow = minYellow;
@@ -162,6 +172,13 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
           this.DEPARTMENT_MAP.set(x.key, x.val().name);
         }
         console.log(this.DEPARTMENT_MAP);
+
+        //try to add country local departments here
+        this.settingService.getCountryLocalDepartments(this.agencyId, this.countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(localDepts => {
+            localDepts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name))
+          })
       })
   }
 

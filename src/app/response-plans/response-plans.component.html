@@ -297,7 +297,7 @@
             {{plan.startDate | date:'d/MM/y'}}
           </div>
           <div class="col-sm-3">
-            <div class="btn-group btn-block" (click)="optionClick(plan)">
+            <div class="btn-group btn-block">
               <button *ngIf="isViewing" type="button" class="btn  btn-block btn-primary"
                       (click)="viewResponsePlan(plan, isViewing)">{{"RESPONSE_PLANS.HOME.VIEW" | translate}}
               </button>
@@ -339,6 +339,7 @@
 
           </div>
         </div>
+
       </div>
 
     </div>
@@ -491,7 +492,9 @@
               <div class="row" *ngIf="directorIdMap.get('countryDirector')">
                 <label class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="countryDirector"
-                         [(ngModel)]="countryDirectorSelected">
+                         [(ngModel)]="countryDirectorSelected"
+                         [disabled]="selectedDirectorMap.get('countryDirector')"
+                  >
                   Country director - {{directorModelMap.get("countryDirector")?.firstName +" "+
                   directorModelMap.get("countryDirector")?.lastName}}
                 </label>
@@ -500,7 +503,9 @@
                    *ngIf="directorIdMap.get('regionDirector') && agencyApprovalSettingMap.get('regionDirector')">
                 <label class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="regionDirector"
-                         [(ngModel)]="regionDirectorSelected">
+                         [(ngModel)]="regionDirectorSelected"
+                         [disabled]="selectedDirectorMap.get('regionDirector')"
+                  >
                   Region director - {{directorModelMap.get("regionDirector")?.firstName +" "+
                   directorModelMap.get("regionDirector")?.lastName}}
                 </label>
@@ -509,7 +514,9 @@
                    *ngIf="directorIdMap.get('globalDirector') && agencyApprovalSettingMap.get('globalDirector')">
                 <label class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="globalDirector"
-                         [(ngModel)]="globalDirectorSelected">
+                         [(ngModel)]="globalDirectorSelected"
+                         [disabled]="selectedDirectorMap.get('globalDirector')"
+                  >
                   Global director - {{directorModelMap.get("globalDirector")?.firstName +" "+
                   directorModelMap.get("globalDirector")?.lastName}}
                 </label>
@@ -530,7 +537,9 @@
                 <label class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="countryDirector" #selectedPaetnerId
                          (change)="selectPartner(partnerId, selectedPaetnerId.checked)"
-                         [checked]="partnerApprovalIdMap.get(partnerId)">
+                         [checked]="partnerApprovalIdMap.get(partnerUserMap.get(partnerId) ? partnerUserMap.get(partnerId) : partnerId)"
+                         [disabled]="partnerApprovalIdMap.get(partnerUserMap.get(partnerId) ? partnerUserMap.get(partnerId) : partnerId)"
+                  >
                   Partner {{i}}: {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId)?.organisationName : intPartnerOrgMap.get(partnerId)?.organisationName}}
                 </label>
               </div>

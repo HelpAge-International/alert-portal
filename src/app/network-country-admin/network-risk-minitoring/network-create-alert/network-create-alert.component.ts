@@ -65,6 +65,9 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   private systemId: string;
   private preSelectCountry: number;
 
+  //phase 2
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
@@ -317,6 +320,11 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               .subscribe((snap) => {
                 value.hazardName = snap.val().name;
               });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
           }
           this.hazards.push(value);
         }
