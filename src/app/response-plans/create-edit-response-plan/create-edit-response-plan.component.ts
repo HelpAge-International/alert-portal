@@ -2095,7 +2095,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     let keys = Object.keys(object);
     let tempList = [];
     for (let key of keys) {
-      tempList.push(object[key]);
+      if (tempList.indexOf(object[key]) == -1) {
+        tempList.push(object[key]);
+      }
     }
     return tempList;
   }
