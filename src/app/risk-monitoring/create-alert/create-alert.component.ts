@@ -14,6 +14,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
 import {HazardImages} from "../../utils/HazardImages";
+import {PrepActionService} from "../../services/prepactions.service";
 declare var jQuery: any;
 
 @Component({
@@ -63,6 +64,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
               private _commonService: CommonService,
               private translate: TranslateService,
               private userService: UserService,
+              private prepActionService: PrepActionService,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -110,6 +112,9 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             area.country = country.location
           })
         })
+
+      this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.countryID, this.agencyId, systemId)
+      console.log(this.prepActionService.actions)
     })
 
   }
@@ -159,6 +164,20 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                 riskNameTranslated = dataToSave.otherName;
               }
 
+              let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario))
+
+              console.log(affectedActions)
+
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = new Date().getTime();
+                console.log(action)
+                console.log(Constants.APP_STATUS + '/action/' + this.countryID + affectedAction.id)
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + affectedAction.id)
+                  .update(action)
+
+              })
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
               notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", {riskName: riskNameTranslated});
@@ -166,6 +185,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
               this.notificationService.saveUserNotificationBasedOnNotificationSetting(notification, redAlertNotificationSetting, this.agencyId, this.countryID);
             }
+
+
 
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
             this.router.navigateByUrl('dashboard');

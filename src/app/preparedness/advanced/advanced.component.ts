@@ -238,6 +238,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             // Initialise everything here but we need to get countryId, agencyId, systemId
             this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
               this.countryId, this.agencyId, this.systemAdminId);
+
+            console.log(this.prepActionService.actions)
             this.initStaff();
             this.initDepartments();
             this.initDocumentTypes();
