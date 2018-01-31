@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AlertMessageType, UserType} from "../../../utils/Enums";
+import {UserType} from "../../../utils/Enums";
 import {ModelDepartmentCanDelete} from "../../../agency-admin/settings/department/department.component";
 import {ModelDepartment} from "../../../model/department.model";
 import {Observable, Subject} from "rxjs/Rx";
@@ -8,7 +8,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../../utils/Constants";
 import {SettingsService} from "../../../services/settings.service";
-import {AlertMessageModel} from "../../../model/alert-message.model";
 
 @Component({
   selector: 'app-country-departments',
@@ -169,18 +168,55 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
 
   addDepartment() {
     if (this.validateNewDepartment()) {
-      let updateObj = {
-        name: this.departmentName
-      };
-      this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryId + '/departments').push(updateObj).then(_ => {
-        if (!this.alertShow) {
-          this.saved = true;
-          this.alertSuccess = true;
-          this.alertShow = true;
-          this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
+      //check name in agency
+      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {
+        query: {
+          orderByChild: "name",
+          equalTo: this.departmentName.trim()
         }
-        this.departmentName = "";
-      });
+      })
+        .first()
+        .subscribe(departments => {
+          if (departments.length == 0) {
+
+            //check name in country level
+            this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {
+              query: {
+                orderByChild: "name",
+                equalTo: this.departmentName.trim()
+              }
+            })
+              .first()
+              .subscribe(depts =>{
+                if (depts.length == 0) {
+
+                  let updateObj = {
+                    name: this.departmentName.trim()
+                  };
+                  this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryId + '/departments').push(updateObj).then(_ => {
+                    if (!this.alertShow) {
+                      this.saved = true;
+                      this.alertSuccess = true;
+                      this.alertShow = true;
+                      this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
+                    }
+                    this.departmentName = "";
+                  });
+
+                } else {
+                  this.alertSuccess = false;
+                  this.alertShow = true;
+                  this.alertMessage = "Department name already exists in this country!";
+                }
+              })
+          } else {
+            console.log("name already exist")
+            this.alertSuccess = false;
+            this.alertShow = true;
+            this.alertMessage = "Department name already exists in agency!";
+          }
+        })
+
     } else {
       this.showAlert();
     }

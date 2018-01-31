@@ -44,7 +44,6 @@ export class ActionsService {
       }
     })
       .map(actions => {
-        console.log(actions);
         let filteredActions = [];
         actions.forEach(action => {
           if (action.asignee === uid && !action.isComplete) {
