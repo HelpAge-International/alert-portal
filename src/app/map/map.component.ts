@@ -9,6 +9,7 @@ import {UserService} from "../services/user.service";
 import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
 import {MapCountry, MapService} from "../services/map.service";
 import {TranslateService} from "@ngx-translate/core";
+import {SettingsService} from "../services/settings.service";
 
 declare var jQuery: any;
 
@@ -43,7 +44,13 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-    constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private userService: UserService, private translate : TranslateService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private userService: UserService,
+              private settingService: SettingsService,
+              private translate: TranslateService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
   }
 
@@ -69,7 +76,7 @@ export class MapComponent implements OnInit, OnDestroy {
           this.userTypePath = Constants.USER_PATHS[userType];
 
           this.mapService = MapService.init(this.af, this.ngUnsubscribe);
-          this.mapService.initMap("global-map", this.uid, userType, agencyId, systemId,
+          this.mapService.initMap("global-map", this.uid, userType, countryId, agencyId, systemId,
             ((countries, green, yellow) => {
               console.log(countries);
               console.log("BOOM!");
@@ -116,6 +123,13 @@ export class MapComponent implements OnInit, OnDestroy {
               for (let x of snap) {
                 this.DEPARTMENT_MAP.set(x.key, x.val().name);
               }
+
+              //try to add country local departments here
+              this.settingService.getCountryLocalDepartments(agencyId, countryId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(localDepts => {
+                  localDepts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name))
+                })
             });
 
           /** Load in the markers on the map! */

@@ -15,6 +15,8 @@ import {UUID} from "../../utils/UUID";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NotificationSettingsModel} from "../../model/notification-settings.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {UserService} from "../../services/user.service";
+import {NetworkService} from "../../services/network.service";
 
 declare var jQuery: any;
 
@@ -62,7 +64,11 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router,
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
               private route: ActivatedRoute) {
   }
 
@@ -99,9 +105,9 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
         this.isDonor = agency.isDonor;
 
         //checks to see if isGlobal exists on the agency as old agencies may not have the property
-        if(agency.hasOwnProperty('isGlobalAgency')){
+        if (agency.hasOwnProperty('isGlobalAgency')) {
           this.isGlobalAgency = agency.isGlobalAgency;
-        } else{
+        } else {
           this.isGlobalAgency = true
         }
 
@@ -172,24 +178,25 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private updateWithNewEmail() {
     console.log("new email");
     // let secondApp = firebase.initializeApp(firebaseConfig, "second");
-    let tempPassword = Constants.TEMP_PASSWORD;
-    console.log(this.agencyAdminEmail)
-    console.log(tempPassword)
-    this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
-      console.log("user " + x.uid + " created successfully");
-      let uid: string = x.uid;
-      this.writeToFirebase(uid);
-      this.secondApp.auth().signOut();
-    }, (error:any) => {
-      console.log(error.message);
-      console.log(error.code);
-      if (error.code == 'auth/email-already-in-use') {
-        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
-      } else {
-        this.errorMessage = "GLOBAL.GENERAL_ERROR";
-      }
-      this.showAlert();
-    });
+    this.createNewUser()
+    // let tempPassword = Constants.TEMP_PASSWORD;
+    // console.log(this.agencyAdminEmail)
+    // console.log(tempPassword)
+    // this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
+    //   console.log("user " + x.uid + " created successfully");
+    //   let uid: string = x.uid;
+    //   this.writeToFirebase(uid);
+    //   this.secondApp.auth().signOut();
+    // }, (error: any) => {
+    //   console.log(error.message);
+    //   console.log(error.code);
+    //   if (error.code == 'auth/email-already-in-use') {
+    //     this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
+    //   } else {
+    //     this.errorMessage = "GLOBAL.GENERAL_ERROR";
+    //   }
+    //   this.showAlert();
+    // });
   }
 
   private updateNoEmailChange() {
@@ -292,23 +299,40 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private createNewUser() {
     console.log("start register new agency");
     // let secondApp = firebase.initializeApp(firebaseConfig, "fourth");
-    let tempPassword = Constants.TEMP_PASSWORD;
-    this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
-      console.log("user " + success.uid + " created successfully");
-      let uid: string = success.uid;
-      this.writeToFirebase(uid);
-      // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
-      this.secondApp.auth().signOut();
-    }, (error: any) => {
-      console.log(error.message);
-      console.log(error.code);
-      if (error.code == 'auth/email-already-in-use') {
-        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
-      } else {
-        this.errorMessage = "GLOBAL.GENERAL_ERROR";
-      }
-      this.showAlert();
-    });
+
+    this.userService.getUserByEmail(this.agencyAdminEmail)
+      .first()
+      .subscribe(existUser => {
+        if (!existUser) {
+          let userId = this.networkService.generateKeyUserPublic()
+          this.writeToFirebase(userId)
+        } else {
+          this.errorMessage = "Email is already exist!"
+          this.showAlert();
+        }
+      }, err => {
+        this.errorMessage = err.message;
+        this.showAlert()
+      })
+
+
+    // let tempPassword = Constants.TEMP_PASSWORD;
+    // this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
+    //   console.log("user " + success.uid + " created successfully");
+    //   let uid: string = success.uid;
+    //   this.writeToFirebase(uid);
+    //   // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
+    //   this.secondApp.auth().signOut();
+    // }, (error: any) => {
+    //   console.log(error.message);
+    //   console.log(error.code);
+    //   if (error.code == 'auth/email-already-in-use') {
+    //     this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
+    //   } else {
+    //     this.errorMessage = "GLOBAL.GENERAL_ERROR";
+    //   }
+    //   this.showAlert();
+    // });
   }
 
   private writeToFirebase(uid: string) {
@@ -360,7 +384,6 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agencyData["/group/systemadmin/allusersgroup/" + this.adminId] = null;
       agencyData["/userPublic/" + this.adminId] = null;
       agencyData["/userPrivate/" + this.adminId] = null;
-
 
 
     } else {

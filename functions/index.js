@@ -153,6 +153,17 @@ exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
+      admin.auth().createUser({
+        uid: userId,
+        email: currData.email,
+        password: TEMP_PASS
+      })
+        .then(user => {
+          console.log("(handleUserAccount)Successfully created new user: " + user.uid)
+        })
+        .catch(error => {
+          console.log("(handleUserAccount)Error creating new user:", error)
+        })
     } else if (preData && currData) {
       //user account change
       console.log("user data changed: " + userId);
@@ -3027,7 +3038,7 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
                   mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
-                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
+                          \n http://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
                           \n Thanks
                           \n Your ALERT team `;
                   console.log('we are executing code here');
@@ -3125,7 +3136,7 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
                   mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
-                          \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
+                          \n http://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
                           \n Thanks
                           \n Your ALERT team `;
                   console.log('we are executing code here');
@@ -3162,18 +3173,19 @@ exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/administra
           let userDb = data.val();
           console.log(userDb);
 
-          admin.auth().createUser({
-            uid: adminId,
-            email: userDb.email,
-            password: TEMP_PASS
-          })
-            .then(user => {
-              console.log("Successfully created new user: " + user.uid)
+          if (!userDb) {
+            admin.auth().createUser({
+              uid: adminId,
+              email: userDb.email,
+              password: TEMP_PASS
             })
-            .catch(error => {
-              console.log("Error creating new user:", error)
-            })
-
+              .then(user => {
+                console.log("Successfully created new user: " + user.uid)
+              })
+              .catch(error => {
+                console.log("Error creating new user:", error)
+              })
+          }
         });
     }
   });

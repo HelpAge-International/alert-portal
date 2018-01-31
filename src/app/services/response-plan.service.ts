@@ -254,7 +254,7 @@ export class ResponsePlanService {
     let directorGlobal = this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
       query: {
         orderByChild: "agencyAdmin/" + agencyId,
-        equalTo: true
+        equalTo: true,
       }
     });
     return Observable.merge(directorCountry, directorRegion, directorGlobal);

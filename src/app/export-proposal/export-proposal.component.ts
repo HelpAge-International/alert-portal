@@ -113,7 +113,7 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
               private router: Router,
               private userService: UserService,
               private networkService: NetworkService,
-              private storageService:LocalStorageService,
+              private storageService: LocalStorageService,
               private route: ActivatedRoute) {
   }
 
@@ -123,7 +123,7 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if(params['isLocalAgency']){
+      if (params['isLocalAgency']) {
         this.isLocalAgency = true;
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemAdminId) => {
           this.uid = user.uid;
@@ -131,7 +131,7 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
           this.agencyId = agencyId
           this.downloadDataLocalAgency();
         });
-      }else{
+      } else {
         this.isLocalAgency = false;
         if (params["isLocalNetworkAdmin"]) {
           this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
@@ -208,8 +208,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private downloadDataLocalAgency() {
 
-            this.downloadResponsePlanDataLocalAgency();
-            this.downloadAgencyDataLocalAgency();
+    this.downloadResponsePlanDataLocalAgency();
+    this.downloadAgencyDataLocalAgency();
 
   }
 
@@ -304,11 +304,11 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private downloadAgencyDataLocalAgency() {
 
-          this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
-            if (name != null) {
-              this.memberAgencyName = name.$value;
-            }
-          });
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+      if (name != null) {
+        this.memberAgencyName = name.$value;
+      }
+    });
 
   }
 
@@ -409,7 +409,7 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
       this.total = responsePlan.budget['total'] ? responsePlan.budget['total'] : 0;
 
       if (responsePlan.budget['item']) {
-        if(isNullOrUndefined(responsePlan.budget['item'][BudgetCategory.Inputs]) == false) {
+        if (isNullOrUndefined(responsePlan.budget['item'][BudgetCategory.Inputs]) == false) {
           this.inputWaSHBudget = responsePlan.budget['item'][BudgetCategory.Inputs][0] ? responsePlan.budget['item'][BudgetCategory.Inputs][0]['budget'] : 0;
           this.inputWaSHNarrative = responsePlan.budget['item'][BudgetCategory.Inputs][0] ? responsePlan.budget['item'][BudgetCategory.Inputs][0]['narrative'] : '';
           this.inputHealthBudget = responsePlan.budget['item'][BudgetCategory.Inputs][1] ? responsePlan.budget['item'][BudgetCategory.Inputs][1]['budget'] : 0;
@@ -473,7 +473,16 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
             activitiesData[key]["beneficiary"].forEach(item => {
               beneficiary.push(item);
             });
-            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"],
+              activitiesData[key]["indicator"],
+              !activitiesData[key]["hasFurtherBeneficiary"] ? beneficiary : null,
+              activitiesData[key]["hasFurtherBeneficiary"],
+              activitiesData[key]["hasDisability"],
+              activitiesData[key]["hasFurtherBeneficiary"] ? activitiesData[key]["furtherBeneficiary"] : null,
+              !activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["disability"] : null,
+              activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["furtherDisability"] : null)
+
             moreData.push(model);
             this.activityMap.set(Number(sectorKey), moreData);
           });

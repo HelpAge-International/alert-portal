@@ -48,9 +48,9 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.userType = userType;
       if(this.isLocalAgency){
-        this.initDepartments();
-      } else{
         this.initDepartmentsLocalAgency();
+      } else{
+        this.initDepartments();
       }
 
     });

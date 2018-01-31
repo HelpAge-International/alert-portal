@@ -264,6 +264,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   }
 
   initCountryOffice(){
+    console.log('initing country office')
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -301,6 +302,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(_ => {
                       let docs = _;
+                      console.log(docs)
                       docs = docs.filter(doc => {
                         if (this.userSelected == "-1")
                           return true;
@@ -318,6 +320,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
                       this.countries[country]['docs'] = docs;
                       this.countries[country]['docsfiltered'] = docs;
                       this.countries[country]['hasDocs'] = (docs.length > 0);
+                      console.log(this.countries)
                     });
                 });
               });
@@ -365,6 +368,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(_ => {
                       let docs = _;
+                      console.log(docs)
                       docs = docs.filter(doc => {
                         if (this.userSelected == "-1")
                           return true;

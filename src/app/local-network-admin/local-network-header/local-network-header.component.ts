@@ -86,7 +86,7 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
           this.checkAlerts();
         })
 
-      this.loadJSON().subscribe(data => {
+      this.loadJSON().takeUntil(this.ngUnsubscribe).subscribe(data => {
 
         for (var key in data) {
 

@@ -345,7 +345,9 @@ import { LocalAgencyCreateEditMessageComponent } from './local-agency/local-agen
 import { LocalAgencyAccountSettingsComponent } from './local-agency/local-agency-account-settings/local-agency-account-settings.component';
 import { LocalAgencyChangePasswordComponent } from './local-agency/local-agency-account-settings/local-agency-change-password/local-agency-change-password.component';
 import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-account-details/local-agency-account-details.component';
-
+import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
+import { FieldOfficeService } from "./services/field-office.service";
+import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
 
 
 
@@ -698,6 +700,8 @@ const firebaseAuthConfig = {
     LocalAgencyAccountSettingsComponent,
     LocalAgencyChangePasswordComponent,
     LocalAgencyAccountDetailsComponent,
+    CountryFieldOfficeSettingsComponent,
+    CountryOfficeAddEditFieldOfficeComponent,
 
   ],
   imports: [
@@ -745,8 +749,9 @@ const firebaseAuthConfig = {
     NetworkService,
     NetworkMapService,
     NetworkCountryService,
-    ActionsService
-    ],
+    ActionsService,
+    FieldOfficeService
+  ],
   bootstrap: [AppComponent]
 })
 

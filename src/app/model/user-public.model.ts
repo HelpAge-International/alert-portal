@@ -19,6 +19,7 @@ export class ModelUserPublic extends BaseModel {
   city: string;
   postCode: string;
 
+
   constructor(firstName: string, lastName: string, title: number, email: string) {
     super();
     this.firstName = firstName;
