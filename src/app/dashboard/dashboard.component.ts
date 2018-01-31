@@ -19,6 +19,8 @@ import {NetworkService} from "../services/network.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkViewModel} from "../country-admin/country-admin-header/network-view.model";
+import {PrepActionService, PreparednessAction} from "../services/prepactions.service";
+import {forEach} from "@angular/router/src/utils/collection";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -95,6 +97,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  protected prepActionService: PrepActionService = new PrepActionService();
   // private networkCountryId: string;
   // private networkId: string;
   private networkMap: Map<string, string>;
@@ -312,6 +315,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
+
     this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
@@ -452,8 +456,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         })
       }
       //if (this.networkId) {
-       // this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
-       //}
+      // this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
+      //}
     }
     if (this.responsePlansForApproval) {
       this.responsePlansForApproval
@@ -734,6 +738,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
+  navigateToNormalActions(action) {
+    this.router.navigate(["/preparedness/minimum", {
+      "updateActionID" : action.$key
+    }]);
+
+
+  }
+
   navigateToNetworkActions(action) {
     console.log(action)
     let reverseMap = CommonUtils.reverseMap(this.networkMap);
@@ -767,7 +779,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
           // Display APA only if there is a red alert
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
-
 
 
           this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));

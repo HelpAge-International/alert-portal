@@ -38,6 +38,7 @@ import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
+
 import {CommonUtils} from "../../utils/CommonUtils";
 import {AddIndicatorRiskMonitoringComponent} from "../../risk-monitoring/add-indicator/add-indicator.component";
 
@@ -59,6 +60,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
+  private updateActionId: string;
   public myFirstName: string;
   public myLastName: string;
 
@@ -162,6 +164,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       if (params['isCHS']) {
         this.filterType = 0;
       }
+
     });
   }
 
@@ -198,7 +201,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             this.modulesAreEnabled = isEnabled;
           });
 
-
           // Currency
           this.calculateCurrency();
         })
@@ -220,6 +222,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
+        }
+        if (params['updateActionID']){
+          this.updateActionId = params['updateActionID'];
         }
 
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
@@ -245,7 +250,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
           //overview
           this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-            this.countryId, this.agencyId, this.systemAdminId);
+            this.countryId, this.agencyId, this.systemAdminId,  this.updateActionId);
           this.initStaff();
           this.initDepartments();
           this.initDocumentTypes();
@@ -316,7 +321,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
       });
     this.initLocalDisplay();
-
   }
 
   ngOnDestroy() {
@@ -1166,4 +1170,5 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
   }
+
 }

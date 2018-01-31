@@ -138,7 +138,7 @@ var MinimumPreparednessComponent = (function () {
     };
     MinimumPreparednessComponent.prototype.getActions = function () {
         var _this = this;
-        console.log('!!!!!!!!!!!');
+        console.log('!!!!!!!!!');
         console.log(this.countryId);
         console.log(this.uid);
         this.subscriptions.add(this.af.database.list(Constants_1.Constants.APP_STATUS + '/action/' + this.countryId).subscribe(function (_) {
