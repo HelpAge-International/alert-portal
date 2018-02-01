@@ -13,7 +13,7 @@ import {OperationAreaModel} from "../../../model/operation-area.model";
 import {CommonService} from "../../../services/common.service";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
-import {Local} from "protractor/built/driverProviders";
+import * as moment from "moment";
 
 @Component({
   selector: 'app-local-network-dashboard-update-alert-level',
@@ -102,7 +102,7 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
         if (params["uid"]) {
           this.uid = params["uid"];
         }
-        if(params['id']){
+        if (params['id']) {
           this.alertId = params['id'];
         }
 
@@ -112,24 +112,24 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
 
           this.networkService.getNetworkDetail(this.networkId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe( network => {
+            .subscribe(network => {
               console.log(network)
               this.leadAgencyId = network.leadAgencyId
-              this.af.database.list( Constants.APP_STATUS + '/countryOffice/' + this.leadAgencyId )
+              this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.leadAgencyId)
                 .takeUntil(this.ngUnsubscribe)
-                .subscribe( offices => {
-                  this.leadAgencyCountryOffice = offices.filter( x => x.location == network.countryCode)[0].$key
+                .subscribe(offices => {
+                  this.leadAgencyCountryOffice = offices.filter(x => x.location == network.countryCode)[0].$key
                 })
             })
 
-            // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe).subscribe(content => {
-              this.countryLevelsValues = content;
-              err => console.log(err);
-            });
+          // get the country levels values
+          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+            .takeUntil(this.ngUnsubscribe).subscribe(content => {
+            this.countryLevelsValues = content;
+            err => console.log(err);
+          });
 
-        }else{
+        } else {
           console.log('else')
           this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
             this.uid = user.uid;
@@ -147,20 +147,19 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
                       this.alertId = param['id'];
 
 
-
                       this.loadAlert(this.alertId, this.networkId);
                     }
                   });
 
                 this.networkService.getNetworkDetail(this.networkId)
                   .takeUntil(this.ngUnsubscribe)
-                  .subscribe( network => {
+                  .subscribe(network => {
                     console.log(network)
                     this.leadAgencyId = network.leadAgencyId
-                    this.af.database.list( Constants.APP_STATUS + '/countryOffice/' + this.leadAgencyId )
+                    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.leadAgencyId)
                       .takeUntil(this.ngUnsubscribe)
-                      .subscribe( offices => {
-                        this.leadAgencyCountryOffice = offices.filter( x => x.location == network.countryCode)[0].$key
+                      .subscribe(offices => {
+                        this.leadAgencyCountryOffice = offices.filter(x => x.location == network.countryCode)[0].$key
                       })
                   })
 
@@ -279,6 +278,23 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
 
     console.log(this.loadedAlert);
 
+    //if alert change state from red to other, reset apa actions with this assigned hazard
+    if (this.preAlertLevel == AlertLevels.Red && this.loadedAlert.alertLevel != this.preAlertLevel) {
+      console.log("alert changed from red to other")
+      this.alertService.getApaActionsNeedResetForThisAlert(this.networkId, this.loadedAlert)
+        .first()
+        .subscribe(apasToReset => {
+          apasToReset.forEach(apa => {
+            let obj = {}
+            obj["action/" + this.networkId + "/" + apa.$key + "/isComplete"] = null
+            obj["action/" + this.networkId + "/" + apa.$key + "/isCompleteAt"] = null
+            obj["action/" + this.networkId + "/" + apa.$key + "/actualCost"] = null
+            obj["action/" + this.networkId + "/" + apa.$key + "/updatedAt"] = moment.utc().valueOf()
+            this.networkService.updateNetworkField(obj)
+          })
+        })
+    }
+
     //
     // if(this.networkCountryId){
     //   this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId);
@@ -288,7 +304,7 @@ export class LocalNetworkDashboardUpdateAlertLevelComponent implements OnInit, O
     //   this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId);
     // }
 
-    if(this.networkViewValues){
+    if (this.networkViewValues) {
       console.log(true)
       this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, '', this.networkId, this.networkViewValues);
     } else {

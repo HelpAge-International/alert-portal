@@ -187,6 +187,17 @@ exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
+      admin.auth().createUser({
+        uid: userId,
+        email: currData.email,
+        password: TEMP_PASS
+      })
+        .then(user => {
+          console.log("(handleUserAccountTest)Successfully created new user: " + user.uid)
+        })
+        .catch(error => {
+          console.log("(handleUserAccountTest)Error creating new user:", error)
+        })
     } else if (preData && currData) {
       //user account change
       console.log("user data changed: " + userId);
@@ -210,6 +221,17 @@ exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}'
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
+      admin.auth().createUser({
+        uid: userId,
+        email: currData.email,
+        password: TEMP_PASS
+      })
+        .then(user => {
+          console.log("(handleUserAccountUat)Successfully created new user: " + user.uid)
+        })
+        .catch(error => {
+          console.log("(handleUserAccountUat)Error creating new user:", error)
+        })
     } else if (preData && currData) {
       //user account change
       console.log("user data changed: " + userId);

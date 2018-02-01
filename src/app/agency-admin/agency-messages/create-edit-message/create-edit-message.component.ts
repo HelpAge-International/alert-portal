@@ -44,11 +44,11 @@ export class CreateEditMessageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemAdminId) => {
         this.uid = user.uid;
         console.log('uid: ' + this.uid);
-        this.agencyGroupPath = Constants.APP_STATUS + '/group/agency/' + this.uid + '/';
-        this.agencyMessageRefPath = '/messageRef/agency/' + this.uid + '/';
+        this.agencyGroupPath = Constants.APP_STATUS + '/group/agency/' + agencyId + '/';
+        this.agencyMessageRefPath = '/messageRef/agency/' + agencyId + '/';
     });
   }
 

@@ -155,6 +155,8 @@ export class StaffComponent implements OnInit, OnDestroy {
         this.officeId.forEach(id => {
           this.staffMap.get(id)
             .takeUntil(this.ngUnsubscribe)
+            .subscribeOn(Scheduler.async)
+            .observeOn(Scheduler.queue)
             .subscribe(x => {
               x.forEach(item => {
                 if (!this.dealedStaff.includes(item.$key)) {
@@ -187,6 +189,8 @@ export class StaffComponent implements OnInit, OnDestroy {
         });
       })
       .takeUntil(this.ngUnsubscribe)
+      .subscribeOn(Scheduler.async)
+      .observeOn(Scheduler.queue)
       .subscribe(() => {
         this.hideLoader = true;
       });
