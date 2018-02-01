@@ -49,7 +49,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private userAgencyId: string;
-  private countries = Constants.COUNTRIES;
   private locationObjs: any[] = [];
 
   @Input() isLocalAgency: boolean;
