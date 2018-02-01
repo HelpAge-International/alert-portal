@@ -235,7 +235,7 @@
       {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.NO_4WMAPPING" | translate}}</p></div>
     <div class="Line-row margin-left"></div>
 
-    <div class="row">
+    <div class="row" *ngIf="!isViewing">
       <button *ngIf="!isLocalAgency" [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/']" data-toggle="modal"
               class="btn btn-outline-primary text-uppercase">{{"GLOBAL.ADD" | translate}}
       </button>
