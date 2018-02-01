@@ -8,6 +8,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../../utils/Constants";
 import {SettingsService} from "../../../services/settings.service";
+import {AlertMessageModel} from "../../../model/alert-message.model";
 
 @Component({
   selector: 'app-country-departments',
@@ -20,6 +21,7 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
   // private alertMessage = null
   private deleting: boolean;
   private depts = [];
+  public agencyDepts = [];
 
   //copied over
   private uid: string = "";
@@ -58,6 +60,7 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.systemId = systemId;
       this.initDepartments();
+      this.initAgencyDepartments();
     });
   }
 
@@ -75,6 +78,19 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
         this.depts = departments
         this.editDepts = departments
         this.initCanDeleteDepartments()
+      })
+  }
+
+  private initAgencyDepartments(){
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        console.log(snapshot.val());
+        snapshot.forEach((snap) => {
+          let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.val().name);
+          this.agencyDepts.push(x);
+
+        });
       })
   }
 
@@ -167,60 +183,68 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
   }
 
   addDepartment() {
-    if (this.validateNewDepartment()) {
-      //check name in agency
-      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {
-        query: {
-          orderByChild: "name",
-          equalTo: this.departmentName.trim()
-        }
-      })
-        .first()
-        .subscribe(departments => {
-          if (departments.length == 0) {
-
-            //check name in country level
-            this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {
-              query: {
-                orderByChild: "name",
-                equalTo: this.departmentName.trim()
-              }
-            })
-              .first()
-              .subscribe(depts =>{
-                if (depts.length == 0) {
-
-                  let updateObj = {
-                    name: this.departmentName.trim()
-                  };
-                  this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryId + '/departments').push(updateObj).then(_ => {
-                    if (!this.alertShow) {
-                      this.saved = true;
-                      this.alertSuccess = true;
-                      this.alertShow = true;
-                      this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
-                    }
-                    this.departmentName = "";
-                  });
-
-                } else {
-                  this.alertSuccess = false;
-                  this.alertShow = true;
-                  this.alertMessage = "Department name already exists in this country!";
-                }
-              })
-          } else {
-            console.log("name already exist")
-            this.alertSuccess = false;
-            this.alertShow = true;
-            this.alertMessage = "Department name already exists in agency!";
+    if(this.depts.filter(x => x.name == this.departmentName).length > 0 || this.agencyDepts.filter(x => x.name == this.departmentName).length > 0){
+      this.alertSuccess = false;
+      this.alertShow = true;
+      this.alertMessage = "Department already exists!";
+    } else {
+      if (this.validateNewDepartment()) {
+        //check name in agency
+        this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {
+          query: {
+            orderByChild: "name",
+            equalTo: this.departmentName.trim()
           }
         })
+          .first()
+          .subscribe(departments => {
+            if (departments.length == 0) {
 
-    } else {
-      this.showAlert();
+              //check name in country level
+              this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {
+                query: {
+                  orderByChild: "name",
+                  equalTo: this.departmentName.trim()
+                }
+              })
+                .first()
+                .subscribe(depts =>{
+                  if (depts.length == 0) {
+
+                    let updateObj = {
+                      name: this.departmentName.trim()
+                    };
+                    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryId + '/departments').push(updateObj).then(_ => {
+                      if (!this.alertShow) {
+                        this.saved = true;
+                        this.alertSuccess = true;
+                        this.alertShow = true;
+                        this.alertMessage = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
+                      }
+                      this.departmentName = "";
+                    });
+
+                  } else {
+                    this.alertSuccess = false;
+                    this.alertShow = true;
+                    this.alertMessage = "Department name already exists in this country!";
+                  }
+                })
+            } else {
+              console.log("name already exist")
+              this.alertSuccess = false;
+              this.alertShow = true;
+              this.alertMessage = "Department name already exists in agency!";
+            }
+          })
+
+      } else {
+        this.showAlert();
+      }
     }
+
   }
+
 
   private showAlert() {
 
