@@ -64,6 +64,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private countryOffices = [];
   private regionalCountryOffices = [];
 
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
