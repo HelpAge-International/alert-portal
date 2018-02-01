@@ -348,6 +348,7 @@ import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-
 import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
 import { FieldOfficeService } from "./services/field-office.service";
 import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
+import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
 
 
 
@@ -702,7 +703,7 @@ const firebaseAuthConfig = {
     LocalAgencyAccountDetailsComponent,
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
-
+    AgencyOverviewComponent
   ],
   imports: [
     BrowserModule,
