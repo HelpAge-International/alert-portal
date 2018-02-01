@@ -64,6 +64,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
               private _noteService: NoteService,

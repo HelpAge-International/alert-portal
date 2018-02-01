@@ -49,6 +49,8 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _agencyService: AgencyService,
               private _contactService: ContactService,

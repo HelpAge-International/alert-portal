@@ -25,7 +25,8 @@
 
     <ng-container *ngIf="!isNetworkAdmin">
       <ng-container *ngIf="!isLocalAgency">
-        <app-country-office-profile-menu></app-country-office-profile-menu>
+        <app-country-office-profile-menu *ngIf="isAgencyAdmin" [isAgencyAdmin]="true"></app-country-office-profile-menu>
+        <app-country-office-profile-menu *ngIf="!isAgencyAdmin" [isAgencyAdmin]="false"></app-country-office-profile-menu>
       </ng-container>
       <ng-container *ngIf="isLocalAgency">
         <app-local-agency-profile-menu></app-local-agency-profile-menu>

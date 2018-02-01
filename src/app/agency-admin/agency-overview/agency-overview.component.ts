@@ -86,7 +86,7 @@ export class AgencyOverviewComponent implements OnInit, OnDestroy {
         }
 
         if (!this.countryId && !this.agencyId && !this.isViewing) {
-          this.router.navigateByUrl("/director");
+          this.router.navigateByUrl("/agency-admin");
         }
 
         this.getAlerts();
