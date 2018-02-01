@@ -60,7 +60,7 @@
       <div class="row Spaced-above">
         <div class="col-sm-1">{{ equipment.updatedAt | date: 'MM/yy'}}</div> <!--Updated-->
         <div class="col-sm-2">{{ equipment.name }}</div> <!--Equipment-->
-        <div class="col-sm-2">{{ countries[selectedCountry] | translate }}</div> <!--Location-->
+        <div class="col-sm-2"><p *ngIf="locationObjs[i]">{{ locationObjs[i].country | translate }}{{ locationObjs[i].areas }}</p></div> <!--Where-->
         <div class="col-sm-2">{{ equipment.quantity }}</div> <!--Quantity-->
         <div class="col-sm-4">{{ equipment.status }}</div> <!--Status-->
         <div class="col-sm-1" *ngIf="!isEdit">
