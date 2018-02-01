@@ -21,6 +21,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkViewModel} from "../country-admin/country-admin-header/network-view.model";
 import {PrepActionService, PreparednessAction} from "../services/prepactions.service";
 import {forEach} from "@angular/router/src/utils/collection";
+import {MinimumPreparednessComponent} from "../preparedness/minimum/minimum.component";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -742,8 +743,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(["/preparedness/minimum", {
       "updateActionID" : action.$key
     }]);
-
-
   }
 
   navigateToNetworkActions(action) {

@@ -1078,6 +1078,10 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
     let partnerOrganisation = event.data.val();
     let isApproved = partnerOrganisation.isApproved;
 
+    console.log("UserID : "+partnerOrganisation.userId);
+    console.log("Agency : "+partnerOrganisation.agencyId);
+    console.log("Country : "+partnerOrganisation.countryId);
+
     if (!preData && currData) {
       console.log("Partner Organisation created");
 

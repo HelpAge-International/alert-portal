@@ -7,7 +7,10 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {ModelNetwork} from "../model/network.model";
+import {MinimumPreparednessComponent} from "../preparedness/minimum/minimum.component";
+import { ScrollToService, ScrollToConfigOptions } from '@nicky-lenaers/ngx-scroll-to';
 
+declare var jQuery: any;
 
 export class PrepActionService {
 
@@ -34,6 +37,8 @@ export class PrepActionService {
   private completeCHS: number;
   private totalCHS: number;
   private CHSCompletePercentage: number;
+
+
   public infoForUpdate: { index: number; updateAction: PreparednessAction; id: string };
 
   constructor() {
@@ -41,6 +46,7 @@ export class PrepActionService {
     this.actionsNetwork = [];
     this.actionsNetworkLocal = [];
   }
+
 
   /**
    * Initialisation method for the actions
@@ -608,7 +614,7 @@ export class PrepActionService {
     }
     //console.log("Action ID clicked: " + this.updateActionId);
 
-    console.log("00000000 "+this.getActionData(i, this.actions[i], this.updateActionId).id);
+    console.log("0000000000 "+this.getActionData(i, this.actions[i], this.updateActionId).id);
   }
 
   public getActionData(i: number, preparednessAction: PreparednessAction, actionId: string, fun? : ()=> object) {
@@ -1036,6 +1042,8 @@ export class PrepActionService {
         }
       });
   }
+
+
 }
 
 export enum PrepSourceTypes {
@@ -1180,4 +1188,5 @@ export class PreparednessUser {
     p.lastName = "...";
     return p;
   }
+
 }

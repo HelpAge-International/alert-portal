@@ -38,6 +38,7 @@ import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
+import {ScrollToService, ScrollToConfigOptions} from '@nicky-lenaers/ngx-scroll-to';
 
 import {CommonUtils} from "../../utils/CommonUtils";
 import {AddIndicatorRiskMonitoringComponent} from "../../risk-monitoring/add-indicator/add-indicator.component";
@@ -122,6 +123,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private modulesAreEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
   private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   protected prepActionService: PrepActionService = new PrepActionService();
+  private _scrollToService: ScrollToService;
 
   private privacy: ModelAgencyPrivacy;
   private userAgencyId: string;
@@ -133,7 +135,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   //Local Agency
   @Input() isLocalAgency: boolean;
-
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -172,42 +173,42 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
 
-        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.assignActionAsignee = this.uid;
-          this.userType = userType;
-          this.filterAssigned = "0";
-          this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.assignActionAsignee = this.uid;
+      this.userType = userType;
+      this.filterAssigned = "0";
+      this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
 
-          this.systemAdminId = systemId;
+      this.systemAdminId = systemId;
 
-          this.agencyId = agencyId;
-          this.countryId = countryId;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
 
-          this.getStaffDetails(this.uid, true);
+      this.getStaffDetails(this.uid, true);
 
 
-          //overview
-          this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-            this.agencyId, this.systemAdminId);
-          this.initStaff();
-          this.initDepartments();
-          this.initDocumentTypes();
+      //overview
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
+        this.agencyId, this.systemAdminId);
+      this.initStaff();
+      this.initDepartments();
+      this.initDocumentTypes();
 
-          // Initialise the page control information
-          PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
-            this.modulesAreEnabled = isEnabled;
-          });
+      // Initialise the page control information
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+        this.modulesAreEnabled = isEnabled;
+      });
 
-          // Currency
-          this.calculateCurrency();
-        })
+      // Currency
+      this.calculateCurrency();
+    })
 
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -223,7 +224,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
         }
-        if (params['updateActionID']){
+        if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];
         }
 
@@ -250,7 +251,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
           //overview
           this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-            this.countryId, this.agencyId, this.systemAdminId,  this.updateActionId);
+            this.countryId, this.agencyId, this.systemAdminId, this.updateActionId);
           this.initStaff();
           this.initDepartments();
           this.initDocumentTypes();
@@ -321,6 +322,26 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
       });
     this.initLocalDisplay();
+  }
+
+  public triggerScrollTo(action) {
+    console.log("triggerScrollTo called")
+    const config: ScrollToConfigOptions = {
+      target: 'popover_content_' + this.updateActionId
+    };
+
+    this._scrollToService.scrollTo(config);
+
+    // let actionID = "a[href^='popover_content_"+action.id+"']";
+    // jQuery(actionID).click(function(e) {
+    //   e.preventDefault();
+    //
+    //   var position = jQuery(jQuery(this).attr("href")).offset().top;
+    //
+    //   jQuery("body, html").animate({
+    //     scrollTop: position
+    //   } /* speed */ );
+    // });
   }
 
   ngOnDestroy() {
@@ -725,7 +746,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          if(this.isLocalAgency){
+          if (this.isLocalAgency) {
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id).update(data);
           } else {
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
@@ -832,6 +853,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 
   }
+
   // Uploading a file to Firebase
   protected uploadFile(action: PreparednessAction, file) {
     let document = {
@@ -845,7 +867,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       uploadedBy: this.uid
     };
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.list(Constants.APP_STATUS + '/document/' + this.agencyId).push(document)
         .then(_ => {
           let docKey = _.key;
@@ -883,7 +905,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         .catch(err => {
           console.log(err, 'You do not have access!');
         });
-    }else{
+    } else {
       this.af.database.list(Constants.APP_STATUS + '/document/' + this.countryId).push(document)
         .then(_ => {
           let docKey = _.key;
@@ -1024,7 +1046,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   protected deleteDocumentNetwork(action: PreparednessAction, docId: string) {
     if (!action.networkCountryId) {
-      console.log("no network country id")
+      console.log("no network country ids")
       return
     }
     for (let x of action.documents) {
@@ -1129,7 +1151,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   public reactivateNetwork(action: PreparednessAction) {
     if (!action.networkCountryId) {
-      console.log("no network country id")
+      console.log("no network country ids")
       return
     }
     let update = {

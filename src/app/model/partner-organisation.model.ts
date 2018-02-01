@@ -6,6 +6,9 @@ import {NoteModel} from "./note.model";
 
 export class PartnerOrganisationModel extends BaseModel {
   public id: string;
+  public userId: string;
+  public agencyId : string;
+  public countryId : string;
   public organisationName: string;
   public relationship: string;
   public title: number;
