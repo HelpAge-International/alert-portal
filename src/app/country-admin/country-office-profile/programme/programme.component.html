@@ -79,23 +79,23 @@
       <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" | translate}}</strong></div>
     </div>
     <div class="Line-row margin-left"></div>
-    <div *ngFor="let m of mapping">
+    <div *ngFor="let m of mapping; let mappingIndex = index">
       <div class="row">
         <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"dd/MM/yyyy") : '-'}}</p>
         </div> <!--Updated-->
         <div class="col-sm-2">
           <p *ngIf="m.sector == ResponsePlansEnum.other && m.otherName != null">
-            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | translate | lowercase}}.svg"
+            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | lowercase}}.svg"
                  alt="{{ResponsePlanSectorsIcons[m.sector] | translate}}"> {{m.otherName | translate}}
           </p>
           <p *ngIf="m.sector != ResponsePlansEnum.other || m.otherName == null">
-            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | translate | lowercase}}.svg"
+            <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | lowercase}}.svg"
                  alt="{{ResponsePlanSectorsIcons[m.sector] | translate}}"> {{ResponsePlanSectors[m.sector] | translate}}
           </p>
         </div>
         <!--Sector-->
         <div class="col-sm-2"><p>{{m.what ? m.what : ''}}</p></div> <!--What-->
-        <div class="col-sm-2"><p>{{ countries[selectedCountry] | translate }}</p></div> <!--Where-->
+        <div class="col-sm-2"><p *ngIf="locationObjs[mappingIndex]">{{ locationObjs[mappingIndex].country | translate }} {{ locationObjs[mappingIndex].areas }}</p></div> <!--Where-->
         <div class="col-sm-2"><p>{{m.toWho ? m.toWho : ''}}</p></div> <!--To Who-->
         <div class="col-sm-2"><p>{{m.when | date:"MM/yyyy"}}</p></div> <!--When-->
 

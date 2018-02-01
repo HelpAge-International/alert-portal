@@ -68,7 +68,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   public indicatorData: Indicator;
   private countries = Constants.COUNTRIES;
   private countriesList: number[] = Constants.COUNTRY_SELECTION;
-  private agencyId: string;
   private countrySelection: any[] = [];
   private curCountrySelection: any[] = this.countrySelection;
   private countryLocation: number;
@@ -157,9 +156,13 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     /**
      * Preset the first drop down box to the country office
      */
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID + "/location")
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID + "/location")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(getCountry => {
+        console.log("agencyId", this.agencyID);
+        console.log("countryID", this.countryID);
+        console.log("getCountry", getCountry);
+
         this.selectedCountry = getCountry.$value;
         console.log(getCountry.$value, 'initCountrySelection');
 
@@ -169,14 +172,11 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(pre => {
+            console.log("selected country:");
+            console.log(this.selectedCountry);
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
-
-
           })
-
       });
-
-
   }
 
   checkLevel2() {
@@ -235,13 +235,19 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       where: this.selectedCountry,
       level1: this.levelOneDisplay[this.selectedValue].id,
       level2: this.selectedValueL2,
-      agencyId: this.agencyId
+      agencyId: this.agencyID
     };
     dataToSave.updatedAt = new Date().getTime();
 
     if (!this.alertMessage) {
-
-
+      let dataToSave = this.programme;
+      let postData = {
+        where: this.selectedCountry,
+        level1: this.selectedValue? this.levelOneDisplay[this.selectedValue].id : null,
+        level2: this.selectedValueL2 ? this.selectedValueL2 : null,
+        agencyId: this.agencyID
+      };
+      dataToSave.updatedAt = new Date().getTime();
       if (!this.programmeId) {
         if (this.countryID) {
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
