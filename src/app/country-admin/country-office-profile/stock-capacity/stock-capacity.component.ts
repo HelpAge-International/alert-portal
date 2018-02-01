@@ -49,7 +49,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private userAgencyId: string;
-  private locationObjs: any[] = [];
+  private locationObjsStocksIn: any[] = [];
+  private locationObjsStocksOut: any[] = [];
 
   @Input() isLocalAgency: boolean;
 
@@ -364,10 +365,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   generateLocations(){
-    console.log(this.stockCapacitiesIN);
-
     this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
-      console.log(this.stockCapacitiesIN);
       this.stockCapacitiesIN.forEach(stockCapacity => {
         let obj = {
           country: "",
@@ -382,7 +380,24 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         if (stockCapacity.level2) {
           obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
         }
-        this.locationObjs.push(obj);
+        this.locationObjsStocksIn.push(obj);
+      });
+
+      this.stockCapacitiesOUT.forEach(stockCapacity => {
+        let obj = {
+          country: "",
+          areas: ""
+        };
+        if (stockCapacity.location && stockCapacity.location > -1) {
+          obj.country = this.countries[stockCapacity.location];
+        }
+        if (stockCapacity.level1 && stockCapacity.level1 > -1) {
+          obj.areas = ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].value
+        }
+        if (stockCapacity.level2) {
+          obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
+        }
+        this.locationObjsStocksOut.push(obj);
       });
     });
   }

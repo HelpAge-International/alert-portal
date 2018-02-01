@@ -65,7 +65,7 @@
         <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
         <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
         <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
-        <div class="col-sm-2"><p>{{ countries[selectedCountry] | translate}}</p></div> <!--Location-->
+        <div class="col-sm-2"><p *ngIf="locationObjsStocksIn[i]">{{ locationObjsStocksIn[i].country | translate }}{{ locationObjsStocksIn[i].areas }}</p></div> <!--Where-->
         <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
         <!--Lead time for delivery to affected population-->
         <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one"
@@ -219,7 +219,7 @@
         <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
         <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
         <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
-        <div class="col-sm-2"><p>{{ countries[selectedCountry] | translate }}</p></div> <!--Location-->
+        <div class="col-sm-2"><p *ngIf="locationObjsStocksOut[i]">{{ locationObjsStocksOut[i].country | translate }}{{ locationObjsStocksOut[i].areas }}</p></div> <!--Where-->
         <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
         <!--Lead time for delivery to affected population-->
         <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one"
