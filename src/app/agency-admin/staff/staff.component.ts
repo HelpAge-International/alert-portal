@@ -25,11 +25,9 @@ export class StaffComponent implements OnInit, OnDestroy {
   private hideLoader: boolean;
 
   POSITION = Constants.STAFF_POSITION;
-  POSITION_SELECTION = Constants.STAFF_POSITION_SELECTION;
   USER_TYPE = Constants.USER_TYPE;
   USER_TYPE_SELECTION = Constants.USER_TYPE_SELECTION;
   OFFICE_TYPE = Constants.OFFICE_TYPE;
-  OFFICE_TYPE_SELECTION = Constants.OFFICE_TYPE_SELECTION;
   NOTIFICATION_SETTINGS = Constants.NOTIFICATION_SETTINGS;
 
   All_Department: string = "allDepartments";
@@ -44,10 +42,6 @@ export class StaffComponent implements OnInit, OnDestroy {
   private officeId: string [] = [];
   private staff: ModelStaff;
   staffName: string;
-  skillSet = new Set();
-  private skillNames: string[] = [];
-  private Position = Constants.STAFF_POSITION;
-  private positionsList = [StaffPosition.All, StaffPosition.OfficeDirector, StaffPosition.OfficeStarff];
   private UserType = Constants.USER_TYPE;
   private userTypesList = [UserType.All, UserType.GlobalDirector, UserType.RegionalDirector, UserType.CountryDirector,
     UserType.ErtLeader, UserType.Ert, UserType.Donor, UserType.GlobalUser, UserType.CountryAdmin, UserType.NonAlert];
@@ -56,15 +50,16 @@ export class StaffComponent implements OnInit, OnDestroy {
   private staffMap = new Map();
   private dealedStaff: string[] = [];
   private showCountryStaff = new Map();
-  private staffEmail: string;
-  private staffPhone: string;
-  private supportSkills: string[] = [];
-  private techSkills: string[] = [];
   private globalUsers: any[] = [];
   private departments: ModelDepartment[] = [];
   private departmentMap: Map<string, string> = new Map<string, string>();
   private agencyId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  //resolve live frozen bug
+  private staffObjMap = new Map()
+  private supportSkillMap = new Map()
+  private techSkillMap = new Map()
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -157,6 +152,11 @@ export class StaffComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(x => {
               x.forEach(item => {
+                //resolve frozen bug
+                this.getStaffObj(item.$key)
+                this.getSupportSkills(id, item.$key)
+                this.getTechSkills(id, item.$key)
+
                 if (!this.dealedStaff.includes(item.$key)) {
                   if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
                     this.addStaff(item, id);
@@ -212,16 +212,6 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(Constants.AGENCY_ADMIN_ADD_STARFF);
   }
 
-  getStaffName(key): string {
-    this.staffName = "";
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + key)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-        this.staffName = user.firstName + " " + user.lastName;
-      });
-    return this.staffName;
-  }
-
   hideCountryStaff(office) {
     if (office.id) {
       let isHidden = this.showCountryStaff.get(office.id);
@@ -239,41 +229,24 @@ export class StaffComponent implements OnInit, OnDestroy {
     }], {skipLocationChange: true});
   }
 
-  editGlobalUser(staffId) {
-    console.log("edit global user");
-  }
-
   closeAdditionalInfo(staffId) {
     jQuery("#" + staffId).collapse("hide");
   }
 
-  getStaffEmail(staffId) {
-    this.staffEmail = "";
+  getStaffObj(staffId) {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
       .takeUntil(this.ngUnsubscribe)
       .first()
       .subscribe(user => {
-        this.staffEmail = user.email;
+        this.staffObjMap.set(staffId, user)
       });
-    return this.staffEmail;
-  }
-
-  getStaffPhone(staffId) {
-    this.staffPhone = "";
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staffId)
-      .takeUntil(this.ngUnsubscribe)
-      .first()
-      .subscribe(user => {
-        this.staffPhone = user.phone;
-      });
-    return this.staffPhone;
   }
 
   getSupportSkills(officeId, staffId) {
-    this.supportSkills = [];
+    let supportSkills = [];
     if (staffId) {
       let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
-        Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
+        Constants.APP_STATUS + "/staff/globalUser/" + this.agencyId + "/" + staffId;
       this.af.database.object(path)
         .first()
         .map(user => {
@@ -294,18 +267,18 @@ export class StaffComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(skill => {
           if (skill.type == SkillType.Support) {
-            this.supportSkills.push(skill.name);
+            supportSkills.push(skill.name);
+            this.supportSkillMap.set(staffId, supportSkills)
           }
         });
     }
-    return this.supportSkills;
   }
 
   getTechSkills(officeId, staffId) {
-    this.techSkills = [];
+    let techSkills = [];
     if (staffId) {
       let path = officeId ? Constants.APP_STATUS + "/staff/" + officeId + "/" + staffId :
-        Constants.APP_STATUS + "/staff/globalUser/" + this.uid + "/" + staffId;
+        Constants.APP_STATUS + "/staff/globalUser/" + this.agencyId + "/" + staffId;
       this.af.database.object(path)
         .first()
         .map(user => {
@@ -326,11 +299,11 @@ export class StaffComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(skill => {
           if (skill.type == SkillType.Tech) {
-            this.techSkills.push(skill.name);
+            techSkills.push(skill.name);
+            this.techSkillMap.set(staffId, techSkills)
           }
         });
     }
-    return this.techSkills;
   }
 
   filterStaff() {
@@ -344,6 +317,14 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/staff/globalUser/" + this.agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(users => {
+
+        //resolve frozen bug
+        users.forEach(user => {
+          this.getStaffObj(user.$key)
+          this.getSupportSkills(null, user.$key)
+          this.getTechSkills(null, user.$key)
+        })
+
         if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
           this.globalUsers = users;
         } else if (this.filterPosition == this.All_Department && this.filterUser != UserType.All && this.filterOffice == OfficeType.All) {

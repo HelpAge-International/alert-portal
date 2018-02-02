@@ -131,7 +131,6 @@ export class ActionsService {
   }
 
 
-
   getActionTitle(action): string {
     let title = "";
     let today = moment().startOf('day').valueOf();
@@ -139,9 +138,8 @@ export class ActionsService {
     if (action.type == ActionType.chs) {
       title = this.translate.instant("A_CHS_PREP_ACTION")
     }
-    else if (action.type == ActionType.mandated)
-    {
-      title = this.translate.instant("A_MANDATED_PREP_ACTION" )
+    else if (action.type == ActionType.mandated) {
+      title = this.translate.instant("A_MANDATED_PREP_ACTION")
     }
     else if (action.level == ActionLevel.MPA) {
       title = this.translate.instant("A_MIN_PREP_ACTION")
@@ -222,10 +220,10 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if(isLocalAgency){
+          if (isLocalAgency) {
             modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
             modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else{
+          } else {
             if (alert.approval && alert.approval['countryDirector']) {
               modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
               modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
@@ -338,10 +336,10 @@ export class ActionsService {
             affectedAreas.push(modelAffectedArea);
           });
           modelAlert.affectedAreas = affectedAreas;
-          if(isLocalAgency){
+          if (isLocalAgency) {
             modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
             modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else{
+          } else {
             modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
             modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
           }
@@ -796,7 +794,7 @@ export class ActionsService {
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + agencyId, {
       query: {
-        orderByChild:  "approval/localAgencyDirector/" + agencyId,
+        orderByChild: "approval/localAgencyDirector/" + agencyId,
         equalTo: AlertStatus.WaitingResponse
       }
     })
@@ -1088,7 +1086,7 @@ export class ActionsService {
 
   approveRedAlertLocalAgency(agencyId, alertId, uid) {
 
-      this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alertId + "/approval/localAgencyDirector/" + agencyId).set(AlertStatus.Approved);
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alertId + "/approval/localAgencyDirector/" + agencyId).set(AlertStatus.Approved);
 
   }
 
@@ -1097,7 +1095,7 @@ export class ActionsService {
   }
 
   getAlertObj(countryId, alertId) {
-    return this.af.database.object(Constants.APP_STATUS + "/alert/"+countryId + "/" + alertId)
+    return this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId)
   }
 
   copyRedAlertOverFromNetwork(agencyCountryMap, alertId, alertObj) {
@@ -1185,7 +1183,7 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        if (plans && plans.length>0) {
+        if (plans && plans.length > 0) {
           plans.forEach(plan => {
             let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
             this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
@@ -1210,7 +1208,7 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        if (plans && plans.length>0) {
+        if (plans && plans.length > 0) {
           plans.forEach(plan => {
             let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
             this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
@@ -1227,6 +1225,18 @@ export class ActionsService {
       });
   }
 
+  getApaActionsNeedResetForThisAlert(countryId: string, alert: ModelAlert) {
+    let hazard = alert.hazardScenario
+    return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {
+      query: {
+        orderByChild: "level",
+        equalTo: ActionLevel.APA
+      }
+    })
+      .map(apas => {
+        return apas.filter(apa => ((!apa.assignHazard || apa.assignHazard == hazard) && apa.isComplete))
+      })
+  }
 
   unSubscribeNow() {
     this.ngUnsubscribe.next();

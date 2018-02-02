@@ -11,6 +11,8 @@ import {UserService} from "../../services/user.service";
 import {OperationAreaModel} from "../../model/operation-area.model";
 import {CommonService} from "../../services/common.service";
 import {HazardImages} from "../../utils/HazardImages";
+import {NetworkService} from "../../services/network.service";
+import * as moment from "moment";
 
 
 @Component({
@@ -51,6 +53,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
               private _commonService: CommonService,
               private route: ActivatedRoute,
               private alertService: ActionsService,
+              private networkService:NetworkService,
               private userService: UserService) {
     this.initAlertData();
   }
@@ -170,7 +173,6 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
 
   submit() {
-    console.log(this.loadedAlert);
 
     this.loadedAlert.estimatedPopulation = this.estimatedPopulation;
     this.loadedAlert.infoNotes = this.infoNotes;
@@ -192,7 +194,22 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
       }
     }
 
-    console.log(this.loadedAlert);
+    //if alert change state from red to other, reset apa actions with this assigned hazard
+    if (this.preAlertLevel == AlertLevels.Red && this.loadedAlert.alertLevel != this.preAlertLevel) {
+      console.log("alert changed from red to other")
+      this.alertService.getApaActionsNeedResetForThisAlert(this.countryId, this.loadedAlert)
+        .first()
+        .subscribe(apasToReset => {
+          apasToReset.forEach(apa => {
+            let obj = {}
+            obj["action/"+this.countryId+"/"+apa.$key+"/isComplete"] = null
+            obj["action/"+this.countryId+"/"+apa.$key+"/isCompleteAt"] = null
+            obj["action/" + this.countryId + "/" + apa.$key + "/actualCost"] = null
+            obj["action/"+this.countryId+"/"+apa.$key+"/updatedAt"] = moment.utc().valueOf()
+            this.networkService.updateNetworkField(obj)
+          })
+        })
+    }
 
     if(this.isLocalAgency){
       this.alertService.updateAlertLocalAgency(this.loadedAlert, this.preAlertLevel, this.agencyId);
