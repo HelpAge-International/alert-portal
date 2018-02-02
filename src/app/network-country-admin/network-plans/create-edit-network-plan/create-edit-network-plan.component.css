@@ -1,7 +1,32 @@
+tooltip{
+  z-index: 1;
+}
+
 input[type=number]{
   width: 100%;
 }
 
 .wide__number{
   width: 55px !important;
+}
+
+.no-bold{
+  font-weight:400;
+  font-size: 0.8rem;
+}
+
+.no-border{
+  border: none;
+}
+
+.align-text-left{
+  text-align: left !important;
+}
+
+.align-text-center{
+  text-align: center;
+}
+
+.beneficiary-text{
+  padding-left: 3.5rem;
 }

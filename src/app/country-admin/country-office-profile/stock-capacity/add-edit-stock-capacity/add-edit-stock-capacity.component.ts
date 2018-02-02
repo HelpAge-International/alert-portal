@@ -73,8 +73,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
               private _commonService: CommonService,
               private _noteService: NoteService) {
     this.stockCapacity = new StockCapacityModel();
-
-    this.stockCapacity.stockType = StockType.Country;
+    this.stockCapacity.stockType = StockType.Country; // set default stock type
 
   }
 
@@ -88,10 +87,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       this.uid = user.uid;
       this.countryId = countryId;
       this.agencyId = agencyId;
-
-
       this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
     });
   }
 
@@ -111,7 +107,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   initCountryOffice(){
-    this.initCountrySelection();
+
     this.route.params.subscribe((params: Params) => {
       if (params['id']) {
         this._stockService.getStockCapacity(this.countryId, params['id'])
@@ -123,6 +119,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
         this.stockCapacity.stockType = Number(params['stockType']);
       }
     });
+    this.initCountrySelection();
   }
 
   validateForm(): boolean {
@@ -148,12 +145,16 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
     }else{
       var postData = {
         location: this.selectedCountry,
-        level1: this.levelOneDisplay[this.selectedValue].id,
-        level2: this.selectedValueL2,
+        level1: this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null,
+        level2: this.selectedValueL2 ? this.selectedValueL2 : null,
         agencyId: this.agencyId
       };
+      this.stockCapacity.location = this.selectedCountry;
+      this.stockCapacity.level1 = this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null;
+      this.stockCapacity.level2 = this.selectedValueL2 ? this.selectedValueL2 : null;
 
       this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
+
       this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/capacity/')
         .push(this.stockCapacity)
         .update(postData)
@@ -208,12 +209,6 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
   initCountrySelection() {
 
-
-    /**
-     * Get the Stock level
-     */
-  console.log(this.stockCapacity, this.activeStockCapacity, this._stockService);
-
     /**
      * Preset the first drop down box to the country office
      */
@@ -240,13 +235,13 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   // This function below is to determine the country selected
-  // TODO: Return the array of level1 areas in the country selected.
+  // Return the array of level1 areas in the country selected.
   setCountryLevel(){
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
-        // TODO: Below needs to return the level1 array of the id selected
+        // Below needs to return the level1 array of the id selected
         this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
 
 

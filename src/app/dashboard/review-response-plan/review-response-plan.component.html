@@ -122,32 +122,32 @@
         <div class="btn btn-success btn-continue" (click)="approvePlan()">{{"DIRECTOR_DASHBOARD.APPROVE_PLAN" |
           translate}}
         </div>
-        <div class="btn btn-danger btn-continue" (click)="rejectPlan()">{{"DIRECTOR_DASHBOARD.REJECT_PLAN" |
+        <div class="btn btn-danger btn-continue" (click)="triggerRejctDialog()">{{"DIRECTOR_DASHBOARD.REJECT_PLAN" |
           translate}}
         </div>
       </div>
     </div>
-    <div #rejectPlanScrollContainer *ngIf="rejectToggleMap.get(responsePlanId)" class="Container Blue Bordered">
-      <b>{{"DIRECTOR_DASHBOARD.REJECT_PLAN_CONFIRMATION" | translate}}</b>
-      <div class="row Small-spaced">
-        <div class="col-sm-10">
-                    <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
-                              [(ngModel)]="rejectComment"></textarea>
-        </div>
-        <div class="col-sm-2">
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="btn btn-primary Full" (click)="triggerRejctDialog()">{{"GLOBAL.CONFIRM" | translate}}</div>
-            </div>
-          </div>
-          <div class="row Small-spaced">
-            <div class="col-sm-12">
-              <div class="btn btn-outline-gray Full">{{"GLOBAL.CANCEL" | translate}}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!--<div #rejectPlanScrollContainer *ngIf="rejectToggleMap.get(responsePlanId)" class="Container Blue Bordered">-->
+      <!--<b>{{"DIRECTOR_DASHBOARD.REJECT_PLAN_CONFIRMATION" | translate}}</b>-->
+      <!--<div class="row Small-spaced">-->
+        <!--<div class="col-sm-10">-->
+                    <!--<textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"-->
+                              <!--[(ngModel)]="rejectComment"></textarea>-->
+        <!--</div>-->
+        <!--<div class="col-sm-2">-->
+          <!--<div class="row">-->
+            <!--<div class="col-sm-12">-->
+              <!--<div class="btn btn-primary Full" (click)="triggerRejctDialog()">{{"GLOBAL.CONFIRM" | translate}}</div>-->
+            <!--</div>-->
+          <!--</div>-->
+          <!--<div class="row Small-spaced">-->
+            <!--<div class="col-sm-12">-->
+              <!--<div class="btn btn-outline-gray Full">{{"GLOBAL.CANCEL" | translate}}</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
 
   </div>
 </div>
@@ -166,7 +166,16 @@
 
         <div class="row">
           <div class="col-lg-12">
-            <p class="text-center">{{"DIRECTOR_DASHBOARD.ARE_YOU_SURE_REJECT" | translate}}?</p>
+            <p class="text-center">Add a comment</p>
+          </div>
+        </div>
+
+        <textarea name="n-Done" id="n-Done" cols="30" rows="5" class="form-control"
+                  [(ngModel)]="rejectComment"></textarea>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <p class="text-center">{{"DIRECTOR_DASHBOARD.ARE_YOU_SURE_REJECT" | translate}}</p>
           </div>
         </div>
 

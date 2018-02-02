@@ -96,6 +96,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
     if(this.countryIdReceived){
       this.getCountry().then(() => {
         this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
+          this.loaderInactive = true;
         })
         this.getNetworksWithSameLocationsInOtherGlobalNetworks(true, true).then(_ => {
           this.loaderInactive = true;
@@ -104,6 +105,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
     } else{
       this.getNetwork().then(() => {
         this.getNetworksWithSameLocationsInOtherGlobalNetworks(true, true).then(_ => {
+          this.loaderInactive = true;
         })
         this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
           this.loaderInactive = true;

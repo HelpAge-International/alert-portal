@@ -43,18 +43,13 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private agencyId: string;
-
   public ResponsePlansEnum = ResponsePlanSectors;
-
-
-  private levelOneDisplay: any[] = [];
-
   private selectedCountry: any;
   private programmeId: any;
   private countriesList: number[] = Constants.COUNTRY_SELECTION;
   private countries = Constants.COUNTRIES;
-
   private TmpSectorExpertise: any[] = [];
+  private locationObjs: any[] = [];
   private ResponsePlanSectorsList: number[] = [
     ResponsePlanSectors.wash,
     ResponsePlanSectors.health,
@@ -76,6 +71,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private router: Router,
               private userService: UserService,
+              private jsonService: CommonService,
               private agencyService: AgencyService,
               private af: AngularFire) {
 
@@ -87,9 +83,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
-
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
   }
 
   initLocalAgency(){
@@ -243,6 +237,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             this.TmpSectorExpertise[val.key] = true;
           });
         }
+        this.generateLocations();
       });
   }
 
@@ -288,6 +283,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             this.TmpSectorExpertise[val.key] = true;
           });
         }
+        this.generateLocations();
       });
   }
 
@@ -458,6 +454,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
         dataToUpdate[key] = val;
       }
     });
+
     this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/programme/' + this.agencyId + '/sectorExpertise/')
       .set(dataToUpdate)
       .then(_ => {
@@ -477,8 +474,27 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     return selected;
   }
 
+  generateLocations(){
+    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
+      this.mapping.forEach(mapping => {
+        let obj = {
+          country: "",
+          areas: ""
+        };
+        if (mapping.where && mapping.where > -1) {
+          obj.country = this.countries[mapping.where];
+        }
+        if (mapping.level1 && mapping.level1 > -1) {
+          obj.areas = ", " + json[mapping.where].levelOneValues[mapping.level1].value
+        }
+        if (mapping.level2 && mapping.level2 > -1) {
+          obj.areas = obj.areas + ", " + json[mapping.where].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
+        }
+        this.locationObjs.push(obj);
+      });
+    });
+  }
 }
-
 
 
 

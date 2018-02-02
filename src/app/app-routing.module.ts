@@ -95,6 +95,7 @@ import {CountryOfficeEquipmentComponent} from "./country-admin/country-office-pr
 import {CountryOfficeAddEditEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-equipment/add-edit-equipment.component";
 import {CountryOfficeAddEditSurgeEquipmentComponent} from "./country-admin/country-office-profile/equipment/add-edit-surge-equipment/add-edit-surge-equipment.component";
 import {CountryOfficeCoordinationComponent} from "./country-admin/country-office-profile/coordination/coordination.component";
+import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
 import {DonorListViewComponent} from "./donor-module/donor-list-view/donor-list-view.component";
 import {CountryOfficeAddEditCoordinationComponent} from "./country-admin/country-office-profile/coordination/add-edit-coordination/add-edit-coordination.component";
 import {CountryOfficeStockCapacityComponent} from "./country-admin/country-office-profile/stock-capacity/stock-capacity.component";
@@ -153,7 +154,7 @@ import {NetworkCountryValidationComponent} from "./commons/network-country-valid
 import {NetworkCountryModuleSettingsComponent} from "./network-country-admin/network-administration/network-country-settings/network-country-module-settings/network-country-module-settings.component";
 import {NetworkCountryClockSettingsComponent} from "./network-country-admin/network-administration/network-country-settings/network-country-clock-settings/network-country-clock-settings.component";
 import {CreateEditNetworkPlanComponent} from "./network-country-admin/network-plans/create-edit-network-plan/create-edit-network-plan.component";
-
+import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
 
 import {LocalNetworkAdminDashboardComponent} from "./local-network-admin/local-network-admin-dashboard/local-network-admin-dashboard.component";
 import { LocalNetworkProfileProgrammeComponent } from './local-network-admin/local-network-profile/local-network-profile-programme/local-network-profile-programme.component';
@@ -336,6 +337,11 @@ const routes: Routes = [
   /**
    * Country admin
    */
+
+
+
+  {path: 'country-admin/settings/field-offices/add-edit', component: CountryOfficeAddEditFieldOfficeComponent},
+  {path: 'country-admin/settings/field-offices/add-edit/:id', component: CountryOfficeAddEditFieldOfficeComponent},
   {path: 'country-admin/new-country/new-country-password', component: NewCountryPasswordComponent},
   {path: 'country-admin/new-country/new-country-details', component: NewCountryDetailsComponent},
   {path: 'country-admin/country-account-settings', component: CountryAccountSettingsComponent},
@@ -346,6 +352,7 @@ const routes: Routes = [
     path: 'country-admin/country-messages/country-create-edit-message/:id',
     component: CountryCreateEditMessageComponent
   },
+  {path: 'country-admin/settings/field-offices', component: CountryFieldOfficeSettingsComponent},
   {path: 'country-admin/settings/country-clock-settings', component: CountryClockSettingsComponent},
   {path: 'country-admin/settings/country-modules-settings', component: CountryModulesSettingsComponent},
   {path: 'country-admin/settings/country-permission-settings', component: CountryPermissionSettingsComponent},

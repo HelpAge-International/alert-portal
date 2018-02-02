@@ -110,6 +110,8 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
       this.agencyId = agencyId;
       this.countryId = countryId;
 
+      // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
+      //   this.countryId = countryAdminUser.countryId;
 
       this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
         if (params['id']) {
@@ -118,6 +120,7 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
             .subscribe(equipment => {
               this.equipment = equipment;
             });
+
         }
       });
       this.initCountrySelection();
@@ -142,8 +145,10 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
          */
         this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
           .takeUntil(this.ngUnsubscribe)
-          .subscribe(pre => {
-            this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
+          .subscribe(content => {
+            err => console.log(err);
+            // Below needs to return the level1 array of the id selected
+            this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
 
 
           })
@@ -153,13 +158,13 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   }
 
   // This function below is to determine the country selected
-  // TODO: Return the array of level1 areas in the country selected.
+  // Return the array of level1 areas in the country selected.
   setCountryLevel(){
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
-        // TODO: Below needs to return the level1 array of the id selected
+        // Below needs to return the level1 array of the id selected
         this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
 
 
@@ -177,10 +182,9 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
 
   setLevel1Value(){
 
-    this.isPreset = true;
-    console.log(this.selectedValue, 'preset value');
 
     this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
+    console.log(this.selectedValue, 'preset value');
 
   }
 
@@ -216,8 +220,8 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
     }else{
       var postData = {
         location: this.selectedCountry,
-        level1: this.levelOneDisplay[this.selectedValue].id,
-        level2: this.selectedValueL2,
+        level1: this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null,
+        level2: this.selectedValueL2 ? this.selectedValueL2: null,
         agencyId: this.agencyId
       };
 

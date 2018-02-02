@@ -51,11 +51,11 @@
 
             <div class="col-sm-3">
               <div class="form-group-risk-frequency">
-                <select  class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
+                <select id="level1" class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
                   <option value="undefined" disabled selected hidden >
                     {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
                   </option>
-                  <option *ngFor="let x of levelOneDisplay" [value]="x.id"> {{x.value}}
+                  <option *ngFor="let x of levelOneDisplay" [value]="x.id" (click)="check()"> {{x.value}}
                   </option>
                 </select>
               </div>
@@ -67,7 +67,7 @@
 
             <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3" >
               <div class="form-group-risk-frequency ">
-                <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2" >
+                <select class="form-control" name="level2" [(ngModel)]="selectedValueL2" >
                   <option value="undefined" disabled selected hidden >
                     {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
                   </option>
@@ -77,7 +77,7 @@
               </div>
             </div>
 
-            <!--==LEVEL 2 END==-->
+           <!--==LEVEL 2 END==-->
           </div>
           <!--END-->
 

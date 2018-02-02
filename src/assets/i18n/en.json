@@ -143,6 +143,8 @@
   "OR_REJECT_THIS_REQUEST":"Or reject this request",
   "TODAY":"today",
   "RESPONSE_PLAN":"Response Plan",
+  "RESPONSE_PLAN_CONTINUE": "Save and Continue",
+  "RESPONSE_PLAN_DONE": "Done",
   "EXPORT_PROPOSAL_SEC_1_TITLE":"1 of 10 Plan Details",
   "PLAN_NAME":"Plan Name",
   "GEOGRAPHICAL_LOCATION":"Geographical Location",
@@ -261,6 +263,7 @@
   "TRAINING_NEEDS":"Training Needs",
   "TECHNICAL_SKILLS":"Technical Skills",
   "SUPPORT_SKILLS":"Support Skills",
+  "FIELD_OFFICE":"Field Office",
   "TELEPHONE_NUMBER":"Telephone Number",
   "A_CHS_PREP_ACTION":"A CHS preparedness action",
   "A_MIN_PREP_ACTION":"A minimum preparedness action",
@@ -310,7 +313,9 @@
     "ACTION_LEVEL":"Action Level",
     "WARNING":"Warning!",
     "MALE":"Male",
+    "MALE_WITH_DISABILITY":"Male with disability",
     "FEMALE":"Female",
+    "FEMALE_WITH_DISABILITY":"Female with disability",
     "TITLE":"Title",
     "FROM":"From: ",
     "DATE":"Date",
@@ -373,7 +378,8 @@
       "EXPIRED":"Expired",
       "IN_PROGRESS":"In Progress",
       "COMPLETED":"Completed",
-      "ARCHIVED":"Archived"
+      "ARCHIVED":"Archived",
+      "UNASSIGNED":"Unassigned"
     },
     "ACTION_TYPE":{
       "CHS":"CHS",
@@ -1150,6 +1156,11 @@
       "MENU":{
         "MODULES":"Modules"
       },
+    "FIELD_OFFICE":{
+      "TITLE_TEXT": "Field Office Settings",
+      "ADD_OFFICE": "Add Field Office",
+      "EDIT_OFFICE": "Edit Field Office"
+    },
       "PERMISSIONS":{
         "TITLE_TEXT":"Permission settings",
         "SAVE_PERMISSIONS":"SAVE PERMISSION SETTINGS",

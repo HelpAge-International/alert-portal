@@ -36,6 +36,17 @@
       </label>
     </div>
 
+    <!--other not monitored hazards-->
+    <div class="col-sm-5">
+      <select class="form-control"
+              [(ngModel)]="alertData.hazardScenario">
+        <option [value]="'undefined'" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+        <option *ngFor="let hazard of nonMonitoredHazards" [value]="hazard">
+          {{hazardScenario[hazard] | translate}}
+        </option>
+      </select>
+    </div>
+
     <!--Select Alert level-->
     <br>
     <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.SELECT_ALERT" | translate}}</b>

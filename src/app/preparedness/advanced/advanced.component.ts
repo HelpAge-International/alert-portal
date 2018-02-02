@@ -825,18 +825,21 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   // (Dan) - this new function is for the undo completed APA
   protected undoCompleteAction(action: PreparednessAction){
+    action.actualCost = null
     // Call to firebase to update values to revert back to
     if (this.isLocalAgency) {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
-        updatedAt: new Date().getTime()
+        updatedAt: new Date().getTime(),
+        actualCost : null
       });
     } else {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
-        updatedAt: new Date().getTime()
+        updatedAt: new Date().getTime(),
+        actualCost : null
       });
     }
 

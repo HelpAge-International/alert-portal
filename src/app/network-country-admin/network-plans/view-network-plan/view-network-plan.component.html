@@ -20,7 +20,7 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Back--button"
-         [routerLink]="isViewing ? ['/network-country/network-plans', networkViewValues] :isLocalNetworkAdmin ? '/network/local-network-plans' : '/network-country/network-plans'">
+         [routerLink]="isViewing ? networkCountryId && networkCountryId!='undefined' ? ['/network-country/network-plans', networkViewValues] : ['/network/local-network-plans', networkViewValues] : isLocalNetworkAdmin ? '/network/local-network-plans' : '/network-country/network-plans'">
       {{"RESPONSE_PLANS.TITLE_TEXT" |
       translate}}
     </div>

@@ -88,11 +88,11 @@
 
             <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3" >
               <div class="form-group-risk-frequency ">
-                <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2" >
+                <select class="form-control" name="CountryAreaLvOne" [(ngModel)]="selectedValueL2" >
                   <option value="undefined" disabled selected hidden >
                     {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
                   </option>
-                  <option *ngFor="let y of levelTwoDisplay" [value]="y.id">{{y.value}}
+                  <option *ngFor="let y of levelTwoDisplay" [ngValue]="y.id">{{y.value}}
                   </option>
                 </select>
               </div>

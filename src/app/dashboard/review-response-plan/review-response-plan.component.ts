@@ -310,7 +310,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       this.scrollToBottom();
     }
   }
-
+ 
   private scrollToBottom(): void {
     try {
       this.rejectPlanScrollContainer.nativeElement.scrollTop = this.rejectPlanScrollContainer.nativeElement.scrollHeight;

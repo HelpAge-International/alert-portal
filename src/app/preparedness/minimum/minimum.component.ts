@@ -74,7 +74,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   // Data for the actions
   // --- Declared because we're missing out "inactive" in this page
-  private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED"];
+  private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED", "GLOBAL.ACTION_STATUS.UNASSIGNED"];
   private DEPARTMENTS: ModelDepartment[] = [];
   private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
@@ -819,6 +819,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   cancelComplete(action) {
     action.actualCost = null
+    this.closePopover(action)
   }
 
   /**
@@ -835,13 +836,15 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.agencyUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
-        updatedAt: new Date().getTime()
+        updatedAt: new Date().getTime(),
+        actualCost : null
       });
     } else {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
-        updatedAt: new Date().getTime()
+        updatedAt: new Date().getTime(),
+        actualCost : null
       });
     }
 
@@ -861,7 +864,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     let document = {
       fileName: file.name,
       filePath: "", //this needs to be updated once the file is uploaded
-      module: DocumentType.APA,
+      module: DocumentType.MPA,
       size: file.size * 0.001,
       sizeType: SizeType.KB,
       title: file.name,
@@ -956,7 +959,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     let document = {
       fileName: file.name,
       filePath: "", //this needs to be updated once the file is uploaded
-      module: DocumentType.APA,
+      module: DocumentType.MPA,
       size: file.size * 0.001,
       sizeType: SizeType.KB,
       title: file.name,

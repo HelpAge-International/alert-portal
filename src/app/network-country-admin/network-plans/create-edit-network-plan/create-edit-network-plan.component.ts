@@ -231,6 +231,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   private moduleAccess: NetworkModulesEnabledModel = new NetworkModulesEnabledModel();
 
+  public disaggregateAge = false;
+  public disaggregateDisability = false;
+
 
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
@@ -247,14 +250,28 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
       }
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+      if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
+      }
+      if (params["systemId"]) {
         this.systemAdminUid = params["systemId"];
+      }
+      if (params["agencyId"]) {
         this.agencyId = params["agencyId"];
+      }
+      if (params["countryId"]) {
         this.countryId = params["countryId"];
+      }
+      if (params["userType"]) {
         this.userType = params["userType"];
+      }
+      if (params["networkId"]) {
         this.networkId = params["networkId"];
+      }
+      if (params["networkCountryId"]) {
         this.networkCountryId = params["networkCountryId"];
+      }
+      if (params["uid"]) {
         this.uid = params["uid"];
       }
       this.isViewing ? this.initNetworkViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
@@ -321,7 +338,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    let id = this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined" ? this.networkId : this.networkCountryId;
     if (this.forEditing) {
       this.networkService.setNetworkField("/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/isEditing", false);
       this.networkService.setNetworkField("/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/editingUserId", null);
@@ -336,7 +353,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private setupForEdit() {
-    this.isLocalNetworkAdmin ? this.setupEditForLocalNetwork() : this.setupEditForNetworkCountry();
+    console.log(this.networkCountryId)
+    this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined" ? this.setupEditForLocalNetwork() : this.setupEditForNetworkCountry();
   }
 
   private setupEditForLocalNetwork() {
@@ -489,7 +507,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private getParticipatingAgencies() {
-    this.isLocalNetworkAdmin ? this.getAgenciesForLocalNetwork() : this.getAgenciesForNetworkCountry();
+    this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined" ? this.getAgenciesForLocalNetwork() : this.getAgenciesForNetworkCountry();
   }
 
   private getAgenciesForLocalNetwork() {
@@ -543,7 +561,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     //   jQuery("#navigate-back").modal("show");
     // } else {
     this.isViewing ?
-      this.router.navigate(['/network-country/network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+      this.router.navigate(this.networkCountryId && this.networkCountryId != "undefined" ? ['/network-country/network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)] : ['/network/local-network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
       :
       this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
     // }
@@ -579,15 +597,15 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   private getCompleteSectionNumber() {
     let counter = 0;
-    if(this.forEditing){
+    if (this.forEditing) {
       let index = 0;
       this.sections.forEach(section => {
-        if(this.sectionsCompleted.get(section) == true && this.responsePlanSettings[index] == true){
+        if (this.sectionsCompleted.get(section) == true && this.responsePlanSettings[index] == true) {
           counter++;
         }
         index++;
       });
-    }else{
+    } else {
       this.sectionsCompleted.forEach((v,) => {
         if (v) {
           counter++;
@@ -595,7 +613,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       });
     }
     //because agency selection section is a must, so here we always return +1
-    return counter+1;
+    return counter + 1;
   }
 
   private updateSectorsList(sectorSelected, sectorEnum) {
@@ -912,7 +930,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private saveToFirebase(newResponsePlan: ResponsePlan) {
-    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    let id = this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undeifned" ? this.networkId : this.networkCountryId;
     let numOfSectionsCompleted: number = 0;
     this.sectionsCompleted.forEach((v,) => {
       if (v) {
@@ -931,7 +949,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
           resetData["/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
           resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
           this.networkService.updateNetworkField(resetData).then(() => {
-            this.router.navigate(this.isViewing ? ['network-country/network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
+            //this.router.navigate(this.isViewing ? ['network-country/network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
           }, error => {
             console.log(error.message);
           });
@@ -940,12 +958,35 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         });
 
       } else {
-        this.planService.pushNewResponsePlan(id, newResponsePlan).then(() => {
-          console.log("Response plan creation successful");
-          this.router.navigate(this.isViewing ? ['network-country/network-plans', this.networkViewValues] : this.isLocalNetworkAdmin ? ['network/local-network-plans'] : ['network-country/network-plans']);
-        }).catch(error => {
-          console.log("Response plan creation unsuccessful with error --> " + error.message);
-        });
+
+        //Make sure we aren't creating new node on autosave
+        if (this.idOfResponsePlanToEdit)
+        {
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkCountryId + "/"+ this.idOfResponsePlanToEdit;
+          this.af.database.object(responsePlansPath)
+            .update(newResponsePlan)
+            .then(()=> {
+              console.log('update');
+            }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
+          });
+
+        } else {
+
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkCountryId;
+          this.af.database.list(responsePlansPath)
+            .push(newResponsePlan)
+            .then(plan => {
+              // set variable in here
+              this.idOfResponsePlanToEdit = plan.path.pieces_[3];
+              console.log('push');
+            }).catch(error => {
+            console.log("Response plan creation unsuccessful with error --> " + error.message);
+          });
+
+        }
+
+        // end
       }
     } else {
 
@@ -953,6 +994,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
     }
   }
+
 
   /**
    * Section 1/10
@@ -963,6 +1005,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection1();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
 
@@ -1073,6 +1117,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection2();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection2() {
@@ -1208,6 +1254,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection3();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection3() {
@@ -1234,6 +1282,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection4();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection4() {
@@ -1319,6 +1369,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection5();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection5() {
@@ -1343,6 +1395,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection6();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection6() {
@@ -1549,6 +1603,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection8();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection8() {
@@ -1569,6 +1625,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection9();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection9() {
@@ -1595,19 +1653,42 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     modelPlanList.forEach(modelPlan => {
       beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
     });
-    beneficiaryList.forEach(item => {
-      if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
-        this.numberFemaleLessThan18 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
-        this.numberFemale18To50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
-        this.numberFemalegreaterThan50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
-        this.numberMaleLessThan18 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
-        this.numberMale18To50 += Number(item["value"]);
-      } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
-        this.numberMalegreaterThan50 += Number(item["value"]);
+
+    modelPlanList.forEach(modelPlan => {
+      if (!modelPlan.hasFurtherBeneficiary) {
+        modelPlan.beneficiary.forEach(item => {
+          if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+            this.numberFemaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+            this.numberFemale18To50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+            this.numberFemalegreaterThan50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+            this.numberMaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+            this.numberMale18To50 += Number(item["value"]);
+          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+            this.numberMalegreaterThan50 += Number(item["value"]);
+          }
+        })
+
+      } else {
+        modelPlan.furtherBeneficiary.forEach(item => {
+          if (item["age"] < 3 && item["gender"] == Gender.feMale) {
+            this.numberFemaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == 3 && item["gender"] == Gender.feMale) {
+            this.numberFemale18To50 += Number(item["value"]);
+          } else if (item["age"] > 3 && item["gender"] == Gender.feMale) {
+            this.numberFemalegreaterThan50 += Number(item["value"]);
+          } else if (item["age"] < 3 && item["gender"] == Gender.male) {
+            this.numberMaleLessThan18 += Number(item["value"]);
+          } else if (item["age"] == 3 && item["gender"] == Gender.male) {
+            this.numberMale18To50 += Number(item["value"]);
+          } else if (item["age"] > 3 && item["gender"] == Gender.male) {
+            this.numberMalegreaterThan50 += Number(item["value"]);
+          }
+        })
+
       }
     });
 
@@ -1713,6 +1794,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection10();
 
     this.handleContinueSave();
+
+    this.onSubmit();
   }
 
   private checkSection10() {
@@ -1921,7 +2004,15 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
             activitiesData[key]["beneficiary"].forEach(item => {
               beneficiary.push(item);
             });
-            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"],
+              activitiesData[key]["indicator"],
+              !activitiesData[key]["hasFurtherBeneficiary"] ? beneficiary : null,
+              activitiesData[key]["hasFurtherBeneficiary"],
+              activitiesData[key]["hasDisability"],
+              activitiesData[key]["hasFurtherBeneficiary"] ? activitiesData[key]["furtherBeneficiary"] : null,
+              !activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["disability"] : null,
+              activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["furtherDisability"] : null);
+
             moreData.push(model);
             if (!this.activityMap.get(Number(sectorKey))) {
               this.activityMap.set(Number(sectorKey), moreData);

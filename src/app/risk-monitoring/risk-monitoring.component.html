@@ -80,9 +80,10 @@
                        [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" | translate}}
                     </a>
                   </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['fromNetwork']">Network: {{indicatorC['networkName']}}</div>
                 </div>
-                <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
-                <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['fromNetwork']">Network: {{indicatorC['networkName']}}</div>
+
                 <div
                   class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
 
@@ -393,9 +394,10 @@
                        [routerLink]="indicator.networkCountryId ? ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId, networkCountryId: indicator.networkCountryId}] : ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId}]">{{"EDIT" | translate}}
                     </a>
                   </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network: {{indicator['networkName']}}</div>
                 </div>
-                <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
-                <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network: {{indicator['networkName']}}</div>
+
                 <div
                   class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                   <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
@@ -709,9 +711,10 @@
                          [routerLink]="indicator.networkCountryId ? ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId, networkCountryId: indicator.networkCountryId}] : ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId}]">{{"EDIT" | translate}}
                       </a>
                     </div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network: {{indicator['networkName']}}</div>
                   </div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network: {{indicator['networkName']}}</div>
+
                   <div
                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                     <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
