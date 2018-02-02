@@ -37,14 +37,17 @@
     </div>
 
     <!--other not monitored hazards-->
-    <div class="col-sm-5">
-      <select class="form-control"
-              [(ngModel)]="alertData.hazardScenario">
-        <option [value]="'undefined'" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-        <option *ngFor="let hazard of nonMonitoredHazards" [value]="hazard">
-          {{hazardScenario[hazard] | translate}}
-        </option>
-      </select>
+    <div class="row" style="width:100%">
+      <div class="col-sm-5 Checkbox--ribbon__alert Left">
+        <p>Non-monitoring hazard</p>
+        <select class="form-control"
+                [(ngModel)]="alertData.hazardScenario">
+          <option [value]="'undefined'" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+          <option *ngFor="let hazard of nonMonitoredHazards" [value]="hazard">
+            {{hazardScenario[hazard] | translate}}
+          </option>
+        </select>
+      </div>
     </div>
 
     <!--Select Alert level-->
