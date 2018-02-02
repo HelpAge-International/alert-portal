@@ -235,6 +235,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   addDepartment() {
+
     if (this.validateNewDepartment()) {
       let updateObj = {
         name: this.departmentName

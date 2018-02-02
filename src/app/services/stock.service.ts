@@ -19,6 +19,7 @@ export class StockService {
                       .map(items => {
                         const stockCapacities: StockCapacityModel[] = [];
                         items.forEach(item => {
+                          console.log("item:", item);
                           let stockCapacity = new StockCapacityModel();
                           stockCapacity.mapFromObject(item);
                           stockCapacity.id = item.$key;

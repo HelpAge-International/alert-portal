@@ -49,9 +49,10 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private userAgencyId: string;
+  private locationObjsStocksIn: any[] = [];
+  private locationObjsStocksOut: any[] = [];
 
   @Input() isLocalAgency: boolean;
-
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
@@ -60,6 +61,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
               private router: Router,
               private af: AngularFire,
               private _commonService: CommonService,
+              private jsonService: CommonService,
               private route: ActivatedRoute) {
     this.newNote = [];
   }
@@ -70,10 +72,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
-
   }
 
   private initLocalAgency(){
@@ -87,6 +86,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
             this._stockService.getStockCapacitiesLocalAgency(this.agencyId).subscribe(stockCapacities => {
               this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Agency);
               this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.AgencyExternal);
+              this.generateLocations();
 
               // Get notes
               stockCapacities.forEach(stockCapacity => {
@@ -129,6 +129,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
             this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
               this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
               this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+              this.generateLocations();
 
               // Get notes
               stockCapacities.forEach(stockCapacity => {
@@ -160,6 +161,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
             this._stockService.getStockCapacities(this.countryId).subscribe(stockCapacities => {
               this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
               this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
+              this.generateLocations();
 
               // Get notes
               stockCapacities.forEach(stockCapacity => {
@@ -360,5 +362,43 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
     });
 
     return userName;
+  }
+
+  generateLocations(){
+    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
+      this.stockCapacitiesIN.forEach(stockCapacity => {
+        let obj = {
+          country: "",
+          areas: ""
+        };
+        if (stockCapacity.location && stockCapacity.location > -1) {
+          obj.country = this.countries[stockCapacity.location];
+        }
+        if (stockCapacity.level1 && stockCapacity.level1 > -1) {
+          obj.areas = ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].value
+        }
+        if (stockCapacity.level2) {
+          obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
+        }
+        this.locationObjsStocksIn.push(obj);
+      });
+
+      this.stockCapacitiesOUT.forEach(stockCapacity => {
+        let obj = {
+          country: "",
+          areas: ""
+        };
+        if (stockCapacity.location && stockCapacity.location > -1) {
+          obj.country = this.countries[stockCapacity.location];
+        }
+        if (stockCapacity.level1 && stockCapacity.level1 > -1) {
+          obj.areas = ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].value
+        }
+        if (stockCapacity.level2) {
+          obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
+        }
+        this.locationObjsStocksOut.push(obj);
+      });
+    });
   }
 }

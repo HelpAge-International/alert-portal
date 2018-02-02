@@ -1185,17 +1185,20 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        plans.forEach(plan => {
-          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(user => {
-              plan["displayName"] = user.firstName + " " + user.lastName;
-              plan["countryId"] = countryId;
-            });
-        });
-
-        return plans;
+        if (plans && plans.length>0) {
+          plans.forEach(plan => {
+            let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(user => {
+                plan["displayName"] = user.firstName + " " + user.lastName;
+                plan["countryId"] = countryId;
+              });
+          });
+          return plans;
+        } else {
+          return []
+        }
       });
   }
 
@@ -1207,16 +1210,20 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        plans.forEach(plan => {
-          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(user => {
-              plan["displayName"] = user.firstName + " " + user.lastName;
-              plan["countryId"] = countryId;
-            });
-        });
-        return plans;
+        if (plans && plans.length>0) {
+          plans.forEach(plan => {
+            let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(user => {
+                plan["displayName"] = user.firstName + " " + user.lastName;
+                plan["countryId"] = countryId;
+              });
+          });
+          return plans;
+        } else {
+          return []
+        }
       });
   }
 

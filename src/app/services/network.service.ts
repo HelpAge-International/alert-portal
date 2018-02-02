@@ -749,7 +749,7 @@ export class NetworkService {
       .map(snap => {
         let ids = [];
         if (snap.val()) {
-          return Object.keys(snap.val()).map(key => snap.val()[key]);
+          return Object.keys(snap.val()).map(key => snap.val()[key]["networkCountryId"]);
         }
         return ids;
       })

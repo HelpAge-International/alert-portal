@@ -14,6 +14,7 @@ import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import { CountryOfficeAddEditEquipmentComponent } from "./add-edit-equipment/add-edit-equipment.component";
 import {AgencyService} from "../../../services/agency-service.service";
+import {CommonService} from "../../../services/common.service";
 
 declare var jQuery: any;
 
@@ -59,6 +60,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private userAgencyId: string;
+  private locationObjs: any[] = [];
 
   @Input() isLocalAgency: boolean;
 
@@ -68,6 +70,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
               private agencyService: AgencyService,
               private router: Router,
               private af: AngularFire,
+              private jsonService: CommonService,
               private route: ActivatedRoute) {
     this.newNote = [];
   }
@@ -107,6 +110,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   this.newNote[equipment.id] = new NoteModel();
                   this.newNote[equipment.id].uploadedBy = this.uid;
                 });
+                this.generateLocations();
               });
 
             this._equipmentService.getSurgeEquipmentsLocalAgency(this.agencyId)
@@ -168,13 +172,14 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                             note.agencyName = agency.name;
                           })
                       }
-                    })
+                    });
                     equipment.notes = notes;
                   });
                   // Create the new note model
                   this.newNote[equipment.id] = new NoteModel();
                   this.newNote[equipment.id].uploadedBy = this.uid;
                 });
+                this.generateLocations();
               });
 
             this._equipmentService.getSurgeEquipments(this.countryId)
@@ -233,7 +238,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                             note.agencyName = agency.name;
                           })
                       }
-                    })
+                    });
                     equipment.notes = notes;
                   });
 
@@ -241,6 +246,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   this.newNote[equipment.id] = new NoteModel();
                   this.newNote[equipment.id].uploadedBy = this.uid;
                 });
+                this.generateLocations();
               });
 
             this._equipmentService.getSurgeEquipments(this.countryId)
@@ -450,5 +456,26 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   closeDeleteModal() {
     jQuery('#delete-action').modal('hide');
+  }
+
+  generateLocations(){
+    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
+      this.equipments.forEach(mapping => {
+        let obj = {
+          country: "",
+          areas: ""
+        };
+        if (mapping.location && mapping.location > -1) {
+          obj.country = this.countries[mapping.location];
+        }
+        if (mapping.level1 && mapping.level1 > -1) {
+          obj.areas = ", " + json[mapping.location].levelOneValues[mapping.level1].value
+        }
+        if (mapping.level2 && mapping.level2) {
+          obj.areas = obj.areas + ", " + json[mapping.location].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
+        }
+        this.locationObjs.push(obj);
+      });
+    });
   }
 }
