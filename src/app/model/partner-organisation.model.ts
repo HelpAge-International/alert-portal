@@ -35,7 +35,6 @@ export class PartnerOrganisationModel extends BaseModel {
     this.externalPartner = true;
   }
 
-
   validate(excludedFields = []): AlertMessageModel {
     if (!this.organisationName && !this.isExcluded('organisationName', excludedFields)) {
       return new AlertMessageModel('ADD_PARTNER.NO_ORGANISATION_NAME');

@@ -325,6 +325,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   public triggerScrollTo(action) {
+
     console.log("triggerScrollTo called")
     const config: ScrollToConfigOptions = {
       target: 'popover_content_' + this.updateActionId
@@ -342,6 +343,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     //     scrollTop: position
     //   } /* speed */ );
     // });
+
   }
 
   ngOnDestroy() {
