@@ -400,9 +400,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   }
 
-
-
-
   checkTypeof(param: any) {
     if (typeof (param) == 'undefined') {
       return false;

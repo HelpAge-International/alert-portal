@@ -14,12 +14,15 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="Back--button Spaced-above">
-      <a href="javascript:void(0)" (click)="backButton()">{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</a>
+      <a href="javascript:void(0)" (click)="backButton()">{{"SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes"
+        | translate}}</a>
     </div>
 
     <div class="Header-title__wrap Spaced row">
-      <h1 class="col-sm-6" *ngIf="!programmeId">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.ADD_4W_MAPPING" | translate}}</h1>
-      <h1 class="col-sm-6" *ngIf="programmeId">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.EDIT_4W_MAPPING" | translate}}</h1>
+      <h1 class="col-sm-6" *ngIf="!programmeId">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.ADD_4W_MAPPING" |
+        translate}}</h1>
+      <h1 class="col-sm-6" *ngIf="programmeId">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.EDIT_4W_MAPPING" |
+        translate}}</h1>
       <div class="col-sm-6 Right-aligned" *ngIf="programmeId">
         <button href="#deleteMapping" data-toggle="modal" class="btn btn-danger text-uppercase">
           {{"DELETE" | translate}}
@@ -29,19 +32,20 @@
 
     <div class="row">
       <div class="Item__selectable Icon__selectable" *ngFor="let sector of ResponsePlanSectorsList">
-          <div (click)="isActive(sector)" [ngClass]="setSelectorClass(sector)"
-               class="{{ResponsePlanSectors[sector] | translate | lowercase}}"></div>
-          <label>{{ResponsePlanSectors[sector] | translate}}</label>
+        <div (click)="isActive(sector)" [ngClass]="setSelectorClass(sector)"
+             class="{{ResponsePlanSectors[sector] | translate | lowercase}}"></div>
+        <label>{{ResponsePlanSectors[sector] | translate}}</label>
       </div>
     </div>
 
     <ng-container *ngIf="programme.sector == ResponsePlansEnum.other">
-    <div class="row Spaced-above">
-      <h6 class="font-weight-bold">Sector Name</h6>
-    </div>
-    <div class="row">
-      <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.otherName">
-    </div>
+      <div class="row Spaced-above">
+        <h6 class="font-weight-bold">Sector Name</h6>
+      </div>
+      <div class="row">
+        <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
+               [(ngModel)]="programme.otherName">
+      </div>
 
     </ng-container>
 
@@ -49,9 +53,9 @@
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHAT" |
       translate}}</h6>
       <tooltip
-      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT1.LEVEL1'"
+        [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT1.LEVEL1'"
       ></tooltip>
-      </div>
+    </div>
     <div class="row">
       <textarea class="col-sm-7" rows="5" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
                 [(ngModel)]="programme.what"></textarea>
@@ -59,16 +63,17 @@
     <br>
 
 
-
     <!--START-->
 
-    <h6 class="font-weight-bold row Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" | translate}}</h6><br>
+    <h6 class="font-weight-bold row Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" |
+      translate}}</h6><br>
     <div class="row">
       <div class="col-sm-3">
         <div class="form-group-risk-frequency row">
-          <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
+          <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control"
+                  name="CountryArea">
             <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
-            <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
+            <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] |
               translate}}
             </option>
           </select>
@@ -76,95 +81,111 @@
       </div>
 
 
-        <!--LEVEL 1 START-->
+      <!--LEVEL 1 START-->
 
-        <div class="col-sm-3">
-          <div class="form-group-risk-frequency">
-            <select  class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
-              <option value="undefined" disabled selected hidden >
-                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
-              </option>
-              <option *ngFor="let x of levelOneDisplay" [value]="x.id"> {{x.value}}
-              </option>
-            </select>
-          </div>
+      <div class="col-sm-3">
+        <div class="form-group-risk-frequency">
+          <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue"
+                  (change)="setLevel1Value()">
+            <option value="undefined" disabled selected hidden>
+              {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
+            </option>
+            <option *ngFor="let x of levelOneDisplay" [value]="x.id"> {{x.value}}
+            </option>
+          </select>
         </div>
-
-        <!--==LEVEL 1 END==-->
-
-        <!--==LEVEL 2 START==-->
-
-        <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3" >
-          <div class="form-group-risk-frequency ">
-            <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2" >
-              <option value="undefined" disabled selected hidden >
-                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
-              </option>
-              <option *ngFor="let y of levelTwoDisplay" [value]="y.id">{{y.value}}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <!--==LEVEL 2 END==-->
-
-
-
       </div>
+
+      <!--==LEVEL 1 END==-->
+
+      <!--==LEVEL 2 START==-->
+
+      <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3">
+        <div class="form-group-risk-frequency ">
+          <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2">
+            <option value="undefined" disabled selected hidden>
+              {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
+            </option>
+            <option *ngFor="let y of levelTwoDisplay" [value]="y.id">{{y.value}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!--==LEVEL 2 END==-->
+
+
+    </div>
 
 
     <!--END-->
 
 
-
-
-
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" |
       translate}}</h6>
-       <tooltip
-      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT3.LEVEL1'"
+      <tooltip
+        [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT3.LEVEL1'"
       ></tooltip>
-      </div>
+    </div>
     <div class="row">
-      <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="programme.toWho">
+      <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
+             [(ngModel)]="programme.toWho">
     </div>
     <br>
-    <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" |
-      translate}}</h6>
-       <tooltip
-      [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT4.LEVEL1'"
-      ></tooltip>
+
+    <div class="row Spaced-above">
+      <div class="col-sm-4">
+        <div class="row">
+          <h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.FROM" | translate}}</h6>
+          <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT4.LEVEL1'"></tooltip>
+        </div>
+        <div class="row">
+          <material-datepicker id="fromDate" placeholder="{{'DD/MM/YYYY'}}"></material-datepicker>
+        </div>
       </div>
-    <div class="row">
-      <div class="col-sm-3 padding-left-none">
-        <select class="form-control" (change)="setMonth($event)" [(ngModel)]="when['month']">
-          <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-          <option *ngFor="let m of MonthList" [value]="m">{{Month[m] | translate}}</option>
-        </select>
-      </div>
-      <div class="form-group-country-office-profile col-sm-2">
-        <select class="form-control" (change)="setYear($event)" [(ngModel)]="when['year']">
-          <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-          <option [value]="2017">2017</option>
-          <option [value]="2018">2018</option>
-          <option [value]="2019">2019</option>
-          <option [value]="2020">2020</option>
-          <option [value]="2021">2021</option>
-        </select>
+
+      <div class="col-sm-2">
+        <div class="row">
+          <h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO" | translate}}</h6>
+          <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT12.LEVEL1'"></tooltip>
+        </div>
+        <div class="row">
+          <material-datepicker id="toDate" placeholder="{{'DD/MM/YYYY'}}"></material-datepicker>
+        </div>
       </div>
     </div>
 
-    <br><br><br>
+    <!--<div class="row">-->
+    <!--<div class="col-sm-3 padding-left-none">-->
+    <!--<select class="form-control" (change)="setMonth($event)" [(ngModel)]="when['month']">-->
+    <!--<option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>-->
+    <!--<option *ngFor="let m of MonthList" [value]="m">{{Month[m] | translate}}</option>-->
+    <!--</select>-->
+    <!--</div>-->
+    <!--<div class="form-group-country-office-profile col-sm-2">-->
+    <!--<select class="form-control" (change)="setYear($event)" [(ngModel)]="when['year']">-->
+    <!--<option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>-->
+    <!--<option [value]="2017">2017</option>-->
+    <!--<option [value]="2018">2018</option>-->
+    <!--<option [value]="2019">2019</option>-->
+    <!--<option [value]="2020">2020</option>-->
+    <!--<option [value]="2021">2021</option>-->
+    <!--</select>-->
+    <!--</div>-->
+    <!--</div>-->
+    
+    <br>
     <div class="row Spaced-above">
       <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="!isLocalAgency" (click)="saveMapping()">
         {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SAVE_CHANGES" | translate}}
       </button>
-      <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="isLocalAgency"(click)="saveMappingLocalAgency()">
+      <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="isLocalAgency" (click)="saveMappingLocalAgency()">
         {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SAVE_CHANGES" | translate}}
       </button>
       <a class="padding-left-two margin-top-one" href="javascript:void(0)"
-         [routerLink]="isLocalAgency ? ['/local-agency/profile'] : ['/country-admin/country-office-profile']">{{"GLOBAL.CANCEL" | translate}}</a>
+         [routerLink]="isLocalAgency ? ['/local-agency/profile'] : ['/country-admin/country-office-profile']">{{"GLOBAL.CANCEL"
+        | translate}}</a>
     </div>
 
     <!--Delete 4W Mapping Modal-->
