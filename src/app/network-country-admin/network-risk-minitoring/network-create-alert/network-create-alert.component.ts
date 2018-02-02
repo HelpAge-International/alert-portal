@@ -16,6 +16,7 @@ import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
+import {PrepActionService} from "../../../services/prepactions.service";
 
 
 @Component({
@@ -77,6 +78,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private storage: LocalStorageService,
               private networkService: NetworkService,
+              private prepActionService: PrepActionService,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -140,6 +142,10 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               this._getDirectorCountryID();
 
               this.initPreSelection(network)
+
+              this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid,  false, this.networkCountryId, this.networkId, this.systemId)
+              console.log('-------if-------')
+              console.log(this.prepActionService.actions)
             })
 
             // get the country levels values
@@ -174,6 +180,10 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
                     //get pre-select country and default to this location
                     this.initPreSelection(network);
+
+                    this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid,  false, this.networkCountryId, this.networkId, this.systemId)
+                    console.log('-------else-------')
+                    console.log(this.prepActionService.actions)
                   })
               })
 
@@ -242,6 +252,23 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               else {
                 riskNameTranslated = dataToSave.otherName;
               }
+
+              console.log(this.prepActionService.actions)
+
+              let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario) || action.assignedHazards.length == 0)
+
+              console.log(affectedActions)
+
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = new Date().getTime();
+                console.log(action)
+                console.log(Constants.APP_STATUS + '/action/' + this.networkCountryId + affectedAction.id)
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + affectedAction.id)
+                  .update(action)
+
+              })
 
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});

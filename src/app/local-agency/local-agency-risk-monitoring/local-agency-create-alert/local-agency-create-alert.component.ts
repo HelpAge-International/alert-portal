@@ -14,6 +14,7 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
+import {PrepActionService} from "../../../services/prepactions.service";
 declare var jQuery: any;
 
 @Component({
@@ -65,6 +66,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               private _commonService: CommonService,
               private translate: TranslateService,
               private userService: UserService,
+              private prepActionService: PrepActionService,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -91,6 +93,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.countryID = countryId;
       this._getHazards();
       this._getDirectorLocalAgencyId();
+
+      console.log(this.prepActionService.actions)
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
 
 
 
@@ -148,6 +153,25 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               else {
                 riskNameTranslated = dataToSave.otherName;
               }
+
+              console.log(this.prepActionService.actions)
+              console.log(dataToSave.hazardScenario)
+              let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario) || action.assignedHazards.length == 0)
+
+              console.log(affectedActions)
+
+              let raisedAt = new Date().getTime();
+
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = raisedAt;
+                console.log(action)
+                console.log(Constants.APP_STATUS + '/action/' + this.agencyId + affectedAction.id)
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + affectedAction.id)
+                  .update(action)
+
+              })
 
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
