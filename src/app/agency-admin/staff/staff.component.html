@@ -64,7 +64,7 @@
         </div>
         <div *ngFor="let staff of office?.staffs" class="row Line-row Small-spaced align-items-center"
              style="position:relative;">
-          <div class="col-lg-2">{{getStaffName(staff.id)}}</div>
+          <div class="col-lg-2">{{staffObjMap.get(staff.id)?.firstName +' '+staffObjMap.get(staff.id)?.lastName}}</div>
           <div class="col-lg-2">{{departmentMap.get(staff.department)}}</div>
           <div class="col-lg-2">{{USER_TYPE[staff.userType] | translate}}</div>
           <div class="col-lg-2">{{OFFICE_TYPE[staff.officeType] | translate}}</div>
@@ -88,17 +88,17 @@
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">{{"EMAIL_ADDRESS" | translate}}</div>
-              <div class="col-md-10 col-sm-6">{{getStaffEmail(staff.id)}}</div>
+              <div class="col-md-10 col-sm-6">{{staffObjMap.get(staff.id)?.email}}</div>
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">{{"TELEPHONE_NUMBER" | translate}}</div>
-              <div class="col-md-10 col-sm-6">{{getStaffPhone(staff.id)}}</div>
+              <div class="col-md-10 col-sm-6">{{staffObjMap.get(staff.id)?.phone}}</div>
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">{{"SUPPORT_SKILLS" | translate}}</div>
               <div class="col-md-10 col-sm-6">
                 <ul>
-                  <li *ngFor="let skill of getSupportSkills(office.id, staff.id)"> {{skill}}</li>
+                  <li *ngFor="let skill of supportSkillMap.get(staff.id)"> {{skill}}</li>
                 </ul>
               </div>
             </div>
@@ -106,7 +106,7 @@
               <div class="col-md-2 col-sm-6 text-bold">{{"TECHNICAL_SKILLS" | translate}}</div>
               <div class="col-md-10 col-sm-6">
                 <ul>
-                  <li *ngFor="let skill of getTechSkills(office.id, staff.id)"> {{skill}}</li>
+                  <li *ngFor="let skill of techSkillMap.get(staff.id)"> {{skill}}</li>
                 </ul>
               </div>
             </div>
@@ -148,7 +148,7 @@
         </div>
         <div *ngFor="let globalUser of globalUsers" class="row Line-row Small-spaced align-items-center"
              style="position:relative;">
-          <div class="col-lg-2">{{getStaffName(globalUser.$key)}}</div>
+          <div class="col-lg-2">{{staffObjMap.get(globalUser.$key)?.firstName +' '+staffObjMap.get(globalUser.$key)?.lastName}}</div>
           <div class="col-lg-2">{{departmentMap.get(globalUser.department)}}</div>
           <div class="col-lg-2">{{USER_TYPE[globalUser.userType] | translate}}</div>
           <div class="col-lg-2">{{OFFICE_TYPE[globalUser.officeType] | translate}}</div>
@@ -173,17 +173,17 @@
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">{{"EMAIL_ADDRESS"| translate}}</div>
-              <div class="col-md-10 col-sm-6">{{getStaffEmail(globalUser.$key)}}</div>
+              <div class="col-md-10 col-sm-6">{{staffObjMap.get(globalUser.$key)?.email}}</div>
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">{{"TELEPHONE_NUMBER"| translate}}</div>
-              <div class="col-md-10 col-sm-6">{{getStaffPhone(globalUser.$key)}}</div>
+              <div class="col-md-10 col-sm-6">{{staffObjMap.get(globalUser.$key)?.phone}}</div>
             </div>
             <div class="row">
               <div class="col-md-2 col-sm-6 text-bold">{{"SUPPORT_SKILLS"| translate}}</div>
               <div class="col-md-10 col-sm-6">
                 <ul>
-                  <li *ngFor="let skill of getSupportSkills(null, globalUser.$key)"> {{skill}}</li>
+                  <li *ngFor="let skill of supportSkillMap.get(globalUser.$key)"> {{skill}}</li>
                 </ul>
               </div>
             </div>
@@ -191,7 +191,7 @@
               <div class="col-md-2 col-sm-6 text-bold">{{"TECHNICAL_SKILLS"| translate}}</div>
               <div class="col-md-10 col-sm-6">
                 <ul>
-                  <li *ngFor="let skill of getTechSkills(null, globalUser.$key)"> {{skill}}</li>
+                  <li *ngFor="let skill of techSkillMap.get(globalUser.$key)"> {{skill}}</li>
                 </ul>
               </div>
             </div>
