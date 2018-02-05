@@ -18,11 +18,7 @@ import {HazardImages} from "../../utils/HazardImages";
 import {WindowRefService} from "../../services/window-ref.service";
 import * as jsPDF from 'jspdf'
 import {ModelUserPublic} from "../../model/user-public.model";
-import * as firebase from "firebase/app";
-
-import App = firebase.app.App;
 import {NetworkCountryModel} from "../network-country.model";
-import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {SettingsService} from "../../services/settings.service";
 
 declare var jQuery: any;
