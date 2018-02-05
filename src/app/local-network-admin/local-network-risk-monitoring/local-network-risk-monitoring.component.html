@@ -454,7 +454,7 @@
                   <div class="col-md-4 col-sm-7 margin-left-four">{{indicator.name}} | <span
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a *ngIf="indicator.fromAgency && !isViewingFromExternal"
+                    <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
                        [routerLink]="networkViewValues ? ['/network/local-network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network/local-network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
                     </a>
                     <a *ngIf="!indicator.fromAgency && !isViewingFromExternal"

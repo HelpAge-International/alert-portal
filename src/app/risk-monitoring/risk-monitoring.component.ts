@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../utils/Enums";
+import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -15,9 +15,11 @@ import {HazardImages} from "../utils/HazardImages";
 import {WindowRefService} from "../services/window-ref.service";
 import * as jsPDF from 'jspdf'
 import {ModelUserPublic} from "../model/user-public.model";
-import {ModelStaff} from "../model/staff.model";
 import {Observable} from "rxjs/Observable";
 import {AgencyService} from "../services/agency-service.service";
+import {SettingsService} from "../services/settings.service";
+import {NetworkService} from "../services/network.service";
+import {CommonUtils} from "../utils/CommonUtils";
 
 declare var jQuery: any;
 
@@ -113,6 +115,13 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private assignedUser: string;
   private staffMap = new Map()
 
+  private overviewCountryPrivacy: any;
+  private Hazard_Conflict = 1
+  private Privacy = Privacy
+  private userAgencyId: string;
+  private userCountryId: string;
+  private withinNetwork: boolean;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -121,6 +130,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private userService: UserService,
               private agencyService: AgencyService,
+              private settingService:SettingsService,
+              private networkService:NetworkService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
@@ -171,9 +182,44 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
 
         if (this.agencyId && this.countryID) {
-          this._getHazards();
-          this.getCountryLocation();
-          this._getCountryContextIndicators();
+
+          //check share the same network
+          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+            this.userAgencyId = agencyId;
+            this.userCountryId = countryId;
+            this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryID)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(networkCountryMap => {
+                let passedNetworkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+
+                //check network country
+                this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(networkCountryMap => {
+                    let userNetworkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
+                    this.withinNetwork = passedNetworkCountryIds.filter(id => userNetworkCountryIds.includes(id)).length > 0
+
+                    //after network country check, and find nothing nothing, continue do local network check
+                    if (!this.withinNetwork) {
+                      this.networkService.getLocalNetworkModelsForCountry(this.userAgencyId, this.userCountryId)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(localNetworks => {
+                          this.withinNetwork = passedNetworkCountryIds.filter(id => localNetworks.map(network => network.id).includes(id)).length > 0
+                        })
+                    }
+                  })
+              })
+          });
+
+          this.settingService.getPrivacySettingForCountry(this.countryID)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(privacy => {
+              this.overviewCountryPrivacy = privacy
+              this._getHazards();
+              this.getCountryLocation();
+              this._getCountryContextIndicators();
+            })
+
         } else {
           this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
             this.uid = user.uid;
@@ -268,11 +314,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }
 
-          this.getIndicators(hazard.id).subscribe((indicators: any) => {
+          this.getIndicators(hazard.id).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
-              this.getLogs(indicator.$key).subscribe((logs: any) => {
+              this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                 logs.forEach((log, key) => {
-                  this.getUsers(log.addedBy).subscribe((user: any) => {
+                  this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                     log.addedByFullName = user.firstName + ' ' + user.lastName;
                   })
                 });
