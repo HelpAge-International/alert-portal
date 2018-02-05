@@ -1460,13 +1460,15 @@ export enum ActionStatus {
   InProgress = 1,
   Completed = 2,
   Inactive = 3,
-  Archived = 4
+  Archived = 4,
+  Unassigned = 5
 }
 export enum ActionStatusMin {
   Expired = 0,
   InProgress = 1,
   Completed = 2,
-  Archived = 3
+  Archived = 3,
+  Unassigned = 4
 }
 
 export enum SizeType {
