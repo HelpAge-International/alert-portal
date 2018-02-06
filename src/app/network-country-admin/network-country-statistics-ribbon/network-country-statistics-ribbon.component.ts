@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
-  ActionLevel, AlertLevels, AlertMessageType, ApprovalStatus, Countries, HazardScenario, ModuleNameNetwork,
+  ActionLevel, ActionType, AlertLevels, AlertMessageType, ApprovalStatus, Countries, HazardScenario, ModuleNameNetwork,
   Privacy
 } from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -463,7 +463,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
     let chsTotal: number = 0;
     let chsGreen: number = 0;
     for (let x of this.prepActionService.actions) {
-      if (x.level == ActionLevel.MPA) {
+      if (x.level == ActionLevel.MPA && x.type != ActionType.chs) {
         if (!x.isArchived) {
           minTotal++;
           if (this.isActionCompleted(x)) {

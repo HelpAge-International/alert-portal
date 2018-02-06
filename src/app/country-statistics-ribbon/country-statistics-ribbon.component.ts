@@ -229,7 +229,7 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
     let chsTotal: number = 0;
     let chsGreen: number = 0;
     for (let x of this.prepActionService.actions) {
-      if (x.level == ActionLevel.MPA) {
+      if (x.level == ActionLevel.MPA && x.type != ActionType.chs) {
         if (!x.isArchived) {
           minTotal++;
           if (this.isActionCompleted(x)) {
