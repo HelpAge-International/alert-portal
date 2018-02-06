@@ -141,7 +141,11 @@
           <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT4.LEVEL1'"></tooltip>
         </div>
         <div class="row">
-          <material-datepicker id="fromDate" placeholder="{{'DD/MM/YYYY'}}"></material-datepicker>
+          <material-datepicker id="fromDate"
+                               placeholder="{{programme.when ? (programme.when | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                               dateFormat="DD-MM-YYYY"
+                               [(date)]="when"
+                               (onSelect)="setWhenDate(programme)"></material-datepicker>
         </div>
       </div>
 
@@ -151,30 +155,15 @@
           <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT12.LEVEL1'"></tooltip>
         </div>
         <div class="row">
-          <material-datepicker id="toDate" placeholder="{{'DD/MM/YYYY'}}"></material-datepicker>
+          <material-datepicker id="toDate"
+                               placeholder="{{programme.toDate ? (programme.toDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                               dateFormat="DD-MM-YYYY"
+                               [(date)]="toDate"
+                               (onSelect)="setToDate(programme)"></material-datepicker>
         </div>
       </div>
     </div>
 
-    <!--<div class="row">-->
-    <!--<div class="col-sm-3 padding-left-none">-->
-    <!--<select class="form-control" (change)="setMonth($event)" [(ngModel)]="when['month']">-->
-    <!--<option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>-->
-    <!--<option *ngFor="let m of MonthList" [value]="m">{{Month[m] | translate}}</option>-->
-    <!--</select>-->
-    <!--</div>-->
-    <!--<div class="form-group-country-office-profile col-sm-2">-->
-    <!--<select class="form-control" (change)="setYear($event)" [(ngModel)]="when['year']">-->
-    <!--<option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>-->
-    <!--<option [value]="2017">2017</option>-->
-    <!--<option [value]="2018">2018</option>-->
-    <!--<option [value]="2019">2019</option>-->
-    <!--<option [value]="2020">2020</option>-->
-    <!--<option [value]="2021">2021</option>-->
-    <!--</select>-->
-    <!--</div>-->
-    <!--</div>-->
-    
     <br>
     <div class="row Spaced-above">
       <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="!isLocalAgency" (click)="saveMapping()">
