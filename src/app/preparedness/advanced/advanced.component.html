@@ -66,7 +66,8 @@
         </tooltip>
         <div *ngIf="userType == userTypes.LocalAgencyAdmin"
              class="btn-group">
-          <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false">
             {{"CREATE_ACTION" | translate}}
           </button>
           <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
@@ -74,9 +75,11 @@
             <span class="sr-only">{{"TOGGLE_DROPDOWN" | translate}}</span>
           </button>
           <div class="dropdown-menu">
-            <a class="dropdown-item" routerLink="/local-agency/preparedness/create-edit-preparedness">{{"CREATE_CUSTOM_ACTIONS" |
+            <a class="dropdown-item" routerLink="/local-agency/preparedness/create-edit-preparedness">{{"CREATE_CUSTOM_ACTIONS"
+              |
               translate}}</a>
-            <a class="dropdown-item" routerLink="/local-agency/preparedness/select">{{"SELECT_FROM_GENERIC_ACTIONS" | translate}}</a>
+            <a class="dropdown-item" routerLink="/local-agency/preparedness/select">{{"SELECT_FROM_GENERIC_ACTIONS" |
+              translate}}</a>
           </div>
         </div>
       </div>
@@ -91,7 +94,8 @@
         </tooltip>
         <div *ngIf="!isViewing && (permissionsAreEnabled.customAPA.New || userType == userTypes.CountryAdmin)"
              class="btn-group">
-          <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false">
             {{"CREATE_ACTION" | translate}}
           </button>
           <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
@@ -111,12 +115,13 @@
     <!--
              START :: FILTERS
     -->
+
+    <div class="row col-lg-1 col-md-1 col-sm-6">
+      {{"GLOBAL.FILTER" | translate}}
+    </div>
     <div class="row align-items-center Filter-form">
-      <div class="col-lg-1 col-md-1 col-sm-6">
-        {{"GLOBAL.FILTER" | translate}}
-      </div>
+      <!-- STATUS -->
       <div class="col-lg-2 col-md-2 col-sm-6">
-        <!-- STATUS -->
         <select class="form-control" id="ActionStatusFilter" [(ngModel)]="filterStatus">
           <option value="-1" selected>{{"ACTION_STATUS" | translate}}</option>
           <option *ngFor="let x of ACTION_STATUS; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_STATUS[i]
@@ -124,15 +129,15 @@
           </option>
         </select>
       </div>
+      <!-- DEPARTMENTS -->
       <div class="col-lg-2 col-md-2 col-sm-6 ">
-        <!-- DEPARTMENTS -->
         <select class="form-control" id="DepartmentsFilter" [(ngModel)]="filterDepartment">
           <option value="-1" selected>{{"ALL_DEPARTMENTS" | translate}}</option>
           <option *ngFor="let x of DEPARTMENTS" value="{{x.id}}">{{x.name}}</option>
         </select>
       </div>
+      <!-- TYPE -->
       <div class="col-lg-2 col-md-2 col-sm-6 ">
-        <!-- TYPE -->
         <select class="form-control" id="TypesFilter" [(ngModel)]="filterType">
           <option value="-1" selected>{{"ALL_TYPES" | translate}}</option>
           <option *ngFor="let x of ACTION_TYPE; let i = index" [attr.data-index]="i" value="{{i}}">{{ACTION_TYPE[i] |
@@ -140,8 +145,17 @@
           </option>
         </select>
       </div>
+      <!-- HAZARDS -->
       <div class="col-lg-2 col-md-2 col-sm-6 ">
-        <!-- ASSIGNED TOO -->
+        <select class="form-control" id="HazardsFilter" [(ngModel)]="filterHazard">
+          <option value="-1" selected>{{"ALL_HAZARDS" | translate}}</option>
+          <option *ngFor="let x of HAZARD_LIST; let i = index" [attr.data-index]="i" value="{{i}}">{{HAZARD_LIST[i] |
+            translate}}
+          </option>
+        </select>
+      </div>
+      <!-- ASSIGNED TOO -->
+      <div class="col-lg-3 col-md-3 col-sm-6 ">
         <select class="form-control" id="AssignedFilter" [(ngModel)]="filterAssigned">
           <option value="-1">{{"UNASSIGNED" | translate}}</option>
           <option value="0">{{"ASSIGNED_TO_ANYONE" | translate}}</option>
@@ -151,6 +165,7 @@
           </option>
         </select>
       </div>
+      <!-- AGENCY & NETWORK -->
       <div class="col-lg-3 col-md-3 col-sm-6 ">
         <select class="form-control" id="AgencyNetworkFilter" [(ngModel)]="filerNetworkAgency">
           <option value="-1" selected>{{"AGENCY_AND_NETWORKS" | translate}}</option>
@@ -166,19 +181,21 @@
     <!--
              START :: INACTIVE
     -->
+    <!--TODO complete filter -->
     <div class="Ribbon__section__wrap Spaced">
       <h2>{{"INACTIVE_ACTIONS" | translate}}</h2>
 
       <ng-container *ngIf="filerNetworkAgency == '-1' || filerNetworkAgency == 'Agency-Only'">
         <div *ngFor="let action of prepActionService.actions">
+
           <!-- FILTERING IF STATEMENT -->
-          <div *ngIf="(filterType == -1 || action.type == filterType) &&
-                    (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Inactive)">
+          <div *ngIf="(filterType == -1 || action.type == filterType)
+                    && (filterDepartment == -1 || action.department == filterDepartment)
+                    && (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1'))
+                    && (filterStatus == -1 || filterStatus == ActionStatus.Inactive)
+                    && (filterHazard == -1 || isChosenHazard(filterHazard, action))">
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div *ngIf="!action.isArchived && !action.isRedAlertActive(hazardRedAlert)">
-
               <div class="Accordion Preparedness-list">
                 <div class="row Preparedness-list__item">
                   <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
@@ -230,7 +247,8 @@
                           | translate}}</a>
                         <a
                           *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                          [routerLink]="['/local-agency/local-agency/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">{{"EDIT_ACTION"
+                          [routerLink]="['/local-agency/local-agency/preparedness/create-edit-preparedness', action.id]"
+                          class="btn btn-block">{{"EDIT_ACTION"
                           | translate}}</a>
                       </div>
                       <div class="col-md-3 col-sm-4 btn-block"
@@ -699,7 +717,8 @@
             <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
 
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div
@@ -812,7 +831,8 @@
                                  *ngIf="!countrySelected">
                               <div
                                 *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
-                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
+                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)"
+                                   aria-expanded="false"
                                    aria-controls="popover_content"
                                    class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                               </div>
@@ -836,8 +856,10 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="subrow-line">{{action.actualCost ? ("Cost") : ("AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
-                              translate)}}: <strong>{{CURRENCIES[currency]}}{{action.actualCost ? action.actualCost : action.budget}}</strong></div>
+                            <div class="subrow-line">{{action.actualCost ? ("Cost") :
+                              ("AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                              translate)}}: <strong>{{CURRENCIES[currency]}}{{action.actualCost ? action.actualCost :
+                                action.budget}}</strong></div>
                             <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
                               translate}}</strong></div>
                             <div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:
@@ -985,7 +1007,8 @@
                               <div class="form-group">
                                 <label for="n-Budget">Actual Cost</label>
                                 <input type="number" required name="budget" [(ngModel)]="action.actualCost"
-                                       class="form-control col-sm-5" id="n-Budget" min="0" placeholder="{{CURRENCIES[currency]}}">
+                                       class="form-control col-sm-5" id="n-Budget" min="0"
+                                       placeholder="{{CURRENCIES[currency]}}">
                               </div>
                             </div>
                           </div>
@@ -1156,7 +1179,8 @@
                                  *ngIf="!countrySelected">
                               <div
                                 *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow()))">
-                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
+                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)"
+                                   aria-expanded="false"
                                    aria-controls="popover_content"
                                    class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                               </div>
@@ -1352,7 +1376,7 @@
                           <a href="javascript:void(0)" class="btn btn-primary btn-block"
                              (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                           <a href="javascript:void(0)" class="btn btn-block"
-                             (click)="closePopover(action)" >{{"GLOBAL.CANCEL" |
+                             (click)="closePopover(action)">{{"GLOBAL.CANCEL" |
                             translate}}</a>
                         </div>
                       </div>
@@ -1487,7 +1511,8 @@
                                  *ngIf="!countrySelected">
                               <div
                                 *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
-                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
+                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)"
+                                   aria-expanded="false"
                                    aria-controls="popover_content"
                                    class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                               </div>
@@ -1504,8 +1529,10 @@
 
                           </div>
                           <div class="row">
-                            <div class="subrow-line">{{action.actualCost ? ("Cost") : ("AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
-                              translate)}}: <strong>{{CURRENCIES[currency]}}{{action.actualCost ? action.actualCost : action.budget}}</strong></div>
+                            <div class="subrow-line">{{action.actualCost ? ("Cost") :
+                              ("AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                              translate)}}: <strong>{{CURRENCIES[currency]}}{{action.actualCost ? action.actualCost :
+                                action.budget}}</strong></div>
                             <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
                               translate}}</strong></div>
 
@@ -1654,7 +1681,8 @@
                               <div class="form-group">
                                 <label for="n-Budget">Actual Cost</label>
                                 <input type="number" required name="budget" [(ngModel)]="action.actualCost"
-                                       class="form-control col-sm-5" id="n-Budget" min="0" placeholder="{{CURRENCIES[currency]}}">
+                                       class="form-control col-sm-5" id="n-Budget" min="0"
+                                       placeholder="{{CURRENCIES[currency]}}">
                               </div>
                             </div>
                           </div>
@@ -1729,7 +1757,8 @@
           <div *ngIf="!isViewing">
             <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Expired) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div
@@ -2217,7 +2246,8 @@
             <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Archived) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div *ngIf="action.isArchived">
 

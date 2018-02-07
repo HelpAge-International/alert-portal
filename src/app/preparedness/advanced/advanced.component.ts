@@ -43,6 +43,7 @@ import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
+import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 
 declare var jQuery: any;
 
@@ -72,14 +73,17 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
+  private filterHazard: number = -1;
   private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
+  public hazardIndex: number = 0;
 
   // Data for the actions
   private ACTION_STATUS = Constants.ACTION_STATUS;
   private DEPARTMENTS: ModelDepartment[] = [];
   private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
+  private HAZARD_LIST = Constants.HAZARD_SCENARIOS;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
@@ -157,9 +161,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
+    console.log("Hazard: ")
   }
 
   initLocalAgency(){
@@ -291,6 +294,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           }
         });
       });
+  }
+
+  public isChosenHazard(hazard:number, action:any){
+    return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
   }
 
   ngOnDestroy() {
@@ -1042,6 +1049,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.alertMessage = new AlertMessageModel("Error exporting your documents");
     }
   }
+
 
   protected closeExportModal() {
     jQuery("#export_documents").modal("hide");

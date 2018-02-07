@@ -320,37 +320,14 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMonth(event: any) {
-    this.when['month'] = parseInt(event.target.value);
-  }
-
-  setYear(event: any) {
-    this.when['year'] = parseInt(event.target.value);
-  }
-
   setWhenDate(programme: ProgrammeMappingModel) {
-    console.log("WHENWHEN: "+programme)
     let whenDate =  moment(this.when).valueOf();
     programme.when = whenDate;
-
-    console.log("From date: "+programme.when);
-
-    // if (this.when['month'] && this.when['year']) {
-    //   let year = this.when['year'];
-    //   let month = Number(this.when['month'] - 1);
-    //   let timeStamp = moment({'year': year, 'month': month, 'day': 15}).valueOf();
-    //   // var timeStamp = new Date(this.when['year'], this.when['month'], 15).getTime();
-    //   this.programme.when = 0;
-    //   this.programme.when = timeStamp;
-    // }
   }
 
   setToDate(programme: ProgrammeMappingModel) {
-    console.log("TOTO: "+programme)
     let toDate =  moment(this.toDate).valueOf();
     programme.toDate = toDate;
-
-    console.log("To date: "+programme.toDate);
   }
 
   deleteMapping() {
