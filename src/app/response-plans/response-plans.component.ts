@@ -34,6 +34,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   @Input() agencyIdForViewing: string;
   @Input() canCopy: boolean = false;
   @Input() agencyOverview: boolean;
+  @Input() isAgencyAdmin: boolean;
 
   //local agency
   @Input() isLocalAgency: boolean;
@@ -319,6 +320,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       //     "canCopy": this.canCopy
       //   }]);
       // }
+      headers["isAgencyAdmin"] = this.isAgencyAdmin;
       this.router.navigate(this.isLocalAgency ? ["/local-agency/response-plans/view-plan", headers] : ["/response-plans/view-plan", headers]);
     } else {
       this.router.navigate(this.isLocalAgency ? ["/local-agency/response-plans/view-plan", {"id": plan.$key}] : ["/response-plans/view-plan", {"id": plan.$key}]);

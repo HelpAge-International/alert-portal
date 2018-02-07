@@ -280,7 +280,8 @@ export class PageControlService {
     "new-user-password"
   ]);
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
-    "agency-admin*"
+    "agency-admin*",
+    "response-plans/view-plan*"
   ]);
 
   public static LocalAgencyAdmin = PageUserType.create(UserType.LocalAgencyAdmin, "local-agency/dashboard", [

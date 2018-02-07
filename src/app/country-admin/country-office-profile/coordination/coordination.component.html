@@ -64,7 +64,7 @@
         </div>
         <div class="col-sm-2"> <!--Sector-->
           <div class="row">
-            <img src="assets/images/icons/{{ responsePlansSectors[coordinationArrangement.sector] }}.svg"
+            <img src="assets/images/icons/{{responsePlansSectorsSelection[coordinationArrangement.sector] |  lowercase}}.svg"
                  class="margin-bottom-one" alt="Health">
             <p *ngIf="coordinationArrangement.sector != responsePlansSectors.other || coordinationArrangement.otherName == null" class="margin-top-one-half margin-left-two">{{
               responsePlansSectorsSelection[coordinationArrangement.sector] | translate }}</p>
