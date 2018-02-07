@@ -348,6 +348,8 @@ import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-
 import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
 import { FieldOfficeService } from "./services/field-office.service";
 import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
+import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
+import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 
 
 
@@ -605,6 +607,8 @@ const firebaseAuthConfig = {
     LocalNetworkAdministrationAgenciesComponent,
     LocalNetworkAdministrationSettingsComponent,
     LocalNetworkAdministrationMessagesComponent,
+    LocalNetworkGlobalMapsComponent,
+    LocalNetworkGlobalMapsListComponent,
     LocalInviteAgenciesComponent,
     NetworkCreateEditMessageComponent,
     NetworkNotificationsComponent,
