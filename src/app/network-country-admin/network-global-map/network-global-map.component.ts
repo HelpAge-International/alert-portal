@@ -69,8 +69,8 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           if (params["isViewing"]) {
             this.isViewing = params["isViewing"];
           }
-          if (this.networkId != null && this.networkCountryId != null && this.uid != null && this.systemAdminId) {
-            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, this.networkCountryId, () => {
+          if (this.networkId != null && this.uid != null && this.systemAdminId) {
+            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, () => {
               console.log("Network map initialised (viewing");
             }, (country) => {
               this.showDialog(country);
@@ -78,15 +78,18 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           }
           else {
             this.uid = user.uid;
+            console.log(this.uid);
             this.networkService.getSelectedIdObj(this.uid)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(selection => {
+
                 this.networkId = selection['id'];
                 this.networkCountryId = selection['networkCountryId'];
 
                 // TODO: Delete this method when page control does auth properly
                 this.getSystemAdmin(this.uid, (systemAdminId => {
-                  this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
+
+                  this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId,
                     () => {
                       // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
                       console.log("Network map initialised");
@@ -107,11 +110,15 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   }
 
   gotoMapList(): void {
-    if (this.paramString == null) {
-      this.router.navigateByUrl('network-country/network-global-map-list');
-    }
-    else {
-      this.router.navigateByUrl('network-country/network-global-map-list' + this.paramString);
+    if (this.isLocalNetworkAdmin) {
+      this.router.navigateByUrl('network/local-network-global-maps-list' + this.paramString)
+    } else {
+      if (this.paramString == null) {
+        this.router.navigateByUrl('network-country/network-global-map-list');
+      }
+      else {
+        this.router.navigateByUrl('network-country/network-global-map-list' + this.paramString);
+      }
     }
   }
 

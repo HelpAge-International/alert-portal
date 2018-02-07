@@ -65,7 +65,7 @@ export class NetworkMapService {
     this.geocoder = new google.maps.Geocoder;
   }
 
-  public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
+  public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string,
               done: () => void, countryClicked: (country: string) => void) {
 
     this.af = af;
@@ -77,7 +77,7 @@ export class NetworkMapService {
     this.systemMpaGreenYellow(systemAdminId, (green, yellow) => {
       this.minGreen = green;
       this.minYellow = yellow;
-      this.getAgencyCountriesOfNetwork(networkId, networkCountryId,
+      this.getAgencyCountriesOfNetwork(networkId,
         (agencyHasCountriesMap => {
           agencyHasCountriesMap.forEach((value, key) => {
             value.forEach(item => {
@@ -305,13 +305,10 @@ export class NetworkMapService {
    * Will build a Map<string, Set<string>> mapping agencies have which countries
    * Environment variable this is stored in is countryHasAgenciesMap
    * @param networkId
-   * @param networkCountryId
    * @param done - Called when the agencies to countries call has been mapped
    */
-  private getAgencyCountriesOfNetwork(networkId: string, networkCountryId: string,
-                                      done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
+  private getAgencyCountriesOfNetwork(networkId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
     console.log("NetworkId: " + networkId);
-    console.log("CountryId: " + networkCountryId);
     this.af.database
       .object(Constants.APP_STATUS + "/network/" + networkId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -459,7 +456,7 @@ export class NetworkMapService {
     const red: string[] = [];
     const yellow: string[] = [];
     const green: string[] = [];
-
+    console.log(this.countries);
     for (const x of this.countries) {
       if (x.overall(this.minGreen) == -1) {
         blue.push(Countries[x.location]);
