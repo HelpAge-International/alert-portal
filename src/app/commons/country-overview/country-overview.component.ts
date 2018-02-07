@@ -394,9 +394,12 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
               countryOffice.alertLevel = AlertLevels.Red;
               this.hazardRedAlert[countryOffice.$key].set(alert.hazardScenario, true);
             }
-            if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
-              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
+            else if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
+              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse && alert.previousIsAmber)) {
               countryOffice.alertLevel = AlertLevels.Amber;
+            }
+            else {
+              countryOffice.alertLevel = AlertLevels.Green
             }
           });
           res(true);
@@ -419,9 +422,12 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
               networkCountry.alertLevel = AlertLevels.Red;
               this.hazardRedAlert[id].set(alert.hazardScenario, true);
             }
-            if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
-              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
+            else if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
+              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse && alert.previousIsAmber)) {
               networkCountry.alertLevel = AlertLevels.Amber;
+            }
+            else {
+              networkCountry.alertLevel = AlertLevels.Green
             }
           });
           res(true);
@@ -443,9 +449,12 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
               localNetwork.alertLevel = AlertLevels.Red;
               this.hazardRedAlert[localNetwork.networkId].set(alert.hazardScenario, true);
             }
-            if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
-              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse)) {
+            else if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected))
+              || (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse && alert.previousIsAmber)) {
               localNetwork.alertLevel = AlertLevels.Amber;
+            }
+            else {
+              localNetwork.alertLevel = AlertLevels.Green
             }
           });
           res(true);
