@@ -42,6 +42,8 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
   //Local Agency
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
   }
 

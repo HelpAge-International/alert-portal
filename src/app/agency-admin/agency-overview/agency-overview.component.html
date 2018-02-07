@@ -85,9 +85,9 @@
 <app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
 <app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
                     [countryIdForViewing]="countryId" [agencyIdForViewing]="agencyId" [isAgencyAdmin]="true"></app-response-plans>
-<app-minimum *ngIf="tabMap.get('preparedness-min')"></app-minimum>
-<app-advanced *ngIf="tabMap.get('preparedness-adv')"></app-advanced>
-<app-budget *ngIf="tabMap.get('preparedness-budget')"></app-budget>
+<app-minimum *ngIf="tabMap.get('preparedness-min')" [isAgencyAdmin]="true"></app-minimum>
+<app-advanced *ngIf="tabMap.get('preparedness-adv')" [isAgencyAdmin]="true"></app-advanced>
+<app-budget *ngIf="tabMap.get('preparedness-budget')" [isAgencyAdmin]="true"></app-budget>
 
 
 
