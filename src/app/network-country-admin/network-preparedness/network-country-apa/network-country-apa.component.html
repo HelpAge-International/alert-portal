@@ -113,6 +113,16 @@
         </select>
       </div>
 
+      <!-- HAZARDS -->
+      <div class="col-lg-2 col-md-2 col-sm-6 ">
+        <select class="form-control" id="HazardsFilter" [(ngModel)]="filterHazard">
+          <option value="-1" selected>{{"ALL_HAZARDS" | translate}}</option>
+          <option *ngFor="let x of HAZARD_LIST; let i = index" [attr.data-index]="i" value="{{i}}">{{HAZARD_LIST[i] |
+            translate}}
+          </option>
+        </select>
+      </div>
+
       <div class="col-lg-2 col-md-2 col-sm-6 ">
         <!-- ASSIGNED TOO -->
         <select class="form-control" id="AssignedFilter" [(ngModel)]="filterAssigned">
@@ -143,7 +153,8 @@
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
 
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
           <div
@@ -501,7 +512,8 @@
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Expired) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
             <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div
@@ -720,7 +732,8 @@
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Archived) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div *ngIf="action.isArchived">
 
@@ -935,7 +948,8 @@
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Inactive)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Inactive) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
           <div *ngIf="!action.isArchived && !action.isRedAlertActive(hazardRedAlert)">
 

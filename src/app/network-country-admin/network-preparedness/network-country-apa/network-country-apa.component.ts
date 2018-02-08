@@ -310,13 +310,16 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
   }
 
-  public isChosenHazard(hazard:number, action:any){
-    return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
-  }
-
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  /**
+   * Hazard filtering
+   */
+  public isChosenHazard(hazard:number, action:any){
+    return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
   }
 
   /**
