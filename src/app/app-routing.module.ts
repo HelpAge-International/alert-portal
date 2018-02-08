@@ -260,7 +260,7 @@ import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-
 import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/local-agency-dashboard/local-agency-dashboard-seasonal-calendar/local-agency-dashboard-seasonal-calendar.component";
 import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
-
+import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -335,6 +335,8 @@ const routes: Routes = [
   {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
   {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
   {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
+  {path: 'agency-admin/agency-overview', component: AgencyOverviewComponent},
+  {path: 'agency-admin/agency-overview/:countryId/:isViewing', component: AgencyOverviewComponent},
 
   /**
    * Country admin

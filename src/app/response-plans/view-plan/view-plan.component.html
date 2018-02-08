@@ -1,9 +1,13 @@
 <ng-container *ngIf="!isLocalAgency">
   <div *ngIf="userType != UserType.Donor">
-    <app-country-admin-header *ngIf="!isViewing || canCopy"></app-country-admin-header>
-    <app-country-admin-menu *ngIf="!isViewing || canCopy"></app-country-admin-menu>
-    <app-director-header *ngIf="isViewing && !canCopy"></app-director-header>
-    <app-director-menu *ngIf="isViewing && !canCopy"></app-director-menu>
+    <app-agency-admin-header *ngIf="isAgencyAdmin"></app-agency-admin-header>
+    <app-agency-admin-menu *ngIf="isAgencyAdmin"></app-agency-admin-menu>
+
+    <app-country-admin-header *ngIf="!isAgencyAdmin && (!isViewing || canCopy)"></app-country-admin-header>
+    <app-country-admin-menu *ngIf="!isAgencyAdmin && (!isViewing || canCopy)"></app-country-admin-menu>
+
+    <app-director-header *ngIf="!isAgencyAdmin && (isViewing && !canCopy)"></app-director-header>
+    <app-director-menu *ngIf="!isAgencyAdmin && (isViewing && !canCopy)"></app-director-menu>
   </div>
 
   <div *ngIf="userType == UserType.Donor">
@@ -13,16 +17,14 @@
 </ng-container>
 
 <ng-container *ngIf="isLocalAgency">
-
     <app-local-agency-header></app-local-agency-header>
     <app-local-agency-menu></app-local-agency-menu>
-
 </ng-container>
-
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div *ngIf="userType != UserType.Donor; else donorBack">
+
+    <div *ngIf="!isAgencyAdmin && userType != UserType.Donor; else donorBack">
       <div *ngIf="!isViewing; else internalView" class="Back--button" [routerLink]="isLocalAgency ? ['/local-agency/response-plans'] : ['/response-plans']">{{"RESPONSE_PLANS.TITLE_TEXT" |
         translate}}
       </div>
@@ -37,12 +39,12 @@
         </div>
       </ng-template>
     </div>
-    <ng-template #donorBack>
+
+    <ng-template #donorBack *ngIf="!isAgencyAdmin">
       <div *ngIf="userType == UserType.Donor" class="Back--button" (click)="backForDonor()">{{countryName |
         translate}} : {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
       </div>
     </ng-template>
-
 
     <app-view-response-plan *ngIf="!isLocalAgency"></app-view-response-plan>
     <app-view-response-plan *ngIf="isLocalAgency" [isLocalAgency]="true"></app-view-response-plan>

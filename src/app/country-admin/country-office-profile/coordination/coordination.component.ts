@@ -43,6 +43,8 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   // Helpers
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _agencyService: AgencyService,

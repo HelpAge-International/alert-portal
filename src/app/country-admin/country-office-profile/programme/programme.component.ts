@@ -66,6 +66,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(private pageControl: PageControlService,
               private _commonService: CommonService,
               private route: ActivatedRoute,

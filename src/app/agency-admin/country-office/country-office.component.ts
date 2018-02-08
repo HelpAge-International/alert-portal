@@ -5,6 +5,7 @@ import {Constants} from "../../utils/Constants";
 import {Observable, Scheduler, Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {UserType} from "../../utils/Enums";
 
 declare var jQuery: any;
 
@@ -39,6 +40,8 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private alertContent: string;
   private countryToUpdate;
   private directorName: string;
+  private systemId: string;
+  private userType: UserType;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -50,6 +53,8 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       // console.log(user.auth.uid);
       this.uid = user.uid;
       this.agencyId = agencyId;
+      this.systemId = systemId;
+      this.userType = userType;
 
       this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId);
       this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
@@ -163,6 +168,20 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   editCountry(country) {
     this.router.navigate(['agency-admin/country-office/create-edit-country/', {id: country.$key}]);
+  }
+
+  viewCountry(country){
+    console.log(country);
+    let data = {
+      "countryId": country.$key,
+      "isViewing": true,
+      "agencyId": this.agencyId,
+      "systemId": this.systemId,
+      "userType": this.userType,
+      "uid": this.uid
+    };
+
+    this.router.navigate(["/agency-admin/agency-overview", data]);
   }
 
   getCountries(region): any {

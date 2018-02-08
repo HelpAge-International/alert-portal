@@ -31,6 +31,7 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   private networkCountryId: string;
   private systemId: string;
   private uid: string;
+  private isAgencyAdmin: boolean;
 
   @Input() isLocalAgency: Boolean;
 
@@ -59,6 +60,9 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
           }
           if (params["isViewing"]) {
             this.isViewing = params["isViewing"];
+          }
+          if (params["isAgencyAdmin"]) {
+            this.isAgencyAdmin = params["isAgencyAdmin"];
           }
           if (params["canCopy"]) {
             this.canCopy = params["canCopy"];

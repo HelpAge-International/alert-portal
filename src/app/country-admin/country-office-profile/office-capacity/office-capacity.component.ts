@@ -88,6 +88,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(private pageControl: PageControlService,
               private router: Router,
               private _noteService: NoteService,
@@ -96,7 +98,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
               private _userService: UserService,
               private _agencyService:AgencyService,
               private af: AngularFire) {
-
   }
 
   ngOnDestroy() {
@@ -105,14 +106,10 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
   }
 
   private initLocalAgency(){
-
-
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
@@ -754,7 +751,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditSurgeCapacity(id?: string) {
-    console.log('here')
     if(this.isLocalAgency){
       if (id) {
         this.router.navigate(['/local-agency/profile/office-capacity/add-edit-surge-capacity', {id: id}], {skipLocationChange: true});

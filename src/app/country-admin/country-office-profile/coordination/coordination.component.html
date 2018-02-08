@@ -18,7 +18,8 @@
   <div class="Full-page__wrap--inner">
 
     <ng-container *ngIf="!isLocalAgency">
-      <app-country-office-profile-menu></app-country-office-profile-menu>
+      <app-country-office-profile-menu *ngIf="isAgencyAdmin" [isAgencyAdmin]="true"></app-country-office-profile-menu>
+      <app-country-office-profile-menu *ngIf="!isAgencyAdmin" [isAgencyAdmin]="false"></app-country-office-profile-menu>
     </ng-container>
     <ng-container *ngIf="isLocalAgency">
       <app-local-agency-profile-menu></app-local-agency-profile-menu>
@@ -63,7 +64,7 @@
         </div>
         <div class="col-sm-2"> <!--Sector-->
           <div class="row">
-            <img src="assets/images/icons/{{ responsePlansSectors[coordinationArrangement.sector] }}.svg"
+            <img src="assets/images/icons/{{responsePlansSectorsSelection[coordinationArrangement.sector] |  lowercase}}.svg"
                  class="margin-bottom-one" alt="Health">
             <p *ngIf="coordinationArrangement.sector != responsePlansSectors.other || coordinationArrangement.otherName == null" class="margin-top-one-half margin-left-two">{{
               responsePlansSectorsSelection[coordinationArrangement.sector] | translate }}</p>

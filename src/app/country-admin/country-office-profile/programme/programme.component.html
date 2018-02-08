@@ -1,10 +1,12 @@
 <script src="programme.component.ts"></script>
+
 <ng-container *ngIf="!isLocalAgency">
   <div *ngIf="!isViewing">
     <app-country-admin-header></app-country-admin-header>
     <app-country-admin-menu></app-country-admin-menu>
   </div>
 </ng-container>
+
 <ng-container *ngIf="isLocalAgency">
   <div *ngIf="!isViewing">
     <app-local-agency-header></app-local-agency-header>
@@ -18,7 +20,8 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <ng-container *ngIf="!isLocalAgency">
-      <app-country-office-profile-menu></app-country-office-profile-menu>
+      <app-country-office-profile-menu *ngIf="isAgencyAdmin" [isAgencyAdmin]="true"></app-country-office-profile-menu>
+      <app-country-office-profile-menu *ngIf="!isAgencyAdmin" [isAgencyAdmin]="false"></app-country-office-profile-menu>
     </ng-container>
     <ng-container *ngIf="isLocalAgency">
       <app-local-agency-profile-menu></app-local-agency-profile-menu>
@@ -235,7 +238,7 @@
       {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.NO_4WMAPPING" | translate}}</p></div>
     <div class="Line-row margin-left"></div>
 
-    <div class="row">
+    <div class="row" *ngIf="!isViewing">
       <button *ngIf="!isLocalAgency" [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/']" data-toggle="modal"
               class="btn btn-outline-primary text-uppercase">{{"GLOBAL.ADD" | translate}}
       </button>

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Subject} from "rxjs/Subject";
 
@@ -17,6 +17,7 @@ export class CountryOfficeProfileMenuComponent implements OnInit, OnDestroy {
   private officeTarget: string;
   private canCopy: boolean;
 
+  @Input() isAgencyAdmin: boolean;
 
   constructor(private route: ActivatedRoute, private router: Router) {
     this.initMenuActive();
@@ -63,178 +64,258 @@ export class CountryOfficeProfileMenuComponent implements OnInit, OnDestroy {
 
   viewingToProgramme() {
     console.log("view programme");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "programme",
-        "canCopy": true
-      }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
         "officeTarget": "programme"
       }]);
+    }else{
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "programme",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "programme"
+        }]);
+      }
     }
     // /director/director-overview;countryId=tPB9g8EwCLMceutAeAyWlYQUh8V2;isViewing=true;agencyId=qbyONHp4xqZy2eUw0kQHU7BAcov1;from=plan
   }
 
   viewingToOfficeCapacity() {
     console.log("view office capacity");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "officeCapacity",
-        "canCopy": true
-      }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
         "officeTarget": "officeCapacity"
       }]);
+    }else {
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "officeCapacity",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "officeCapacity"
+        }]);
+      }
     }
   }
 
   viewingToPartners() {
     console.log("view partners");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
-        "officeTarget": "partners",
-        "canCopy": true
+        "officeTarget": "partners"
       }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "partners",
-      }]);
+    }else {
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "partners",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "partners"
+        }]);
+      }
     }
   }
 
   viewingToEquipment() {
     console.log("view partners");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
-        "officeTarget": "equipment",
-        "canCopy": true
+        "officeTarget": "equipment"
       }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "equipment",
-      }]);
+    }else {
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "equipment",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "equipment"
+        }]);
+      }
     }
   }
 
   viewingToCoordination() {
     console.log("view coordination");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
-        "officeTarget": "coordination",
-        "canCopy": true
+        "officeTarget": "coordination"
       }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "coordination",
-      }]);
+    }else {
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "coordination",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "coordination"
+        }]);
+      }
     }
   }
 
   viewingToStockCapacity() {
     console.log("view stock capacity");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "stockCapacity",
-        "canCopy": true
-      }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
         "officeTarget": "stockCapacity"
       }]);
+    }else {
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "stockCapacity",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "stockCapacity"
+        }]);
+      }
     }
   }
 
   viewingToDocuments() {
     console.log("view documents");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "documents",
-        "canCopy": true
-      }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
         "officeTarget": "documents"
       }]);
+    }else {
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "documents",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "documents"
+        }]);
+      }
     }
   }
 
   viewingToContacts() {
     console.log("view contacts");
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", {
-        "countryId": this.countryID,
-        "isViewing": this.isViewing,
-        "agencyId": this.agencyId,
-        "from": "officeProfile",
-        "officeTarget": "contacts",
-        "canCopy": true
-      }]);
-    } else {
-      this.router.navigate(["/director/director-overview", {
+    if(this.isAgencyAdmin){
+      this.router.navigate(["/agency-admin/agency-overview", {
         "countryId": this.countryID,
         "isViewing": this.isViewing,
         "agencyId": this.agencyId,
         "from": "officeProfile",
         "officeTarget": "contacts"
       }]);
+    }else {
+      if (this.canCopy) {
+        this.router.navigate(["/dashboard/dashboard-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "contacts",
+          "canCopy": true
+        }]);
+      } else {
+        this.router.navigate(["/director/director-overview", {
+          "countryId": this.countryID,
+          "isViewing": this.isViewing,
+          "agencyId": this.agencyId,
+          "from": "officeProfile",
+          "officeTarget": "contacts"
+        }]);
+      }
     }
   }
 

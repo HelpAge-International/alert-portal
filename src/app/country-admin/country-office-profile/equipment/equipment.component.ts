@@ -64,6 +64,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
               private _noteService: NoteService,
@@ -81,14 +83,10 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
-
   }
 
   private initLocalAgency(){
-
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
@@ -151,7 +149,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
-          this.countryId = countryId;
+          this.countryId = countryId ? countryId : this.countryId;
           this.programmeId = systemId;
           this.userAgencyId = agencyId;
 
@@ -211,7 +209,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
           } else {
 
             this.agencyId = agencyId;
-            this.countryId = countryId;
+            this.countryId = countryId ? countryId : this.countryId;
 
             // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
             //   .takeUntil(this.ngUnsubscribe)
@@ -221,7 +219,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
             //       .takeUntil(this.ngUnsubscribe)
             //       .subscribe(countryId => {
             //         this.countryId = countryId;
-
+            
             this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
                 this.equipments = equipments;
