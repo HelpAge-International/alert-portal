@@ -64,6 +64,12 @@ const HAZARDS = {
   "26": "Volcano"
 }
 
+const LEVELS = {
+  "0": "Green",
+  "1": "Amber",
+  "2": "Red"
+}
+
 // exports.sendWelcomeEmail = functions.auth.user().onCreate(event => {
 //
 //   const user = event.data; // The Firebase user.
@@ -4451,6 +4457,190 @@ exports.sendNetworkCountryAgencyValidationEmail_UAT_1 = functions.database.ref('
 //       })
 //     }
 //   })
+
+exports.sendAlertMobileNotification_SAND = functions.database.ref('/sand/alert/{networkCountryId}/{alertId}/alertLevel')
+  .onWrite(event => {
+    return sendAlertMobileNotification(event, "sand")
+  })
+
+exports.sendAlertMobileNotification_TEST = functions.database.ref('/test/alert/{networkCountryId}/{alertId}/alertLevel')
+  .onWrite(event => {
+    return sendAlertMobileNotification(event, "test")
+  })
+
+function sendAlertMobileNotification(event, env){
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    let networkCountryId = event.params['networkCountryId'];
+    let alertId = event.params['alertId'];
+    
+    if (preData !== currData) {
+      var alert
+      var countryGroup
+
+      var isCountry = false
+
+      let alertPromise = admin.database().ref(`/${env}/alert/${networkCountryId}/${alertId}`).once('value')
+
+      let sendCountryNotificationPromise = alertPromise.then(alertSnap => {
+        alert = alertSnap.val()
+        notification = createAlertLevelChangedNotification(alert, preData, currData)
+        return sendNotificationToCountryUsers(env, notification, networkCountryId)
+      })
+
+
+      return sendCountryNotificationPromise.then(
+        //Success
+        function(){
+          return Promise.resolve()
+        },
+        //Fail
+        function(error){
+          let networkPromise = admin.database().ref(`/${env}/network/${networkCountryId}`).once('value');
+
+          return networkPromise.then(networkSnap => {
+            let network = networkSnap.val()
+
+            
+            if(network){
+              let agencyPromises = []
+              for (var agencyName in network.agencies) {
+                if (network.agencies.hasOwnProperty(agencyName) && network.agencies[agencyName].hasOwnProperty('countryCode') && network.agencies[agencyName].isApproved) {
+                  let countryId = network.agencies[agencyName].countryCode
+                  agencyPromises.push(sendNotificationToCountryUsers(env, notification, countryId))
+                }
+              }            
+              return Promise.all(agencyPromises)
+            }
+            else{
+              return Promise.reject(new Error('fail'))
+            }            
+          })
+        }
+      )
+      .then(
+        function(){
+          return Promise.resolve()
+        },
+        function(error){
+          return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
+            let networkCountry = networkCountrySnap.val()
+            for (var networkCountryNetworkCountryId in networkCountry) {
+              //networkCountry/{networkCountryNetworkCountryId}
+              if (networkCountry.hasOwnProperty(networkCountryNetworkCountryId)) {
+                for(var networkCountryAlertId in networkCountry[networkCountryNetworkCountryId]){
+                  //networkCountry/{networkCountryNetworkCountryId}/{networkCountryAlertId}
+                  if(networkCountry[networkCountryNetworkCountryId].hasOwnProperty(networkCountryAlertId)){
+                    if(networkCountryAlertId == networkCountryId){
+                      let networkCountryAlert = networkCountry[networkCountryNetworkCountryId][networkCountryAlertId]
+
+                      let networkCountryPromises = []
+                      if(networkCountryAlert.agencyCountries){
+                        for(var agencyCountryId in networkCountryAlert.agencyCountries){
+                          //networkCountry/{networkCountryNetworkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}
+
+                          if(networkCountryAlert.agencyCountries.hasOwnProperty(agencyCountryId)){
+                            for(var countryId in networkCountryAlert.agencyCountries[agencyCountryId]){
+                              //networkCountry/{networkCountryNetworkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}/{countryId}/
+                              if(networkCountryAlert.agencyCountries[agencyCountryId].hasOwnProperty(countryId)){
+                                var country = networkCountryAlert.agencyCountries[agencyCountryId][countryId]
+                                if(country.isApproved){
+                                  networkCountryPromises.push(sendNotificationToCountryUsers(env, notification, countryId))
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+            
+                      return Promise.all(networkCountryPromises)
+                    }
+                  }
+                }   
+              }
+            }
+            return Promise.reject(new Error('fail'))
+          })
+        }
+      )
+    }
+
+}
+
+function sendNotificationToCountryUsers(env, notification, countryId){
+
+  return admin.database().ref(`/${env}/group/country/${countryId}/`).once('value').then(countryGroupSnap => {
+    let countryGroup = countryGroupSnap.val()
+
+    if(countryGroup){
+      sendAlertPromises = []
+      for (var userId in countryGroup.countryallusersgroup) {              
+        if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {   
+          //env, payload, userId, countryId, notificationGroup               
+          sendAlertPromises.push(sendNotification(env, notification, userId, countryId, 0))
+        }
+      }
+      return Promise.all(sendAlertPromises)
+    }
+    else{
+      return Promise.reject(new Error('fail'))
+    }
+
+  })
+}
+
+
+function createAlertLevelChangedNotification(alert, preData, currData){
+  const payload = {
+      'notification': {
+          'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
+          'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${LEVELS[preData]} to ${LEVELS[currData]}`
+      }
+    }
+
+  return payload
+}
+
+/*const payload = {
+      'notification': {
+          'title': title,
+          'body': message
+      }
+      'data': {
+          'key': value
+      }
+    }
+    */
+function sendNotification(env, payload, userId, countryId, notificationGroup){
+  var deviceNotificationId
+  return admin.database().ref(`/${env}/staff/${countryId}/${userId}/notification/${notificationGroup}`).once('value')
+  .then(notificationGroupSnap => {
+    if(notificationGroupSnap.val() != null){
+      return Promise.resolve()
+    }
+    else{
+      return Promise.reject(new Error('fail'))
+    }
+  })
+  .then(function(){
+    return admin.database().ref(`/${env}/userPublic/${userId}/deviceNotificationId`).once('value')
+    .then(deviceNotificationIdSnap => {
+      let deviceNotificationId = deviceNotificationIdSnap.val()
+      if(deviceNotificationId){
+        return admin.messaging().sendToDevice(deviceNotificationId, payload);
+      }
+      else{
+        return Promise.resolve()
+      }    
+    })
+
+  },
+  function(error){
+    return Promise.resolve()
+  })
+}
+
 
 ////private functions
 function fetchUsersAndSendEmail(node, countryId, title, content, setting) {
