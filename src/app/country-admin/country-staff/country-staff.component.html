@@ -34,22 +34,22 @@
             <div class="col-lg-2 col-md-2">{{"GLOBAL.NAME"| translate}}</div>
             <div class="col-lg-2 col-md-2">{{"GLOBAL.DEPARTMENT"| translate}}</div>
             <div class="col-lg-2 col-md-2">{{"COUNTRY_ADMIN.STAFF.USER_TYPE"| translate}}</div>
-            <div class="col-lg-2 col-md-2">{{"COUNTRY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
+            <div class="col-lg-3 col-md-3">{{"COUNTRY_ADMIN.STAFF.OFFICE_TYPE"| translate}}</div>
             <div class="col-lg-2 col-md-2"></div>
-            <div class="col-lg-2 col-md-2"></div>
+            <div class="col-lg-1 col-md-1"></div>
         </div>
         <div class="Empty--ribbon" *ngIf="staffList?.length == 0">{{"COUNTRY_ADMIN.STAFF.EMPTY_LIST"| translate}}</div>
         <div *ngFor="let staff of staffList" class="row align-items-center Line-row Small-spaced" [hidden] = "hideFilteredStaff(staff)">
             <div class="col-lg-2 col-md-2">{{ staffPublicUser[staff?.id]?.firstName }} {{ staffPublicUser[staff?.id]?.lastName }}</div>
             <div class="col-lg-2 col-md-2">{{ departmentMap.get(staff.department) }}</div>
             <div class="col-lg-2 col-md-2">{{ getStaffUserType(staff.userType) | translate}}</div>
-            <div class="col-lg-2 col-md-2">{{OfficeType[staff.officeType] | translate}}</div>
+            <div class="col-lg-3 col-md-3">{{OfficeType[staff.officeType] | translate}} {{fieldOfficeMap.get(staff?.fieldOffice) ? ' ('+fieldOfficeMap.get(staff?.fieldOffice)+')' : ''}}</div>
             <div class="col-lg-2 col-md-2 additional-info">
                 <i class="fa fa-2x fa-info-circle" aria-hidden="true"></i>
                 <a href="javascript:void(0)" data-toggle="collapse" [attr.data-target]="'#'+staff.id" aria-expanded="false"
                 aria-controls="popover_content">{{"COUNTRY_ADMIN.STAFF.ADDITIONAL_INFO"| translate}}</a>
             </div>
-            <div class="col-lg-2 col-md-2"><a href="javascript:void(0)" (click) = "editStaff(countryId, staff.id)" class="btn btn-primary">Edit</a></div>
+            <div class="col-lg-1 col-md-1"><a href="javascript:void(0)" (click) = "editStaff(countryId, staff.id)" class="btn btn-primary">Edit</a></div>
 
             <!-- Additional information -->
             <div [attr.id]="staff?.id" class="Popover__ribbon prevent_parent_collapse collapse col-12">

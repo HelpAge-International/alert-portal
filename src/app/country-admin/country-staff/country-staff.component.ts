@@ -12,6 +12,7 @@ import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
+import {FieldOfficeService} from "../../services/field-office.service";
 
 declare var jQuery: any;
 
@@ -55,9 +56,14 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
+  private fieldOfficeMap = new Map<string, string>()
+
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private af: AngularFire,
+              private fieldService:FieldOfficeService,
               private router: Router) {
   }
 
@@ -79,6 +85,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.getStaffData();
     this.getPartnerData();
     this.initDepartments();
+    this.initFieldOffices()
   }
 
   private initDepartments() {
@@ -196,6 +203,9 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.staff.training = item.training;
     this.staff.skill = item.skill;
     this.staff.notification = item.notification;
+    if (item.fieldOffice) {
+      this.staff.fieldOffice = item.fieldOffice
+    }
 
     return this.staff;
   }
@@ -305,5 +315,13 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
         });
     }
     return this.techSkills;
+  }
+
+  private initFieldOffices() {
+    this.fieldService.getFieldOffices(this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(offices => {
+        offices.forEach(office => this.fieldOfficeMap.set(office.id, office.name))
+      })
   }
 }
