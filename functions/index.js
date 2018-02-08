@@ -3397,7 +3397,7 @@ exports.updateUserEmail_UAT = functions.database.ref('/uat/userPublic/{uid}/emai
 /***********************************************************************************************************************/
 
 /***********************************************************************************************************************/
-exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/sand/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
+exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/sand/networkCountry/{networkId}/{networkCountryid}/agencyCountries/{agencyId}/{countryId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
     const currData = event.data.current.val();
@@ -4458,127 +4458,155 @@ exports.sendNetworkCountryAgencyValidationEmail_UAT_1 = functions.database.ref('
 //     }
 //   })
 
-exports.sendAlertMobileNotification_SAND = functions.database.ref('/sand/alert/{networkCountryId}/{alertId}/alertLevel')
+exports.sendAlertMobileNotification_SAND = functions.database.ref('/sand/alert/{id}/{alertId}')
   .onWrite(event => {
     return sendAlertMobileNotification(event, "sand")
   })
 
-exports.sendAlertMobileNotification_TEST = functions.database.ref('/test/alert/{networkCountryId}/{alertId}/alertLevel')
+exports.sendAlertMobileNotification_TEST = functions.database.ref('/test/alert/{id}/{alertId}')
   .onWrite(event => {
     return sendAlertMobileNotification(event, "test")
   })
 
 function sendAlertMobileNotification(event, env){
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
+  const preData = event.data.previous.val();
+  const currData = event.data.current.val();
 
-    let networkCountryId = event.params['networkCountryId'];
-    let alertId = event.params['alertId'];
-    
-    if (preData !== currData) {
-      var alert
-      var countryGroup
+  if(preData != null){
+    const preAlertLevel = preData.alertLevel
+    const currAlertLevel = currData.alertLevel
 
-      var isCountry = false
+    var preApprovalLevel
+    if(preData.approval != null && preData.approval.countryDirector != null && Object.keys(preData.approval.countryDirector).length > 0){
+      preApprovalKey = Object.keys(preData.approval.countryDirector)[0]
+      preApprovalLevel = preData.approval.countryDirector[preApprovalKey]
+    }
 
-      let alertPromise = admin.database().ref(`/${env}/alert/${networkCountryId}/${alertId}`).once('value')
+    var currApprovalLevel
+    if(currData.approval != null && currData.approval.countryDirector != null && Object.keys(currData.approval.countryDirector).length > 0){
+      currApprovalKey = Object.keys(currData.approval.countryDirector)[0]
+      currApprovalLevel = currData.approval.countryDirector[currApprovalKey]
+    }
 
-      let sendCountryNotificationPromise = alertPromise.then(alertSnap => {
+    console.log(`${preAlertLevel} => ${currAlertLevel} - ${preApprovalLevel} => ${currApprovalLevel}`)
+
+    let toGreenAmber = preAlertLevel != currAlertLevel && (currAlertLevel == ALERT_AMBER || currAlertLevel == ALERT_GREEN)
+    let toApprovedRed  = preApprovalLevel != currApprovalLevel && currAlertLevel == ALERT_RED && currApprovalLevel == APPROVED
+    let redAlertRequested = currAlertLevel == ALERT_RED && currApprovalLevel == WAITING_RESPONSE && (currAlertLevel != preAlertLevel || preApprovalLevel != currApprovalLevel)
+
+    console.log(`To Green/Amber: ${toGreenAmber} - To Approved Red: ${toApprovedRed} - Red Alert Requested: ${redAlertRequested}`)
+    if(toGreenAmber || toApprovedRed || redAlertRequested){
+      let id = event.params['id'];
+      let alertId = event.params['alertId'];
+      return admin.database().ref(`/${env}/alert/${id}/${alertId}`).once('value')
+      .then(alertSnap => {
         alert = alertSnap.val()
-        notification = createAlertLevelChangedNotification(alert, preData, currData)
-        return sendNotificationToCountryUsers(env, notification, networkCountryId)
-      })
-
-
-      return sendCountryNotificationPromise.then(
-        //Success
-        function(){
-          return Promise.resolve()
-        },
-        //Fail
-        function(error){
-          let networkPromise = admin.database().ref(`/${env}/network/${networkCountryId}`).once('value');
-
-          return networkPromise.then(networkSnap => {
-            let network = networkSnap.val()
-
-            
-            if(network){
-              let agencyPromises = []
-              for (var agencyName in network.agencies) {
-                if (network.agencies.hasOwnProperty(agencyName) && network.agencies[agencyName].hasOwnProperty('countryCode') && network.agencies[agencyName].isApproved) {
-                  let countryId = network.agencies[agencyName].countryCode
-                  agencyPromises.push(sendNotificationToCountryUsers(env, notification, countryId))
-                }
-              }            
-              return Promise.all(agencyPromises)
-            }
-            else{
-              return Promise.reject(new Error('fail'))
-            }            
-          })
+        if(toGreenAmber){
+          let notification = createAlertLevelChangedNotification(alert, preAlertLevel, currAlertLevel)
+          return sendCountryNetworkNetworkCountryNotification(env, notification, id, 0)
         }
-      )
-      .then(
-        function(){
-          return Promise.resolve()
-        },
-        function(error){
-          return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
-            let networkCountry = networkCountrySnap.val()
-            for (var networkCountryNetworkCountryId in networkCountry) {
-              //networkCountry/{networkCountryNetworkCountryId}
-              if (networkCountry.hasOwnProperty(networkCountryNetworkCountryId)) {
-                for(var networkCountryAlertId in networkCountry[networkCountryNetworkCountryId]){
-                  //networkCountry/{networkCountryNetworkCountryId}/{networkCountryAlertId}
-                  if(networkCountry[networkCountryNetworkCountryId].hasOwnProperty(networkCountryAlertId)){
-                    if(networkCountryAlertId == networkCountryId){
-                      let networkCountryAlert = networkCountry[networkCountryNetworkCountryId][networkCountryAlertId]
+        else if(toApprovedRed){
+          let notification = createRedAlertApprovedNotification(alert)
+          return sendCountryNetworkNetworkCountryNotification(env, notification, id, 0)
+        }
+        else if(redAlertRequested){
+          let notification = createRedAlertRequestedNotification(alert, preAlertLevel, currAlertLevel)
+          return sendCountryNetworkNetworkCountryNotification(env, notification, id, 1)
+        }
+      })
+    }
+  }
+}
 
-                      let networkCountryPromises = []
-                      if(networkCountryAlert.agencyCountries){
-                        for(var agencyCountryId in networkCountryAlert.agencyCountries){
-                          //networkCountry/{networkCountryNetworkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}
+//I know.. Country, Network, or NetworkCountry
+function sendCountryNetworkNetworkCountryNotification(env, notification, id, notificationSetting){
+  return sendNotificationToCountryUsers(env, notification, id, notificationSetting).then(
+    //Success
+    function(){
+      return Promise.resolve()
+    },
+    //Fail
+    function(error){
+      let networkPromise = admin.database().ref(`/${env}/network/${id}`).once('value');
 
-                          if(networkCountryAlert.agencyCountries.hasOwnProperty(agencyCountryId)){
-                            for(var countryId in networkCountryAlert.agencyCountries[agencyCountryId]){
-                              //networkCountry/{networkCountryNetworkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}/{countryId}/
-                              if(networkCountryAlert.agencyCountries[agencyCountryId].hasOwnProperty(countryId)){
-                                var country = networkCountryAlert.agencyCountries[agencyCountryId][countryId]
-                                if(country.isApproved){
-                                  networkCountryPromises.push(sendNotificationToCountryUsers(env, notification, countryId))
-                                }
-                              }
+      return networkPromise.then(networkSnap => {
+        let network = networkSnap.val()
+
+        
+        if(network){
+          let agencyPromises = []
+          for (var agencyName in network.agencies) {
+            if (network.agencies.hasOwnProperty(agencyName) && network.agencies[agencyName].hasOwnProperty('countryCode') && network.agencies[agencyName].isApproved) {
+              let countryId = network.agencies[agencyName].countryCode
+              agencyPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
+            }
+          }            
+          return Promise.all(agencyPromises)
+        }
+        else{
+          return Promise.reject(new Error('fail'))
+        }            
+      })
+    }
+  )
+  .then(
+    function(){
+      return Promise.resolve()
+    },
+    function(error){
+      return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
+        let networkCountry = networkCountrySnap.val()
+        for (var networkCountryId in networkCountry) {
+          //networkCountry/{networkCountryId}
+          if (networkCountry.hasOwnProperty(networkCountryId)) {
+            for(var networkCountryAlertId in networkCountry[networkCountryId]){
+              //networkCountry/{networkCountryId}/{networkCountryAlertId}
+              if(networkCountry[networkCountryId].hasOwnProperty(networkCountryAlertId)){
+                if(networkCountryAlertId == id){
+                  let networkCountryAlert = networkCountry[networkCountryId][networkCountryAlertId]
+
+                  let networkCountryPromises = []
+                  if(networkCountryAlert.agencyCountries){
+                    for(var agencyCountryId in networkCountryAlert.agencyCountries){
+                      //networkCountry/{networkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}
+
+                      if(networkCountryAlert.agencyCountries.hasOwnProperty(agencyCountryId)){
+                        for(var countryId in networkCountryAlert.agencyCountries[agencyCountryId]){
+                          //networkCountry/{networkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}/{countryId}/
+                          if(networkCountryAlert.agencyCountries[agencyCountryId].hasOwnProperty(countryId)){
+                            var country = networkCountryAlert.agencyCountries[agencyCountryId][countryId]
+                            if(country.isApproved){
+                              networkCountryPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
                             }
                           }
                         }
                       }
-            
-                      return Promise.all(networkCountryPromises)
                     }
                   }
-                }   
+        
+                  return Promise.all(networkCountryPromises)
+                }
               }
-            }
-            return Promise.reject(new Error('fail'))
-          })
+            }   
+          }
         }
-      )
+        return Promise.reject(new Error('fail'))
+      })
     }
-
+  )
 }
 
-function sendNotificationToCountryUsers(env, notification, countryId){
+function sendNotificationToCountryUsers(env, notification, countryId, notificationSetting){
 
   return admin.database().ref(`/${env}/group/country/${countryId}/`).once('value').then(countryGroupSnap => {
     let countryGroup = countryGroupSnap.val()
 
     if(countryGroup){
-      sendAlertPromises = []
+      var sendAlertPromises = []
       for (var userId in countryGroup.countryallusersgroup) {              
         if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {   
           //env, payload, userId, countryId, notificationGroup               
-          sendAlertPromises.push(sendNotification(env, notification, userId, countryId, 0))
+          sendAlertPromises.push(sendNotification(env, notification, userId, countryId, notificationSetting))
         }
       }
       return Promise.all(sendAlertPromises)
@@ -4590,16 +4618,30 @@ function sendNotificationToCountryUsers(env, notification, countryId){
   })
 }
 
-
-function createAlertLevelChangedNotification(alert, preData, currData){
-  const payload = {
+function createAlertLevelChangedNotification(alert, preAlertLevel, currAlertLevel){
+  return {
       'notification': {
           'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
-          'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${LEVELS[preData]} to ${LEVELS[currData]}`
+          'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${LEVELS[preAlertLevel]} to ${LEVELS[currAlertLevel]}`
       }
     }
+}
+function createRedAlertApprovedNotification(alert){
+  return {
+      'notification': {
+          'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
+          'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${alert.previousIsAmber ? "Amber" : "Green"} to ${LEVELS[alert.alertLevel]}`
+      }
+    }
+}
 
-  return payload
+function createRedAlertRequestedNotification(alert){
+  return {
+      'notification': {
+          'title': `A red alert level has been requested for ${HAZARDS[alert.hazardScenario]}`,
+          'body': `A red alert has been requested for the following alert: ${HAZARDS[alert.hazardScenario]}`
+      }
+    }
 }
 
 /*const payload = {
