@@ -3,13 +3,14 @@ import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
-import {Observable, Scheduler, Subject} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
-import {OfficeType, SkillType, StaffPosition, UserType} from "../../utils/Enums";
+import {OfficeType, SkillType, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
 import {AgencyService} from "../../services/agency-service.service";
 import {SettingsService} from "../../services/settings.service";
+import {FieldOfficeService} from "../../services/field-office.service";
 
 declare var jQuery: any;
 
@@ -61,11 +62,14 @@ export class StaffComponent implements OnInit, OnDestroy {
   private supportSkillMap = new Map()
   private techSkillMap = new Map()
 
+  private fieldOfficeMap = new Map<string, string>()
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
               private agencyService: AgencyService,
               private settingService: SettingsService,
+              private fieldService:FieldOfficeService,
               private router: Router) {
   }
 
@@ -86,6 +90,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private initData() {
     this.getStaffData();
     this.initDepartments();
+    this.initFieldOffice()
   }
 
   private initDepartments() {
@@ -204,6 +209,9 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.staff.training = item.training;
     this.staff.skill = item.skill;
     this.staff.notification = item.notification;
+    if (item.fieldOffice) {
+      this.staff.fieldOffice = item.fieldOffice
+    }
     this.staffs[this.officeId.indexOf(id)].staffs.push(this.staff);
     this.dealedStaff.push(item.$key);
   }
@@ -433,4 +441,15 @@ export class StaffComponent implements OnInit, OnDestroy {
       });
   }
 
+  private initFieldOffice() {
+    this.agencyService.getAllCountryIdsForAgency(this.agencyId)
+      .flatMap(countryIds => Observable.from(countryIds))
+      .flatMap(countryId => {
+        return this.fieldService.getFieldOffices(countryId.toString())
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(offices =>{
+        offices.forEach(office => this.fieldOfficeMap.set(office.id, office.name))
+      })
+  }
 }

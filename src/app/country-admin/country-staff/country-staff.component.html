@@ -121,13 +121,13 @@
         <div *ngFor="let partner of partnersList" class="row align-items-center Line-row Small-spaced">
             <div class="col-lg-2 col-md-2">{{ partnerPublicUser[partner?.id]?.firstName }} {{ partnerPublicUser[partner?.id]?.lastName }}</div>
             <div class="col-lg-2 col-md-2">{{ partner.position }}</div>
-            <div class="col-lg-4 col-md-4">{{ partnerOrganisations[partner?.id]?.organisationName }}</div>
+            <div class="col-lg-5 col-md-5">{{ partnerOrganisations[partner?.id]?.organisationName }}</div>
             <div class="col-lg-2 col-md-2 additional-info">
                 <i class="fa fa-2x fa-info-circle" aria-hidden="true"></i>
                 <a href="javascript:void(0)" data-toggle="collapse" [attr.data-target]="'#'+partner.id" aria-expanded="false"
                 aria-controls="popover_content">{{"COUNTRY_ADMIN.STAFF.ADDITIONAL_INFO"| translate}}</a>
             </div>
-            <div class="col-lg-2 col-md-2"><a href="javascript:void(0)" (click) = "editPartner(partner.id)" class="btn btn-primary">{{"EDIT" | translate}}</a></div>
+            <div class="col-lg-1 col-md-1"><a href="javascript:void(0)" (click) = "editPartner(partner.id)" class="btn btn-primary">{{"EDIT" | translate}}</a></div>
 
             <!-- Additional information -->
             <div [attr.id]="partner?.id" class="Popover__ribbon prevent_parent_collapse collapse col-12">

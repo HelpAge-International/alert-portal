@@ -11,7 +11,6 @@ export class FieldOfficeService {
   public getFieldOffices(countryId: string){
     return this.af.database.list(Constants.APP_STATUS + '/fieldOffice/' + countryId)
       .map(fieldOffices =>{
-        console.log(fieldOffices)
         fieldOffices.forEach(office => {
           office.id = office.$key
         })
