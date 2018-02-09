@@ -473,7 +473,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Director Selection</h5>
+        <h5 class="modal-title">Select recipients</h5>
         <button type="button" class="close" aria-label="Close" data-dismiss="modal">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -482,7 +482,7 @@
         <!--directors-->
         <ng-container>
           <div class="row">
-            <div class="col-sm-4">Directors</div>
+            <h6 class="col-sm-4">Directors</h6>
             <!--<div class="col-sm-8"><b>{{ notificationName | translate }}</b></div>-->
           </div>
           <div class="row Small-spaced">
@@ -490,58 +490,61 @@
             <div class="col-sm-10 ">
               <!--<div class="row" *ngFor="let userType of USER_TYPE_SELECTION; let i = index;">-->
               <div class="row" *ngIf="directorIdMap.get('countryDirector')">
-                <label class="form-check-label">
+                <div class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="countryDirector"
                          [(ngModel)]="countryDirectorSelected"
                          [disabled]="selectedDirectorMap.get('countryDirector')"
                   >
                   Country director - {{directorModelMap.get("countryDirector")?.firstName +" "+
                   directorModelMap.get("countryDirector")?.lastName}}
-                </label>
+                </div>
               </div>
               <div class="row"
                    *ngIf="directorIdMap.get('regionDirector') && agencyApprovalSettingMap.get('regionDirector')">
-                <label class="form-check-label">
+                <div class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="regionDirector"
                          [(ngModel)]="regionDirectorSelected"
                          [disabled]="selectedDirectorMap.get('regionDirector')"
                   >
                   Region director - {{directorModelMap.get("regionDirector")?.firstName +" "+
                   directorModelMap.get("regionDirector")?.lastName}}
-                </label>
+                </div>
               </div>
               <div class="row"
                    *ngIf="directorIdMap.get('globalDirector') && agencyApprovalSettingMap.get('globalDirector')">
-                <label class="form-check-label">
+                <div class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="globalDirector"
                          [(ngModel)]="globalDirectorSelected"
                          [disabled]="selectedDirectorMap.get('globalDirector')"
                   >
                   Global director - {{directorModelMap.get("globalDirector")?.firstName +" "+
                   directorModelMap.get("globalDirector")?.lastName}}
-                </label>
+                </div>
               </div>
               <!--</div>-->
             </div>
           </div>
+
+          <!--//no director div-->
+          <div *ngIf="countryDirectorExist" class="text-center">There are no directors added to your ALERT account</div>
         </ng-container>
         <!--partners-->
         <ng-container *ngIf="planToApproval?.partnerOrganisations">
           <div class="row">
-            <div class="col-sm-4">Partners</div>
+            <h6 class="col-sm-4">Partners</h6>
           </div>
           <div class="row Small-spaced">
             <div class="col-sm-2"></div>
             <div class="col-sm-10 ">
               <div class="row" *ngFor="let partnerId of partnerList; index as i">
-                <label class="form-check-label">
+                <div class="form-check-label">
                   <input type="checkbox" class="form-check-input" name="countryDirector" #selectedPaetnerId
                          (change)="selectPartner(partnerId, selectedPaetnerId.checked)"
                          [checked]="partnerApprovalIdMap.get(partnerUserMap.get(partnerId) ? partnerUserMap.get(partnerId) : partnerId)"
-                         [disabled]="partnerApprovalIdMap.get(partnerUserMap.get(partnerId) ? partnerUserMap.get(partnerId) : partnerId)"
+                         [disabled]="selectedPartnerApprovalIdMap.get(partnerUserMap.get(partnerId) ? partnerUserMap.get(partnerId) : partnerId)"
                   >
-                  Partner {{i}}: {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId)?.organisationName : intPartnerOrgMap.get(partnerId)?.organisationName}}
-                </label>
+                  {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId)?.organisationName : intPartnerOrgMap.get(partnerId)?.organisationName}}
+                </div>
               </div>
             </div>
           </div>

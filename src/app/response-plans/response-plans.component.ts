@@ -14,9 +14,7 @@ import {NotificationService} from "../services/notification.service";
 import {AgencyService} from "../services/agency-service.service";
 import * as moment from "moment";
 import {ModelUserPublic} from "../model/user-public.model";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
 import {CommonUtils} from "../utils/CommonUtils";
-import { CreateEditCountryComponent } from "../agency-admin/country-office/create-edit-country/create-edit-country.component";
 
 declare const jQuery: any;
 
@@ -85,6 +83,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private partnerApprovalIdMap = new Map()
   private partnerUserMap = new Map()
   private selectedDirectorMap = new Map<string, boolean>()
+  private selectedPartnerApprovalIdMap = new Map()
+  private countryDirectorExist: boolean
 
 
   constructor(private pageControl: PageControlService,
@@ -159,6 +159,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             this.handleRequireSubmissionTagForDirectors();
             this.getResponsePlans(this.countryId);
             this.getApprovalHierachySettings()
+            this.checkIsThereCountryDirector()
           });
       });
 
@@ -393,7 +394,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         obj["value"] = plan.approval["partner"][key]
         obj["key"] = key
         return obj
-      }).forEach(item =>{
+      }).forEach(item => {
         if (item["value"] != ApprovalStatus.InProgress) {
           this.partnerApprovalIdMap.set(item["key"], true)
         }
@@ -565,15 +566,16 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           console.log(item)
           if (item["value"] == ApprovalStatus.InProgress) {
             this.partnerApprovalIdMap.set(item["key"], false)
+            this.selectedPartnerApprovalIdMap.set(item["key"], false)
           } else {
             this.partnerApprovalIdMap.set(item["key"], true)
+            this.selectedPartnerApprovalIdMap.set(item["key"], true)
           }
           // if (item["value"] == ApprovalStatus.WaitingApproval) {
           //   this.partnerApprovalIdMap.set(item["key"], true)
           // } else if (item["value"] == ApprovalStatus.InProgress) {
           //   this.partnerApprovalIdMap.set(item["key"], false)
           // }
-          console.log(this.partnerApprovalIdMap)
         })
     }
   }
@@ -1245,5 +1247,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           })
       }
     });
+  }
+
+  private checkIsThereCountryDirector() {
+    this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + this.countryId)
+      .first()
+      .subscribe(director => this.countryDirectorExist = !!director.$value)
   }
 }
