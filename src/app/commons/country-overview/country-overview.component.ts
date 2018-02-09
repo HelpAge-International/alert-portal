@@ -478,7 +478,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
 
     for (let x of this.prepActionService[countryOffice.$key].actions) {
-      if (x.level == ActionLevel.MPA && x.type != ActionType.chs) {
+      if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
           minTotal++;
           if (this.isActionCompleted(x, countryID)) {
@@ -563,7 +563,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
 
     for (let x of this.prepActionService[countryID].actions) {
-      if (x.level == ActionLevel.MPA && x.type != ActionType.chs) {
+      if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
           minTotal++;
           if (this.isActionCompleted(x, countryID)) {
@@ -651,7 +651,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
 
     for (let x of this.prepActionService[countryID].actions) {
-      if (x.level == ActionLevel.MPA && x.type != ActionType.chs) {
+      if (x.level == ActionLevel.MPA) {
         if (!x.isArchived) {
           minTotal++;
           if (this.isActionCompleted(x, countryID)) {
