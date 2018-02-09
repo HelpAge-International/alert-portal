@@ -8,9 +8,9 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng" [ngSwitch]="count">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row" routerLink="/risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
+    <div class="Back--button row" routerLink="/risk-monitoring" (click)="setEdit()">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
     <div class="Header-title__wrap--risk Spaced-above">
-      <h1>{{"RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" | translate}}</h1>
+      <h1> {{ (!editHazard ? "RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" : "RISK_MONITORING.ADD_HAZARD.EDIT_HAZARD") | translate}}</h1>
       <tooltip
         [level1]="'TOOLTIPS.RISK_MONITORING.TT8.LEVEL1'"
       ></tooltip>
@@ -79,14 +79,15 @@
       <div class="row" style="width:100%">
         <label class="Checkbox--ribbon__alert Left col-sm-5">
           <div class="risk-icon__components">
-            <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{_getHazardImage(hazardData.hazardScenario)}}"></span>
+            <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{otherHazard ? _getHazardImage(hazardData.hazardScenario) : _getHazardImage(editGetScenario)}}"></span>
           </div>
           <p>
-            <b>{{HazardScenario[hazardData.hazardScenario] | translate}}</b>
-            <b *ngIf="otherHazard">{{hazardName}}</b>
+            <b>{{HazardScenario[hazardData.hazardScenario] | translate}} </b>
+            <b> {{editHazard ? (HazardScenario[editGetScenario]  | translate) : hazardName}}</b>
           </p>
         </label>
       </div>
+
       <!--Select another hazard-->
       <div class="col-sm-4">
         <div class="Spaced-above"><p><b>{{"RISK_MONITORING.ADD_HAZARD.IS_SEASONAL_HAZARD" | translate}}</b>
@@ -95,9 +96,10 @@
           ></tooltip>
         </p></div>
 
+
         <div class="row no-gutters">
           <label class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
-            <input type="radio" name="RT" id="RT_yes" value="false" (change)="seasonHazard($event)">
+            <input type="radio" name="RT" id="RT_yes" value="false" [checked]="getEditSeasons.length > 0" (change)="seasonHazard($event)">
             {{'YES' | translate}}
           </label>
         </div>
@@ -108,30 +110,46 @@
             {{'GLOBAL.NO' | translate}}
           </label>
         </div>
+        <div *ngIf="!editHazard">
         <button class="btn btn-outline-primary Spaced-above text-right" *ngIf="selectHazard"
                 (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASON_FROM_CALENDAR" | translate}}
         </button>
-
+        </div>
+        <!--Edit Hazard built in-->
+        <br>
+        <div class="col-sm-8">
+          <a href="javascript:void(0)" (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.EDIT_SEASONS"
+            | translate}}</a>
+        </div>
         <!--Edit seasons button-->
+        <div *ngIf="!radioValue">
         <div *ngIf="season">
-          <br>
-          <div class="col-sm-8">
-            <a href="javascript:void(0)" (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.EDIT_SEASONS"
-              | translate}}</a>
-          </div>
           <div *ngFor="let season of checkedSeasons" class="row">
             <div class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-4">
               <img src="assets/images/icons/circle_tick.svg">
               <p>{{season.name}}</p>
+              </div>
             </div>
           </div>
+
+        <!--Edit hazard-->
+        <div *ngIf="editHazard">
+          </div>
+            <div *ngFor="let s of AllSeasons; index as i" class="row" >
+              <div *ngIf="getEditSeasons.indexOf(i) != -1" class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-4">
+                <img src="assets/images/icons/circle_tick.svg">
+                <div>
+                  <p>{{s?.name}}</p>
+                </div>
+              </div>
+            </div>
         </div>
 
       </div>
       <!--Confirm/cancel buttons-->
       <br>
       <div class="Form-submit__wrapper align-items-baseline">
-        <a href="javascript:void(0)" class="btn btn-primary" (click)="addHazardBtn()">{{"RISK_MONITORING.ADD_HAZARD.ADD_HAZARD" | translate}}</a>
+        <a href="javascript:void(0)" class="btn btn-primary" (click)="editHazard ? saveHazardBtn() : addHazardBtn()"> {{ (editHazard ? "RISK_MONITORING.ADD_HAZARD.SAVE_HAZARD" : "RISK_MONITORING.ADD_HAZARD.ADD_HAZARD") | translate}}</a>
         <a href="javascript:void(0)" class="col-sm-1" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</a>
       </div>
     </form>
@@ -151,9 +169,9 @@
         <div class="modal-body text-center">
           <div class="row col-sm-12">
             <div class="col-sm-12">
-              <div class="row margin-left-three" *ngFor="let season of AllSeasons;let i = index">
+              <div class="row margin-left-three" *ngFor="let season of AllSeasons; index as i">
                 <input class="col-sm-0 margin-top-one-half big-checkbox" type="checkbox"
-                       [value]="season" [checked]="detected(i)"
+                       [value]="season" [checked]="getEditSeasons.indexOf(i) != -1"
                        aria-label="" (change)="selectSeason($event, i)">
                 <div class="col-sm-1">
                   <div class="Color__swatch__check Right-aligned"
@@ -174,7 +192,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
-                  (click)="saveSelectSeasons('select-seasons')">{{"SAVE" | translate}}
+                  (click)="saveSelectSeasons('select-seasons');">{{"SAVE" | translate}}
           </button>
           <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" (click)="closeModal()">
             {{"GLOBAL.CANCEL" | translate}}
@@ -239,6 +257,8 @@
               </div>
             </form>
           </div>
+
+
           <div class="modal-footer">
             <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
                     [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"SAVE" | translate}}

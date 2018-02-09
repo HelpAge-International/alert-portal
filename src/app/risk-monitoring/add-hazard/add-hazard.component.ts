@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, Input} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {AlertMessageType, HazardScenario} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -14,6 +14,8 @@ import {Http} from "@angular/http";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {HazardImages} from "../../utils/HazardImages";
 import {ColourSelector} from "../../utils/ColourSelector";
+import {TranslateService} from "@ngx-translate/core";
+import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 
 declare var jQuery: any;
 
@@ -55,6 +57,17 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   private hazardScenariosListTop: InformHolder[] = [];
   private colours: ColourSelector[] = ColourSelector.list();
   private submitNewCalendar: boolean = true;
+  private tmpHazardData: any[] = [];
+
+  // Edit Hazard variables
+  public hazardId = [];
+  public editHazard: boolean;
+  public editGetScenario: any[] = [];
+  public getEditSeasons: any[] = [];
+  public updateNameOfSeason: string;
+  public editSeasonalHazard: boolean;
+  public getKey: string;
+  public radioValue: boolean;
 
   private hazardScenariosList: number[] = [
     HazardScenario.HazardScenario0,
@@ -86,6 +99,9 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     HazardScenario.HazardScenario26
   ];
   private hazardData: any = {};
+  public activeHazards: any[] = [];
+  public archivedHazards: any[] = [];
+  private hazardScenario = Constants.HAZARD_SCENARIOS;
 
   // INFORM information
   private informHandler: InformService;
@@ -94,9 +110,10 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private http: Http, private router: Router, private storage: LocalStorageService, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private af: AngularFire, private translate: TranslateService, private route: ActivatedRoute, private http: Http, private router: Router, private storage: LocalStorageService, private userService: UserService) {
     this.hazardData.seasons = [];
     this.initHazardData();
+
 
     // Inform Handler for the top 3 items
     this.informHandler = new InformService(http);
@@ -108,8 +125,13 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
       this.UserType = userType;
       this.agencyID = agencyId;
       this.countryID = countryId;
+
       this._loadData();
+      this._getEditHazard();
+
     });
+
+
     // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
     //   this.uid = user.uid;
     //   this.UserType = userType;
@@ -124,9 +146,67 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   initHazardData() {
     this.hazardData = new ModelHazard();
+
   }
 
-  _getTopResults() {
+  getIndicators(hazardID: string) {
+    return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardID);
+  }
+  setEdit() {
+
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + "/editingHazard").set(null)
+
+  }
+
+  _getEditHazard() {
+
+    this.route.params.subscribe(params => {
+      this.hazardId = params['hazardId'];
+    });
+
+
+
+          this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + "/editingHazard")
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(isEdit => {
+              this.editHazard = isEdit.$value;
+              console.log(this.editHazard, 'howdy neighbour');
+              if (this.editHazard){
+                this.count = 2;
+              }
+            });
+
+          // get the hazard scenario
+          this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/hazardScenario')
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(getHazard => {
+              this.editGetScenario = getHazard.$value;
+      });
+
+                // get the season key
+                this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/seasons', {preserveSnapshot: true})
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(getSeasons => {
+                    getSeasons.forEach(getSeasons =>{
+
+                      console.log(getSeasons,'get seasons');
+                      this.getEditSeasons.push(toInteger(getSeasons.key));
+                      })
+                  });
+
+                          //get all seasons
+                          this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe(AllSeasons => {
+                             this.AllSeasons = AllSeasons;
+
+                            });
+
+
+
+  }
+
+   _getTopResults() {
     this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
       this.showInformUnavailable = (list.length == 0);
       this.hazardScenariosListTop = list;
@@ -175,9 +255,12 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   _loadData() {
     // this._getCountryID().then(() => {
+
     this._getCustomHazards();
     this._getCountryLocation();
+
     // });
+
   }
 
   _getCustomHazards() {
@@ -198,6 +281,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((AllSeasons: any) => {
           this.AllSeasons = AllSeasons;
+          console.log(this.AllSeasons, 'all seasons');
           res(true);
         });
     });
@@ -230,7 +314,12 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this.count = 1;
+    if (this.editHazard){
+      this.router.navigate(['/risk-monitoring/']);
+    } else {
+      this.count = 1;
+    }
+
   }
 
   _checkHazard(hazard) {
@@ -274,6 +363,36 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     if (this.hazardData.hazardScenario == 'otherSelected') {
       this.otherHazard = true;
     }
+  }
+
+  saveHazardBtn() {
+    console.log('save hazard');
+    this.getEditSeasons.push(this.getKey);
+    console.log(this.getEditSeasons);
+    let updateKeys = {};
+    updateKeys[this.getKey] = true;
+
+    let dbPath = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/seasons/');
+    let dbPathChangeSeasonal = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId);
+    console.log(this.editSeasonalHazard, 'edit season hazard');
+    // Filter before doing something in FireBase
+    if (this.radioValue){
+      dbPath.remove();
+
+      dbPathChangeSeasonal.update({
+        isSeasonal: false
+      })
+    } else if (this.getEditSeasons.length == 0){
+      dbPath.set(this.getEditSeasons)
+    } else {
+      dbPath.update(updateKeys)
+      dbPathChangeSeasonal.update({
+        isSeasonal: true})
+    }
+    // After everything is done route back ..
+    this.router.navigate(['/risk-monitoring/']);
+
+
   }
 
   addHazardBtn() {
@@ -332,18 +451,34 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   seasonHazard(event: any) {
-    this.hazardData.seasons = [];
-    this.addHazardSeason = event.target.value;
+
+    /* #start
+     * The values are the wrong way round when I came on to this component
+     * so i have left them as they are in case of other checks ...
+     * YES = false and NO = true
+     */
+      this.hazardData.seasons = [];
+      this.addHazardSeason = event.target.value;
+
+
     if (this.addHazardSeason == 'true') {
-      this.hazardData.isSeasonal = false;
-      this.selectHazard = false;
-      this.season = false;
-    }
-    else {
-      this.hazardData.isSeasonal = true;
-      this.selectHazard = true;
-      this.season = false;
-    }
+        this.hazardData.isSeasonal = false;
+        this.selectHazard = false;
+        this.season = false;
+        this.radioValue = true;
+      }
+      else {
+
+
+        this.hazardData.isSeasonal = true;
+        this.selectHazard = true;
+        this.season = false;
+        this.radioValue = false;
+      }
+
+    // #end
+
+
   }
 
   saveSelectSeasons(modalID: string) {
@@ -351,6 +486,8 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     for (let i in this.hazardData.seasons) {
       this.checkedSeasons.push(this.AllSeasons[i])
     }
+    console.log(this.updateNameOfSeason);
+    //this.updateName();
     this.modalID = modalID;
     this.addHazardSeason = 'true';
     this.selectHazard = false;
@@ -362,20 +499,37 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     else {
       this.season = true;
     }
+  console.log(this.getEditSeasons, 'get edit seasons');
     this.closeModal();
   }
 
+  /*updateName(){
+    // update the name to node
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/seasons')
+      .update({
+      name: 'check'
+      });
+  }*/
+
   selectSeason(event: any, seasonKey: string) {
+
+    if (this.editHazard) {
+      this.getKey = seasonKey;
+      console.log(event, seasonKey);
+    }
     if (event.target.checked) {
       this.hazardData.seasons[seasonKey] = true;
+
     } else {
       delete this.hazardData.seasons[seasonKey];
+
     }
   }
 
   detected(i) {
     for (let key in this.hazardData.seasons) {
       if (i == key) {
+        console.log(i, key, 'Ayo');
         return true;
       }
     }
@@ -426,6 +580,8 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
       }).catch((error: any) => {
       console.log(error, 'You do not have access!')
     });
+
+
   }
 
   closeModal() {

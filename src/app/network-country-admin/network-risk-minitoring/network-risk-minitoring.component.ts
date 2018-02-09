@@ -684,6 +684,14 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     return promise;
   }
 
+  changeHazard(hazardId){
+    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + this.tmpHazardData['ID'])
+      .update({editingHazard: true});
+    console.log(hazardId, 'in risk monitoring');
+    this.router.navigateByUrl("network-country/network-risk-monitoring/add-hazard/" + this.tmpHazardData['ID']);
+
+  }
+
   getIndicators(hazardID: string) {
     return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardID);
   }

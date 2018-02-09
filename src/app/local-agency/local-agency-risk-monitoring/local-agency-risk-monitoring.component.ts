@@ -18,6 +18,7 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import * as firebase from "firebase/app";
 import App = firebase.app.App;
 import {subscribeOn} from "rxjs/operator/subscribeOn";
+import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 
 declare var jQuery: any;
 @Component({
@@ -109,6 +110,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private assignedHazard: any;
   private assignedUser: string;
 
+
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -142,6 +145,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
       this._getHazards();
       this.getAgencyLocation();
       this._getCountryContextIndicators();
+
     })
 
   }
@@ -162,6 +166,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
     });
     return promise;
   }
+
+
 
   _getIndicatorFutureTimestamp(indicator) {
     let triggers: any[] = indicator.trigger;
@@ -1133,6 +1139,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
     return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardID);
   }
 
+
   getLogs(indicatorID: string) {
     return this.af.database.list(Constants.APP_STATUS + "/log/" + indicatorID, {
       query: {
@@ -1248,6 +1255,14 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
       });
     }
     return true;
+  }
+
+  changeHazard(hazardId){
+    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + this.tmpHazardData['ID'])
+      .update({editingHazard: true});
+    console.log(hazardId, 'in risk monitoring');
+    this.router.navigateByUrl("local-agency/risk-monitoring/add-hazard/" + this.tmpHazardData['ID']);
+
   }
 
   setTmpHazard(hazardID: string, activeStatus: boolean, hazardScenario: number) {

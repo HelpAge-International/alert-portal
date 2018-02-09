@@ -15,6 +15,7 @@ import {Http} from "@angular/http";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {HazardImages} from "../../../../utils/HazardImages";
 import {ColourSelector} from "../../../../utils/ColourSelector";
+import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 
 declare var jQuery: any;
 
@@ -90,6 +91,17 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
   ];
   private hazardData: any = {};
 
+  // Edit Hazard variables
+  public hazardId = [];
+  public editHazard: boolean;
+  public editGetScenario: any[] = [];
+  public getEditSeasons: any[] = [];
+  public updateNameOfSeason: string;
+  public editSeasonalHazard: boolean;
+  public getKey: string;
+  public radioValue: boolean;
+
+
   // INFORM information
   private informHandler: InformService;
   private loaderInactive: boolean;
@@ -136,6 +148,8 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
 
         if(this.isViewing){
           this._loadData();
+          this._getEditHazard();
+
         } else {
           this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
             this.uid = user.uid;
@@ -147,15 +161,17 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
                 this.networkCountryId = selection["networkCountryId"];
                 this.networkId = selection["id"];
                 this.UserType = selection["userType"];
-
+                console.log('after pagecontrol');
                 this._loadData();
 
               })
+
           })
+
+
         }
 
       })
-
 
     // this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
     //   this.uid = user.uid;
@@ -182,6 +198,57 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
       this.loaderInactive = true;
     });
   }
+
+  _getEditHazard() {
+
+    this.route.params.subscribe(params => {
+      this.hazardId = params['hazardId'];
+    });
+
+
+
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId + "/" + this.hazardId + "/editingHazard")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(isEdit => {
+        this.editHazard = isEdit.$value;
+        console.log(this.editHazard, 'howdy neighbour');
+        if (this.editHazard){
+          this.count = 2;
+        }
+      });
+
+    // get the hazard scenario
+
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId + "/" + this.hazardId + '/hazardScenario')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getHazard => {
+        console.log(getHazard.$value);
+        this.editGetScenario = getHazard.$value;
+      });
+
+    // get the season key
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId + "/" + this.hazardId + '/seasons', {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getSeasons => {
+        getSeasons.forEach(getSeasons =>{
+
+          console.log(getSeasons,'get seasons');
+          this.getEditSeasons.push(toInteger(getSeasons.key));
+        })
+      });
+
+    //get all seasons
+    this.af.database.list(Constants.APP_STATUS + "/season/" + this.networkCountryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(AllSeasons => {
+        this.AllSeasons = AllSeasons;
+
+      });
+
+
+
+  }
+
 
   _getHazardImage(key) {
     return HazardImages.init().getCSS((+key));
@@ -228,6 +295,8 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
     // this._getCountryID().then(() => {
     this._getCustomHazards();
     this._getCountryLocation();
+    this._getEditHazard();
+
     // });
   }
 
@@ -281,7 +350,11 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this.count = 1;
+    if (this.editHazard){
+      this.router.navigate(['/risk-monitoring/']);
+    } else {
+      this.count = 1;
+    }
   }
 
   _checkHazard(hazard) {
@@ -325,6 +398,36 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
     if (this.hazardData.hazardScenario == 'otherSelected') {
       this.otherHazard = true;
     }
+  }
+
+  saveHazardBtn() {
+    console.log('save hazard');
+    this.getEditSeasons.push(this.getKey);
+    console.log(this.getEditSeasons);
+    let updateKeys = {};
+    updateKeys[this.getKey] = true;
+
+    let dbPath = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId + "/" + this.hazardId + '/seasons/');
+    let dbPathChangeSeasonal = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.networkCountryId + "/" + this.hazardId);
+    console.log(this.editSeasonalHazard, 'edit season hazard');
+    // Filter before doing something in FireBase
+    if (this.radioValue){
+      dbPath.remove();
+
+      dbPathChangeSeasonal.update({
+        isSeasonal: false
+      })
+    } else if (this.getEditSeasons.length == 0){
+      dbPath.set(this.getEditSeasons)
+    } else {
+      dbPath.update(updateKeys)
+      dbPathChangeSeasonal.update({
+        isSeasonal: true})
+    }
+    // After everything is done route back ..
+    this.router.navigate(['/network-country/network-risk-monitoring/']);
+
+
   }
 
   addHazardBtn() {
@@ -383,17 +486,24 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   seasonHazard(event: any) {
+    /* #start
+     * The values are the wrong way round when I came on to this component
+     * so i have left them as they are in case of other checks ...
+     * YES = false and NO = true
+     */
     this.hazardData.seasons = [];
     this.addHazardSeason = event.target.value;
     if (this.addHazardSeason == 'true') {
       this.hazardData.isSeasonal = false;
       this.selectHazard = false;
       this.season = false;
+      this.radioValue = true;
     }
     else {
       this.hazardData.isSeasonal = true;
       this.selectHazard = true;
       this.season = false;
+      this.radioValue = false;
     }
   }
 
@@ -417,10 +527,16 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   selectSeason(event: any, seasonKey: string) {
+    if (this.editHazard) {
+      this.getKey = seasonKey;
+      console.log(event, seasonKey);
+    }
     if (event.target.checked) {
       this.hazardData.seasons[seasonKey] = true;
+
     } else {
       delete this.hazardData.seasons[seasonKey];
+
     }
   }
 

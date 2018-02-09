@@ -435,6 +435,9 @@
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewingFromExternal" class="sub-sub-contents__wrap--risk col-sm-11">
+                <a href="javascript:void(0)" data-toggle="modal"
+                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario); changeHazard(hazardId);">
+                  {{"GLOBAL.EDIT" | translate}}</a>
                 <a href="javascript:void(0)"
                    *ngIf="hazard.existsOnNetwork"
                    data-toggle="modal"
@@ -768,6 +771,7 @@
                      data-toggle="modal"
                      data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
+                  <a href="javascript:void(0)">{{"GLOBAL.CHANGE" | translate}}</a>
                   <a *ngIf="hazard.existsOnNetwork" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
                   <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)" (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
