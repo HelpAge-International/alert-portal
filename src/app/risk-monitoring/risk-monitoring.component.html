@@ -366,6 +366,9 @@
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
                 <a href="javascript:void(0)" data-toggle="modal"
+                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario); changeHazard(hazardId);">
+                   {{"GLOBAL.EDIT" | translate}}</a>
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard"
                    *ngIf="hazard.existsOnAgency"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"ARCHIVE_ACTION_DIALOG.TITLE"
@@ -376,6 +379,7 @@
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
                 <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" *ngIf="hazard.existsOnAgency" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
+
               </div>
             </div>
             <div *ngIf="hazard.indicators && hazard.indicators.length > 0">
@@ -693,7 +697,9 @@
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
                   <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" *ngIf="hazard.existsOnAgency" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
+
                 </div>
+
               </div>
               <!----------------------------Trends in malnutrition---------------------------->
               <div *ngIf="hazard.indicators && hazard.indicators.length > 0">

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -138,7 +138,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.usersForAssign = [];
 
     this.route.params
@@ -1323,6 +1322,15 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   removeTmpLog() {
     this.tmpLogData = [];
   }
+
+  changeHazard(hazardId){
+    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
+      .update({editingHazard: true});
+    console.log(hazardId, 'in risk monitoring');
+    this.router.navigateByUrl("/risk-monitoring/add-hazard/" + this.tmpHazardData['ID']);
+
+  }
+
 
   editLog(modalID: string) {
 
