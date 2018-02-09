@@ -612,9 +612,6 @@ export class PrepActionService {
     if (this.updater != null) {
       this.updater();
     }
-    //console.log("Action ID clicked: " + this.updateActionId);
-
-    console.log("0000000000 "+this.getActionData(i, this.actions[i], this.updateActionId).id);
   }
 
   public getActionData(i: number, preparednessAction: PreparednessAction, actionId: string, fun? : ()=> object) {

@@ -739,10 +739,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
-  navigateToNormalActions(action) {
+  navigateToCompleteAction(action) {
     this.router.navigate(["/preparedness/minimum", {
-      "updateActionID" : action.$key
+      "updateActionID": action.$key
     }]);
+  }
+
+  navigateToCompleteIndicator(indicator) {
+    if (indicator.hazardScenario["key"] == "countryContext") {
+      this.router.navigate(["/risk-monitoring", {
+        "updateIndicatorID": indicator.$key,
+        "hazardID": indicator.hazardScenario["key"]
+      }]);
+    } else {
+      this.router.navigate(["/risk-monitoring", {
+        "updateIndicatorID": indicator.$key,
+        "hazardID": indicator.hazardScenario["hazardScenario"]
+      }]);
+    }
   }
 
   navigateToNetworkActions(action) {

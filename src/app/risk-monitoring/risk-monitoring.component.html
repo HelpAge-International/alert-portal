@@ -388,7 +388,7 @@
                     *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
                     *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <a *ngIf="!isViewing && !indicator.fromNetwork"
-                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
+                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicatorKey]">{{"EDIT" | translate}}
                     </a>
                     <a *ngIf="!isViewing && indicator.fromNetwork"
                        [routerLink]="indicator.networkCountryId ? ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId, networkCountryId: indicator.networkCountryId}] : ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId}]">{{"EDIT" | translate}}

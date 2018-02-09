@@ -21,7 +21,6 @@ import {AgencyService} from "../services/agency-service.service";
 
 declare var jQuery: any;
 
-
 @Component({
   selector: 'app-risk-monitoring',
   templateUrl: './risk-monitoring.component.html',
@@ -42,7 +41,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private isViewing: boolean;
   private agencyId: string;
   private systemId: string;
-  public hazards: any[] = [];
+  private updateIndicatorId: string;
+  public hazard: string;
   private canCopy: boolean;
   private agencyOverview: boolean;
 
@@ -112,6 +112,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private assignedHazard: any;
   private assignedUser: string;
   private staffMap = new Map()
+  private stopCondition: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -140,7 +141,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.usersForAssign = [];
-
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -168,6 +168,19 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["userType"]) {
           this.UserType = params["userType"];
+        }
+        if (params["hazardID"]) {
+          this.hazard = params["hazardID"];
+        }
+        if (params['updateIndicatorID']) {
+          this.updateIndicatorId = params['updateIndicatorID'];
+
+          Observable.interval(5000)
+            .takeWhile(() => !this.stopCondition)
+            .subscribe(i => {
+              this.triggerScrollTo()
+              this.stopCondition = true
+            })
         }
 
         if (this.agencyId && this.countryID) {
@@ -197,6 +210,37 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  public triggerScrollTo() {
+    if (this.hazard == "countryContext") {
+
+      console.log(this.activeHazards[1].risk)
+
+      jQuery("#collapseOne").collapse('show');
+
+     // this.changeIndicatorState(true,'countryContext', this.updateIndicatorId)
+      //jQuery("#countryContext_"+this.updateIndicatorId).collapse('show');
+    } else {
+      console.log("IN collapse: " +this.hazard)
+      console.log(this.indicators)
+      jQuery("#collapse"+this.hazard).collapse('show');
+
+      // this.changeIndicatorState(true,this.hazard, this.updateIndicatorId)
+      // jQuery("#"+this.hazard+"_"+this.updateIndicatorId).collapse('show');
+
+      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
+      console.log(hazardIndex)
+      let indicatorindex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
+      console.log(indicatorindex)
+      console.log(this.activeHazards[hazardIndex].$key)
+      this.changeIndicatorState(true,this.activeHazards[hazardIndex].$key, indicatorindex)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorindex).offset().top - 200
+      }, 2000);
+
+    }
+
   }
 
   private getCountryLocation() {
@@ -278,7 +322,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                 });
                 indicator.logs = this._sortLogsByDate(logs);
               });
-
 
             });
             hazard.indicators = indicators;
@@ -1213,6 +1256,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
+    console.log("IndicatorKey: "+ indicatorKey)
+    console.log("HazardKey: "+ hazardID)
+
     var key = hazardID + '_' + indicatorKey;
     if (state) {
       this.isIndicatorUpdate[key] = true;
@@ -1242,7 +1288,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
     const indicatorID = indicator.$key;
-
 
     if (!hazardID || !indicatorID) {
       console.log('hazardID or indicatorID cannot be empty');

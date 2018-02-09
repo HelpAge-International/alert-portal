@@ -38,10 +38,11 @@ import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
-import {ScrollToService, ScrollToConfigOptions} from '@nicky-lenaers/ngx-scroll-to';
+import {ScrollToService} from 'ng2-scroll-to-el';
 
 import {CommonUtils} from "../../utils/CommonUtils";
 import {AddIndicatorRiskMonitoringComponent} from "../../risk-monitoring/add-indicator/add-indicator.component";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -104,6 +105,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
   public userTypes = UserType;
   private Privacy = Privacy;
+  private actions: PreparednessAction[] = [];
 
   // Used to run the initAlerts method after all actions have been returned
   private fbLocationCalls = 3;
@@ -123,7 +125,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private modulesAreEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
   private permissionsAreEnabled: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   protected prepActionService: PrepActionService = new PrepActionService();
-  private _scrollToService: ScrollToService;
 
   private privacy: ModelAgencyPrivacy;
   private userAgencyId: string;
@@ -135,6 +136,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   //Local Agency
   @Input() isLocalAgency: boolean;
+  private stopCondition: boolean;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -189,7 +191,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
       this.getStaffDetails(this.uid, true);
 
-
       //overview
       this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
         this.agencyId, this.systemAdminId);
@@ -226,6 +227,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
         if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];
+
+          Observable.interval(5000)
+            .takeWhile(() => !this.stopCondition)
+            .subscribe(i => {
+              this.triggerScrollTo()
+              this.stopCondition = true
+            })
         }
 
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
@@ -255,6 +263,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           this.initStaff();
           this.initDepartments();
           this.initDocumentTypes();
+
 
           // Initialise the page control information
           PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
@@ -318,32 +327,20 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
               })
           }
+
         });
 
       });
     this.initLocalDisplay();
+
   }
 
-  public triggerScrollTo(action) {
+  public triggerScrollTo() {
+    jQuery("#popover_content_" + this.updateActionId).collapse('show');
 
-    console.log("triggerScrollTo called")
-    const config: ScrollToConfigOptions = {
-      target: 'popover_content_' + this.updateActionId
-    };
-
-    this._scrollToService.scrollTo(config);
-
-    // let actionID = "a[href^='popover_content_"+action.id+"']";
-    // jQuery(actionID).click(function(e) {
-    //   e.preventDefault();
-    //
-    //   var position = jQuery(jQuery(this).attr("href")).offset().top;
-    //
-    //   jQuery("body, html").animate({
-    //     scrollTop: position
-    //   } /* speed */ );
-    // });
-
+    jQuery('html, body').animate({
+      scrollTop: jQuery("#popover_content_" + this.updateActionId).offset().top - 200
+    }, 2000);
   }
 
   ngOnDestroy() {
@@ -837,14 +834,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost : null
+        actualCost: null
       });
     } else {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost : null
+        actualCost: null
       });
     }
 
