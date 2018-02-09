@@ -361,6 +361,9 @@
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
                 <a href="javascript:void(0)" data-toggle="modal"
+                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario); changeHazard(hazardId);">
+                  {{"GLOBAL.EDIT" | translate}}</a>
+                <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#archiveHazard"
                    *ngIf="hazard.existsOnAgency"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"ARCHIVE_ACTION_DIALOG.TITLE"
