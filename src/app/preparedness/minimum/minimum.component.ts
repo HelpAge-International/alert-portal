@@ -332,7 +332,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
       });
     this.initLocalDisplay();
-
   }
 
   public triggerScrollTo() {
@@ -1191,7 +1190,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private switchToNetwork(action: PreparednessAction) {
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, action.networkCountryId)
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
-    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
+    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, "", this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
   }
 

@@ -668,7 +668,7 @@
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 [routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+                 (click)="navigateToNetworkActions(action)">
                 {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
@@ -710,8 +710,8 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 [routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block"  (click)="navigateToNetworkActions(action)">
+                 <!--[routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">-->
                 {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>

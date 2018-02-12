@@ -740,29 +740,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToCompleteAction(action) {
-    this.router.navigate(["/preparedness/minimum", {
-      "updateActionID": action.$key
-    }]);
+    action.level == ActionLevel.MPA ?
+      this.router.navigate(["/preparedness/minimum", { "updateActionID": action.$key }])
+      :
+      this.router.navigate(["/preparedness/advanced", { "updateActionID": action.$key }])
   }
 
-  navigateToCompleteIndicator(indicator) {
-    if (indicator.hazardScenario["key"] == "countryContext") {
-      this.router.navigate(["/risk-monitoring", {
-        "updateIndicatorID": indicator.$key,
-        "hazardID": indicator.hazardScenario["key"]
-      }]);
-    } else {
-      this.router.navigate(["/risk-monitoring", {
-        "updateIndicatorID": indicator.$key,
-        "hazardID": indicator.hazardScenario["hazardScenario"]
-      }]);
-    }
+  navigateToCompleteIndicator(indicator) {//For both: Normal and Network
+    indicator.hazardScenario["key"] == "countryContext" ?
+      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["key"] }])
+    :
+      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["hazardScenario"] }])
   }
 
   navigateToNetworkActions(action) {
     console.log(action)
     let reverseMap = CommonUtils.reverseMap(this.networkMap);
-    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
+    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, model.networkId);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, model.networkCountryId);
     this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
@@ -770,11 +764,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
       :
       this.router.navigate(['/network-country/network-country-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
-  }
-
-  navigateToNetworkIndicators(indicator) {
-    console.log(indicator);
-    this.router.navigate(['/risk-monitoring']);
   }
 
   private navigateToLogin() {

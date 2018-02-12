@@ -44,6 +44,7 @@ import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -68,6 +69,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private isSameAgency: boolean = false;
   public myFirstName: string;
   public myLastName: string;
+  private updateActionId: string;
 
   // Filters
   private filterStatus: number = -1;
@@ -131,6 +133,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   //Local Agency
   @Input() isLocalAgency: boolean;
+  private stopCondition: boolean;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -204,6 +207,16 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
+        }
+        if (params['updateActionID']) {
+          this.updateActionId = params['updateActionID'];
+
+          Observable.interval(5000)
+            .takeWhile(() => !this.stopCondition)
+            .subscribe(i => {
+              this.triggerScrollTo()
+              this.stopCondition = true
+            })
         }
 
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
@@ -294,6 +307,14 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           }
         });
       });
+  }
+
+  public triggerScrollTo() {
+    jQuery("#popover_content_" + this.updateActionId).collapse('show');
+
+    jQuery('html, body').animate({
+      scrollTop: jQuery("#popover_content_" + this.updateActionId).offset().top - 200
+    }, 2000);
   }
 
   public isChosenHazard(hazard:number, action:any){
@@ -1143,7 +1164,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private switchToNetwork(action: PreparednessAction) {
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, action.networkCountryId)
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
-    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
+    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, "", this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
   }
 

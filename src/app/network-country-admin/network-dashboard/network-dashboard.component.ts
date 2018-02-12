@@ -32,12 +32,12 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {SettingsService} from "../../services/settings.service";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
-import { NetworkCountryCreateEditActionComponent } from "../network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
+import {NetworkCountryCreateEditActionComponent} from "../network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
 import {NetworkCountryMpaComponent} from "../network-preparedness/network-country-mpa/network-country-mpa.component";
 import {PrepActionService} from "../../services/prepactions.service";
 import {MandatedListModel} from "../../agency-admin/agency-mpa/agency-mpa.component";
 import {map} from "rxjs/operator/map";
-
+import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
@@ -120,6 +120,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private redAlerts: Observable<any[]>;
   private isRedAlert: boolean;
   private affectedAreasToShow: any [];
+  private networkMap: Map<string, string>;
   private userPaths = Constants.USER_PATHS;
 
   private taskName: string;
@@ -186,9 +187,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
           this.getMandatedPrepActions();
 
-
-
-
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
@@ -222,6 +220,32 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           })
       });
 
+  }
+
+  navigateToNetworkActions(action) {
+    console.log("NETWORK called")
+    if (action.level == ActionLevel.MPA) {
+      console.log(this.networkViewValues);
+      console.log(action);
+    //  let reverseMap = CommonUtils.reverseMap(this.networkMap);
+      let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, action.networkId, action.countryId, true)
+      this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
+      this.isViewing ?
+        this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+        :
+        this.isLocalNetworkAdmin ?
+          this.router.navigate(['/network/local-network-preparedness-mpa', {"updateActionID": action.$key}])
+          :
+          this.router.navigate(['/network-country/network-country-mpa', {"updateActionID": action.$key}])
+    } else {
+      this.isViewing ?
+        this.router.navigate(['/network-country/network-country-apa', {"updateActionID": action.$key}, this.networkViewValues])
+        :
+        this.isLocalNetworkAdmin ?
+          this.router.navigate(['/network/local-network-preparedness-apa', {"updateActionID": action.$key}])
+          :
+          this.router.navigate(['/network-country/network-country-apa', {"updateActionID": action.$key}])
+    }
   }
 
   private initLocalNetworkAccess() {

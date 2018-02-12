@@ -213,34 +213,40 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   public triggerScrollTo() {
-    if (this.hazard == "countryContext") {
 
-      console.log(this.activeHazards[1].risk)
+    if (this.hazard == "countryContext") {
+      let indicatorIndexCC = this.indicatorsCC.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
+      let indicatorID = "#indicators-to-hazards_CC"+"_"+indicatorIndexCC
 
       jQuery("#collapseOne").collapse('show');
 
-     // this.changeIndicatorState(true,'countryContext', this.updateIndicatorId)
-      //jQuery("#countryContext_"+this.updateIndicatorId).collapse('show');
-    } else {
-      console.log("IN collapse: " +this.hazard)
-      console.log(this.indicators)
+      this.changeIndicatorState(true,"countryContext", indicatorIndexCC)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000);
+    } else if (this.hazard == "-1"){
+      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
+      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+
+      jQuery("#collapse"+this.activeHazards[hazardIndex].otherName).collapse('show');
+
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000)
+    }else {
+      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
+      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+
       jQuery("#collapse"+this.hazard).collapse('show');
 
-      // this.changeIndicatorState(true,this.hazard, this.updateIndicatorId)
-      // jQuery("#"+this.hazard+"_"+this.updateIndicatorId).collapse('show');
-
-      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
-      console.log(hazardIndex)
-      let indicatorindex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      console.log(indicatorindex)
-      console.log(this.activeHazards[hazardIndex].$key)
-      this.changeIndicatorState(true,this.activeHazards[hazardIndex].$key, indicatorindex)
+      this.changeIndicatorState(true,this.activeHazards[hazardIndex].$key, indicatorIndex)
       jQuery('html, body').animate({
-        scrollTop: jQuery(indicatorindex).offset().top - 200
+        scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
-
     }
-
   }
 
   private getCountryLocation() {
