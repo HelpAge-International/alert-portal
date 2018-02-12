@@ -56,6 +56,7 @@ export class Constants {
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
+  static APPROVAL_STATUS = ["Requires Submission", "Waiting Approval", "Approved", "Needs Reviewing"];
 
   // local agency administrator
 

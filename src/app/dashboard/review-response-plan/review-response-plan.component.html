@@ -33,11 +33,11 @@
 
           <!-- Plan approval row -->
           <div *ngFor="let partner of partnerApproveList" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
               <p>{{partner.name}}</p>
             </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[partner.status]}} <i class="fa fa-check-circle"
+            <div class="col-lg-8">
+              <p class="text-muted">{{Approval_Status_Name[partner.status]}} <i class="fa fa-check-circle"
                                                                           aria-hidden="true"></i></p>
             </div>
           </div>
@@ -54,28 +54,28 @@
 
           <!-- Plan approval row -->
           <div *ngIf="countryDirectorApproval.length > 0" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
               <p *ngIf="uid != countryDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                 translate}}</p>
               <p *ngIf="uid == countryDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
                 translate}} ({{"DIRECTOR_DASHBOARD.YOU" | translate}})</p>
             </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[countryDirectorApproval[0].status]}} <i class="fa fa-check-circle"
+            <div class="col-lg-8">
+              <p class="text-muted">{{Approval_Status_Name[countryDirectorApproval[0].status]}} <i class="fa fa-check-circle"
                                                                                              aria-hidden="true"></i></p>
             </div>
           </div>
 
           <!-- Plan approval row -->
           <div *ngIf="regionalDirectorApproval.length > 0" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
               <p *ngIf="uid != regionalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                 translate}}</p>
               <p *ngIf="uid == regionalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
                 translate}} ({{"DIRECTOR_DASHBOARD.YOU" | translate}})</p>
             </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[regionalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
+            <div class="col-lg-8">
+              <p class="text-muted">{{Approval_Status_Name[regionalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
                                                                                               aria-hidden="true"></i>
               </p>
             </div>
@@ -83,14 +83,14 @@
 
           <!-- Plan approval row -->
           <div *ngIf="globalDirectorApproval.length > 0" class="row Line-row S-small-spaced">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
               <p *ngIf="uid != globalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
                 translate}}</p>
               <p *ngIf="uid == globalDirectorApproval[0].id">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" | translate}}
                 ({{"DIRECTOR_DASHBOARD.YOU" | translate}})</p>
             </div>
-            <div class="col-lg-5">
-              <p class="text-muted">{{ApprovalStatus[globalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
+            <div class="col-lg-8">
+              <p class="text-muted">{{Approval_Status_Name[globalDirectorApproval[0].status]}} <i class="fa fa-check-circle"
                                                                                             aria-hidden="true"></i></p>
             </div>
           </div>

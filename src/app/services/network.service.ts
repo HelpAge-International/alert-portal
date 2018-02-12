@@ -970,7 +970,7 @@ export class NetworkService {
               let tempCountryObj = allNetworksObj[networkId][countryId]
               tempCountryObj["id"] = countryId
               return tempCountryObj
-            }).filter(country => country.location == location)
+            }).filter(country => country.location == location && country.isActive)
             tempObj["networkId"] = networkId
             return tempObj
           })
@@ -995,7 +995,7 @@ export class NetworkService {
             let tempObj = allNetworksObj[networkId]
             tempObj["networkId"] = networkId
             return tempObj
-          }).filter(network => network.countryCode == location)
+          }).filter(network => network.countryCode == location && network.isActive)
           localNetworks = networkObjs
         }
         return localNetworks

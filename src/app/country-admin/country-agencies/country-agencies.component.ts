@@ -123,7 +123,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
             temp["agencyId"] = agency.$key;
             return temp;
           });
-          countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location);
+          countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location && countryItem.isActive);
 
           if (countries.length > 0) {
             // An agency should only have one country office per country

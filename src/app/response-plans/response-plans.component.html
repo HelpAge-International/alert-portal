@@ -526,7 +526,7 @@
           </div>
 
           <!--//no director div-->
-          <div *ngIf="countryDirectorExist" class="text-center">There are no directors added to your ALERT account</div>
+          <div *ngIf="!countryDirectorExist" class="text-center">There are no directors added to your ALERT account</div>
         </ng-container>
         <!--partners-->
         <ng-container *ngIf="planToApproval?.partnerOrganisations">

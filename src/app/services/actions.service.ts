@@ -46,7 +46,7 @@ export class ActionsService {
       .map(actions => {
         let filteredActions = [];
         actions.forEach(action => {
-          if (action.asignee === uid && !action.isComplete) {
+          if (action.asignee === uid && !action.isComplete && !action.isArchived) {
             action["countryId"] = countryId
             filteredActions.push(action);
           }

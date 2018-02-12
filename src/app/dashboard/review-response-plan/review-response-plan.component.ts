@@ -28,6 +28,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private ApprovalStatus = ApprovalStatus;
+  private Approval_Status_Name = Constants.APPROVAL_STATUS
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private responsePlanId: string;
@@ -310,7 +311,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       this.scrollToBottom();
     }
   }
- 
+
   private scrollToBottom(): void {
     try {
       this.rejectPlanScrollContainer.nativeElement.scrollTop = this.rejectPlanScrollContainer.nativeElement.scrollHeight;
