@@ -155,18 +155,42 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
+      if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
-        this.systemId = params["systemId"];
-        this.agencyId = params["agencyId"];
-        this.countryId = params["countryId"];
-        this.userType = params["userType"];
-        this.networkId = params["networkId"];
-        if (!this.isLocalNetworkAdmin) {
-          this.networkCountryId = params["networkCountryId"];
-        }
-        this.uid = params["uid"]
       }
+      if (params["systemId"]) {
+        this.systemId = params["systemId"];
+      }
+      if (params["agencyId"]) {
+        this.agencyId = params["agencyId"];
+      }
+      if (params["countryId"]) {
+        this.countryId = params["countryId"];
+      }
+      if (params["userType"]) {
+        this.userType = params["userType"];
+      }
+      if (params["networkId"]) {
+        this.networkId = params["networkId"];
+      }
+      if (!this.isLocalNetworkAdmin) {
+        this.networkCountryId = params["networkCountryId"];
+      }
+      if (params["uid"]) {
+        this.uid = params["uid"];
+      }
+      // if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
+      //   this.isViewing = params["isViewing"];
+      //   this.systemId = params["systemId"];
+      //   this.agencyId = params["agencyId"];
+      //   this.countryId = params["countryId"];
+      //   this.userType = params["userType"];
+      //   this.networkId = params["networkId"];
+      //   if (!this.isLocalNetworkAdmin) {
+      //     this.networkCountryId = params["networkCountryId"];
+      //   }
+      //   this.uid = params["uid"]
+      // }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
@@ -186,12 +210,16 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
           this.getMandatedPrepActions();
 
-
-
-
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
+
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              this.networkModules = modules
+              console.log(this.networkModules)
+            })
 
         });
     });
@@ -247,6 +275,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
+
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              this.networkModules = modules
+              console.log(this.networkModules)
+            })
 
         });
     });
@@ -646,13 +681,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   shouldShow(level: number, action: any) {
-    if (level == ActionLevel.MPA && !(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.MinimumPreparednessActions].status))) {
+    if (level == ActionLevel.MPA && !(this.networkModules && this.networkModules[ModuleNameNetwork.MinimumPreparednessActions].status)) {
       return false;
     }
-    else if (level == ActionLevel.APA && (!(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.AdvancedPreparednessActions].status)) || !this.isRedAlert)) {
+    else if (level == ActionLevel.APA && (!(this.networkModules && this.networkModules[ModuleNameNetwork.AdvancedPreparednessActions].status) || !this.isRedAlert)) {
       return false;
     }
-    else if (action == ActionType.chs && !(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status))) {
+    else if (action == ActionType.chs && !(this.networkModules && this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status)) {
       return false;
     }
     else return true;

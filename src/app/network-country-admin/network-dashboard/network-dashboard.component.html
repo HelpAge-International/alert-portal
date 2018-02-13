@@ -32,7 +32,7 @@
 
     <!--alert screen-->
     <div
-      *ngIf="DashboardTypeUsed == DashboardType.default && (!isViewing || (isViewing && networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status))">
+      *ngIf="DashboardTypeUsed == DashboardType.default && (networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
@@ -132,7 +132,7 @@
     </div>
 
     <!--director alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.director && (!isViewing || (isViewing && networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status))">
+    <div *ngIf="DashboardTypeUsed == DashboardType.director && (networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
 
       <div *ngIf="alertsNetwork | async as alertList">
         <div *ngFor="let alert of alertList">
@@ -589,69 +589,71 @@
          *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0">
       <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
       <br>
-      <div *ngIf="userType == UserType.CountryDirector">
-        <div *ngIf="responsePlansForApproval | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
-            <div class="col-sm-9" col-md-1>
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
-              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
-              <!--</button>-->
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+      <ng-container *ngIf="networkModules && networkModules[NETWORK_MODULE.ResponsePlanning].status">
+        <div *ngIf="userType == UserType.CountryDirector">
+          <div *ngIf="responsePlansForApproval | async as plans">
+            <div *ngFor="let plan of plans" class="row Spaced">
+              <div class="col-sm-9" col-md-1>
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+              </div>
+              <div class="col-md-3">
+                <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+                <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+                <!--</button>-->
+                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+              </div>
             </div>
           </div>
-        </div>
 
-      </div>
-      <!--partner users-->
-      <div *ngIf="userType == UserType.PartnerUser">
-        <div *ngIf="responsePlansForApproval | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
-            <div class="col-sm-9" col-md-1>
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+        </div>
+        <!--partner users-->
+        <div *ngIf="userType == UserType.PartnerUser">
+          <div *ngIf="responsePlansForApproval | async as plans">
+            <div *ngFor="let plan of plans" class="row Spaced">
+              <div class="col-sm-9" col-md-1>
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+              </div>
+              <div class="col-md-3">
+                <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+                <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+                <!--</button>-->
+                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+              </div>
             </div>
-            <div class="col-md-3">
-              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
-              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
-              <!--</button>-->
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+          </div>
+          <div *ngIf="responsePlansForApprovalNetwork | async as plans">
+            <div *ngFor="let plan of plans" class="row Spaced">
+              <div class="col-sm-9" col-md-1>
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+              </div>
+              <div class="col-md-3">
+                <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
+                <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
+                <!--</button>-->
+                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+              </div>
             </div>
           </div>
         </div>
-        <div *ngIf="responsePlansForApprovalNetwork | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
-            <div class="col-sm-9" col-md-1>
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
-              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
-              <!--</button>-->
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      </ng-container>
 
       <div
         *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0">
@@ -676,7 +678,7 @@
         </div>
 
         <ng-container
-          *ngIf="!isViewing || (isViewing && networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
+          *ngIf="networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status">
           <div *ngFor="let indicator of indicatorsOverdue">
             <div class="row Spaced">
               <div class="col-md-1">
@@ -719,7 +721,7 @@
         </div>
 
         <ng-container
-          *ngIf="!isViewing || (isViewing && networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
+          *ngIf="networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status">
           <div *ngFor="let indicator of indicatorsToday">
             <div class="row Spaced">
               <div class="col-md-1">
@@ -762,7 +764,7 @@
         </div>
 
         <ng-container
-          *ngIf="!isViewing || (isViewing && networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
+          *ngIf="networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status">
           <div *ngFor="let indicator of indicatorsThisWeek">
             <div class="row Spaced">
               <div class="col-md-1">
@@ -788,7 +790,7 @@
 
     <!--risk monitoring & calendars-->
     <div class="Widget-Group"
-         [hidden]="!((isViewing && networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status) || !isViewing)">
+         [hidden]="!(networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
 
       <div class="Widget Risk-Monitoring">
         <h3>{{"RISK_MONITORING_TEXT" | translate}}</h3>

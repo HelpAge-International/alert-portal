@@ -8,6 +8,8 @@ import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NetworkService} from "../../services/network.service";
 import {SettingsService} from "../../services/settings.service";
 import {Subject} from "rxjs/Subject";
+import {PageControlService} from "../../services/pagecontrol.service";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-local-network-menu',
@@ -23,9 +25,14 @@ export class LocalNetworkMenuComponent implements OnInit, OnDestroy {
   private networkModules: ModuleSettingsModel[];
   private PRIVACY = Privacy
   private NETWORK_MODULE = ModuleNameNetwork
+  private uid: string;
+  private networkId: string;
 
   constructor(private storageService: LocalStorageService,
               private networkService: NetworkService,
+              private pageControl: PageControlService,
+              private router: Router,
+              private route: ActivatedRoute,
               private settingService: SettingsService) {
   }
 
@@ -51,6 +58,19 @@ export class LocalNetworkMenuComponent implements OnInit, OnDestroy {
           console.log(modules)
           this.networkModules = modules
         })
+    } else {
+
+      this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+        this.uid = user.uid;
+
+        //get network id
+        this.networkService.getSelectedIdObj(user.uid)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(selection => {
+            this.networkId = selection["id"];
+          });
+      })
+
     }
   }
 

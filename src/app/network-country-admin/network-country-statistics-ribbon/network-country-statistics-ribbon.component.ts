@@ -150,6 +150,14 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.userPermissions = matrix);
 
+          //init module status
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              console.log(modules)
+              this.networkModules = modules
+            })
+
         });
     });
   }
@@ -197,6 +205,14 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.userPermissions = matrix);
+
+          //init module status
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              console.log(modules)
+              this.networkModules = modules
+            })
 
         });
     });
