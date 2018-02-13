@@ -185,7 +185,10 @@
         )
         }}</h2>
 
-      <!--for normal user-->
+      <!--
+          Actions for normal user
+      -->
+
       <ng-container *ngIf="!isLocalAgency && (filerNetworkAgency == '-1' || filerNetworkAgency == 'Agency-Only')">
         <div *ngFor="let action of prepActionService.actions">
 
@@ -214,6 +217,9 @@
                       <div class="row Preparedness-list__item">
 
 
+                        <!--<div *ngIf="((!action.isComplete && action.asignee != '' && action.asignee != null && action.assignee == uid) && action.id == updateActionId)">-->
+                          <!--{{callScrollTo(action);}}-->
+                        <!--</div>-->
                         <!--
                        Everywhere that the following line is used it's just way of handling the "Expired on" state with the clock settings.
                        Based on those setting they're sometimes expired. This below checks that. It makes all the IF statements look
@@ -247,7 +253,6 @@
                           date:"d MMM
                           ''yy"}}</strong>
                         </div>
-
 
                         <div class="col-md-10 col-sm-10">
                           <div class="row">
@@ -862,7 +867,10 @@
         </div>
       </ng-container>
 
-      <!--for network-->
+      <!--
+          Actions for network
+      -->
+
       <ng-container *ngIf="!isLocalAgency && (filerNetworkAgency != 'Agency-Only')">
         <div *ngFor="let action of prepActionService.actionsNetwork">
 
@@ -1212,14 +1220,10 @@
 
 
 
+      <!--
+          Actions for normal user local agency
+      -->
 
-
-
-
-
-
-
-      <!--for normal user local agency -->
       <ng-container *ngIf="isLocalAgency && (filerNetworkAgency == '-1' || filerNetworkAgency == 'Agency-Only')">
         <div *ngFor="let action of prepActionService.actions">
 
@@ -1886,19 +1890,6 @@
 
         </div>
       </ng-container>
-
-
-
-
-
-
-
-
-
-
-
-
-
     </div>
 
 

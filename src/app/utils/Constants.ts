@@ -862,8 +862,6 @@ export class Constants {
     "GLOBAL.COUNTRIES.ZW"
   ];
 
-
-
   static HAZARD_CATEGORY_ICON_CLASS = [
     "Icon--earthquake",
     "Icon--cyclone",

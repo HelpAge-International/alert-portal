@@ -19,6 +19,9 @@ import {NetworkService} from "../services/network.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkViewModel} from "../country-admin/country-admin-header/network-view.model";
+import {PrepActionService, PreparednessAction} from "../services/prepactions.service";
+import {forEach} from "@angular/router/src/utils/collection";
+import {MinimumPreparednessComponent} from "../preparedness/minimum/minimum.component";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -95,6 +98,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private moduleSettings: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   private countryPermissionMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+  protected prepActionService: PrepActionService = new PrepActionService();
   // private networkCountryId: string;
   // private networkId: string;
   private networkMap: Map<string, string>;
@@ -312,6 +316,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
+
     this.actionService.getActionsDueInWeek(this.countryId, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(actions => {
@@ -734,10 +739,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
+  navigateToCompleteAction(action) {
+    action.level == ActionLevel.MPA ?
+      this.router.navigate(["/preparedness/minimum", { "updateActionID": action.$key }])
+      :
+      this.router.navigate(["/preparedness/advanced", { "updateActionID": action.$key }])
+  }
+
+  navigateToCompleteIndicator(indicator) {//For both: Normal and Network
+    indicator.hazardScenario["key"] == "countryContext" ?
+      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["key"] }])
+    :
+      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["hazardScenario"] }])
+  }
+
   navigateToNetworkActions(action) {
     console.log(action)
     let reverseMap = CommonUtils.reverseMap(this.networkMap);
-    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
+    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, model.networkId);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, model.networkCountryId);
     this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
@@ -745,11 +764,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
       :
       this.router.navigate(['/network-country/network-country-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
-  }
-
-  navigateToNetworkIndicators(indicator) {
-    console.log(indicator);
-    this.router.navigate(['/risk-monitoring']);
   }
 
   private navigateToLogin() {
@@ -767,6 +781,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
           // Display APA only if there is a red alert
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
+
+
 
           this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
           this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));

@@ -28,6 +28,7 @@ import {CommonUtils} from "../../../utils/CommonUtils";
 import {NetworkCountryModel} from "../../network-country.model";
 import {ModelAgency} from "../../../model/agency.model";
 import {UserService} from "../../../services/user.service";
+import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 
 declare const jQuery: any;
 
@@ -80,6 +81,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
+  private filterHazard: number = -1;
   private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
 
@@ -312,6 +314,13 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  /**
+   * Hazard filtering
+   */
+  public isChosenHazard(hazard:number, action:any){
+    return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
   }
 
   /**

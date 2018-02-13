@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit, Input} from "@angular/core";
+import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {Constants} from "../../utils/Constants";
@@ -6,9 +6,11 @@ import {
   ActionLevel,
   ActionStatusMin,
   ActionType,
-  AlertMessageType, Currency,
+  AlertMessageType,
+  Currency,
   DocumentType,
-  FileExtensionsEnding, Privacy,
+  FileExtensionsEnding,
+  Privacy,
   SizeType,
   UserType
 } from "../../utils/Enums";
@@ -17,7 +19,9 @@ import {LocalStorageService} from "angular-2-local-storage";
 import * as firebase from "firebase";
 import {UserService} from "../../services/user.service";
 import {
-  AgencyModulesEnabled, CountryPermissionsMatrix, NetworkModulesEnabledModel,
+  AgencyModulesEnabled,
+  CountryPermissionsMatrix,
+  NetworkModulesEnabledModel,
   PageControlService
 } from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
@@ -38,8 +42,7 @@ import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
-import {CommonUtils} from "../../utils/CommonUtils";
-import {AddIndicatorRiskMonitoringComponent} from "../../risk-monitoring/add-indicator/add-indicator.component";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -59,6 +62,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
+  private updateActionId: string;
   public myFirstName: string;
   public myLastName: string;
 
@@ -101,6 +105,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private fileExtensions: FileExtensionsEnding[] = FileExtensionsEnding.list();
   public userTypes = UserType;
   private Privacy = Privacy;
+  private actions: PreparednessAction[] = [];
 
   // Used to run the initAlerts method after all actions have been returned
   private fbLocationCalls = 3;
@@ -131,7 +136,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   //Local Agency
   @Input() isLocalAgency: boolean;
-
+  private stopCondition: boolean;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -162,6 +167,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       if (params['isCHS']) {
         this.filterType = 0;
       }
+
     });
   }
 
@@ -169,43 +175,41 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
 
-        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.assignActionAsignee = this.uid;
-          this.userType = userType;
-          this.filterAssigned = "0";
-          this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.assignActionAsignee = this.uid;
+      this.userType = userType;
+      this.filterAssigned = "0";
+      this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
 
-          this.systemAdminId = systemId;
+      this.systemAdminId = systemId;
 
-          this.agencyId = agencyId;
-          this.countryId = countryId;
+      this.agencyId = agencyId;
+      this.countryId = countryId;
 
-          this.getStaffDetails(this.uid, true);
+      this.getStaffDetails(this.uid, true);
 
+      //overview
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
+        this.agencyId, this.systemAdminId);
+      this.initStaff();
+      this.initDepartments();
+      this.initDocumentTypes();
 
-          //overview
-          this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-            this.agencyId, this.systemAdminId);
-          this.initStaff();
-          this.initDepartments();
-          this.initDocumentTypes();
+      // Initialise the page control information
+      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+        this.modulesAreEnabled = isEnabled;
+      });
 
-          // Initialise the page control information
-          PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
-            this.modulesAreEnabled = isEnabled;
-          });
-
-
-          // Currency
-          this.calculateCurrency();
-        })
+      // Currency
+      this.calculateCurrency();
+    })
 
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -220,6 +224,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
+        }
+        if (params['updateActionID']) {
+          this.updateActionId = params['updateActionID'];
+
+          Observable.interval(5000)
+            .takeWhile(() => !this.stopCondition)
+            .subscribe(i => {
+              this.triggerScrollTo()
+              this.stopCondition = true
+            })
         }
 
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
@@ -245,10 +259,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
           //overview
           this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-            this.countryId, this.agencyId, this.systemAdminId);
+            this.countryId, this.agencyId, this.systemAdminId, this.updateActionId);
           this.initStaff();
           this.initDepartments();
           this.initDocumentTypes();
+
 
           // Initialise the page control information
           PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
@@ -312,11 +327,19 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
               })
           }
+
         });
 
       });
     this.initLocalDisplay();
+  }
 
+  public triggerScrollTo() {
+    jQuery("#popover_content_" + this.updateActionId).collapse('show');
+
+    jQuery('html, body').animate({
+      scrollTop: jQuery("#popover_content_" + this.updateActionId).offset().top - 200
+    }, 2000);
   }
 
   ngOnDestroy() {
@@ -721,7 +744,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          if(this.isLocalAgency){
+          if (this.isLocalAgency) {
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id).update(data);
           } else {
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
@@ -810,14 +833,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost : null
+        actualCost: null
       });
     } else {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost : null
+        actualCost: null
       });
     }
 
@@ -831,6 +854,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 
   }
+
   // Uploading a file to Firebase
   protected uploadFile(action: PreparednessAction, file) {
     let document = {
@@ -844,7 +868,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       uploadedBy: this.uid
     };
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.list(Constants.APP_STATUS + '/document/' + this.agencyId).push(document)
         .then(_ => {
           let docKey = _.key;
@@ -882,7 +906,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         .catch(err => {
           console.log(err, 'You do not have access!');
         });
-    }else{
+    } else {
       this.af.database.list(Constants.APP_STATUS + '/document/' + this.countryId).push(document)
         .then(_ => {
           let docKey = _.key;
@@ -1023,7 +1047,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   protected deleteDocumentNetwork(action: PreparednessAction, docId: string) {
     if (!action.networkCountryId) {
-      console.log("no network country id")
+      console.log("no network country ids")
       return
     }
     for (let x of action.documents) {
@@ -1128,7 +1152,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   public reactivateNetwork(action: PreparednessAction) {
     if (!action.networkCountryId) {
-      console.log("no network country id")
+      console.log("no network country ids")
       return
     }
     let update = {
@@ -1166,7 +1190,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private switchToNetwork(action: PreparednessAction) {
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, action.networkCountryId)
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
-    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
+    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, "", this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
   }
+
 }

@@ -23,7 +23,6 @@ import {CommonUtils} from "../utils/CommonUtils";
 
 declare var jQuery: any;
 
-
 @Component({
   selector: 'app-risk-monitoring',
   templateUrl: './risk-monitoring.component.html',
@@ -44,7 +43,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private isViewing: boolean;
   private agencyId: string;
   private systemId: string;
-  public hazards: any[] = [];
+  private updateIndicatorId: string;
+  public hazard: string;
   private canCopy: boolean;
   private agencyOverview: boolean;
 
@@ -114,6 +114,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private assignedHazard: any;
   private assignedUser: string;
   private staffMap = new Map()
+  private stopCondition: boolean;
 
   private overviewCountryPrivacy: any;
   private Hazard_Conflict = 1
@@ -150,7 +151,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.usersForAssign = [];
-
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -178,6 +178,19 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["userType"]) {
           this.UserType = params["userType"];
+        }
+        if (params["hazardID"]) {
+          this.hazard = params["hazardID"];
+        }
+        if (params['updateIndicatorID']) {
+          this.updateIndicatorId = params['updateIndicatorID'];
+
+          Observable.interval(5000)
+            .takeWhile(() => !this.stopCondition)
+            .subscribe(i => {
+              this.triggerScrollTo()
+              this.stopCondition = true
+            })
         }
 
         if (this.agencyId && this.countryID) {
@@ -242,6 +255,43 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  public triggerScrollTo() {
+
+    if (this.hazard == "countryContext") {
+      let indicatorIndexCC = this.indicatorsCC.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
+      let indicatorID = "#indicators-to-hazards_CC"+"_"+indicatorIndexCC
+
+      jQuery("#collapseOne").collapse('show');
+
+      this.changeIndicatorState(true,"countryContext", indicatorIndexCC)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000);
+    } else if (this.hazard == "-1"){
+      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
+      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+
+      jQuery("#collapse"+this.activeHazards[hazardIndex].otherName).collapse('show');
+
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000)
+    }else {
+      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
+      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+
+      jQuery("#collapse"+this.hazard).collapse('show');
+
+      this.changeIndicatorState(true,this.activeHazards[hazardIndex].$key, indicatorIndex)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000);
+    }
   }
 
   private getCountryLocation() {
@@ -323,7 +373,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                 });
                 indicator.logs = this._sortLogsByDate(logs);
               });
-
 
             });
             hazard.indicators = indicators;
@@ -1258,6 +1307,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
+    console.log("IndicatorKey: "+ indicatorKey)
+    console.log("HazardKey: "+ hazardID)
+
     var key = hazardID + '_' + indicatorKey;
     if (state) {
       this.isIndicatorUpdate[key] = true;
@@ -1287,7 +1339,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
     const indicatorID = indicator.$key;
-
 
     if (!hazardID || !indicatorID) {
       console.log('hazardID or indicatorID cannot be empty');

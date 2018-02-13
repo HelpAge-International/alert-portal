@@ -584,9 +584,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       let updateObj: any = {};
       console.log(this.showDueDate);
       console.log(this.action.dueDate);
-      if (this.showDueDate) {
+      //if (this.showDueDate) {
         updateObj.dueDate = this.action.dueDate;
-      }
+      //}
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
       updateObj.budget = this.action.budget;

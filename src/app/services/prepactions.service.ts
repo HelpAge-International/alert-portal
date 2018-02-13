@@ -7,14 +7,18 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {ModelNetwork} from "../model/network.model";
+import {MinimumPreparednessComponent} from "../preparedness/minimum/minimum.component";
+import { ScrollToService, ScrollToConfigOptions } from '@nicky-lenaers/ngx-scroll-to';
+
+declare var jQuery: any;
 
 export class PrepActionService {
 
   private uid: string;
-
   private countryId: string;
   private agencyId: string;
   private systemAdminId: string;
+  private updateActionId: string;
 
   private isMPA: boolean = false;
 
@@ -34,11 +38,15 @@ export class PrepActionService {
   private totalCHS: number;
   private CHSCompletePercentage: number;
 
+
+  public infoForUpdate: { index: number; updateAction: PreparednessAction; id: string };
+
   constructor() {
     this.actions = [];
     this.actionsNetwork = [];
     this.actionsNetworkLocal = [];
   }
+
 
   /**
    * Initialisation method for the actions
@@ -140,13 +148,15 @@ export class PrepActionService {
   }
 
   public initActionsWithInfo(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
-                              countryId: string, agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
+                             countryId: string, agencyId: string, systemId: string, updateActionId?: string, updated?: (action: PreparednessAction) => void) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
     this.countryId = countryId;
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
+    this.updateActionId = updateActionId;
+
     this.getDefaultClockSettings(af, this.agencyId, this.countryId, () => {
       if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
         this.init(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM, updated);
@@ -157,7 +167,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfoLocalAgency(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, isMPA: boolean,
-                              agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
+                                        agencyId: string, systemId: string, updated?: (action: PreparednessAction) => void) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -261,7 +271,7 @@ export class PrepActionService {
   }
 
   public initActionsWithInfoAllLocalNetworksInCountry(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
-                                                 countryId: string, agencyId: string, systemId: string, localNetworks: ModelNetwork[]) {
+                                                      countryId: string, agencyId: string, systemId: string, localNetworks: ModelNetwork[]) {
     // this.uid = uid;
     // this.ngUnsubscribe = ngUnsubscribe;
     // this.isMPA = isMPA;
@@ -319,7 +329,7 @@ export class PrepActionService {
     af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-      console.log(snap.val())
+        console.log(snap.val())
         this.agencyId = snap.val().agencyId;
         this.systemAdminId = "";
         for (let x in snap.val().systemAdmin) {
@@ -360,14 +370,14 @@ export class PrepActionService {
       af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
-        if(snap.val() != null){
-          this.defaultClockValue = (+(snap.val().preparedness.value));
-          this.defaultClockType = (+(snap.val().preparedness.durationType));
-          if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
-            defaultClockSettingsAquired();
-            this.ranClockInitialiser = true;
+          if (snap.val() != null) {
+            this.defaultClockValue = (+(snap.val().preparedness.value));
+            this.defaultClockType = (+(snap.val().preparedness.durationType));
+            if (!this.ranClockInitialiser) {    // Wrap this in a guard to stop multiple calls being made!
+              defaultClockSettingsAquired();
+              this.ranClockInitialiser = true;
+            }
           }
-        }
 
         });
     } else {
@@ -593,18 +603,19 @@ export class PrepActionService {
       this.actions[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
     }
 
-
     // Optional notifier method
     if (updated != null) {
       updated(this.actions[i]);
     }
 
-
     // Subscriber method
     if (this.updater != null) {
       this.updater();
     }
+  }
 
+  public getActionData(i: number, preparednessAction: PreparednessAction, actionId: string, fun? : ()=> object) {
+    return this.infoForUpdate = {index: i, updateAction: this.actions[i], id: actionId};
   }
 
   private updateActionNetwork(af: AngularFire, id: string, action, whichUser: string, source: PrepSourceTypes, networkId, networkCountryId, updated: (action: PreparednessAction) => void) {
@@ -1027,6 +1038,8 @@ export class PrepActionService {
         }
       });
   }
+
+
 }
 
 export enum PrepSourceTypes {
@@ -1171,4 +1184,5 @@ export class PreparednessUser {
     p.lastName = "...";
     return p;
   }
+
 }

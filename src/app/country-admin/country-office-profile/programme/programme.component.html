@@ -70,13 +70,13 @@
     <h3 class="row-sm-12 Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.4WMAPPING" | translate}}</h3>
     <br>
     <div class="row">
-      <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong>
-      </div>
+      <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_UPDATED" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{"ADD_PARTNER.SECTOR" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHAT" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" | translate}}</strong></div>
       <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" | translate}}</strong></div>
-      <div class="col-sm-2"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHEN" | translate}}</strong></div>
+      <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.FROM" | translate}}</strong></div>
+      <div class="col-sm-1"><strong>{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO" | translate}}</strong></div>
     </div>
     <div class="Line-row margin-left"></div>
     <div *ngFor="let m of mapping; let mappingIndex = index">
@@ -97,7 +97,8 @@
         <div class="col-sm-2"><p>{{m.what ? m.what : ''}}</p></div> <!--What-->
         <div class="col-sm-2"><p *ngIf="locationObjs[mappingIndex]">{{ locationObjs[mappingIndex].country | translate }}{{ locationObjs[mappingIndex].areas }}</p></div> <!--Where-->
         <div class="col-sm-2"><p>{{m.toWho ? m.toWho : ''}}</p></div> <!--To Who-->
-        <div class="col-sm-2"><p>{{m.when | date:"MM/yyyy"}}</p></div> <!--When-->
+        <div class="col-sm-1"><p>{{m.when | date:"dd/MM/yyyy"}}</p></div> <!--From-->
+        <div class="col-sm-1"><p>{{m.toDate | date:"dd/MM/yyyy"}}</p></div> <!--To-->
 
         <div *ngIf="canEdit && isEdit" class="col-sm-1">
           <button *ngIf="!isLocalAgency" [routerLink]="['/country-admin/country-office-profile/mapping-programme-add-edit/', m.key]"
