@@ -1693,7 +1693,7 @@
     "TITLE_TEXT_EDIT_PAGE":"Edit preparedness action",
     "BACK_BUTTON":"Preparedness actions",
     "ACTION_SELECT_TEXT":"Is this a minimum or advanced preparedness action?",
-    "HAZARD_SELECT_TEXT":"Hazzard association",
+    "HAZARD_SELECT_TEXT":"Hazard association",
     "DUE_DATE":"Due date",
     "FREQUENCY":"Frequency",
     "BUDGET_NARRATIVE_ERROR":"An error occured submitting your budget narratives",
