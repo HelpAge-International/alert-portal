@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../utils/Constants";
@@ -16,6 +16,8 @@ import {current} from "codelyzer/util/syntaxKind";
   providers: [AgencyService]
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  @ViewChild('cookieLaw')
+  private cookieLawEl: any;
 
   private loaderInactive: boolean = true;
   private inactive: boolean = true;
@@ -480,5 +482,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
+  }
+
+  public seenCookiePolicy(seen: any) {
+   if (seen){
+     this.cookieLawEl.dismiss();
+   }
   }
 }
