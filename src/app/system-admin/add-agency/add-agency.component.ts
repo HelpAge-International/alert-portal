@@ -39,12 +39,11 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   agencyAdminAddressLine1: string;
   agencyAdminAddressLine2: string;
   agencyAdminAddressLine3: string;
-  agencyAdminCountry: number;
+  agencyAdminCountry: string;
   agencyAdminCity: string;
   agencyAdminPostCode: string;
   isEdit = false;
   Country = Constants.COUNTRIES;
-  countryList: number[] = Constants.COUNTRY_SELECTION;
   PersonTitle = Constants.PERSON_TITLE;
   personTitleList: number[] = Constants.PERSON_TITLE_SELECTION;
   private emailInDatabase: string;
@@ -136,7 +135,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
             this.agencyAdminAddressLine1 = user.addressLine1;
             this.agencyAdminAddressLine2 = user.addressLine2;
             this.agencyAdminAddressLine3 = user.addressLine3;
-            this.agencyAdminCountry = user.country;
+            this.agencyAdminCountry = this.COUNTRY[user.country];
             this.agencyAdminCity = user.city;
             this.agencyAdminPostCode = user.postCode;
           });
@@ -223,7 +222,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
         this.userPublic.addressLine3 = this.agencyAdminAddressLine3;
       }
       if (this.agencyAdminCountry) {
-        this.userPublic.country = this.agencyAdminCountry;
+        this.userPublic.country = this.COUNTRY.indexOf(this.agencyAdminCountry);
       }
       if (this.agencyAdminCity) {
         this.userPublic.city = this.agencyAdminCity;
@@ -261,6 +260,10 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   selectCountry() {
     console.log(this.country);
     console.log(this.COUNTRY.indexOf(this.country));
+  }
+
+  onSelectAgencyAdminCountry(){
+    console.log(this.agencyAdminCountry);
   }
 
   private registerNewAgency() {
@@ -344,7 +347,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     newAgencyAdmin.addressLine2 = this.agencyAdminAddressLine2 ? this.agencyAdminAddressLine2 : "";
     newAgencyAdmin.addressLine3 = this.agencyAdminAddressLine3 ? this.agencyAdminAddressLine3 : "";
     newAgencyAdmin.city = this.agencyAdminCity ? this.agencyAdminCity : "";
-    newAgencyAdmin.country = this.agencyAdminCountry ? this.agencyAdminCountry : -1;
+    newAgencyAdmin.country = this.COUNTRY.indexOf(this.agencyAdminCountry);
     newAgencyAdmin.postCode = this.agencyAdminPostCode ? this.agencyAdminPostCode : "";
     newAgencyAdmin.phone = "";
     agencyData["/userPublic/" + uid] = newAgencyAdmin;
