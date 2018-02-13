@@ -223,29 +223,32 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToNetworkActions(action) {
-    console.log("NETWORK called")
     if (action.level == ActionLevel.MPA) {
-      console.log(this.networkViewValues);
-      console.log(action);
-    //  let reverseMap = CommonUtils.reverseMap(this.networkMap);
       let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, action.networkId, action.countryId, true)
       this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
       this.isViewing ?
         this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
         :
         this.isLocalNetworkAdmin ?
-          this.router.navigate(['/network/local-network-preparedness-mpa', {"updateActionID": action.$key}])
+          this.router.navigate(['/network/local-network-preparedness-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
           :
-          this.router.navigate(['/network-country/network-country-mpa', {"updateActionID": action.$key}])
+          this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
     } else {
       this.isViewing ?
-        this.router.navigate(['/network-country/network-country-apa', {"updateActionID": action.$key}, this.networkViewValues])
+        this.router.navigate(['/network-country/network-country-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
         :
         this.isLocalNetworkAdmin ?
-          this.router.navigate(['/network/local-network-preparedness-apa', {"updateActionID": action.$key}])
+          this.router.navigate(['/network/local-network-preparedness-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
           :
-          this.router.navigate(['/network-country/network-country-apa', {"updateActionID": action.$key}])
+          this.router.navigate(['/network-country/network-country-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
     }
+  }
+
+  navigateToNetworkIndicator(indicator) {
+    indicator.hazardScenario["key"] == "countryContext" ?
+      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["key"] }])
+      :
+      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["hazardScenario"] }])
   }
 
   private initLocalNetworkAccess() {

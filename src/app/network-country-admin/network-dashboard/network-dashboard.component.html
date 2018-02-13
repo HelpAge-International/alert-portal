@@ -667,8 +667,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 (click)="navigateToNetworkActions(action)">
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkActions(action)">
                 {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
@@ -688,8 +687,8 @@
                 </p>
               </div>
               <div class="col-md-3">
-                <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                   [routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">
+                <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkIndicator(indicator)">
+                   <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
                   {{"GLOBAL.UPDATE" | translate}}
                 </a>
               </div>
@@ -731,8 +730,8 @@
                 </p>
               </div>
               <div class="col-md-3">
-                <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                   [routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">
+                <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkIndicator(indicator)">
+                   <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
                   {{"GLOBAL.UPDATE" | translate}}
                 </a>
               </div>
@@ -754,8 +753,8 @@
 
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                 [routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToNetworkActions(action)">
+                 <!--[routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">-->
                 {{"GLOBAL.UPDATE" | translate}}</a>
             </div>
           </div>
@@ -774,8 +773,8 @@
                 </p>
               </div>
               <div class="col-md-3">
-                <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                   [routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">
+                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToNetworkIndicator(indicator)">
+                   <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
                   {{"GLOBAL.UPDATE" | translate}}</a>
               </div>
             </div>
