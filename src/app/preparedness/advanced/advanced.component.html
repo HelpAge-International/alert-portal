@@ -251,7 +251,7 @@
                           | translate}}</a>
                       </div>
                       <div class="col-md-3 col-sm-4 btn-block"
-                           *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                           *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                         <a href="javascript:void(0)" (click)="copyAction(action)"
                            class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                       </div>
@@ -849,7 +849,7 @@
                                 class="btn btn-block link-color">Undo completion</a>
                             </div>
                             <div class="col-md-3 col-sm-4 btn-block"
-                                 *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                                 *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                               <a href="javascript:void(0)" (click)="copyAction(action)"
                                  class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                             </div>
@@ -1195,7 +1195,7 @@
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                             </div>
                             <div class="col-md-3 col-sm-4 btn-block"
-                                 *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                                 *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                               <a href="javascript:void(0)" (click)="copyAction(action)"
                                  class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                             </div>
@@ -1846,7 +1846,7 @@
 
                           </ng-container>
                           <div class="col-md-3 col-sm-4 btn-block"
-                               *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
                                class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                           </div>
@@ -2079,7 +2079,7 @@
 
                           </ng-container>
                           <div class="col-md-3 col-sm-4 btn-block"
-                               *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
                                class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                           </div>
@@ -2310,7 +2310,7 @@
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
                           <div class="col-md-3 col-sm-4 btn-block"
-                               *ngIf="isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
                                class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                           </div>

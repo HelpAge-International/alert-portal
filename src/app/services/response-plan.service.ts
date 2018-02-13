@@ -260,6 +260,10 @@ export class ResponsePlanService {
     return Observable.merge(directorCountry, directorRegion, directorGlobal);
   }
 
+  getLocalAgencyDirector(agencyId): Observable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/directorLocalAgency/" + agencyId);
+  }
+
   serviceDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

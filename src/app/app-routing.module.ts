@@ -258,7 +258,9 @@ import {LocalAgencyAccountSettingsComponent} from "./local-agency/local-agency-a
 import {LocalAgencyChangePasswordComponent} from "./local-agency/local-agency-account-settings/local-agency-change-password/local-agency-change-password.component";
 import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-account-details/local-agency-account-details.component';
 import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/local-agency-dashboard/local-agency-dashboard-seasonal-calendar/local-agency-dashboard-seasonal-calendar.component";
-
+import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
+import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
+import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -333,6 +335,8 @@ const routes: Routes = [
   {path: 'agency-admin/agency-account-details', component: AgencyAccountDetailsComponent},
   {path: 'agency-admin/agency-account-settings/agency-change-password', component: AgencyChangePasswordComponent},
   {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
+  {path: 'agency-admin/agency-overview', component: AgencyOverviewComponent},
+  {path: 'agency-admin/agency-overview/:countryId/:isViewing', component: AgencyOverviewComponent},
 
   /**
    * Country admin
@@ -559,6 +563,8 @@ const routes: Routes = [
   {path: 'network/local-network-plans', component: LocalNetworkPlansComponent},
   {path: 'network/local-network-preparedness-mpa', component: LocalNetworkPreparednessComponent},
   {path: 'network/local-network-preparedness-apa', component: LocalNetworkApaComponent},
+  {path: 'network/local-network-global-maps', component: LocalNetworkGlobalMapsComponent},
+  {path: 'network/local-network-global-maps-list', component: LocalNetworkGlobalMapsListComponent},
   {path: 'network/local-network-calendar', component: LocalNetworkCalendarComponent},
   {path: 'network/local-network-risk-monitoring', component: LocalNetworkRiskMonitoringComponent},
   {path: 'network/local-network-risk-monitoring/add-indicator/:hazardID/:indicatorID/:countryOfficeCode', component: AddIndicatorLocalNetworkComponent},

@@ -75,7 +75,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let ag of country.agencies">
-                  <td><img src="{{ag.image}}"/><p>{{ag.name}}</p></td>
+                  <td><p><img class="circle-image agency-logo-scale" src="{{ag.image}}"/>{{ag.name}}</p></td>
                   <td *ngIf="ag.overall() >= networkMapService.minGreen"><i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i></td>
                   <td *ngIf="ag.overall() >= networkMapService.minYellow && ag.overall() < networkMapService.minGreen"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></td>
                   <td *ngIf="ag.overall() < networkMapService.minYellow"><i class="fa fa-times-circle fa-2x text-danger" aria-hidden="true"></i></td>

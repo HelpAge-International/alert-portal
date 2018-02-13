@@ -135,6 +135,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   @Input() isLocalAgency: boolean;
   private stopCondition: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               protected af: AngularFire,

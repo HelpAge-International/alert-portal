@@ -31,6 +31,8 @@ export class ModelAlert extends BaseModel {
   public networkCountryId?: string
   public networkId?: string
 
+  public previousIsAmber?: boolean
+
   constructor() {
     super();
     this.affectedAreas = [];

@@ -7,8 +7,6 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs/Subject";
 import {ModelNetwork} from "../model/network.model";
-import {MinimumPreparednessComponent} from "../preparedness/minimum/minimum.component";
-import { ScrollToService, ScrollToConfigOptions } from '@nicky-lenaers/ngx-scroll-to';
 
 declare var jQuery: any;
 

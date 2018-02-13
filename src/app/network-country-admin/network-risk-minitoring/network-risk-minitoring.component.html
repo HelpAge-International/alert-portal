@@ -147,7 +147,7 @@
                       </a>
                     </ng-container>
                   </div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee) && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
                   <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['agency']">Monitoring Agency: {{indicatorC['agency'].name}}</div>
                 </div>
                 <div *ngIf="(locationFilter == -1 || (indicatorC.affectedLocation && indicatorC.affectedLocation['0'].level1 == locationFilter))
@@ -473,7 +473,7 @@
                     </a>
 
                   </div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
                   <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                 </div>
                 <div *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
@@ -799,7 +799,7 @@
                          [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT" | translate}}
                       </a>
                     </div>
-                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
                     <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                   </div>
                   <div

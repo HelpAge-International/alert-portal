@@ -46,7 +46,7 @@ export class ActionsService {
       .map(actions => {
         let filteredActions = [];
         actions.forEach(action => {
-          if (action.asignee === uid && !action.isComplete) {
+          if (action.asignee === uid && !action.isComplete && !action.isArchived) {
             action["countryId"] = countryId
             filteredActions.push(action);
           }
@@ -203,6 +203,11 @@ export class ActionsService {
             modelAlert.updatedBy = alert.updatedBy;
           }
 
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber;
+          }
+
+
           let affectedAreas: ModelAffectedArea[] = [];
           if (alert.affectedAreas) {
             let ids: string[] = Object.keys(alert.affectedAreas);
@@ -319,6 +324,10 @@ export class ActionsService {
           modelAlert.createdBy = alert.createdBy;
           if (alert.updatedBy) {
             modelAlert.updatedBy = alert.updatedBy;
+          }
+
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber;
           }
 
           let affectedAreas: ModelAffectedArea[] = [];
@@ -483,6 +492,11 @@ export class ActionsService {
         modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
         modelAlert.createdBy = alert.createdBy;
 
+        if (alert.previousIsAmber) {
+          modelAlert.previousIsAmber = alert.previousIsAmber;
+        }
+
+
         let affectedAreas: ModelAffectedArea[] = [];
         let ids: string[] = Object.keys(alert.affectedAreas);
         ids.forEach(id => {
@@ -587,6 +601,8 @@ export class ActionsService {
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
 
+    updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
+
     console.log(updateData);
     if (networkCountryId) {
 
@@ -663,6 +679,8 @@ export class ActionsService {
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
 
+    updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
+
 
     this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
@@ -719,6 +737,10 @@ export class ActionsService {
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.createdBy = alert.createdBy;
+
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
 
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
@@ -813,6 +835,10 @@ export class ActionsService {
           modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.createdBy = alert.createdBy;
+
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
 
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
@@ -909,6 +935,10 @@ export class ActionsService {
           modelAlert.networkCountryId = networkCountryId;
           modelAlert.networkId = networkId
 
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
+
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
           ids.forEach(id => {
@@ -1002,6 +1032,10 @@ export class ActionsService {
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.createdBy = alert.createdBy;
           modelAlert.networkId = networkId;
+
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
 
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
@@ -1113,24 +1147,24 @@ export class ActionsService {
 
   }
 
-  rejectRedAlert(countryId, alertId, uid) {
+  rejectRedAlert(countryId, alert, uid) {
     let update = {};
-    update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
-    update["/alert/" + countryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
+    update["/alert/" + countryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + countryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  rejectRedAlertLocalAgency(agencyId, alertId, uid) {
+  rejectRedAlertLocalAgency(agencyId, alert, uid) {
     let update = {};
-    update["/alert/" + agencyId + "/" + alertId + "/approval/localAgencyDirector/" + agencyId] = AlertStatus.Rejected;
-    update["/alert/" + agencyId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
+    update["/alert/" + agencyId + "/" + alert.id + "/approval/localAgencyDirector/" + agencyId] = AlertStatus.Rejected;
+    update["/alert/" + agencyId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  rejectRedAlertNetwork(countryId, alertId, networkCountryId) {
+  rejectRedAlertNetwork(countryId, alert, networkCountryId) {
     let update = {};
-    update["/alert/" + networkCountryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
-    update["/alert/" + networkCountryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
+    update["/alert/" + networkCountryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + networkCountryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 

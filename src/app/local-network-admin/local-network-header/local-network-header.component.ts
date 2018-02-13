@@ -171,7 +171,7 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
             this.isRed = true;
           }
           if ((alert.alertLevel == AlertLevels.Amber && (alert.approvalStatus == AlertStatus.Approved || alert.approvalStatus == AlertStatus.Rejected)) ||
-            alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse && alert.timeUpdated) {
+            alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.WaitingResponse && alert.previousIsAmber) {
             this.isAmber = true;
           }
         });

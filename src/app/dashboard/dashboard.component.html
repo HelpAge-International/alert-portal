@@ -225,7 +225,7 @@
                         (click)="approveRedAlert(alert.id)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
-              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">{{"OR_REJECT_THIS_REQUEST"
+              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert)">{{"OR_REJECT_THIS_REQUEST"
                 | translate}}</a></div>
             </div>
             <br>
@@ -660,8 +660,8 @@
     <div *ngIf="userType!=UserType.PartnerUser">
       <div
         *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 &&
-         actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default &&
-          approvalPlans.length == 0 && actionsOverdueNetwork.length == 0 && actionsThisWeekNetwork.length == 0 && actionsTodayNetwork.length == 0 &&
+         actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && (DashboardTypeUsed == DashboardType.default || (DashboardTypeUsed == DashboardType.default &&
+          approvalPlans.length == 0)) && actionsOverdueNetwork.length == 0 && actionsThisWeekNetwork.length == 0 && actionsTodayNetwork.length == 0 &&
           indicatorsThisWeekNetwork.length == 0 && indicatorsTodayNetwork.length == 0 && indicatorsOverdueNetwork.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>

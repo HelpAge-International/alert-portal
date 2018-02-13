@@ -34,7 +34,7 @@ declare var jQuery: any;
 @Component({
   selector: 'app-network-country-create-edit-actionn',
   templateUrl: './network-country-create-edit-actionn.component.html',
-  styleUrls: ['./network-country-create-edit-actionn.component.scss']
+  styleUrls: ['./network-country-create-edit-actionn.component.css']
 })
 export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestroy {
 

@@ -9,6 +9,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {ModelDepartment} from "../../model/department.model";
+import {SettingsService} from "../../services/settings.service";
 
 
 declare var jQuery: any;
@@ -42,7 +43,14 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
   //Local Agency
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  @Input() isAgencyAdmin: boolean;
+
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private settingService: SettingsService,
+              private userService: UserService) {
   }
 
   ngOnInit() {
@@ -61,7 +69,7 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
         }
       });
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
         this.UserType = userType;
@@ -102,6 +110,7 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -124,6 +133,13 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
           x.name = snapshot.val().name;
           this.departments.push(x);
         });
+
+        //add departments from country level as well (added for phase 2)
+        this.settingService.getCountryLocalDepartments(this.agencyId, this.countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(depts => {
+            this.departments = this.departments.concat(depts).filter((elem, index, self) => index === self.findIndex(item => item.id === elem.id))
+          })
       });
   }
 

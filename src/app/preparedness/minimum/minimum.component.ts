@@ -138,6 +138,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   @Input() isLocalAgency: boolean;
   private stopCondition: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               protected af: AngularFire,
@@ -263,7 +265,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           this.initStaff();
           this.initDepartments();
           this.initDocumentTypes();
-
 
           // Initialise the page control information
           PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
@@ -854,7 +855,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 
   }
-
   // Uploading a file to Firebase
   protected uploadFile(action: PreparednessAction, file) {
     let document = {

@@ -700,12 +700,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  rejectRedRequest(alertId) {
-    this.actionService.rejectRedAlert(this.countryId, alertId, this.uid);
+  rejectRedRequest(alert) {
+    console.log(alert)
+    this.actionService.rejectRedAlert(this.countryId, alert, this.uid);
   }
 
   rejectRedRequestNetwork(alert) {
-    this.actionService.rejectRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId ? alert.networkcountryId : alert.networkId);
+    this.actionService.rejectRedAlertNetwork(this.countryId, alert, alert.networkCountryId ? alert.networkcountryId : alert.networkId);
   }
 
   planReview(plan, isLocal) {

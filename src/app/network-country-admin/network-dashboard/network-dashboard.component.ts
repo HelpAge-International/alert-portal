@@ -945,9 +945,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  rejectRedRequest(alertId) {
+  rejectRedRequest(alert) {
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    this.actionService.rejectRedAlert(id, alertId, this.uid);
+    this.actionService.rejectRedAlert(id, alert, this.uid);
   }
 
   planReview(planId) {

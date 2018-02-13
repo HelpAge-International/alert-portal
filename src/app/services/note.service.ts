@@ -12,7 +12,6 @@ export class NoteService {
     public getNotes(node: string): Observable<NoteModel[]> {
       const getNotesSubscription = this.af.database.list(Constants.APP_STATUS + node)
       .map(items => {
-        console.log(items)
         const notes: NoteModel[] = [];
         items.forEach(item => {
           let note = new NoteModel();

@@ -54,6 +54,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
+  @Input() isAgencyAdmin: boolean;
+
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _stockService: StockService,
               private _noteService: NoteService,

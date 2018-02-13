@@ -53,7 +53,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
               private _commonService: CommonService,
               private route: ActivatedRoute,
               private alertService: ActionsService,
-              private networkService:NetworkService,
+              private networkService: NetworkService,
               private userService: UserService) {
     this.initAlertData();
   }
@@ -202,18 +202,25 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
         .subscribe(apasToReset => {
           apasToReset.forEach(apa => {
             let obj = {}
-            obj["action/"+this.countryId+"/"+apa.$key+"/isComplete"] = null
-            obj["action/"+this.countryId+"/"+apa.$key+"/isCompleteAt"] = null
+            obj["action/" + this.countryId + "/" + apa.$key + "/isComplete"] = null
+            obj["action/" + this.countryId + "/" + apa.$key + "/isCompleteAt"] = null
             obj["action/" + this.countryId + "/" + apa.$key + "/actualCost"] = null
-            obj["action/"+this.countryId+"/"+apa.$key+"/updatedAt"] = moment.utc().valueOf()
+            obj["action/" + this.countryId + "/" + apa.$key + "/updatedAt"] = moment.utc().valueOf()
             this.networkService.updateNetworkField(obj)
           })
         })
     }
 
-    if(this.isLocalAgency){
+    //new property "previousIsAmber" will be pushed if updated from amber, otherwise, this property will be deleted
+    if (this.preAlertLevel == AlertLevels.Amber && this.loadedAlert.alertLevel == AlertLevels.Red) {
+      this.loadedAlert.previousIsAmber = true
+    } else {
+      this.loadedAlert.previousIsAmber = null
+    }
+
+    if (this.isLocalAgency) {
       this.alertService.updateAlertLocalAgency(this.loadedAlert, this.preAlertLevel, this.agencyId);
-    }else{
+    } else {
       this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.countryId, this.agencyId);
     }
 
