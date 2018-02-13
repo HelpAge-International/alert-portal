@@ -1,3 +1,4 @@
+
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Router, Params, ActivatedRoute} from "@angular/router";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
@@ -539,14 +540,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     let diff = [];
     this.sectorsRelatedTo.forEach(item => {
 
-      console.log("*****************");
-      console.log(this.sectorBudget);
-      console.log("*****************");
-      console.log(item);
       if (!this.sectorBudget.get(item)) {
         diff.push(item);
-        console.log("*****************");
-        console.log(item);
       }
     });
 
@@ -667,10 +662,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     this.handleContinueSave();
 
-
-
-    console.log(this.loadResponsePlan, 'load response plan');
-    console.log(this.newResponsePlan, 'new response plan');
 
       //this.autoSaveSection1();
 
@@ -827,8 +818,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     this.handleContinueSave();
 
-    console.log(this.newResponsePlan, 'new response plan');
-    console.log(this.loadResponsePlan, 'load response plan');
 
     this.onSave();
   }
@@ -2170,77 +2159,115 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   autoSaveToFirebase(newResponsePlan: ResponsePlan) {
 
 
-    console.log(this.planName, 'plan name ');
-    let numOfSectionsCompleted: number = 0;
-    this.sectionsCompleted.forEach((v, k) => {
-      if (v) {
-        numOfSectionsCompleted++;
-      }
-    });
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let id = this.isLocalAgency ? this.agencyId : this.countryId
+    /* Set tracking info here */
 
-    if (numOfSectionsCompleted > 0) {
-
-      if(this.isLocalAgency){
-        if (this.forEditing) {
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + this.idOfResponsePlanToEdit;
-          newResponsePlan.isEditing = false;
-          newResponsePlan.editingUserId = null;
-          this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
-            console.log("Response plan successfully updated");
-            //if edit, delete approval data and any validation token
-            let resetData = {};
-            resetData["/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
-            resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
-            this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
-              //this.router.navigateByUrl('local-agency/response-plans');
-            }, error => {
-              console.log(error.message);
-            });
-          }).catch(error => {
-            console.log("Response plan creation unsuccessful with error --> " + error.message);
-          });
-
-        } else {
-          this.pushToFirebase();
-        }
-      }else{
-        if (this.forEditing) {
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
-
-             this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
-            console.log("Response plan successfully updated");
-            //if edit, delete approval data and any validation token
-            let resetData = {};
-            resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
-            resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
-            this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
-              //this.router.navigateByUrl( 'response-plans');
-            }, error => {
-              console.log(error.message);
-            });
-          }).catch(error => {
-            console.log("Response plan creation unsuccessful with error --> " + error.message);
-          });
-
-        } else {
-
-          this.pushToFirebase();
-        }
-      }
-    } else {
-      console.log(numOfSectionsCompleted);
-      this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
+    if(this.newResponsePlan.status == 0 && !this.idOfResponsePlanToEdit){
+      this.newResponsePlan['timeTracking'] = {}
+      this.newResponsePlan['timeTracking']['timeSpentInAmber'] = [newTimeObject]
     }
-    //newResponsePlan.isEditing = false;
+
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(plan => {
+
+          console.log(plan)
+        if((this.newResponsePlan.status == ApprovalStatus.InProgress || this.newResponsePlan.status == ApprovalStatus.WaitingApproval) && this.idOfResponsePlanToEdit){
+          // Change from Green to Amber
+          if(plan['timeTracking']['timeSpentInGreen'] && plan['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1) != -1){
+            let index = plan['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+            plan['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+            plan['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            this.newResponsePlan['timeTracking'] = plan['timeTracking']
+          }
+          // Change from Red to Amber
+          if(plan['timeTracking']['timeSpentInRed'] && plan['timeTracking']['timeSpentInRed'].findIndex(x => x.finish == -1) != -1){
+            let index = plan['timeTracking']['timeSpentInRed'].findIndex(x => x.finish == -1);
+            plan['timeTracking']['timeSpentInRed'][index].finish = currentTime
+            plan['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            this.newResponsePlan['timeTracking'] = plan['timeTracking']
+          }
+        }
+    })
+  
+  
+      /* End tracking info */
+  
+  
+      console.log(this.planName, 'plan name ');
+      let numOfSectionsCompleted: number = 0;
+      this.sectionsCompleted.forEach((v, k) => {
+        if (v) {
+          numOfSectionsCompleted++;
+        } 
+      });
+  
+      if (numOfSectionsCompleted > 0) {
+  
+        if(this.isLocalAgency){
+          if (this.forEditing) { 
+            let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + this.idOfResponsePlanToEdit;
+            newResponsePlan.isEditing = false;
+            newResponsePlan.editingUserId = null;
+            this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+              console.log("Response plan successfully updated");
+              //if edit, delete approval data and any validation token
+              let resetData = {};
+              resetData["/responsePlan/" + this.agencyId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+              resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
+              this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
+                //this.router.navigateByUrl('local-agency/response-plans');
+              }, error => {
+                console.log(error.message);
+              });
+            }).catch(error => {
+              console.log("Response plan creation unsuccessful with error --> " + error.message);
+            });
+  
+          } else {
+            this.pushToFirebase();
+          }
+        }else{
+          if (this.forEditing) {
+            let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
+  
+               this.af.database.object(responsePlansPath).update(newResponsePlan).then(() => {
+              console.log("Response plan successfully updated");
+              //if edit, delete approval data and any validation token
+              let resetData = {};
+              resetData["/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/approval"] = null;
+              resetData["/responsePlanValidation/" + this.idOfResponsePlanToEdit] = null;
+              this.af.database.object(Constants.APP_STATUS).update(resetData).then(() => {
+                //this.router.navigateByUrl( 'response-plans');
+              }, error => {
+                console.log(error.message);
+              });
+            }).catch(error => {
+              console.log("Response plan creation unsuccessful with error --> " + error.message);
+            });
+  
+          } else {
+  
+            this.pushToFirebase();
+          }
+        }
+      } else {
+        console.log(numOfSectionsCompleted);
+        this.alertMessage = new AlertMessageModel("RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.NO_COMPLETED_SECTIONS");
+      }
+      //newResponsePlan.isEditing = false;
   }
 
   pushToFirebase(){
 
     console.log(this.newResponsePlan);
+    let id = this.isLocalAgency ? this.agencyId : this.countryId;
 
     if (this.idOfResponsePlanToEdit)
     {
-      let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + "/"+ this.idOfResponsePlanToEdit;
+      let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id+ "/"+ this.idOfResponsePlanToEdit;
       this.af.database.object(responsePlansPath)
         .update(this.newResponsePlan)
         .then(()=> {
@@ -2251,7 +2278,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     } else {
 
-      let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId;
+      let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id;
       this.af.database.list(responsePlansPath)
         .push(this.newResponsePlan)
         .then(plan => {
@@ -2268,21 +2295,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
 
   private checkSectorInfo() {
-    console.log(this.activityMap);
-    console.log(this.activityInfoMap);
     let checkValue = true;
 
     this.activityMap.forEach((value, key) => {
 
-      console.log(value);
       value.forEach(obj => {
-        console.log('start of foreach');
 
         if ( !obj.indicator || !obj.name || !obj.output ) {
-          console.log('check null values');
-          console.log(obj.indicator);
-          console.log(obj.name);
-          console.log(obj.output);
           checkValue = false;
         }
 

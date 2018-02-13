@@ -129,6 +129,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
 
 
 
+
       this.loadData();
 
 
@@ -350,9 +351,9 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       //   this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkId, this.uid, true);
       // }
 
-    } else if (this.userType == UserType.CountryDirector) {
+    } else if (this.userType == UserType.LocalAgencyDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.agencyId, this.uid, false);
-      this.responsePlansForApprovalNetwork = Observable.of([]);
+      this.responsePlansForApprovalNetwork = Observable.of([]); 
       this.responsePlansForApprovalNetworkLocal = Observable.of([]);
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {

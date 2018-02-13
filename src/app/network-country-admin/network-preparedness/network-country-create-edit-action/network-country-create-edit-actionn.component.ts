@@ -28,6 +28,7 @@ import {Location} from "@angular/common";
 import {LocalStorageService} from "angular-2-local-storage";
 import {HazardImages} from "../../../utils/HazardImages";
 import {AgencyService} from "../../../services/agency-service.service";
+import { identifierModuleUrl } from '@angular/compiler';
 
 declare var jQuery: any;
 
@@ -579,6 +580,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
 
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     // Save/update the action
     if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
@@ -663,6 +668,30 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
                       if (this.action.id != null) {
                         console.log('action is is not null')
+
+                        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(action => {
+                            console.log(action['timeTracking'])
+                            // Change from unassigned to in progress
+                            if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                              action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                              action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                              updateObj['timeTracking'] = action['timeTracking']
+                            }
+          
+                            // Change from complete to in progress
+                            if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                              console.log('switch from complete to in progress')
+                              action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                                if(timeObject.finish == -1){
+                                  action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                                  action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                                  updateObj['timeTracking'] = action['timeTracking']
+                                  return;
+                                }
+                              })
+                            }
                         // Updating
                         console.log(updateObj)
                         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
@@ -684,29 +713,38 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                           }else{
                             this._location.back()
                           }
+                        })
 
                         });
                       } else {
                         console.log('action id is null')
-                        // Saving
-                        updateObj.createdAt = new Date().getTime();
-                        updateObj.networkId = this.networkId;
-                        console.log(updateObj);
-                        this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
 
-                          // Send notification to the assignee
-                          let notification = new MessageModel();
-                          notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-                            : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-                          notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-                            : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
-
-                          notification.time = new Date().getTime();
-                          this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
-                            this._location.back();
+                        updateObj['timeTracking'] = {}
+                        if(updateObj.asignee){
+                          updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                        }else{
+                          updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                        }
+                          // Saving
+                          updateObj.createdAt = new Date().getTime();
+                          updateObj.networkId = this.networkId;
+                          console.log(updateObj);
+                          this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
+  
+                            // Send notification to the assignee
+                            let notification = new MessageModel();
+                            notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+                            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+  
+                            notification.time = new Date().getTime();
+                            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+                              this._location.back();
+                            });
                           });
-                        });
                       }
+                    
                     })
                 })
             })
@@ -714,12 +752,43 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       }else{
 
         if (this.action.id != null) {
-          // Updating
-          console.log(updateObj);
-          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-            this._location.back();
-          });
+          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(action => {
+              console.log(action['timeTracking'])
+              // Change from unassigned to in progress
+              if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                updateObj['timeTracking'] = action['timeTracking']
+              }
+          
+              // Change from complete to in progress
+              if(action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                console.log('switch from complete to in progress')
+                action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                  if(timeObject.finish == -1){
+                    action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                    action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                    updateObj['timeTracking'] = action['timeTracking']
+                    return;
+                  }
+                })
+              }
+            // Updating
+            console.log(updateObj);
+            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+              this._location.back();
+            });
+        })
         } else {
+
+          updateObj['timeTracking'] = {}
+          if(updateObj.asignee){
+            updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+          }else{
+            updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+          }
           // Saving
           updateObj.createdAt = new Date().getTime();
           updateObj.networkId = this.networkId;

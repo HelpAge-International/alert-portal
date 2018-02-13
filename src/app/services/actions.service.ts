@@ -1144,6 +1144,7 @@ export class ActionsService {
       }
     }))
       .map(plans => {
+        console.log(plans)
         plans.forEach(plan => {
           let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
@@ -1155,6 +1156,7 @@ export class ActionsService {
         return plans;
       });
   }
+
 
   getResponsePlanForCountryDirectorToApprovalNetwork(countryId, networkCountryId) {
     return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + networkCountryId, ({

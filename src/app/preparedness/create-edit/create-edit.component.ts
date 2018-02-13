@@ -647,9 +647,26 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(action => {
                   console.log(action['timeTracking'])
+                  // Change from unassigned to in progress
                   if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
-
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
                   }
+
+                  // Change from complete to in progress
+                  if(action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                    console.log('switch from complete to in progress')
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if(timeObject.finish == -1){
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+
 
                   // this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + "/" + this.action.id + )
                   this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
@@ -676,7 +693,28 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
               this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(action => {
-                  console.log(action['timeTracking'])
+
+                  // Change from unassigned to in progress
+                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
+                  }
+
+                  // Change from complete to in progress
+                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                    console.log('switch from complete to in progress')
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if(timeObject.finish == -1){
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+
+
                   this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
 
                     if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
