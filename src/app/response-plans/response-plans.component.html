@@ -553,7 +553,7 @@
       <div class="modal-footer">
         <button type="button" data-dismiss="modal" class="btn btn-outline-secondary">{{"GLOBAL.CANCEL"| translate}}
         </button>
-        <button type="button" data-dismiss="modal" class="btn btn-primary" (click)="submitPlanToApproval()">{{"SAVE"|
+        <button type="button" data-dismiss="modal" class="btn btn-primary" (click)="submitPlanToApproval()" [disabled]="!countryDirectorExist">{{"SAVE"|
           translate}}
         </button>
       </div>
