@@ -217,7 +217,8 @@ export class MapService {
   private asyncWaitCount: number = 2;
 
   private beginDownloadAllActions() {
-    this.downloadAllCHSActions();
+    this.downloadAllCountries()
+    // this.downloadAllCHSActions();
     this.downloadAllMandatedActions();
   }
 

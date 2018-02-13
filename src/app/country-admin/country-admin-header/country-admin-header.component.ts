@@ -333,7 +333,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
     //build emit value
-    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, this.networkCountryMap.get(this.selectedNetwork.id), true)
+    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, "", this.userType, this.uid, this.selectedNetwork.id, this.networkCountryMap.get(this.selectedNetwork.id), true)
     // this.networkRequest.emit(model)
     this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, this.networkCountryMap.get(network.id))

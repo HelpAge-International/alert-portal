@@ -96,6 +96,9 @@ export class SettingsService {
           privacy.riskMonitoring = snap.val()[3].privacy;
           privacy.officeProfile = snap.val()[4].privacy;
           privacy.responsePlan = snap.val()[5].privacy;
+          if (snap.val()[6]) {
+            privacy.conflictIndicators = snap.val()[6].privacy
+          }
           return privacy;
         }
       });

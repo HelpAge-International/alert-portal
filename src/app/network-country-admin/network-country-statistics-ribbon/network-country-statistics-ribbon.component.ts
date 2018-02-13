@@ -1,6 +1,12 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
-  ActionLevel, AlertLevels, AlertMessageType, ApprovalStatus, Countries, HazardScenario, ModuleNameNetwork,
+  ActionLevel,
+  AlertLevels,
+  AlertMessageType,
+  ApprovalStatus,
+  Countries,
+  HazardScenario,
+  ModuleNameNetwork,
   Privacy
 } from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -9,7 +15,6 @@ import {Subject} from "rxjs/Subject";
 import {NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
-import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {NetworkService} from "../../services/network.service";
 import {LocalStorageService} from "angular-2-local-storage";

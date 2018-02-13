@@ -43,6 +43,7 @@ import * as firebase from "firebase";
 import {ModelAgency} from "../../../model/agency.model";
 import {ModelNetwork} from "../../../model/network.model";
 import {MandatedListModel} from "../../../agency-admin/agency-mpa/agency-mpa.component";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -89,6 +90,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private systemAdminId: string;
   public myFirstName: string;
   public myLastName: string;
+  private updateActionId: string;
 
   // Filters
   private filterStatus: number = -1;
@@ -110,6 +112,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private allUnassigned: boolean = true;
   private allArchived: boolean = false;
+  private stopCondition: boolean;
   // --- Declared because we're missing out "inactive" in this page
   private ActionStatus = ActionStatusMin;
   private ActionType = ActionType;
@@ -200,6 +203,17 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       }
       if (params['isCHS']) {
         this.filterType = 0;
+      }
+      if (params['updateActionID']) {
+        this.updateActionId = params['updateActionID'];
+
+        console.log("UPD ActionID: "+this.updateActionId)
+        Observable.interval(5000)
+          .takeWhile(() => !this.stopCondition)
+          .subscribe(i => {
+            this.triggerScrollTo()
+            this.stopCondition = true
+          })
       }
       if (params['isViewingFromExternal']) {
         this.isViewingFromExternal = params['isViewingFromExternal'];
@@ -378,6 +392,14 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     // Currency
     this.calculateCurrency();
+  }
+
+  public triggerScrollTo() {
+    jQuery("#popover_content_" + this.updateActionId).collapse('show');
+
+    jQuery('html, body').animate({
+      scrollTop: jQuery("#popover_content_" + this.updateActionId).offset().top - 200
+    }, 2000);
   }
 
   ngOnDestroy() {

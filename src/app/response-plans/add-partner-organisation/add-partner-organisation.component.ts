@@ -76,6 +76,10 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.countryId = countryId;
 
+      this.partnerOrganisation.userId = this.uid;
+      this.partnerOrganisation.agencyId = this.agencyId;
+      this.partnerOrganisation.countryId = this.countryId;
+
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe)
@@ -116,6 +120,10 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.agencyId = agencyId;
       this.countryId = countryId;
+
+      this.partnerOrganisation.userId = this.uid;
+      this.partnerOrganisation.agencyId = this.agencyId;
+      this.partnerOrganisation.countryId = this.countryId;
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)

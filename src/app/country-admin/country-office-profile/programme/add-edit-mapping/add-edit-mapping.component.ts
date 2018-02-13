@@ -12,13 +12,14 @@ import * as moment from "moment";
 import {CommonService} from "../../../../services/common.service";
 import {OperationAreaModel} from "../../../../model/operation-area.model";
 import {Location} from "@angular/common";
-import { CountryAdminHeaderComponent } from "../../../country-admin-header/country-admin-header.component";
+import {CountryAdminHeaderComponent} from "../../../country-admin-header/country-admin-header.component";
 import {NetworkService} from "../../../../services/network.service";
 import {Indicator} from "../../../../model/indicator";
 import {TranslateService} from "@ngx-translate/core";
-import {ModelJsonLocation
+import {
+  ModelJsonLocation
 } from "../../../../model/json-location.model";
-
+import {PartnerOrganisationProjectModel} from "../../../../model/partner-organisation.model";
 
 declare var jQuery: any;
 
@@ -86,11 +87,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private isPreset: boolean = true;
   private isPresetValue: any;
 
-
-  private when: any[] = [];
+  private when: any;
+  private toDate: any;
 
   @Input() isLocalAgency: boolean;
-
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -125,7 +125,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -138,7 +138,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       });
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -181,13 +181,12 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   checkLevel2() {
 
-    if (this.levelTwoDisplay.length == 1){
+    if (this.levelTwoDisplay.length == 1) {
       console.log('do nothing');
     } else {
       jQuery('#level2Show').hide();
     }
   }
-
 
   _getProgramme(programmeID: string) {
     this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + programmeID)
@@ -228,7 +227,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   saveMapping() {
-    this.setDate();
+    //this.setDate();
     this.alertMessage = this.programme.validate();
     var dataToSave = this.programme;
     dataToSave.updatedAt = new Date().getTime();
@@ -237,7 +236,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       let dataToSave = this.programme;
       let postData = {
         where: this.selectedCountry,
-        level1: this.selectedValue? this.levelOneDisplay[this.selectedValue].id : null,
+        level1: this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null,
         level2: this.selectedValueL2 ? this.selectedValueL2 : null,
         agencyId: this.agencyID
       };
@@ -250,7 +249,13 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
-              this.when = [];
+              this.when = 0;
+              this.toDate = 0;
+                //this.when = this.programme.when;
+              //this.toDate = this.programme.toDate;
+
+              console.log("From date: "+this.when +" To: "+this.toDate);
+
               this.router.navigate(['/country-admin/country-office-profile/programme/']);
             }).catch((error: any) => {
             console.log(error, 'You do not have access!')
@@ -274,7 +279,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   saveMappingLocalAgency() {
-    this.setDate();
+   // this.setDate();
     this.alertMessage = this.programme.validate();
     if (!this.alertMessage) {
       var dataToSave = this.programme;
@@ -286,7 +291,13 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
-              this.when = [];
+              //this.when = [];
+
+              this.when = this.programme.when;
+              this.toDate = this.programme.toDate;
+
+              console.log("From date Agency: "+this.when +" To: "+this.toDate);
+
               this.router.navigate(['/local-agency/profile/programme/']);
             }).catch((error: any) => {
             console.log(error, 'You do not have access!')
@@ -309,23 +320,14 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMonth(event: any) {
-    this.when['month'] = parseInt(event.target.value);
+  setWhenDate(programme: ProgrammeMappingModel) {
+    let whenDate =  moment(this.when).valueOf();
+    programme.when = whenDate;
   }
 
-  setYear(event: any) {
-    this.when['year'] = parseInt(event.target.value);
-  }
-
-  setDate() {
-    if (this.when['month'] && this.when['year']) {
-      let year = this.when['year'];
-      let month = Number(this.when['month'] - 1);
-      let timeStamp = moment({'year': year, 'month': month, 'day': 15}).valueOf();
-      // var timeStamp = new Date(this.when['year'], this.when['month'], 15).getTime();
-      this.programme.when = 0;
-      this.programme.when = timeStamp;
-    }
+  setToDate(programme: ProgrammeMappingModel) {
+    let toDate =  moment(this.toDate).valueOf();
+    programme.toDate = toDate;
   }
 
   deleteMapping() {
@@ -370,7 +372,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   // }
 
 
-  resetValue(){
+  resetValue() {
 
     console.log('reset selection');
     // Reset Values to remove level 2 drop down
@@ -380,7 +382,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   // This function below is to determine the country selected
   // TODO: Return the array of level1 areas in the country selected.
-  setCountryLevel(){
+  setCountryLevel() {
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
@@ -393,15 +395,12 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   }
 
-  setLevel1Value(){
+  setLevel1Value() {
 
-      console.log(this.selectedValue, 'preset value');
-      this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
+    console.log(this.selectedValue, 'preset value');
+    this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
 
   }
-
-
-
 
   checkTypeof(param: any) {
     if (typeof (param) == 'undefined') {
@@ -414,9 +413,11 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   removeAnotherLocation(key: number,) {
     this.indicatorData.affectedLocation.splice(key, 1);
   }
+
 // #end
   _convertTimestampToDate(timestamp: number) {
     this.when = [];
+
     let date = moment(timestamp);
     this.when['month'] = date.month() + 1;
     this.when['year'] = date.year();

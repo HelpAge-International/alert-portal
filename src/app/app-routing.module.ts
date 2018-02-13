@@ -444,6 +444,7 @@ const routes: Routes = [
   {path: 'risk-monitoring/add-indicator/:hazardID/:indicatorID', component: AddIndicatorRiskMonitoringComponent},
   {path: 'risk-monitoring/add-indicator/:hazardID', component: AddIndicatorRiskMonitoringComponent},
   {path: 'risk-monitoring/add-hazard', component: AddHazardRiskMonitoringComponent},
+  {path: 'risk-monitoring/add-hazard/:hazardId', component: AddHazardRiskMonitoringComponent},
 
   /**
    * Preparedness
@@ -592,6 +593,8 @@ const routes: Routes = [
   {path: 'network-country/network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/add-hazard', component: AddHazardNetworkCountryComponent},
   {path: 'network-country/network-risk-monitoring/create-alert', component: NetworkCreateAlertComponent},
+  {path: 'network-country/network-risk-monitoring/add-hazard/:hazardId', component: AddHazardNetworkCountryComponent},
+
 
   {path: 'network-country/network-plans', component: NetworkPlansComponent},
   {path: 'network-country/network-plans/view-network-plan', component: ViewNetworkPlanComponent},
@@ -628,6 +631,7 @@ const routes: Routes = [
   {path: 'local-agency/dashboard-update-alert-level/:id/:agencyId', component: DashboardUpdateAlertLevelComponent},
   {path: 'local-agency/risk-monitoring', component: LocalAgencyRiskMonitoringComponent},
   {path: 'local-agency/risk-monitoring/add-hazard', component: LocalAgencyAddHazardComponent},
+  {path: 'local-agency/risk-monitoring/add-hazard/:hazardID', component: LocalAgencyAddHazardComponent},
   {path: 'local-agency/risk-monitoring/add-indicator/:hazardID/:indicatorID', component: LocalAgencyAddIndicatorComponent},
   {path: 'local-agency/risk-monitoring/add-indicator/:hazardID', component: LocalAgencyAddIndicatorComponent},
   {path: 'local-agency/risk-monitoring/create-alert', component: LocalAgencyCreateAlertComponent},

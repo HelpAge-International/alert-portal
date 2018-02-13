@@ -43,6 +43,8 @@ import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
+import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -67,19 +69,23 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private isSameAgency: boolean = false;
   public myFirstName: string;
   public myLastName: string;
+  private updateActionId: string;
 
   // Filters
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
+  private filterHazard: number = -1;
   private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
+  public hazardIndex: number = 0;
 
   // Data for the actions
   private ACTION_STATUS = Constants.ACTION_STATUS;
   private DEPARTMENTS: ModelDepartment[] = [];
   private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
+  private HAZARD_LIST = Constants.HAZARD_SCENARIOS;
   private ASSIGNED_TOO: PreparednessUser[] = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
   private currentlyAssignedToo: PreparednessUser;
@@ -127,6 +133,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   //Local Agency
   @Input() isLocalAgency: boolean;
+  private stopCondition: boolean;
 
   @Input() isAgencyAdmin: boolean;
 
@@ -159,9 +166,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
+    console.log("Hazard: ")
   }
 
   initLocalAgency(){
@@ -203,6 +209,16 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
+        }
+        if (params['updateActionID']) {
+          this.updateActionId = params['updateActionID'];
+
+          Observable.interval(5000)
+            .takeWhile(() => !this.stopCondition)
+            .subscribe(i => {
+              this.triggerScrollTo()
+              this.stopCondition = true
+            })
         }
 
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
@@ -293,6 +309,18 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           }
         });
       });
+  }
+
+  public triggerScrollTo() {
+    jQuery("#popover_content_" + this.updateActionId).collapse('show');
+
+    jQuery('html, body').animate({
+      scrollTop: jQuery("#popover_content_" + this.updateActionId).offset().top - 200
+    }, 2000);
+  }
+
+  public isChosenHazard(hazard:number, action:any){
+    return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
   }
 
   ngOnDestroy() {
@@ -1045,6 +1073,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
+
   protected closeExportModal() {
     jQuery("#export_documents").modal("hide");
   }
@@ -1137,7 +1166,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private switchToNetwork(action: PreparednessAction) {
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, action.networkCountryId)
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
-    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, this.userType, this.uid, action.networkId, action.networkCountryId, true)
+    let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, "", this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
   }
 

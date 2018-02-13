@@ -81,6 +81,7 @@
   "ACTION_STATUS":"Action Status",
   "ALL_DEPARTMENTS":"All departments",
   "ALL_TYPES":"All types",
+  "ALL_HAZARDS":"All Hazards",
   "UNASSIGNED":"Unassigned",
   "ASSIGNED_TO_ANYONE":"Assigned to Anyone",
   "AGENCY_AND_NETWORKS":"Agency & Networks",
@@ -296,6 +297,7 @@
     "WELCOME":"Welcome",
     "HOME":"Home",
     "NAME":"Name",
+    "EDIT":"Edit",
     "TYPE":"Type: ",
     "DELETE_ALL":"Delete All",
     "CANCEL":"Cancel",
@@ -1388,7 +1390,8 @@
         "NO_SECTOR":"Sector cannot be empty!",
         "NO_WHAT":"Field What cannot be empty!",
         "NO_TO_WHO":"Field To Who cannot be empty",
-        "NO_WHEN":"Field When cannot be empty!",
+        "NO_WHEN":"Field From cannot be empty!",
+        "NO_TO":"Field To cannot be empty!",
         "NO_WHERE":"Field Where cannot be empty!",
         "SUCCESS_SAVE_MAPPING":"You sucessfully added new Programme Mapping",
         "SUCCESS_EDIT_MAPPING":"You successfully updated Programme Mapping",
@@ -1397,6 +1400,8 @@
           "WHERE":"Where",
           "TO_WHO":"To Whom",
           "WHEN":"When",
+          "FROM":"From",
+          "TO":"To",
           "SAVE_CHANGES":"Save Changes",
           "MODAL_TITLE":"Delete this Programme Mapping?",
           "MODAL_TEXT_PART_ONE":"Are you sure you want to delete this Programme Mapping?"
@@ -1828,6 +1833,7 @@
       "HAZARD_DETECTED":"This hazard exists already",
       "SUCCESS_MESSAGE_ADD_INDICATOR":"Indicator successfully saved!",
       "ADD_NEW_HAZARD":"Add new hazard",
+      "EDIT_HAZARD":"Edit hazard",
       "INFORMATION_PROVIDED":"Information provided by ",
       "INFORM_INDEX":"Inform Index",
       "NOTE_HAZARD":"Note: this list will only display the hazards that don't appear in your risk monitoring list (you cannot add the same hazard twice)",
@@ -1836,6 +1842,7 @@
       "SELECT_SEASON_FROM_CALENDAR":"SELECT SEASON(S) FROM THE CALENDAR",
       "EDIT_SEASONS":"Edit Seasons",
       "ADD_HAZARD":"add hazard",
+      "SAVE_HAZARD":"save hazard",
       "SELECT_SEASONS":"Select seasons",
       "ADD_TO_SEASONAL_CALENDAR": "+ Add to the seasonal calendar",
       "ADD_SEASONAL_TO_CALENDAR_NO_START_DATE":"Please complete the start date",
@@ -2167,7 +2174,7 @@
         "LEVEL1":"Target beneficiaries"
       },
       "TT4":{
-        "LEVEL1":"Project completion date"
+        "LEVEL1":"Project start date"
       },
       "TT5":{
         "LEVEL1":"The total number of staff in your Country Office, including all emergency response staff and those not involved in emergency response."
@@ -2189,6 +2196,9 @@
       },
       "TT11":{
         "LEVEL1":"Where the stock is currently stored"
+      },
+      "TT12":{
+        "LEVEL1":"Project end date"
       }
     }
   },
