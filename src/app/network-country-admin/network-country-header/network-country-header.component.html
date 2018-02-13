@@ -15,7 +15,7 @@
       </li>
 
       <li class="Header_bar__username" *ngIf="user | async as userObj">
-        {{userObj.firstName + " " + userObj.lastName}}
+        {{userObj.firstName + " " + userObj.lastName+", Network Country"}}
       </li>
 
       <li class="Header_bar__country dropdown" *ngIf="networkCountry | async as networkCountryObj">

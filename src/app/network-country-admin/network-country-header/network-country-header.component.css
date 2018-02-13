@@ -5,3 +5,7 @@
   opacity: 0.5;
 
 }
+
+li.Header_bar__username {
+  text-transform: capitalize;
+}

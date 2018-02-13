@@ -36,7 +36,22 @@
       </li>
 
       <li class="Header_bar__username">
-        {{firstName+" "+lastName}}
+        {{firstName+" "+lastName+", "}}{{
+        userType == UserType.GlobalDirector ? "Global Director" :
+        userType == UserType.RegionalDirector ? "Regional Director" :
+        userType == UserType.CountryDirector ? "Country Director" :
+        userType == UserType.ErtLeader ? "Ert Leader" :
+        userType == UserType.Ert ? "Ert" :
+        userType == UserType.Donor ? "Donor" :
+        userType == UserType.GlobalUser ? "Global User" :
+        userType == UserType.CountryAdmin ? "Country Admin" :
+        userType == UserType.AgencyAdmin ? "Agency Admin" :
+        userType == UserType.SystemAdmin ? "System Admin" :
+        userType == UserType.PartnerUser ? "Partner User" :
+        userType == UserType.PartnerOrganisation ? "Partner Organisation" :
+        userType == UserType.LocalAgencyAdmin ? "Local Agency Admin" :
+        userType == UserType.LocalAgencyDirector ? "Local Agency Director" :
+        userType == UserType.AgencyUser ? "Agency User" : "" }}
       </li>
 
       <li class="Header_bar__country dropdown">

@@ -1714,7 +1714,7 @@
     "NO_BUDGET":"Budget is required",
     "NO_REQUIRE_DOC":"Require Doc is required",
     "ALL_HAZARDS":"All Hazards",
-    "FREQUENCY_LABEL":"I need to update this MPA more frequently than other MPAs",
+    "FREQUENCY_LABEL":"I need this MPA to expire more frequently than others",
     "SELECT_GENERIC_ACTION":"Select a generic preparedness action",
     "BUDGET_NARRATIVE":"Budget Narrative"
   },
