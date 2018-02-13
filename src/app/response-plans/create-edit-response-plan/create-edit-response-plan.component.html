@@ -1,5 +1,11 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-menu></app-country-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -16,11 +22,13 @@
         </div>
       </div>
       <div class="col-sm-3">
-          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="onSave()">{{"SAVE" | translate}}</div></span>
+          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="goBack()">{{"RESPONSE_PLAN_DONE"| translate}}</div></span>
       </div>
     </div>
 
-    <div *ngIf="!totalSections && totalSections == 0" class="Empty--ribbon">{{"RESPONSE_PLANS.NO_SECTIONS_ENABLED" | translate}}</div>
+    <div *ngIf="!totalSections && totalSections == 0" class="Empty--ribbon">{{"RESPONSE_PLANS.NO_SECTIONS_ENABLED" |
+      translate}}
+    </div>
 
     <div class="Ribbon__section__wrap Spaced">
 
@@ -35,7 +43,8 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section1Status | translate}}</div>
-            <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -44,7 +53,7 @@
               <label for="P-name">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_NAME" |
                 translate}}</label>
               <input type="text" class="form-control" id="P-name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
-                     [(ngModel)]="planName">
+                [(ngModel)]="planName">
             </div>
             <div class="col-lg-6 col-md-6">
               <label for="G-location">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.GEO_LOCATION" |
@@ -79,7 +88,7 @@
           </div>
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection1()">{{"GLOBAL.CONTINUE" |
+                  (click)="continueButtonPressedOnSection1()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -98,7 +107,8 @@
             <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.PLAN_CONTEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section2Status | translate}}</div>
-            <div id="header_section_2" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_2" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -108,8 +118,8 @@
               | translate}}
               <!--tooltip-->
               <tooltip
-              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
-              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
               </tooltip>
 
             </label>
@@ -138,8 +148,8 @@
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
               | translate}}
               <tooltip
-              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'"
-              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'">
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'">
               </tooltip>
             </label>
 
@@ -165,8 +175,8 @@
           <div class="row Spaced form-group align-items-center">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
               | translate}}
-            <tooltip
-              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
+              <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
               </tooltip>
             </label>
 
@@ -192,7 +202,7 @@
 
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection2()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection2()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -208,18 +218,20 @@
             <div class="Ribbon__header__number"><span>{{sectionThreeNum}}</span>{{"GLOBAL.OF" | translate}}
               {{totalSections}}
             </div>
-            <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BASIC_INFORMATION" |
+            <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BASIC_INFORMATION"
+              |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section3Status | translate}}</div>
-            <div id="header_section_3" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_3" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
           <div class="form-group Spaced">
             <label>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}
               <tooltip
-            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
-            </tooltip>
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
+              </tooltip>
             </label>
 
           </div>
@@ -278,10 +290,10 @@
           <div class="form-group">
             <label>{{"PRESENCE_IN_COUNTRY" |
               translate}}
-            <tooltip
-            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
-            [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
-            </tooltip>
+              <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
+              </tooltip>
             </label>
           </div>
           <div class="Selection-row Selection-row--column Spaced">
@@ -313,13 +325,17 @@
                      [checked]="isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedDirect()">
               {{"DIRECTLY_THROUGH_STAFF" | translate}}</label>
-            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6" [hidden]="!moduleAccess.countryOffice">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part" [hidden]="!moduleAccess.countryOffice"
+            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"
+                   [hidden]="!moduleAccess.countryOffice">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
+                     [hidden]="!moduleAccess.countryOffice"
                      [checked]="isWorkingWithPartners"
                      (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
-            <label for="imp-both" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6" [hidden]="!moduleAccess.countryOffice">
-              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-both" [hidden]="!moduleAccess.countryOffice"
+            <label for="imp-both" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"
+                   [hidden]="!moduleAccess.countryOffice">
+              <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-both"
+                     [hidden]="!moduleAccess.countryOffice"
                      [checked]="isWorkingWithStaffAndPartners"
                      (click)="methodOfImplementationSelectedBoth()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_BOTH" | translate}}</label>
@@ -329,10 +345,11 @@
             <div class="col-lg-8 col-md-8">
               <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}
                 <tooltip
-              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
-              </tooltip>
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
+                </tooltip>
               </label>
-              <div class="row align-items-center Small-spaced" *ngFor="let dropDown of partnersDropDowns; let i = index">
+              <div class="row align-items-center Small-spaced"
+                   *ngFor="let dropDown of partnersDropDowns; let i = index">
                 <div class="col-sm-6">
                   <select class="form-control" id="P-lead"
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
@@ -342,12 +359,12 @@
                     </option>
 
                     <option *ngFor="let partnerOrganisation of partnerOrganisations"
-                      [value]="partnerOrganisation.$key"
-                      [selected]="partnerOrganisation.$key == partnerOrganisationsSelected[i]">
+                            [value]="partnerOrganisation.$key"
+                            [selected]="partnerOrganisation.$key == partnerOrganisationsSelected[i]">
                       {{partnerOrganisation.organisationName}}
                     </option>
                     <!--<option value="addNewPartnerOrganisation" class="text-primary">+-->
-                      <!--{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}-->
+                    <!--{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION" | translate}}-->
                     <!--</option>-->
                   </select>
                 </div>
@@ -364,7 +381,7 @@
           </div>
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection3()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection3()">{{"RESPONSE_PLAN_CONTINUE"|
               translate}}
             </div>
           </div>
@@ -383,7 +400,8 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section4Status | translate}}</div>
-            <div id="header_section_4" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_4" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -392,9 +410,9 @@
               <div class="form-group">
                 <label for="n-exp-response">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_PROPOSED_PLAN_TEXT"
                   | translate}}
-                <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
-                </tooltip>
+                  <tooltip
+                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
+                  </tooltip>
                 </label>
                 <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"
                           [(ngModel)]="proposedResponseText"></textarea>
@@ -406,9 +424,9 @@
               <div class="form-group">
                 <label for="n-exp-act">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_ACTIVITIES_PLAN_TEXT"
                   | translate}}
-                <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
-                </tooltip>
+                  <tooltip
+                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
+                  </tooltip>
                 </label>
                 <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"
                           [(ngModel)]="progressOfActivitiesPlanText"></textarea>
@@ -420,9 +438,9 @@
               <div class="form-group">
                 <label for="n-exp-coo">{{"HOW_ARE_YOU_CO_ORDINATING"
                   | translate}}
-                <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
-                </tooltip>
+                  <tooltip
+                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
+                  </tooltip>
                 </label>
                 <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"
                           [(ngModel)]="coordinationPlanText"></textarea>
@@ -431,7 +449,7 @@
           </div>
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection4()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection4()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -450,7 +468,8 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section5Status | translate}}</div>
-            <div id="header_section_5" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_5" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -458,9 +477,9 @@
             <label>{{"HOW_MANY_BENEFICIARIES" |
               translate}}
               <tooltip
-            [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
-            [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
-            </tooltip>
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
+                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
+              </tooltip>
             </label>
           </div>
           <div class="row Spaced align-items-center">
@@ -500,19 +519,19 @@
               <div class="form-group">
                 <label for="n-Done">{{"WHICH_VULNERABLE_GROUP_TARGETING" |
                   translate}}
-                <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
-                </tooltip>
+                  <tooltip
+                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
+                    [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
+                  </tooltip>
                 </label>
                 <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns; let i = index">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"
-                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)" >
+                            (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
                       <option hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
                       <option *ngFor="let group of groups"
-                        [value]="group.$key"
-                        [selected] = "group.$key == selectedVulnerableGroups[i]">{{group.name | translate}}
+                              [value]="group.$key"
+                              [selected]="group.$key == selectedVulnerableGroups[i]">{{group.name | translate}}
                       </option>
                     </select>
                   </div>
@@ -540,7 +559,7 @@
               <tooltip
                 [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
                 [level2]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL2'">
-                </tooltip>
+              </tooltip>
             </label>
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
@@ -563,7 +582,7 @@
 
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection5()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection5()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -582,7 +601,8 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section6Status | translate}}</div>
-            <div id="header_section_6" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_6" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -591,10 +611,10 @@
               <div class="form-group">
                 <label for="R-success">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.RISK_MANAGEMENT.DESCRIBE_THE_RISKS_TEXT"
                   | translate}}</label>
-                  <!-- TOOLTIP 2.16 -->
-                  <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL2'">
+                <!-- TOOLTIP 2.16 -->
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL1'"
+                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT17.LEVEL2'">
                 </tooltip>
 
                 <textarea id="R-success" cols="30" rows="5" class="form-control"
@@ -604,7 +624,7 @@
           </div>
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection6()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection6()">{{"RESPONSE_PLAN_CONTINUE"|
               translate}}
             </div>
           </div>
@@ -623,7 +643,8 @@
             <h4 class="Ribbon__header__title">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section7Status | translate}}</div>
-            <div id="header_section_7" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_7" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content">
@@ -651,20 +672,25 @@
                 </div>
                 <div class="Accordion__Content collapse" id="Activity{{sector}}">
 
+                  <!--activity list-->
                   <div *ngIf="activityMap.get(sector)?.length > 0">
                     <div *ngFor="let activity of activityMap.get(sector); index as i">
-                      <div class="row Outlined Spaced align-items-center" *ngIf="activeActivity && activeActivity[sector] != activity">
+                      <div class="row Outlined Spaced align-items-center"
+                           *ngIf="activeActivity && activeActivity[sector] != activity">
                         <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
                         <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
-                        <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)" (click)="viewActivity(sector, activity)" class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
+                        <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)"
+                                                                         (click)="viewActivity(sector, activity)"
+                                                                         class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
                           | translate}}</a></div>
                       </div>
 
-                      <div *ngIf="activeActivity && activeActivity[sector] == activity" class="row Outlined Spaced align-items-center">
+                      <div *ngIf="activeActivity && activeActivity[sector] == activity"
+                           class="row Outlined Spaced align-items-center">
                         <div class="row Spaced col-lg-12 no-gutters">
                           <div class="col-lg-12 text-right">
                             <a href="javascript:void(0)" class="text-danger" (click)="removeActivity(sector, activity)"
-                              *ngIf="activityMap.get(sector)?.length > 1 && !activity.isEmpty()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
+                               *ngIf="activityMap.get(sector)?.length > 1 && !activity.isEmpty()">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.REMOVE_THIS_ACTIVITY"
                               | translate}}</a>
                           </div>
                         </div>
@@ -672,11 +698,11 @@
                           <div class="col-lg-12 form-group">
                             <label for="P-activity">{{"WHAT_IS_PLANNED_ACTIVITY"
                               | translate}}</label>
-                              <!-- TOOLTIP 2.17 -->
-                              <tooltip
+                            <!-- TOOLTIP 2.17 -->
+                            <tooltip
                               [level1]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL1'"
                               [level2]="'TOOLTIPS.RESPONSE_PLANS.TT18.LEVEL2'">
-                              </tooltip>
+                            </tooltip>
                             <input type="text" [(ngModel)]="activity.name" class="form-control" #name>
                           </div>
                         </div>
@@ -697,16 +723,29 @@
                           </div>
                         </div>
                         <div class="row col-lg-12 Spaced form-group">
-                          <label class="col-lg-12">{{"BENEFICIARIES_OF_THIS_ACTIVITY"
+                          <label class="col-lg-6">{{"BENEFICIARIES_OF_THIS_ACTIVITY"
                             | translate}}</label>
-                          <div class="row no-gutters Demographic__text">
+
+                          <!--phase 2 stuff-->
+                          <p class="col-lg-6">Disaggregate:
+                            <span><label class="no-bold margin-left-one">Age</label> <input type="checkbox"
+                                                                                            name="disaggregateAge"
+                                                                                            [(ngModel)]="activity.hasFurtherBeneficiary"> </span>|
+                            <span><label class="no-bold">Disability</label>
+                              <input type="checkbox" [(ngModel)]="activity.hasDisability"> </span>
+                              <!--type="checkbox" [(ngModel)]="active.hasDisability"> </span>-->
+                          </p>
+
+
+                          <div class="row no-gutters Demographic__text" *ngIf="!activity.hasFurtherBeneficiary">
                             <div class="col-lg-2 tier">
                               <div class="row align-items-center">
                                 <div class="col-12">{{"GLOBAL.FEMALE" | translate}} <br/> <18</div>
                               </div>
                               <div class="row align-items-center">
                                 <div class="col-12"><input type="number" class="form-control" #femaleRange1 min="0"
-                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[0] && activity.beneficiary[0].value"></div>
+                                                           [(ngModel)]="activity.beneficiary && activity.beneficiary[0] && activity.beneficiary[0].value">
+                                </div>
                               </div>
                             </div>
                             <div class="col-lg-2 tier">
@@ -715,7 +754,8 @@
                               </div>
                               <div class="row align-items-center">
                                 <div class="col-12"><input type="number" class="form-control" #femaleRange2 min="0"
-                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[1] && activity.beneficiary[1].value"></div>
+                                                           [(ngModel)]="activity.beneficiary && activity.beneficiary[1] && activity.beneficiary[1].value">
+                                </div>
                               </div>
                             </div>
                             <div class="col-lg-2 tier">
@@ -724,7 +764,8 @@
                               </div>
                               <div class="row align-items-center">
                                 <div class="col-12"><input type="number" class="form-control" #femaleRange3 min="0"
-                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[2] && activity.beneficiary[2].value"></div>
+                                                           [(ngModel)]="activity.beneficiary && activity.beneficiary[2] && activity.beneficiary[2].value">
+                                </div>
                               </div>
                             </div>
                             <div class="col-lg-2 tier">
@@ -732,8 +773,9 @@
                                 <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> <18</div>
                               </div>
                               <div class="row align-items-center">
-                                <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0" value="0"
-                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[3] && activity.beneficiary[3].value">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange1 min="0"
+                                                           value="0"
+                                                           [(ngModel)]="activity.beneficiary && activity.beneficiary[3] && activity.beneficiary[3].value">
                                 </div>
                               </div>
                             </div>
@@ -742,8 +784,9 @@
                                 <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> 18-50</div>
                               </div>
                               <div class="row align-items-center">
-                                <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0" value="0"
-                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[4] && activity.beneficiary[4].value">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange2 min="0"
+                                                           value="0"
+                                                           [(ngModel)]="activity.beneficiary && activity.beneficiary[4] && activity.beneficiary[4].value">
                                 </div>
                               </div>
                             </div>
@@ -752,15 +795,280 @@
                                 <div class="col-12">{{"GLOBAL.MALE" | translate}} <br/> >50</div>
                               </div>
                               <div class="row align-items-center">
-                                <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0" value="0"
-                                                          [(ngModel)]="activity.beneficiary && activity.beneficiary[5] && activity.beneficiary[5].value">
+                                <div class="col-12"><input type="number" class="form-control" #maleRange3 min="0"
+                                                           value="0"
+                                                           [(ngModel)]="activity.beneficiary && activity.beneficiary[5] && activity.beneficiary[5].value">
                                 </div>
                               </div>
                             </div>
                           </div>
+
+                          <p class="beneficiary-text" *ngIf="activity.hasDisability && !activity.hasFurtherBeneficiary">Of the above
+                            beneficiaries, how many are: </p>
+
+                          <div class="row no-gutters Demographic__text" *ngIf="activity.hasFurtherBeneficiary">
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.FEMALE" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[0] && activity.furtherBeneficiary[0].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[1] && activity.furtherBeneficiary[1].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[2] && activity.furtherBeneficiary[2].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[3] && activity.furtherBeneficiary[3].value">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[4] && activity.furtherBeneficiary[4].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[5] && activity.furtherBeneficiary[5].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[6] && activity.furtherBeneficiary[6].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[7] && activity.furtherBeneficiary[7].value">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.MALE" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[8] && activity.furtherBeneficiary[8].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[9] && activity.furtherBeneficiary[9].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[10] && activity.furtherBeneficiary[10].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[11] && activity.furtherBeneficiary[11].value">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[12] && activity.furtherBeneficiary[12].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[13] && activity.furtherBeneficiary[13].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[14] && activity.furtherBeneficiary[14].value">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[15] && activity.furtherBeneficiary[15].value">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <p class="beneficiary-text" *ngIf="activity.hasFurtherBeneficiary && activity.hasDisability">Of the above
+                            beneficiaries, how many are: </p>
+
+                          <div class="row no-gutters Demographic__text"
+                               *ngIf="activity.hasDisability && !activity.hasFurtherBeneficiary">
+
+
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.FEMALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-4">
+                                  <div class="col-12 no-padding"><18</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[0]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[1]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">>50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[2]">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.MALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-4">
+                                  <div class="col-12 no-padding"><18</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[3]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[4]">
+                                </div>
+                                <div class="col-4">
+                                  <div class="col-12 no-padding">>50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.disability && activity.disability[5]">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row no-gutters Demographic__text"
+                               *ngIf="activity.hasDisability && activity.hasFurtherBeneficiary">
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.FEMALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[0]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[1]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[2]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[3]">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[4]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[5]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[6]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[7]">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6 tier">
+                              <div class="row align-text-left">
+                                <div class="col-12">{{"GLOBAL.MALE_WITH_DISABILITY" | translate}}</div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">0-5</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[8]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">6-12</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[9]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">13-17</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[10]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">18-50</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[11]">
+                                </div>
+                              </div>
+                              <div class="row align-items-center no-border">
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">51-59</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[12]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">60-69</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[13]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">70-79</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[14]">
+                                </div>
+                                <div class="col-3">
+                                  <div class="col-12 no-padding">80+</div>
+                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                         [(ngModel)]="activity.furtherDisability && activity.furtherDisability[15]">
+                                </div>
+                              </div>
+                            </div>
+
+
+                          </div>
+
+
                           <div class="row col-lg-12">
                             <div class="col-lg-10">
-                              <p class="text-danger" *ngIf="activityError && activityError[sector] && activityError[sector][i]">
+                              <p class="text-danger"
+                                 *ngIf="activityError && activityError[sector] && activityError[sector][i]">
                                 {{ activityError[sector][i] | translate }}
                               </p>
                             </div>
@@ -841,7 +1149,7 @@
 
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection7()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection7()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -857,10 +1165,12 @@
             <div class="Ribbon__header__number"><span>{{sectionEightNum}}</span>{{"GLOBAL.OF" | translate}}
               {{totalSections}}
             </div>
-            <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.MONITORING_ACC_LEARNING" |
+            <h4 class="Ribbon__header__title">
+              {{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.MONITORING_ACC_LEARNING" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section8Status | translate}}</div>
-            <div id="header_section_8" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_8" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Spaced">
@@ -915,7 +1225,7 @@
 
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection8()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection8()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -934,7 +1244,8 @@
             <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.DOUBLE_COUNTING" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section9Status | translate}}</div>
-            <div id="header_section_9" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="doublerCounting()"
+            <div id="header_section_9" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="doublerCounting()"
                  (click)="checkAllSections()"></div>
           </div>
         </div>
@@ -947,18 +1258,18 @@
           <div class="row">
             <div class="col-lg-12">
               <div class="row Demographic__text">
-                  <tooltip
-              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
-              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
-              </tooltip>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
+                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
+                </tooltip>
                 <div class="col-lg-3">
                   <div class="row  align-items-center"></div>
                   <div class="row  align-items-center">
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES" | translate}}
                     <tooltip
-                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL1'"
-                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL2'">
-                  </tooltip>
+                      [level1]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL1'"
+                      [level2]="'TOOLTIPS.RESPONSE_PLANS.TT20.LEVEL2'">
+                    </tooltip>
                   </div>
                   <div class="row  align-items-center">
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.TOTAL_BENEFICIARIES_ADJUSTED" | translate}}
@@ -972,7 +1283,8 @@
                     <div class="col-12">{{numberFemaleLessThan18}}</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12"><input type="text" class="form-control wide__number" [(ngModel)]="adjustedFemaleLessThan18">
+                    <div class="col-12"><input type="text" class="form-control wide__number"
+                                               [(ngModel)]="adjustedFemaleLessThan18">
                     </div>
                   </div>
                 </div>
@@ -984,7 +1296,8 @@
                     <div class="col-12">{{numberFemale18To50}}</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12"><input type="text" class="form-control wide__number" [(ngModel)]="adjustedFemale18To50">
+                    <div class="col-12"><input type="text" class="form-control wide__number"
+                                               [(ngModel)]="adjustedFemale18To50">
                     </div>
                   </div>
                 </div>
@@ -1020,7 +1333,8 @@
                     <div class="col-12">{{numberMaleLessThan18}}</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12"><input type="text" class="form-control wide__number" [(ngModel)]="adjustedMaleLessThan18">
+                    <div class="col-12"><input type="text" class="form-control wide__number"
+                                               [(ngModel)]="adjustedMaleLessThan18">
                     </div>
                   </div>
                 </div>
@@ -1032,7 +1346,8 @@
                     <div class="col-12">{{numberMale18To50}}</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12"><input type="text" class="form-control wide__number" [(ngModel)]="adjustedMale18To50"></div>
+                    <div class="col-12"><input type="text" class="form-control wide__number"
+                                               [(ngModel)]="adjustedMale18To50"></div>
                   </div>
                 </div>
                 <div class="col-lg-1 tier">
@@ -1043,7 +1358,8 @@
                     <div class="col-12">{{numberMalegreaterThan50}}</div>
                   </div>
                   <div class="row align-items-center">
-                    <div class="col-12"><input type="text" class="form-control wide__number" [(ngModel)]="adjustedMalegreaterThan50">
+                    <div class="col-12"><input type="text" class="form-control wide__number"
+                                               [(ngModel)]="adjustedMalegreaterThan50">
                     </div>
                   </div>
                 </div>
@@ -1052,7 +1368,7 @@
           </div>
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                 (click)="continueButtonPressedOnSection9()">{{"GLOBAL.CONTINUE" |
+                 (click)="continueButtonPressedOnSection9()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -1071,7 +1387,8 @@
             <h4 class="Ribbon__header__title">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section10Status | translate}}</div>
-            <div id="header_section_10" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)" (click)="checkAllSections()"></div>
+            <div id="header_section_10" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
+                 (click)="checkAllSections()"></div>
           </div>
         </div>
         <div class="Response__content Response__content--budget Spaced">
@@ -1080,7 +1397,9 @@
               <div class="col-lg-3 col-4">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.BUDGET_CATEGORY" |
                 translate}}
               </div>
-              <div class="col-lg-2 col-3">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} ({{CURRENCIES[currency]}})</div>
+              <div class="col-lg-2 col-3">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}
+                ({{CURRENCIES[currency]}})
+              </div>
               <div class="col-lg-4 col-5">{{"PREPAREDNESS.BUDGET_NARRATIVE" |
                 translate}}
               </div>
@@ -1210,7 +1529,9 @@
           <div class="col-lg-6 Spaced subitem" *ngIf="capitalsExist">
             <label>{{"GLOBAL.PLEASE_SPECIFY" | translate}}</label>
             <div class="row Header Small-spaced">
-              <div class="col-lg-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}} ({{CURRENCIES[currency]}})</div>
+              <div class="col-lg-3 col-4">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" | translate}}
+                ({{CURRENCIES[currency]}})
+              </div>
               <div class="col-lg-9 col-5">{{"GLOBAL.DESCRIPTION" | translate}}</div>
             </div>
             <div class="row Line-row Header Small-spaced" *ngFor="let capitalItemSection of capitalItemSections">
@@ -1236,7 +1557,7 @@
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
                  (click)="checkSection10Status()">
-              {{"GLOBAL.CONTINUE" |
+              {{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -1260,11 +1581,14 @@
       </div>
 
       <div class="modal-body">
-        <div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p></div>
+        <div class="text-center"><p>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.DO_YOU_WANT_TO_SAVE" | translate}}</p>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSubmit()">{{"YES" | translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModalAndNavigate()">{{"GLOBAL.NO"|
+          translate}}
+        </button>
       </div>
     </div>
   </div>

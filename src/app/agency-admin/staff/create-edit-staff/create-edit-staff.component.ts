@@ -14,6 +14,7 @@ import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ModelDepartment} from "../../../model/department.model";
+import {NetworkService} from "../../../services/network.service";
 
 declare var jQuery: any;
 
@@ -98,12 +99,14 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private editInitialUserType: UserType;
   private isUserTypeChange: boolean;
+  private selectedDepartments = []
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
               private route: ActivatedRoute,
               private agencyService: AgencyService,
+              private networkService: NetworkService,
               private userService: UserService) {
   }
 
@@ -431,14 +434,30 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private createNewUser() {
-    this.secondApp.auth().createUserWithEmailAndPassword(this.email, Constants.TEMP_PASSWORD).then(newUser => {
-      console.log(newUser.uid + " was successfully created");
-      this.updateFirebase(newUser.uid);
-      this.secondApp.auth().signOut();
-    }, error => {
-      this.waringMessage = error.message;
-      this.showAlert();
-    });
+
+    this.userService.getUserByEmail(this.email)
+      .first()
+      .subscribe(existUser => {
+        if (!existUser) {
+          let userId = this.networkService.generateKeyUserPublic()
+          this.updateFirebase(userId)
+        } else {
+          this.waringMessage = "Email is already exist!"
+          this.hideWarning = false;
+        }
+      }, err => {
+        this.waringMessage = err.message;
+        this.hideWarning = false;
+      })
+
+    // this.secondApp.auth().createUserWithEmailAndPassword(this.email, Constants.TEMP_PASSWORD).then(newUser => {
+    //   console.log(newUser.uid + " was successfully created");
+    //   this.updateFirebase(newUser.uid);
+    //   this.secondApp.auth().signOut();
+    // }, error => {
+    //   this.waringMessage = error.message;
+    //   this.showAlert();
+    // });
   }
 
   private updateFirebase(uid) {
@@ -712,6 +731,14 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       .subscribe(region => {
         this.regionOfficeList = Object.keys(region.countries);
       });
+  }
+
+  selectedCountryOffice(countryOffice) {
+    if (countryOffice.departments) {
+      this.selectedDepartments = Object.keys(countryOffice.departments).map(key => {
+        return ModelDepartment.create(key, countryOffice.departments[key].name)
+      })
+    }
   }
 
   private updateDirectorRegion(regionalDirectorId: string, officeList: Array<any>) {

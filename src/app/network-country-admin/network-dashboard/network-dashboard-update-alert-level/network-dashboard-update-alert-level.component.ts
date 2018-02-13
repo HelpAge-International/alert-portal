@@ -13,6 +13,7 @@ import {OperationAreaModel} from "../../../model/operation-area.model";
 import {CommonService} from "../../../services/common.service";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
+import * as moment from "moment";
 
 
 @Component({
@@ -277,7 +278,30 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
       }
     }
 
-    console.log(this.loadedAlert);
+    //if alert change state from red to other, reset apa actions with this assigned hazard
+    if (this.preAlertLevel == AlertLevels.Red && this.loadedAlert.alertLevel != this.preAlertLevel) {
+      console.log("alert changed from red to other")
+      this.alertService.getApaActionsNeedResetForThisAlert(this.networkCountryId, this.loadedAlert)
+        .first()
+        .subscribe(apasToReset => {
+          apasToReset.forEach(apa => {
+            let obj = {}
+            obj["action/"+this.networkCountryId+"/"+apa.$key+"/isComplete"] = null
+            obj["action/"+this.networkCountryId+"/"+apa.$key+"/isCompleteAt"] = null
+            obj["action/" + this.networkCountryId + "/" + apa.$key + "/actualCost"] = null
+            obj["action/"+this.networkCountryId+"/"+apa.$key+"/updatedAt"] = moment.utc().valueOf()
+            this.networkService.updateNetworkField(obj)
+          })
+        })
+    }
+
+    //new property "previousIsAmber" will be pushed if updated from amber, otherwise, this property will be deleted
+    if (this.preAlertLevel == AlertLevels.Amber && this.loadedAlert.alertLevel == AlertLevels.Red) {
+      this.loadedAlert.previousIsAmber = true
+    } else {
+      this.loadedAlert.previousIsAmber = null
+    }
+
     if(this.networkViewValues){
       console.log(true)
       this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId, null, this.networkViewValues);

@@ -51,6 +51,8 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
   private sourcePlanInfo2: string;
   private sectorsRelatedToMap = new Map<number, boolean>();
 
+  private agencyId: string;
+
   private networkCountryId: string;
   private isLocalNetworkAdmin: boolean;
 
@@ -67,6 +69,25 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
+    this.route.params.subscribe((params: Params) => {
+      if(params['isLocalAgency']){
+        this.initLocalAgency()
+      }else{
+        this.initCountryOffice()
+      }
+    });
+  }
+
+  initLocalAgency(){
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.userPath = Constants.USER_PATHS[userType];
+      this.agencyId = agencyId
+      this.downloadDataLocalAgency();
+    });
+  }
+
+  initCountryOffice(){
     this.route.params.subscribe((params: Params) => {
       if (params["id"] && params["networkCountryId"]) {
         this.responsePlanId = params["id"];
@@ -91,7 +112,7 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
           this.downloadData();
         });
       }
-    });
+    })
   }
 
   ngOnDestroy() {
@@ -141,6 +162,12 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
       });
   }
 
+  private downloadDataLocalAgency() {
+
+            this.downloadResponsePlanDataLocalAgency();
+            this.downloadAgencyDataLocalAgency();
+  }
+
   private downloadAgencyData(userType) {
 
     const normalUser = () => {
@@ -167,6 +194,20 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
 
     this.networkCountryId ? networkUser() : normalUser();
   }
+
+  private downloadAgencyDataLocalAgency() {
+
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+            if (name != null) {
+              this.memberAgencyName = name.$value;
+            }
+          });
+          this.calculateCurrency(this.agencyId);
+
+
+
+  }
+
 
   private downloadResponsePlanData() {
     if (!this.responsePlanId) {
@@ -199,6 +240,37 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
       });
   }
 
+  private downloadResponsePlanDataLocalAgency() {
+    if (!this.responsePlanId) {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.responsePlanId = params["id"];
+          }
+        });
+    }
+    let id = this.agencyId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
+    this.af.database.object(responsePlansPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlan: ResponsePlan) => {
+        this.responsePlan = responsePlan;
+        console.log(responsePlan);
+        this.configGroups(responsePlan);
+
+        if (responsePlan.sectorsRelatedTo) {
+          responsePlan.sectorsRelatedTo.forEach(sector => {
+            this.sectorsRelatedToMap.set(sector, true);
+          });
+        }
+
+        this.bindProjectLeadDataLocalAgency(responsePlan);
+        this.bindPartnersData(responsePlan);
+        this.bindSourcePlanData(responsePlan);
+      });
+  }
+
   private bindProjectLeadData(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
       this.userService.getUser(responsePlan.planLead)
@@ -209,6 +281,24 @@ export class ApplicationDatasheet implements OnInit, OnDestroy {
           this.planLeadPhone = user.phone;
 
           this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
+            if (position != null) {
+              this.planLeadPosition = position.$value;
+            }
+          });
+        });
+    }
+  }
+
+  private bindProjectLeadDataLocalAgency(responsePlan: ResponsePlan) {
+    if (responsePlan.planLead) {
+      this.userService.getUser(responsePlan.planLead)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.planLeadName = user.firstName + " " + user.lastName;
+          this.planLeadEmail = user.email;
+          this.planLeadPhone = user.phone;
+
+          this.af.database.object(Constants.APP_STATUS + "/staff/" + this.agencyId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
             if (position != null) {
               this.planLeadPosition = position.$value;
             }

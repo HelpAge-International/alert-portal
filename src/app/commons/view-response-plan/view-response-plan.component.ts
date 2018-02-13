@@ -50,6 +50,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private isViewing: boolean;
 
   @Input() responsePlanId: string;
+  @Input() isLocalAgency: boolean;
   // @Input() set _countryId(_countryId: string){
   //   this.countryId = _countryId;
   // }
@@ -125,6 +126,11 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   ngOnInit() {
     jQuery('#header_section_1').trigger('click');
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+  }
+
+  initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -242,6 +248,97 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       });
   }
 
+  initLocalAgency(){
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["id"]) {
+          this.responsePlanId = params["id"];
+        }
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["token"]) {
+          this.accessToken = params["token"];
+        }
+        if (params["partnerOrganisationId"]) {
+          this.partnerOrganisationId = params["partnerOrganisationId"];
+        }
+        if (params["systemId"]) {
+          this.systemAdminUid = params["systemId"];
+        }
+
+        if (this.accessToken) {
+          let invalid = true;
+
+          firebase.auth().signInAnonymously().catch(error => {
+            console.log(error.message);
+          });
+
+          firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+              if (user.isAnonymous) {
+                //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+                this.af.database.object(Constants.APP_STATUS + "/responsePlanValidation/" + this.responsePlanId + "/validationToken")
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe((validationToken) => {
+                    if (validationToken) {
+                      if (this.accessToken === validationToken.token) {
+                        let expiry = validationToken.expiry;
+                        let currentTime = moment.utc();
+                        let tokenExpiryTime = moment.utc(expiry);
+
+                        if (currentTime.isBefore(tokenExpiryTime))
+                          invalid = false;
+                      }
+
+                      if (invalid) {
+                        this.navigateToLogin();
+                      }
+                      this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                      this.handleLoadResponsePlan();
+                    } else {
+                      this.navigateToLogin();
+                    }
+                  });
+              }
+            }
+          });
+
+          if (this.agencyId != null) {
+            this.calculateCurrency(this.agencyId);
+          }
+
+        } else {
+
+            this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+              this.agencyId = agencyId
+              //get response plan settings from agency
+              this.userService.getAgencyDetail(agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => {
+                  let sections = agency.responsePlanSettings.sections;
+                  this.showingSections = Object.keys(sections).filter(key => sections[key]).map(key => Number(key));
+                  console.log(this.showingSections)
+                });
+
+              this.uid = user.auth.uid;
+              this.userPath = Constants.USER_PATHS[userType];
+                this.loadDataLocalAgency();
+              this.calculateCurrency(agencyId);
+            });
+          };
+
+      });
+  }
+
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
@@ -327,6 +424,12 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     }
   }
 
+  private loadDataLocalAgency() {
+
+    this.handleLoadResponsePlanLocalAgency();
+
+  }
+
   private handleLoadResponsePlan() {
     if (this.responsePlanId) {
       this.loadResponsePlanData();
@@ -337,6 +440,21 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
           if (params["id"]) {
             this.responsePlanId = params["id"];
             this.loadResponsePlanData();
+          }
+        });
+    }
+  }
+
+  private handleLoadResponsePlanLocalAgency() {
+    if (this.responsePlanId) {
+      this.loadResponsePlanDataLocalAgency();
+    } else {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.responsePlanId = params["id"];
+            this.loadResponsePlanDataLocalAgency();
           }
         });
     }
@@ -407,6 +525,29 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
     let id = this.networkCountryId ? this.networkCountryId : this.networkId ? this.networkId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
+
+    this.af.database.object(responsePlansPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlan: ResponsePlan) => {
+        this.responsePlanToShow = responsePlan;
+        if (!this.accessToken) {
+          this.configGroups(responsePlan);
+        }
+
+        this.loadSection1PlanLead(responsePlan);
+        this.loadSection3(responsePlan);
+        this.loadSection7(responsePlan);
+        this.loadSection8(responsePlan);
+        this.loadSection10(responsePlan);
+      });
+  }
+
+  private loadResponsePlanDataLocalAgency() {
+    console.log("response plan id: " + this.responsePlanId);
+    let id = this.agencyId;
+    console.log(Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId)
+
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
 
     this.af.database.object(responsePlansPath)
@@ -506,7 +647,14 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             activitiesData[key]["beneficiary"].forEach(item => {
               beneficiary.push(item);
             });
-            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"],
+              activitiesData[key]["indicator"],
+              !activitiesData[key]["hasFurtherBeneficiary"] ? beneficiary : null,
+              activitiesData[key]["hasFurtherBeneficiary"],
+              activitiesData[key]["hasDisability"],
+              activitiesData[key]["hasFurtherBeneficiary"] ? activitiesData[key]["furtherBeneficiary"] : null,
+              !activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["disability"] : null,
+              activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["furtherDisability"] : null);
             moreData.push(model);
             this.activityMap.set(Number(sectorKey), moreData);
           });

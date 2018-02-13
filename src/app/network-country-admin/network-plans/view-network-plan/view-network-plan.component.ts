@@ -50,10 +50,6 @@ export class ViewNetworkPlanComponent implements OnInit {
       if (params["networkCountryId"]) {
         this.networkCountryId = params["networkCountryId"];
       }
-      this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
-      if (this.isLocalNetworkAdmin) {
-        this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
-      }
       // if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
       //   this.isViewing = params["isViewing"];
       //   this.systemId = params["systemId"];
@@ -64,6 +60,10 @@ export class ViewNetworkPlanComponent implements OnInit {
       //   this.networkCountryId = params["networkCountryId"];
       //   this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
       // }
+      this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      if (this.isLocalNetworkAdmin) {
+        this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
+      }
     })
   }
 

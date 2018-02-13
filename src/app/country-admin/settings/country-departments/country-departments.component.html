@@ -1,0 +1,102 @@
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
+
+<app-status-alert [message]="alertMessage" [success]="alertSuccess"
+                  [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <app-country-admin-settings-menu></app-country-admin-settings-menu>
+
+    <div class="Sub-header-title__wrap">
+      <h2>Agency Departments</h2>
+
+    </div>
+
+    <div class="Departments">
+
+      <div *ngIf="!agencyDepts || agencyDepts.length == 0">
+        No departments are added to your agency.
+      </div>
+
+      <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of agencyDepts">
+        <!-- Check box for deletion -->
+        <label for="{{department.id}}" *ngIf="deleting && !canDeleteItem.get(department.id)">
+          <input class="form-check-input" type="checkbox" id="{{department.id}}" [value]="department.id"
+                 (change)="onDepartmentSelected(department.id)">
+        </label>
+        <!-- Regular label -->
+        <ng-container *ngIf="(!deleting || department.name) && !editing">
+          {{department.name}}
+        </ng-container>
+        <!-- Editing input -->
+        <input type="text" class="form-control col-md-4" *ngIf="editing" [(ngModel)]="department.name">
+      </div>
+    </div>
+
+    <div class="Sub-header-title__wrap">
+
+
+      <h2>{{"MAPS.DEPARTMENTS" | translate}}</h2>
+      <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting"
+              (click)="deleteSelectedDepartments($event)">{{"DELETE" | translate | uppercase}}
+      </button>
+      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="deleting"
+              (click)="cancelDeleteDepartments($event)">{{"GLOBAL.CANCEL" | translate}}
+      </button>
+
+      <button type="button" class="btn btn-outline-danger Inline-editable--enable" (click)="deleteDepartments($event)"
+              *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DELETE_DEPARTMENTS" | translate |
+        uppercase}}
+      </button>
+      <button type="button" class="btn btn-outline-primary Inline-editable--enable" (click)="flipEditDepartments()"
+              *ngIf="!deleting && !editing">{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.EDIT_DEPARTMENTS" | translate |
+        uppercase}}
+      </button>
+      <button type="button" class="btn btn-primary Inline-editable--enable" *ngIf="editing"
+              (click)="saveEditedDepartments()">{{"SAVE" | translate | uppercase}}
+      </button>
+
+      <button type="button" class="btn btn-primary btn-ghost Inline-editable--enable" *ngIf="editing"
+              (click)="flipEditDepartments()">{{"GLOBAL.CANCEL" | translate}}
+      </button>
+    </div>
+
+    <p *ngIf="deleting">{{"AGENCY_ADMIN.SETTINGS.DEPARTMENTS.DELETE_DEPARTMENTS_INFO" | translate}}</p>
+
+    <div class="Departments">
+
+      <div *ngIf="!depts || depts.length == 0">
+        {{"NO_DEPARTMENTS_COUNTRY" | translate}}
+      </div>
+
+      <div class="row Editable-check-text Large-spacing-top" *ngFor="let department of depts">
+        <!-- Check box for deletion -->
+        <label for="{{department.id}}" *ngIf="deleting && !canDeleteItem.get(department.id)">
+          <input class="form-check-input" type="checkbox" id="{{department.id}}" [value]="department.id"
+                 (change)="onDepartmentSelected(department.id)">
+        </label>
+        <!-- Regular label -->
+        <ng-container *ngIf="(!deleting || department.name) && !editing">
+          {{department.name}}
+        </ng-container>
+        <!-- Editing input -->
+        <input type="text" class="form-control col-md-4" *ngIf="editing" [(ngModel)]="department.name">
+      </div>
+
+      <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
+        <div class="col-md-4 col-8" [ngClass]="{'has-danger': alerts[departmentName]}">
+          <input type="text" class="form-control" placeholder="{{'SYSTEM_ADMIN.SETTING.ADD_A_NEW_DEPARTMENT' | translate}}" [(ngModel)]="departmentName"
+                 required>
+        </div>
+        <div class="col-md-8 col-4">
+          <button type="button" class="btn btn-outline-primary" (click)="addDepartment()">{{"SAVE" |
+            translate | uppercase}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

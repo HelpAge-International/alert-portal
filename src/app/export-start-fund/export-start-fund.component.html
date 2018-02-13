@@ -1,25 +1,48 @@
-<ng-container *ngIf="!isViewing; else country">
-  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-    <app-network-country-header></app-network-country-header>
-    <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isLocalAgency">
+
+  <ng-container *ngIf="!isViewing; else country">
+    <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+      <ng-container *ngIf="networkCountryId; else normal">
+        <app-network-country-header></app-network-country-header>
+        <app-network-country-menu></app-network-country-menu>
+      </ng-container>
+    </ng-container>
   </ng-container>
+
+  <ng-template #localNetworkAdmin>
+    <app-local-network-header></app-local-network-header>
+    <app-local-network-menu></app-local-network-menu>
+  </ng-template>
+
+  <ng-template #country>
+    <app-country-admin-header></app-country-admin-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-template>
+
+  <ng-template #normal>
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </ng-template>
+
 </ng-container>
 
-<ng-template #localNetworkAdmin>
-  <app-local-network-header></app-local-network-header>
-  <app-local-network-menu></app-local-network-menu>
-</ng-template>
+<ng-container *ngIf="isLocalAgency">
 
-<ng-template #country>
-  <app-country-admin-header></app-country-admin-header>
-  <app-network-country-menu></app-network-country-menu>
-</ng-template>
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+
+</ng-container>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="">
-      <div class="Back--button"
-           [routerLink]="isViewing ? ['/network-country/network-plans', networkViewValues] : isLocalNetworkAdmin ? '/network/local-network-plans' : networkCountryId ? '/network-country/network-plans' : '/response-plans'">
+      <div *ngIf="!isLocalAgency" class="Back--button"
+                 [routerLink]="isViewing ? ['/network-country/network-plans', networkViewValues] : isLocalNetworkAdmin ? '/network/local-network-plans' : networkCountryId ? '/network-country/network-plans' : '/response-plans'">
+      {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
+    </div>
+
+      <div *ngIf="isLocalAgency" class="Back--button"
+           [routerLink]="['/local-agency/response-plans']">
         {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
       </div>
 

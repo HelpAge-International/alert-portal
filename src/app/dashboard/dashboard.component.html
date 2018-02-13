@@ -225,7 +225,7 @@
                         (click)="approveRedAlert(alert.id)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
-              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert.id)">{{"OR_REJECT_THIS_REQUEST"
+              <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert)">{{"OR_REJECT_THIS_REQUEST"
                 | translate}}</a></div>
             </div>
             <br>
@@ -660,8 +660,8 @@
     <div *ngIf="userType!=UserType.PartnerUser">
       <div
         *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 &&
-         actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default &&
-          approvalPlans.length == 0 && actionsOverdueNetwork.length == 0 && actionsThisWeekNetwork.length == 0 && actionsTodayNetwork.length == 0 &&
+         actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && (DashboardTypeUsed == DashboardType.default || (DashboardTypeUsed == DashboardType.default &&
+          approvalPlans.length == 0)) && actionsOverdueNetwork.length == 0 && actionsThisWeekNetwork.length == 0 && actionsTodayNetwork.length == 0 &&
           indicatorsThisWeekNetwork.length == 0 && indicatorsTodayNetwork.length == 0 && indicatorsOverdueNetwork.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
@@ -701,9 +701,9 @@
       </div>
     </div>
     <!--my tasks-->
-    <div class="Widget">
-         <!--*ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 ||-->
-         <!--actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0 || approvalPlansNetworkLocal.length>0"-->
+    <div class="Widget" *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 ||
+         actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0 || approvalPlansNetworkLocal.length>0">
+
       <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
       <br>
       <!--director-->
@@ -786,7 +786,7 @@
               <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
               <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
               <!--</button>-->
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan)">
                 {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
             </div>
           </div>
@@ -813,6 +813,7 @@
       </div>
 
       <!--normal users-->
+      <!--Dashboard - Actions and Indicators due today/week-->
       <div
         *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 ||
          indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ||
@@ -830,7 +831,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToCompleteAction(action)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -868,7 +869,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToCompleteIndicator(indicator)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -887,8 +888,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 (click)="navigateToNetworkIndicators(indicator)">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToCompleteIndicator(indicator)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -907,7 +907,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToCompleteAction(action)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -945,7 +945,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToCompleteIndicator(indicator)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -964,8 +964,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block"
-                 (click)="navigateToNetworkIndicators(indicator)">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToCompleteIndicator(indicator)">{{"GLOBAL.UPDATE"
                 |
                 translate}}
               </a>
@@ -984,7 +983,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToCompleteAction(action)">{{"GLOBAL.UPDATE"
                 |
                 translate}}</a>
             </div>
@@ -1020,7 +1019,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToCompleteIndicator(indicator)">{{"GLOBAL.UPDATE"
                 | translate}}</a>
             </div>
           </div>
@@ -1037,8 +1036,7 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-primary btn-block"
-                 (click)="navigateToNetworkIndicators(indicator)">{{"GLOBAL.UPDATE"
+              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToCompleteIndicator(indicator)">{{"GLOBAL.UPDATE"
                 | translate}}</a>
             </div>
           </div>

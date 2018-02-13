@@ -148,16 +148,18 @@
     <h6><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.GEO_LOCATION" | translate}}</b></h6>
     <div class="row" *ngFor="let geoLocationKey of geoLocationList">
       <label for="geoLocation_{{geoLocationKey}}" class="Checkbox--ribbon col-sm-5">
-        <input (change)="stateGeoLocation($event)" type="radio" name="RT" id="geoLocation_{{geoLocationKey}}"
-               value="{{geoLocationKey}}" [checked]="indicatorData.geoLocation == geoLocationKey">{{geoLocation[geoLocationKey]
-        | translate}}
-        <span class="col-sm-9"></span>
+        <div class="row padding-left-two F-width">
+          <div class="col-xs-12">
+            <input (change)="stateGeoLocation($event)" type="radio" name="RT" id="geoLocation_{{geoLocationKey}}"
+                   value="{{geoLocationKey}}" [checked]="indicatorData.geoLocation == geoLocationKey">{{geoLocation[geoLocationKey] | translate}}
+          </div>
+        </div>
       </label>
     </div>
 
     <div class="locations_affected__wrap--risk-blockquote row text-left Spaced-above"
          *ngIf="indicatorData.geoLocation && indicatorData.affectedLocation && indicatorData.affectedLocation.length > 0">
-      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
+      <p class="col-sm-12"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.LOCATION_SELECT" | translate}}</b></p><br>
       <div class="col-sm-12 row" *ngFor="let location of indicatorData.affectedLocation; let locationKey = index">
         <div class="col-sm-3">
           <div class="form-group-risk-frequency ">

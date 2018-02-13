@@ -1,5 +1,11 @@
-<app-agency-admin-header></app-agency-admin-header>
-<app-agency-admin-menu></app-agency-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <div class="Alert-error" [hidden]="inactive">
   {{errorMessage | translate}}

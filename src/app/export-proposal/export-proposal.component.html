@@ -1,25 +1,45 @@
-<ng-container *ngIf="!isViewing; else country">
-  <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
-    <app-network-country-header></app-network-country-header>
-    <app-network-country-menu></app-network-country-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <ng-container *ngIf="!isViewing; else country">
+    <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
+      <ng-container *ngIf="networkCountryId; else normal">
+        <app-network-country-header></app-network-country-header>
+        <app-network-country-menu></app-network-country-menu>
+      </ng-container>
+    </ng-container>
   </ng-container>
+
+  <ng-template #localNetworkAdmin>
+    <app-local-network-header></app-local-network-header>
+    <app-local-network-menu></app-local-network-menu>
+  </ng-template>
+
+  <ng-template #country>
+    <app-country-admin-header></app-country-admin-header>
+    <app-network-country-menu></app-network-country-menu>
+  </ng-template>
+
+  <ng-template #normal>
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </ng-template>
+
 </ng-container>
 
-<ng-template #localNetworkAdmin>
-  <app-local-network-header></app-local-network-header>
-  <app-local-network-menu></app-local-network-menu>
-</ng-template>
+<ng-container *ngIf="isLocalAgency">
 
-<ng-template #country>
-  <app-country-admin-header></app-country-admin-header>
-  <app-network-country-menu></app-network-country-menu>
-</ng-template>
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
     <div class="">
-      <div class="Back--button"
+      <div *ngIf="!isLocalAgency" class="Back--button"
            [routerLink]="isViewing ? ['/network-country/network-plans', networkViewValues] : isLocalNetworkAdmin ? '/network/local-network-plans' : networkCountryId ? '/network-country/network-plans' : '/response-plans'">
+        {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
+      </div>
+      <div *ngIf="isLocalAgency" class="Back--button"
+           [routerLink]="['/local-agency/response-plans']">
         {{"RESPONSE_PLANS.TITLE_TEXT" | translate}}
       </div>
 
@@ -379,27 +399,65 @@
                 </tr>
                 <tr>
                   <td colspan="3"><p>{{"FEMALE_LESS_18" | translate}}</p></td>
-                  <td colspan="2"><p>{{activity.beneficiary &&
-                    activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
+                  <td colspan="2"><p>{{activity.hasFurtherBeneficiary ?
+                    ((activity.furtherBeneficiary && activity.furtherBeneficiary[0] ?
+                    activity.furtherBeneficiary[0]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[1] ?
+                    activity.furtherBeneficiary[1]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[2] ?
+                    activity.furtherBeneficiary[2]["value"] : 0))
+                    :
+                    (activity.beneficiary && activity.beneficiary[0] ? activity.beneficiary[0]["value"] : 0)}}</p></td>
                   <td colspan="2"><p>{{"MALE_LESS_18" | translate}}</p></td>
-                  <td colspan="2"><p>{{activity.beneficiary &&
-                    activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
+                  <td colspan="2"><p>{{activity.hasFurtherBeneficiary ?
+                    ((activity.furtherBeneficiary && activity.furtherBeneficiary[8] ?
+                    activity.furtherBeneficiary[8]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[9] ?
+                    activity.furtherBeneficiary[9]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[10] ?
+                    activity.furtherBeneficiary[10]["value"] : 0))
+                    :
+                    (activity.beneficiary && activity.beneficiary[3]?activity.beneficiary[3]["value"]:0)}}</p></td>
                 </tr>
                 <tr>
                   <td colspan="3"><p>{{"FEMALE_18_50" | translate}}</p></td>
-                  <td colspan="2"><p>{{activity.beneficiary &&
-                    activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
+                  <td colspan="2"><p>{{activity.hasFurtherBeneficiary ?
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[3] ?
+                    activity.furtherBeneficiary[3]["value"] : 0)
+                    :
+                    (activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0)}}</p></td>
                   <td colspan="2"><p>{{"MALE_18_50" | translate}}</p></td>
-                  <td colspan="2"><p>{{activity.beneficiary &&
-                    activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
+                  <td colspan="2"><p>{{activity.hasFurtherBeneficiary ?
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[11] ?
+                    activity.furtherBeneficiary[11]["value"] : 0)
+                    :
+                    (activity.beneficiary && activity.beneficiary[4]?activity.beneficiary[4]["value"]:0)}}</p></td>
                 </tr>
                 <tr>
                   <td colspan="3"><p>{{"FEMALE_GREATER_50" | translate}}</p></td>
-                  <td colspan="2"><p>{{activity.beneficiary &&
-                    activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
+                  <td colspan="2"><p>{{activity.hasFurtherBeneficiary ?
+                    ((activity.furtherBeneficiary && activity.furtherBeneficiary[4] ?
+                    activity.furtherBeneficiary[4]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[5] ?
+                    activity.furtherBeneficiary[5]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[6] ?
+                    activity.furtherBeneficiary[6]["value"] : 0)+
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[7] ?
+                    activity.furtherBeneficiary[7]["value"] : 0))
+                    :
+                    activity.beneficiary && activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
                   <td colspan="2"><p>{{"MALE_GREATER_50" | translate}}</p></td>
-                  <td colspan="2"><p>{{activity.beneficiary &&
-                    activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
+                  <td colspan="2"><p>{{activity.hasFurtherBeneficiary ?
+                    ((activity.furtherBeneficiary && activity.furtherBeneficiary[12] ?
+                    activity.furtherBeneficiary[12]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[13] ?
+                    activity.furtherBeneficiary[13]["value"] : 0) +
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[14] ?
+                    activity.furtherBeneficiary[14]["value"] : 0)+
+                    (activity.furtherBeneficiary && activity.furtherBeneficiary[15] ?
+                    activity.furtherBeneficiary[15]["value"] : 0))
+                    :
+                    activity.beneficiary && activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
                 </tr>
               </ng-container>
 
@@ -409,7 +467,7 @@
               </tr>
 
               <tr>
-                <td colspan="9"><p>{{sector.sourcePlan}}</p></td>
+                <td colspan="9"><p>{{SourcePlan[sector.sourcePlan]}}</p></td>
               </tr>
               <tr>
                 <td colspan="9">

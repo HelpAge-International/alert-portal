@@ -385,6 +385,17 @@ exports.handleUserAccountLive = functions.database.ref('/live/userPublic/{userId
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
+      admin.auth().createUser({
+        uid: userId,
+        email: currData.email,
+        password: TEMP_PASS
+      })
+        .then(user => {
+          console.log("(handleUserAccount)Successfully created new user: " + user.uid)
+        })
+        .catch(error => {
+          console.log("(handleUserAccount)Error creating new user:", error)
+        })
     } else if (preData && currData) {
       //user account change
       console.log("user data changed: " + userId);
@@ -3350,17 +3361,20 @@ exports.createUserNetworkCountry_LIVE = functions.database.ref('/live/administra
           let userDb = data.val();
           console.log(userDb);
 
-          admin.auth().createUser({
-            uid: adminId,
-            email: userDb.email,
-            password: TEMP_PASS
-          })
-            .then(user => {
-              console.log("Successfully created new user: " + user.uid)
+          if (!userDb) {
+            admin.auth().createUser({
+              uid: adminId,
+              email: userDb.email,
+              password: TEMP_PASS
             })
-            .catch(error => {
-              console.log("Error creating new user:", error)
-            })
+              .then(user => {
+                console.log("Successfully created new user: " + user.uid)
+              })
+              .catch(error => {
+                console.log("Error creating new user:", error)
+              })
+          }
+
 
         });
     }

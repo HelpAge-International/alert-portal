@@ -204,6 +204,8 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                     err => console.log(err);
                   });
 
+                this.initPreSelection()
+
 
         }else{
           this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
@@ -233,12 +235,8 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                     err => console.log(err);
                   });
 
-                // //get country location enum
-                // this.userService.getCountryDetail(this.countryID, this.agencyId)
-                //   .first()
-                //   .subscribe(country => {
-                //     this.countryLocation = country.location;
-                //   });
+                //get country location enum
+                this.initPreSelection();
 
               })
 
@@ -246,6 +244,14 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         }
 
 
+      });
+  }
+
+  private initPreSelection() {
+    this.networkService.getLocalNetwork(this.networkId)
+      .first()
+      .subscribe(country => {
+        this.countryLocation = country.countryCode;
       });
   }
 
@@ -366,9 +372,10 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
   addAnotherLocation() {
     let modelArea = new OperationAreaModel();
-    modelArea.country = this.countryLocation;
+    if (this.countryLocation >= 0) {
+      modelArea.country = this.countryLocation;
+    }
     this.indicatorData.affectedLocation.push(modelArea);
-    console.log(this.indicatorData)
   }
 
   removeAnotherLocation(key: number,) {
@@ -456,8 +463,6 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(countryOffices => {
               countryOffices.filter( countryOffice => {
-                console.log(this.countryID)
-                console.log(countryOffice.$key)
                 if(this.countryID == countryOffice.$key){
                   this.agencyId = agency.$key
 

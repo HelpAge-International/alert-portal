@@ -75,15 +75,15 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
           this.firstName = user.firstName;
           this.lastName = user.lastName;
 
-          this.loadJSON().subscribe(data => {
-
-            for (var key in data){
-
-              this.userLang.push(key);
-              this.languageMap.set(key, data[key]);
-            }
-
-          });
+          // this.loadJSON().subscribe(data => {
+          //
+          //   for (var key in data){
+          //
+          //     this.userLang.push(key);
+          //     this.languageMap.set(key, data[key]);
+          //   }
+          //
+          // });
 
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
             .takeUntil(this.ngUnsubscribe)

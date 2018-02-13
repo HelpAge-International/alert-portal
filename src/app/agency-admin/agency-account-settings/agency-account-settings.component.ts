@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -39,6 +39,8 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private countriesList: number[] = Constants.COUNTRY_SELECTION;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }

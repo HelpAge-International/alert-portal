@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class SettingsMenuComponent implements OnInit {
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private ngUnsubscribe: Subject<void> = new Subject<void>(); 
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router) { }
 

@@ -113,6 +113,16 @@
         </select>
       </div>
 
+      <!-- HAZARDS -->
+      <div class="col-lg-2 col-md-2 col-sm-6 ">
+        <select class="form-control" id="HazardsFilter" [(ngModel)]="filterHazard">
+          <option value="-1" selected>{{"ALL_HAZARDS" | translate}}</option>
+          <option *ngFor="let x of HAZARD_LIST; let i = index" [attr.data-index]="i" value="{{i}}">{{HAZARD_LIST[i] |
+            translate}}
+          </option>
+        </select>
+      </div>
+
       <div class="col-lg-2 col-md-2 col-sm-6 ">
         <!-- ASSIGNED TOO -->
         <select class="form-control" id="AssignedFilter" [(ngModel)]="filterAssigned">
@@ -143,7 +153,8 @@
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.InProgress || filterStatus == ActionStatus.Completed || filterStatus == ActionStatus.Expired) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
 
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
           <div
@@ -279,8 +290,8 @@
 
                       </div>
                       <div class="row">
-                        <div class="subrow-line">{{"AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
-                          translate}}: <strong>{{CURRENCIES[currency]}}{{action.budget}}</strong></div>
+                        <div class="subrow-line">{{action.actualCost ? ("Cost") : ("AGENCY_ADMIN.SETTINGS.RESPONSE_PLAN_SECTION_SETTINGS.BUDGET" |
+                          translate)}}: <strong>{{CURRENCIES[currency]}}{{action.actualCost ? action.actualCost : action.budget}}</strong></div>
                         <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
                           translate}}</strong></div>
 
@@ -415,13 +426,23 @@
                     <div class="col-md-7">
                       <div class="row">
                         <div class="col-12">
-                          <h4>C{{"CONFIRM_THIS_ACTION_IS_COMPLETED" | translate}}</h4>
+                          <h4>{{"CONFIRM_THIS_ACTION_IS_COMPLETED" | translate}}</h4>
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-12 form-group">
                     <textarea name="confirm_complete" cols="40" rows="4" class="form-control"
                               placeholder="Add a completion note here" [(ngModel)]="action.note"></textarea>
+                        </div>
+                      </div>
+                      <!--actual cost-->
+                      <div class="row">
+                        <div class="col-lg-8 col-md-10">
+                          <div class="form-group">
+                            <label for="n-Budget">Actual Cost</label>
+                            <input type="number" required name="budget" [(ngModel)]="action.actualCost"
+                                   class="form-control col-sm-5" id="n-Budget" min="0" placeholder="{{CURRENCIES[currency]}}">
+                          </div>
                         </div>
                       </div>
                       <div class="row">
@@ -455,7 +476,7 @@
                       <a href="javascript:void(0)" class="btn btn-primary btn-block"
                          (click)="completeAction(action)">{{"GLOBAL.CONFIRM" | translate}}</a>
                       <a href="javascript:void(0)" class="btn btn-block"
-                         (click)="closePopover(action)">{{"GLOBAL.CANCEL" |
+                         (click)="cancelComplete(action)">{{"GLOBAL.CANCEL" |
                         translate}}</a>
                     </div>
                   </div>
@@ -491,7 +512,8 @@
           <!-- FILTERING IF STATEMENT -->
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
             <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div
@@ -511,7 +533,7 @@
                           <span class="fa-stack">
                             <i class="fa fa-circle fa-stack-2x"></i>
                             <i class="fa fa-stack-1x fa-inverse fa-times"></i>
-                          </span>{{ACTION_STATUS[0] | translate}}
+                          </span>{{ACTION_STATUS[5] | translate}}
                         </div>
                         <div class="col-md-1 col-sm-1 text-primary Preparedness-list__item--entries">
 
@@ -710,7 +732,8 @@
           <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Archived)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Archived) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div *ngIf="action.isArchived">
 
@@ -925,7 +948,8 @@
         <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
                     (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Inactive)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Inactive) &&
+                    (filterHazard == -1 || isChosenHazard(filterHazard, action))">
           <!-- BELONGING IN THE MODULE IF STATEMENT -->
           <div *ngIf="!action.isArchived && !action.isRedAlertActive(hazardRedAlert)">
 

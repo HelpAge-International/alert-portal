@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -41,6 +41,10 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   private userType: UserType;
   private userAgencyId: string;
 
+  @Input() isLocalAgency: boolean;
+
+  @Input() isAgencyAdmin: boolean;
+
   // Helpers
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _agencyService: AgencyService,
@@ -56,6 +60,34 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+  }
+
+  private initLocalAgency(){
+
+
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.userType = userType;
+          this.agencyId = agencyId;
+
+            this._agencyService.getAgency(this.agencyId)
+              .map(agency => {
+                return agency as ModelAgency;
+              })
+              .subscribe(agency => {
+                this.agency = agency;
+
+                this._coordinationArrangementService.getCoordinationArrangementsLocalAgency(this.agencyId)
+                  .subscribe(coordinationArrangements => {
+                    this.coordinationArrangements = coordinationArrangements;
+                  });
+              });
+        });
+  }
+
+  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -121,7 +153,11 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-staff');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/agency-staff');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-staff');
+    }
   }
 
   editCoordinationArrangement() {
@@ -149,11 +185,20 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   }
 
   addEditCoordinationArrangement(coordinationArrangementId?: string) {
-    if (coordinationArrangementId) {
-      this.router.navigate(['/country-admin/country-office-profile/coordination/add-edit-coordination',
-        {id: coordinationArrangementId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/coordination/add-edit-coordination');
+    if(this.isLocalAgency){
+      if (coordinationArrangementId) {
+        this.router.navigate(['/local-agency/profile/coordination/add-edit-coordination',
+          {id: coordinationArrangementId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/coordination/add-edit-coordination');
+      }
+    }else{
+      if (coordinationArrangementId) {
+        this.router.navigate(['/country-admin/country-office-profile/coordination/add-edit-coordination',
+          {id: coordinationArrangementId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/coordination/add-edit-coordination');
+      }
     }
   }
 }

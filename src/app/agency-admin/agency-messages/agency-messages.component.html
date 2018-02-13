@@ -1,5 +1,11 @@
-<app-agency-admin-header></app-agency-admin-header>
-<app-agency-admin-menu></app-agency-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -7,7 +13,7 @@
 
     <div class="Header-title__wrap">
       <h1>{{"AGENCY_ADMIN.MESSAGES.TITLE_TEXT" | translate}}</h1>
-      <a routerLink="/agency-admin/agency-messages/create-edit-message" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate | uppercase}}</a>
+      <a [routerLink]="[this.isLocalAgency ? '/local-agency/agency-messages/create-edit-message' : '/agency-admin/agency-messages/create-edit-message']" class="btn btn-primary">{{"MESSAGES.CREATE_NEW_MESSAGE" | translate | uppercase}}</a>
     </div>
 
     <div *ngIf="(sentMessages)?.length == 0" class="Empty--ribbon">{{"MESSAGES.NO_MESSAGES" | translate}}</div>

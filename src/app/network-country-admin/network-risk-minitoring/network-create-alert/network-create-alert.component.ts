@@ -16,7 +16,6 @@ import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
-import {Local} from "protractor/built/driverProviders";
 
 
 @Component({
@@ -64,6 +63,10 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   private networkId: any;
   private isViewing: boolean;
   private systemId: string;
+  private preSelectCountry: number;
+
+  //phase 2
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -84,7 +87,11 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    let model = new OperationAreaModel()
+    if (this.preSelectCountry >= 0) {
+      model.country = this.preSelectCountry
+    }
+    this.alertData.affectedAreas.push(model);
   }
 
   removeAnotherArea(key: number,) {
@@ -131,6 +138,8 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               })
               this._getHazards();
               this._getDirectorCountryID();
+
+              this.initPreSelection(network)
             })
 
             // get the country levels values
@@ -152,8 +161,6 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                 this.networkCountryId = selection["networkCountryId"];
                 this.UserType = selection["userType"];
 
-
-                console.log(this.networkId)
                 this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(network => {
@@ -164,6 +171,9 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
                     this._getHazards();
                     this._getDirectorCountryID();
+
+                    //get pre-select country and default to this location
+                    this.initPreSelection(network);
                   })
               })
 
@@ -179,6 +189,13 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
       })
 
+  }
+
+  private initPreSelection(network) {
+    this.preSelectCountry = network.location
+    this.alertData.affectedAreas.forEach(area => {
+      area.country = network.location
+    })
   }
 
   ngOnDestroy(): void {
@@ -303,6 +320,11 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               .subscribe((snap) => {
                 value.hazardName = snap.val().name;
               });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
           }
           this.hazards.push(value);
         }

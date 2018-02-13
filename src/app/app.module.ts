@@ -304,8 +304,53 @@ import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-ris
 import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
 import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
 import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
-
-
+import { CountryDepartmentsComponent } from './country-admin/settings/country-departments/country-departments.component';
+import { LocalAgencyMinimumPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-minimum-preparedness/local-agency-minimum-preparedness.component';
+import { LocalAgencyAdevancedPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-adevanced-preparedness/local-agency-adevanced-preparedness.component';
+import { LocalAgencyBudgetComponent } from './local-agency/local-agency-preparedness/local-agency-budget/local-agency-budget.component';
+import { LocalAgencySelectPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-select-preparedness/local-agency-select-preparedness.component';
+import { LocalAgencyCreateEditPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-create-edit-preparedness/local-agency-create-edit-preparedness.component';
+import { LocalAgencyResponsePlansComponent } from './local-agency/local-agency-response-plans/local-agency-response-plans.component';
+import { LocalAgencyCreateEditResponsePlansComponent } from './local-agency/local-agency-response-plans/local-agency-create-edit-response-plans/local-agency-create-edit-response-plans.component';
+import { LocalAgencyAddPartnerOrganisationComponent } from './local-agency/local-agency-response-plans/local-agency-add-partner-organisation/local-agency-add-partner-organisation.component';
+import { LocalAgencyExternalPartnerResponsePlanComponent } from './local-agency/local-agency-response-plans/local-agency-external-partner-response-plan/local-agency-external-partner-response-plan.component';
+import { LocalAgencyViewPlanComponent } from './local-agency/local-agency-response-plans/local-agency-view-plan/local-agency-view-plan.component';
+import { LocalAgencyContactsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-contacts.component';
+import { LocalAgencyCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-coordination.component';
+import { LocalAgencyDocumentsComponent } from './local-agency/local-agency-profile/local-agency-documents/local-agency-documents.component';
+import { LocalAgencyEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-equipment.component';
+import { LocalAgencyOfficeCapacityComponent } from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-office-capacity.component';
+import { LocalAgencyProfileMenuComponent } from './local-agency/local-agency-profile/local-agency-profile-menu/local-agency-profile-menu.component';
+import { LocalAgencyPartnersComponent } from './local-agency/local-agency-profile/local-agency-partners/local-agency-partners.component';
+import { LocalAgencyProgrammeComponent } from './local-agency/local-agency-profile/local-agency-programme/local-agency-programme.component';
+import { LocalAgencyStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-stock-capacity.component';
+import { LocalAgencyAddEditMappingComponent } from './local-agency/local-agency-profile/local-agency-programme/local-agency-add-edit-mapping/local-agency-add-edit-mapping.component';
+import { LocalAgencyAddEditSurgeCapacityComponent } from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-add-edit-surge-capacity/local-agency-add-edit-surge-capacity.component';
+import { LocalAgencyAddEditEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-equipment/local-agency-add-edit-equipment.component';
+import { LocalAgencyAddEditSurgeEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-surge-equipment/local-agency-add-edit-surge-equipment.component';
+import { LocalAgencyAddEditCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-add-edit-coordination/local-agency-add-edit-coordination.component';
+import { LocalAgencyAddEditStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
+import { LocalAgencyAddEditPointOfContactComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-add-edit-point-of-contact/local-agency-add-edit-point-of-contact.component';
+import { LocalAgencyEditOfficeDetailsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-edit-office-details/local-agency-edit-office-details.component';
+import { LocalAgencySettingsResponsePlanComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-response-plan/local-agency-settings-response-plan.component';
+import { LocalAgencyClockSettingsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-clock-settings/local-agency-clock-settings.component';
+import { LocalAgencyDepartmentComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-department/local-agency-department.component';
+import { LocalAgencyModulesComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-modules/local-agency-modules.component';
+import { LocalAgencyNotificationComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-notification/local-agency-notification.component';
+import { LocalAgencySettingsMenuComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-menu/local-agency-settings-menu.component';
+import { LocalAgencySkillsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-skills/local-agency-skills.component';
+import { LocalAgencySettingsDocumentsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-documents/local-agency-settings-documents.component';
+import { LocalAgencyMessagesComponent } from './local-agency/local-agency-messages/local-agency-messages.component';
+import { LocalAgencyCreateEditMessageComponent } from './local-agency/local-agency-messages/local-agency-create-edit-message/local-agency-create-edit-message.component';
+import { LocalAgencyAccountSettingsComponent } from './local-agency/local-agency-account-settings/local-agency-account-settings.component';
+import { LocalAgencyChangePasswordComponent } from './local-agency/local-agency-account-settings/local-agency-change-password/local-agency-change-password.component';
+import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-account-details/local-agency-account-details.component';
+import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
+import { FieldOfficeService } from "./services/field-office.service";
+import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
+import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
+import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
+import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -561,6 +606,8 @@ const firebaseAuthConfig = {
     LocalNetworkAdministrationAgenciesComponent,
     LocalNetworkAdministrationSettingsComponent,
     LocalNetworkAdministrationMessagesComponent,
+    LocalNetworkGlobalMapsComponent,
+    LocalNetworkGlobalMapsListComponent,
     LocalInviteAgenciesComponent,
     NetworkCreateEditMessageComponent,
     NetworkNotificationsComponent,
@@ -613,7 +660,52 @@ const firebaseAuthConfig = {
     LocalAgencyCreateAlertComponent,
     LocalAgencyAdministrationStaffComponent,
     LocalAgencyAddEditStaffComponent,
-    LocalAgencyAddEditPartnerComponent
+    LocalAgencyAddEditPartnerComponent,
+    CountryDepartmentsComponent,
+    LocalAgencyAddEditPartnerComponent,
+    LocalAgencyMinimumPreparednessComponent,
+    LocalAgencyAdevancedPreparednessComponent,
+    LocalAgencyBudgetComponent,
+    LocalAgencySelectPreparednessComponent,
+    LocalAgencyCreateEditPreparednessComponent,
+    LocalAgencyResponsePlansComponent,
+    LocalAgencyCreateEditResponsePlansComponent,
+    LocalAgencyAddPartnerOrganisationComponent,
+    LocalAgencyExternalPartnerResponsePlanComponent,
+    LocalAgencyViewPlanComponent,
+    LocalAgencyContactsComponent,
+    LocalAgencyCoordinationComponent,
+    LocalAgencyDocumentsComponent,
+    LocalAgencyEquipmentComponent,
+    LocalAgencyOfficeCapacityComponent,
+    LocalAgencyProfileMenuComponent,
+    LocalAgencyPartnersComponent,
+    LocalAgencyProgrammeComponent,
+    LocalAgencyStockCapacityComponent,
+    LocalAgencyAddEditMappingComponent,
+    LocalAgencyAddEditSurgeCapacityComponent,
+    LocalAgencyAddEditEquipmentComponent,
+    LocalAgencyAddEditSurgeEquipmentComponent,
+    LocalAgencyAddEditCoordinationComponent,
+    LocalAgencyAddEditStockCapacityComponent,
+    LocalAgencyEditOfficeDetailsComponent,
+    LocalAgencyAddEditPointOfContactComponent,
+    LocalAgencySettingsResponsePlanComponent,
+    LocalAgencyClockSettingsComponent,
+    LocalAgencyDepartmentComponent,
+    LocalAgencyModulesComponent,
+    LocalAgencyNotificationComponent,
+    LocalAgencySettingsMenuComponent,
+    LocalAgencySkillsComponent,
+    LocalAgencySettingsDocumentsComponent,
+    LocalAgencyMessagesComponent,
+    LocalAgencyCreateEditMessageComponent,
+    LocalAgencyAccountSettingsComponent,
+    LocalAgencyChangePasswordComponent,
+    LocalAgencyAccountDetailsComponent,
+    CountryFieldOfficeSettingsComponent,
+    CountryOfficeAddEditFieldOfficeComponent,
+    AgencyOverviewComponent
   ],
   imports: [
     BrowserModule,
@@ -660,7 +752,9 @@ const firebaseAuthConfig = {
     NetworkService,
     NetworkMapService,
     NetworkCountryService,
-    ActionsService],
+    ActionsService,
+    FieldOfficeService
+  ],
   bootstrap: [AppComponent]
 })
 

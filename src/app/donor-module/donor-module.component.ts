@@ -132,7 +132,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
         }, allLocations);
       });
 
-    //get network country offices
+    // //get network country offices
     // this.af.database.object(Constants.APP_STATUS + "/networkCountry/", {preserveSnapshot: true})
     //   .map(snap => {
     //     let locations = [];

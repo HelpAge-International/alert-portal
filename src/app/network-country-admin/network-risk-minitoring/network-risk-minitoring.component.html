@@ -147,6 +147,7 @@
                       </a>
                     </ng-container>
                   </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee) && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
                   <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['agency']">Monitoring Agency: {{indicatorC['agency'].name}}</div>
                 </div>
                 <div *ngIf="(locationFilter == -1 || (indicatorC.affectedLocation && indicatorC.affectedLocation['0'].level1 == locationFilter))
@@ -282,7 +283,7 @@
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey] && uid == indicatorC.assignee">
                     <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                          (click)="updateIndicatorStatus('countryContext', indicatorC, indicatorKey)">
-                      {{"ACCOUNT_SETTINGS.SAVE" | translate}}
+                      {{"SAVE" | translate}}
                     </div>
                     <br>
                     <p class="Right-aligned col-lg-6">
@@ -434,6 +435,9 @@
           <div class="card-block">
             <div class="Sub-header-title__wrap--risk">
               <div *ngIf="!isViewingFromExternal" class="sub-sub-contents__wrap--risk col-sm-11">
+                <a href="javascript:void(0)" data-toggle="modal"
+                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario); changeHazard(hazardId);">
+                  {{"GLOBAL.EDIT" | translate}}</a>
                 <a href="javascript:void(0)"
                    *ngIf="hazard.existsOnNetwork"
                    data-toggle="modal"
@@ -469,6 +473,7 @@
                     </a>
 
                   </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
                   <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                 </div>
                 <div *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
@@ -766,6 +771,7 @@
                      data-toggle="modal"
                      data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
+                  <a href="javascript:void(0)">{{"GLOBAL.CHANGE" | translate}}</a>
                   <a *ngIf="hazard.existsOnNetwork" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
                   <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)" (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
@@ -793,6 +799,7 @@
                          [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT" | translate}}
                       </a>
                     </div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
                     <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
                   </div>
                   <div

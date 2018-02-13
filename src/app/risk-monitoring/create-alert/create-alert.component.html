@@ -36,6 +36,20 @@
       </label>
     </div>
 
+    <!--other not monitored hazards-->
+    <div class="row" style="width:100%">
+      <div class="col-sm-5 Checkbox--ribbon__alert Left">
+        <p>Non-monitoring hazard</p>
+        <select class="form-control"
+                [(ngModel)]="alertData.hazardScenario">
+          <option [value]="'undefined'" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+          <option *ngFor="let hazard of nonMonitoredHazards" [value]="hazard">
+            {{hazardScenario[hazard] | translate}}
+          </option>
+        </select>
+      </div>
+    </div>
+
     <!--Select Alert level-->
     <br>
     <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_ALERT.INPUTS.SELECT_ALERT" | translate}}</b>
@@ -51,19 +65,22 @@
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
         <input type="radio" name="alert1" id="RT_yes" [(ngModel)]="alertData.alertLevel" [value]="1">
       </label>
-      <button class="btn btn-warning Left" id="amberAlert" (click)="highlightRadio()">{{alertLevels[1] | translate}}</button>
+      <button class="btn btn-warning Left" id="amberAlert" (click)="highlightRadio()">{{alertLevels[1] | translate}}
+      </button>
 
       <!--red alert -->
       <label for="RT_yes"
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
         <input type="radio" name="alert1" id="radioRed" [(ngModel)]="alertData.alertLevel" [value]="2">
       </label>
-      <button  id="redAlert" (click)="highlightRadio()" class="btn btn-danger Left">{{alertLevels[2] | translate}}</button>
+      <button id="redAlert" (click)="highlightRadio()" class="btn btn-danger Left">{{alertLevels[2] | translate}}
+      </button>
     </div>
 
     <br>
 
-    <h6 class="Spaced-above" *ngIf="alertData.alertLevel && alertData.alertLevel == 2"><b>{{"REASONS_FOR_RED_ALERT_REQUEST" | translate}}</b></h6>
+    <h6 class="Spaced-above" *ngIf="alertData.alertLevel && alertData.alertLevel == 2"><b>{{"REASONS_FOR_RED_ALERT_REQUEST"
+      | translate}}</b></h6>
     <div class="Spaced-above form-group col-sm-12 row" *ngIf="alertData.alertLevel && alertData.alertLevel == 2">
       <input type="text" class="large-text-padding__wrap--risk form-control form-control-sm col-sm-5"
              id="smFormGroupInput" [(ngModel)]="alertData.reasonForRedAlert">
@@ -80,7 +97,7 @@
             <select class="form-control" name="CountryArea"
                     [(ngModel)]="location.country">
               <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-              <option *ngFor="let countryKey of countriesList" [ngValue]="countryKey">{{countries[countryKey] |
+              <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] |
                 translate}}
               </option>
             </select>

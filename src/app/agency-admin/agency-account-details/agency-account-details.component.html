@@ -1,5 +1,11 @@
-<app-agency-admin-header></app-agency-admin-header>
-<app-agency-admin-menu></app-agency-admin-menu>
+<ng-container *ngIf="!isLocalAgency">
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
 
 <div class="Alert-success" [hidden]="successInactive">
   {{successMessage | translate}}
@@ -104,7 +110,7 @@
 
     <div class="Form-submit__wrapper">
       <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.SAVE_CHANGES" | translate | uppercase}}</div>
-      <div class="btn btn-outline-secondary" routerLink="/agency-admin/country-office">{{"GLOBAL.CANCEL" | translate}}
+      <div class="btn btn-outline-secondary" [routerLink]="isLocalAgency ? ['/local-agency/dashboard'] : ['/agency-admin/country-office']">{{"GLOBAL.CANCEL" | translate}}
       </div>
     </div>
 

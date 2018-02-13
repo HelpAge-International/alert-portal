@@ -64,6 +64,10 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
   private networkViewValues: {};
   private isViewing: boolean;
   private systemId: string;
+  private preSelectCountry: number;
+
+  //phase 2
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
 
 
   constructor(private pageControl: PageControlService,
@@ -85,7 +89,11 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    let model = new OperationAreaModel()
+    if (this.preSelectCountry >= 0) {
+      model.country = this.preSelectCountry
+    }
+    this.alertData.affectedAreas.push(model);
   }
 
   removeAnotherArea(key: number,) {
@@ -134,6 +142,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                         this._getHazards();
                         this._getDirectorCountryID();
                       })
+
+                    this.initPreSelection(network)
                   })
 
 
@@ -172,6 +182,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                         this._getHazards();
                         this._getDirectorCountryID();
                       })
+                    //get network location
+                    this.initPreSelection(network);
                   })
               })
 
@@ -186,6 +198,13 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
 
       })
 
+  }
+
+  private initPreSelection(network) {
+    this.preSelectCountry = network.countryCode
+    this.alertData.affectedAreas.forEach(area => {
+      area.country = network.countryCode
+    })
   }
 
   ngOnDestroy(): void {
@@ -310,6 +329,11 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
               .subscribe((snap) => {
                 value.hazardName = snap.val().name;
               });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
           }
           this.hazards.push(value);
         }

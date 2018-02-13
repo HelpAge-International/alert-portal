@@ -15,6 +15,8 @@ import {UUID} from "../../utils/UUID";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NotificationSettingsModel} from "../../model/notification-settings.model";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {UserService} from "../../services/user.service";
+import {NetworkService} from "../../services/network.service";
 
 declare var jQuery: any;
 
@@ -37,12 +39,11 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   agencyAdminAddressLine1: string;
   agencyAdminAddressLine2: string;
   agencyAdminAddressLine3: string;
-  agencyAdminCountry: number;
+  agencyAdminCountry: string;
   agencyAdminCity: string;
   agencyAdminPostCode: string;
   isEdit = false;
   Country = Constants.COUNTRIES;
-  countryList: number[] = Constants.COUNTRY_SELECTION;
   PersonTitle = Constants.PERSON_TITLE;
   personTitleList: number[] = Constants.PERSON_TITLE_SELECTION;
   private emailInDatabase: string;
@@ -62,7 +63,11 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router,
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private networkService: NetworkService,
               private route: ActivatedRoute) {
   }
 
@@ -99,9 +104,9 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
         this.isDonor = agency.isDonor;
 
         //checks to see if isGlobal exists on the agency as old agencies may not have the property
-        if(agency.hasOwnProperty('isGlobalAgency')){
+        if (agency.hasOwnProperty('isGlobalAgency')) {
           this.isGlobalAgency = agency.isGlobalAgency;
-        } else{
+        } else {
           this.isGlobalAgency = true
         }
 
@@ -130,7 +135,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
             this.agencyAdminAddressLine1 = user.addressLine1;
             this.agencyAdminAddressLine2 = user.addressLine2;
             this.agencyAdminAddressLine3 = user.addressLine3;
-            this.agencyAdminCountry = user.country;
+            this.agencyAdminCountry = this.COUNTRY[user.country];
             this.agencyAdminCity = user.city;
             this.agencyAdminPostCode = user.postCode;
           });
@@ -172,24 +177,25 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private updateWithNewEmail() {
     console.log("new email");
     // let secondApp = firebase.initializeApp(firebaseConfig, "second");
-    let tempPassword = Constants.TEMP_PASSWORD;
-    console.log(this.agencyAdminEmail)
-    console.log(tempPassword)
-    this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
-      console.log("user " + x.uid + " created successfully");
-      let uid: string = x.uid;
-      this.writeToFirebase(uid);
-      this.secondApp.auth().signOut();
-    }, (error:any) => {
-      console.log(error.message);
-      console.log(error.code);
-      if (error.code == 'auth/email-already-in-use') {
-        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
-      } else {
-        this.errorMessage = "GLOBAL.GENERAL_ERROR";
-      }
-      this.showAlert();
-    });
+    this.createNewUser()
+    // let tempPassword = Constants.TEMP_PASSWORD;
+    // console.log(this.agencyAdminEmail)
+    // console.log(tempPassword)
+    // this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(x => {
+    //   console.log("user " + x.uid + " created successfully");
+    //   let uid: string = x.uid;
+    //   this.writeToFirebase(uid);
+    //   this.secondApp.auth().signOut();
+    // }, (error: any) => {
+    //   console.log(error.message);
+    //   console.log(error.code);
+    //   if (error.code == 'auth/email-already-in-use') {
+    //     this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
+    //   } else {
+    //     this.errorMessage = "GLOBAL.GENERAL_ERROR";
+    //   }
+    //   this.showAlert();
+    // });
   }
 
   private updateNoEmailChange() {
@@ -216,7 +222,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
         this.userPublic.addressLine3 = this.agencyAdminAddressLine3;
       }
       if (this.agencyAdminCountry) {
-        this.userPublic.country = this.agencyAdminCountry;
+        this.userPublic.country = this.COUNTRY.indexOf(this.agencyAdminCountry);
       }
       if (this.agencyAdminCity) {
         this.userPublic.city = this.agencyAdminCity;
@@ -256,6 +262,10 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     console.log(this.COUNTRY.indexOf(this.country));
   }
 
+  onSelectAgencyAdminCountry(){
+    console.log(this.agencyAdminCountry);
+  }
+
   private registerNewAgency() {
     this.validateAgencyName();
   }
@@ -292,23 +302,40 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
   private createNewUser() {
     console.log("start register new agency");
     // let secondApp = firebase.initializeApp(firebaseConfig, "fourth");
-    let tempPassword = Constants.TEMP_PASSWORD;
-    this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
-      console.log("user " + success.uid + " created successfully");
-      let uid: string = success.uid;
-      this.writeToFirebase(uid);
-      // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
-      this.secondApp.auth().signOut();
-    }, (error: any) => {
-      console.log(error.message);
-      console.log(error.code);
-      if (error.code == 'auth/email-already-in-use') {
-        this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
-      } else {
-        this.errorMessage = "GLOBAL.GENERAL_ERROR";
-      }
-      this.showAlert();
-    });
+
+    this.userService.getUserByEmail(this.agencyAdminEmail)
+      .first()
+      .subscribe(existUser => {
+        if (!existUser) {
+          let userId = this.networkService.generateKeyUserPublic()
+          this.writeToFirebase(userId)
+        } else {
+          this.errorMessage = "Email is already exist!"
+          this.showAlert();
+        }
+      }, err => {
+        this.errorMessage = err.message;
+        this.showAlert()
+      })
+
+
+    // let tempPassword = Constants.TEMP_PASSWORD;
+    // this.secondApp.auth().createUserWithEmailAndPassword(this.agencyAdminEmail, tempPassword).then(success => {
+    //   console.log("user " + success.uid + " created successfully");
+    //   let uid: string = success.uid;
+    //   this.writeToFirebase(uid);
+    //   // this.secondApp.auth().sendPasswordResetEmail(this.agencyAdminEmail);
+    //   this.secondApp.auth().signOut();
+    // }, (error: any) => {
+    //   console.log(error.message);
+    //   console.log(error.code);
+    //   if (error.code == 'auth/email-already-in-use') {
+    //     this.errorMessage = "SYSTEM_ADMIN.AGENCIES.EMAIL_IN_USE_ERROR";
+    //   } else {
+    //     this.errorMessage = "GLOBAL.GENERAL_ERROR";
+    //   }
+    //   this.showAlert();
+    // });
   }
 
   private writeToFirebase(uid: string) {
@@ -320,7 +347,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     newAgencyAdmin.addressLine2 = this.agencyAdminAddressLine2 ? this.agencyAdminAddressLine2 : "";
     newAgencyAdmin.addressLine3 = this.agencyAdminAddressLine3 ? this.agencyAdminAddressLine3 : "";
     newAgencyAdmin.city = this.agencyAdminCity ? this.agencyAdminCity : "";
-    newAgencyAdmin.country = this.agencyAdminCountry ? this.agencyAdminCountry : -1;
+    newAgencyAdmin.country = this.COUNTRY.indexOf(this.agencyAdminCountry);
     newAgencyAdmin.postCode = this.agencyAdminPostCode ? this.agencyAdminPostCode : "";
     newAgencyAdmin.phone = "";
     agencyData["/userPublic/" + uid] = newAgencyAdmin;
@@ -331,6 +358,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
     if (this.isEdit) {
       if (!this.isGlobalAgency) {
+        console.log('global agency??')
         agencyData["/administratorLocalAgency/" + uid + "/agencyId"] = this.agencyId;
       }
       agencyData["/administratorAgency/" + uid + "/agencyId"] = this.agencyId;
@@ -345,6 +373,7 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agencyData["/agency/" + this.agencyId + "/isDonor"] = this.isDonor;
       agencyData["/agency/" + this.agencyId + "/isGlobalAgency"] = this.isGlobalAgency;
       if (!this.isGlobalAgency) {
+        console.log('global agency??')
         agencyData["/agency/" + this.agencyId + "/countryCode"] = this.COUNTRY.indexOf(this.country);
       } else {
         agencyData["/agency/" + this.agencyId + "/countryCode"] = null;
@@ -360,9 +389,9 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
       agencyData["/userPrivate/" + this.adminId] = null;
 
 
-
     } else {
       if (!this.isGlobalAgency) {
+        console.log('global agency??')
         agencyData["/administratorLocalAgency/" + uid + "/agencyId"] = uid;
       }
       agencyData["/administratorAgency/" + uid + "/agencyId"] = uid;

@@ -46,7 +46,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private sectorImgPathMap = new Map<number, string>();
   private isEditingCapacity: boolean;
 
-  private agencies = []
+  private agencies = [];
 
   //TODO check user permission to edit
   private canEdit: boolean = true;
@@ -101,8 +101,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   private isViewingFromExternal: boolean;
 
   private agencyCountryPrivacyMap = new Map<string, ModelAgencyPrivacy>()
-  private Privacy = Privacy
-
+  private Privacy = Privacy;
+  private isOpenAgencyMenus: boolean;
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -205,7 +205,9 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
               .subscribe(map => {
                 console.log(map);
                 this.officeAgencyMap = map;
-
+                if (!map){
+                  return;
+                }
                 map.forEach((value: string, key: string) => {
                   this._agencyService.getAgency(key)
                     .takeUntil(this.ngUnsubscribe)
@@ -515,7 +517,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
             res(true);
           });
       });
-    })
+    });
     return promise;
   }
 
@@ -532,6 +534,21 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
         this.tSkillsFilter = filterVal;
         break;
     }
+    this.openAgencyMenus();
+  }
+
+  /** Opening agency menus when a filter selected*/
+  openAgencyMenus() {
+    if (!this.agencies || this.isOpenAgencyMenus){
+      return;
+    }
+
+    this.isOpenAgencyMenus = true;
+
+    this.agencies.forEach(function (value, index){
+      console.log('#header_section_'+index);
+      jQuery('#header_section_'+index).trigger('click');
+    });
   }
 
   //

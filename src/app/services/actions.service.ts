@@ -44,10 +44,9 @@ export class ActionsService {
       }
     })
       .map(actions => {
-        console.log(actions);
         let filteredActions = [];
         actions.forEach(action => {
-          if (action.asignee === uid && !action.isComplete) {
+          if (action.asignee === uid && !action.isComplete && !action.isArchived) {
             action["countryId"] = countryId
             filteredActions.push(action);
           }
@@ -132,7 +131,6 @@ export class ActionsService {
   }
 
 
-
   getActionTitle(action): string {
     let title = "";
     let today = moment().startOf('day').valueOf();
@@ -140,9 +138,8 @@ export class ActionsService {
     if (action.type == ActionType.chs) {
       title = this.translate.instant("A_CHS_PREP_ACTION")
     }
-    else if (action.type == ActionType.mandated)
-    {
-      title = this.translate.instant("A_MANDATED_PREP_ACTION" )
+    else if (action.type == ActionType.mandated) {
+      title = this.translate.instant("A_MANDATED_PREP_ACTION")
     }
     else if (action.level == ActionLevel.MPA) {
       title = this.translate.instant("A_MIN_PREP_ACTION")
@@ -180,7 +177,7 @@ export class ActionsService {
     return title;
   }
 
-  getAlerts(countryId) {
+  getAlerts(countryId, isLocalAgency?) {
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
@@ -206,6 +203,11 @@ export class ActionsService {
             modelAlert.updatedBy = alert.updatedBy;
           }
 
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber;
+          }
+
+
           let affectedAreas: ModelAffectedArea[] = [];
           if (alert.affectedAreas) {
             let ids: string[] = Object.keys(alert.affectedAreas);
@@ -223,11 +225,18 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if (alert.approval && alert.approval['countryDirector']) {
-            modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
-            modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          if (isLocalAgency) {
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+          } else {
+            if (alert.approval && alert.approval['countryDirector']) {
+              modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+              modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+            }
           }
+
           alertList.push(modelAlert);
+
         });
         return alertList;
       })
@@ -292,7 +301,7 @@ export class ActionsService {
     return Constants.COUNTRIES[countryId];
   }
 
-  getRedAlerts(countryId) {
+  getRedAlerts(countryId, isLocalAgency?) {
 
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
@@ -317,6 +326,10 @@ export class ActionsService {
             modelAlert.updatedBy = alert.updatedBy;
           }
 
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber;
+          }
+
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
           ids.forEach(id => {
@@ -332,8 +345,14 @@ export class ActionsService {
             affectedAreas.push(modelAffectedArea);
           });
           modelAlert.affectedAreas = affectedAreas;
-          modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
-          modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          if (isLocalAgency) {
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+          } else {
+            modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
+            modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+          }
+
           alertList.push(modelAlert);
         });
         return alertList;
@@ -458,6 +477,65 @@ export class ActionsService {
       });
   }
 
+  getAlertLocalAgency(alertId, agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alertId)
+      .map(alert => {
+        let modelAlert = new ModelAlert();
+        modelAlert.id = alert.$key;
+        modelAlert.alertLevel = alert.alertLevel;
+        modelAlert.hazardScenario = alert.hazardScenario;
+        modelAlert.otherName = alert.otherName;
+        modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+        modelAlert.infoNotes = alert.infoNotes;
+        modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+        modelAlert.timeCreated = alert.timeCreated;
+        modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
+        modelAlert.createdBy = alert.createdBy;
+
+        if (alert.previousIsAmber) {
+          modelAlert.previousIsAmber = alert.previousIsAmber;
+        }
+
+
+        let affectedAreas: ModelAffectedArea[] = [];
+        let ids: string[] = Object.keys(alert.affectedAreas);
+        ids.forEach(id => {
+          let modelAffectedArea = new ModelAffectedArea();
+          let affectedCountry = alert.affectedAreas[id]['country'];
+          let affectedLevel1 = alert.affectedAreas[id]['level1'];
+          let affectedLevel2 = alert.affectedAreas[id]['level2'];
+
+          modelAffectedArea.affectedCountry = affectedCountry;
+          modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
+          modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
+
+          affectedAreas.push(modelAffectedArea);
+        });
+        modelAlert.affectedAreas = affectedAreas;
+
+        modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+        modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+
+        return modelAlert;
+      })
+      .do(modelAlert => {
+        if (modelAlert.hazardScenario == -1) {
+          this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + modelAlert.otherName)
+            .first()
+            .subscribe(nameObj => {
+              modelAlert.displayName = nameObj.name;
+            })
+        }
+      })
+      .do(modelAlert => {
+        this.userService.getUser(modelAlert.updatedBy ? modelAlert.updatedBy : modelAlert.createdBy)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(user => {
+            modelAlert.createdByName = user.firstName + " " + user.lastName
+          });
+      });
+  }
+
   getAllLevelInfo(country: number) {
     return this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .map(result => {
@@ -523,6 +601,8 @@ export class ActionsService {
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
 
+    updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
+
     console.log(updateData);
     if (networkCountryId) {
 
@@ -560,6 +640,77 @@ export class ActionsService {
     });
   }
 
+  updateAlertLocalAgency(alert: ModelAlert, alertLevelBefore: number, agencyId: string) {
+    console.log("update alert");
+    let updateData = {};
+    let areaData = {};
+    let index: number = 0;
+    alert.affectedAreas.forEach(area => {
+      let subData = {};
+      subData["country"] = Number(area.country);
+      if (area.level1) {
+        subData["level1"] = Number(area.level1);
+      }
+      if (area.level2) {
+        subData["level2"] = Number(area.level2);
+      }
+      areaData[index] = subData;
+      index++;
+    });
+    updateData["affectedAreas"] = areaData;
+    updateData["alertLevel"] = alert.alertLevel;
+    let countryDirectorData = {};
+    countryDirectorData[alert.approvalDirectorId] = alert.approvalStatus;
+    // countryDirectorData[alert.approvalCountryId] = alert.approvalStatus;
+    let countryDirector = {};
+    countryDirector["localAgencyDirector"] = countryDirectorData;
+    updateData["approval"] = countryDirector;
+    updateData["createdBy"] = alert.createdBy;
+    updateData["estimatedPopulation"] = alert.estimatedPopulation;
+    updateData["hazardScenario"] = alert.hazardScenario;
+    if (alert.hazardScenario == -1) {
+      updateData["otherName"] = alert.otherName;
+    }
+    updateData["infoNotes"] = alert.infoNotes;
+    if (alert.reasonForRedAlert) {
+      updateData["reasonForRedAlert"] = alert.reasonForRedAlert;
+    }
+    updateData["timeCreated"] = alert.timeCreated;
+    updateData["timeUpdated"] = alert.timeUpdated;
+    updateData["updatedBy"] = alert.updatedBy;
+
+    updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
+
+
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alert.id).set(updateData).then(() => {
+      // Send notification to users with Alert level changed notification
+      const alertChangedNotificationSetting = 0;
+      let riskNameTranslated = "";
+      if (alert.hazardScenario != -1) {
+        riskNameTranslated = this.translate.instant(Constants.HAZARD_SCENARIOS[alert.hazardScenario]);
+      } else {
+        riskNameTranslated = this.translate.instant(alert.displayName);
+      }
+      const levelBefore = this.translate.instant(Constants.ALERTS[alertLevelBefore]);
+      const levelAfter = this.translate.instant(Constants.ALERTS[alert.alertLevel]);
+
+      let notification = new MessageModel();
+      notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_TITLE", {riskName: riskNameTranslated});
+      notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ALERT_LEVEL_UPDATED_CONTENT", {
+        riskName: riskNameTranslated,
+        levelBefore: levelBefore,
+        levelAfter: levelAfter
+      });
+      notification.time = new Date().getTime();
+
+      this.notificationService.saveUserNotificationBasedOnNotificationSettingLocalAgency(notification, alertChangedNotificationSetting, agencyId);
+
+      this.router.navigateByUrl('/local-agency/dashboard')
+    }, error => {
+      console.log(error.message);
+    });
+  }
+
   getAlertsForDirectorToApprove(uid, countryId, isNetwork?) {
     console.log(countryId)
     console.log(uid)
@@ -587,6 +738,10 @@ export class ActionsService {
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.createdBy = alert.createdBy;
 
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
+
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
           ids.forEach(id => {
@@ -605,6 +760,104 @@ export class ActionsService {
 
           modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
           modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
+
+          alertList.push(modelAlert);
+        });
+        return alertList;
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          if (alert.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
+              .first()
+              .subscribe(nameObj => {
+                alert.otherName = nameObj.name;
+              });
+          }
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          this.userService.getUser(alert.createdBy)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(user => {
+              alert.createdByName = user.firstName + " " + user.lastName
+            });
+        });
+      })
+      .do(alertList => {
+        alertList.forEach(alert => {
+          let affectedAreasToDisplay: any[] = [];
+          alert.affectedAreas.forEach(affectedArea => {
+            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+              let obj = {
+                country: "",
+                areas: ""
+              };
+              if (affectedArea.affectedCountry > -1) {
+                obj.country = this.getCountryNameById(affectedArea.affectedCountry);
+              }
+              if (affectedArea.affectedLevel1 > -1) {
+                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+              }
+              if (affectedArea.affectedLevel2 > -1) {
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+              }
+              affectedAreasToDisplay.push(obj);
+            });
+          });
+          alert.affectedAreasDisplay = affectedAreasToDisplay;
+        });
+      });
+  }
+
+  getAlertsForDirectorToApproveLocalAgency(uid, agencyId) {
+
+
+    return this.af.database.list(Constants.APP_STATUS + "/alert/" + agencyId, {
+      query: {
+        orderByChild: "approval/localAgencyDirector/" + agencyId,
+        equalTo: AlertStatus.WaitingResponse
+      }
+    })
+      .map(alerts => {
+        console.log(alerts)
+        let alertList = [];
+        alerts.forEach(alert => {
+          let modelAlert = new ModelAlert();
+          modelAlert.id = alert.$key;
+          modelAlert.alertLevel = alert.alertLevel;
+          modelAlert.hazardScenario = alert.hazardScenario;
+          modelAlert.otherName = alert.otherName;
+          modelAlert.otherName = alert.otherName;
+          modelAlert.estimatedPopulation = Number(alert.estimatedPopulation);
+          modelAlert.infoNotes = alert.infoNotes;
+          modelAlert.reasonForRedAlert = alert.reasonForRedAlert;
+          modelAlert.timeCreated = alert.timeCreated;
+          modelAlert.createdBy = alert.createdBy;
+
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
+
+          let affectedAreas: ModelAffectedArea[] = [];
+          let ids: string[] = Object.keys(alert.affectedAreas);
+          ids.forEach(id => {
+            let modelAffectedArea = new ModelAffectedArea();
+            let affectedCountry = alert.affectedAreas[id]['country'];
+            let affectedLevel1 = alert.affectedAreas[id]['level1'];
+            let affectedLevel2 = alert.affectedAreas[id]['level2'];
+
+            modelAffectedArea.affectedCountry = affectedCountry;
+            modelAffectedArea.affectedLevel1 = affectedLevel1 != null ? affectedLevel1 : -1;
+            modelAffectedArea.affectedLevel2 = affectedLevel2 != null ? affectedLevel2 : -1;
+
+            affectedAreas.push(modelAffectedArea);
+          });
+          modelAlert.affectedAreas = affectedAreas;
+
+          modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+          modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
 
           alertList.push(modelAlert);
         });
@@ -681,6 +934,10 @@ export class ActionsService {
           modelAlert.createdBy = alert.createdBy;
           modelAlert.networkCountryId = networkCountryId;
           modelAlert.networkId = networkId
+
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
 
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
@@ -776,6 +1033,10 @@ export class ActionsService {
           modelAlert.createdBy = alert.createdBy;
           modelAlert.networkId = networkId;
 
+          if (alert.previousIsAmber) {
+            modelAlert.previousIsAmber = alert.previousIsAmber
+          }
+
           let affectedAreas: ModelAffectedArea[] = [];
           let ids: string[] = Object.keys(alert.affectedAreas);
           ids.forEach(id => {
@@ -857,12 +1118,18 @@ export class ActionsService {
 
   }
 
+  approveRedAlertLocalAgency(agencyId, alertId, uid) {
+
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alertId + "/approval/localAgencyDirector/" + agencyId).set(AlertStatus.Approved);
+
+  }
+
   approveRedAlertNetwork(countryId, alertId, networkCountryId) {
     return this.af.database.object(Constants.APP_STATUS + "/alert/" + networkCountryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
   }
 
   getAlertObj(countryId, alertId) {
-    return this.af.database.object(Constants.APP_STATUS + "/alert/"+countryId + "/" + alertId)
+    return this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId)
   }
 
   copyRedAlertOverFromNetwork(agencyCountryMap, alertId, alertObj) {
@@ -880,17 +1147,24 @@ export class ActionsService {
 
   }
 
-  rejectRedAlert(countryId, alertId, uid) {
+  rejectRedAlert(countryId, alert, uid) {
     let update = {};
-    update["/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
-    update["/alert/" + countryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
+    update["/alert/" + countryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + countryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  rejectRedAlertNetwork(countryId, alertId, networkCountryId) {
+  rejectRedAlertLocalAgency(agencyId, alert, uid) {
     let update = {};
-    update["/alert/" + networkCountryId + "/" + alertId + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
-    update["/alert/" + networkCountryId + "/" + alertId + "/alertLevel/"] = AlertLevels.Amber;
+    update["/alert/" + agencyId + "/" + alert.id + "/approval/localAgencyDirector/" + agencyId] = AlertStatus.Rejected;
+    update["/alert/" + agencyId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
+    this.af.database.object(Constants.APP_STATUS).update(update);
+  }
+
+  rejectRedAlertNetwork(countryId, alert, networkCountryId) {
+    let update = {};
+    update["/alert/" + networkCountryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + networkCountryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
@@ -943,17 +1217,20 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        plans.forEach(plan => {
-          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(user => {
-              plan["displayName"] = user.firstName + " " + user.lastName;
-              plan["countryId"] = countryId;
-            });
-        });
-
-        return plans;
+        if (plans && plans.length > 0) {
+          plans.forEach(plan => {
+            let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(user => {
+                plan["displayName"] = user.firstName + " " + user.lastName;
+                plan["countryId"] = countryId;
+              });
+          });
+          return plans;
+        } else {
+          return []
+        }
       });
   }
 
@@ -965,19 +1242,35 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        plans.forEach(plan => {
-          let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(user => {
-              plan["displayName"] = user.firstName + " " + user.lastName;
-              plan["countryId"] = countryId;
-            });
-        });
-        return plans;
+        if (plans && plans.length > 0) {
+          plans.forEach(plan => {
+            let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
+            this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(user => {
+                plan["displayName"] = user.firstName + " " + user.lastName;
+                plan["countryId"] = countryId;
+              });
+          });
+          return plans;
+        } else {
+          return []
+        }
       });
   }
 
+  getApaActionsNeedResetForThisAlert(countryId: string, alert: ModelAlert) {
+    let hazard = alert.hazardScenario
+    return this.af.database.list(Constants.APP_STATUS + "/action/" + countryId, {
+      query: {
+        orderByChild: "level",
+        equalTo: ActionLevel.APA
+      }
+    })
+      .map(apas => {
+        return apas.filter(apa => ((!apa.assignHazard || apa.assignHazard == hazard) && apa.isComplete))
+      })
+  }
 
   unSubscribeNow() {
     this.ngUnsubscribe.next();

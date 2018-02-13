@@ -1,8 +1,16 @@
 <ng-container *ngIf="!isNetworkAdmin">
-  <div *ngIf="!isViewing">
-    <app-country-admin-header></app-country-admin-header>
-    <app-country-admin-menu></app-country-admin-menu>
-  </div>
+  <ng-container *ngIf="!isLocalAgency">
+    <div *ngIf="!isViewing">
+      <app-country-admin-header></app-country-admin-header>
+      <app-country-admin-menu></app-country-admin-menu>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="isLocalAgency">
+    <div *ngIf="!isViewing">
+      <app-local-agency-header></app-local-agency-header>
+      <app-local-agency-menu></app-local-agency-menu>
+    </div>
+  </ng-container>
 </ng-container>
 <ng-container *ngIf="isNetworkAdmin">
   <app-network-header></app-network-header>
@@ -16,13 +24,19 @@
   <div class="Full-page__wrap--inner">
 
     <ng-container *ngIf="!isNetworkAdmin">
-      <app-country-office-profile-menu></app-country-office-profile-menu>
+      <ng-container *ngIf="!isLocalAgency">
+        <app-country-office-profile-menu *ngIf="isAgencyAdmin" [isAgencyAdmin]="true"></app-country-office-profile-menu>
+        <app-country-office-profile-menu *ngIf="!isAgencyAdmin" [isAgencyAdmin]="false"></app-country-office-profile-menu>
+      </ng-container>
+      <ng-container *ngIf="isLocalAgency">
+        <app-local-agency-profile-menu></app-local-agency-profile-menu>
+      </ng-container>
     </ng-container>
     <ng-container *ngIf="isNetworkAdmin">
       <app-network-setting-menus></app-network-setting-menus>
     </ng-container>
 
-    <div *ngIf="!isNetworkAdmin" class="Sub-header-title__wrap">
+    <div *ngIf="!isNetworkAdmin && !isLocalAgency" class="Sub-header-title__wrap">
       <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
       <button *ngIf="countryPermissionsMatrix.other.DownloadDocuments" type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
               [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
@@ -34,11 +48,19 @@
               [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
       </button>
     </div>
+
+    <div *ngIf="isLocalAgency" class="Sub-header-title__wrap">
+      <h2>{{ 'DOCUMENTS_TEXT' | translate }}</h2>
+      <button type="button" class="btn btn-primary Inline-editable--enable" (click)="exportSelectedDocuments($event)"
+              [disabled]="docsCount < 1">{{ 'DOCUMENTS.EXPORT' | translate }}
+      </button>
+    </div>
+
     <div class="row align-items-center Filter-form System-admin--form-wrap">
       <div class="col-lg-1 col-md-1">
         {{ 'GLOBAL.FILTER' | translate }}
       </div>
-      <div *ngIf="!isNetworkAdmin" class="col-lg-2 col-md-2">
+      <div *ngIf="!isNetworkAdmin && !isLocalAgency" class="col-lg-2 col-md-2">
         <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
           <option value="-1" selected>{{ 'DOCUMENTS.ALL_COUNTRIES' | translate }}</option>
           <option *ngFor="let country of CountriesEnum; let i = index"
@@ -92,7 +114,8 @@
               </label>
             </div>
             <div class="col-sm-11">
-              <h2>{{COUNTRIES[country.location] | translate}}</h2>
+              <h2 *ngIf="!isLocalAgency">{{COUNTRIES[country.location] | translate}}</h2>
+              <h2 *ngIf="isLocalAgency">{{COUNTRIES[country.country] | translate}}</h2>
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Hide-all"
                  *ngIf="country.hasDocs">{{ 'GLOBAL.HIDE_ADD' | translate }}</a>
               <a href="#collapse{{country.$key}}" data-toggle="collapse" aria-expanded="false" class="Show-all"
@@ -107,7 +130,7 @@
             <div class="col-lg-3 col-md-3">{{ 'GLOBAL.TITLE' | translate }}</div>
             <div class="col-lg-2 col-md-2">{{ 'GLOBAL.NAME' | translate }}</div>
             <div class="col-lg-1 col-md-1">{{ 'GLOBAL.SIZE' | translate }}</div>
-            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS2.UPLOADED_BY' | translate }}</div>
+            <div class="col-lg-2 col-md-2">{{ 'DOCUMENTS.UPLOADED_BY' | translate }}</div>
             <div class="col-lg-1 col-md-2">{{ 'GLOBAL.DATE' | translate }}</div>
           </div>
 

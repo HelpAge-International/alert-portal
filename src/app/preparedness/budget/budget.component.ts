@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -9,6 +9,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {ModelDepartment} from "../../model/department.model";
+import {SettingsService} from "../../services/settings.service";
 
 
 declare var jQuery: any;
@@ -39,7 +40,17 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
   public minTotal: number;
   public advTotal: number;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  //Local Agency
+  @Input() isLocalAgency: boolean;
+
+  @Input() isAgencyAdmin: boolean;
+
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private settingService: SettingsService,
+              private userService: UserService) {
   }
 
   ngOnInit() {
@@ -58,18 +69,35 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
-      this.UserType = userType;
-      if (!(this.countryId != null && this.agencyId != null && this.isViewing)) {
-        this.agencyId = agencyId;
-        this.countryId = countryId;
-      }
-      this.populateDepartments();
-      this.populateNarratives();
-      this.populateBudgets();
-      this.calculateCurrency();
-    });
+    if (this.isLocalAgency) {
+      this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.uid = user.uid;
+        this.UserType = userType;
+        if (this.agencyId == null) {
+          this.agencyId = agencyId;
+          this.countryId = countryId;
+        }
+        this.populateDepartments();
+        this.populateNarrativesLocalAgency();
+        this.populateBudgetsLocalAgency();
+        this.calculateCurrency();
+      });
+    } else {
+      this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.uid = user.uid;
+        this.UserType = userType;
+        if (!(this.countryId != null && this.agencyId != null && this.isViewing)) {
+          this.agencyId = agencyId;
+          this.countryId = countryId;
+        }
+        this.populateDepartments();
+        this.populateNarratives();
+        this.populateBudgets();
+        this.calculateCurrency();
+      });
+    }
+
+
   }
 
   ngOnDestroy() {
@@ -82,6 +110,7 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -104,6 +133,13 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
           x.name = snapshot.val().name;
           this.departments.push(x);
         });
+
+        //add departments from country level as well (added for phase 2)
+        this.settingService.getCountryLocalDepartments(this.agencyId, this.countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(depts => {
+            this.departments = this.departments.concat(depts).filter((elem, index, self) => index === self.findIndex(item => item.id === elem.id))
+          })
       });
   }
 
@@ -111,7 +147,24 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
    * Generate a map of string -> string for departmentId -> narrative
    */
   public populateNarratives() {
+
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.advPrepNarrative = {};
+        for (let x in snap.val().advPreparednessBudget) {
+          this.advPrepNarrative[x] = snap.val().advPreparednessBudget[x].narrative;
+        }
+        this.minPrepNarrative = {};
+        for (let x in snap.val().minPreparednessBudget) {
+          this.minPrepNarrative[x] = snap.val().minPreparednessBudget[x].narrative;
+        }
+      });
+  }
+
+  public populateNarrativesLocalAgency() {
+
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.advPrepNarrative = {};
@@ -130,6 +183,33 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
    */
   public populateBudgets() {
     this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        this.minBudget.clear();
+        this.advBudget.clear();
+        this.minTotal = 0;
+        this.advTotal = 0;
+        snap.forEach((snapshot) => {
+          if (snapshot.val() != null && snapshot.val().hasOwnProperty('budget') && snapshot.val().hasOwnProperty('department') && snapshot.val().hasOwnProperty('type')) {
+            if (snapshot.val().level == ActionLevel.APA) {
+              let x: number = this.advBudget.get(snapshot.val().department) ? this.advBudget.get(snapshot.val().department) : 0;
+              x += snapshot.val().budget;
+              this.advTotal += snapshot.val().budget;
+              this.advBudget.set(snapshot.val().department, x);
+            }
+            else {
+              let x: number = this.minBudget.get(snapshot.val().department) ? this.minBudget.get(snapshot.val().department) : 0;
+              x += snapshot.val().budget;
+              this.minTotal += snapshot.val().budget;
+              this.minBudget.set(snapshot.val().department, x);
+            }
+          }
+        });
+      });
+  }
+
+  public populateBudgetsLocalAgency() {
+    this.af.database.list(Constants.APP_STATUS + "/action/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         this.minBudget.clear();
@@ -177,6 +257,33 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
     };
     console.log(totalUpdateObj);
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId).update(totalUpdateObj)
+      .then(_ => {
+        this.alertMessage = new AlertMessageModel('SYSTEM_ADMIN.ACTIONS.EDIT_CONFIRM_SAVE_CHANGES', AlertMessageType.Success);
+      })
+      .catch(() => {
+        this.alertMessage = new AlertMessageModel('PREPAREDNESS.BUDGET_NARRATIVE_ERROR', AlertMessageType.Error);
+      });
+  }
+
+  public saveNarrativesLocalAgency() {
+    console.log(this.advPrepNarrative);
+    console.log(this.minPrepNarrative);
+    let minPrepUpdate = {};
+    for (let x in this.minPrepNarrative) {
+      minPrepUpdate[x] = {};
+      minPrepUpdate[x].narrative = this.minPrepNarrative[x];
+    }
+    let advPrepUpdate = {};
+    for (let x in this.advPrepNarrative) {
+      advPrepUpdate[x] = {};
+      advPrepUpdate[x].narrative = this.advPrepNarrative[x];
+    }
+    let totalUpdateObj = {
+      minPreparednessBudget: minPrepUpdate,
+      advPreparednessBudget: advPrepUpdate
+    };
+    console.log(totalUpdateObj);
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId).update(totalUpdateObj)
       .then(_ => {
         this.alertMessage = new AlertMessageModel('SYSTEM_ADMIN.ACTIONS.EDIT_CONFIRM_SAVE_CHANGES', AlertMessageType.Success);
       })

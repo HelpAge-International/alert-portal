@@ -11,6 +11,8 @@ import {ModelCountryOffice} from "../../../model/countryoffice.model";
 import {Observable, Subject} from "rxjs";
 import {AgencyService} from "../../../services/agency-service.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {NetworkService} from "../../../services/network.service";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-create-edit-country',
@@ -55,7 +57,13 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private oldCountryAdmin: string;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
+              private router: Router,
+              private route: ActivatedRoute,
+              private networkService: NetworkService,
+              private userService: UserService,
+              private agencyService: AgencyService) {
   }
 
   ngOnInit() {
@@ -254,17 +262,34 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private createNewUser() {
     console.log("create new user...");
-    let tempPass = Constants.TEMP_PASSWORD;
-    this.secondApp.auth().createUserWithEmailAndPassword(this.countryAdminEmail, tempPass).then(success => {
-      console.log(success.uid + " was successfully created");
-      let countryId = success.uid;
-      this.updateFirebase(countryId);
-      this.secondApp.auth().signOut();
-    }, error => {
-      console.log(error.message);
-      this.waringMessage = error.message;
-      this.hideWarning = false;
-    })
+    // let tempPass = Constants.TEMP_PASSWORD;
+
+    this.userService.getUserByEmail(this.countryAdminEmail)
+      .first()
+      .subscribe(existUser => {
+        if (!existUser) {
+          let countryId = this.networkService.generateKeyUserPublic();
+          this.updateFirebase(countryId)
+        } else {
+          this.waringMessage = "Email is already exist!"
+          this.hideWarning = false;
+        }
+      }, err => {
+          this.waringMessage = err.message;
+          this.hideWarning = false;
+      })
+
+
+    // this.secondApp.auth().createUserWithEmailAndPassword(this.countryAdminEmail, tempPass).then(success => {
+    //   console.log(success.uid + " was successfully created");
+    //   let countryId = success.uid;
+    //   this.updateFirebase(countryId);
+    //   this.secondApp.auth().signOut();
+    // }, error => {
+    //   console.log(error.message);
+    //   this.waringMessage = error.message;
+    //   this.hideWarning = false;
+    // })
   }
 
   private updateFirebase(countryId: string) {
@@ -443,7 +468,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     countryAdmin.addressLine1 = this.countryAdminAddress1 ? this.countryAdminAddress1 : "";
     countryAdmin.addressLine2 = this.countryAdminAddress2 ? this.countryAdminAddress2 : "";
     countryAdmin.addressLine3 = this.countryAdminAddress3 ? this.countryAdminAddress3 : "";
-    countryAdmin.country = this.countryAdminCountry ? this.countryAdminCountry : -1;
+    countryAdmin.country = this.countryAdminCountry ? Number(this.countryAdminCountry) : -1;
     countryAdmin.city = this.countryAdminCity ? this.countryAdminCity : "";
     countryAdmin.postCode = this.countryAdminPostcode ? this.countryAdminPostcode : "";
     this.countryData["/userPublic/" + countryId] = countryAdmin;

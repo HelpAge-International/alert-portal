@@ -33,14 +33,10 @@
         <td *ngIf="country?.isActive">{{"GLOBAL.ACTIVE" | translate}}</td>
         <td *ngIf="!country?.isActive">{{"GLOBAL.DEACTIVE" | translate}}</td>
         <td>
-          <div *ngIf="!country?.isActive" class="btn btn-success" (click)="update(country)">{{"GLOBAL.ACTIVATE" |
-            translate}}
-          </div>
-          <div *ngIf="country?.isActive" class="btn btn-danger" (click)="update(country)">{{"GLOBAL.DEACTIVATE"
-            |
-            translate}}
-          </div>
+          <div *ngIf="!country?.isActive" class="btn btn-success" (click)="update(country)">{{"GLOBAL.ACTIVATE" | translate}}</div>
+          <div *ngIf="country?.isActive" class="btn btn-danger" (click)="update(country)">{{"GLOBAL.DEACTIVATE" | translate}}</div>
           <div class="btn btn-primary" (click)="editCountry(country)">{{"EDIT" | translate}}</div>
+          <div class="btn btn-primary" (click)="viewCountry(country)">{{"VIEW" | translate}}</div>
         </td>
       </tr>
     </table>
@@ -88,6 +84,7 @@
               | translate}}
             </div>
             <div class="btn btn-primary" (click)="editCountry(country)">{{"EDIT" | translate}}</div>
+            <div class="btn btn-primary" (click)="viewCountry(country)">{{"VIEW" | translate}}</div>
           </td>
         </tr>
       </table>
@@ -127,6 +124,7 @@
                 translate}}
               </div>
               <div class="btn btn-primary" (click)="editCountry(country)">{{"EDIT" | translate}}</div>
+              <div class="btn btn-primary" (click)="viewCountry(country)">{{"VIEW" | translate}}</div>
             </td>
           </tr>
         </table>

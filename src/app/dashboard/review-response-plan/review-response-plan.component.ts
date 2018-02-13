@@ -28,6 +28,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private ApprovalStatus = ApprovalStatus;
+  private Approval_Status_Name = Constants.APPROVAL_STATUS
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private responsePlanId: string;

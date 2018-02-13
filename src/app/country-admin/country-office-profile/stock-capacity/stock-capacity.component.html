@@ -1,7 +1,15 @@
-<div *ngIf="!isViewing">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
-</div>
+<ng-container *ngIf="!isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </div>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-local-agency-header></app-local-agency-header>
+    <app-local-agency-menu></app-local-agency-menu>
+  </div>
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -9,7 +17,13 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <app-country-office-profile-menu></app-country-office-profile-menu>
+    <ng-container *ngIf="!isLocalAgency">
+      <app-country-office-profile-menu *ngIf="isAgencyAdmin" [isAgencyAdmin]="true"></app-country-office-profile-menu>
+      <app-country-office-profile-menu *ngIf="!isAgencyAdmin" [isAgencyAdmin]="false"></app-country-office-profile-menu>
+    </ng-container>
+    <ng-container *ngIf="isLocalAgency">
+      <app-local-agency-profile-menu></app-local-agency-profile-menu>
+    </ng-container>
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT' | translate }}</h2>
@@ -52,7 +66,7 @@
         <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
         <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
         <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
-        <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
+        <div class="col-sm-2"><p *ngIf="locationObjsStocksIn[i]">{{ locationObjsStocksIn[i].country | translate }}{{ locationObjsStocksIn[i].areas }}</p></div> <!--Where-->
         <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
         <!--Lead time for delivery to affected population-->
         <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one"
@@ -63,8 +77,13 @@
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
-          <button class="btn btn-outline-primary text-uppercase"
+          <button *ngIf="!isLocalAgency" class="btn btn-outline-primary text-uppercase"
                   (click)="addEditStockCapacity(STOCK_TYPE.Country, stockCapacity.id)">
+            {{ 'EDIT' | translate }}
+          </button>
+
+          <button *ngIf="isLocalAgency" class="btn btn-outline-primary text-uppercase"
+                  (click)="addEditStockCapacity(STOCK_TYPE.Agency, stockCapacity.id)">
             {{ 'EDIT' | translate }}
           </button>
         </div>
@@ -79,6 +98,12 @@
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
                    name="new_note"
+                   *ngIf="!isLocalAgency"
+                   placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[stockCapacity.id] && newNote[stockCapacity.id].content">
+            <input  type="text"
+                   name="new_note"
+                   *ngIf="isLocalAgency"
                    placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                    [(ngModel)]="newNote[stockCapacity.id] && newNote[stockCapacity.id].content">
 
@@ -91,7 +116,7 @@
               <div class="col-lg-6">
                 <p>{{ note.content }}</p>
                 <br>
-                <div class="row">
+                <div *ngIf="!isLocalAgency" class="row">
                   <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}<span *ngIf="note.agencyName">, {{note.agencyName}} </span></strong>
                   </p>
                   <a
@@ -108,13 +133,39 @@
                     class="padding-left-one col-sm-0 text-danger"
                     (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
                 </div>
+                <div *ngIf="isLocalAgency" class="row">
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  </p>
+                  <a
+                    *ngIf="note.uploadedBy==uid"
+                    href="javascript:void(0)"
+                    class="col-sm-0 margin-right-none"
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy==uid"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy==uid"
+                    href="javascript:void(0)"
+                    class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
+                </div>
               </div>
             </div>
             <hr>
 
             <!--add Note button-->
-            <div class="add_log mt-auto p-2 text-right float-right">
+            <div *ngIf="!isLocalAgency" class="add_log mt-auto p-2 text-right float-right">
               <button *ngIf="countryPermissionsMatrix.notes.New || userType == USER_TYPE.CountryAdmin" type="submit"
+                      class="btn btn-primary text-uppercase">{{
+                'NOTES.ADD' | translate }}
+              </button>
+              <br>
+              <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
+              }}</a>
+            </div>
+            <div *ngIf="isLocalAgency" class="add_log mt-auto p-2 text-right float-right">
+              <button type="submit"
                       class="btn btn-primary text-uppercase">{{
                 'NOTES.ADD' | translate }}
               </button>
@@ -128,10 +179,20 @@
       <!--Notes Drop Down End-->
     </div>
 
+    <ng-container *ngIf="!isLocalAgency">
     <button class="btn btn-outline-primary text-uppercase"
             *ngIf="canEdit && !isViewing"
             (click)="addEditStockCapacity(STOCK_TYPE.Country)">{{ 'GLOBAL.ADD' | translate }}
     </button>
+    </ng-container>
+
+    <ng-container *ngIf="isLocalAgency">
+      <button class="btn btn-outline-primary text-uppercase"
+              *ngIf="canEdit && !isViewing"
+              (click)="addEditStockCapacity(STOCK_TYPE.Agency)">{{ 'GLOBAL.ADD' | translate }}
+      </button>
+    </ng-container>
+
 
     <br><h6 class="Spaced-above"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.STOCK_OUT' | translate }}</strong>
   </h6><br>
@@ -159,7 +220,7 @@
         <div class="col-sm-1"><p>{{ stockCapacity.updatedAt | date: 'MM/yy'}}</p></div> <!--Updated-->
         <div class="col-sm-3"><p>{{ stockCapacity.description }}</p></div> <!--Description-->
         <div class="col-sm-2"><p>{{ stockCapacity.quantity }}</p></div> <!--Quantity-->
-        <div class="col-sm-2"><p>{{ stockCapacity.location }}</p></div> <!--Location-->
+        <div class="col-sm-2"><p *ngIf="locationObjsStocksOut[i]">{{ locationObjsStocksOut[i].country | translate }}{{ locationObjsStocksOut[i].areas }}</p></div> <!--Where-->
         <div class="col-sm-3"><p>{{ stockCapacity.leadTime }}</p></div>
         <!--Lead time for delivery to affected population-->
         <div class="col-sm-1" *ngIf="!isEdit"><img src="assets/images/icons/log_bubble.svg" class="margin-left-one"
@@ -170,8 +231,12 @@
           </a>
         </div> <!--Notes-->
         <div class="col-sm-1" *ngIf="canEdit && isEdit">
-          <button class="btn btn-outline-primary text-uppercase"
+          <button *ngIf="!isLocalAgency" class="btn btn-outline-primary text-uppercase"
                   (click)="addEditStockCapacity(STOCK_TYPE.External, stockCapacity.id)">
+            {{ 'EDIT' | translate }}
+          </button>
+          <button *ngIf="isLocalAgency" class="btn btn-outline-primary text-uppercase"
+                  (click)="addEditStockCapacity(STOCK_TYPE.AgencyExternal, stockCapacity.id)">
             {{ 'EDIT' | translate }}
           </button>
         </div>
@@ -186,6 +251,12 @@
           <form (ngSubmit)="addNote(stockCapacity, newNote[stockCapacity.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
                    name="new_note"
+                   *ngIf="!isLocalAgency"
+                   placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[stockCapacity.id] && newNote[stockCapacity.id].content">
+            <input type="text"
+                   name="new_note"
+                   *ngIf="isLocalAgency"
                    placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                    [(ngModel)]="newNote[stockCapacity.id] && newNote[stockCapacity.id].content">
 
@@ -198,7 +269,7 @@
               <div class="col-lg-6">
                 <p>{{ note.content }}</p>
                 <br>
-                <div class="row">
+                <div *ngIf="!isLocalAgency" class="row">
                   <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}<span *ngIf="note.agencyName">, {{note.agencyName}} </span></strong>
                   </p>
                   <a
@@ -215,13 +286,40 @@
                     class="padding-left-one col-sm-0 text-danger"
                     (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
                 </div>
+                <div *ngIf="isLocalAgency" class="row">
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  </p>
+                  <a
+                    *ngIf="note.uploadedBy == uid"
+                    href="javascript:void(0)"
+                    class="col-sm-0 margin-right-none"
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy == uid"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy == uid "
+                    href="javascript:void(0)"
+                    class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote(stockCapacity, note)">{{ 'DELETE' | translate }}</a>
+                </div>
               </div>
             </div>
             <hr>
 
             <!--add Note button-->
-            <div class="add_log mt-auto p-2 text-right float-right">
+            <div *ngIf="!isLocalAgency" class="add_log mt-auto p-2 text-right float-right">
               <button *ngIf="countryPermissionsMatrix.notes.New || userType == USER_TYPE.CountryAdmin" type="submit"
+                      class="btn btn-primary text-uppercase">{{
+                'NOTES.ADD' | translate }}
+              </button>
+              <br>
+              <br><a href="#notes_ext_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+              translate
+              }}</a>
+            </div>
+            <div *ngIf="isLocalAgency" class="add_log mt-auto p-2 text-right float-right">
+              <button type="submit"
                       class="btn btn-primary text-uppercase">{{
                 'NOTES.ADD' | translate }}
               </button>
@@ -236,10 +334,19 @@
       <!--Notes Drop Down End-->
     </div>
 
-    <button class="btn btn-outline-primary text-uppercase"
-            *ngIf="canEdit && !isViewing"
-            (click)="addEditStockCapacity(STOCK_TYPE.External)">{{ 'GLOBAL.ADD' | translate }}
-    </button>
+    <ng-container *ngIf="!isLocalAgency">
+      <button class="btn btn-outline-primary text-uppercase"
+              *ngIf="canEdit && !isViewing"
+              (click)="addEditStockCapacity(STOCK_TYPE.External)">{{ 'GLOBAL.ADD' | translate }}
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="isLocalAgency">
+      <button class="btn btn-outline-primary text-uppercase"
+              *ngIf="canEdit && !isViewing"
+              (click)="addEditStockCapacity(STOCK_TYPE.AgencyExternal)">{{ 'GLOBAL.ADD' | translate }}
+      </button>
+    </ng-container>
 
   </div>
 </div>

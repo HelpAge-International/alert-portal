@@ -63,6 +63,7 @@ export class NetworkService {
   getSelectedIdObj(uid: string) {
     return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
       .flatMap(snap => {
+        console.log(snap.val());
         if (snap.val()) {
           let selection = snap.val();
           let selectData = {};
@@ -749,7 +750,7 @@ export class NetworkService {
       .map(snap => {
         let ids = [];
         if (snap.val()) {
-          return Object.keys(snap.val()).map(key => snap.val()[key]);
+          return Object.keys(snap.val()).map(key => snap.val()[key]["networkCountryId"]);
         }
         return ids;
       })
@@ -970,7 +971,7 @@ export class NetworkService {
               let tempCountryObj = allNetworksObj[networkId][countryId]
               tempCountryObj["id"] = countryId
               return tempCountryObj
-            }).filter(country => country.location == location)
+            }).filter(country => country.location == location && country.isActive)
             tempObj["networkId"] = networkId
             return tempObj
           })
@@ -995,7 +996,7 @@ export class NetworkService {
             let tempObj = allNetworksObj[networkId]
             tempObj["networkId"] = networkId
             return tempObj
-          }).filter(network => network.countryCode == location)
+          }).filter(network => network.countryCode == location && network.isActive)
           localNetworks = networkObjs
         }
         return localNetworks

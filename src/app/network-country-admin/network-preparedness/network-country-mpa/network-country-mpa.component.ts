@@ -43,6 +43,7 @@ import * as firebase from "firebase";
 import {ModelAgency} from "../../../model/agency.model";
 import {ModelNetwork} from "../../../model/network.model";
 import {MandatedListModel} from "../../../agency-admin/agency-mpa/agency-mpa.component";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -89,6 +90,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private systemAdminId: string;
   public myFirstName: string;
   public myLastName: string;
+  private updateActionId: string;
 
   // Filters
   private filterStatus: number = -1;
@@ -99,7 +101,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   // Data for the actions
   // --- Declared because we're missing out "inactive" in this page
-  private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED"];
+  private ACTION_STATUS = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.ACTION_STATUS.ARCHIVED", "GLOBAL.ACTION_STATUS.UNASSIGNED"];
   private DEPARTMENTS: ModelDepartment[] = [];
   private DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
   private ACTION_TYPE = Constants.ACTION_TYPE;
@@ -110,6 +112,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private allUnassigned: boolean = true;
   private allArchived: boolean = false;
+  private stopCondition: boolean;
   // --- Declared because we're missing out "inactive" in this page
   private ActionStatus = ActionStatusMin;
   private ActionType = ActionType;
@@ -200,6 +203,17 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       }
       if (params['isCHS']) {
         this.filterType = 0;
+      }
+      if (params['updateActionID']) {
+        this.updateActionId = params['updateActionID'];
+
+        console.log("UPD ActionID: "+this.updateActionId)
+        Observable.interval(5000)
+          .takeWhile(() => !this.stopCondition)
+          .subscribe(i => {
+            this.triggerScrollTo()
+            this.stopCondition = true
+          })
       }
       if (params['isViewingFromExternal']) {
         this.isViewingFromExternal = params['isViewingFromExternal'];
@@ -378,6 +392,14 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     // Currency
     this.calculateCurrency();
+  }
+
+  public triggerScrollTo() {
+    jQuery("#popover_content_" + this.updateActionId).collapse('show');
+
+    jQuery('html, body').animate({
+      scrollTop: jQuery("#popover_content_" + this.updateActionId).offset().top - 200
+    }, 2000);
   }
 
   ngOnDestroy() {
@@ -779,15 +801,19 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update(data);
           this.addNote(action);
           this.closePopover(action);
         }
@@ -802,10 +828,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update(data);
         this.addNote(action);
         this.closePopover(action);
       }
@@ -819,12 +842,15 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   // (Dan) - this new function is for the undo completed MPA
   protected undoCompleteAction(action: PreparednessAction) {
 
+    action.actualCost = null
+
     // Call to firebase to update values to revert back to *In Progress*
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
       isComplete: false,
       isCompleteAt: null,
       // Set updatedAt to time it was undone
-      updatedAt: new Date().getTime()
+      updatedAt: new Date().getTime(),
+      actualCost : null
     });
 
   }
@@ -838,6 +864,13 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
 
   }
+
+  cancelComplete(action) {
+    action.actualCost = null
+    this.closePopover(action)
+  }
+
+
 
 
   // Uploading a file to Firebase

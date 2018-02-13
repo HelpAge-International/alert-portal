@@ -160,7 +160,7 @@ export enum UserType {
   PartnerUser = 13,
   PartnerOrganisation = 14,
   LocalAgencyAdmin = 15,
-  AgencyDirector = 16,
+  LocalAgencyDirector = 16,
   AgencyUser = 17
 }
 export enum OfficeType {
@@ -1460,13 +1460,15 @@ export enum ActionStatus {
   InProgress = 1,
   Completed = 2,
   Inactive = 3,
-  Archived = 4
+  Archived = 4,
+  Unassigned = 5
 }
 export enum ActionStatusMin {
   Expired = 0,
   InProgress = 1,
   Completed = 2,
-  Archived = 3
+  Archived = 3,
+  Unassigned = 4
 }
 
 export enum SizeType {
@@ -1522,6 +1524,8 @@ export enum Month {
 export enum StockType {
   Country = 0,
   External = 1,
-  Network = 2
+  Network = 2,
+  Agency = 3,
+  AgencyExternal = 4
 }
 

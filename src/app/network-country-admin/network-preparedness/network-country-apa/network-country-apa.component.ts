@@ -28,6 +28,7 @@ import {CommonUtils} from "../../../utils/CommonUtils";
 import {NetworkCountryModel} from "../../network-country.model";
 import {ModelAgency} from "../../../model/agency.model";
 import {UserService} from "../../../services/user.service";
+import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 
 declare const jQuery: any;
 
@@ -80,6 +81,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   private filterStatus: number = -1;
   private filterDepartment: string = "-1";
   private filterType: number = -1;
+  private filterHazard: number = -1;
   private filterAssigned: string = "-1";
   private filerNetworkAgency: string = "-1";
 
@@ -315,6 +317,13 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Hazard filtering
+   */
+  public isChosenHazard(hazard:number, action:any){
+    return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
+  }
+
+  /**
    * Initialisation method for the alerts. Builds the map HazardScenario -> boolean if they're active or not
    */
   private initAlerts() {
@@ -341,6 +350,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
               this.hazardRedAlert.set(snapshot.val().hazardScenario, false);
             }
           }
+          console.log(this.hazardRedAlert)
         });
       });
 
@@ -664,24 +674,28 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   // (Dan) - this new function is for the undo completed APA
   protected undoCompleteAction(action: PreparednessAction) {
 
+    action.actualCost = null
+
     console.log(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id, 'in undo');
     //Call to firebase to update values to revert back to *In Progress*
     this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
       isComplete: false,
       isCompleteAt: null,
-      updatedAt: new Date().getTime()
+      updatedAt: new Date().getTime(),
+      actualCost : null
     });
 
   }
 
   //Close documents popover
   protected closePopover(action: PreparednessAction) {
-
     let toggleDialog = jQuery("#popover_content_" + action.id);
-
     toggleDialog.toggle();
+  }
 
-
+  cancelComplete(action) {
+    action.actualCost = null
+    this.closePopover(action)
   }
 
   // Uploading a file to Firebase

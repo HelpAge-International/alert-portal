@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, Countries, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -14,6 +14,7 @@ import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import { CountryOfficeAddEditEquipmentComponent } from "./add-edit-equipment/add-edit-equipment.component";
 import {AgencyService} from "../../../services/agency-service.service";
+import {CommonService} from "../../../services/common.service";
 
 declare var jQuery: any;
 
@@ -59,6 +60,11 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
   private userAgencyId: string;
+  private locationObjs: any[] = [];
+
+  @Input() isLocalAgency: boolean;
+
+  @Input() isAgencyAdmin: boolean;
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
               private _equipmentService: EquipmentService,
@@ -66,6 +72,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
               private agencyService: AgencyService,
               private router: Router,
               private af: AngularFire,
+              private jsonService: CommonService,
               private route: ActivatedRoute) {
     this.newNote = [];
   }
@@ -76,7 +83,56 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+  }
 
+  private initLocalAgency(){
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.userType = userType;
+          this.agencyId = agencyId;
+
+            this._equipmentService.getEquipmentsLocalAgency(this.agencyId)
+              .subscribe(equipments => {
+                this.equipments = equipments;
+
+                this.equipments.forEach(equipment => {
+                  const equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipment.id);
+
+                  console.log(equipmentNode)
+                  this._noteService.getNotes(equipmentNode).subscribe(notes => {
+                    equipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[equipment.id] = new NoteModel();
+                  this.newNote[equipment.id].uploadedBy = this.uid;
+                });
+                this.generateLocations();
+              });
+
+            this._equipmentService.getSurgeEquipmentsLocalAgency(this.agencyId)
+              .subscribe(surgeEquipments => {
+                this.surgeEquipments = surgeEquipments;
+
+                this.surgeEquipments.forEach(surgeEquipment => {
+                  const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', surgeEquipment.id);
+
+                  console.log(surgeEquipmentNode)
+                  this._noteService.getNotes(surgeEquipmentNode).subscribe(notes => {
+                    surgeEquipment.notes = notes;
+                  });
+
+                  // Create the new note model
+                  this.newNote[surgeEquipment.id] = new NoteModel();
+                  this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+                });
+
+              });
+        });
+  }
+
+  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -90,11 +146,10 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
-          this.countryId = countryId;
+          this.countryId = countryId ? countryId : this.countryId;
           this.programmeId = systemId;
           this.userAgencyId = agencyId;
 
@@ -115,16 +170,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                             note.agencyName = agency.name;
                           })
                       }
-                    })
+                    });
                     equipment.notes = notes;
                   });
                   // Create the new note model
                   this.newNote[equipment.id] = new NoteModel();
                   this.newNote[equipment.id].uploadedBy = this.uid;
-
                 });
+                this.generateLocations();
               });
-
 
             this._equipmentService.getSurgeEquipments(this.countryId)
               .subscribe(surgeEquipments => {
@@ -155,7 +209,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
           } else {
 
             this.agencyId = agencyId;
-            this.countryId = countryId;
+            this.countryId = countryId ? countryId : this.countryId;
 
             // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
             //   .takeUntil(this.ngUnsubscribe)
@@ -165,7 +219,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
             //       .takeUntil(this.ngUnsubscribe)
             //       .subscribe(countryId => {
             //         this.countryId = countryId;
-
+            
             this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
                 this.equipments = equipments;
@@ -182,7 +236,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                             note.agencyName = agency.name;
                           })
                       }
-                    })
+                    });
                     equipment.notes = notes;
                   });
 
@@ -190,6 +244,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   this.newNote[equipment.id] = new NoteModel();
                   this.newNote[equipment.id].uploadedBy = this.uid;
                 });
+                this.generateLocations();
               });
 
             this._equipmentService.getSurgeEquipments(this.countryId)
@@ -216,26 +271,28 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                   this.newNote[surgeEquipment.id] = new NoteModel();
                   this.newNote[surgeEquipment.id].uploadedBy = this.uid;
                 });
+
               });
+
             //     })
             // });
-
           }
+
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
             this.countryPermissionsMatrix = isEnabled;
           }));
 
         });
-
       });
-
-
-
-
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-staff');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/agency-staff');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-staff');
+    }
+
   }
 
   editEquipment() {
@@ -247,22 +304,37 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   addEditEquipment(equipmentId?: string) {
-    if (equipmentId) {
-      this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-equipment');
+    if(this.isLocalAgency){
+      if (equipmentId) {
+        this.router.navigate(['/local-agency/profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/equipment/add-edit-equipment');
+      }
+    }else{
+      if (equipmentId) {
+        this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-equipment');
+      }
     }
   }
 
   addEditSurgeEquipment(surgeEquipmentId?: string) {
-    if (surgeEquipmentId) {
-      this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-surge-equipment');
+    if(this.isLocalAgency){
+      if (surgeEquipmentId) {
+        this.router.navigate(['/local-agency/profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/equipment/add-edit-surge-equipment');
+      }
+    }else{
+      if (surgeEquipmentId) {
+        this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-surge-equipment', {id: surgeEquipmentId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-surge-equipment');
+      }
     }
 
   }
-
 
   getUserName(userId) {
     let userName = "";
@@ -288,10 +360,18 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
       let equipmentNode = "";
       note.agencyId = this.userAgencyId
 
-      if (equipmentType == 'equipment') {
-        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      } else {
-        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      if(this.isLocalAgency){
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        }
+      }else{
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        }
       }
 
       this._noteService.saveNote(equipmentNode, note).then(() => {
@@ -314,10 +394,18 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
     if (this.validateNote(note)) {
       let equipmentNode = "";
 
-      if (equipmentType == 'equipment') {
-        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-      } else {
-        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      if(this.isLocalAgency){
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+        }
+      }else{
+        if (equipmentType == 'equipment') {
+          equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        } else {
+          equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+        }
       }
 
       this._noteService.saveNote(equipmentNode, note).then(() => {
@@ -343,10 +431,18 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
     let equipmentNode = '';
 
-    if (equipmentType == 'equipment') {
-      equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
-    } else {
-      equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+    if(this.isLocalAgency){
+      if (equipmentType == 'equipment') {
+        equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+      } else {
+        equipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipmentId);
+      }
+    }else{
+      if (equipmentType == 'equipment') {
+        equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      } else {
+        equipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipmentId);
+      }
     }
 
     this._noteService.deleteNote(equipmentNode, note)
@@ -358,5 +454,26 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   closeDeleteModal() {
     jQuery('#delete-action').modal('hide');
+  }
+
+  generateLocations(){
+    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
+      this.equipments.forEach(mapping => {
+        let obj = {
+          country: "",
+          areas: ""
+        };
+        if (mapping.location && mapping.location > -1) {
+          obj.country = this.countries[mapping.location];
+        }
+        if (mapping.level1 && mapping.level1 > -1) {
+          obj.areas = ", " + json[mapping.location].levelOneValues[mapping.level1].value
+        }
+        if (mapping.level2 && mapping.level2) {
+          obj.areas = obj.areas + ", " + json[mapping.location].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
+        }
+        this.locationObjs.push(obj);
+      });
+    });
   }
 }

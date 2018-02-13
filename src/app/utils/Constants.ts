@@ -56,17 +56,18 @@ export class Constants {
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.CountryDirector, UserType.CountryAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
   static COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "countrydirectors", "countryadmins", "ertleads", "erts", "donor"];
+  static APPROVAL_STATUS = ["Requires Submission", "Waiting Approval", "Approved", "Needs Reviewing"];
 
   // local agency administrator
 
-  static LOCAL_AGENCY_ADMIN_HOME = "/dashboard";
-  static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
+  static LOCAL_AGENCY_ADMIN_HOME = "/local-agency/dashboard";
+  static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.LOCAL_AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
     "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
-  static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.AgencyDirector, UserType.AgencyUser,
+  static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.LocalAgencyDirector, UserType.AgencyUser,
     UserType.ErtLeader, UserType.Ert];
-  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.AgencyDirector, UserType.LocalAgencyAdmin,
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.LocalAgencyDirector, UserType.LocalAgencyAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
-  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "agencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
+  static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "localagencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
 
 
 
@@ -126,7 +127,7 @@ export class Constants {
     GenericActionCategory.EmergencyResponseTeamManagement];
 
   static ACTION_LEVEL: string[] = ["GLOBAL.PREPAREDNESS_LEVEL.ALL", "GLOBAL.PREPAREDNESS_LEVEL.MPA", "GLOBAL.PREPAREDNESS_LEVEL.APA"];
-  static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.DEACTIVE", "GLOBAL.ACTION_STATUS.ARCHIVED"];
+  static ACTION_STATUS: string[] = ["GLOBAL.ACTION_STATUS.EXPIRED", "GLOBAL.ACTION_STATUS.IN_PROGRESS", "GLOBAL.ACTION_STATUS.COMPLETED", "GLOBAL.DEACTIVE", "GLOBAL.ACTION_STATUS.ARCHIVED", "GLOBAL.ACTION_STATUS.UNASSIGNED"];
   static ACTION_TYPE: string[] = ["GLOBAL.ACTION_TYPE.CHS", "GLOBAL.ACTION_TYPE.MANDATED", "GLOBAL.ACTION_TYPE.CUSTOM"];
 
   static CURRENCY: string[] = [
@@ -200,7 +201,8 @@ export class Constants {
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.CHS_PREP_ACTIONS",
     "RISK_MONITORING_TEXT",
     "AGENCY_ADMIN.SETTINGS.MODULE_NAME.COUNTRY_OFFICE_PROFILE",
-    "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING"
+    "AGENCY_ADMIN.SETTINGS.MODULE_NAME.RESPONSE_PLANNING",
+    "CONFLICT_INDICATORS"
   ];
 
   static MODULE_NAME_NETWORK_COUNTRY = [
@@ -861,8 +863,6 @@ export class Constants {
     "GLOBAL.COUNTRIES.ZW"
   ];
 
-
-
   static HAZARD_CATEGORY_ICON_CLASS = [
     "Icon--earthquake",
     "Icon--cyclone",
@@ -976,16 +976,23 @@ export class Constants {
     'countryUser',
     'administratorAgency',
     ,
-    'partnerUser'
+    'partnerUser',
+    ,
+    'administratorLocalAgency',
+    'localAgencyDirector'
   ];
 
   // Nodes List, used for saving Notes
   static PARTNER_ORGANISATION_NODE = '/partnerOrganisation/{id}/notes';
   static EQUIPMENT_NODE = '/countryOfficeProfile/equipment/{countryId}/{id}/notes';
+  static EQUIPMENT_NODE_LOCAL_AGENCY = '/localAgencyProfile/equipment/{agencyId}/{id}/notes';
   static SURGE_EQUIPMENT_NODE = '/countryOfficeProfile/surgeEquipment/{countryId}/{id}/notes';
+  static SURGE_EQUIPMENT_NODE_LOCAL_AGENCY = '/localAgencyProfile/surgeEquipment/{agencyId}/{id}/notes';
   static STOCK_CAPACITY_NODE = '/countryOfficeProfile/capacity/stockCapacity/{countryId}/{id}/notes';
+  static STOCK_CAPACITY_NODE_LOCAL_AGENCY = '/localAgencyProfile/capacity/stockCapacity/{agencyId}/{id}/notes';
   static STAFF_NODE = '/staff/{countryId}/{staffId}/notes';
   static SURGE_CAPACITY_NODE = '/countryOfficeProfile/capacity/surgeCapacity/{countryId}/{id}/notes';
+  static SURGE_CAPACITY_NODE_LOCAL_AGENCY = '/localAgencyProfile/capacity/surgeCapacity/{agencyId}/{id}/notes';
 
   static MONTH = [
     null,

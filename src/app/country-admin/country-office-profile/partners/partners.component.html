@@ -1,7 +1,15 @@
-<div *ngIf="!isViewing">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
-</div>
+<ng-container *ngIf="!isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </div>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <div *ngIf="!isViewing">
+    <app-local-agency-header></app-local-agency-header>
+    <app-local-agency-menu></app-local-agency-menu>
+  </div>
+</ng-container>
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -9,7 +17,13 @@
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
 
-    <app-country-office-profile-menu></app-country-office-profile-menu>
+    <ng-container *ngIf="!isLocalAgency">
+      <app-country-office-profile-menu *ngIf="isAgencyAdmin" [isAgencyAdmin]="true"></app-country-office-profile-menu>
+      <app-country-office-profile-menu *ngIf="!isAgencyAdmin" [isAgencyAdmin]="false"></app-country-office-profile-menu>
+    </ng-container>
+    <ng-container *ngIf="isLocalAgency">
+      <app-local-agency-profile-menu></app-local-agency-profile-menu>
+    </ng-container>
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-4">{{ 'GLOBAL.USER_TYPE.PARTNER' | translate }}</h2>
@@ -116,6 +130,11 @@
           <hr class="d-inline-flex">
           <form (ngSubmit)="addNote(partnerOrganisation, newNote[partnerOrganisation.id])">
             <input [disabled]="!countryPermissionsMatrix.notes.New && userType != USER_TYPE.CountryAdmin" type="text"
+                   *ngIf="!isLocalAgency"
+                   name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                   [(ngModel)]="newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
+            <input [disabled]="userType != USER_TYPE.LocalAgencyAdmin" type="text"
+                   *ngIf="isLocalAgency"
                    name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
                    [(ngModel)]="newNote[partnerOrganisation.id] && newNote[partnerOrganisation.id].content">
 
@@ -128,7 +147,7 @@
               <div class="col-lg-6">
                 <p>{{ note.content }}</p>
                 <br>
-                <div class="row">
+                <div *ngIf="!isLocalAgency" class="row">
                   <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}<span *ngIf="note.agencyName">, {{note.agencyName}} </span></strong>
                   </p>
                   <a
@@ -143,13 +162,36 @@
                     href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
                     (click)="deleteNote(partnerOrganisation, note)">{{ 'DELETE' | translate }}</a>
                 </div>
+                <div *ngIf="isLocalAgency" class="row">
+                  <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}</strong>
+                  </p>
+                  <a
+                    *ngIf="note.uploadedBy == uid && userType == USER_TYPE.LocalAgencyAdmin"
+                    href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                    (click)="editNote(partnerOrganisation, note)">{{ 'EDIT' | translate }}</a>
+                  <p
+                    *ngIf="note.uploadedBy == uid &&  userType == USER_TYPE.LocalAgencyAdmin"
+                    href="javascript:void(0)" class="padding-left-one">|</p>
+                  <a
+                    *ngIf="note.uploadedBy == uid && userType == USER_TYPE.LocalAgencyAdmin"
+                    href="javascript:void(0)" class="padding-left-one col-sm-0 text-danger"
+                    (click)="deleteNote(partnerOrganisation, note)">{{ 'DELETE' | translate }}</a>
+                </div>
               </div>
             </div>
             <hr>
 
             <!--add Note button-->
-            <div class="add_log mt-auto p-2 text-right float-right">
+            <div *ngIf="!isLocalAgency" class="add_log mt-auto p-2 text-right float-right">
               <button *ngIf="countryPermissionsMatrix.notes.New || userType == USER_TYPE.CountryAdmin" type="submit"
+                      class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
+              </button>
+              <br>
+              <br><a href="#notes_{{ i }}" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' | translate
+              }}</a>
+            </div>
+            <div *ngIf="isLocalAgency" class="add_log mt-auto p-2 text-right float-right">
+              <button *ngIf="userType == USER_TYPE.LocalAgencyAdmin" type="submit"
                       class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
               </button>
               <br>

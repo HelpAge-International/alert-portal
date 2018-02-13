@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageType, UserType} from "../../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -24,6 +24,7 @@ declare var jQuery: any;
 export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDestroy {
   private uid: string;
   private countryId: string;
+  private agencyId: string;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -37,6 +38,8 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private userType: UserType;
   public countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -55,6 +58,39 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   }
 
   ngOnInit() {
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
+  }
+
+  initLocalAgency(){
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+      this.uid = user.uid;
+      this.userType = userType;
+      this.agencyId = agencyId;
+
+      this._userService.getStaffList(this.agencyId).subscribe(staffList => {
+        this.staffList = staffList;
+        this.staffList.forEach(staff => {
+
+          this._userService.getUser(staff.id).takeUntil(this.ngUnsubscribe).subscribe(user => {
+            this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
+          });
+        });
+      });
+
+      this.route.params.subscribe((params: Params) => {
+        if (params['id']) {
+          this._contactService.getPointOfContactLocalAgency(this.agencyId, params['id'])
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(pointOfContact => {
+              this.pointOfContact = pointOfContact;
+            });
+        }
+      });
+    });
+  }
+
+  initCountryOffice(){
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
       this.uid = user.uid;
@@ -95,22 +131,41 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   }
 
   submit() {
-    this._contactService.savePointOfContact(this.countryId, this.pointOfContact)
-      .then(() => {
-          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_CONTACT', AlertMessageType.Success);
-          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-        },
-        err => {
-          if (err instanceof DisplayError) {
-            this.alertMessage = new AlertMessageModel(err.message);
-          } else {
-            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-          }
-        });
+    if(this.isLocalAgency){
+      this._contactService.savePointOfContactLocalAgency(this.agencyId, this.pointOfContact)
+        .then(() => {
+            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_CONTACT', AlertMessageType.Success);
+            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+          },
+          err => {
+            if (err instanceof DisplayError) {
+              this.alertMessage = new AlertMessageModel(err.message);
+            } else {
+              this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+            }
+          });
+    }else{
+      this._contactService.savePointOfContact(this.countryId, this.pointOfContact)
+        .then(() => {
+            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_CONTACT', AlertMessageType.Success);
+            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+          },
+          err => {
+            if (err instanceof DisplayError) {
+              this.alertMessage = new AlertMessageModel(err.message);
+            } else {
+              this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+            }
+          });
+    }
   }
 
   goBack() {
-    this.router.navigateByUrl('/country-admin/country-office-profile/contacts');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/profile/contacts');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-office-profile/contacts');
+    }
   }
 
 
@@ -121,12 +176,21 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   deleteAction() {
     this.closeModal();
 
-    this._contactService.deletePointOfContact(this.countryId, this.pointOfContact)
-      .then(() => {
-        this.goBack();
-        this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_DELETED', AlertMessageType.Success);
-      })
-      .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    if(this.isLocalAgency){ 
+      this._contactService.deletePointOfContactLocalAgency(this.agencyId, this.pointOfContact)
+        .then(() => {
+          this.goBack();
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    }else{
+      this._contactService.deletePointOfContact(this.countryId, this.pointOfContact)
+        .then(() => {
+          this.goBack();
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_DELETED', AlertMessageType.Success);
+        })
+        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
+    }
   }
 
   closeModal() {

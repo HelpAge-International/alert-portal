@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, UserType} from "../../../utils/Enums";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -47,6 +47,9 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
 
+  @Input() isLocalAgency: boolean;
+
+  @Input() isAgencyAdmin: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
               private _agencyService: AgencyService,
@@ -63,6 +66,48 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+  }
+
+  private initLocalAgency(){
+
+
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+      this.uid = user.uid;
+      this.userType = userType;
+      this.agencyId = agencyId;
+
+        this._agencyService.getAgency(this.agencyId)
+          .map(agency => {
+            return agency as ModelAgency;
+          })
+          .subscribe(agency => {
+            this.agency = agency;
+
+                let countryOfficeAddress = new CountryOfficeAddressModel();
+                countryOfficeAddress.mapFromObject(agency);
+
+                this.countryOfficeAddress = countryOfficeAddress;
+              });
+            this._contactService.getPointsOfContactLocalAgency(this.agencyId)
+              .subscribe(pointsOfContact => {
+                this.pointsOfContact = pointsOfContact;
+                this.pointsOfContact.forEach(pointOfContact => {
+                  this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
+                    this.userPublicDetails[pointOfContact.staffMember] = user;
+                  });
+                  this._userService.getStaff(this.agencyId, pointOfContact.staffMember).subscribe(staff => {
+                    this.staffList[pointOfContact.staffMember] = staff;
+                  });
+                });
+              });
+          });
+
+  }
+
+  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -216,15 +261,28 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   }
 
   editOfficeDetails() {
-    this.router.navigateByUrl('/country-admin/country-office-profile/contacts/edit-office-details');
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('/local-agency/profile/contacts/edit-office-details');
+    }else{
+      this.router.navigateByUrl('/country-admin/country-office-profile/contacts/edit-office-details');
+    }
   }
 
   addEditPointOfContact(pointOfContactId?: string) {
-    if (pointOfContactId) {
-      this.router.navigate(['/country-admin/country-office-profile/contacts/add-edit-point-of-contact',
-        {id: pointOfContactId}], {skipLocationChange: true});
-    } else {
-      this.router.navigateByUrl('/country-admin/country-office-profile/contacts/add-edit-point-of-contact');
+    if(this.isLocalAgency){
+      if (pointOfContactId) {
+        this.router.navigate(['/local-agency/profile/contacts/add-edit-point-of-contact',
+          {id: pointOfContactId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/local-agency/profile/contacts/add-edit-point-of-contact');
+      }
+    }else{
+      if (pointOfContactId) {
+        this.router.navigate(['/country-admin/country-office-profile/contacts/add-edit-point-of-contact',
+          {id: pointOfContactId}], {skipLocationChange: true});
+      } else {
+        this.router.navigateByUrl('/country-admin/country-office-profile/contacts/add-edit-point-of-contact');
+      }
     }
   }
 }

@@ -58,6 +58,8 @@ export class MapService {
   private done: (countries: MapCountry[], green: number, yellow: number) => void;
   private clickedCountry: (country: string) => void;
 
+  private countryId: string;
+
 
 
   public static init(af: AngularFire, ngUnsubscribe: Subject<void>): MapService {
@@ -68,34 +70,37 @@ export class MapService {
     return x;
   }
 
-  public initMap(elementId: string, uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
+  public initMap(elementId: string, uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
     // Download everything we need then set the parallel actions calls going
     if (this.map == null) {
       this.initBlankMap(elementId);
     }
     this.clickedCountry = countryClicked;
-    this.initialiseMap(uid, userType, agencyId, systemId, done);
+    this.initialiseMap(uid, userType, countryId, agencyId, systemId, done);
   }
 
-  public initCountries(uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void) {
+  public initCountries(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void) {
     this.clickedCountry = null;
-    this.initialiseMap(uid, userType, agencyId, systemId, done);
+    this.initialiseMap(uid, userType, countryId, agencyId, systemId, done);
   }
 
-  private initialiseMap(uid: string, userType: UserType, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
+  private initialiseMap(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
     this.uid = uid;
     this.agencyId = agencyId;
     this.systemId = systemId;
     this.done = done;
+    this.countryId = countryId
 
     // Download everything we need then set the parallel actions calls going
     this.downloadThreshold(() => {
       this.downloadDefaultClockSettings(() => {
         this.downloadDepartments(() => {
-          PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
-            this.modulesEnabled = isEnabled;
-            this.beginDownloadAllActions();
-          });
+          this.downloadCountryDepartments(()=>{
+            PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+              this.modulesEnabled = isEnabled;
+              this.beginDownloadAllActions();
+            });
+          })
         })
       });
     });
@@ -184,6 +189,18 @@ export class MapService {
       });
   }
 
+  private downloadCountryDepartments(fun: () => void) {
+    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        for (let x of snap) {
+          this.departmentMap.set(x.key, x.val());
+          this.departments.push(ModelDepartment.create(x.key, x.val()));
+        }
+        fun();
+      });
+  }
+
   /**
    * Get all the actions
    *
@@ -200,7 +217,8 @@ export class MapService {
   private asyncWaitCount: number = 2;
 
   private beginDownloadAllActions() {
-    this.downloadAllCHSActions();
+    this.downloadAllCountries()
+    // this.downloadAllCHSActions();
     this.downloadAllMandatedActions();
   }
 

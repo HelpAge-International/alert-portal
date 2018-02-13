@@ -2,9 +2,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {Constants} from "../utils/Constants";
-import {ApprovalStatus, UserType} from "../utils/Enums";
+import {ApprovalStatus, ResponsePlansApprovalSettings, UserType} from "../utils/Enums";
 import {Observable} from "rxjs/Observable";
-import set = Reflect.set;
 import {ResponsePlanService} from "../services/response-plan.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
@@ -12,10 +11,10 @@ import {PageControlService} from "../services/pagecontrol.service";
 import {MessageModel} from "../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "../services/notification.service";
-import {ResponsePlan} from "../model/responsePlan";
-import {observable} from "rxjs/symbol/observable";
 import {AgencyService} from "../services/agency-service.service";
 import * as moment from "moment";
+import {ModelUserPublic} from "../model/user-public.model";
+import {CommonUtils} from "../utils/CommonUtils";
 
 declare const jQuery: any;
 
@@ -33,6 +32,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   @Input() agencyIdForViewing: string;
   @Input() canCopy: boolean = false;
   @Input() agencyOverview: boolean;
+  @Input() isAgencyAdmin: boolean;
+
+  //local agency
+  @Input() isLocalAgency: boolean;
 
   private isGlobalDirectorMap = new Map<string, boolean>();
   private isRegionalDirectorMap = new Map<string, boolean>();
@@ -64,6 +67,27 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private directorSubmissionRequireMap = new Map<number, boolean>();
   private agencyPlanExpireDuration: number;
 
+  //phase 2 approval
+  private directorIdMap = new Map<string, string>()
+  private directorModelMap = new Map<string, ModelUserPublic>()
+  private countryRegionAgencyIdMap = new Map<string, string>()
+  private agencyApprovalSettingMap = new Map<string, boolean>()
+  private countryDirectorSelected: boolean
+  private regionDirectorSelected: boolean
+  private globalDirectorSelected: boolean
+  private ApprovalStatus = ApprovalStatus
+  private ResponsePlansApprovalSettings = ResponsePlansApprovalSettings
+  private extPartnerOrgMap = new Map()
+  private intPartnerOrgMap = new Map()
+  private partnerList = []
+  private validPartnerMap = new Map<string, boolean>()
+  private partnerApprovalIdMap = new Map()
+  private partnerUserMap = new Map()
+  private selectedDirectorMap = new Map<string, boolean>()
+  private selectedPartnerApprovalIdMap = new Map()
+  private countryDirectorExist: boolean
+
+
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private af: AngularFire,
@@ -77,13 +101,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.auth.uid;
-      if (this.isViewing) {
-        this.countryId = this.countryIdForViewing;
-        this.agencyId = this.agencyIdForViewing;
-        this.getResponsePlans(this.countryId);
-      } else {
+      if (this.isLocalAgency) {
+        this.uid = user.auth.uid;
         this.userType = userType;
+        this.agencyId = agencyId;
         let userPath = Constants.USER_PATHS[userType];
 
         this.agencyService.getAgencyResponsePlanClockSettingsDuration(agencyId)
@@ -92,17 +113,40 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             console.log(duration);
             this.agencyPlanExpireDuration = duration;
 
-            if (this.userType == UserType.PartnerUser) {
-              this.agencyId = agencyId;
-              this.countryId = countryId;
-              this.handleRequireSubmissionTagForDirectors();
-              this.getResponsePlans(this.countryId);
-            } else {
-              this.getSystemAgencyCountryIds(userPath);
-            }
+            this.getResponsePlans(this.agencyId);
+            this.handleRequireSubmissionTagForLocalAgencyDirector();
+            this.getApprovalHierachySettings()
+            this.checkIsThereLocalAgencyDirector()
 
           });
+      } else {
+        this.uid = user.auth.uid;
+        if (this.isViewing) {
+          this.countryId = this.countryIdForViewing;
+          this.agencyId = this.agencyIdForViewing;
+          this.getResponsePlans(this.countryId);
+        } else {
+          this.userType = userType;
+          let userPath = Constants.USER_PATHS[userType];
 
+          this.agencyService.getAgencyResponsePlanClockSettingsDuration(agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(duration => {
+              console.log(duration);
+              this.agencyPlanExpireDuration = duration;
+
+              if (this.userType == UserType.PartnerUser) {
+                this.agencyId = agencyId;
+                this.countryId = countryId;
+                this.handleRequireSubmissionTagForDirectors();
+                this.getResponsePlans(this.countryId);
+              } else {
+                this.getSystemAgencyCountryIds(userPath);
+              }
+
+            });
+
+        }
       }
     });
   }
@@ -118,6 +162,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             this.countryId = countryId.$value;
             this.handleRequireSubmissionTagForDirectors();
             this.getResponsePlans(this.countryId);
+            this.getApprovalHierachySettings()
+            this.checkIsThereCountryDirector()
           });
       });
 
@@ -125,7 +171,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private getResponsePlans(id: string) {
     /*Active Plans*/
-    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id).subscribe(plans => {
+    console.log(Constants.APP_STATUS + "/responsePlan/" + id)
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id).takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.activePlans = [];
       plans.forEach(plan => {
         if (plan.isActive) {
@@ -222,33 +269,18 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.service.serviceDestroy();
   }
 
-  getName(id) {
-    let name = "";
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id, {preserveSnapshot: true})
-      .first()
-      .subscribe(snap => {
-        if (snap.val()) {
-          let user = snap.val();
-          name = user.firstName + " " + user.lastName;
-        } else {
-          this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
-            .first()
-            .subscribe(org => {
-              name = org.organisationName;
-            })
-        }
-      });
-
-    return name;
-  }
-
   goToCreateNewResponsePlan() {
-    this.router.navigateByUrl('response-plans/create-edit-response-plan');
+    this.router.navigateByUrl(this.isLocalAgency ? 'local-agency/response-plans/create-edit-response-plan' : 'response-plans/create-edit-response-plan');
   }
 
   viewResponsePlan(plan, isViewing) {
     if (isViewing) {
-      let headers = {"id": plan.$key, "isViewing": isViewing, "countryId": this.countryIdForViewing, "agencyId": this.agencyId};
+      let headers = {
+        "id": plan.$key,
+        "isViewing": isViewing,
+        "countryId": this.countryIdForViewing,
+        "agencyId": this.agencyId
+      };
       if (this.agencyOverview) {
         headers["agencyOverview"] = this.agencyOverview;
         // this.router.navigate(["/response-plans/view-plan", {
@@ -272,9 +304,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       //     "canCopy": this.canCopy
       //   }]);
       // }
-      this.router.navigate(["/response-plans/view-plan", headers]);
+      headers["isAgencyAdmin"] = this.isAgencyAdmin;
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/response-plans/view-plan", headers] : ["/response-plans/view-plan", headers]);
     } else {
-      this.router.navigate(["/response-plans/view-plan", {"id": plan.$key}]);
+      this.router.navigate(this.isLocalAgency ? ["/local-agency/response-plans/view-plan", {"id": plan.$key}] : ["/response-plans/view-plan", {"id": plan.$key}]);
     }
   }
 
@@ -307,32 +340,60 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.dialogEditingUserEmail = editingUser.email;
         });
     } else {
-      this.router.navigate(['response-plans/create-edit-response-plan', {id: this.responsePlanToEdit.$key}]);
+      this.router.navigate(this.isLocalAgency ? ['local-agency/response-plans/create-edit-response-plan', {id: this.responsePlanToEdit.$key}] : ['response-plans/create-edit-response-plan', {id: this.responsePlanToEdit.$key}]);
     }
   }
 
   exportStartFund(responsePlan) {
-    this.router.navigate(['/export-start-fund', {id: responsePlan.$key}]);
+    this.router.navigate(this.isLocalAgency ? ['/export-start-fund', {
+      id: responsePlan.$key,
+      isLocalAgency: true
+    }] : ['/export-start-fund', {id: responsePlan.$key}]);
   }
 
   exportProposal(responsePlan, isExcel: boolean) {
     if (isExcel) {
-      this.router.navigate(['/export-proposal', {id: responsePlan.$key, excel: 1}]);
+      this.router.navigate(this.isLocalAgency ? ['/export-proposal', {
+        id: responsePlan.$key,
+        excel: 1,
+        isLocalAgency: true
+      }] : ['/export-proposal', {id: responsePlan.$key, excel: 1}]);
     } else {
-      this.router.navigate(['/export-proposal', {id: responsePlan.$key, excel: 0}]);
+      this.router.navigate(this.isLocalAgency ? ['/export-proposal', {
+        id: responsePlan.$key,
+        excel: 0,
+        isLocalAgency: true
+      }] : ['/export-proposal', {id: responsePlan.$key, excel: 0}]);
     }
   }
 
   submitForApproval(plan) {
-    this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
-    this.planToApproval = plan;
-    if (this.needShowDialog) {
-      jQuery("#dialog-action").modal("show");
-      this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
-      this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
-    } else {
-      this.confirmDialog();
+    this.resetDirectorSelection()
+    if (plan.partnerOrganisations) {
+      this.getPartnersToApprove(plan)
     }
+
+    if (plan.approval && plan.approval["partner"]) {
+      Object.keys(plan.approval["partner"]).map(key => {
+        let obj = {}
+        obj["value"] = plan.approval["partner"][key]
+        obj["key"] = key
+        return obj
+      }).forEach(item => {
+        if (item["value"] != ApprovalStatus.InProgress) {
+          this.partnerApprovalIdMap.set(item["key"], true)
+        }
+      })
+    }
+    // this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
+    this.planToApproval = plan;
+    // if (this.needShowDialog) {
+    //   jQuery("#dialog-action").modal("show");
+    //   this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
+    //   this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
+    // } else {
+    this.isLocalAgency ? this.confirmDialogLocalAgency() : this.confirmDialog();
+    // }
   }
 
   submitForPartnerValidation(plan) {
@@ -355,89 +416,272 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         console.log(result);
         if (counter === 1 && result.$value && result.$value != null) {
           this.directorSubmissionRequireMap.set(1, true);
+          this.directorIdMap.set("countryDirector", result.$value)
+          this.countryRegionAgencyIdMap.set("countryDirector", this.countryId)
         }
         if (counter === 2 && result.$value && result.$value != null) {
           this.directorSubmissionRequireMap.set(2, true);
+          this.directorIdMap.set("regionDirector", result.$value)
+          this.getRegionId(this.countryId)
         }
         if (counter === 3 && result.length > 0) {
           this.directorSubmissionRequireMap.set(3, true);
+          this.directorIdMap.set("globalDirector", result[0].$key)
+          this.countryRegionAgencyIdMap.set("globalDirector", this.agencyId)
         }
+        console.log(this.directorIdMap)
+        this.initDirectorsModel(this.directorIdMap)
+      });
+  }
+
+  private handleRequireSubmissionTagForLocalAgencyDirector() {
+    this.directorSubmissionRequireMap.set(1, false);
+    this.directorSubmissionRequireMap.set(2, false);
+    this.directorSubmissionRequireMap.set(3, false);
+    let counter = 0;
+    this.service.getLocalAgencyDirector(this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(result => {
+        counter++;
+        console.log(counter);
+        console.log(result);
+        if (counter === 1 && result.$value && result.$value != null) {
+          this.directorSubmissionRequireMap.set(1, true);
+          this.directorIdMap.set("countryDirector", result.$value)
+          this.countryRegionAgencyIdMap.set("countryDirector", this.countryId)
+        }
+        if (counter === 2 && result.$value && result.$value != null) {
+          this.directorSubmissionRequireMap.set(2, true);
+          this.directorIdMap.set("regionDirector", result.$value)
+          this.getRegionId(this.countryId)
+        }
+        if (counter === 3 && result.length > 0) {
+          this.directorSubmissionRequireMap.set(3, true);
+          this.directorIdMap.set("globalDirector", result[0].$key)
+          this.countryRegionAgencyIdMap.set("globalDirector", this.agencyId)
+        }
+        console.log(this.directorIdMap)
+        this.initDirectorsModel(this.directorIdMap)
       });
   }
 
   archivePlan(plan) {
     //same as edit, need to reset approval status and validation process
     let updateData = {};
-    updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/approval"] = null;
-    updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive"] = false;
+    if (this.isLocalAgency) {
+      updateData["/responsePlan/" + this.agencyId + "/" + plan.$key + "/approval"] = null;
+      updateData["/responsePlan/" + this.agencyId + "/" + plan.$key + "/isActive"] = false;
+    } else {
+      updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/approval"] = null;
+      updateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive"] = false;
+    }
     updateData["/responsePlanValidation/" + plan.$key] = null;
     this.af.database.object(Constants.APP_STATUS).update(updateData);
     // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
   }
 
   confirmDialog() {
-    if (this.needShowDialog) {
-      jQuery("#dialog-action").modal("hide");
-    }
+    // if (this.needShowDialog) {
+    //   jQuery("#dialog-action").modal("hide");
+    // }
     if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
-      let approvalData = {};
-      let countryId = "";
-      let agencyId = "";
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
-        .flatMap(countryAdmin => {
-          countryId = countryAdmin.countryId;
-          agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
-          return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
+      jQuery("#directorSelection").modal("show");
+      console.log(this.planToApproval)
+      if (this.planToApproval.approval && this.planToApproval.approval["countryDirector"]) {
+        if (Object.keys(this.planToApproval.approval["countryDirector"]).map(key => this.planToApproval.approval["countryDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.countryDirectorSelected = true
+          this.selectedDirectorMap.set("countryDirector", true)
+        }
+      }
+      if (this.planToApproval.approval && this.planToApproval.approval["regionDirector"]) {
+        if (Object.keys(this.planToApproval.approval["regionDirector"]).map(key => this.planToApproval.approval["regionDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.regionDirectorSelected = true
+          this.selectedDirectorMap.set("regionDirector", true)
+        }
+      }
+      if (this.planToApproval.approval && this.planToApproval.approval["globalDirector"]) {
+        if (Object.keys(this.planToApproval.approval["globalDirector"]).map(key => this.planToApproval.approval["globalDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.globalDirectorSelected = true
+          this.selectedDirectorMap.set("globalDirector", true)
+        }
+      }
+      //logic for partners
+      this.updatePartnerApprovalSelection(this.planToApproval);
+
+      // let approvalData = {};
+      // let countryId = "";
+      // let agencyId = "";
+      // this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
+      //   .flatMap(countryAdmin => {
+      //     countryId = countryAdmin.countryId;
+      //     agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
+      //     return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
+      //   })
+      //   .do(director => {
+      //     if (director && director.$value) {
+      //       // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
+      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.WaitingApproval;
+      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+      //
+      //       // Send notification to country director
+      //       let notification = new MessageModel();
+      //       notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+      //       notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+      //       notification.time = new Date().getTime();
+      //       this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
+      //       });
+      //
+      //     } else {
+      //       this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
+      //       this.showAlert();
+      //       return;
+      //     }
+      //   })
+      //   .flatMap(() => {
+      //     return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
+      //   })
+      //   .map(approvalSettings => {
+      //     let setting = [];
+      //     approvalSettings.forEach(item => {
+      //       setting.push(item.$value);
+      //     });
+      //     return setting;
+      //   })
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe(approvalSettings => {
+      //     if (approvalSettings[0] == false && approvalSettings[1] == false) {
+      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
+      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
+      //       this.updatePartnerValidation(countryId, approvalData);
+      //
+      //     } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
+      //       console.log("regional enabled");
+      //       this.updateWithRegionalApproval(agencyId, countryId, approvalData);
+      //     } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
+      //       console.log("global enabled");
+      //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
+      //     } else {
+      //       console.log("both directors enabled");
+      //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
+      //       this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
+      //     }
+      //   });
+    }
+  }
+
+  private updatePartnerApprovalSelection(plan) {
+    if (plan.approval && plan.approval["partner"]) {
+      Object.keys(plan.approval["partner"])
+        .map(key => {
+          let obj = {}
+          obj["value"] = plan.approval["partner"][key]
+          obj["key"] = key
+          return obj
         })
-        .do(director => {
-          if (director && director.$value) {
-            // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
-            approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.WaitingApproval;
-            approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
-
-            // Send notification to country director
-            let notification = new MessageModel();
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
-            });
-
+        .forEach(item => {
+          console.log(item)
+          if (item["value"] == ApprovalStatus.InProgress) {
+            this.partnerApprovalIdMap.set(item["key"], false)
+            this.selectedPartnerApprovalIdMap.set(item["key"], false)
           } else {
-            this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
-            this.showAlert();
-            return;
+            this.partnerApprovalIdMap.set(item["key"], true)
+            this.selectedPartnerApprovalIdMap.set(item["key"], true)
           }
+          // if (item["value"] == ApprovalStatus.WaitingApproval) {
+          //   this.partnerApprovalIdMap.set(item["key"], true)
+          // } else if (item["value"] == ApprovalStatus.InProgress) {
+          //   this.partnerApprovalIdMap.set(item["key"], false)
+          // }
         })
-        .flatMap(() => {
-          return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
-        })
-        .map(approvalSettings => {
-          let setting = [];
-          approvalSettings.forEach(item => {
-            setting.push(item.$value);
-          });
-          return setting;
-        })
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(approvalSettings => {
-          if (approvalSettings[0] == false && approvalSettings[1] == false) {
-            approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
-            approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
-            this.updatePartnerValidation(countryId, approvalData);
+    }
+  }
 
-          } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
-            console.log("regional enabled");
-            this.updateWithRegionalApproval(agencyId, countryId, approvalData);
-          } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-            console.log("global enabled");
-            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
-          } else {
-            console.log("both directors enabled");
-            this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
-            this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
-          }
-        });
+  confirmDialogLocalAgency() {
+    // if (this.needShowDialog) {
+    //   jQuery("#dialog-action").modal("hide");
+    // }
+    if (this.userType == UserType.LocalAgencyAdmin || this.userType == UserType.LocalAgencyDirector) {
+      jQuery("#directorSelection").modal("show");
+
+      if (this.planToApproval.approval && this.planToApproval.approval["countryDirector"]) {
+        if (Object.keys(this.planToApproval.approval["countryDirector"]).map(key => this.planToApproval.approval["countryDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.countryDirectorSelected = true
+          this.selectedDirectorMap.set("countryDirector", true)
+        }
+      }
+      if (this.planToApproval.approval && this.planToApproval.approval["regionDirector"]) {
+        if (Object.keys(this.planToApproval.approval["regionDirector"]).map(key => this.planToApproval.approval["regionDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.regionDirectorSelected = true
+          this.selectedDirectorMap.set("regionDirector", true)
+        }
+      }
+      if (this.planToApproval.approval && this.planToApproval.approval["globalDirector"]) {
+        if (Object.keys(this.planToApproval.approval["globalDirector"]).map(key => this.planToApproval.approval["globalDirector"][key])[0] != ApprovalStatus.InProgress) {
+          this.globalDirectorSelected = true
+          this.selectedDirectorMap.set("globalDirector", true)
+        }
+      }
+      //logic for partners
+      this.updatePartnerApprovalSelection(this.planToApproval);
+
+      // let approvalData = {};
+      // let countryId = "";
+      // let agencyId = "";
+      // this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
+      //   .flatMap(countryAdmin => {
+      //     countryId = countryAdmin.countryId;
+      //     agencyId = countryAdmin.agencyId
+      //     return this.af.database.object(Constants.APP_STATUS + "/directorLocalAgency/" + agencyId);
+      //   })
+      //   .do(director => {
+      //     if (director && director.$value) {
+      //       // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
+      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
+      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+      //
+      //       // Send notification to country director
+      //       let notification = new MessageModel();
+      //       notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+      //       notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+      //       notification.time = new Date().getTime();
+      //       this.notificationService.saveUserNotificationLocalAgency(director.$value, notification, UserType.LocalAgencyDirector, agencyId).then(() => {
+      //       });
+      //
+      //     } else {
+      //       this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
+      //       this.showAlert();
+      //       return;
+      //     }
+      //   })
+      //   .flatMap(() => {
+      //     return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
+      //   })
+      //   .map(approvalSettings => {
+      //     let setting = [];
+      //     approvalSettings.forEach(item => {
+      //       setting.push(item.$value);
+      //     });
+      //     return setting;
+      //   })
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe(approvalSettings => {
+      //     if (approvalSettings[0] == false && approvalSettings[1] == false) {
+      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
+      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
+      //       this.updatePartnerValidation(agencyId, approvalData);
+      //
+      //     } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
+      //       console.log("regional enabled");
+      //       this.updateWithRegionalApprovalLocalAgency(agencyId, approvalData);
+      //     } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
+      //       console.log("global enabled");
+      //       this.updateWithGlobalApprovalLocalAgency(this.agencyId, approvalData);
+      //     } else {
+      //       console.log("both directors enabled");
+      //       this.updateWithGlobalApprovalLocalAgency(this.agencyId, approvalData);
+      //       this.updateWithRegionalApprovalLocalAgency(this.agencyId, approvalData);
+      //     }
+      //   });
     }
   }
 
@@ -495,6 +739,33 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
   }
 
+  private updateWithRegionalApprovalLocalAgency(agencyId: string, approvalData: {}) {
+    console.log("region approval")
+
+    this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + agencyId)
+      .flatMap(id => {
+        console.log(id);
+        if (id && id.$value && id.$value != "null") {
+          // Send notification to regional director
+          let notification = new MessageModel();
+          notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+          notification.time = new Date().getTime();
+          this.notificationService.saveUserNotificationLocalAgency(id.$value, notification, UserType.RegionalDirector, agencyId).then(() => {
+          });
+
+          return this.af.database.object(Constants.APP_STATUS + "/regionDirector/" + id.$value + "/regionId", {preserveSnapshot: true});
+        }
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        if (snap.val()) {
+          approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + snap.val()] = ApprovalStatus.WaitingApproval;
+        }
+        this.updatePartnerValidation(agencyId, approvalData);
+      });
+  }
+
   private updateWithGlobalApproval(agencyId: string, countryId: string, approvalData: {}) {
     this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
       query: {
@@ -521,6 +792,32 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       });
   }
 
+  private updateWithGlobalApprovalLocalAgency(agencyId: string, approvalData: {}) {
+    this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
+      query: {
+        orderByChild: "agencyAdmin/" + agencyId,
+        equalTo: true
+      }
+    })
+      .first()
+      .subscribe(globalDirector => {
+        if (globalDirector.length > 0 && globalDirector[0].$key) {
+          // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
+          approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
+
+          // Send notification to global director
+          let notification = new MessageModel();
+          notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+          notification.time = new Date().getTime();
+
+          this.notificationService.saveUserNotificationLocalAgency(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId).then(() => {
+          });
+        }
+        this.updatePartnerValidation(agencyId, approvalData);
+      });
+  }
+
   closeModal(model: string) {
     jQuery(model).modal("hide");
   }
@@ -540,7 +837,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     if (!plan.approval) {
       return [];
     }
-    return Object.keys(plan.approval).filter(key => key != "partner").map(key => plan.approval[key]);
+    return Object.keys(plan.approval).filter(key => key != "partner").map(key => plan.approval[key])
   }
 
   getApproveStatus(approve) {
@@ -548,7 +845,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       return -1;
     }
     let list = Object.keys(approve).map(key => approve[key]);
-    return list[0] == ApprovalStatus.Approved;
+    // return list[0] == ApprovalStatus.Approved;
+    return list[0];
   }
 
   activatePlan(plan) {
@@ -557,9 +855,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/status"] = ApprovalStatus.NeedsReviewing;
     // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/timeUpdated"] = moment().utc().valueOf();
     // this.af.database.object(Constants.APP_STATUS).update(activateData);
-    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
-    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
-    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
+    if (this.isLocalAgency) {
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/isActive").set(true);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
+    } else {
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(true);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
+    }
+    this.af.database.list(this.isLocalAgency ? Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/approval" : Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval")
       .map(list => {
         let newList = [];
         list.forEach(item => {
@@ -571,18 +874,35 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       })
       .first()
       .takeUntil(this.ngUnsubscribe).subscribe(approvalList => {
-      for (let approval of approvalList) {
-        if (approval["countryDirector"]) {
-          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
-            .set(ApprovalStatus.NeedsReviewing);
+      if (this.isLocalAgency) {
+        for (let approval of approvalList) {
+          if (approval["localAgencyDirector"]) {
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/approval/countryDirector/" + approval["localAgencyDirector"])
+              .set(ApprovalStatus.NeedsReviewing);
+          }
+          if (approval["regionDirector"]) {
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
+              .set(ApprovalStatus.NeedsReviewing);
+          }
+          if (approval["globalDirector"]) {
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
+              .set(ApprovalStatus.NeedsReviewing);
+          }
         }
-        if (approval["regionDirector"]) {
-          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
-            .set(ApprovalStatus.NeedsReviewing);
-        }
-        if (approval["globalDirector"]) {
-          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
-            .set(ApprovalStatus.NeedsReviewing);
+      } else {
+        for (let approval of approvalList) {
+          if (approval["countryDirector"]) {
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/countryDirector/" + approval["countryDirector"])
+              .set(ApprovalStatus.NeedsReviewing);
+          }
+          if (approval["regionDirector"]) {
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/regionDirector/" + approval["regionDirector"])
+              .set(ApprovalStatus.NeedsReviewing);
+          }
+          if (approval["globalDirector"]) {
+            this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/approval/globalDirector/" + approval["globalDirector"])
+              .set(ApprovalStatus.NeedsReviewing);
+          }
         }
       }
     });
@@ -617,9 +937,31 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   checkStatus(plan): boolean {
-    let showSubmit = true;
+    let showSubmit = false;
     if (plan.approval) {
-      showSubmit = !Object.keys(plan.approval).includes("countryDirector");
+      Object.keys(plan.approval)
+        .map(key => plan.approval[key])
+        .forEach(item => {
+          Object.keys(item).map(id => item[id])
+            .forEach(value => {
+              if (value == ApprovalStatus.InProgress) {
+                showSubmit = true
+              }
+            })
+        })
+      if (!showSubmit && plan.partnerOrganisations) {
+        if (!plan.approval["partner"]) {
+          showSubmit = true
+        } else {
+          let orgNumber = Object.keys(plan.partnerOrganisations).length
+          let approveNum = Object.keys(plan.approval["partner"]).length
+          if (orgNumber != approveNum) {
+            showSubmit = true
+          }
+        }
+      }
+    } else {
+      showSubmit = true
     }
     return showSubmit;
   }
@@ -628,4 +970,344 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     return parseInt(value);
   }
 
+  selectPartner(partnerId, hasChecked) {
+    console.log((this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId) + "/" + hasChecked)
+    let id = this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId
+    this.partnerApprovalIdMap.set(id, hasChecked)
+  }
+
+  submitPlanToApproval() {
+    let approvalData = {};
+    console.log(this.getApprovalStatus("countryDirector"))
+    console.log(this.getApprovalStatus("regionDirector"))
+    console.log(this.getApprovalStatus("globalDirector"))
+    console.log(this.countryDirectorSelected)
+    console.log(this.regionDirectorSelected)
+    console.log(this.globalDirectorSelected)
+
+    //check country director
+    if (this.countryDirectorSelected) {
+      if ((this.getApprovalStatus("countryDirector") != ApprovalStatus.Approved && this.getApprovalStatus("countryDirector") != ApprovalStatus.NeedsReviewing)) {
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/countryDirector/" + (this.isLocalAgency ? this.agencyId : this.countryId)] = ApprovalStatus.WaitingApproval;
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+
+        // Send notification to country director
+        let notification = new MessageModel();
+        notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+        notification.time = new Date().getTime();
+        this.isLocalAgency ?
+          this.notificationService.saveUserNotificationLocalAgency(this.directorIdMap.get("countryDirector"), notification, UserType.LocalAgencyDirector, this.agencyId)
+          :
+          this.notificationService.saveUserNotification(this.directorIdMap.get("countryDirector"), notification, UserType.CountryDirector, this.agencyId, this.countryId)
+
+      }
+    }
+    else {
+      approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/countryDirector/" + (this.isLocalAgency ? this.agencyId : this.countryId)] = ApprovalStatus.InProgress;
+    }
+
+    //check region director
+    if (this.regionDirectorSelected) {
+      if ((this.getApprovalStatus("regionDirector") != ApprovalStatus.Approved && this.getApprovalStatus("regionDirector") != ApprovalStatus.NeedsReviewing)) {
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/regionDirector/" + this.countryRegionAgencyIdMap.get("regionDirector")] = ApprovalStatus.WaitingApproval
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId)+ "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+
+        // Send notification to country director
+        let notification = new MessageModel();
+        notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+        notification.time = new Date().getTime();
+        this.notificationService.saveUserNotification(this.directorIdMap.get("regionDirector"), notification, UserType.RegionalDirector, this.agencyId, this.countryId)
+      }
+    }
+    else {
+      if (this.agencyApprovalSettingMap.get("regionDirector")) {
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/regionDirector/" + this.countryRegionAgencyIdMap.get("regionDirector")] = ApprovalStatus.InProgress
+      }
+    }
+
+    //check global director
+    if (this.globalDirectorSelected) {
+      if (((this.getApprovalStatus("globalDirector") != ApprovalStatus.Approved && this.getApprovalStatus("globalDirector") != ApprovalStatus.NeedsReviewing))) {
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/globalDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+
+        // Send notification to country director
+        let notification = new MessageModel();
+        notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+        notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+        notification.time = new Date().getTime();
+        this.notificationService.saveUserNotification(this.directorIdMap.get("globalDirector"), notification, UserType.GlobalDirector, this.agencyId, this.countryId)
+      }
+    }
+    else {
+      if (this.agencyApprovalSettingMap.get("globalDirector")) {
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/globalDirector/" + this.agencyId] = ApprovalStatus.InProgress;
+      }
+    }
+
+    //logic for partners
+    let atLeastOnePartnerSelected = false
+    if (this.partnerApprovalIdMap) {
+      this.partnerApprovalIdMap.forEach((v, k) => {
+        if (v) {
+          atLeastOnePartnerSelected = true
+          if (!(this.planToApproval.approval && this.planToApproval.approval["partner"] &&
+              this.planToApproval.approval["partner"][k] &&
+              (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
+            approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval
+          }
+        } else {
+          approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.InProgress
+        }
+      })
+    }
+
+    //more logic for partners which not checked yet, need init here
+    let partnerIdsToCheck = this.partnerList.map(partnerId => this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId)
+    partnerIdsToCheck.forEach(id => {
+      if (!this.partnerApprovalIdMap.has(id)) {
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + id] = ApprovalStatus.InProgress
+      }
+    })
+
+    if (this.countryDirectorSelected || this.regionDirectorSelected || this.globalDirectorSelected || atLeastOnePartnerSelected) {
+      approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+    } else {
+      approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.InProgress
+    }
+
+    if (approvalData) {
+      this.updatePartnerValidation(null, approvalData)
+    }
+
+    // this.resetDirectorSelection()
+
+
+    // let countryId = "";
+    // let agencyId = "";
+    // this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
+    //   .flatMap(countryAdmin => {
+    //     countryId = countryAdmin.countryId;
+    //     agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
+    //     return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
+    //   })
+    //   .do(director => {
+    //     if (director && director.$value) {
+    //       // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
+    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.WaitingApproval;
+    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+    //
+    //       // Send notification to country director
+    //       let notification = new MessageModel();
+    //       notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+    //       notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+    //       notification.time = new Date().getTime();
+    //       this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
+    //       });
+    //
+    //     } else {
+    //       this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
+    //       this.showAlert();
+    //       return;
+    //     }
+    //   })
+    //   .flatMap(() => {
+    //     return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
+    //   })
+    //   .map(approvalSettings => {
+    //     let setting = [];
+    //     approvalSettings.forEach(item => {
+    //       setting.push(item.$value);
+    //     });
+    //     return setting;
+    //   })
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe(approvalSettings => {
+    //     if (approvalSettings[0] == false && approvalSettings[1] == false) {
+    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
+    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
+    //       this.updatePartnerValidation(countryId, approvalData);
+    //
+    //     } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
+    //       console.log("regional enabled");
+    //       this.updateWithRegionalApproval(agencyId, countryId, approvalData);
+    //     } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
+    //       console.log("global enabled");
+    //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
+    //     } else {
+    //       console.log("both directors enabled");
+    //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
+    //       this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
+    //     }
+    //   });
+  }
+
+  private initDirectorsModel(directorIdMap: Map<string, string>) {
+    directorIdMap.forEach((v, k) => {
+      this.userService.getUser(directorIdMap.get(k))
+        .first()
+        .subscribe(director => {
+          this.directorModelMap.set(k, director)
+          console.log(this.directorModelMap)
+        })
+    })
+  }
+
+  private getRegionId(countryId) {
+    this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
+      .flatMap(id => {
+        if (id && id.$value && id.$value != "null") {
+          return this.af.database.object(Constants.APP_STATUS + "/regionDirector/" + id.$value + "/regionId", {preserveSnapshot: true});
+        }
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        if (snap.val()) {
+          this.countryRegionAgencyIdMap.set("regionDirector", snap.val())
+        }
+        console.log(this.countryRegionAgencyIdMap)
+      });
+  }
+
+  private getApprovalHierachySettings() {
+    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/responsePlanSettings/approvalHierachy")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(approvalSettings => {
+        approvalSettings.forEach(setting => {
+          if (setting.$key == "0") {
+            this.agencyApprovalSettingMap.set("regionDirector", setting.$value)
+          } else {
+            this.agencyApprovalSettingMap.set("globalDirector", setting.$value)
+          }
+          console.log(this.agencyApprovalSettingMap)
+        })
+      });
+  }
+
+  private resetDirectorSelection() {
+    this.countryDirectorSelected = false
+    this.regionDirectorSelected = false
+    this.globalDirectorSelected = false
+    this.partnerApprovalIdMap.clear()
+    this.partnerList = []
+  }
+
+  private getApprovalStatus(directorType: string) {
+    return this.planToApproval.approval && this.planToApproval.approval[directorType] &&
+    this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] ? this.planToApproval.approval[directorType][this.countryRegionAgencyIdMap.get(directorType)] : -1
+  }
+
+  private getPartnersToApprove(plan) {
+    const orgUserMap = new Map<string, string>();
+    // const needValidResponsePlanId = plan.$key;
+
+    let partnerOrgIds = [];
+    plan.partnerOrganisations.forEach(partnerOrg => {
+      partnerOrgIds.push(partnerOrg);
+    });
+
+    let noPartnerUserOrg;
+
+    Observable.from(partnerOrgIds)
+      .flatMap(partnerOrgId => {
+        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId, {preserveSnapshot: true});
+      })
+      .do(snap => {
+        if (snap && snap.val()) {
+          noPartnerUserOrg = snap.val();
+          noPartnerUserOrg["key"] = snap.key;
+          this.validPartnerMap.set(snap.key, snap.val().isApproved);
+        }
+      })
+      .flatMap(snap => {
+        if (snap && snap.val()) {
+          orgUserMap.set(snap.key, "");
+          return this.af.database.object(Constants.APP_STATUS + "/partner/" + snap.val().validationPartnerUserId, {preserveSnapshot: true})
+            .map(snap => {
+              if (snap && snap.val()) {
+                snap.val()["orgId"] = snap.key;
+                return snap;
+              }
+            });
+        }
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        if (snap && snap.val()) {
+          orgUserMap.set(snap.val().partnerOrganisationId, snap.key);
+          // console.log(orgUserMap)
+          // let updateData = {};
+          // updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + snap.key] = ApprovalStatus.WaitingApproval;
+          // console.log(updateData);
+          // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+          //   console.log("update success")
+          // }, error => {
+          //   console.log(error.message);
+          // });
+        } else {
+          // console.log("no partner user found!!!!!!!");
+          // console.log(noPartnerUserOrg);
+          // console.log(orgUserMap);
+
+          // let updateData = {};
+          // orgUserMap.forEach((v, k) => {
+          //   if (!v) {
+          //     updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval;
+          //   }
+          // });
+          // console.log(updateData);
+          // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+          //   console.log("update success")
+          // }, error => {
+          //   console.log(error.message);
+          // });
+        }
+        this.getPartnerDetail(orgUserMap)
+        this.partnerList = CommonUtils.convertMapToKeysInArray(orgUserMap)
+        console.log(this.partnerList)
+        // //update response plan status
+        // if (orgUserMap.size === partnerOrgIds.length) {
+        //   this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key + "/status").set(ApprovalStatus.WaitingApproval);
+        // }
+
+      });
+  }
+
+  private getPartnerDetail(orgUserMap) {
+    console.log(orgUserMap)
+    orgUserMap.forEach((v, k) => {
+      if (!v) {
+        this.service.getPartnerOrgnisation(k)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(org => this.extPartnerOrgMap.set(k, org))
+      } else {
+        this.service.getPartnerOrgnisation(k)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(org => {
+            this.intPartnerOrgMap.set(k, org)
+            this.service.getPartnerBasedOnOrgId(k)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(userId => {
+                if (userId) {
+                  this.partnerUserMap.set(k, userId)
+                }
+              })
+          })
+      }
+    });
+  }
+
+  private checkIsThereCountryDirector() {
+    this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + this.countryId)
+      .first()
+      .subscribe(director => this.countryDirectorExist = !!director.$value)
+  }
+
+  private checkIsThereLocalAgencyDirector() {
+    this.af.database.object(Constants.APP_STATUS + "/directorLocalAgency/" + this.agencyId)
+      .first()
+      .subscribe(director => this.countryDirectorExist = !!director.$value)
+  }
 }

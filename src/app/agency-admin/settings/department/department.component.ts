@@ -1,7 +1,8 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
+import {UserType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import Promise = firebase.Promise;
@@ -25,6 +26,8 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private deleteCandidates: any = {};
   private depts: ModelDepartmentCanDelete[] = [];
   private editDepts: ModelDepartment[] = [];
+  private UserType = UserType;
+  private userType: number;
   public canDeleteItem: Map<string, boolean> = new Map<string, boolean>();
   private alerts = {};
   private newDepartmentErrorInactive: boolean = true;
@@ -36,13 +39,20 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  @Input() isLocalAgency: boolean;
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.initDepartments();
+      this.userType = userType;
+      if(this.isLocalAgency){
+        this.initDepartmentsLocalAgency();
+      } else{
+        this.initDepartments();
+      }
+
     });
   }
 
@@ -57,6 +67,34 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
   private initDepartments() {
     this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid, {preserveSnapshot: true})
+      .map((val) => {
+        console.log(val.val());
+        return val.val().agencyId;
+      })
+      .flatMap((agencyId) => {
+        this.agencyId = agencyId;
+        console.log(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments");
+        return this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true});
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        this.depts = [];
+        this.editDepts = [];
+        console.log(snapshot.val());
+        snapshot.forEach((snap) => {
+          let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.val().name);
+          this.depts.push(x);
+          let y: ModelDepartment = new ModelDepartment();
+          y.id = snap.key;
+          y.name = snap.val().name;
+          this.editDepts.push(y);
+        });
+        this.initCanDeleteDepartments();
+      });
+  }
+
+  private initDepartmentsLocalAgency() {
+    this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + this.uid, {preserveSnapshot: true})
       .map((val) => {
         console.log(val.val());
         return val.val().agencyId;
@@ -197,6 +235,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   addDepartment() {
+
     if (this.validateNewDepartment()) {
       let updateObj = {
         name: this.departmentName

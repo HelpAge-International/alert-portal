@@ -12,6 +12,7 @@ import {PartnerOrganisationModel} from "../../model/partner-organisation.model";
 import {PartnerOrganisationService} from "../../services/partner-organisation.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
+import {FieldOfficeService} from "../../services/field-office.service";
 
 declare var jQuery: any;
 
@@ -55,9 +56,14 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private _userService: UserService,
+  private fieldOfficeMap = new Map<string, string>()
+
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
               private af: AngularFire,
+              private fieldService:FieldOfficeService,
               private router: Router) {
   }
 
@@ -78,11 +84,29 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   private initData() {
     this.getStaffData();
     this.getPartnerData();
+    this.initDepartments();
+    this.initFieldOffices()
+  }
+
+  private initDepartments() {
+    this.departments = [];
+    this.departmentMap.clear();
+    //agency level
     this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snap => {
-        this.departments = [];
-        this.departmentMap.clear();
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        })
+      });
+    //country level
+    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments', {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
         snap.forEach((snapshot) => {
           let x: ModelDepartment = new ModelDepartment();
           x.id = snapshot.key;
@@ -179,6 +203,9 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.staff.training = item.training;
     this.staff.skill = item.skill;
     this.staff.notification = item.notification;
+    if (item.fieldOffice) {
+      this.staff.fieldOffice = item.fieldOffice
+    }
 
     return this.staff;
   }
@@ -288,5 +315,13 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
         });
     }
     return this.techSkills;
+  }
+
+  private initFieldOffices() {
+    this.fieldService.getFieldOffices(this.countryId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(offices => {
+        offices.forEach(office => this.fieldOfficeMap.set(office.id, office.name))
+      })
   }
 }

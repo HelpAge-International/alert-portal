@@ -143,7 +143,7 @@ export class ResponsePlanService {
               let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
               let waitingApprovalList = [];
               approvePair.forEach(item => {
-                let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
+                let waiting = Object.keys(item).map(key => item[key]).filter(value => (value == ApprovalStatus.WaitingApproval || value == ApprovalStatus.InProgress));
                 waitingApprovalList = waitingApprovalList.concat(waiting);
               });
 
@@ -254,10 +254,14 @@ export class ResponsePlanService {
     let directorGlobal = this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
       query: {
         orderByChild: "agencyAdmin/" + agencyId,
-        equalTo: true
+        equalTo: true,
       }
     });
     return Observable.merge(directorCountry, directorRegion, directorGlobal);
+  }
+
+  getLocalAgencyDirector(agencyId): Observable<any> {
+    return this.af.database.object(Constants.APP_STATUS + "/directorLocalAgency/" + agencyId);
   }
 
   serviceDestroy() {

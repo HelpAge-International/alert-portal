@@ -39,6 +39,7 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
   private dcTotalFemale: number;
   private dcTotalMale: number;
   private dcTotal: number;
+  private agencyId: string;
 
   private networkCountryId: string;
 
@@ -50,6 +51,18 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
    */
 
   ngOnInit() {
+    this.route.params.subscribe((params: Params) => {
+      if (params['isLocalAgency']) {
+        this.initLocalAgency()
+      } else {
+        this.initCountryOffice()
+      }
+
+    });
+
+  }
+
+  private initCountryOffice() {
     this.route.params.subscribe((params: Params) => {
       if (params["id"] && params["networkCountryId"]) {
         this.responsePlanId = params["id"];
@@ -71,6 +84,15 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
           this.downloadData();
         });
       }
+    })
+  }
+
+  private initLocalAgency() {
+
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.agencyId = agencyId;
+      this.downloadDataLocalAgency();
     });
 
   }
@@ -108,6 +130,13 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
       });
   }
 
+  private downloadDataLocalAgency() {
+
+    this.downloadResponsePlanDataLocalAgency();
+    this.downloadAgencyDataLocalAgency();
+
+  }
+
   private downloadAgencyData(userType) {
     const normalUser = () => {
       this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
@@ -132,6 +161,17 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.networkCountryId ? networkUser() : normalUser();
   }
 
+  private downloadAgencyDataLocalAgency() {
+
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+      if (name != null) {
+        this.memberAgencyName = name.$value;
+      }
+    });
+
+
+  }
+
   private downloadResponsePlanData() {
     if (!this.responsePlanId) {
       this.route.params
@@ -143,6 +183,31 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
         });
     }
     let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+    let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
+    this.af.database.object(responsePlansPath)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((responsePlan: ResponsePlan) => {
+        this.responsePlan = responsePlan;
+        console.log(responsePlan);
+        this.dcTotalFemale = Number(responsePlan.doubleCounting[0].value) + Number(responsePlan.doubleCounting[1].value) + Number(responsePlan.doubleCounting[2].value);
+        this.dcTotalMale = Number(responsePlan.doubleCounting[3].value) + Number(responsePlan.doubleCounting[4].value) + Number(responsePlan.doubleCounting[5].value);
+        this.dcTotal = this.dcTotalFemale + this.dcTotalMale;
+
+        this.bindProjectActivitiesData(responsePlan);
+      });
+  }
+
+  private downloadResponsePlanDataLocalAgency() {
+    if (!this.responsePlanId) {
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params["id"]) {
+            this.responsePlanId = params["id"];
+          }
+        });
+    }
+    let id = this.agencyId;
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
@@ -177,7 +242,14 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
             activitiesData[key]["beneficiary"].forEach(item => {
               beneficiary.push(item);
             });
-            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"], activitiesData[key]["indicator"], beneficiary);
+            let model = new ModelPlanActivity(activitiesData[key]["name"], activitiesData[key]["output"],
+              activitiesData[key]["indicator"],
+              !activitiesData[key]["hasFurtherBeneficiary"] ? beneficiary : null,
+              activitiesData[key]["hasFurtherBeneficiary"],
+              activitiesData[key]["hasDisability"],
+              activitiesData[key]["hasFurtherBeneficiary"] ? activitiesData[key]["furtherBeneficiary"] : null,
+              !activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["disability"] : null,
+              activitiesData[key]["hasFurtherBeneficiary"] && activitiesData[key]["hasDisability"] ? activitiesData[key]["furtherDisability"] : null);
             moreData.push(model);
             this.activityMap.set(Number(sectorKey), moreData);
           });
@@ -205,15 +277,37 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
    */
 
   getTotalFemalePopulation(activity) {
-    return (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
-      + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
-      + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+    if (activity.hasFurtherBeneficiary) {
+      return (activity.furtherBeneficiary && activity.furtherBeneficiary[0] ? Number(activity.furtherBeneficiary[0]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[1] ? Number(activity.furtherBeneficiary[1]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[2] ? Number(activity.furtherBeneficiary[2]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[3] ? Number(activity.furtherBeneficiary[3]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[4] ? Number(activity.furtherBeneficiary[4]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[5] ? Number(activity.furtherBeneficiary[5]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[6] ? Number(activity.furtherBeneficiary[6]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[7] ? Number(activity.furtherBeneficiary[7]["value"]) : 0)
+    } else {
+      return (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+        + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+        + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+    }
   }
 
   getTotalMalePopulation(activity) {
-    return (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
-      + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
-      + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+    if (activity.hasFurtherBeneficiary) {
+      return (activity.furtherBeneficiary && activity.furtherBeneficiary[8] ? Number(activity.furtherBeneficiary[8]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[9] ? Number(activity.furtherBeneficiary[9]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[10] ? Number(activity.furtherBeneficiary[10]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[11] ? Number(activity.furtherBeneficiary[11]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[12] ? Number(activity.furtherBeneficiary[12]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[13] ? Number(activity.furtherBeneficiary[13]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[14] ? Number(activity.furtherBeneficiary[14]["value"]) : 0)
+        + (activity.furtherBeneficiary && activity.furtherBeneficiary[15] ? Number(activity.furtherBeneficiary[15]["value"]) : 0)
+    } else {
+      return (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+        + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+        + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+    }
   }
 
   getOverallTotalPopulation(activity) {
@@ -225,7 +319,13 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += ((activity.furtherBeneficiary && activity.furtherBeneficiary[0] ? Number(activity.furtherBeneficiary[0]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[1] ? Number(activity.furtherBeneficiary[1]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[2] ? Number(activity.furtherBeneficiary[2]["value"]) : 0))
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0);
+          }
         });
       }
     });
@@ -238,7 +338,11 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += (activity.furtherBeneficiary && activity.furtherBeneficiary[3] ? Number(activity.furtherBeneficiary[3]["value"]) : 0);
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0);
+          }
         });
       }
     });
@@ -251,7 +355,14 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += ((activity.furtherBeneficiary && activity.furtherBeneficiary[4] ? Number(activity.furtherBeneficiary[4]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[5] ? Number(activity.furtherBeneficiary[5]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[6] ? Number(activity.furtherBeneficiary[6]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[7] ? Number(activity.furtherBeneficiary[7]["value"]) : 0))
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+          }
         });
       }
     });
@@ -264,7 +375,13 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += ((activity.furtherBeneficiary && activity.furtherBeneficiary[8] ? Number(activity.furtherBeneficiary[8]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[9] ? Number(activity.furtherBeneficiary[9]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[10] ? Number(activity.furtherBeneficiary[10]["value"]) : 0))
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0);
+          }
         });
       }
     });
@@ -277,7 +394,11 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += (activity.furtherBeneficiary && activity.furtherBeneficiary[11] ? Number(activity.furtherBeneficiary[11]["value"]) : 0);
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0);
+          }
         });
       }
     });
@@ -290,7 +411,14 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += ((activity.furtherBeneficiary && activity.furtherBeneficiary[12] ? Number(activity.furtherBeneficiary[12]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[13] ? Number(activity.furtherBeneficiary[13]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[14] ? Number(activity.furtherBeneficiary[14]["value"]) : 0) +
+              (activity.furtherBeneficiary && activity.furtherBeneficiary[15] ? Number(activity.furtherBeneficiary[15]["value"]) : 0))
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+          }
         });
       }
     });
@@ -303,9 +431,20 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += (activity.furtherBeneficiary && activity.furtherBeneficiary[0] ? Number(activity.furtherBeneficiary[0]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[1] ? Number(activity.furtherBeneficiary[1]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[2] ? Number(activity.furtherBeneficiary[2]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[3] ? Number(activity.furtherBeneficiary[3]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[4] ? Number(activity.furtherBeneficiary[4]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[5] ? Number(activity.furtherBeneficiary[5]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[6] ? Number(activity.furtherBeneficiary[6]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[7] ? Number(activity.furtherBeneficiary[7]["value"]) : 0)
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0);
+          }
         });
       }
     });
@@ -318,9 +457,20 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+          if (activity.hasFurtherBeneficiary) {
+            total += (activity.furtherBeneficiary && activity.furtherBeneficiary[8] ? Number(activity.furtherBeneficiary[8]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[9] ? Number(activity.furtherBeneficiary[9]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[10] ? Number(activity.furtherBeneficiary[10]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[11] ? Number(activity.furtherBeneficiary[11]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[12] ? Number(activity.furtherBeneficiary[12]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[13] ? Number(activity.furtherBeneficiary[13]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[14] ? Number(activity.furtherBeneficiary[14]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[15] ? Number(activity.furtherBeneficiary[15]["value"]) : 0)
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+          }
         });
       }
     });
@@ -333,13 +483,32 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
     this.sectors.forEach(function (sector) {
       if (activityMap.get(sector.id)) {
         activityMap.get(sector.id).forEach(function (activity) {
-          total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0)
+          if (activity.hasFurtherBeneficiary) {
+            total += (activity.furtherBeneficiary && activity.furtherBeneficiary[0] ? Number(activity.furtherBeneficiary[0]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[1] ? Number(activity.furtherBeneficiary[1]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[2] ? Number(activity.furtherBeneficiary[2]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[3] ? Number(activity.furtherBeneficiary[3]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[4] ? Number(activity.furtherBeneficiary[4]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[5] ? Number(activity.furtherBeneficiary[5]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[6] ? Number(activity.furtherBeneficiary[6]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[7] ? Number(activity.furtherBeneficiary[7]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[8] ? Number(activity.furtherBeneficiary[8]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[9] ? Number(activity.furtherBeneficiary[9]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[10] ? Number(activity.furtherBeneficiary[10]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[11] ? Number(activity.furtherBeneficiary[11]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[12] ? Number(activity.furtherBeneficiary[12]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[13] ? Number(activity.furtherBeneficiary[13]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[14] ? Number(activity.furtherBeneficiary[14]["value"]) : 0)
+              + (activity.furtherBeneficiary && activity.furtherBeneficiary[15] ? Number(activity.furtherBeneficiary[15]["value"]) : 0)
+          } else {
+            total += (activity.beneficiary && activity.beneficiary[0] ? Number(activity.beneficiary[0]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[1] ? Number(activity.beneficiary[1]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[2] ? Number(activity.beneficiary[2]["value"]) : 0)
 
-            + (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
-            + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+              + (activity.beneficiary && activity.beneficiary[3] ? Number(activity.beneficiary[3]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[4] ? Number(activity.beneficiary[4]["value"]) : 0)
+              + (activity.beneficiary && activity.beneficiary[5] ? Number(activity.beneficiary[5]["value"]) : 0);
+          }
         });
       }
     });

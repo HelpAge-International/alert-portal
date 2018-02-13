@@ -2,7 +2,7 @@ import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Currency} from "../../../utils/Enums";
+import {Currency, UserType} from "../../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
@@ -34,6 +34,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private agencyWebAddress: string = '';
   private agencyCountry: number;
   private agencyCurrency: number;
+  private userType: number;
 
   private Country = Constants.COUNTRIES;
   private countriesList: number[] = Constants.COUNTRY_SELECTION;
@@ -54,6 +55,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
+        this.userType = userType
         this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
           .takeUntil(this.ngUnsubscribe)
           .subscribe(id => {
@@ -95,6 +97,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.validate()) {
+      console.log('validated')
 
       let agencyData = {};
 
@@ -108,6 +111,10 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
       agencyData['/agency/' + this.agencyId + '/website'] = this.agencyWebAddress;
       agencyData['/agency/' + this.agencyId + '/currency'] = this.agencyCurrency;
       agencyData['/administratorAgency/' + this.uid + '/firstLogin'] = false;
+      if(this.userType == UserType.LocalAgencyAdmin){
+        agencyData['/administratorLocalAgency/' + this.uid + '/firstLogin'] = false;
+      }
+
 
       if (this.logoFile) {
 
@@ -123,7 +130,14 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(() => {
                 this.successInactive = true;
-                this.router.navigateByUrl('/agency-admin/country-office');
+
+                if(this.userType == UserType.AgencyAdmin){
+
+                  this.router.navigateByUrl('/agency-admin/country-office');
+                } else{
+
+                  this.router.navigateByUrl('/local-agency/dashboard');
+                }
               });
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -138,15 +152,20 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
           });
       } else {
 
-        console.log("Without logo");
-        console.log("agencyData" + agencyData['/agency/' + this.agencyId + '/addressLine2']);
         this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
           this.successInactive = false;
           Observable.timer(Constants.ALERT_REDIRECT_DURATION)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(() => {
             this.successInactive = true;
-            this.router.navigateByUrl('/agency-admin/country-office');
+
+              if(this.userType == UserType.AgencyAdmin){
+
+                this.router.navigateByUrl('/agency-admin/country-office');
+              } else{
+
+                this.router.navigateByUrl('/local-agency/dashboard');
+              }
           });
         }, error => {
           this.errorMessage = 'GLOBAL.GENERAL_ERROR';
