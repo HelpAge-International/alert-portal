@@ -295,7 +295,13 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
         })
     }
 
-    console.log(this.loadedAlert);
+    //new property "previousIsAmber" will be pushed if updated from amber, otherwise, this property will be deleted
+    if (this.preAlertLevel == AlertLevels.Amber && this.loadedAlert.alertLevel == AlertLevels.Red) {
+      this.loadedAlert.previousIsAmber = true
+    } else {
+      this.loadedAlert.previousIsAmber = null
+    }
+
     if(this.networkViewValues){
       console.log(true)
       this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.leadAgencyCountryOffice, this.leadAgencyId, this.networkCountryId, null, this.networkViewValues);

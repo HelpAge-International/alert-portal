@@ -10,6 +10,8 @@ import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.
 import {MapCountry, MapService} from "../services/map.service";
 import {TranslateService} from "@ngx-translate/core";
 import {SettingsService} from "../services/settings.service";
+import {AgencyService} from "../services/agency-service.service";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -50,6 +52,7 @@ export class MapComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private userService: UserService,
               private settingService: SettingsService,
+              private agencyService:AgencyService,
               private translate: TranslateService) {
     this.mapHelper = SuperMapComponents.init(af, this.ngUnsubscribe);
   }
@@ -125,11 +128,19 @@ export class MapComponent implements OnInit, OnDestroy {
               }
 
               //try to add country local departments here
-              this.settingService.getCountryLocalDepartments(agencyId, countryId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(localDepts => {
-                  localDepts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name))
-                })
+              if (this.isDirector) {
+                this.agencyService.getAllCountryIdsForAgency(agencyId)
+                  .mergeMap(ids => Observable.from(ids))
+                  .mergeMap(id => this.settingService.getCountryLocalDepartments(agencyId, id))
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(depts => depts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name)))
+              } else {
+                this.settingService.getCountryLocalDepartments(agencyId, countryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(localDepts => {
+                    localDepts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name))
+                  })
+              }
             });
 
           /** Load in the markers on the map! */

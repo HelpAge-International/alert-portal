@@ -608,12 +608,12 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
 
-  rejectRedRequest(alertId) {
-    this.actionService.rejectRedAlertLocalAgency(this.agencyId, alertId, this.uid);
+  rejectRedRequest(alert) {
+    this.actionService.rejectRedAlertLocalAgency(this.agencyId, alert, this.uid);
   }
 
   rejectRedRequestNetwork(alert) {
-    this.actionService.rejectRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId);
+    this.actionService.rejectRedAlertNetwork(this.countryId, alert, alert.networkCountryId);
   }
 
   planReview(plan, isLocal) {

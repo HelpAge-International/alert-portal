@@ -493,7 +493,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .distinctUntilChanged()
         .subscribe(x => {
-          this.partnerOrganisations.push(x);
+          if (x.isApproved) {
+            this.partnerOrganisations.push(x);
+          }
         });
     });
   }
@@ -962,7 +964,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         //Make sure we aren't creating new node on autosave
         if (this.idOfResponsePlanToEdit)
         {
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkCountryId + "/"+ this.idOfResponsePlanToEdit;
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkId + "/"+ this.idOfResponsePlanToEdit;
           this.af.database.object(responsePlansPath)
             .update(newResponsePlan)
             .then(()=> {
@@ -973,7 +975,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
         } else {
 
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkCountryId;
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkId;
           this.af.database.list(responsePlansPath)
             .push(newResponsePlan)
             .then(plan => {
