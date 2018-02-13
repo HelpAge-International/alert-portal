@@ -261,6 +261,7 @@ import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/loca
 import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
+import {CodeOfConductComponent} from "./code-of-conduct/code-of-conduct.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -272,6 +273,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'login/:emailEntered', component: LoginComponent},
+  {path: 'code-of-conduct', component: CodeOfConductComponent},
 
   /**
    * New User

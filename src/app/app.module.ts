@@ -352,6 +352,7 @@ import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-netwo
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
 import {CookieLawModule} from "angular2-cookie-law";
+import { CodeOfConductComponent } from './code-of-conduct/code-of-conduct.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -706,7 +707,8 @@ const firebaseAuthConfig = {
     LocalAgencyAccountDetailsComponent,
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
-    AgencyOverviewComponent
+    AgencyOverviewComponent,
+    CodeOfConductComponent
   ],
   imports: [
     CookieLawModule,
