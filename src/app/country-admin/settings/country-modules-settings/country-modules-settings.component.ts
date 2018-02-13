@@ -62,8 +62,15 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
         this._settingsService.getCountryModulesSettings(this.countryId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((modules: ModuleSettingsModel[]) => {
-            console.log(modules);
             this.moduleSettings = modules;
+            //to make sure old data work, check length here, if it's old data, push one in
+            if (this.moduleSettings.length == 6) {
+              let conflictModule = new ModuleSettingsModel()
+              conflictModule.privacy = Privacy.Public
+              conflictModule.status = true
+              this.moduleSettings.push(conflictModule)
+            }
+            console.log(this.moduleSettings);
           })
       }
 

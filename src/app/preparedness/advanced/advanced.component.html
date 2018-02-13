@@ -1729,7 +1729,7 @@
           <div *ngIf="!isViewing">
             <div *ngIf="(filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div
@@ -1959,11 +1959,11 @@
                     userType != UserType.GlobalDirector && userType != UserType.RegionalDirector &&
                     !(privacy?.chs != Privacy.Public && action.type == ActionType.chs) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired) ||
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned) ||
                     (filterType == -1 || action.type == filterType) &&
                     (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector || isSameAgency) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div

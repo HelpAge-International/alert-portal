@@ -143,13 +143,14 @@ export class NetworkMapService {
   private getActionsFor(countryId: string, agencyId: string, systemId: string, done: (holder: NetworkMapActionHolder) => void) {
     const holder: NetworkMapActionHolder = new NetworkMapActionHolder();
     this.downloadDefaultClockSettings(agencyId, (value, durationType) => {
-      this.af.database.list(Constants.APP_STATUS + '/actionCHS/' + systemId, {preserveSnapshot: true})
-        .flatMap((chsSnap) => {
-          for (const x of chsSnap) {
-            holder.mpaTotal.add(x.key);
-          }
-          return this.af.database.list(Constants.APP_STATUS + '/actionMandated/' + agencyId, {preserveSnapshot: true});
-        })
+      // this.af.database.list(Constants.APP_STATUS + '/actionCHS/' + systemId, {preserveSnapshot: true})
+      //   .flatMap((chsSnap) => {
+      //     for (const x of chsSnap) {
+      //       holder.mpaTotal.add(x.key);
+      //     }
+      //     return this.af.database.list(Constants.APP_STATUS + '/actionMandated/' + agencyId, {preserveSnapshot: true});
+      //   })
+      this.af.database.list(Constants.APP_STATUS + '/actionMandated/' + agencyId, {preserveSnapshot: true})
         .flatMap((mandatedSnap) => {
           for (const x of mandatedSnap) {
             if (x.val().level == ActionLevel.MPA) {

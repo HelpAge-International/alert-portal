@@ -16,7 +16,9 @@ import {
   AlertStatus,
   ApprovalStatus,
   Countries,
-  DashboardType, ModuleNameNetwork, Privacy,
+  DashboardType,
+  ModuleNameNetwork,
+  Privacy,
   UserType
 } from "../../utils/Enums";
 import {ModelAlert} from "../../model/alert.model";
@@ -32,12 +34,8 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {SettingsService} from "../../services/settings.service";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
-import { NetworkCountryCreateEditActionComponent } from "../network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component";
-import {NetworkCountryMpaComponent} from "../network-preparedness/network-country-mpa/network-country-mpa.component";
 import {PrepActionService} from "../../services/prepactions.service";
 import {MandatedListModel} from "../../agency-admin/agency-mpa/agency-mpa.component";
-import {map} from "rxjs/operator/map";
-
 
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
@@ -140,6 +138,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private agencyCountryMap = new Map<string, string>();
   private networkModules: ModuleSettingsModel[]
 
+  private Hazard_Conflict = 1
+
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -155,17 +155,29 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"]) {
+      if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
+      }
+      if (params["systemId"]) {
         this.systemId = params["systemId"];
+      }
+      if (params["agencyId"]) {
         this.agencyId = params["agencyId"];
+      }
+      if (params["countryId"]) {
         this.countryId = params["countryId"];
+      }
+      if (params["userType"]) {
         this.userType = params["userType"];
+      }
+      if (params["networkId"]) {
         this.networkId = params["networkId"];
-        if (!this.isLocalNetworkAdmin) {
-          this.networkCountryId = params["networkCountryId"];
-        }
-        this.uid = params["uid"]
+      }
+      if (params["uid"]) {
+        this.uid = params["uid"];
+      }
+      if (!this.isLocalNetworkAdmin) {
+        this.networkCountryId = params["networkCountryId"];
       }
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
@@ -185,8 +197,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.networkCountryId = selection["networkCountryId"];
 
           this.getMandatedPrepActions();
-
-
 
 
           this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -256,7 +266,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     console.log(this.userType);
     this.DashboardTypeUsed = this.userType == UserType.CountryDirector ? DashboardType.director : DashboardType.default;
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    console.log('network view values')
+    console.log(this.networkViewValues)
     if (!this.networkViewValues) {
       console.log('no network view values')
       this.router.navigateByUrl("/dashboard");
@@ -724,26 +734,30 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
                           this.hazards.push(hazard);
                         });
                     } else {
-                      if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
-                        this.hazards.push(hazard);
-                        this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(object => {
-                            if (object) {
-                              this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
-                            }
-                          });
-                      } else {
-                        this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(object => {
-                            if (object) {
+                      //check conflict privacy settings
+                      if (agencyKey == this.agencyId || !(privacy.conflictIndicators && privacy.conflictIndicators == Privacy.Private && hazard.hazardScenario == this.Hazard_Conflict)) {
+                        if (!this.checkHazardScenarioExist(hazard, this.hazards)) {
+                          this.hazards.push(hazard);
+                          this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe(object => {
+                              if (object) {
+                                this.numberOfIndicatorsObject[object.$key] = Object.keys(object).filter(key => !key.includes("$")).length;
+                              }
+                            });
+                        } else {
+                          this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key)
+                            .takeUntil(this.ngUnsubscribe)
+                            .subscribe(object => {
+                              if (object) {
 
-                              let key = this.getHazardIdIfExist(hazard, this.hazards)
-                              this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
-                            }
-                          });
+                                let key = this.getHazardIdIfExist(hazard, this.hazards)
+                                this.numberOfIndicatorsObject[key] += Object.keys(object).filter(key => !key.includes("$")).length;
+                              }
+                            });
+                        }
                       }
+
                     }
                   }
                 });

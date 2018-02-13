@@ -5,6 +5,7 @@ export class ModelAgencyPrivacy {
   public riskMonitoring:number;
   public officeProfile:number;
   public responsePlan:number;
+  public conflictIndicators:number
 
   public mapObject(item:any) {
     this.mpa = item[0].privacy;

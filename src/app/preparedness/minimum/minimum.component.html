@@ -1927,7 +1927,7 @@
             <div *ngIf="(!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div
@@ -2138,12 +2138,12 @@
                     !(privacy.chs != Privacy.Public && action.type == ActionType.chs) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired) ||
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned) ||
                     (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector || agencyId == userAgencyId) &&
                     (!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div
@@ -2375,7 +2375,7 @@
             <div *ngIf="(!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div
@@ -2584,12 +2584,12 @@
                     !(privacy.chs != Privacy.Public && action.type == ActionType.chs) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired) ||
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned) ||
                     (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector || agencyId == userAgencyId) &&
                     (!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
                     (filterType == -1 || action.type == filterType) &&
                     (filterDepartment == -1 || action.department == filterDepartment) &&
-                    (filterStatus == -1 || filterStatus == ActionStatus.Expired)">
+                    (filterStatus == -1 || filterStatus == ActionStatus.Unassigned)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
               <div
