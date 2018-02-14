@@ -8,6 +8,7 @@ import {AgencyService} from "../services/agency-service.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkService} from "../services/network.service";
 import {current} from "codelyzer/util/syntaxKind";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-login',
@@ -33,6 +34,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   private userChecks: number = 0;
   private ngUnsubscribe: Subject<any> = new Subject<any>();
   private mErrorCodes: Map<string, string> = new Map<string, string>();
+  private uid: string;
+  private cocText: string;
 
   // Temporary values for the login user type.
   //  - Won't be used for anything else
@@ -90,21 +93,19 @@ export class LoginComponent implements OnInit, OnDestroy {
           method: AuthMethods.Password,
         })
         .then((success) => {
+          this.uid = success.uid;
 
-          // Check if we are a network admin!
-          this.checkNetworkLogin(success.uid,
-            (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
-              //TODO:
-              console.log("network selection")
-              this.router.navigateByUrl("network/network-account-selection")
-            },
-            () => {// REGULAR LOGIN
-              console.log("regular login")
-              this.regularLogin(success.uid);
-            })
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/cocAgreed", {preserveSnapshot: true})
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((snap) => {
+                if(snap.val()){
+                  this.checkLogins();
+                }else{
+                  this.showCoC();
+                }
+            });
 
-        })
-
+          })
         .catch((error) => {
           // An error occured with logging in the user
           console.log(error.message);
@@ -126,6 +127,34 @@ export class LoginComponent implements OnInit, OnDestroy {
     else {
       this.showAlert(true, "LOGIN.VALIDATION_ERROR");
     }
+  }
+
+  private showCoC(){
+    this.af.database.object(Constants.APP_STATUS + "/coc/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val().cocText){
+          this.cocText = snap.val().cocText;
+          this.loaderInactive = true;
+          jQuery("#coc-window").modal("show");
+        }else{
+          this.checkLogins();
+        }
+    });
+  }
+
+  onAgreeCoC(){
+    this.loaderInactive = false;
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/cocAgreed").set(true);
+    this.checkLogins();
+  }
+
+  private checkLogins(){
+    this.checkNetworkLogin(this.uid,(isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
+      this.router.navigateByUrl("network/network-account-selection")
+    }, () => {// REGULAR LOGIN
+      this.regularLogin(this.uid);
+    })
   }
 
   /**

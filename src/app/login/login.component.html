@@ -52,4 +52,23 @@
   </div>
 </div>
 
+<div class="modal fade" id="coc-window" tabindex="-1" role="doc-toc" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="doc-toc">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Code of Conduct<strong></strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{cocText}}</p>
+      </div>
+      <button type="button" data-dismiss="modal" aria-label="Close" (click)="onAgreeCoC()">{{"GLOBAL.IAGREE" | translate}}</button>
+    </div>
+  </div>
+</div>
+
 <cookie-law #cookieLaw (isSeen)="seenCookiePolicy($event)"></cookie-law>
+

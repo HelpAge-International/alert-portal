@@ -292,7 +292,9 @@
       "UR": "Urdu",
       "BN": "Bengali"
     },
-    "SWITCH": "Switch language",
+    "SWITCH": "Switch Language",
+    "COC": "Code of Conduct",
+    "IAGREE":"I Agree",
     "MODAL_HEADER":"Select a language",
     "WELCOME":"Welcome",
     "HOME":"Home",

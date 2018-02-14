@@ -13,8 +13,12 @@
                     <a class="dropdown-item" routerLink="/agency-admin/agency-account-settings">
                         {{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}
                     </a>
-                  <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
-
+                    <a class="dropdown-item" (click)="openLanguageModal()">
+                      {{"GLOBAL.SWITCH" | translate}}
+                    </a>
+                    <a class="dropdown-item">
+                    {{"GLOBAL.COC" | translate}}
+                    </a>
                     <a class="dropdown-item" (click)="logout()">
                         {{"GLOBAL.LOGOUT" | translate}}
                     </a>
