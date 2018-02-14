@@ -68,7 +68,16 @@ export class LocalNetworkMenuComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(selection => {
             this.networkId = selection["id"];
+
+            //init module status
+            this.settingService.getCountryModulesSettings(this.networkId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(modules => {
+                console.log(modules)
+                this.networkModules = modules
+              })
           });
+
       })
 
     }
