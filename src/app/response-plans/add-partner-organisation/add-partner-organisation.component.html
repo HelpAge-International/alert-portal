@@ -20,11 +20,18 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
+      <button *ngIf="isInactive" type="button" class="btn btn-outline-primary text-uppercase"
+              (click)="setInactiveStateFalse()">
+        {{ 'INACTIVATE' | translate }}
+      </button>
+      <button *ngIf="!isInactive" type="button" class="btn btn-primary text-uppercase"
+              (click)="setInactiveState()">
+        {{ 'INACTIVE' | translate }}
+      </button>
       <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePartnerOrganisation()">
         {{"DELETE" | translate}}
       </button>
     </div>
-
 
     <div class="Underline-title__wrap">
       <h5>{{ "ADD_PARTNER.ORGANISATION_DETAILS" | translate }}</h5>
@@ -121,9 +128,9 @@
                   </div>
                 </div>
                 <!--<div class="col-sm-3" *ngIf="operationArea.country-->
-                                 <!--&& countryLevelsValues[operationArea.country]-->
-                                 <!--&& countryLevelsValues[operationArea.country].levelOneValues">-->
-                  <div class="col-sm-3" *ngIf="hasLevel1(operationArea.country)">
+                <!--&& countryLevelsValues[operationArea.country]-->
+                <!--&& countryLevelsValues[operationArea.country].levelOneValues">-->
+                <div class="col-sm-3" *ngIf="hasLevel1(operationArea.country)">
                   <div class="form-group">
                     <select class="form-control" name="CountryAreaLevelOne_{{opin}}"
                             [(ngModel)]="operationArea.level1">

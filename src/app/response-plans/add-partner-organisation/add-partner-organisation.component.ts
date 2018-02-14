@@ -29,6 +29,7 @@ declare var jQuery: any;
 export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private defaultCountry: any;
   private isEdit = false;
+  private isInactive = false;
   private uid: string;
   private agencyId: string;
   private countryId: string;
@@ -275,6 +276,12 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     project.endDate = newEndDate;
   }
 
+  setInactiveState(){
+    this.isInactive = true;
+  }
+  setInactiveStateFalse(){
+    this.isInactive = false;
+  }
   goBack() {
     if(this.isLocalAgency){
       this.router.navigateByUrl("local-agency/profile/partners")

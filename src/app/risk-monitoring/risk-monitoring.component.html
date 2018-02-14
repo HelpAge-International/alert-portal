@@ -352,9 +352,10 @@
                 <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) :
                   hazard.hazardName}}</h4></div>
               <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
-                <div *ngIf="hazard.isSeasonal">
+
+                <a href="javascript:void(0)" class="text-primary" id="open-seasonal-modal{{hazard.$key}}" *ngIf="hazard.isSeasonal" (click)="openSeasonalModal('select-seasons')">
                   <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" | translate}}
-                </div>
+                </a>
               </div>
               <div class="indicators__wrap--risk col-sm-3 Right-aligned">
                 <strong>{{hazard.indicators && hazard.indicators.length ? hazard.indicators.length : 0}}</strong>
@@ -1207,6 +1208,38 @@
           <button
             class="btn btn-primary col-sm-3 text-uppercase" (click)="saveAssignedUser()">{{"SAVE" | translate}}
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Show seasonal hazards-->
+<div class="modal fade" id="select-seasons" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above" id="addCalendarModalLabel">{{"RISK_MONITORING.ADD_HAZARD.SEASONS" | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-body text-center">
+        <div class="row col-sm-12">
+          <div class="col-sm-12">
+            <div class="row margin-left-three" *ngFor="let season of AllSeasons; index as i">
+              <div class="col-sm-1">
+                <div class="Color__swatch__check Right-aligned"
+                     [ngStyle]="{'background':season.colorCode}">
+                </div>
+              </div>
+              <div class="cold-sm-7 margin-left-one"><p class="font-size-two"><strong>
+                {{season.name}} | {{season.startTime | date:"dd/MM/yy"}} - {{season.endTime |
+                date:"dd/MM/yy"}}</strong></p></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -96,9 +96,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private alertImages = Constants.ALERT_IMAGES;
   private logContent: any[] = [];
   private isIndicatorCountryUpdate: any[] = [];
-
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
+  private AllSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -292,6 +292,24 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
     }
+  }
+
+  openSeasonalModal(key){
+    this._getAllSeasons();
+    jQuery("#"+key).modal("show");
+  }
+
+  _getAllSeasons() {
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((AllSeasons: any) => {
+          this.AllSeasons = AllSeasons;
+          console.log(this.AllSeasons.findIndex((season)=> season.name), 'all seasons');
+          res(true);
+        });
+    });
+    return promise;
   }
 
   private getCountryLocation() {
