@@ -41,6 +41,7 @@ export class DonorHeaderComponent implements OnInit {
   private userLang = [];
   private language: string;
   private browserLang: string = "";
+  private cocText: string;
 
   // End
 
@@ -112,25 +113,31 @@ export class DonorHeaderComponent implements OnInit {
 
   }
 
-  openLanguageModal()
-  {
+  openLanguageModal() {
 
     console.log('Open language modal');
     jQuery("#language-selection").modal("show");
 
   };
 
+  displayCoC(){
+    console.log("Display COC");
+    this.af.database.object(Constants.APP_STATUS + "/coc/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val().cocText){
+          this.cocText = snap.val().cocText;
+          jQuery("#coc-window").modal("show");
+        }
+      });
+  }
+
   changeLanguage(language: string) {
     this.language = language;
     console.log(this.uid);
-
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
-
-
     this.translate.use(language.toLowerCase());
     jQuery("#language-selection").modal("hide");
-
-
   }
 
   logout() {

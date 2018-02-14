@@ -21,6 +21,7 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
   firstName: string = "";
   lastName: string = "";
   counter: number = 0;
+  private cocText: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   // Dan's switch language
@@ -113,6 +114,18 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     jQuery("#language-selection").modal("show");
 
   };
+
+  displayCoC(){
+    console.log("Display COC");
+    this.af.database.object(Constants.APP_STATUS + "/coc/", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val().cocText){
+          this.cocText = snap.val().cocText;
+          jQuery("#coc-window").modal("show");
+        }
+      });
+  }
 
   changeLanguage(language: string) {
     this.language = language;
