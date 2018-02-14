@@ -1050,7 +1050,7 @@
 
     <div class="Widget-Group" *ngIf="DashboardTypeUsed == DashboardType.default">
 
-      <div [hidden]="!moduleSettings.riskMonitoring">
+      <ng-container *ngIf="moduleSettings.riskMonitoring">
         <div class="Widget Risk-Monitoring">
           <h3>{{"RISK_MONITORING_TEXT" | translate}}</h3>
           <ul class="list-inline">
@@ -1080,7 +1080,7 @@
           <a href="javascript:void(0)" routerLink="/dashboard/dashboard-seasonal-calendar">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
             | translate}}</a>
         </div>
-      </div>
+      </ng-container>
 
     </div>
 

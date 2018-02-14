@@ -24,6 +24,7 @@ import App = firebase.app.App;
 import {NetworkCountryModel} from "../network-country.model";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
 import {SettingsService} from "../../services/settings.service";
+import {ModuleSettingsModel} from "../../model/module-settings.model";
 
 declare var jQuery: any;
 
@@ -128,6 +129,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   private isViewingFromExternal: boolean;
 
   private staffMap = new Map()
+
+  private Hazard_Conflict = 1
+  private modules: ModuleSettingsModel[];
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -278,6 +282,12 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 this._getCountryContextIndicators();
                 this.getUsersForAssign();
 
+                this.settingService.getCountryModulesSettings(this.networkId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(modules => {
+                    console.log(modules)
+                    this.modules = modules
+                  })
 
               });
           })
