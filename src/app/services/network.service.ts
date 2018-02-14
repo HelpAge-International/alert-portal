@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
-import {ActionLevel, DurationType, NetworkMessageRecipientType, NetworkUserAccountType, Privacy} from "../utils/Enums";
+import {
+  ActionLevel, AlertLevels, AlertMessageType, DurationType, NetworkMessageRecipientType, NetworkUserAccountType,
+  Privacy
+} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network-admin/network-agencies/network-agency.model";
@@ -18,6 +21,8 @@ import {NetworkWithCountryModel} from "../country-admin/country-admin-header/net
 import {ClockSettingsModel} from "../model/clock-settings.model";
 import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
 import {NetworkPrivacyModel} from "../model/network-privacy.model";
+import {LogModel} from "../model/log.model";
+import {AlertMessageModel} from "../model/alert-message.model";
 
 @Injectable()
 export class NetworkService {
@@ -1001,6 +1006,40 @@ export class NetworkService {
         }
         return localNetworks
       })
+  }
+
+  saveIndicatorLog(indicatorId: string, log: LogModel) {
+    return this.af.database.list(Constants.APP_STATUS + '/log/' + indicatorId)
+      .push(log)
+      .catch((error: any) => {
+        console.log(error, 'push log failed')
+      });
+  }
+
+  saveIndicatorLogMoreParams(previousTrigger:number, triggerSelected:number, uid:string, indicatorId: string) {
+    if (previousTrigger != -1 && previousTrigger != triggerSelected) {
+      let content = ""
+      switch (triggerSelected) {
+        case AlertLevels.Green:
+          content = "Indicator level was updated to GREEN"
+          break
+        case AlertLevels.Amber:
+          content = "Indicator level was updated to AMBER"
+          break
+        case AlertLevels.Red:
+          content = "Indicator level was updated to RED"
+          break
+      }
+
+      let log = new LogModel()
+      log.addedBy = uid
+      log.timeStamp = moment.utc().valueOf()
+      log.triggerAtCreation = triggerSelected
+      log.content = content
+
+      return this.saveIndicatorLog(indicatorId, log)
+
+    }
   }
 
 }

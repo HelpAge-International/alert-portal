@@ -126,6 +126,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   private staffMap = new Map()
 
   private Hazard_Conflict = 1
+  private previousIndicatorTrigger:number = -1
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -741,6 +742,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
   setCheckedTrigger(indicatorID: string, triggerSelected: number) {
     this.indicatorTrigger[indicatorID] = triggerSelected;
+    this.previousIndicatorTrigger = triggerSelected
   }
 
   setClassForIndicator(trigger: number, triggerSelected: number) {
@@ -787,8 +789,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     this.af.database.object(urlToUpdate)
       .update(dataToSave)
       .then(_ => {
-
         this.changeIndicatorState(false, hazardID, indicatorKey);
+        //create log model for pushing - phase 2
+        this.networkService.saveIndicatorLogMoreParams(this.previousIndicatorTrigger, triggerSelected, this.uid, indicator.$key).then(()=>this.previousIndicatorTrigger = -1)
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
     });

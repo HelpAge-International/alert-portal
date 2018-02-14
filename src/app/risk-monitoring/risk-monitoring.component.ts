@@ -1,5 +1,8 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../utils/Enums";
+import {
+  AlertLevels, AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy,
+  UserType
+} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -20,6 +23,7 @@ import {AgencyService} from "../services/agency-service.service";
 import {SettingsService} from "../services/settings.service";
 import {NetworkService} from "../services/network.service";
 import {CommonUtils} from "../utils/CommonUtils";
+import {Trigger} from "@ng-bootstrap/ng-bootstrap/util/triggers";
 
 declare var jQuery: any;
 
@@ -122,6 +126,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private userAgencyId: string;
   private userCountryId: string;
   private withinNetwork: boolean;
+  private previousIndicatorTrigger:number = -1
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -1320,6 +1325,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   setCheckedTrigger(indicatorID: string, triggerSelected: number) {
     this.indicatorTrigger[indicatorID] = triggerSelected;
+    this.previousIndicatorTrigger = triggerSelected
   }
 
   setClassForIndicator(trigger: number, triggerSelected: number) {
@@ -1361,6 +1367,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       .update(dataToSave)
       .then(_ => {
         this.changeIndicatorState(false, hazardID, indicatorKey);
+        //create log model for pushing - phase 2
+        this.networkService.saveIndicatorLogMoreParams(this.previousIndicatorTrigger, triggerSelected, this.uid, indicator.$key).then(()=>this.previousIndicatorTrigger = -1)
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
     });

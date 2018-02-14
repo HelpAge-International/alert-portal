@@ -19,6 +19,7 @@ import * as firebase from "firebase/app";
 import App = firebase.app.App;
 import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
+import {NetworkService} from "../../services/network.service";
 
 declare var jQuery: any;
 @Component({
@@ -110,6 +111,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private assignedHazard: any;
   private assignedUser: string;
 
+  private previousIndicatorTrigger:number = -1
+
 
 
   constructor(private pageControl: PageControlService,
@@ -119,6 +122,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
               private storage: LocalStorageService,
               private translate: TranslateService,
               private userService: UserService,
+              private networkService:NetworkService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
@@ -1184,6 +1188,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   setCheckedTrigger(indicatorID: string, triggerSelected: number) {
     this.indicatorTrigger[indicatorID] = triggerSelected;
+    this.previousIndicatorTrigger = triggerSelected
   }
 
   setClassForIndicator(trigger: number, triggerSelected: number) {
@@ -1226,6 +1231,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
       .update(dataToSave)
       .then(_ => {
         this.changeIndicatorState(false, hazardID, indicatorKey);
+        //create log model for pushing - phase 2
+        this.networkService.saveIndicatorLogMoreParams(this.previousIndicatorTrigger, triggerSelected, this.uid, indicator.$key).then(()=>this.previousIndicatorTrigger = -1)
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
     });
