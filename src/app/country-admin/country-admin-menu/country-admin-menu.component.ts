@@ -4,8 +4,9 @@ import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {PermissionsAgency, UserType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Constants} from "../../utils/Constants";
 import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
+import {Constants} from "../../utils/Constants";
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-country-admin-menu',
@@ -26,8 +27,11 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   public permRiskMonitoring = false;
   public permCountryOffice = false;
   public permResponsePlanning = false;
+  private countryId: string;
+  private agencyId: string;
 
-  constructor(private pageControl: PageControlService, private af: AngularFire,
+  constructor(private pageControl: PageControlService,
+              private af: AngularFire,
               private userService: UserService,
               private route: ActivatedRoute,
               private router: Router) {
@@ -37,6 +41,9 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
+      this.countryId = countryId
+      this.agencyId = agencyId
+
       PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
           for (const value of list) {
             if (value.permission === PermissionsAgency.MinimumPreparedness) {
@@ -67,6 +74,71 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  exportData() {
+    //TODO this is to test data export function
+    console.log("try to export country office data")
+
+    let counter = 0
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new()
+
+    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId)
+      .first()
+      .subscribe(planList => {
+        let plans = planList.map(plan => {
+          let obj = {}
+          obj["name"] = plan["name"]
+          obj["hazardScenario"] = plan["hazardScenario"]
+          obj["status"] = plan["status"]
+          obj["sectionsCompleted"] = plan["sectionsCompleted"]
+          obj["timeUpdated"] = plan["timeUpdated"]
+          return obj
+        })
+
+        const planSheet = XLSX.utils.json_to_sheet(plans);
+        XLSX.utils.book_append_sheet(wb, planSheet, "Response Plans")
+
+        counter++
+
+        this.exportFile(counter, 2, wb)
+      })
+
+    //test another sheet
+    this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId)
+      .first()
+      .subscribe(actionList => {
+        let actions = actionList.map(action => {
+          let obj = {}
+          obj["Action title"] = action["type"]
+          obj["Preparedness action level"] = action["level"]
+          obj["Type"] = action["type"]
+          obj["Department"] = action["department"]
+          obj["Assigned to"] = action["asignee"]
+          obj["Due Date"] = action["dueDate"]
+          obj["Budget"] = action["budget"]
+          obj["Document Required"] = action["requireDoc"]
+          obj["Status"] = "test status"
+          obj["Expires"] = action["dueDate"]
+          obj["Notes"] = "test 5"
+          return obj
+        })
+
+        const actionSheet = XLSX.utils.json_to_sheet(actions);
+        XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
+
+        counter++
+
+        this.exportFile(counter, 2, wb)
+      })
+  }
+
+  private exportFile(counter, total, wb) {
+    if (counter == total) {
+      //try export see if works
+      XLSX.writeFile(wb, 'SheetJS.xlsx')
+    }
   }
 
 }
