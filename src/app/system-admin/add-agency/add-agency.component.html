@@ -128,11 +128,11 @@
       <div class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}</label>
-          <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry"
-                  name="agencyAdminCountry">
+          <select class="form-control" id="Country" [(ngModel)]="agencyAdminCountry" name="agencyAdminCountry" (change)="onSelectAgencyAdminCountry()">
             <option value="undefined" selected hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
-            <option *ngFor="let country of countryList">{{Country[country] | translate}}</option>
+            <option *ngFor="let agencyAdminCountry of COUNTRY" [value]="agencyAdminCountry">{{agencyAdminCountry | translate}}</option>
           </select>
+
         </div>
       </div>
       <div class="col-lg-4 col-md-6">

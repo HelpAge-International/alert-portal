@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
-import {AngularFire} from 'angularfire2';
+import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {MapService} from './map.service';
 import {ActionLevel, ActionType, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
 import {CommonService} from './common.service';
@@ -9,6 +9,7 @@ import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {HazardImages} from '../utils/HazardImages';
 import {PrepActionService} from './prepactions.service';
+import {Observable} from "rxjs/Observable";
 
 /**
  * Network map service
@@ -77,13 +78,15 @@ export class NetworkMapService {
     this.systemMpaGreenYellow(systemAdminId, (green, yellow) => {
       this.minGreen = green;
       this.minYellow = yellow;
+      console.log(this.minGreen);
+      console.log(this.minYellow);
       this.getAgencyCountriesOfNetwork(networkId,
-        (agencyHasCountriesMap => {
+        ((agencyHasCountriesMap, cVal) => {
           agencyHasCountriesMap.forEach((value, key) => {
             value.forEach(item => {
-              console.log("Agency Id: " + key + " >> " + item);
+              console.log("pickOnlyCountryLocation: " + cVal);
               // Fire off a request to get the countryOffice for every country
-              this.getCountryOffice(key, item, () => {
+              this.getCountryOffice(key, item, cVal, () => {
                 /* ALL COUNTRY OFFICES FINISHED PULLING
                  *   Even though we're in a forEach, counter is maintained so this method fires when
                  *   they are all done */
@@ -119,8 +122,6 @@ export class NetworkMapService {
 
       this.getActionsFor(countryId, agencyId, systemId, (holder) => {
         const nMA: NetworkMapAgency = x.getAgency(agencyId);
-        console.log("Agency: " + agencyId + " | Country: " + countryId);
-        console.log(x);
         nMA.mpaTotal = holder.mpaTotal.size;
         nMA.mpaComplete = holder.mpaComplete.size;
 
@@ -308,12 +309,17 @@ export class NetworkMapService {
    * @param networkId
    * @param done - Called when the agencies to countries call has been mapped
    */
-  private getAgencyCountriesOfNetwork(networkId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
+  private getAgencyCountriesOfNetwork(networkId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>, countryCodeLimiter?: number) => void) {
     console.log("NetworkId: " + networkId);
     this.af.database
       .object(Constants.APP_STATUS + "/network/" + networkId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
+        let cVal: number = -1;
+        if (snap.val().hasOwnProperty("isGlobal") && !snap.val().isGlobal) {
+          // LOCAL NETWORK. Get the country constraint from the leadAgencyId and agency > countryCode
+          cVal = snap.val().countryCode;
+        }
         this.countryIdFromAgencyIdCounter = 0;
         const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
         if (snap.val().hasOwnProperty("agencies") != null) {
@@ -332,7 +338,7 @@ export class NetworkMapService {
               agencyHasCountriesMap.set(x, countries);
               if (this.countryIdFromAgencyIdCounter == 0) {
                 console.log(agencyHasCountriesMap);
-                done(agencyHasCountriesMap);
+                done(agencyHasCountriesMap, cVal == -1 ? null : cVal);
               }
             });
           }
@@ -408,26 +414,32 @@ export class NetworkMapService {
    *
    * done() is only called once, counter is maintained so done() is only fired when all requests come back
    */
-  private getCountryOffice(agencyId: string, countryId: string, done: () => void) {
+  private getCountryOffice(agencyId: string, countryId: string, onlyPickCountryLocationEnum: number, done: () => void) {
     this.mCountryOfficeCounter++;
     this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId,
         {preserveSnapshot: true})
       .flatMap((snap) => {
-        this.countryIdToLocation.set(snap.key, snap.val().location);
-        // Ensure a country object for this country office is created
-        const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
-        mapCountry.setAgency(agencyId, new NetworkMapAgency(agencyId, countryId));
+        if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == snap.val().location) {
+          this.countryIdToLocation.set(snap.key, snap.val().location);
+          // Ensure a country object for this country office is created
+          const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
+          mapCountry.setAgency(agencyId, new NetworkMapAgency(agencyId, countryId));
+        }
         return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId, {preserveSnapshot: true});
       })
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(this.countryIdToLocation.get(countryId));
-        const agency: NetworkMapAgency = mapCountry.getAgency(snap.key);
-        if (agency != null) {
-          agency.name = snap.val().name;
-          agency.image = snap.val().logoPath;
-          // Save this relationship to the map as well for the potential hazards!
-          this.AGENCY_ID_NAME_MAP.set(snap.key, agency.name);
+        if (snap != null && snap.val() != null) {
+          const mapCountry: NetworkMapCountry = this.findNetworkMapCountry(this.countryIdToLocation.get(countryId));
+          if (mapCountry != null) {
+            const agency: NetworkMapAgency = mapCountry.getAgency(snap.key);
+            if (agency != null) {
+              agency.name = snap.val().name;
+              agency.image = snap.val().logoPath;
+              // Save this relationship to the map as well for the potential hazards!
+              this.AGENCY_ID_NAME_MAP.set(snap.key, agency.name);
+            }
+          }
         }
         this.mCountryOfficeCounter--;
         if (this.mCountryOfficeCounter == 0) {
@@ -935,6 +947,15 @@ export class NetworkMapService {
     this.countries.push(newCountry);
     return newCountry;
   }
+
+  public findNetworkMapCountry(location: number): NetworkMapCountry {
+    for (const x of this.countries) {
+      if (x.location === location) {
+        return x;
+      }
+    }
+    return null;
+  }
 }
 
 /**
@@ -1046,7 +1067,13 @@ export class NetworkMapAgency {
   public mpaTotal: number;
 
   public overall(): number {
-    return (this.mpaComplete * 100) / this.mpaTotal;
+    let returnVal: number = (this.mpaComplete * 100) / this.mpaTotal;
+    if (isNaN(returnVal)) {
+      return 0;
+    }
+    else {
+      return returnVal;
+    }
   }
 
   constructor(id: string, countryId: string) {

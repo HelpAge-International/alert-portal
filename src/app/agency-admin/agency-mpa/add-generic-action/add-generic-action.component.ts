@@ -52,6 +52,8 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
 
   private actionsSelected: any = {};
 
+  private addDepartmentSelectedAction: string = null;
+
   private Category = Constants.CATEGORY;
   private ActionPrepLevel = Constants.ACTION_LEVEL;
   private levelsList = [ActionLevel.ALL, ActionLevel.MPA, ActionLevel.APA];
@@ -109,10 +111,21 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
       let dep = {
         name: this.newDepartment
       };
-      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").push(dep).then(_ => {
+      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").push(dep).then(snapshot => {
         jQuery("#add_department").modal("hide");
         this.departmentSelected = this.newDepartment;
-        this.newDepartment = '';
+        // this.newDepartment = '';
+        console.log(snapshot);
+        if (this.addDepartmentSelectedAction != null) {
+          for (let x of this.actions) {
+            if (x.id == this.addDepartmentSelectedAction) {
+              console.log("Assigning department of " + x.task + " to '" + snapshot.key + "'");
+              x.department = snapshot.key;
+            }
+          }
+          console.log(this.actions);
+          this.addDepartmentSelectedAction = null;
+        }
       });
     } else {
       this.showAlert(true);
@@ -140,13 +153,25 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        this.departments = [];
         snap.forEach((snapshot) => {
-          let x: ModelDepartment = new ModelDepartment();
-          x.id = snapshot.key;
-          x.name = snapshot.val().name;
-          this.departments.push(x);
+          let found = false;
+          for (let x of this.departments) {
+            if (x.id == snapshot.key) {
+              found = true;
+              x.name = snapshot.val().name;
+            }
+          }
+          if (!found) {
+            let x: ModelDepartment = new ModelDepartment();
+            x.id = snapshot.key;
+            x.name = snapshot.val().name;
+            this.departments.push(x);
+          }
         });
+        for (let x of this.actions) {
+          x.department = "" + x.department;
+          console.log("Assigning department of " + x.task + " to '" + x.department + "'");
+        }
       });
   }
 
@@ -229,6 +254,11 @@ export class AddGenericActionComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
+  }
+
+
+  public addDepartmentDialogClicked(action) {
+    this.addDepartmentSelectedAction = action.id;
   }
 }
 

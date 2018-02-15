@@ -1,5 +1,8 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../../utils/Enums";
+import {
+  AlertMessageType, Countries, DetailedDurationType, HazardScenario, ModuleNameNetwork, Privacy,
+  UserType
+} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -20,6 +23,7 @@ import * as jsPDF from 'jspdf'
 import {ModelUserPublic} from "../../model/user-public.model";
 import {NetworkCountryModel} from "../network-country.model";
 import {SettingsService} from "../../services/settings.service";
+import {ModuleSettingsModel} from "../../model/module-settings.model";
 
 declare var jQuery: any;
 
@@ -127,6 +131,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
   private Hazard_Conflict = 1
   private previousIndicatorTrigger:number = -1
+  private modules: ModuleSettingsModel[];
+  private ModuleNameNetwork = ModuleNameNetwork
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -277,6 +283,12 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 this._getCountryContextIndicators();
                 this.getUsersForAssign();
 
+                this.settingService.getCountryModulesSettings(this.networkId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(modules => {
+                    console.log(modules)
+                    this.modules = modules
+                  })
 
               });
           })

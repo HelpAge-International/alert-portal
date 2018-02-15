@@ -618,10 +618,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getCountryContextIndicators() {
-
     this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
+        this.countryContextIndicators = [];
         list.forEach(indicator => {
           this.countryContextIndicators.push(indicator);
         });

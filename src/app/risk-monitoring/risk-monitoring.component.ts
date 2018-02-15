@@ -266,11 +266,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     if (this.hazard == "countryContext") {
       let indicatorIndexCC = this.indicatorsCC.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      let indicatorID = "#indicators-to-hazards_CC"+"_"+indicatorIndexCC
+      let indicatorID = "#indicators-to-hazards_CC"+"_"+indicatorIndexCC;
 
       jQuery("#collapseOne").collapse('show');
 
-      this.changeIndicatorState(true,"countryContext", indicatorIndexCC)
+      this.changeIndicatorState(true,"countryContext", indicatorIndexCC);
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
