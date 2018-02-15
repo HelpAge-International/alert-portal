@@ -34,6 +34,10 @@ const PLAN_WAITINGAPPROVAL = 1
 const PLAN_APPROVED = 2
 const PLAN_NEEDREVIEWING = 3
 
+const NOTIFICATION_ALERT = 0
+const NOTIFICATION_INDICATOR_ASSIGNED = 1
+const NOTIFICATION_INDICATOR_RESCHEDULE = 2
+
 const HAZARDS = {
   "0": "Cold Wave",
   "1": "Conflict",
@@ -4452,11 +4456,49 @@ exports.sendNetworkCountryAgencyValidationEmail_UAT_1 = functions.database.ref('
 //       admin.database().ref('/uat/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
 //         let plan = data.val()
 //         let title = `Response plan was rejected`
-//         let content = `The following response plan:${plan.name}, was rejected by global director.`
+//         let content = `The following response plan:${plan.name}, was responseejected by global director.`
 //         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
 //       })
 //     }
 //   })
+
+exports.sendIndicatorAssignedMobileNotification_SAND = functions.database.ref('/sand/indicator/{hazardId}/{indicatorId}/')
+  .onWrite(event => {
+    return sendIndicatorAssignedMobileNotification(event, "sand")
+  })
+
+function sendIndicatorAssignedMobileNotification(event, env){
+  const preIndicatorData = event.data.previous.val();
+  const currIndicatorData = event.data.current.val();
+
+  const preIndicatorAssignee = preIndicatorData.assignee
+  const currIndicatorAssignee = currIndicatorData.assignee
+
+  const preIndicatorDueDate = preIndicatorData.dueDate
+  const currIndicatorDueDate = currIndicatorData.dueDate
+
+  const hazardId = event.params.hazardId
+  const indicatorId = event.params.indicatorId
+
+  var rescheduleNotification = createIndicatorRescheduleNotification(currIndicatorData, hazardId, indicatorId)
+  var assignedNotification = createIndicatorAssignedNotification(currIndicatorData, hazardId, indicatorId)
+
+  var promises = []
+
+  if(currIndicatorDueDate != preIndicatorDueDate){
+    promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
+  }
+  else if(currIndicatorAssignee != preIndicatorAssignee){
+    promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
+    promises.push(sendNotification(env, assignedNotification, currIndicatorAssignee))
+    if(preIndicatorAssignee != null){
+      promises.push(sendNotification(env, rescheduleNotification, preIndicatorAssignee))
+    }
+  }
+
+  return Promise.all(promises)
+
+}
 
 exports.sendAlertMobileNotification_SAND = functions.database.ref('/sand/alert/{id}/{alertId}')
   .onWrite(event => {
@@ -4502,15 +4544,15 @@ function sendAlertMobileNotification(event, env){
       .then(alertSnap => {
         alert = alertSnap.val()
         if(toGreenAmber){
-          let notification = createAlertLevelChangedNotification(alert, preAlertLevel, currAlertLevel)
+          let notification = createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel)
           return sendCountryNetworkNetworkCountryNotification(env, notification, id, 0)
         }
         else if(toApprovedRed){
-          let notification = createRedAlertApprovedNotification(alert)
+          let notification = createRedAlertApprovedNotification(alert, alertId)
           return sendCountryNetworkNetworkCountryNotification(env, notification, id, 0)
         }
         else if(redAlertRequested){
-          let notification = createRedAlertRequestedNotification(alert, preAlertLevel, currAlertLevel)
+          let notification = createRedAlertRequestedNotification(alert, alertId, preAlertLevel, currAlertLevel)
           return sendCountryNetworkNetworkCountryNotification(env, notification, id, 1)
         }
       })
@@ -4544,7 +4586,7 @@ function sendCountryNetworkNetworkCountryNotification(env, notification, id, not
           return Promise.all(agencyPromises)
         }
         else{
-          return Promise.reject(new Error('fail'))
+          return Promise.reject(new Error('Network doesnt exist'))
         }            
       })
     }
@@ -4554,6 +4596,8 @@ function sendCountryNetworkNetworkCountryNotification(env, notification, id, not
       return Promise.resolve()
     },
     function(error){
+
+      //Sorry for the climb
       return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
         let networkCountry = networkCountrySnap.val()
         for (var networkCountryId in networkCountry) {
@@ -4590,7 +4634,7 @@ function sendCountryNetworkNetworkCountryNotification(env, notification, id, not
             }   
           }
         }
-        return Promise.reject(new Error('fail'))
+        return Promise.reject(new Error('Network Country doesnt exist'))
       })
     }
   )
@@ -4606,43 +4650,80 @@ function sendNotificationToCountryUsers(env, notification, countryId, notificati
       for (var userId in countryGroup.countryallusersgroup) {              
         if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {   
           //env, payload, userId, countryId, notificationGroup               
-          sendAlertPromises.push(sendNotification(env, notification, userId, countryId, notificationSetting))
+          sendAlertPromises.push(sendNotificationWithSetting(env, notification, userId, countryId, notificationSetting))
         }
       }
       return Promise.all(sendAlertPromises)
     }
     else{
-      return Promise.reject(new Error('fail'))
+      return Promise.reject(new Error(`Country doesnt exist: ${countryId}`))
     }
 
   })
 }
 
-function createAlertLevelChangedNotification(alert, preAlertLevel, currAlertLevel){
+function createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel){
   return {
       'notification': {
           'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
           'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${LEVELS[preAlertLevel]} to ${LEVELS[currAlertLevel]}`
+      },
+      'data': {
+        'alertId': alertId,
+        'type': NOTIFICATION_ALERT.toString()
       }
     }
 }
-function createRedAlertApprovedNotification(alert){
+function createRedAlertApprovedNotification(alert, alertId){
   return {
       'notification': {
           'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
           'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${alert.previousIsAmber ? "Amber" : "Green"} to ${LEVELS[alert.alertLevel]}`
+      },
+      'data': {
+        'alertId': alertId,
+        'type': NOTIFICATION_ALERT.toString()
       }
     }
 }
 
-function createRedAlertRequestedNotification(alert){
+function createRedAlertRequestedNotification(alert, alertId){
   return {
       'notification': {
           'title': `A red alert level has been requested for ${HAZARDS[alert.hazardScenario]}`,
           'body': `A red alert has been requested for the following alert: ${HAZARDS[alert.hazardScenario]}`
+      },
+      'data': {
+        'alertId': alertId,
+        'type': NOTIFICATION_ALERT.toString()
       }
     }
 }
+
+function createIndicatorAssignedNotification(indicator, hazardId, indicatorId){
+  return {
+      'notification': {
+          'title': "An indicator has been assigned to you",
+          'body': `The following indicator: ${indicator.name} has been assigned to you`
+      },
+      'data': {
+        'indicatorId': indicatorId,
+        'hazardId': hazardId,
+        'type': NOTIFICATION_INDICATOR_ASSIGNED.toString()
+      }
+    }
+}
+
+function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId){
+  return {
+      'data': {
+        'indicatorId': indicatorId,
+        'hazardId': hazardId,
+        'type': NOTIFICATION_INDICATOR_RESCHEDULE.toString()
+      }
+    }
+}
+
 
 /*const payload = {
       'notification': {
@@ -4654,8 +4735,22 @@ function createRedAlertRequestedNotification(alert){
       }
     }
     */
-function sendNotification(env, payload, userId, countryId, notificationGroup){
-  var deviceNotificationId
+
+function sendNotification(env, payload, userId){
+  console.log("Sending Notification")
+  return admin.database().ref(`/${env}/userPublic/${userId}/deviceNotificationId`).once('value')
+    .then(deviceNotificationIdSnap => {
+      let deviceNotificationId = deviceNotificationIdSnap.val()
+      if(deviceNotificationId){
+        console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`)
+        return admin.messaging().sendToDevice(deviceNotificationId, payload);
+      }
+      else{
+        return Promise.resolve()
+      }    
+    })
+}
+function sendNotificationWithSetting(env, payload, userId, countryId, notificationGroup){
   return admin.database().ref(`/${env}/staff/${countryId}/${userId}/notification/${notificationGroup}`).once('value')
   .then(notificationGroupSnap => {
     if(notificationGroupSnap.val() != null){
@@ -4666,21 +4761,13 @@ function sendNotification(env, payload, userId, countryId, notificationGroup){
     }
   })
   .then(function(){
-    return admin.database().ref(`/${env}/userPublic/${userId}/deviceNotificationId`).once('value')
-    .then(deviceNotificationIdSnap => {
-      let deviceNotificationId = deviceNotificationIdSnap.val()
-      if(deviceNotificationId){
-        return admin.messaging().sendToDevice(deviceNotificationId, payload);
-      }
-      else{
-        return Promise.resolve()
-      }    
-    })
+    return sendNotification(env, payload, userId)
 
   },
   function(error){
     return Promise.resolve()
   })
+
 }
 
 
