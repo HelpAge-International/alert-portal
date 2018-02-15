@@ -59,7 +59,7 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
 
       if (userType == UserType.CountryAdmin) {
 
-        this._settingsService.getCountryModulesSettings(this.countryId)
+        this._settingsService.getCountryModulesSettings(this.agencyId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((modules: ModuleSettingsModel[]) => {
             this.moduleSettings = modules;

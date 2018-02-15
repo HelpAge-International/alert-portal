@@ -207,6 +207,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
 
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              this.networkModules = modules
+              console.log(this.networkModules)
+            })
+
         });
     });
   }
@@ -290,6 +297,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
+
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              this.networkModules = modules
+              console.log(this.networkModules)
+            })
 
         });
     });
@@ -689,13 +703,13 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   shouldShow(level: number, action: any) {
-    if (level == ActionLevel.MPA && !(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.MinimumPreparednessActions].status))) {
+    if (level == ActionLevel.MPA && !(this.networkModules && this.networkModules[ModuleNameNetwork.MinimumPreparednessActions].status)) {
       return false;
     }
-    else if (level == ActionLevel.APA && (!(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.AdvancedPreparednessActions].status)) || !this.isRedAlert)) {
+    else if (level == ActionLevel.APA && (!(this.networkModules && this.networkModules[ModuleNameNetwork.AdvancedPreparednessActions].status) || !this.isRedAlert)) {
       return false;
     }
-    else if (action == ActionType.chs && !(!this.isViewing || (this.isViewing && this.networkModules && this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status))) {
+    else if (action == ActionType.chs && !(this.networkModules && this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status)) {
       return false;
     }
     else return true;
@@ -709,7 +723,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         list.forEach(hazard => {
-          if (hazard.isActive) {
+          if (hazard.isActive && (hazard.hazardScenario == this.Hazard_Conflict && this.networkModules[ModuleNameNetwork.ConflictIndicators].status || hazard.hazardScenario != this.Hazard_Conflict)) {
             if (hazard.hazardScenario == -1) {
               this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
                 .first()
@@ -758,7 +772,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe(list => {
                 list.forEach(hazard => {
-                  if (hazard.isActive) {
+                  if (hazard.isActive && (hazard.hazardScenario == this.Hazard_Conflict && this.networkModules[ModuleNameNetwork.ConflictIndicators].status || hazard.hazardScenario != this.Hazard_Conflict)) {
                     if (hazard.hazardScenario == -1) {
                       this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
                         .first()

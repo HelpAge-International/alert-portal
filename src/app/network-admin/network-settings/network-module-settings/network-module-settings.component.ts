@@ -6,7 +6,7 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NetworkService} from "../../../services/network.service";
 import {ModuleSettingsModel} from "../../../model/module-settings.model";
-import {AlertMessageType, Privacy} from "../../../utils/Enums";
+import {AlertMessageType, ModuleNameNetwork, Privacy} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 import {NetworkPrivacyModel} from "../../../model/network-privacy.model";
@@ -27,6 +27,7 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
   private MODULE_NAME = Constants.MODULE_NAME_NETWORK_COUNTRY;
   private Privacy = Privacy;
   private networkId: string;
+  private ModuleNameNetwork = ModuleNameNetwork
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -75,6 +76,14 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
 
   changeStatus(moduleId, status) {
     this.modules[moduleId].status = status;
+    //if mpa disabled, chs should be disabled too
+    if (moduleId == ModuleNameNetwork.MinimumPreparednessActions && status == false) {
+      this.modules[ModuleNameNetwork.CHSPreparednessActions].status = false
+    }
+    //if risk monitoring disabled, conflict indicator should be disabled too
+    if (moduleId == ModuleNameNetwork.RiskMonitoring && status == false) {
+      this.modules[ModuleNameNetwork.ConflictIndicators].status = false
+    }
   }
 
   cancelChanges() {
