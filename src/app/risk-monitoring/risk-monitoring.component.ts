@@ -1214,6 +1214,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
     var key = hazardID + '_' + indicatorKey;
+    console.log("hazardIndicatorKey" + key);
     if (state) {
       this.isIndicatorUpdate[key] = true;
       return true;
@@ -1240,7 +1241,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     return indicatorClass;
   }
 
-  updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
+  updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number, state : boolean = false) {
     const indicatorID = indicator.$key;
 
 
@@ -1260,16 +1261,22 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + hazardID + '/' + indicatorID;
     }
+    this.changeIndicatorState(state, hazardID, indicatorKey);
 
     this.af.database.object(urlToUpdate)
       .update(dataToSave)
       .then(_ => {
-        this.changeIndicatorState(false, hazardID, indicatorKey);
+        this.changeIndicatorState(state, hazardID, indicatorKey);
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
+
     });
 
+  }
 
+  updateNetworkIntdicatorStatus(id : string, hazardID: string, indicator, indicatorKey: number, state : boolean = false) {
+    this.changeIndicatorState(false, id, indicatorKey)
+    this.updateIndicatorStatus(hazardID, indicator, indicatorKey, state)
   }
 
   saveLog(indicatorID: string, triggerSelected: number) {
