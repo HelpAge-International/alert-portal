@@ -1,5 +1,8 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../../utils/Enums";
+import {
+  AlertMessageType, Countries, DetailedDurationType, HazardScenario, ModuleNameNetwork, Privacy,
+  UserType
+} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -132,6 +135,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
   private Hazard_Conflict = 1
   private modules: ModuleSettingsModel[];
+  private ModuleNameNetwork = ModuleNameNetwork
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,

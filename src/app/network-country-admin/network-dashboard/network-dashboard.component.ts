@@ -139,6 +139,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private networkViewValues: {};
   private agencyCountryMap = new Map<string, string>();
   private networkModules: ModuleSettingsModel[]
+  private Hazard_Conflict = 1
 
 
   constructor(private pageControl: PageControlService,
@@ -701,7 +702,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(list => {
         list.forEach(hazard => {
-          if (hazard.isActive) {
+          if (hazard.isActive && (hazard.hazardScenario == this.Hazard_Conflict && this.networkModules[ModuleNameNetwork.ConflictIndicators].status || hazard.hazardScenario != this.Hazard_Conflict)) {
             if (hazard.hazardScenario == -1) {
               this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
                 .first()
@@ -750,7 +751,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe(list => {
                 list.forEach(hazard => {
-                  if (hazard.isActive) {
+                  if (hazard.isActive && (hazard.hazardScenario == this.Hazard_Conflict && this.networkModules[ModuleNameNetwork.ConflictIndicators].status || hazard.hazardScenario != this.Hazard_Conflict)) {
                     if (hazard.hazardScenario == -1) {
                       this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + hazard.otherName)
                         .first()
