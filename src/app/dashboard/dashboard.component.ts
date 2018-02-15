@@ -1,3 +1,4 @@
+
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -612,6 +613,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
   private getCountryContextIndicators() {
 
     this.af.database.list(Constants.APP_STATUS + '/indicator/' + this.countryId)
@@ -660,39 +663,109 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  approveRedAlert(alertId) {
+  approveRedAlert(alertId, hazardScenario) {
+
+    let hazardKey = this.hazards.find(x => x.hazardScenario == hazardScenario).$key
+    let hazardTrackingNode = this.hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+    let currentTime = new Date().getTime()
+    let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
+
+    if(hazardKey){
+      console.log(hazardTrackingNode)
+      if(hazardTrackingNode){
+        hazardTrackingNode.push(newTimeObject)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryId + '/' + hazardKey)
+        .update({timeTracking: hazardTrackingNode})
+      }else{
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryId + '/' + hazardKey)
+        .update({timeTracking: [newTimeObject]})
+      }
+    }
+    
+
+
     this.actionService.approveRedAlert(this.countryId, alertId, this.uid);
   }
 
-  approveRedAlertNetwork(alert) {
-    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(() => {
-      this.networkService.mapAgencyCountryForNetworkCountry(alert.networkId, alert.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(agencyCountryMap => {
-          this.actionService.getAlertObj(alert.networkCountryId, alert.id)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(alertObj => {
-              this.actionService.copyRedAlertOverFromNetwork(agencyCountryMap, alert.id, alertObj)
-            })
-        })
-    });
+  approveRedAlertNetwork(alert, hazardScenario) {
+
+    this.af.database.list(Constants.APP_STATUS + '/hazards/' + alert.networkCountryId)
+    .takeUntil(this.ngUnsubscribe)
+    .subscribe(hazards => {
+
+      let hazardKey = hazards.find(x => x.hazardScenario == hazardScenario).$key
+      let hazardTrackingNode = hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+      let currentTime = new Date().getTime()
+      let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
+  
+      if(hazardKey){
+        console.log(hazardTrackingNode)
+        if(hazardTrackingNode){
+          hazardTrackingNode.push(newTimeObject)
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkCountryId + '/' + hazardKey)
+          .update({timeTracking: hazardTrackingNode})
+        }else{
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkCountryId + '/' + hazardKey)
+          .update({timeTracking: [newTimeObject]})
+        }
+      }
+  
+      this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(() => {
+        this.networkService.mapAgencyCountryForNetworkCountry(alert.networkId, alert.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agencyCountryMap => {
+            this.actionService.getAlertObj(alert.networkCountryId, alert.id)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(alertObj => {
+                this.actionService.copyRedAlertOverFromNetwork(agencyCountryMap, alert.id, alertObj)
+              })
+          })
+      });
+  
+    })
+    
   }
 
-  approveRedAlertLocalNetwork(alert) {
-    this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(() => {
-      this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(agencyCountryMap => {
-          console.log(agencyCountryMap)
-          this.actionService.getAlertObj(alert.networkId, alert.id)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(alertObj => {
-              console.log(alertObj)
+  approveRedAlertLocalNetwork(alert, hazardScenario) {
 
-              this.actionService.copyRedAlertOverFromNetwork(agencyCountryMap, alert.id, alertObj)
-            })
-        })
-    });
+    this.af.database.list(Constants.APP_STATUS + '/hazards/' + alert.networId)
+    .takeUntil(this.ngUnsubscribe)
+    .subscribe(hazards => {
+
+      let hazardKey = hazards.find(x => x.hazardScenario == hazardScenario).$key
+      let hazardTrackingNode = hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+      let currentTime = new Date().getTime()
+      let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
+  
+      if(hazardKey){
+        console.log(hazardTrackingNode)
+        if(hazardTrackingNode){
+          hazardTrackingNode.push(newTimeObject)
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkId + '/' + hazardKey)
+          .update({timeTracking: hazardTrackingNode})
+        }else{
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkId + '/' + hazardKey)
+          .update({timeTracking: [newTimeObject]})
+        }
+      }
+  
+      this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(() => {
+        this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agencyCountryMap => {
+            console.log(agencyCountryMap)
+            this.actionService.getAlertObj(alert.networkId, alert.id)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(alertObj => {
+                console.log(alertObj)
+  
+                this.actionService.copyRedAlertOverFromNetwork(agencyCountryMap, alert.id, alertObj)
+              })
+          })
+      });
+
+    })
+    
   }
 
   rejectRedRequest(alertId) {

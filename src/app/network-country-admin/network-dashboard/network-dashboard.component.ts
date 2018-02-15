@@ -869,8 +869,29 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   }
 
-  approveRedAlert(alertId) {
+  approveRedAlert(alertId, hazardScenario) {
+
+
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+
+    let hazardKey = this.hazards.find(x => x.hazardScenario == hazardScenario).$key
+    let hazardTrackingNode = this.hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+    let currentTime = new Date().getTime()
+    let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
+
+    if(hazardKey){
+      console.log(hazardTrackingNode)
+      if(hazardTrackingNode){
+        hazardTrackingNode.push(newTimeObject)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id+ '/' + hazardKey)
+        .update({timeTracking: hazardTrackingNode})
+      }else{
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id+ '/' + hazardKey)
+        .update({timeTracking: [newTimeObject]})
+      }
+    }
+
+    
     console.log(id)
     this.actionService.approveRedAlertNetwork(this.countryId, alertId, id).then(() => {
       if (this.isLocalNetworkAdmin) {

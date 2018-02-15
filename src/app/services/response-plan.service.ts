@@ -143,6 +143,7 @@ export class ResponsePlanService {
               let approvePair = Object.keys(result).filter(key => !(key.indexOf("$") > -1)).map(key => result[key]);
               let waitingApprovalList = [];
               approvePair.forEach(item => {
+                console.log(item)
                 let waiting = Object.keys(item).map(key => item[key]).filter(value => value == ApprovalStatus.WaitingApproval);
                 waitingApprovalList = waitingApprovalList.concat(waiting);
               });

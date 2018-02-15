@@ -330,7 +330,12 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       let approvalUid = this.getRightUidForApproval();
       let id = this.isLocalAgency ? this.agencyId : this.networkCountryId ? this.networkCountryId : this.countryId;
-      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      if(this.isLocalAgency){
+        this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      }else{
+        this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      }
+      
     }
   }
 
