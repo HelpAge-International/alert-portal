@@ -29,7 +29,7 @@ declare var jQuery: any;
 export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private defaultCountry: any;
   private isEdit = false;
-  private isInactive = false;
+  private isActive = false;
   private uid: string;
   private agencyId: string;
   private countryId: string;
@@ -276,11 +276,15 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     project.endDate = newEndDate;
   }
 
-  setInactiveState(){
-    this.isInactive = true;
+  setActiveState(){
+    this.isActive = true;
+    this.partnerOrganisation.isActive = this.isActive;
+    console.log(this.partnerOrganisation.isActive)
   }
-  setInactiveStateFalse(){
-    this.isInactive = false;
+  setInactiveState(){
+    this.isActive = false;
+    this.partnerOrganisation.isActive = this.isActive;
+    console.log(this.partnerOrganisation.isActive)
   }
   goBack() {
     if(this.isLocalAgency){

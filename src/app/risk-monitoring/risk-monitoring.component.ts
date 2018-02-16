@@ -131,8 +131,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private userService: UserService,
               private agencyService: AgencyService,
-              private settingService:SettingsService,
-              private networkService:NetworkService,
+              private settingService: SettingsService,
+              private networkService: NetworkService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
@@ -260,52 +260,53 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   public triggerScrollTo() {
 
     if (this.hazard == "countryContext") {
-      let indicatorIndexCC = this.indicatorsCC.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      let indicatorID = "#indicators-to-hazards_CC"+"_"+indicatorIndexCC
+      let indicatorIndexCC = this.indicatorsCC.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorID = "#indicators-to-hazards_CC" + "_" + indicatorIndexCC;
 
       jQuery("#collapseOne").collapse('show');
 
-      this.changeIndicatorState(true,"countryContext", indicatorIndexCC)
+      this.changeIndicatorState(true, "countryContext", indicatorIndexCC);
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
-    } else if (this.hazard == "-1"){
-      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
-      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+    } else if (this.hazard == "-1") {
+      let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
 
-      jQuery("#collapse"+this.activeHazards[hazardIndex].otherName).collapse('show');
+      jQuery("#collapse" + this.activeHazards[hazardIndex].otherName).collapse('show');
 
-      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex)
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
-      }, 2000)
-    }else {
-      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
-      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+      }, 2000);
+    } else {
+      let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
 
-      jQuery("#collapse"+this.hazard).collapse('show');
+      jQuery("#collapse" + this.hazard).collapse('show');
 
-      this.changeIndicatorState(true,this.activeHazards[hazardIndex].$key, indicatorIndex)
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
     }
   }
 
-  openSeasonalModal(key){
+  openSeasonalModal(key) {
     this._getAllSeasons();
-    jQuery("#"+key).modal("show");
+    jQuery("#" + key).modal("show");
   }
 
   _getAllSeasons() {
+    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((AllSeasons: any) => {
           this.AllSeasons = AllSeasons;
-          console.log(this.AllSeasons.findIndex((season)=> season.name), 'all seasons');
+          console.log(this.AllSeasons, 'all seasons');
           res(true);
         });
     });
@@ -364,7 +365,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           indicator.logs = this._sortLogsByDate(logs);
         });
       });
-
       this.indicatorsCC = indicators;
     });
   }
@@ -1325,8 +1325,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
-    console.log("IndicatorKey: "+ indicatorKey)
-    console.log("HazardKey: "+ hazardID)
+    console.log("IndicatorKey: " + indicatorKey)
+    console.log("HazardKey: " + hazardID)
 
     var key = hazardID + '_' + indicatorKey;
     if (state) {
@@ -1438,7 +1438,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.tmpLogData = [];
   }
 
-  changeHazard(hazardId){
+  changeHazard(hazardId) {
     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
       .update({editingHazard: true});
     console.log(hazardId, 'in risk monitoring');

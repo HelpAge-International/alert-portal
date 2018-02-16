@@ -1042,6 +1042,8 @@
         "COUNTRY_OFFICE_PROFILE":"Country office profile",
         "RESPONSE_PLANNING":"Response planning",
         "GLOBAL_MAPS":"Global maps",
+        "KEY": "Key",
+        "MAP_KEY_VALUE": "The colour of the country is determined by the percentage of minimum preparedness actions that are completed, this is checked against a system wide threshold.",
         "PREP_BUDGET":"Preparedness Budget",
         "SAVE_SUCCESS":"Module Settings successfully saved",
         "MODULE_NAME":"This module can not be enabled as Minimum preparedness actions module is disabled"
@@ -1140,6 +1142,8 @@
       "SUCCESS_DELETED":"The partner has been successfully deleted",
       "STATUS_AWAITING_VALIDATION":"Awaiting validation",
       "STATUS_VALIDATED":"Validated",
+      "STATUS_ACTIVE":"Active",
+      "STATUS_INACTIVE":"Inactive",
       "PERMISSIONS":{
         "TITLE":"Permissions",
         "CHS_ACTIONS":"CHS Actions",
@@ -1887,7 +1891,7 @@
       "EXPORT_LOG":"EXPORT LOG",
       "MY_SOURCES_INFORMATION":"My Sources of Information",
       "NO_INDICATORS":"You have not added any indicators yet.",
-      "SEASONAL_HAZARD":"Seasonal hazard",
+      "SEASONAL_HAZARD":"Seasonal Hazard",
       "PLACEHOLDER_ADD_LOG":"Add a log entry",
       "ARCHIVED_HAZARDS":"Archived Hazards",
       "VIEW_ALL":"View all",

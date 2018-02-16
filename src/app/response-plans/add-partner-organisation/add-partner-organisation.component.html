@@ -20,13 +20,13 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
-      <button *ngIf="isInactive" type="button" class="btn btn-outline-primary text-uppercase"
-              (click)="setInactiveStateFalse()">
-        {{ 'INACTIVATE' | translate }}
-      </button>
-      <button *ngIf="!isInactive" type="button" class="btn btn-primary text-uppercase"
+      <button *ngIf="isActive && isEdit" type="button" class="btn btn-outline-primary text-uppercase"
               (click)="setInactiveState()">
         {{ 'INACTIVE' | translate }}
+      </button>
+      <button *ngIf="!isActive && isEdit" type="button" class="btn btn-primary text-uppercase"
+              (click)="setActiveState()">
+        {{ 'ACTIVE' | translate }}
       </button>
       <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePartnerOrganisation()">
         {{"DELETE" | translate}}
