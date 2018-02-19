@@ -100,7 +100,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
           this.userType = userType;
           this.agencyId = agencyId;
 
-
             this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(this.agencyId)
               .subscribe(partnerOrganisations => {
                 console.log(partnerOrganisations)

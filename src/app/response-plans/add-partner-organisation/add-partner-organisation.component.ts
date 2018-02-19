@@ -71,7 +71,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
@@ -116,7 +116,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     });
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
@@ -185,16 +185,16 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     // Transforms projects endDate to timestamp
     this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime());
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this._partnerOrganisationService.savePartnerOrganisationLocalAgency(this.agencyId, this.partnerOrganisation)
         .then(result => {
           this.partnerOrganisation.id = this.partnerOrganisation.id || result.key;
 
           this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
 
-          if(this.isLocalAgency){
+          if (this.isLocalAgency) {
             setTimeout(() => this.router.navigateByUrl("local-agency/profile/partners"), Constants.ALERT_REDIRECT_DURATION);
-          }else{
+          } else {
             setTimeout(() => this.router.navigateByUrl("country-admin/country-office-profile/partners"), Constants.ALERT_REDIRECT_DURATION);
           }
 
@@ -208,16 +208,16 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
             this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
           }
         });
-    }else{
+    } else {
       this._partnerOrganisationService.savePartnerOrganisation(this.agencyId, this.countryId, this.partnerOrganisation)
         .then(result => {
           this.partnerOrganisation.id = this.partnerOrganisation.id || result.key;
 
           this.alertMessage = new AlertMessageModel('ADD_PARTNER.SUCCESS_SAVED', AlertMessageType.Success);
 
-          if(this.isLocalAgency){
+          if (this.isLocalAgency) {
 
-          }else{
+          } else {
             setTimeout(() => this.router.navigateByUrl("country-admin/country-office-profile/partners"), Constants.ALERT_REDIRECT_DURATION);
           }
 
@@ -238,7 +238,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     let project = this.partnerOrganisation.projects[pin];
 
     if (project.sector[i]) {
-      this.isEdit ? project.sector[i]=!project.sector[i]: project.sector.splice(i, 1);
+      this.isEdit ? project.sector[i] = !project.sector[i] : project.sector.splice(i, 1);
     } else {
       project.sector[i] = true;
     }
@@ -276,20 +276,39 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     project.endDate = newEndDate;
   }
 
-  setActiveState(){
+  setActiveState() {
+    jQuery("#confirm-active").modal("hide");
     this.isActive = true;
     this.partnerOrganisation.isActive = this.isActive;
-    console.log(this.partnerOrganisation.isActive)
+    console.log("Active State: "+ this.partnerOrganisation.isActive);
+    this.submit();
   }
-  setInactiveState(){
+
+  setInactiveState() {
+    jQuery("#confirm-inactive").modal("hide");
     this.isActive = false;
     this.partnerOrganisation.isActive = this.isActive;
-    console.log(this.partnerOrganisation.isActive)
+    console.log("InActive State: "+ this.partnerOrganisation.isActive);
+    this.submit();
   }
+
+  openConfirmationModel() {
+    console.log("openConfirmationModel(): "+ this.partnerOrganisation.isActive);
+    if (!this.partnerOrganisation.isActive) {
+      jQuery("#confirm-active").modal("show");
+    } else {
+      jQuery("#confirm-inactive").modal("show");
+    }
+  }
+
+  closeConfirmationModel() {
+    jQuery("#confirm-active").modal("hide");
+  }
+
   goBack() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigateByUrl("local-agency/profile/partners")
-    }else{
+    } else {
       this.router.navigateByUrl("country-admin/country-office-profile/partners")
     }
 
@@ -306,9 +325,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     partner.position = this.partnerOrganisation.position;
     this._sessionService.partner = partner;
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigateByUrl('local-agency/agency-staff/add-edit-partner');
-    }else{
+    } else {
       this.router.navigateByUrl('country-admin/country-staff/country-add-edit-partner');
     }
   }

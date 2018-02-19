@@ -1144,6 +1144,8 @@
       "STATUS_VALIDATED":"Validated",
       "STATUS_ACTIVE":"Active",
       "STATUS_INACTIVE":"Inactive",
+      "CONFIRM_INACTIVE":"Would you like to deactivate this user?",
+      "CONFIRM_ACTIVE":"Would you like to activate this user?",
       "PERMISSIONS":{
         "TITLE":"Permissions",
         "CHS_ACTIONS":"CHS Actions",
