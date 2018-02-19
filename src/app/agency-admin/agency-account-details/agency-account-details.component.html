@@ -58,7 +58,15 @@
                  [(ngModel)]="agencyAddressLine3">
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
+      <div *ngIf="isLocalAgency" class="col-lg-4 col-md-6">
+        <div class="form-group">
+          <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
+          <select name="Country" id="Country" class="form-control" [(ngModel)]="headOfficeCountry">
+            <option *ngFor="let country of countriesList" [ngValue]="country">{{Country[country] | translate}}</option>
+          </select>
+        </div>
+      </div>
+      <div *ngIf="!isLocalAgency" class="col-lg-4 col-md-6">
         <div class="form-group">
           <label for="Country">{{"GLOBAL.USER_INFO.COUNTRY" | translate}}*</label>
           <select name="Country" id="Country" class="form-control" [(ngModel)]="agencyCountry">

@@ -33,6 +33,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   private agencyPhone: string = '';
   private agencyWebAddress: string = '';
   private agencyCountry: number;
+  private headOfficeCountry: number;
   private agencyCurrency: number;
 
   private clockSettings: any;
@@ -91,6 +92,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
         editedAgency.addressLine1 = this.agencyAddressLine1;
         editedAgency.addressLine2 = this.agencyAddressLine2;
         editedAgency.addressLine3 = this.agencyAddressLine3;
+        editedAgency.headOfficeCountry = this.headOfficeCountry;
         editedAgency.country = this.agencyCountry;
         editedAgency.city = this.agencyCity;
         editedAgency.postCode = this.agencyPostCode;
@@ -107,6 +109,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
           && editedAgency.addressLine2 == this.modalAgency.addressLine2
           && editedAgency.addressLine3 == this.modalAgency.addressLine3
           && editedAgency.country == this.modalAgency.country
+          && editedAgency.headOfficeCountry == this.modalAgency.headOfficeCountry
           && editedAgency.city == this.modalAgency.city
           && editedAgency.postCode == this.modalAgency.postCode
           && editedAgency.phone == this.modalAgency.phone
@@ -212,6 +215,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
         this.agencyPhone = agency.phone;
         this.agencyWebAddress = agency.website;
         this.agencyCountry = agency.country;
+        this.headOfficeCountry = agency.headOfficeCountry
         this.agencyCurrency = agency.currency;
 
         // Loading default settings values
