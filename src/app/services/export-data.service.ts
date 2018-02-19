@@ -19,6 +19,15 @@ export class ExportDataService {
 
     //fetch country alert data
     this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId)
+      // .do(alertList => {
+      //   alertList.forEach(alert => {
+      //     if (alert.otherName) {
+      //       this.af.database.object(Constants.APP_STATUS + "/hazardOther/"+alert.otherName)
+      //         .first()
+      //         .subscribe(obj => alert.otherName = obj.name)
+      //     }
+      //   })
+      // })
       .first()
       .subscribe(alertList => {
         let alerts = alertList.map(alert => {
@@ -105,18 +114,28 @@ export class ExportDataService {
   }
 
   public mapCustomHazardAlertForCountry(countryId) {
-    this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
+    return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
         orderByChild: "hazardScenario",
         equalTo: -1
       }
     })
       .map(customAlerts =>{
+        let totalCustomAlerts = customAlerts.length()
+        let customNameMap = new Map<string, string>()
+        let customCounter = 0
+        console.log(totalCustomAlerts)
         customAlerts.forEach(alert => {
           this.af.database.object(Constants.APP_STATUS + "/hazardOther/"+alert.otherName)
             .first()
             .subscribe(obj => {
+              console.log(obj.name)
+              customNameMap.set(alert.$key, obj.name)
+              customCounter++
 
+              if (totalCustomAlerts === customCounter) {
+                return customNameMap
+              }
             })
 
         })
