@@ -47,7 +47,7 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
 
 
   }
