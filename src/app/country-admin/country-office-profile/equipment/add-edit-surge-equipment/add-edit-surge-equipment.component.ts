@@ -46,7 +46,7 @@ export class CountryOfficeAddEditSurgeEquipmentComponent implements OnInit, OnDe
   }
 
   ngOnInit() {
-    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice;
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
   }
 
   initLocalAgency(){
