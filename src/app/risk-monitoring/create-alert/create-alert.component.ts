@@ -1,3 +1,4 @@
+
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -137,6 +138,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       return false;
     }
 
+    console.log('SAVING ALERT....')
+
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
 
@@ -154,11 +157,44 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
           dataToSave.hazardScenario = -1;
         }
         dataToSave.hazardScenario = parseInt(dataToSave.hazardScenario)
-        console.log(dataToSave);
+
+
+        let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+        let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
+        let currentTime = new Date().getTime()
+        let newTimeObject = {raisedAt: currentTime, level: dataToSave.alertLevel == AlertLevels.Red ? AlertLevels.Red : AlertLevels.Amber};
+      
+        if(hazard){
+          if(dataToSave.alertLevel == AlertLevels.Red){
+            if(this.UserType == UserType.CountryDirector){
+              if(hazardTrackingNode){
+                hazardTrackingNode.push(newTimeObject)
+                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
+                .update({timeTracking: hazardTrackingNode})
+              }else{
+                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
+                .update({timeTracking: [newTimeObject]})
+              }
+              
+            }
+          }else{
+            if(hazardTrackingNode){
+              hazardTrackingNode.push(newTimeObject)
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
+              .update({timeTracking: hazardTrackingNode})
+            }else{
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
+              .update({timeTracking: [newTimeObject]})
+            }
+            
+          } 
+        } 
+
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
           .push(dataToSave)
           .then(() => {
+ 
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -285,8 +321,10 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
             if (index != -1) {
               this.nonMonitoredHazards.splice(index, 1)
-            }
+            } 
           }
+          console.log(x)
+          value.id = x.key
           this.hazards.push(value);
         }
         console.log(this.hazards);

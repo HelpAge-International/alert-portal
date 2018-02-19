@@ -874,19 +874,19 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
 
-    let hazardKey = this.hazards.find(x => x.hazardScenario == hazardScenario).$key
-    let hazardTrackingNode = this.hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+    let hazard = this.hazards.find(x => x.hazardScenario == hazardScenario)
+    let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
     let currentTime = new Date().getTime()
     let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
 
-    if(hazardKey){
+    if(hazard){
       console.log(hazardTrackingNode)
       if(hazardTrackingNode){
         hazardTrackingNode.push(newTimeObject)
-        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id+ '/' + hazardKey)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id+ '/' + hazard.$key)
         .update({timeTracking: hazardTrackingNode})
       }else{
-        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id+ '/' + hazardKey)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id+ '/' + hazard.$key)
         .update({timeTracking: [newTimeObject]})
       }
     }

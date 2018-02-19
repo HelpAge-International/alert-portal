@@ -139,6 +139,37 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         }
         console.log(dataToSave);
 
+        let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+        let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
+        let currentTime = new Date().getTime()
+        let newTimeObject = {raisedAt: currentTime, level: dataToSave.alertLevel == AlertLevels.Red ? AlertLevels.Red : AlertLevels.Amber};
+        
+        if(hazard){
+          if(dataToSave.alertLevel == AlertLevels.Red){
+            if(this.UserType == UserType.LocalAgencyDirector){
+              if(hazardTrackingNode){
+                hazardTrackingNode.push(newTimeObject)
+                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId+ '/' + hazard.id)
+                .update({timeTracking: hazardTrackingNode})
+              }else{
+                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id)
+                .update({timeTracking: [newTimeObject]})
+              }
+              
+            }
+          }else{
+            if(hazardTrackingNode){
+              hazardTrackingNode.push(newTimeObject)
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId+ '/' + hazard.id)
+              .update({timeTracking: hazardTrackingNode})
+            }else{
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id)
+              .update({timeTracking: [newTimeObject]})
+            }
+            
+          } 
+        }
+
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
           .then(() => {
@@ -253,6 +284,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               this.nonMonitoredHazards.splice(index, 1)
             }
           }
+          value.id = x.key
           this.hazards.push(value);
         }
         console.log(this.hazards);

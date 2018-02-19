@@ -1,3 +1,4 @@
+import { UserType } from './../../utils/Enums';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -44,6 +45,10 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private countriesList = Constants.COUNTRY_SELECTION;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
+  private userType: number;
+  private hazards: any[] = [];
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
+  private loadedAlertLevel: AlertLevels;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -73,6 +78,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
+      this.userType = userType;
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((param: Params) => {
@@ -86,6 +92,8 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             this.isDirector = param['isDirector'];
             this.isLocalAgency ? this.loadAlertLocalAgency(this.alertId, this.agencyId) : this.loadAlert(this.alertId, this.countryId);
           }
+
+          this._getHazards()
 
         });
 
@@ -103,6 +111,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.alertService.getAlert(alertId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alert: ModelAlert) => {
+        this.loadedAlertLevel = alert.alertLevel;
         this.loadedAlert = alert;
         this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
         this.infoNotes = this.loadedAlert.infoNotes;
@@ -136,6 +145,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.alertService.getAlertLocalAgency(alertId, agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alert: ModelAlert) => {
+        this.loadedAlertLevel = alert.alertLevel;
         this.loadedAlert = alert;
         this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
         this.infoNotes = this.loadedAlert.infoNotes;
@@ -170,7 +180,42 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
 
   submit() {
-    console.log(this.loadedAlert);
+
+    let hazard = this.hazards.find(x => x.hazardScenario == this.loadedAlert.hazardScenario)
+    let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
+    let currentTime = new Date().getTime()
+    let newTimeObject = {raisedAt: currentTime, level: this.loadedAlert.alertLevel == AlertLevels.Red ? AlertLevels.Red : AlertLevels.Amber};
+    let id = this.isLocalAgency ? this.agencyId : this.countryId;
+
+    //Checks to see if hazards exists on the country office 
+    if(hazard){
+      if(this.loadedAlertLevel != this.loadedAlert.alertLevel && (this.loadedAlert.alertLevel == AlertLevels.Red || this.loadedAlert.alertLevel == AlertLevels.Amber)){
+        if(this.loadedAlert.alertLevel == AlertLevels.Red){
+          if(this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector){
+            if(hazardTrackingNode){
+              hazardTrackingNode.push(newTimeObject)
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+              .update({timeTracking: hazardTrackingNode})
+            }else{
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+              .update({timeTracking: [newTimeObject]})
+            }
+            
+          }
+        }else if(this.loadedAlert.alertLevel == AlertLevels.Amber){
+          if(hazardTrackingNode){
+            hazardTrackingNode.push(newTimeObject)
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+            .update({timeTracking: hazardTrackingNode})
+          }else{
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+            .update({timeTracking: [newTimeObject]})
+          }
+          
+        } 
+      }
+    } 
+
 
     this.loadedAlert.estimatedPopulation = this.estimatedPopulation;
     this.loadedAlert.infoNotes = this.infoNotes;
@@ -201,6 +246,38 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     }
 
   }
+
+
+  _getHazards() {
+
+    let id = this.isLocalAgency ? this.agencyId : this.countryId;
+
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        for (let x of snapshot) {
+          let value = x.val();
+          if (value.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + value.otherName, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                value.hazardName = snap.val().name;
+              });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
+          }
+          console.log(x)
+          value.id = x.key
+          this.hazards.push(value);
+        }
+        console.log(this.hazards);
+      });
+  }
+
+
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();

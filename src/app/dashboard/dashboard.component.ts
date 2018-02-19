@@ -665,19 +665,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   approveRedAlert(alertId, hazardScenario) {
 
-    let hazardKey = this.hazards.find(x => x.hazardScenario == hazardScenario).$key
-    let hazardTrackingNode = this.hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+    let hazard = this.hazards.find(x => x.hazardScenario == hazardScenario)
+    let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
     let currentTime = new Date().getTime()
     let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
 
-    if(hazardKey){
+    if(hazard){
       console.log(hazardTrackingNode)
       if(hazardTrackingNode){
         hazardTrackingNode.push(newTimeObject)
-        this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryId + '/' + hazardKey)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryId + '/' + hazard.$key)
         .update({timeTracking: hazardTrackingNode})
       }else{
-        this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryId + '/' + hazardKey)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryId + '/' + hazard.$key)
         .update({timeTracking: [newTimeObject]})
       }
     }
@@ -693,19 +693,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     .takeUntil(this.ngUnsubscribe)
     .subscribe(hazards => {
 
-      let hazardKey = hazards.find(x => x.hazardScenario == hazardScenario).$key
-      let hazardTrackingNode = hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+      let hazard = hazards.find(x => x.hazardScenario == hazardScenario)
+      let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
       let currentTime = new Date().getTime()
       let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
   
-      if(hazardKey){
+      if(hazard){
         console.log(hazardTrackingNode)
         if(hazardTrackingNode){
           hazardTrackingNode.push(newTimeObject)
-          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkCountryId + '/' + hazardKey)
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkCountryId + '/' + hazard.$key)
           .update({timeTracking: hazardTrackingNode})
         }else{
-          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkCountryId + '/' + hazardKey)
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkCountryId + '/' + hazard.$key)
           .update({timeTracking: [newTimeObject]})
         }
       }
@@ -732,19 +732,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     .takeUntil(this.ngUnsubscribe)
     .subscribe(hazards => {
 
-      let hazardKey = hazards.find(x => x.hazardScenario == hazardScenario).$key
-      let hazardTrackingNode = hazards.find(x => x.hazardScenario == hazardScenario).timeTracking
+      let hazard = hazards.find(x => x.hazardScenario == hazardScenario)
+      let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
       let currentTime = new Date().getTime()
       let newTimeObject = {raisedAt: currentTime, level: AlertLevels.Red};
   
-      if(hazardKey){
+      if(hazard){
         console.log(hazardTrackingNode)
         if(hazardTrackingNode){
           hazardTrackingNode.push(newTimeObject)
-          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkId + '/' + hazardKey)
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkId + '/' + hazard.$key)
           .update({timeTracking: hazardTrackingNode})
         }else{
-          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkId + '/' + hazardKey)
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + alert.networkId + '/' + hazard.$key)
           .update({timeTracking: [newTimeObject]})
         }
       }
