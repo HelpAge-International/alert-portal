@@ -18,6 +18,8 @@ import {recognize} from "@angular/router/src/recognize";
 import {ModelStaff} from "../model/staff.model";
 import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {ModelAgency} from "../model/agency.model";
+import * as XLSX from "xlsx";
+import * as moment from "moment";
 
 @Injectable()
 export class UserService {
@@ -764,9 +766,5 @@ export class UserService {
           return selectedObj.$value;
         }
       })
-  }
-
-  exportOfficeData() {
-
   }
 }

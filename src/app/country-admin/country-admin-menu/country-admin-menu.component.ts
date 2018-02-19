@@ -7,6 +7,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
 import {Constants} from "../../utils/Constants";
 import * as XLSX from 'xlsx';
+import {ExportDataService} from "../../services/export-data.service";
 
 @Component({
   selector: 'app-country-admin-menu',
@@ -34,6 +35,7 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private userService: UserService,
               private route: ActivatedRoute,
+              private dataService:ExportDataService,
               private router: Router) {
   }
 
@@ -77,68 +79,68 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   }
 
   exportData() {
-    //TODO this is to test data export function
     console.log("try to export country office data")
+    this.dataService.exportOfficeData(this.countryId)
 
-    let counter = 0
-
-    const wb: XLSX.WorkBook = XLSX.utils.book_new()
-
-    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId)
-      .first()
-      .subscribe(planList => {
-        let plans = planList.map(plan => {
-          let obj = {}
-          obj["name"] = plan["name"]
-          obj["hazardScenario"] = plan["hazardScenario"]
-          obj["status"] = plan["status"]
-          obj["sectionsCompleted"] = plan["sectionsCompleted"]
-          obj["timeUpdated"] = plan["timeUpdated"]
-          return obj
-        })
-
-        const planSheet = XLSX.utils.json_to_sheet(plans);
-        XLSX.utils.book_append_sheet(wb, planSheet, "Response Plans")
-
-        counter++
-
-        this.exportFile(counter, 2, wb)
-      })
-
-    //test another sheet
-    this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId)
-      .first()
-      .subscribe(actionList => {
-        let actions = actionList.map(action => {
-          let obj = {}
-          obj["Action title"] = action["type"]
-          obj["Preparedness action level"] = action["level"]
-          obj["Type"] = action["type"]
-          obj["Department"] = action["department"]
-          obj["Assigned to"] = action["asignee"]
-          obj["Due Date"] = action["dueDate"]
-          obj["Budget"] = action["budget"]
-          obj["Document Required"] = action["requireDoc"]
-          obj["Status"] = "test status"
-          obj["Expires"] = action["dueDate"]
-          obj["Notes"] = "test 5"
-          return obj
-        })
-
-        const actionSheet = XLSX.utils.json_to_sheet(actions);
-        XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
-
-        counter++
-
-        this.exportFile(counter, 2, wb)
-      })
+    // let counter = 0
+    //
+    // const wb: XLSX.WorkBook = XLSX.utils.book_new()
+    //
+    // this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + this.countryId)
+    //   .first()
+    //   .subscribe(planList => {
+    //     let plans = planList.map(plan => {
+    //       let obj = {}
+    //       obj["name"] = plan["name"]
+    //       obj["hazardScenario"] = plan["hazardScenario"]
+    //       obj["status"] = plan["status"]
+    //       obj["sectionsCompleted"] = plan["sectionsCompleted"]
+    //       obj["timeUpdated"] = plan["timeUpdated"]
+    //       return obj
+    //     })
+    //
+    //     const planSheet = XLSX.utils.json_to_sheet(plans);
+    //     XLSX.utils.book_append_sheet(wb, planSheet, "Response Plans")
+    //
+    //     counter++
+    //
+    //     this.exportFile(counter, 2, wb)
+    //   })
+    //
+    // //test another sheet
+    // this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId)
+    //   .first()
+    //   .subscribe(actionList => {
+    //     let actions = actionList.map(action => {
+    //       let obj = {}
+    //       obj["Action title"] = action["type"]
+    //       obj["Preparedness action level"] = action["level"]
+    //       obj["Type"] = action["type"]
+    //       obj["Department"] = action["department"]
+    //       obj["Assigned to"] = action["asignee"]
+    //       obj["Due Date"] = action["dueDate"]
+    //       obj["Budget"] = action["budget"]
+    //       obj["Document Required"] = action["requireDoc"]
+    //       obj["Status"] = "test status"
+    //       obj["Expires"] = action["dueDate"]
+    //       obj["Notes"] = "test 5"
+    //       return obj
+    //     })
+    //
+    //     const actionSheet = XLSX.utils.json_to_sheet(actions);
+    //     XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
+    //
+    //     counter++
+    //
+    //     this.exportFile(counter, 2, wb)
+    //   })
   }
 
-  private exportFile(counter, total, wb) {
-    if (counter == total) {
-      //try export see if works
-      XLSX.writeFile(wb, 'SheetJS.xlsx')
-    }
-  }
+  // private exportFile(counter, total, wb) {
+  //   if (counter == total) {
+  //     //try export see if works
+  //     XLSX.writeFile(wb, 'SheetJS.xlsx')
+  //   }
+  // }
 
 }

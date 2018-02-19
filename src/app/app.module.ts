@@ -351,6 +351,7 @@ import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settin
 import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
+import {ExportDataService} from "./services/export-data.service";
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -753,7 +754,8 @@ const firebaseAuthConfig = {
     NetworkMapService,
     NetworkCountryService,
     ActionsService,
-    FieldOfficeService
+    FieldOfficeService,
+    ExportDataService
   ],
   bootstrap: [AppComponent]
 })

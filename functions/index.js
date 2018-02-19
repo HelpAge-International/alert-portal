@@ -4797,12 +4797,11 @@ exports.sendBugReportingEmailSand = functions.database.ref('/sand/bugReporting/{
                           \n Description: \n
                           ${currData.description}
                           \n 
-                          ${currData.downloadURL}
+                          ${currData.downloadLink}
                           \n
                           \n 
                           User details: \n
-                          ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName} \n
-                          ${currData.email}
+                          ${currData.firstName} ${currData.lastName}, ${COUNTRIES[currData.country]}, ${currData.agencyName}, ${currData.email}
                           \n
                           \n
                           System Information: \n
