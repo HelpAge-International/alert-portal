@@ -4768,3 +4768,49 @@ function getAlertName(level) {
 }
 
 /*********************************************************************************************************************************************/
+
+/*BUG REPORTING********************************************************************************************************************************************/
+exports.sendBugReportingEmailSand = functions.database.ref('/sand/bugReporting/{countryId}/{bugId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    console.log(currData)
+
+    let eParams = event.params;
+    // Set variables to parameters of the data returned, ready to construct for the email
+    let countryId = eParams['countryId'];
+    let bugId = eParams['bugId'];
+
+    console.log("countyId: " + countryId);
+
+    const mailOptions = {
+      from: '"ALERT Network" <noreply@firebase.com>',
+      to: 'dan@rolleragency.co.uk'
+    };
+    mailOptions.subject = `ALERT Platform: A problem has been reported`;
+    mailOptions.text = `Hello,
+                          \n
+                          \n A problem was reported at ${currData.date}
+                          \n 
+                          \n Description: \n
+                          ${currData.description}
+                          \n 
+                          ${currData.downloadURL}
+                          \n
+                          \n 
+                          User details: \n
+                          ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName} \n
+                          ${currData.email}
+                          \n
+                          \n
+                          System Information: \n
+                          ${currData.systemInfo}
+                          `;
+    return mailTransport.sendMail(mailOptions).then(() => {
+      console.log('New bug reporting email:');
+    })
+  })
+/*********************************************************************************************************************************************/
+
