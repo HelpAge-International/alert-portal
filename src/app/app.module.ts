@@ -348,7 +348,8 @@ import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-
 import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
 import { FieldOfficeService } from "./services/field-office.service";
 import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
-
+import { BugReportingService } from './services/bug-reporting.service';
+import { ReportProblemComponent } from './report-problem/report-problem.component';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -702,6 +703,7 @@ const firebaseAuthConfig = {
     LocalAgencyAccountDetailsComponent,
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
+    ReportProblemComponent,
 
   ],
   imports: [
@@ -750,7 +752,8 @@ const firebaseAuthConfig = {
     NetworkMapService,
     NetworkCountryService,
     ActionsService,
-    FieldOfficeService
+    FieldOfficeService,
+    BugReportingService
   ],
   bootstrap: [AppComponent]
 })

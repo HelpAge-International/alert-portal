@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../../services/user.service";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
@@ -6,6 +6,8 @@ import {PermissionsAgency, UserType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
+import { ReportProblemComponent } from "../../report-problem/report-problem.component";
+import { BugReportingService } from "../../services/bug-reporting.service";
 
 @Component({
   selector: 'app-country-admin-menu',
@@ -27,6 +29,8 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   public permCountryOffice = false;
   public permResponsePlanning = false;
 
+
+
   constructor(private pageControl: PageControlService, private af: AngularFire,
               private userService: UserService,
               private route: ActivatedRoute,
@@ -34,6 +38,8 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;

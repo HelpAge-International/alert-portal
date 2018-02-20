@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -21,7 +21,10 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {Location} from "@angular/common";
 import {NetworkCountryAgenciesComponent} from "../../network-country-admin/network-administration/network-country-agencies/network-country-agencies.component";
 import {NetworkWithCountryModel} from "./network-with-country.model";
-
+import {BugReportingService} from "../../services/bug-reporting.service";
+import {ReportProblemComponent} from "../../report-problem/report-problem.component";
+import * as html2canvas from 'html2canvas'
+import * as Canvas2Image from "Canvas2Image";
 declare const jQuery: any;
 
 
@@ -29,10 +32,14 @@ declare const jQuery: any;
   selector: 'app-country-admin-header',
   templateUrl: './country-admin-header.component.html',
   styleUrls: ['./country-admin-header.component.css'],
-  providers: [ActionsService]
+  providers: [ActionsService, BugReportingService]
 })
 
 export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
+
+  // Reporting problem
+  private showIcon: boolean;
+
 
   @Output() partnerAgencyRequest = new EventEmitter();
   // @Output() networkRequest = new EventEmitter();
@@ -95,7 +102,9 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private locationService: Location,
               private http: Http,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private bugReport: BugReportingService
+        ) {
 
     //this.translate.addLangs(["en", "fr", "es", "pt"]);
     translate.setDefaultLang("en");
@@ -107,7 +116,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
+    jQuery('.float').hide();
+    //this.showIcon = false;
     this.showLoader = true;
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.systemId = systemId;
@@ -294,6 +304,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+
   selectAgencyCountryForPartner(agency) {
     if (agency.$key != this.agencyId) {
       this.partnerAgencyRequest.emit(agency);
@@ -394,6 +405,10 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   };
 
+  reportProblem(){
+    jQuery('.float').show();
+  }
+
 
   changeLanguage(language: string) {
     this.language = language;
@@ -475,6 +490,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       })
 
   }
+
 
   private getLocalNetworks(agencyId: string, countryId: any) {
     console.log('in local networks');

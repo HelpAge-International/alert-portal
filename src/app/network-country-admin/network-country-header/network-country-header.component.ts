@@ -71,6 +71,7 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    jQuery('.float').hide();
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.uid = user.uid;
       this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
@@ -158,6 +159,10 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
     jQuery("#language-selection").modal("hide");
 
 
+  }
+
+  reportProblem(){
+    jQuery('.float').show();
   }
 
   logout() {

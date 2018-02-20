@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -19,6 +19,9 @@ import {NetworkService} from "../services/network.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkViewModel} from "../country-admin/country-admin-header/network-view.model";
+import { BugReportingService } from "../services/bug-reporting.service";
+import { ReportProblemComponent } from "../report-problem/report-problem.component";
+import * as html2canvas from "html2canvas";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -31,6 +34,10 @@ declare var jQuery: any;
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
+
+  // Reporting problem
+  @Input() showIcon: boolean;
+
 
   private alertList: ModelAlert[];
 
@@ -101,6 +108,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private localNetworks: any;
   private alertsLocalNetwork: Observable<any>;
 
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private route: ActivatedRoute,
@@ -108,7 +116,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private networkService: NetworkService,
               private storageService: LocalStorageService,
-              private actionService: ActionsService) {
+              private actionService: ActionsService,
+              private bugReport: BugReportingService) {
   }
 
   ngOnInit() {
@@ -191,6 +200,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /**
    * Private functions
    */
+
+
+
 
   private loadData() {
     // this.getCountryId().then(() => {
@@ -640,6 +652,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         })
     }
   }
+
 
   getIndicatorName(indicator): string {
     return this.actionService.getIndicatorTitle(indicator);

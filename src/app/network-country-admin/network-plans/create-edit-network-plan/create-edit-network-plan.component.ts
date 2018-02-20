@@ -682,7 +682,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     //   jQuery("#navigate-back").modal("hide");
     // }
 
-    console.log("Finish button pressed");
+
     this.checkAllSections();
 
     let newResponsePlan: ResponsePlan = new ResponsePlan;
@@ -972,8 +972,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
           });
 
         } else {
-
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkCountryId;
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkId;
           this.af.database.list(responsePlansPath)
             .push(newResponsePlan)
             .then(plan => {
