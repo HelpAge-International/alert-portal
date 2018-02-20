@@ -394,7 +394,7 @@
 
       <div class="Ribbon__section__wrap--risk align-items-right"
            *ngFor="let hazard of activeHazards; let hazardIndex = index;">
-        <ng-container *ngIf="hazard.hazardScenario != Hazard_Conflict || (hazard.hazardScenario == Hazard_Conflict && modules[ModuleNameNetwork.ConflictIndicators].status)">
+        <ng-container *ngIf="hazard.hazardScenario != Hazard_Conflict || (hazard.hazardScenario == Hazard_Conflict && modules && modules[ModuleNameNetwork.ConflictIndicators].status)">
           <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse-active-' + hazard.$key}}"
                aria-expanded="true" attr.aria-controls="{{'collapse-active-' + hazard.$key}}"
                *ngIf="eventFilter == -1 || eventFilter == hazard.hazardScenario">
