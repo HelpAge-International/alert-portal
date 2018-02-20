@@ -8,6 +8,7 @@ import {AgencyPermissionObject, PageControlService} from "../../services/pagecon
 import {Constants} from "../../utils/Constants";
 import * as XLSX from 'xlsx';
 import {ExportDataService} from "../../services/export-data.service";
+import {CommonService} from "../../services/common.service";
 
 @Component({
   selector: 'app-country-admin-menu',
@@ -35,7 +36,8 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private userService: UserService,
               private route: ActivatedRoute,
-              private dataService:ExportDataService,
+              private commonService: CommonService,
+              private dataService: ExportDataService,
               private router: Router) {
   }
 
@@ -47,25 +49,25 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId
 
       PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
-          for (const value of list) {
-            if (value.permission === PermissionsAgency.MinimumPreparedness) {
-              this.permMinimumPreparedness = !value.isAuthorized;
-            }
-            if (value.permission === PermissionsAgency.AdvancedPreparedness) {
-              this.permAdvancedPreparedness = !value.isAuthorized;
-            }
-            if (value.permission === PermissionsAgency.RiskMonitoring) {
-              this.permRiskMonitoring = !value.isAuthorized;
-            }
-            if (value.permission === PermissionsAgency.CountryOffice) {
-              this.permCountryOffice = !value.isAuthorized;
-            }
-            if (value.permission === PermissionsAgency.ResponsePlanning) {
-              this.permResponsePlanning = !value.isAuthorized;
-            }
-            PageControlService.agencySelfCheck(userType, this.route, this.router, value);
+        for (const value of list) {
+          if (value.permission === PermissionsAgency.MinimumPreparedness) {
+            this.permMinimumPreparedness = !value.isAuthorized;
           }
-        });
+          if (value.permission === PermissionsAgency.AdvancedPreparedness) {
+            this.permAdvancedPreparedness = !value.isAuthorized;
+          }
+          if (value.permission === PermissionsAgency.RiskMonitoring) {
+            this.permRiskMonitoring = !value.isAuthorized;
+          }
+          if (value.permission === PermissionsAgency.CountryOffice) {
+            this.permCountryOffice = !value.isAuthorized;
+          }
+          if (value.permission === PermissionsAgency.ResponsePlanning) {
+            this.permResponsePlanning = !value.isAuthorized;
+          }
+          PageControlService.agencySelfCheck(userType, this.route, this.router, value);
+        }
+      });
     });
   }
 
@@ -80,7 +82,13 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
 
   exportData() {
     console.log("try to export country office data")
-    this.dataService.exportOfficeData(this.countryId)
+    // get the country levels values
+    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .first()
+      .subscribe(content => {
+        console.log("got json file content")
+        this.dataService.exportOfficeData(this.countryId, content)
+      })
 
     // let counter = 0
     //
