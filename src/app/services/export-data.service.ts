@@ -7,18 +7,21 @@ import {CommonService} from "./common.service";
 import {WorkBook} from "xlsx";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {TranslateService} from "@ngx-translate/core";
+import {UserService} from "./user.service";
 
 @Injectable()
 export class ExportDataService {
 
   constructor(private af: AngularFire,
               private translateService: TranslateService,
+              private userService:UserService,
               private commonService: CommonService) {
   }
 
-  public exportOfficeData(countryId: string, areaContent: any) {
+  public exportOfficeData(agencyId:string, countryId: string, areaContent: any) {
 
-    const total = 3
+    //TODO MAKE SURE TOTAL NUMBER IS RIGHT!!
+    const total = 5
     let counter = 0
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new()
@@ -36,27 +39,76 @@ export class ExportDataService {
     counter = this.fetchActionsData(countryId, wb, counter, total);
 
     //fetch point of contacts
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/contacts/" + countryId)
-      .first()
-      .subscribe(contactsList => {
-        let contacts = contactsList.map(contact => {
-          let obj = {}
-          obj["Name of contact"] = contact["staffMember"]
-          // obj["Contact Email"] = contact["name"]
-          obj["Skype Name"] = contact["skypeName"]
-          // obj["Direct Telephone"] = contact["name"]
-          obj["Office Telephone"] = contact["phone"]
-          return obj
-        })
+    counter = this.fetchPointOfContactData(countryId, wb, counter, total);
 
-        const planSheet = XLSX.utils.json_to_sheet(contacts);
-        XLSX.utils.book_append_sheet(wb, planSheet, "CO - Contacts(Point of Contact)")
+    //fetch office contacts
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId)
+      .first()
+      .subscribe(countryOffice => {
+        let offices = []
+        let office = {}
+        office["Address Line 1"] = countryOffice.addressLine1
+        office["Address Line 2"] = countryOffice.addressLine2
+        office["Address Line 3"] = countryOffice.addressLine3
+        office["Country"] = countryOffice.location
+        office["City"] = countryOffice.city
+        office["Postcode"] = countryOffice.postCode
+        office["Phone Number"] = countryOffice.phone
+        office["Email Address"] = countryOffice.adminId
+        offices.push(office)
+        console.log(offices)
+
+        const officeSheet = XLSX.utils.json_to_sheet(offices);
+        XLSX.utils.book_append_sheet(wb, officeSheet, "CO - Contacts (Office Details)")
 
         counter++
 
         this.exportFile(counter, total, wb)
       })
+  }
 
+  private fetchPointOfContactData(countryId: string, wb: WorkBook, counter: number, total: number) {
+    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/contacts/" + countryId)
+      .first()
+      .subscribe(contactsList => {
+        let contacts = contactsList.map(contact => {
+          let obj = {}
+          obj["Skype Name"] = contact["skypeName"]
+          obj["Office Telephone"] = contact["phone"]
+          obj["staffId"] = contact["staffMember"]
+          return obj
+        })
+
+        let totalContacts = contacts.length
+        let contactCounter = 0
+        contacts.forEach(contact => {
+          this.userService.getUser(contact.staffId)
+            .first()
+            .subscribe(staff => {
+              contact["Name of contact"] = staff.firstName + " " + staff.lastName
+              contact["Contact Email"] = staff.email
+              contact["Direct Telephone"] = staff.phone
+              let tempObj = JSON.parse(JSON.stringify(contact))
+              for (const prop of Object.keys(contact)) {
+                delete contact[prop];
+              }
+              contact["Name of contact"] = tempObj["Name of contact"]
+              contact["Contact Email"] = tempObj["Contact Email"]
+              contact["Skype Name"] = tempObj["Skype Name"]
+              contact["Direct Telephone"] = tempObj["Direct Telephone"]
+              contact["Office Telephone"] = tempObj["Office Telephone"]
+
+              contactCounter++
+              if (contactCounter == totalContacts) {
+                const planSheet = XLSX.utils.json_to_sheet(contacts);
+                XLSX.utils.book_append_sheet(wb, planSheet, "CO - Contacts(Point of Contact)")
+                counter++
+                this.exportFile(counter, total, wb)
+              }
+            })
+        })
+      })
+    return counter;
   }
 
   private fetchActionsData(countryId: string, wb: WorkBook, counter: number, total: number) {
@@ -150,6 +202,7 @@ export class ExportDataService {
   }
 
   private exportFile(counter, total, wb) {
+    console.log(counter)
     if (counter == total) {
       //try export see if works
       XLSX.writeFile(wb, 'SheetJS.xlsx')

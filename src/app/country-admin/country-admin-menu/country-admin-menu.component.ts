@@ -87,7 +87,7 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(content => {
         console.log("got json file content")
-        this.dataService.exportOfficeData(this.countryId, content)
+        this.dataService.exportOfficeData(this.agencyId, this.countryId, content)
       })
 
     // let counter = 0
