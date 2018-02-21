@@ -47,7 +47,6 @@ export class CommonService {
 
   getAreaNameListFromObj(jsonContent: {}, areas: any): string {
     let areaList = Object.keys(areas).map(key => Object.keys(areas[key]).map(id => areas[key][id]).reverse())
-    console.log(areaList)
     let names = "";
     areaList.forEach(area => {
       console.log(area)
@@ -70,11 +69,9 @@ export class CommonService {
           country = area[2]
         }
         let countryName = Constants.COUNTRIES[country];
-        console.log(countryName)
-        console.log(jsonContent[country]["levelOneValues"])
-        let level1Name = jsonContent[country]["levelOneValues"][level1]["value"];
+        let level1Name = jsonContent[country]["levelOneValues"][level1]["value"] ? jsonContent[country]["levelOneValues"][level1]["value"] + ", " : ""
         console.log(level1Name)
-        names += level1Name + ", " + this.translate.instant(countryName)
+        names += level1Name + this.translate.instant(countryName)
         names += "\n"
       }
       else if (area.length == 3) {
@@ -82,9 +79,9 @@ export class CommonService {
         let level1 = area[1];
         let country = area[2];
         let countryName = Constants.COUNTRIES[country];
-        let level1Name = jsonContent[country]["levelOneValues"][level1]["value"];
-        let level2Name = jsonContent[country]["levelOneValues"][level1]["levelTwoValues"][level2]["value"];
-        names += level2Name + ", " + level1Name + ", " + this.translate.instant(countryName)
+        let level1Name = jsonContent[country]["levelOneValues"][level1]["value"] ? jsonContent[country]["levelOneValues"][level1]["value"] + ", " : ""
+        let level2Name = jsonContent[country]["levelOneValues"][level1]["levelTwoValues"][level2]["value"] ? jsonContent[country]["levelOneValues"][level1]["levelTwoValues"][level2]["value"] + ", " : ""
+        names += level2Name + level1Name + this.translate.instant(countryName)
         names += "\n"
       }
     })

@@ -1030,38 +1030,6 @@ export class Constants {
   static NETWORK_VIEW_SELECTED_ID = "network-view-selected-id"
   static NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID = "network-view-selected-network-country-id"
   static NETWORK_CALENDAR= "network-calendar"
-
-  /***INFO FOR EXPORT DATA*******************************************************************/
-  static ALERT_LEVEL_STRING = ["Green alert", "Amber alert", "Red alert"]
-  static HAZARD_SCENARIOS_STRING = [
-    "Cold Wave",
-    "Conflict",
-    "Cyclone",
-    "Drought",
-    "Earthquake",
-    "Epidemic",
-    "Fire",
-    "Flash Flood",
-    "Flood",
-    "Heat Wave",
-    "Heavy Rain",
-    "Humanitarian Access",
-    "Insect Infestation",
-    "Landslide",
-    "Locust Infestation",
-    "Mudslide",
-    "Population Displacement",
-    "Population Return",
-    "Snow Avalanche",
-    "Snowfall",
-    "Storm",
-    "Storm Surge",
-    "Technological Disaster",
-    "Tornado",
-    "Tsunami",
-    "Violent Wind",
-    "Volcano"
-  ]
 }
 
 export enum FILE_SETTING {
