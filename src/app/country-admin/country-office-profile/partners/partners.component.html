@@ -106,7 +106,7 @@
         </a>
       </div>
 
-      <p class="col-sm-2">{{partnerOrganisation.isApproved? PARTNER_STATUS[ partnerOrganisation.isActive? 2 : 3] : PARTNER_STATUS[ 0] | translate }}</p> <!--Status-->
+      <p class="col-sm-2">{{partnerOrganisation.isApproved? PARTNER_STATUS[ partnerOrganisation.isActive? 2 : 3] : PARTNER_STATUS[0] | translate }}</p> <!--Status-->
       <div class="col-sm-1" *ngIf="!isEdit">
         <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
         <p class="notes-number__components--country-office-profile">{{ partnerOrganisation.notes.length }}</p>

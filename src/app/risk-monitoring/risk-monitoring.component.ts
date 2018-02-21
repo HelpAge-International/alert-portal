@@ -20,6 +20,8 @@ import {AgencyService} from "../services/agency-service.service";
 import {SettingsService} from "../services/settings.service";
 import {NetworkService} from "../services/network.service";
 import {CommonUtils} from "../utils/CommonUtils";
+import {CommonService} from "../services/common.service";
+import {OperationAreaModel} from "../model/operation-area.model";
 
 declare var jQuery: any;
 
@@ -122,6 +124,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private userAgencyId: string;
   private userCountryId: string;
   private withinNetwork: boolean;
+  private countryLevelsValues: any;
+
+  private subnationalName: string;
+  private countryName: string;
+  private level1: string;
+  private level2: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -133,7 +141,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               private agencyService: AgencyService,
               private settingService: SettingsService,
               private networkService: NetworkService,
-              private windowService: WindowRefService) {
+              private windowService: WindowRefService,
+              private _commonService: CommonService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -323,6 +332,36 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         });
     });
     return promise;
+  }
+
+  showSubNationalAreas(areas) {
+    for (let area in areas) {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .subscribe(content => {
+          this.countryLevelsValues = content;
+          // console.log(this.getLocationName(areas[area]));
+          this.setLocationName(areas[area]);
+          err => console.log(err);
+        });
+    }
+    jQuery("#show-subnational").modal("show");
+  }
+
+  setLocationName(location) {
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country) {
+      this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
+    } else if ((location.level1 && location.level1 != -1) && location.country) {
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1;
+    } else {
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName;
+    }
+    console.log(this.countryName + ", " + this.level2 + ", " + this.level1)
   }
 
   _getIndicatorFutureTimestamp(indicator) {

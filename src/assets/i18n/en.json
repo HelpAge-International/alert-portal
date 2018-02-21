@@ -1533,6 +1533,8 @@
       "VIEW":"VIEW",
       "VIEW_PLAN":"View plan",
       "EDIT_PLAN":"Edit plan",
+      "RESEND_NOTIFICATION": "Resend notification",
+      "CONFIRM_RESEND_NOTIFICATION": "Would you like to confirm resending notification?",
       "REQUIRE_SUBMISSION":"Requires submission",
       "REQUIRE_APPROVAL":"Requires approval",
       "SUBMIT_FOR_APPROVAL":"Submit for approval",
@@ -1899,6 +1901,7 @@
       "VIEW_ALL":"View all",
       "NATIONAL":"National",
       "SUBNATIONAL":"Subnational",
+      "SUBNATIONAL_AREA":"Subnational area(s)",
       "MODAL":{
         "ARCHIVE_HAZARD":{
           "MESSAGE_PART_ONE":"Are you sure you want to",

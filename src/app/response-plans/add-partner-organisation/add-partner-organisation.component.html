@@ -297,7 +297,7 @@
       <br>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="setInactiveState()">{{"SAVE"| translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel()">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-inactive')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>
@@ -318,7 +318,7 @@
       <br>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="setActiveState()">{{"SAVE"| translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel()">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-active')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>

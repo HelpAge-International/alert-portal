@@ -301,8 +301,8 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     }
   }
 
-  closeConfirmationModel() {
-    jQuery("#confirm-active").modal("hide");
+  closeConfirmationModel(key) {
+    jQuery("#"+key).modal("hide");
   }
 
   goBack() {
