@@ -19,6 +19,7 @@ import * as firebase from "firebase/app";
 import App = firebase.app.App;
 import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
+import {CommonService} from "../../services/common.service";
 
 declare var jQuery: any;
 @Component({
@@ -41,6 +42,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private agencyId: string;
   private systemId: string;
   public hazards: any[] = [];
+  public hazard: string;
   private canCopy: boolean;
   private agencyOverview: boolean;
 
@@ -95,6 +97,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
+  private AllSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -109,6 +112,12 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private assignedIndicator: any;
   private assignedHazard: any;
   private assignedUser: string;
+  private countryLevelsValues: any;
+
+  private subnationalName: string;
+  private countryName: string;
+  private level1: string;
+  private level2: string;
 
 
 
@@ -119,7 +128,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
               private storage: LocalStorageService,
               private translate: TranslateService,
               private userService: UserService,
-              private windowService: WindowRefService) {
+              private windowService: WindowRefService,
+              private _commonService: CommonService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -167,7 +177,54 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
     return promise;
   }
 
+  openSeasonalModal(key) {
+    this._getAllSeasons();
+    jQuery("#" + key).modal("show");
+  }
 
+  _getAllSeasons() {
+    console.log(this.activeHazards)
+    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((AllSeasons: any) => {
+          this.AllSeasons = AllSeasons;
+          res(true);
+        });
+    });
+    return promise;
+  }
+
+  showSubNationalAreas(areas) {
+    for (let area in areas) {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .subscribe(content => {
+          this.countryLevelsValues = content;
+          // console.log(this.getLocationName(areas[area]));
+          this.setLocationName(areas[area]);
+          err => console.log(err);
+        });
+    }
+    jQuery("#show-subnational").modal("show");
+  }
+
+  setLocationName(location) {
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country) {
+      this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
+    } else if ((location.level1 && location.level1 != -1) && location.country) {
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1;
+    } else {
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName;
+    }
+    console.log(this.countryName + ", " + this.level2 + ", " + this.level1)
+  }
 
   _getIndicatorFutureTimestamp(indicator) {
     let triggers: any[] = indicator.trigger;

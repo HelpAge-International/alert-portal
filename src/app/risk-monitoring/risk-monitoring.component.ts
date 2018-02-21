@@ -315,7 +315,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((AllSeasons: any) => {
           this.AllSeasons = AllSeasons;
-          console.log(this.AllSeasons, 'all seasons');
           res(true);
         });
     });
