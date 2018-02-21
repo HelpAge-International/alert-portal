@@ -111,13 +111,13 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
 
   gotoMapList(): void {
     if (this.isLocalNetworkAdmin) {
-      this.router.navigateByUrl('network/local-network-global-maps-list' + this.paramString)
+      this.router.navigateByUrl('/network/local-network-global-maps-list' + this.paramString)
     } else {
       if (this.paramString == null) {
-        this.router.navigateByUrl('network-country/network-global-map-list');
+        this.router.navigateByUrl('/network-country/network-global-map-list');
       }
       else {
-        this.router.navigateByUrl('network-country/network-global-map-list' + this.paramString);
+        this.router.navigateByUrl('/network-country/network-global-map-list' + this.paramString);
       }
     }
   }
