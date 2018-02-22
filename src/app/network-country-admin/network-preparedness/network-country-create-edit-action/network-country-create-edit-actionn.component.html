@@ -174,42 +174,42 @@
     <!--
           FREQUENCY
     -->
-    <!--<div class="row System-admin&#45;&#45;form-wrap" *ngIf="action.level == actionLevelEnum.MPA">-->
-    <!--<div class="col-lg-8 col-md-10">-->
-    <!--<div class="form-group">-->
-    <!--<label for="n-Frequency">{{"PREPAREDNESS.FREQUENCY" | translate}}</label>-->
-    <!--</div>-->
+    <div class="row System-admin--form-wrap" *ngIf="action.level == actionLevelEnum.MPA">
+    <div class="col-lg-8 col-md-10">
+    <div class="form-group">
+    <label for="n-Frequency">{{"PREPAREDNESS.FREQUENCY" | translate}}</label>
+    </div>
 
-    <!--<div class="row no-gutters">-->
-    <!--<label for="frequency-check" class="Checkbox&#45;&#45;ribbon Left">-->
-    <!--<input type="checkbox" name="frequency-check" id="frequency-check"-->
-    <!--[checked]="action.isFrequencyActive" (change)="updateFrequencyActive()">-->
-    <!--{{"PREPAREDNESS.FREQUENCY_LABEL" | translate}}-->
-    <!--</label>-->
-    <!--&lt;!&ndash;tooltip&ndash;&gt;-->
-    <!--<tooltip-->
-    <!--[level1]="'TOOLTIPS.PREPAREDNESS.TT11.LEVEL1'">-->
-    <!--</tooltip>-->
-    <!--</div>-->
-    <!--<div class="row align-items-center" *ngIf="action.isFrequencyActive">-->
-    <!--<div class="col-sm-1 col-2">{{"EVERY" | translate}}</div>-->
-    <!--<div class="col-sm-2 col-4">-->
-    <!--<select class="form-control" [(ngModel)]="action.frequencyQuantity">-->
-    <!--<option *ngFor="let f of frequencyQuantities" [value]="f"-->
-    <!--[selected]="action.frequencyQuantity == f">{{f}}</option>-->
-    <!--</select>-->
-    <!--</div>-->
-    <!--<div class="col-sm-3 col-6">-->
-    <!--<select class="form-control" [(ngModel)]="action.frequencyType">-->
-    <!--<option *ngFor="let list of durationTypeList; let i = index" [value]="i"-->
-    <!--[selected]="action.frequencyType == i">-->
-    <!--{{durationType[i] | translate}}-->
-    <!--</option>-->
-    <!--</select>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
+    <div class="row no-gutters">
+    <label for="frequency-check" class="Checkbox--ribbon Left">
+    <input type="checkbox" name="frequency-check" id="frequency-check"
+    [checked]="action.isFrequencyActive" (change)="updateFrequencyActive()">
+    {{"PREPAREDNESS.FREQUENCY_LABEL" | translate}}
+    </label>
+    <!--tooltip-->
+    <tooltip
+    [level1]="'TOOLTIPS.PREPAREDNESS.TT11.LEVEL1'">
+    </tooltip>
+    </div>
+    <div class="row align-items-center" *ngIf="action.isFrequencyActive">
+    <div class="col-sm-1 col-2">{{"EVERY" | translate}}</div>
+    <div class="col-sm-2 col-4">
+    <select class="form-control" [(ngModel)]="action.frequencyQuantity">
+    <option *ngFor="let f of frequencyQuantities" [value]="f"
+    [selected]="action.frequencyQuantity == f">{{f}}</option>
+    </select>
+    </div>
+    <div class="col-sm-3 col-6">
+    <select class="form-control" [(ngModel)]="action.frequencyType">
+    <option *ngFor="let list of durationTypeList; let i = index" [value]="i"
+    [selected]="action.frequencyType == i">
+    {{durationType[i] | translate}}
+    </option>
+    </select>
+    </div>
+    </div>
+    </div>
+    </div>
 
 
     <!--
