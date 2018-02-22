@@ -32,7 +32,6 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private language: string;
   private browserLang: string = "";
   // End
-  private cocText: string;
   private USER_TYPE: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -130,18 +129,6 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     console.log('Open language modal');
     jQuery("#language-selection").modal("show");
   };
-
-  displayCoC(){
-    console.log("Display COC");
-    this.af.database.object(Constants.APP_STATUS + "/coc/", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        if(snap.val().cocText){
-          this.cocText = snap.val().cocText;
-          jQuery("#coc-window").modal("show");
-        }
-      });
-  }
 
   changeLanguage(language: string){
     this.language = language;

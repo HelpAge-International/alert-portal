@@ -78,7 +78,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
   private showLoader: boolean;
   private localNetworkList: string[];
   private localNetworks: ModelNetwork[] = [];
-  private cocText: string;
 
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
@@ -392,18 +391,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
       jQuery("#language-selection").modal("show");
 
     };
-
-  displayCoC(){
-    console.log("Display COC");
-    this.af.database.object(Constants.APP_STATUS + "/coc/", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        if(snap.val().cocText){
-          this.cocText = snap.val().cocText;
-          jQuery("#coc-window").modal("show");
-        }
-      });
-  }
 
     changeLanguage(language: string) {
       this.language = language;
