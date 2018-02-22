@@ -1,5 +1,5 @@
 /*Sets the activation button to the same width as the deactivation button*/
 .btn-warning, .btn-danger, .btn-success {
   font-weight: normal;
-  width: 60%;
+  width: 50%;
 }
