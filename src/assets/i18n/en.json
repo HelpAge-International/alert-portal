@@ -899,6 +899,8 @@
       "ERROR_ADV_THRESHOLD":"Green value for advanced preparedness threshold can not be lower than or same as the amber value. Please select a different value",
       "DOC_SETTINGS":"Document Upload Settings",
       "RESPONSE_PLANS":"Response Plans Settings",
+      "COC":"Code of Conduct",
+      "TOC":"Terms and Conditions",
       "VULNERABLE_GROUPS":"Vulnerable groups",
       "ADD_NEW_GROUP":"Add a new group",
       "EDIT_GROUPS":"Edit groups",

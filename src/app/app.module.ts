@@ -348,11 +348,12 @@ import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-
 import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
 import { FieldOfficeService } from "./services/field-office.service";
 import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
-import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
-import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
-import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
-import {CookieLawModule} from "angular2-cookie-law";
-import { CodeOfConductComponent } from './code-of-conduct/code-of-conduct.component';
+import { LocalNetworkGlobalMapsComponent } from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
+import { LocalNetworkGlobalMapsListComponent } from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
+import { AgencyOverviewComponent } from "./agency-admin/agency-overview/agency-overview.component";
+import { CookieLawModule } from "angular2-cookie-law";
+import { CoCComponent } from './system-admin/system-settings/coc/coc.component';
+import { ToCComponent } from './system-admin/system-settings/toc/toc.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -708,7 +709,8 @@ const firebaseAuthConfig = {
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
     AgencyOverviewComponent,
-    CodeOfConductComponent
+    CoCComponent,
+    ToCComponent
   ],
   imports: [
     CookieLawModule,
