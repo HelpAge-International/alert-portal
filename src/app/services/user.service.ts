@@ -767,4 +767,8 @@ export class UserService {
         }
       })
   }
+
+  getSkill(skillId) {
+    return this.af.database.object(Constants.APP_STATUS + "/skill/" + skillId)
+  }
 }
