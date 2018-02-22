@@ -95,7 +95,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         .then((success) => {
           this.uid = success.uid;
 
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/cocAgreed", {preserveSnapshot: true})
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
             .takeUntil(this.ngUnsubscribe)
             .subscribe((snap) => {
                 if(snap.val()){
@@ -145,7 +145,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onAgreeCoC(){
     this.loaderInactive = false;
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/cocAgreed").set(true);
+    let data = {"latestCoCAgreed" : true};
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).set(data);
     this.checkLogins();
   }
 
