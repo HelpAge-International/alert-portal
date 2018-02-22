@@ -356,7 +356,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           }
         });
       });
-
     // Populate actions
   }
 

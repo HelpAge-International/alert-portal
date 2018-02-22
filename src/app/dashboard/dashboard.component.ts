@@ -157,7 +157,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.DashboardTypeUsed = DashboardType.default;
           }
           if (this.userType == UserType.PartnerUser) {
-            console.log("partner user")
+            //console.log("partner user")
             this.agencyId = agencyId;
             this.countryId = countryId;
             this.loadDataForPartnerUser(agencyId, countryId);
