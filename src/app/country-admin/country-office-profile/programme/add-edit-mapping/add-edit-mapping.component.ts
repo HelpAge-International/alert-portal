@@ -88,7 +88,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private isPresetValue: any;
 
   private when: any;
-  private toDate: any;
+  private  toDate: any;
 
   @Input() isLocalAgency: boolean;
 
@@ -195,7 +195,9 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme = new ProgrammeMappingModel();
         programme.id = programme.$key;
         this.programme.setData(programme);
-        this._convertTimestampToDate(programme.when);
+        console.log(this.programme)
+         this.setWhenDate(programme);
+         this.setToDate(programme)
       });
   }
 
@@ -206,7 +208,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme = new ProgrammeMappingModel();
         programme.id = programme.$key;
         this.programme.setData(programme);
-        this._convertTimestampToDate(programme.when);
+        this.setWhenDate(programme);
+        this.setToDate(programme)
+        // this._convertTimestampToDate(programme.when);
+        // this._convertTimestampToDate(programme.toDate)
       });
   }
 
@@ -249,8 +254,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
-              this.when = 0;
-              this.toDate = 0;
+              // this.when = 0;
+              // this.toDate = 0;
                 //this.when = this.programme.when;
               //this.toDate = this.programme.toDate;
 
@@ -321,13 +326,17 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   setWhenDate(programme: ProgrammeMappingModel) {
-    let whenDate =  moment(this.when).valueOf();
-    programme.when = whenDate;
+    // programme.when = whenDate;
+    let whenDate =  moment(this.when).format("DD/MM/YYYY");
+    //programme.when = whenDate;
+    this.when = whenDate;
+    //console.log(this.when)
   }
 
   setToDate(programme: ProgrammeMappingModel) {
-    let toDate =  moment(this.toDate).valueOf();
-    programme.toDate = toDate;
+    let toDate =  moment(this.toDate).format("DD/MM/YYYY");
+    this.toDate = toDate;
+   // programme.toDate = toDate;
   }
 
   deleteMapping() {
@@ -415,12 +424,18 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
 // #end
-  _convertTimestampToDate(timestamp: number) {
-    this.when = [];
+  _convertTimestampToDate(programme) {
+    let whenDate =  moment(this.when).valueOf();
+    console.log(whenDate)
+    programme.when = whenDate;
+  }
+
+  _convertToDate(timestamp: number) {
+    this.toDate = [];
 
     let date = moment(timestamp);
-    this.when['month'] = date.month() + 1;
-    this.when['year'] = date.year();
+    this.toDate['month'] = date.month() + 1;
+    this.toDate['year'] = date.year();
   }
 
   ngOnDestroy() {

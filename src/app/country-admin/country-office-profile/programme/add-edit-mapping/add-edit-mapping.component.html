@@ -142,13 +142,12 @@
         </div>
         <div class="row">
           <material-datepicker id="fromDate"
-                               placeholder="{{programme.when ? (programme.when | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
-                               dateFormat="DD-MM-YYYY"
-                               [(date)]="when"
+                               dateFormat="DD/MM/YYYY"
+                               [(ngModel)]="when"
                                (onSelect)="setWhenDate(programme)"></material-datepicker>
         </div>
       </div>
-
+      <p>{{when}}</p>
       <div class="col-sm-2">
         <div class="row">
           <h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO" | translate}}</h6>
@@ -156,15 +155,14 @@
         </div>
         <div class="row">
           <material-datepicker id="toDate"
-                               placeholder="{{programme.toDate ? (programme.toDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
-                               dateFormat="DD-MM-YYYY"
-                               [(date)]="toDate"
+                               dateFormat="DD/MM/YYYY"
+                               [(ngModel)]="toDate"
                                (onSelect)="setToDate(programme)"></material-datepicker>
         </div>
       </div>
     </div>
-
     <br>
+
     <div class="row Spaced-above">
       <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="!isLocalAgency" (click)="saveMapping()">
         {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SAVE_CHANGES" | translate}}
