@@ -905,8 +905,6 @@
       "PREPAREDNESS":"Preparedness",
       "ERROR_MIN_THRESHOLD":"Green value for minimum preparedness threshold can not be lower than or same as the amber value. Please select a different value",
       "ERROR_ADV_THRESHOLD":"Green value for advanced preparedness threshold can not be lower than or same as the amber value. Please select a different value",
-      "DOC_SETTINGS":"Document Upload Settings",
-      "RESPONSE_PLANS":"Response Plans Settings",
       "COC":"Code of Conduct",
       "TOC":"Terms and Conditions",
       "DOC_SETTINGS":"Document Upload",
@@ -916,7 +914,12 @@
       "EDIT_GROUPS":"Edit groups",
       "SUCCESS_ADD_GROUP":"New group added",
       "ERROR_NO_GROUP_NAME":"Please enter the group name to add a new group",
-      "ERROR_NO_EDIT_GROUP_NAME":"Please enter the group name"
+      "ERROR_NO_EDIT_GROUP_NAME":"Please enter the group name",
+      "SUCCESS_TOC_UPDATE":"Terms and Conditions updated successfully",
+      "SUCCESS_COC_UPDATE":"Code of Conduct updated successfully",
+      "ERROR_TOC_UPDATE":"Terms and Conditions cannot be empty",
+      "ERROR_COC_UPDATE":"Code of Conduct cannot be empty"
+
     }
   },
   "AGENCY_ADMIN":{

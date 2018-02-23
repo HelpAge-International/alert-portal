@@ -15,6 +15,9 @@ export class SystemSettingsCocComponent implements OnInit {
   private isEditing: boolean = false;
   private cocText: string = "";
   private uid: string;
+  private alertMessage: string = "";
+  private alertSuccess: boolean = true;
+  private alertShow: boolean = false;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -40,16 +43,39 @@ export class SystemSettingsCocComponent implements OnInit {
     });
   }
 
-  edit(event) {
+  edit() {
     this.isEditing = true;
   }
 
-  cancelEdit(event) {
+  cancelEdit() {
     this.isEditing = false;
   }
 
   saveEdited() {
-    this.isEditing = false;
-    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid +"/coc").set(this.cocText);
+    if(this.isValid()){
+      let cocObj = {"coc": this.cocText};
+      this.isEditing = false;
+      this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid).update(cocObj).then(_ =>{
+        this.alertMessage = "SYSTEM_ADMIN.SETTING.SUCCESS_COC_UPDATE";
+        this.alertShow = true;
+        this.alertSuccess = true;
+      }, error => {
+        console.log(error.message);
+      });
+    }else{
+      this.alertMessage = "SYSTEM_ADMIN.SETTING.ERROR_COC_UPDATE";
+      this.alertShow = true;
+      this.alertSuccess = false;
+    }
+  }
+
+  onAlertHidden(hidden: boolean) {
+    this.alertShow = !hidden;
+    this.alertSuccess = true;
+    this.alertMessage = "";
+  }
+
+  private isValid(){
+    return this.cocText != null && this.cocText.length != 0;
   }
 }

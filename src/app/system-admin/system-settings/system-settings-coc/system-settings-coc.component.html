@@ -1,6 +1,8 @@
 <app-system-admin-header></app-system-admin-header>
 <app-system-admin-menu></app-system-admin-menu>
 
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
 <div *ngIf="isSaved" class="Alert-success">{{successMessage | translate}}</div>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
@@ -26,17 +28,16 @@
 
     <div class="Sub-header-title__wrap">
       <h2>{{"SYSTEM_ADMIN.SETTING.COC_SETTING" | translate}}</h2>
-      <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="edit($event)">
+      <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="edit()">
         {{"UPDATE" | translate | uppercase}}
       </button>
       <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEdited()">{{"SAVE" | translate |
         uppercase}}
       </button>
-      <button class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEdit($event)">{{"GLOBAL.CANCEL" |
+      <button class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEdit()">{{"GLOBAL.CANCEL" |
         translate}}
       </button>
     </div>
-
 
     <div class="wrapper" align="left">
         <p class="coc-text" *ngIf="!isEditing">{{cocText}}</p>
