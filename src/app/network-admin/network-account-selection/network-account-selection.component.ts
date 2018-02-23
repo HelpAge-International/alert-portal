@@ -60,6 +60,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
       this.downloadNetworkAdminAccount();
       this.downloadAllNetworkCountryAdminAccounts();
 
+
       this.userSerivce.getUserType(this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(userType => {
@@ -74,6 +75,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
               .subscribe(agencyDetail => {
                 this.agencyDetail = agencyDetail;
                 console.log(this.agencyDetail)
+
               });
           }
         });
@@ -103,6 +105,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((network) => {
         this.filterAndInsertToList(network);
+        console.log("NETWORK:" + network);
       });
   }
 
@@ -151,6 +154,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe(office => {
                 this.networkCountries.push(office);
+                console.log("OFFICE: "+ office);
               })
           })
         })

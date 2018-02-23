@@ -578,7 +578,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     this.removeFilterLockLevel();
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
-
+    console.log("TEST: \n" + this.dueDate + "\n" + this.filterLockDueDate);
     // Save/update the action
     if (this.action.validate(this.showDueDate)) {
       this.showLoader = true

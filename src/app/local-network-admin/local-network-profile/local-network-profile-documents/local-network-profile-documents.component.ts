@@ -127,7 +127,8 @@ export class LocalNetworkProfileDocumentsComponent implements OnInit, OnDestroy 
               .takeUntil(this.ngUnsubscribe)
               .subscribe(network => {
                 this.countries[0] = network;
-                console.log(network)
+                console.log("LOCAL_NETWORK: "+this.countries);
+                console.log(network);
                 // if (this.agencyId && this.countryId && this.isViewing) {
                 //
                 //   this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
@@ -236,7 +237,8 @@ export class LocalNetworkProfileDocumentsComponent implements OnInit, OnDestroy 
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(network => {
                     this.countries[0] = network;
-                    console.log(network)
+                    console.log("LOCAL_NETWORK: "+this.countries);
+                    console.log(network);
 
                       this.af.database.list(Constants.APP_STATUS + '/document/' + this.networkId, this.docFilter)
                         .takeUntil(this.ngUnsubscribe)
@@ -282,6 +284,7 @@ export class LocalNetworkProfileDocumentsComponent implements OnInit, OnDestroy 
           }
         });
       });
+    console.log(this.countries);
   }
 
   ngOnDestroy() {
