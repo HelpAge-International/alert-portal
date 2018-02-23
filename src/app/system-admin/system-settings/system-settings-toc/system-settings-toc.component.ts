@@ -7,9 +7,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SystemSettingsTocComponent implements OnInit {
 
+  private isEditing: boolean = false;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  edit(event) {
+    this.isEditing = true;
+  }
+
+  cancelEdit(event) {
+    //Cancel
+    this.isEditing = false;
+  }
+
+  saveEdited() {
+    //Save
   }
 
 }

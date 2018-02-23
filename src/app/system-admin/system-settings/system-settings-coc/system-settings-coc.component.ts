@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {Constants} from "../../../utils/Constants";
 
 @Component({
   selector: 'app-system-settings-coc',
@@ -7,9 +8,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SystemSettingsCocComponent implements OnInit {
 
+  private isEditing: boolean = false;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  edit(event) {
+    this.isEditing = true;
+  }
+
+  cancelEdit(event) {
+    //Cancel
+    this.isEditing = false;
+  }
+
+  saveEdited() {
+    //Save
   }
 
 }
