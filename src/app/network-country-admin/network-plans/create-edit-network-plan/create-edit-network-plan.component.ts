@@ -935,7 +935,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private saveToFirebase(newResponsePlan: ResponsePlan) {
-    let id = this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undeifned" ? this.networkId : this.networkCountryId;
+    let id = (this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined") ? this.networkId : this.networkCountryId;
     let numOfSectionsCompleted: number = 0;
     this.sectionsCompleted.forEach((v,) => {
       if (v) {
@@ -967,7 +967,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         //Make sure we aren't creating new node on autosave
         if (this.idOfResponsePlanToEdit)
         {
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkId + "/"+ this.idOfResponsePlanToEdit;
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + "/"+ this.idOfResponsePlanToEdit;
           this.af.database.object(responsePlansPath)
             .update(newResponsePlan)
             .then(()=> {
@@ -978,7 +978,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
         } else {
 
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.networkId;
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id
           this.af.database.list(responsePlansPath)
             .push(newResponsePlan)
             .then(plan => {
