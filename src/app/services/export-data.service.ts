@@ -1,17 +1,16 @@
 import {Injectable} from '@angular/core';
 import {Constants} from "../utils/Constants";
 import * as XLSX from "xlsx";
+import {WorkBook} from "xlsx";
 import * as moment from "moment";
 import {AngularFire} from "angularfire2";
 import {CommonService} from "./common.service";
-import {WorkBook} from "xlsx";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "./user.service";
-import {Countries, GeoLocation, SkillType, StockType} from "../utils/Enums";
+import {GeoLocation, SkillType, StockType} from "../utils/Enums";
 import {PartnerOrganisationService} from "./partner-organisation.service";
 import {Observable} from "rxjs/Rx";
-import {takeUntil} from "rxjs/operator/takeUntil";
 import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
 
@@ -29,7 +28,7 @@ export class ExportDataService {
               private commonService: CommonService) {
   }
 
-  public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap:Map<string,string>) {
+  public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>) {
     //TODO MAKE SURE TOTAL NUMBER FOR SHEETS IS RIGHT!! (16 now)
     this.total = 14
     this.counter = 0
@@ -46,13 +45,14 @@ export class ExportDataService {
     this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryId)
       .first()
       .subscribe(countryIndicators => {
-        let ccIndicators = countryIndicators.map(item => {
+        let allIndicators = []
+        //first fetch country context indicators
+        let indicators = countryIndicators.map(item => {
           let obj = {}
           obj["Hazard"] = "Country Context"
           obj["Indicator Name"] = item["name"]
-          // obj["Name of Source"] = item[""]
-          // obj["Link to source"] = item[""]
-          obj["Current status"] = item["triggerSelected"]
+          obj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
+          obj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
           obj["Green trigger name"] = item["trigger"][0]["triggerValue"]
           obj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
           obj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
@@ -63,7 +63,42 @@ export class ExportDataService {
           obj["Location"] = this.getIndicatorLocation(item, areaContent)
           return obj
         })
-        console.log(ccIndicators)
+        allIndicators = allIndicators.concat(indicators)
+
+        //then fetch all other indicators
+        this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
+          .first()
+          .subscribe(hazards => {
+            let hazardIndicatorCounter = 0
+            hazards.forEach(hazard => {
+              this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazard.$key)
+                .first()
+                .subscribe(hazardIndicatorList => {
+                  let hazardIndicators = hazardIndicatorList.map(item => {
+                    let indicatorObj = {}
+                    indicatorObj["Hazard"] = item.hazardScenario.hazardScenario
+                    indicatorObj["Indicator Name"] = item["name"]
+                    indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
+                    indicatorObj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
+                    indicatorObj["Green trigger name"] = item["trigger"][0]["triggerValue"]
+                    indicatorObj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
+                    indicatorObj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
+                    indicatorObj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
+                    indicatorObj["Red trigger name"] = item["trigger"][2]["triggerValue"]
+                    indicatorObj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
+                    indicatorObj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
+                    indicatorObj["Location"] = this.getIndicatorLocation(item, areaContent)
+                    return indicatorObj
+                  })
+                  allIndicators = allIndicators.concat(hazardIndicators)
+                  hazardIndicatorCounter++
+
+                  if (hazards.length === hazardIndicatorCounter) {
+                    console.log(allIndicators)
+                  }
+                })
+            })
+          })
       })
 
     //fetch response plan data
@@ -703,4 +738,9 @@ export class ExportDataService {
     return location
   }
 
+  private getIndicatorSourceAndLink(indicator) {
+    return Object.keys(indicator.source).map(key => {
+      return indicator.source[key]["link"] ? indicator.source[key]["name"] + " (" + indicator.source[key]["link"] + ")" : indicator.source[key]["name"]
+    })
+  }
 }
