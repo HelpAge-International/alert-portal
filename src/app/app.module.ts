@@ -65,6 +65,7 @@ import {SystemSettingsResponsePlansComponent} from './system-admin/system-settin
 import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/system-settings-documents/system-settings-documents.component';
 import {NewAgencyPasswordComponent} from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
 import {NewAgencyDetailsComponent} from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
+import {SplitOnCapsPipe} from './utils/pipes/split-by-caps.pipe';
 import {KeysPipe} from './utils/pipes/keys.pipe';
 import {EnumKeysPipe} from './utils/pipes/enum-keys.pipe';
 import {KeyValuesPipe} from './utils/pipes/key-values.pipe';
@@ -455,6 +456,7 @@ const firebaseAuthConfig = {
     SystemSettingsDocumentsComponent,
     NewAgencyPasswordComponent,
     NewAgencyDetailsComponent,
+    SplitOnCapsPipe,
     KeysPipe,
     EnumKeysPipe,
     EnumKeyValuesPipe,

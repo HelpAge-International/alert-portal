@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, Params} from "@angular/router";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {AgencyService} from "../../services/agency-service.service";
@@ -38,6 +38,8 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   private networkCountryData = [];
   private localNetworkData = []
 
+  private isLocalAgency = false;
+
   constructor(private pageControl: PageControlService, private route: ActivatedRoute,
               private af: AngularFire, private router: Router, private userService: UserService,
               private networkService: NetworkService,
@@ -46,14 +48,32 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
-      this.UserType = userType;
-      this.countryId = countryId;
-      this.agencyID = agencyId;
-      this.systemAdminID = systemId;
-      this._loadData();
-    });
+    this.route.url.subscribe(url => {
+      if(url[0].path == 'local-agency'){
+        this.isLocalAgency = true;
+
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          this.countryId = countryId;
+          this.agencyID = agencyId;
+          this.systemAdminID = systemId;
+          this._loadDataLocalAgency();
+        });
+      }else{
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.UserType = userType;
+          this.countryId = countryId;
+          this.agencyID = agencyId;
+          this.systemAdminID = systemId;
+          this._loadData();
+        });
+      }
+      
+    })
+
+    
   }
 
   ngOnDestroy() {
@@ -73,9 +93,22 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getNetworkAndNetworkCountries() {
+  _loadDataLocalAgency() {
+    this.userService.getAgencyDetail(this.agencyID)
+      .first()
+      .subscribe(agency => {
+        console.log(agency)
+        this.countryToShow = agency;
+        this.countryKey = agency.country;
+        this.getCountryOfficesWithSameLocationsInOtherAgencies();
+        this.getNetworkAndNetworkCountries()
+        this.getLocalNetworks()
+      });
+  }
 
-    this.networkService.mapNetworkOfficesWithSameLocationsInOtherNetworks(this.countryToShow.location)
+  private getNetworkAndNetworkCountries() {
+    let country = this.isLocalAgency ? this.countryToShow.country : this.countryToShow.location
+    this.networkService.mapNetworkOfficesWithSameLocationsInOtherNetworks(country)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
         this.networkCountryData = []
@@ -95,15 +128,17 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   private getLocalNetworks() {
-    this.networkService.getLocalNetworksWithSameLocationsInOtherNetworks(this.countryToShow.location)
+    let country = this.isLocalAgency ? this.countryToShow.country : this.countryToShow.location
+    this.networkService.getLocalNetworksWithSameLocationsInOtherNetworks(country)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(localNetworks => {
+        console.log(localNetworks)
         this.localNetworkData = localNetworks
         localNetworks.forEach(localNetwork =>{
           this.globalNetworks[localNetwork.networkId] = localNetwork
         })
       })
-  }
+  } 
 
   // Getting all country offices with the same location in other agencies
   private getCountryOfficesWithSameLocationsInOtherAgencies() {
@@ -123,7 +158,12 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
             temp["agencyId"] = agency.$key;
             return temp;
           });
-          countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location && countryItem.isActive);
+          if(this.isLocalAgency){
+            countries = countries.filter(countryItem => countryItem.location == this.countryToShow.country && countryItem.isActive);
+          }else{
+            countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location && countryItem.isActive);
+          }
+          
 
           if (countries.length > 0) {
             // An agency should only have one country office per country

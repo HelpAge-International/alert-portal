@@ -123,6 +123,7 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe( network => {
                     this.countries[0] = network;
+                    console.log(this.countries, this.countries[0].location, this.COUNTRIES[this.countries[0].location]);
                     console.log(network)
                     // if (this.agencyId && this.countryId && this.isViewing) {
                     //

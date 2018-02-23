@@ -993,6 +993,7 @@ export class NetworkService {
   }
 
   getLocalNetworksWithSameLocationsInOtherNetworks(location: number) {
+
     return this.af.database.object(Constants.APP_STATUS + "/network")
       .map(allNetworksObj => {
         let localNetworks = []
@@ -1004,6 +1005,7 @@ export class NetworkService {
           }).filter(network => network.countryCode == location && network.isActive)
           localNetworks = networkObjs
         }
+        console.log(localNetworks)
         return localNetworks
       })
   }

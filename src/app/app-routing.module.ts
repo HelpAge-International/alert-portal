@@ -402,6 +402,7 @@ const routes: Routes = [
   },
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
+  {path: 'local-agency/country-agencies', component: CountryAgenciesComponent},
   {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
   {
     path: 'country-admin/country-office-profile/mapping-programme-add-edit',

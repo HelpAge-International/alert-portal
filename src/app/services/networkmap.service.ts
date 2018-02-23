@@ -258,7 +258,16 @@ export class NetworkMapService {
                       raised.affectedAreas.push({country: obj.country, areas: obj.areas});
 
                     }
-                    networkMapHazard.instancesOfHazard.push(raised);
+                    let alreadyAdded = false;
+                    for (let x of networkMapHazard.instancesOfHazard) {
+                      if (raised.population == x.population && raised.agencyName == x.agencyName
+                          && ((x.affectedAreas == null && raised.affectedAreas == null) || (x.affectedAreas.length == raised.affectedAreas.length))) {
+                        alreadyAdded = true;
+                      }
+                    }
+                    if (!alreadyAdded) {
+                      networkMapHazard.instancesOfHazard.push(raised);
+                    }
                     this.placeMarker(country.location, networkMapHazard.hazardScenario);
                   });
                 } else {

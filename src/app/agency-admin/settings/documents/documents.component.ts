@@ -77,10 +77,11 @@ export class DocumentsComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(id => {
           this.agencyId = id.$value;
-          this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
+          this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(_ => {
               this.countries = _;
+              console.log(this.countries);
               Object.keys(this.countries).map(country => {
                 let key = this.countries[country].$key;
                 this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
@@ -224,6 +225,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
     // the filtering based on User is done client side, because FireBase supports orderBy only on one parameter
 
     this.countriesFilterSubject.next(Countries[this.countrySelected]);
+    console.log(this.countrySelected);
   }
 
   // Feel free to extend to other fields for filtering if needed
