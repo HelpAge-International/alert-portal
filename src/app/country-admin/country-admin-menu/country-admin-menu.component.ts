@@ -86,8 +86,39 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .first()
       .subscribe(content => {
-        //start export data
-        this.dataService.exportOfficeData(this.agencyId, this.countryId, content)
+        //get all staff for this country
+        this.userService.getStaffList(this.countryId)
+          .first()
+          .subscribe(staffs => {
+            let staffMap = new Map<string, string>()
+            //get country admin first
+            this.userService.getUser(this.uid)
+              .first()
+              .subscribe(admin => {
+                staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
+
+                if (staffs.length > 0) {
+                  //get rest staffs for country
+                  staffs.forEach(staff => {
+                    this.userService.getUser(staff.id)
+                      .first()
+                      .subscribe(user => {
+                        staffMap.set(user.id, user.firstName + " " + user.lastName)
+
+                        if (staffMap.size === staffs.length + 1) {
+                          //start export data
+                          this.dataService.exportOfficeData(this.agencyId, this.countryId, content, staffMap)
+                        }
+                      })
+                  })
+                } else {
+                  //start export data
+                  this.dataService.exportOfficeData(this.agencyId, this.countryId, content, staffMap)
+                }
+              })
+
+          })
+
       })
   }
 }
