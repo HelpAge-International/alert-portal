@@ -13,14 +13,14 @@
     <ul class="section-nav">
       <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings']">{{"SYSTEM_ADMIN.SETTING.PREPAREDNESS"
         | translate}}</a></li>
-      <li class="section-nav__item active"><a
+      <li class="section-nav__item "><a
         [routerLink]="['/system-admin/system-settings/system-settings-documents']">{{"SYSTEM_ADMIN.SETTING.DOC_SETTINGS"
         | translate}}</a></li>
       <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">{{"SYSTEM_ADMIN.SETTING.RESPONSE_PLANS"
         | translate}}</a></li>
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-toc']">{{"TERMS_AND_CONDITIONS"
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-coc']">{{"CODE_OF_CONDUCT"
         | translate}}</a></li>
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-coc']">{{"CODE_OF_CONDUCT"
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-toc']">{{"TERMS_AND_CONDITIONS"
         | translate}}</a></li>
     </ul>
 
@@ -38,9 +38,9 @@
     </div>
 
 
-    <div class="wrapper" align="center">
-        <p class="coc-text" *ngIf="!isEditing">Text here before edit!</p>
-        <textarea *ngIf="isEditing" name="resize" class="resize" rows="10" cols="50"></textarea>
+    <div class="wrapper" align="left">
+        <p class="coc-text" *ngIf="!isEditing">{{cocText}}</p>
+        <textarea *ngIf="isEditing" name="resize" class="resize" rows="10" cols="50" [(ngModel)]="cocText"></textarea>
     </div>
 
   </div>
