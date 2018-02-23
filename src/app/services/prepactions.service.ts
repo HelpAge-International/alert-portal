@@ -1004,6 +1004,9 @@ export class PrepActionService {
     if (!ran) {
       n.notes.push(note);
     }
+    this.actions.forEach((action) => { //Sort the array to get latest notes at the top
+      action.notes.sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime());
+    });
   }
 
   /**

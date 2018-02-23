@@ -1,7 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router, NavigationEnd, NavigationStart} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {LocalStorageService} from "angular-2-local-storage";
+
 
 @Component({
   selector: 'app-local-network-profile-menu',
@@ -25,8 +26,40 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private storageService: LocalStorageService, private router: Router) {
     this.initMenuActive();
-  }
 
+    this.router.events.subscribe((event) => {
+      //Update highlight on sub menu when navigating from dropdown menu
+      if(event instanceof NavigationEnd) {
+        if (event.url.includes("programme")) {
+          this.handleMenuActive("programme");
+        }
+        else if (event.url.includes("office-capacity")) {
+          this.handleMenuActive("officeCapacity");
+        }
+        else if (event.url.includes("partners")) {
+          this.handleMenuActive("partners");
+        }
+        else if (event.url.includes("equipment")) {
+          this.handleMenuActive("equipment");
+        }
+        else if (event.url.includes("coordination")) {
+          this.handleMenuActive("coordination");
+        }
+        else if (event.url.includes("stock-capacity")) {
+          this.handleMenuActive("stockCapacity");
+        }
+        else if (event.url.includes("documents")) {
+          this.handleMenuActive("documents");
+        }
+        else if (event.url.includes("contacts")) {
+          this.handleMenuActive("contacts");
+        }
+        else {
+          throw new Error("Local-Network-Profile-Menu: Invalid Url Arg");
+        }
+      }
+    });
+  }
 
   ngOnInit() {
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
@@ -44,6 +77,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         this.agencyId = params["agencyId"];
       }
       if (params["officeTarget"]) {
+        console.log(params["officeTarget"]);
         this.officeTarget = params["officeTarget"];
         this.handleMenuActive(this.officeTarget);
       }
@@ -59,7 +93,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
       if (params["agencyOverview"]) {
         this.agencyOverview = params["agencyOverview"];
       }
-    })
+    });
   }
 
   private initMenuActive() {

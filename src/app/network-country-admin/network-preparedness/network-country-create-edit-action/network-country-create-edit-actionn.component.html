@@ -164,7 +164,7 @@
                                dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)" [rangeStart]="getNowDate()"
                                [(date)]="dueDate"></material-datepicker>
         </div>
-        <div [hidden]="(dueDate != undefined || filterLockDueDate) || !showDueDate" class="alert alert-danger">
+        <div [hidden]="(action.dueDate != undefined || filterLockDueDate) || !showDueDate" class="alert alert-danger">
           {{"PREPAREDNESS.NO_DUE_DATE" | translate}}
         </div>
       </div>
