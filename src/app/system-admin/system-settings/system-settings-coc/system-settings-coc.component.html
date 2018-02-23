@@ -11,18 +11,36 @@
     </div>
 
     <ul class="section-nav">
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings']">{{"SYSTEM_ADMIN.SETTING.PREPAREDNESS" | translate}}</a></li>
-      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-documents']">{{"SYSTEM_ADMIN.SETTING.DOC_SETTINGS" | translate}}</a></li>
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">{{"SYSTEM_ADMIN.SETTING.RESPONSE_PLANS" | translate}}</a></li>
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-toc']">{{"TERMS_AND_CONDITIONS" | translate}}</a></li>
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-coc']">{{"CODE_OF_CONDUCT" | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings']">{{"SYSTEM_ADMIN.SETTING.PREPAREDNESS"
+        | translate}}</a></li>
+      <li class="section-nav__item active"><a
+        [routerLink]="['/system-admin/system-settings/system-settings-documents']">{{"SYSTEM_ADMIN.SETTING.DOC_SETTINGS"
+        | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">{{"SYSTEM_ADMIN.SETTING.RESPONSE_PLANS"
+        | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-toc']">{{"TERMS_AND_CONDITIONS"
+        | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-coc']">{{"CODE_OF_CONDUCT"
+        | translate}}</a></li>
     </ul>
 
-    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.COC_SETTING" | translate}}</h3>
-    <hr>
+    <div class="Sub-header-title__wrap">
+      <h2>{{"SYSTEM_ADMIN.SETTING.COC_SETTING" | translate}}</h2>
+      <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="edit($event)">
+        {{"UPDATE" | translate | uppercase}}
+      </button>
+      <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEdited()">{{"SAVE" | translate |
+        uppercase}}
+      </button>
+      <button class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEdit($event)">{{"GLOBAL.CANCEL" |
+        translate}}
+      </button>
+    </div>
 
-    <div class="Form-submit__wrapper">
-      <div class="btn btn-primary" (click)="saveSetting()">{{"SYSTEM_ADMIN.SETTING.SAVE" | translate | uppercase}}</div>
+
+    <div class="wrapper" align="center">
+        <p class="coc-text" *ngIf="!isEditing">Text here before edit!</p>
+        <textarea *ngIf="isEditing" name="resize" class="resize" rows="10" cols="50"></textarea>
     </div>
 
   </div>

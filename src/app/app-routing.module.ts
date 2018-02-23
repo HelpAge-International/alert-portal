@@ -203,7 +203,8 @@ import { AddIndicatorLocalNetworkComponent } from './local-network-admin/local-n
 import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
 import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
 import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
-
+import { SystemSettingsCocComponent } from "./system-admin/system-settings/system-settings-coc/system-settings-coc.component";
+import { SystemSettingsTocComponent } from "./system-admin/system-settings/system-settings-toc/system-settings-toc.component";
 
 /* Local Agency */
 
@@ -261,8 +262,6 @@ import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/loca
 import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
-import {SystemSettingsCocComponent} from "./system-admin/system-settings/system-settings-coc/system-settings-coc.component";
-import {SystemSettingsTocComponent} from "./system-admin/system-settings/system-settings-toc/system-settings-toc.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -301,8 +300,8 @@ const routes: Routes = [
   {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
   {path: 'system-admin/system-settings', component: SystemSettingsComponent},
   {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
-  {path: 'system-admin/system-settings/system-settings-coc', component: SystemSettingsCocComponent},
   {path: 'system-admin/system-settings/system-settings-toc', component: SystemSettingsTocComponent},
+  {path: 'system-admin/system-settings/system-settings-coc', component: SystemSettingsCocComponent},
   {
     path: 'system-admin/system-settings/system-settings-response-plans',
     component: SystemSettingsResponsePlansComponent
