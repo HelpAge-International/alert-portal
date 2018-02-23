@@ -142,9 +142,8 @@
         </div>
         <div class="row">
           <material-datepicker id="fromDate"
-                               placeholder="{{programme.when ? (programme.when | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
                                dateFormat="DD-MM-YYYY"
-                               [(date)]="when"
+                               [(ngModel)]="programme.when"
                                (onSelect)="setWhenDate(programme)"></material-datepicker>
         </div>
       </div>
@@ -156,10 +155,9 @@
         </div>
         <div class="row">
           <material-datepicker id="toDate"
-                               placeholder="{{programme.toDate ? (programme.toDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
                                dateFormat="DD-MM-YYYY"
-                               [(date)]="toDate"
-                               (onSelect)="setToDate(programme)"></material-datepicker>
+                               [(ngModel)]="programme.toDate"
+                               (onSelect)="setToDate(programme)" ></material-datepicker>
         </div>
       </div>
     </div>

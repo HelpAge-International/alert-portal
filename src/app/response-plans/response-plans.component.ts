@@ -976,6 +976,30 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.partnerApprovalIdMap.set(id, hasChecked)
   }
 
+  confirmResendNotification(model){
+    jQuery("#"+model).modal("show");
+  }
+
+  resendCountryNotification(user){
+    let notification = new MessageModel();
+    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+    notification.time = new Date().getTime();
+    this.isLocalAgency ?
+      this.notificationService.saveUserNotificationLocalAgency(this.directorIdMap.get(user), notification, UserType.LocalAgencyDirector, this.agencyId)
+      :
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId)
+    this.closeModal('#confirm-resend');
+  }
+
+  resendNotification(user){
+    let notification = new MessageModel();
+    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+    notification.time = new Date().getTime();
+    this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId)
+  }
+
   submitPlanToApproval() {
     let approvalData = {};
     console.log(this.getApprovalStatus("countryDirector"))
@@ -1000,7 +1024,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.notificationService.saveUserNotificationLocalAgency(this.directorIdMap.get("countryDirector"), notification, UserType.LocalAgencyDirector, this.agencyId)
           :
           this.notificationService.saveUserNotification(this.directorIdMap.get("countryDirector"), notification, UserType.CountryDirector, this.agencyId, this.countryId)
-
       }
     }
     else {

@@ -20,6 +20,8 @@ import {AgencyService} from "../services/agency-service.service";
 import {SettingsService} from "../services/settings.service";
 import {NetworkService} from "../services/network.service";
 import {CommonUtils} from "../utils/CommonUtils";
+import {CommonService} from "../services/common.service";
+import {OperationAreaModel} from "../model/operation-area.model";
 
 declare var jQuery: any;
 
@@ -96,9 +98,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private alertImages = Constants.ALERT_IMAGES;
   private logContent: any[] = [];
   private isIndicatorCountryUpdate: any[] = [];
-
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
+  private AllSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -122,6 +124,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private userAgencyId: string;
   private userCountryId: string;
   private withinNetwork: boolean;
+  private countryLevelsValues: any;
+
+  private subnationalName: string;
+  private countryName: string;
+  private level1: string;
+  private level2: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -131,9 +139,10 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private userService: UserService,
               private agencyService: AgencyService,
-              private settingService:SettingsService,
-              private networkService:NetworkService,
-              private windowService: WindowRefService) {
+              private settingService: SettingsService,
+              private networkService: NetworkService,
+              private windowService: WindowRefService,
+              private _commonService: CommonService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -260,38 +269,56 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   public triggerScrollTo() {
 
     if (this.hazard == "countryContext") {
-      let indicatorIndexCC = this.indicatorsCC.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      let indicatorID = "#indicators-to-hazards_CC"+"_"+indicatorIndexCC;
+      let indicatorIndexCC = this.indicatorsCC.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorID = "#indicators-to-hazards_CC" + "_" + indicatorIndexCC;
 
       jQuery("#collapseOne").collapse('show');
 
-      this.changeIndicatorState(true,"countryContext", indicatorIndexCC);
+      this.changeIndicatorState(true, "countryContext", indicatorIndexCC);
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
-    } else if (this.hazard == "-1"){
-      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
-      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+    } else if (this.hazard == "-1") {
+      let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
 
-      jQuery("#collapse"+this.activeHazards[hazardIndex].otherName).collapse('show');
+      jQuery("#collapse" + this.activeHazards[hazardIndex].otherName).collapse('show');
 
-      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex)
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
-      }, 2000)
-    }else {
-      let hazardIndex = this.activeHazards.findIndex((hazard)=> hazard.hazardScenario == this.hazard)
-      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator)=> indicator.$key == this.updateIndicatorId)
-      let indicatorID = "#indicators-to-hazards_"+hazardIndex+"_"+indicatorIndex
+      }, 2000);
+    } else {
+      let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
 
-      jQuery("#collapse"+this.hazard).collapse('show');
+      jQuery("#collapse" + this.hazard).collapse('show');
 
-      this.changeIndicatorState(true,this.activeHazards[hazardIndex].$key, indicatorIndex)
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
     }
+  }
+
+  openSeasonalModal(key) {
+    this._getAllSeasons();
+    jQuery("#" + key).modal("show");
+  }
+
+  _getAllSeasons() {
+    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((AllSeasons: any) => {
+          this.AllSeasons = AllSeasons;
+          res(true);
+        });
+    });
+    return promise;
   }
 
   private getCountryLocation() {
@@ -304,6 +331,36 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         });
     });
     return promise;
+  }
+
+  showSubNationalAreas(areas) {
+    for (let area in areas) {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .subscribe(content => {
+          this.countryLevelsValues = content;
+          // console.log(this.getLocationName(areas[area]));
+          this.setLocationName(areas[area]);
+          err => console.log(err);
+        });
+    }
+    jQuery("#show-subnational").modal("show");
+  }
+
+  setLocationName(location) {
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country) {
+      this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
+    } else if ((location.level1 && location.level1 != -1) && location.country) {
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1;
+    } else {
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName;
+    }
+    console.log(this.countryName + ", " + this.level2 + ", " + this.level1)
   }
 
   _getIndicatorFutureTimestamp(indicator) {
@@ -346,7 +403,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           indicator.logs = this._sortLogsByDate(logs);
         });
       });
-
       this.indicatorsCC = indicators;
     });
   }
@@ -1307,8 +1363,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
-    console.log("IndicatorKey: "+ indicatorKey)
-    console.log("HazardKey: "+ hazardID)
+    console.log("IndicatorKey: " + indicatorKey)
+    console.log("HazardKey: " + hazardID)
 
     var key = hazardID + '_' + indicatorKey;
     if (state) {
@@ -1420,7 +1476,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.tmpLogData = [];
   }
 
-  changeHazard(hazardId){
+  changeHazard(hazardId) {
     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
       .update({editingHazard: true});
     console.log(hazardId, 'in risk monitoring');

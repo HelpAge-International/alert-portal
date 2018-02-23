@@ -152,6 +152,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   getIndicators(hazardID: string) {
     return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardID);
   }
+
   setEdit() {
 
     this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + "/editingHazard").set(null)
@@ -165,48 +166,45 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     });
 
 
-
-          this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + "/editingHazard")
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(isEdit => {
-              this.editHazard = isEdit.$value;
-              console.log(this.editHazard, 'howdy neighbour');
-              if (this.editHazard){
-                this.count = 2;
-              }
-            });
-
-          // get the hazard scenario
-          this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/hazardScenario')
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(getHazard => {
-              this.editGetScenario = getHazard.$value;
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + "/editingHazard")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(isEdit => {
+        this.editHazard = isEdit.$value;
+        console.log(this.editHazard, 'howdy neighbour');
+        if (this.editHazard) {
+          this.count = 2;
+        }
       });
 
-                // get the season key
-                this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/seasons', {preserveSnapshot: true})
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(getSeasons => {
-                    getSeasons.forEach(getSeasons =>{
+    // get the hazard scenario
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/hazardScenario')
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getHazard => {
+        this.editGetScenario = getHazard.$value;
+      });
 
-                      console.log(getSeasons,'get seasons');
-                      this.getEditSeasons.push(toInteger(getSeasons.key));
-                      })
-                  });
+    // get the season key
+    this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId + '/seasons', {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getSeasons => {
+        getSeasons.forEach(getSeasons => {
 
-                          //get all seasons
-                          this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
-                            .takeUntil(this.ngUnsubscribe)
-                            .subscribe(AllSeasons => {
-                             this.AllSeasons = AllSeasons;
+          console.log(getSeasons, 'get seasons');
+          this.getEditSeasons.push(toInteger(getSeasons.key));
+        })
+      });
 
-                            });
+    //get all seasons
+    this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(AllSeasons => {
+        this.AllSeasons = AllSeasons;
 
-
+      });
 
   }
 
-   _getTopResults() {
+  _getTopResults() {
     this.informHandler.getTopResultsCC(this.locationID, 3, (list) => {
       this.showInformUnavailable = (list.length == 0);
       this.hazardScenariosListTop = list;
@@ -314,7 +312,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    if (this.editHazard){
+    if (this.editHazard) {
       this.router.navigate(['/risk-monitoring/']);
     } else {
       this.count = 1;
@@ -376,18 +374,19 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     let dbPathChangeSeasonal = this.af.database.object(Constants.APP_STATUS + "/hazard/" + this.countryID + "/" + this.hazardId);
     console.log(this.editSeasonalHazard, 'edit season hazard');
     // Filter before doing something in FireBase
-    if (this.radioValue){
+    if (this.radioValue) {
       dbPath.remove();
 
       dbPathChangeSeasonal.update({
         isSeasonal: false
       })
-    } else if (this.getEditSeasons.length == 0){
+    } else if (this.getEditSeasons.length == 0) {
       dbPath.set(this.getEditSeasons)
     } else {
       dbPath.update(updateKeys)
       dbPathChangeSeasonal.update({
-        isSeasonal: true})
+        isSeasonal: true
+      })
     }
     // After everything is done route back ..
     this.router.navigate(['/risk-monitoring/']);
@@ -457,24 +456,24 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
      * so i have left them as they are in case of other checks ...
      * YES = false and NO = true
      */
-      this.hazardData.seasons = [];
-      this.addHazardSeason = event.target.value;
+    this.hazardData.seasons = [];
+    this.addHazardSeason = event.target.value;
 
 
     if (this.addHazardSeason == 'true') {
-        this.hazardData.isSeasonal = false;
-        this.selectHazard = false;
-        this.season = false;
-        this.radioValue = true;
-      }
-      else {
+      this.hazardData.isSeasonal = false;
+      this.selectHazard = false;
+      this.season = false;
+      this.radioValue = true;
+    }
+    else {
 
 
-        this.hazardData.isSeasonal = true;
-        this.selectHazard = true;
-        this.season = false;
-        this.radioValue = false;
-      }
+      this.hazardData.isSeasonal = true;
+      this.selectHazard = true;
+      this.season = false;
+      this.radioValue = false;
+    }
 
     // #end
 
@@ -499,7 +498,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
     else {
       this.season = true;
     }
-  console.log(this.getEditSeasons, 'get edit seasons');
+    console.log(this.getEditSeasons, 'get edit seasons');
     this.closeModal();
   }
 

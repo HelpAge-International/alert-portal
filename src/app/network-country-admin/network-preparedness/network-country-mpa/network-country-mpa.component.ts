@@ -44,6 +44,7 @@ import {ModelAgency} from "../../../model/agency.model";
 import {ModelNetwork} from "../../../model/network.model";
 import {MandatedListModel} from "../../../agency-admin/agency-mpa/agency-mpa.component";
 import {Observable} from "rxjs/Observable";
+import {ModelStaff} from "../../../model/staff.model";
 
 declare var jQuery: any;
 
@@ -107,6 +108,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private ACTION_TYPE = Constants.ACTION_TYPE;
   private ASSIGNED_TOO = [];
   private CURRENT_USERS: Map<string, PreparednessUser> = new Map<string, PreparednessUser>();
+  private STAFF: Map<string, ModelStaff> = new Map<string, ModelStaff>();
   private currentlyAssignedToo: PreparednessUser;
   private actionLevelEnum = ActionLevel;
 
@@ -348,7 +350,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.initAgenciesDetails(networkMap)
         }
       })
-    this.initStaff(this.agencyId, this.countryId);
+    this.initStaff(this.uid, this.agencyId, this.countryId);
     PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
       this.permissionsAreEnabled = isEnabled;
     });
@@ -385,7 +387,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.initAgenciesDetailsForLocal(networkIds)
         }
       })
-    this.initStaff(this.agencyId, this.countryId);
+    this.initStaff(this.uid, this.agencyId, this.countryId);
     PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
       this.permissionsAreEnabled = isEnabled;
     });
@@ -593,12 +595,19 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       });
   }
 
-  private initStaff(agencyId, countryId) {
+  private initStaff(uid, agencyId, countryId) {
     this.initCountryAdmin(agencyId, countryId);
     this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
+          this.STAFF.set(agencyId, snapshot.val());
+          console.log(this.STAFF.get(agencyId));
+          // snapshot.forEach((data) => {
+          //   this.STAFF.set(data.key, data.val());
+          //   console.log(this.STAFF.get('position'))
+          //   //console.log(data.+" "+data.val());
+          // });
           this.getStaffDetails(snapshot.key, false);
         });
       });
@@ -662,7 +671,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     }
     this.closeModal();
   }
-
 
   /**
    * Update method for the action. This will check if one already exists in the system beforehand, and only
@@ -1066,7 +1074,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
           agencyCountryMap.forEach((countryId, agencyId) => {
-            this.initStaff(agencyId, countryId);
+            this.initStaff(this.uid, agencyId, countryId);
           })
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
@@ -1085,7 +1093,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
           agencyCountryMap.forEach((countryId, agencyId) => {
-            this.initStaff(agencyId, countryId);
+            this.initStaff(this.uid, agencyId, countryId);
           })
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
@@ -1108,7 +1116,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     })
 
     CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
-      this.initStaff(agencyId, agencyCountryMap.get(agencyId))
+      this.initStaff(this.uid, agencyId, agencyCountryMap.get(agencyId))
     })
   }
 }

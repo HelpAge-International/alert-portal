@@ -20,12 +20,18 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
+      <button *ngIf="partnerOrganisation.isActive && isEdit" type="button" class="btn btn-outline-primary text-uppercase"
+              (click)="openConfirmationModel()">
+        {{ 'DEACTIVATE' | translate }}
+      </button>
+      <button *ngIf="!partnerOrganisation.isActive && isEdit" type="button" class="btn btn-primary text-uppercase"
+              (click)="openConfirmationModel()">
+        {{ 'ACTIVATE' | translate }}
+      </button>
       <button *ngIf="isEdit" type="button" class="btn btn-danger" (click)="deletePartnerOrganisation()">
         {{"DELETE" | translate}}
       </button>
     </div>
-
-
     <div class="Underline-title__wrap">
       <h5>{{ "ADD_PARTNER.ORGANISATION_DETAILS" | translate }}</h5>
     </div>
@@ -121,9 +127,9 @@
                   </div>
                 </div>
                 <!--<div class="col-sm-3" *ngIf="operationArea.country-->
-                                 <!--&& countryLevelsValues[operationArea.country]-->
-                                 <!--&& countryLevelsValues[operationArea.country].levelOneValues">-->
-                  <div class="col-sm-3" *ngIf="hasLevel1(operationArea.country)">
+                <!--&& countryLevelsValues[operationArea.country]-->
+                <!--&& countryLevelsValues[operationArea.country].levelOneValues">-->
+                <div class="col-sm-3" *ngIf="hasLevel1(operationArea.country)">
                   <div class="form-group">
                     <select class="form-control" name="CountryAreaLevelOne_{{opin}}"
                             [(ngModel)]="operationArea.level1">
@@ -271,6 +277,48 @@
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">{{"GLOBAL.CANCEL"| translate}}
         </button>
         <button type="button" class="btn btn-primary" (click)="deleteAction()">{{"GLOBAL.CONFIRM" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Inactive confirmation-->
+<div class="modal fade" id="confirm-inactive" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"COUNTRY_ADMIN.PARTNER.CONFIRM_INACTIVE" | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="setInactiveState()">{{"SAVE"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-inactive')">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Active confirmation-->
+<div class="modal fade" id="confirm-active" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"COUNTRY_ADMIN.PARTNER.CONFIRM_ACTIVE" | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="setActiveState()">{{"SAVE"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-active')">{{"GLOBAL.CANCEL"| translate}}
+        </button>
       </div>
     </div>
   </div>

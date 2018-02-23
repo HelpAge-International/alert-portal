@@ -77,3 +77,7 @@
 .Tooltip__bubble.Blue.info:after {
   right: 39.5%;
 }
+
+p.font-size-two {
+  text-transform: capitalize;
+}

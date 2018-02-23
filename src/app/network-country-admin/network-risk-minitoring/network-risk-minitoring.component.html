@@ -1,4 +1,3 @@
-
 <ng-container *ngIf="!isViewingFromExternal">
   <ng-container *ngIf="!isViewing; else country">
     <ng-container *ngIf="!isLocalNetworkAdmin; else localNetworkAdmin">
@@ -25,10 +24,13 @@
   <div class="Full-page__wrap--inner">
     <div class="Header-title__wrap--risk">
       <h1>{{"RISK_MONITORING_TEXT" | translate}}</h1>
-      <div *ngIf="!isViewingFromExternal" class="btn btn-tertiary" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/create-alert', networkViewValues] : ['/network-country/network-risk-monitoring/create-alert']">
+      <div *ngIf="!isViewingFromExternal" class="btn btn-tertiary"
+           [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/create-alert', networkViewValues] : ['/network-country/network-risk-monitoring/create-alert']">
         {{"RISK_MONITORING.ADD_ALERT.TITLE_PAGE" | translate}}
       </div>
-      <a *ngIf="!isViewingFromExternal" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-hazard', networkViewValues] : ['/network-country/network-risk-monitoring/add-hazard']" class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD"
+      <a *ngIf="!isViewingFromExternal"
+         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-hazard', networkViewValues] : ['/network-country/network-risk-monitoring/add-hazard']"
+         class="btn btn-primary">{{"RISK_MONITORING.MAIN_PAGE.ADD_NEW_HAZARD"
         |
         translate}}</a>
     </div>
@@ -39,24 +41,31 @@
         Filter:
       </div>
       <div class="col-lg-2 col-md-1 col-sm-6">
-        <select class="form-control ng-untouched ng-pristine ng-valid" name="events" (change)="changeEventFilter($event.target.value)" id="riskEvents">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="events"
+                (change)="changeEventFilter($event.target.value)" id="riskEvents">
           <option value="event">Event</option>
           <option data-value="countryContext">Country Context</option>
-          <option *ngFor="let scenario of hazardScenariosList" data-value="{{scenario}}">{{hazardScenario[scenario] | translate}}</option>
+          <option *ngFor="let scenario of hazardScenariosList" data-value="{{scenario}}">{{hazardScenario[scenario] |
+            translate}}
+          </option>
 
         </select>
       </div>
 
       <div class="col-lg-2 col-md-1 col-sm-6">
-        <select class="form-control ng-untouched ng-pristine ng-valid" name="locations" (change)="changeLocationFilter($event.target.value)" id="riskLocations">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="locations"
+                (change)="changeLocationFilter($event.target.value)" id="riskLocations">
           <option value="location">Location</option>
-          <option *ngFor="let location of countryLevelsValues?.levelOneValues" data-value="{{location.id}}">{{location.value}}</option>
+          <option *ngFor="let location of countryLevelsValues?.levelOneValues" data-value="{{location.id}}">
+            {{location.value}}
+          </option>
 
         </select>
       </div>
 
       <div class="col-lg-2 col-md-1 col-sm-6">
-        <select class="form-control ng-untouched ng-pristine ng-valid" name="agency" (change)="changeAgencyFilter($event.target.value)" id="riskAgencies">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="agency"
+                (change)="changeAgencyFilter($event.target.value)" id="riskAgencies">
           <option value="agency">Monitoring Agency</option>
           <option *ngFor="let agency of agencies" data-value="{{agency.name}}">{{agency.name}}</option>
 
@@ -64,7 +73,8 @@
       </div>
 
       <div class="col-lg-2 col-md-1 col-sm-6">
-        <select class="form-control ng-untouched ng-pristine ng-valid" name="indicator" (change)="changeIndicatorLevelFilter($event.target.value)" id="riskIndicatorLevel">
+        <select class="form-control ng-untouched ng-pristine ng-valid" name="indicator"
+                (change)="changeIndicatorLevelFilter($event.target.value)" id="riskIndicatorLevel">
           <option value="indicator">Indicator Level</option>
           <option value="0">Green</option>
           <option value="1">Amber</option>
@@ -123,7 +133,9 @@
                    data-target="#archiveHazard">
                   {{"ARCHIVE_ACTION_DIALOG.TITLE" | translate}}</a>
 
-                <a  [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext', networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                <a
+                  [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext', networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext']"
+                  class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -135,20 +147,29 @@
                      *ngIf="(locationFilter == -1 || (indicatorC.affectedLocation && indicatorC.affectedLocation['0'].level1 == locationFilter))
                      && (agencyFilter == -1 || (indicatorC.fromAgency && indicatorC.agency.name == agencyFilter))
                      && (indicatorLevelFilter == -1 || indicatorC.triggerSelected == indicatorLevelFilter)">
-                  <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
-                    *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
-                    *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
+                  <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} |
+                    <span href="javascript:void(0)" class="text-primary" *ngIf="indicatorC.geoLocation"
+                          (click)="showSubNationalAreas(indicatorC.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
+                    <span *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <ng-container *ngIf="!isViewingFromExternal">
                       <a *ngIf="indicatorC.fromAgency"
-                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode]">{{"EDIT" | translate}}
+                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode]">{{"EDIT"
+                        | translate}}
                       </a>
                       <a *ngIf="!indicatorC.fromAgency"
-                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key]">{{"EDIT" | translate}}
+                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/', indicatorC.$key]">{{"EDIT"
+                        | translate}}
                       </a>
                     </ng-container>
                   </div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee) && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['agency']">Monitoring Agency: {{indicatorC['agency'].name}}</div>
+                  <div class="col-md-4 col-sm-5 margin-left-four"
+                       *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee) && !isViewing && !isViewingFromExternal">
+                    Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' +
+                    staffMap.get(indicatorC.assignee)?.lastName}}
+                  </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['agency']">Monitoring Agency:
+                    {{indicatorC['agency'].name}}
+                  </div>
                 </div>
                 <div *ngIf="(locationFilter == -1 || (indicatorC.affectedLocation && indicatorC.affectedLocation['0'].level1 == locationFilter))
                             && (agencyFilter == -1 || (indicatorC.fromAgency && indicatorC.agency.name == agencyFilter))
@@ -261,16 +282,21 @@
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div class="Update__button">
-                      <div *ngIf="indicatorC?.assignee && uid == indicatorC.assignee && !indicatorC.fromAgency && !isViewingFromExternal" class="col-sm-12 btn btn-tertiary"
-                           (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
+                      <div
+                        *ngIf="indicatorC?.assignee && uid == indicatorC.assignee && !indicatorC.fromAgency && !isViewingFromExternal"
+                        class="col-sm-12 btn btn-tertiary"
+                        (click)="changeIndicatorState(true,'countryContext', indicatorKey); setCheckedTrigger(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"GLOBAL.UPDATE" | translate}}
                       </div>
-                      <div *ngIf="!indicatorC?.assignee && (!indicatorC.fromAgency || (indicatorC.fromAgency && indicatorC.countryOfficeCode === countryID)) && !isViewingFromExternal">
+                      <div
+                        *ngIf="!indicatorC?.assignee && (!indicatorC.fromAgency || (indicatorC.fromAgency && indicatorC.countryOfficeCode === countryID)) && !isViewingFromExternal">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
-                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
+                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary"
+                           (click)="assignIndicatorTo('countryContext', indicatorC)">
                           Assign to</a>
                       </div>
-                      <div *ngIf="isViewing && canCopy && !indicatorC['agency'] && UserType != USER_TYPE.Donor" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="isViewing && canCopy && !indicatorC['agency'] && UserType != USER_TYPE.Donor"
+                           class="col-sm-12 btn btn-tertiary"
                            (click)="copyIndicator(indicatorC, true)">
                         Copy
                       </div>
@@ -307,8 +333,8 @@
                       <hr class="d-inline-flex">
                       <form>
                         <input
-                               type="text" placeholder="Add a log entry" name="log_{{indicatorC.$key}}"
-                               [(ngModel)]="logContent[indicatorC.$key]">
+                          type="text" placeholder="Add a log entry" name="log_{{indicatorC.$key}}"
+                          [(ngModel)]="logContent[indicatorC.$key]">
                       </form>
                       <div *ngIf="indicatorC.logs && indicatorC.logs.length > 0">
                         <div *ngFor="let log of indicatorC.logs">
@@ -328,13 +354,15 @@
                                 <a
                                   *ngIf="uid == log.addedBy"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" | translate}} </a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" |
+                                  translate}} </a>
                                 <a
                                   *ngIf="uid == log.addedBy">|</a>
                                 <a
                                   *ngIf="uid == log.addedBy"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" | translate}}</a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" |
+                                  translate}}</a>
                               </div>
                             </div>
                           </div>
@@ -345,7 +373,7 @@
 
                     <div class="add_log mt-auto p-2 text-right float-right">
                       <div
-                           class="btn btn-primary" (click)="saveLog(indicatorC.$key, indicatorC.triggerSelected)">
+                        class="btn btn-primary" (click)="saveLog(indicatorC.$key, indicatorC.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
                       </div>
                       <br>
@@ -417,9 +445,12 @@
               <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) :
                 hazard.hazardName}}</h4></div>
             <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
-              <div *ngIf="hazard.isSeasonal">
-                <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" | translate}}
-              </div>
+              <a href="javascript:void(0)" class="text-primary resend-notification"
+                 id="open-seasonal-modal{{hazard.$key}}" *ngIf="hazard.isSeasonal"
+                 (click)="openSeasonalModal('select-seasons')">
+                <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
+                translate}}
+              </a>
             </div>
             <div class="indicators__wrap--risk col-sm-3 Right-aligned">
               <strong>{{hazard.indicators && hazard.indicators.length ? hazard.indicators.length : 0}}</strong>
@@ -449,9 +480,12 @@
                    data-toggle="modal"
                    data-target="#deleteHazardModal"
                    (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
-                <a *ngIf="hazard.existsOnNetwork" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                <a *ngIf="hazard.existsOnNetwork"
+                   [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]"
+                   class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
-                <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)" (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)"
+                   (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                   | translate}}</a>
               </div>
             </div>
@@ -462,19 +496,29 @@
                      *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
                      && (agencyFilter == -1 || (indicator.fromAgency && indicator.agency.name == agencyFilter))
                      && (indicatorLevelFilter == -1 || indicator.triggerSelected == indicatorLevelFilter)">
-                  <div class="col-md-4 col-sm-7 margin-left-four">{{indicator.name}} | <span
-                    *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
-                    *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
-                       [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
+                  <div class="col-md-4 col-sm-7 margin-left-four">{{indicator.name}} |
+                    <span href="javascript:void(0)" class="text-primary" *ngIf="indicator.geoLocation"
+                          (click)="showSubNationalAreas(indicator.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
+                    <span *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
+                    <a
+                      *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
+                      [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT"
+                      | translate}}
                     </a>
                     <a *ngIf="!indicator.fromAgency && !isViewingFromExternal"
-                       [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT" | translate}}
+                       [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT"
+                      | translate}}
                     </a>
 
                   </div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
+                  <div class="col-md-4 col-sm-5 margin-left-four"
+                       *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">
+                    Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' +
+                    staffMap.get(indicator.assignee)?.lastName}}
+                  </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency:
+                    {{indicator['agency'].name}}
+                  </div>
                 </div>
                 <div *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
                             && (agencyFilter == -1 || (indicator.fromAgency && indicator.agency.name == agencyFilter))
@@ -574,16 +618,20 @@
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div *ngIf="indicator?.assignee && !indicator.fromAgency && !isViewingFromExternal" class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="indicator?.assignee && !indicator.fromAgency && !isViewingFromExternal"
+                         class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"GLOBAL.UPDATE" | translate}}
                     </div>
-                    <div *ngIf="!indicator?.assignee && (!indicator.fromAgency || (indicator.fromAgency && indicator.countryOfficeCode === countryID)) && !isViewingFromExternal">
+                    <div
+                      *ngIf="!indicator?.assignee && (!indicator.fromAgency || (indicator.fromAgency && indicator.countryOfficeCode === countryID)) && !isViewingFromExternal">
                       <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
-                         aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo(hazard.$key, indicator)">
+                         aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary"
+                         (click)="assignIndicatorTo(hazard.$key, indicator)">
                         Assign to</a>
                     </div>
-                    <div *ngIf="isViewing && canCopy && !indicator['agency'] && UserType != USER_TYPE.Donor" class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="isViewing && canCopy && !indicator['agency'] && UserType != USER_TYPE.Donor"
+                         class="col-sm-12 btn btn-tertiary"
                          (click)="copyIndicator(indicator, false, hazard)">
                       <!--TODO TRANSLATE-->
                       Copy
@@ -619,8 +667,8 @@
                       <hr class="d-inline-flex">
                       <form>
                         <input
-                               type="text" placeholder="Add a log entry" name="log_{{indicator.$key}}"
-                               [(ngModel)]="logContent[indicator.$key]">
+                          type="text" placeholder="Add a log entry" name="log_{{indicator.$key}}"
+                          [(ngModel)]="logContent[indicator.$key]">
                       </form>
                       <div *ngIf="indicator.logs && indicator.logs.length > 0">
                         <div *ngFor="let log of indicator.logs">
@@ -646,7 +694,8 @@
                                 <a
                                   *ngIf="uid == log.addedBy"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
+                                  (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
+                                  translate}}</a>
                               </div>
                             </div>
                           </div>
@@ -657,7 +706,7 @@
 
                     <div class="add_log mt-auto p-2 text-right float-right">
                       <div
-                           class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
+                        class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
                         {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
                       </div>
                       <br>
@@ -739,10 +788,12 @@
                   src="assets/images/risks/{{hazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>-->
                 <h4>{{hazardScenario[hazard.hazardScenario] | translate}}</h4></div>
               <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
-                <div *ngIf="hazard.isSeasonal">
+                <a href="javascript:void(0)" class="text-primary resend-notification"
+                   id="open-seasonal-m{{hazard.$key}}" *ngIf="hazard.isSeasonal"
+                   (click)="openSeasonalModal('select-seasons')">
                   <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
                   translate}}
-                </div>
+                </a>
               </div>
               <div class="indicators__wrap--risk col-sm-3 Right-aligned"><strong>{{hazard.indicators &&
                 hazard.indicators.length ? hazard.indicators.length : 0}}</strong>
@@ -772,9 +823,12 @@
                      data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
                   <a href="javascript:void(0)">{{"GLOBAL.CHANGE" | translate}}</a>
-                  <a *ngIf="hazard.existsOnNetwork" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                  <a *ngIf="hazard.existsOnNetwork"
+                     [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]"
+                     class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
-                  <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)" (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                  <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)"
+                     (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
 
 
@@ -789,18 +843,28 @@
                        *ngIf="(locationFilter == -1 || (indicator.affectedLocation && indicator.affectedLocation['0'].level1 == locationFilter))
                             && (agencyFilter == -1 || (indicator.fromAgency && indicator.agency.name == agencyFilter))
                             && (indicatorLevelFilter == -1 || indicator.triggerSelected == indicatorLevelFilter)">
-                    <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
-                      *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
-                      *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                      <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
-                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
+                    <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} |
+                      <span href="javascript:void(0)" class="text-primary" *ngIf="indicator.geoLocation"
+                            (click)="showSubNationalAreas(indicator.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
+                      <span *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
+                      <a
+                        *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
+                        [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT"
+                        | translate}}
                       </a>
                       <a *ngIf="!indicator.fromAgency && !isViewingFromExternal"
-                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT" | translate}}
+                         [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id + '/' + indicator.$key]">{{"EDIT"
+                        | translate}}
                       </a>
                     </div>
-                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
-                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency: {{indicator['agency'].name}}</div>
+                    <div class="col-md-4 col-sm-5 margin-left-four"
+                         *ngIf="indicator.assignee && staffMap.get(indicator.assignee)  && !isViewing && !isViewingFromExternal">
+                      Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' +
+                      staffMap.get(indicator.assignee)?.lastName}}
+                    </div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['agency']">Monitoring Agency:
+                      {{indicator['agency'].name}}
+                    </div>
                   </div>
                   <div
                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one"
@@ -918,7 +982,8 @@
 
                     <div class="end-col__wrap--risk col-md-3 col-sm-6"
                          *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                      <div *ngIf="uid == indicator.assignee && !indicator.fromAgency && !isViewingFromExternal" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="uid == indicator.assignee && !indicator.fromAgency && !isViewingFromExternal"
+                           class="col-sm-12 btn btn-tertiary"
                            (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                         {{"GLOBAL.UPDATE" | translate}}
                       </div>
@@ -947,8 +1012,8 @@
                         <hr class="d-inline-flex">
                         <form>
                           <input
-                                 type="text" placeholder="Add log entry" name="log_{{indicator.$key}}"
-                                 [(ngModel)]="logContent[indicator.$key]">
+                            type="text" placeholder="Add log entry" name="log_{{indicator.$key}}"
+                            [(ngModel)]="logContent[indicator.$key]">
                         </form>
                         <div *ngIf="indicator.logs && indicator.logs.length > 0">
                           <div *ngFor="let log of indicator.logs">
@@ -967,13 +1032,15 @@
                                   <a
                                     *ngIf="uid == log.addedBy"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}}</a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" |
+                                    translate}}</a>
                                   <a
                                     *ngIf="uid == log.addedBy">|</a>
                                   <a
                                     *ngIf="uid == log.addedBy"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
+                                    translate}}</a>
                                 </div>
                               </div>
                             </div>
@@ -985,7 +1052,7 @@
                       <!--add log button-->
                       <div class="add_log mt-auto p-2 text-right float-right">
                         <div
-                             class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
+                          class="btn btn-primary" (click)="saveLog(indicator.$key, indicator.triggerSelected)">
                           {{"RISK_MONITORING.MAIN_PAGE.ADD_LOG_ENTRY" | translate}}
                         </div>
                         <!--export log button-->
@@ -1278,3 +1345,58 @@
     </div>
   </div>
 </div>
+
+<!--Show seasonal hazards-->
+<div class="modal fade" id="select-seasons" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above" id="addCalendarModalLabel">{{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
+          translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-body text-center">
+        <div class="row col-sm-12">
+          <div class="col-sm-12">
+            <div class="row margin-left-three" *ngFor="let season of AllSeasons; index as i">
+              <div class="col-sm-1">
+                <div class="Color__swatch__check Right-aligned"
+                     [ngStyle]="{'background':season.colorCode}">
+                </div>
+              </div>
+              <div class="cold-sm-7 margin-left-one"><p class="font-size-two"><strong>
+                {{season.name}} | {{season.startTime | date:"dd/MM/yy"}} - {{season.endTime |
+                date:"dd/MM/yy"}}</strong></p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="show-subnational" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title Spaced-above">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL_AREA" | translate |
+          translate}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-body">
+        <div class="text-center">
+          <h6>{{subnationalName}}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

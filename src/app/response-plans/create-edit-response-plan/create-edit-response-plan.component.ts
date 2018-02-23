@@ -2066,8 +2066,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .distinctUntilChanged()
       .subscribe(x => {
-        if (x.isApproved) {
+        console.log(x.isActive)
+        if (x.isApproved && x.isActive) {
+          console.log(x.isActive);
           this.partnerOrganisations.push(x);
+        }else{
+
         }
       });
   }

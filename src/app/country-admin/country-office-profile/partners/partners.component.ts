@@ -88,9 +88,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
   }
 
   private initLocalAgency(){
@@ -101,7 +99,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
           this.uid = user.uid;
           this.userType = userType;
           this.agencyId = agencyId;
-
 
             this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(this.agencyId)
               .subscribe(partnerOrganisations => {
@@ -343,7 +340,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     }else{
       this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
     }
-
   }
 
   hideFilteredPartners(partnerOrganisation: PartnerOrganisationModel): boolean {

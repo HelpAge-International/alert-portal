@@ -157,7 +157,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.DashboardTypeUsed = DashboardType.default;
           }
           if (this.userType == UserType.PartnerUser) {
-            console.log("partner user")
+            //console.log("partner user")
             this.agencyId = agencyId;
             this.countryId = countryId;
             this.loadDataForPartnerUser(agencyId, countryId);
@@ -585,7 +585,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getHazards() {
-
     this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
       .flatMap(list => {
         this.hazards = [];

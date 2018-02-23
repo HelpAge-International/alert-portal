@@ -354,6 +354,11 @@ import { AgencyOverviewComponent } from "./agency-admin/agency-overview/agency-o
 import { CookieLawModule } from "angular2-cookie-law";
 import { CoCComponent } from './system-admin/system-settings/coc/coc.component';
 import { ToCComponent } from './system-admin/system-settings/toc/toc.component';
+import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
+import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
+import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
+import { PageFooterComponent } from './commons/page-footer/page-footer.component';
+import { PageFooterTocComponent } from './commons/page-footer-toc/page-footer-toc.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -711,6 +716,8 @@ const firebaseAuthConfig = {
     AgencyOverviewComponent,
     CoCComponent,
     ToCComponent
+    PageFooterComponent,
+    PageFooterTocComponent,
   ],
   imports: [
     CookieLawModule,

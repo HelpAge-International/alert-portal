@@ -22,6 +22,7 @@ export class PartnerOrganisationModel extends BaseModel {
   public notes: Array<NoteModel>;
   public partners: any[];
   public isApproved: boolean;
+  public isActive: boolean;
   public externalPartner: boolean;
   public modifiedAt: number;
 

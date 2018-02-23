@@ -55,6 +55,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private systemId: string;
   public hazards: any[] = [];
+  public hazard: string;
   private canCopy: boolean;
   private agencyOverview: boolean;
 
@@ -109,6 +110,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
+  private AllSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -129,6 +131,11 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private isViewingFromExternal: boolean;
   private staffMap = new Map()
 
+  private subnationalName: string;
+  private countryName: string;
+  private level1: string;
+  private level2: string;
+
   private Hazard_Conflict = 1
 
   constructor(private pageControl: PageControlService,
@@ -142,7 +149,8 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
               private agencyService: AgencyService,
               private networkService: NetworkService,
               private settingService:SettingsService,
-              private windowService: WindowRefService) {
+              private windowService: WindowRefService,
+              private _commonService: CommonService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
   }
@@ -335,6 +343,54 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       this.indicatorLevelFilter = indicatorLevel;
     }
+  }
+
+  openSeasonalModal(key) {
+    this._getAllSeasons();
+    jQuery("#" + key).modal("show");
+  }
+
+  _getAllSeasons() {
+    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
+    let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((AllSeasons: any) => {
+          this.AllSeasons = AllSeasons;
+          res(true);
+        });
+    });
+    return promise;
+  }
+
+  showSubNationalAreas(areas) {
+    for (let area in areas) {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .subscribe(content => {
+          this.countryLevelsValues = content;
+          // console.log(this.getLocationName(areas[area]));
+          this.setLocationName(areas[area]);
+          err => console.log(err);
+        });
+    }
+    jQuery("#show-subnational").modal("show");
+  }
+
+  setLocationName(location) {
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country) {
+      this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
+    } else if ((location.level1 && location.level1 != -1) && location.country) {
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName + ", " + this.level1;
+    } else {
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      this.subnationalName = this.countryName;
+    }
+    console.log(this.countryName + ", " + this.level2 + ", " + this.level1)
   }
 
   private getCountryLocation() {

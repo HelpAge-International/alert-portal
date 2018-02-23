@@ -355,7 +355,7 @@
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
 
                     <option value="null" hidden disabled selected>
-                      {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
+                      {{partnerOrganisations.length<1? "No Partner(s)" : "ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
 
                     <option *ngFor="let partnerOrganisation of partnerOrganisations"

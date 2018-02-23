@@ -249,10 +249,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
-              this.when = 0;
-              this.toDate = 0;
-                //this.when = this.programme.when;
-              //this.toDate = this.programme.toDate;
+              // this.when = 0;
+              // this.toDate = 0;
+              // this.when = this.programme.when;
+              // this.toDate = this.programme.toDate;
 
               console.log("From date: "+this.when +" To: "+this.toDate);
 
@@ -322,11 +322,13 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   setWhenDate(programme: ProgrammeMappingModel) {
     let whenDate =  moment(this.when).valueOf();
+    console.log(whenDate)
     programme.when = whenDate;
   }
 
   setToDate(programme: ProgrammeMappingModel) {
     let toDate =  moment(this.toDate).valueOf();
+    console.log(toDate)
     programme.toDate = toDate;
   }
 
