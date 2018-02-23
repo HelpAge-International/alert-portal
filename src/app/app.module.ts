@@ -352,6 +352,9 @@ import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-netwo
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
 import { PageFooterComponent } from './commons/page-footer/page-footer.component';
+import { PageFooterTocComponent } from './commons/page-footer-toc/page-footer-toc.component';
+import { SystemSettingsTocComponent } from './system-admin/system-settings/system-settings-toc/system-settings-toc.component';
+import { SystemSettingsCocComponent } from './system-admin/system-settings/system-settings-coc/system-settings-coc.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -707,7 +710,10 @@ const firebaseAuthConfig = {
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
     AgencyOverviewComponent,
-    PageFooterComponent
+    PageFooterComponent,
+    PageFooterTocComponent,
+    SystemSettingsTocComponent,
+    SystemSettingsCocComponent
   ],
   imports: [
     BrowserModule,

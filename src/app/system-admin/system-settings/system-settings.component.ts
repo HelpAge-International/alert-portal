@@ -46,7 +46,6 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   saveSetting() {
-
     if (this.uid) {
       this.writeToFirebase();
     } else {

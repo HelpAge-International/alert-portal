@@ -585,7 +585,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getHazards() {
-
     this.af.database.list(Constants.APP_STATUS + '/hazard/' + this.countryId)
       .flatMap(list => {
         this.hazards = [];

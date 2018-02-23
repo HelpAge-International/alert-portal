@@ -1,0 +1,30 @@
+<app-system-admin-header></app-system-admin-header>
+<app-system-admin-menu></app-system-admin-menu>
+
+<div *ngIf="isSaved" class="Alert-success">{{successMessage | translate}}</div>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Header-title__wrap">
+      <h1>{{"SYSTEM_ADMIN.SETTING.TITLE" | translate}}</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings']">{{"SYSTEM_ADMIN.SETTING.PREPAREDNESS" | translate}}</a></li>
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-documents']">{{"SYSTEM_ADMIN.SETTING.DOC_SETTINGS" | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">{{"SYSTEM_ADMIN.SETTING.RESPONSE_PLANS" | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-toc']">{{"TERMS_AND_CONDITIONS" | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-coc']">{{"CODE_OF_CONDUCT" | translate}}</a></li>
+    </ul>
+
+    <h3 class="System-admin__Sub-title--spaced">{{"SYSTEM_ADMIN.SETTING.COC_SETTING" | translate}}</h3>
+    <hr>
+
+    <div class="Form-submit__wrapper">
+      <div class="btn btn-primary" (click)="saveSetting()">{{"SYSTEM_ADMIN.SETTING.SAVE" | translate | uppercase}}</div>
+    </div>
+
+  </div>
+</div>
+
