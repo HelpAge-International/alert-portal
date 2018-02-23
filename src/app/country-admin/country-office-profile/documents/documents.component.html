@@ -63,9 +63,9 @@
       <div *ngIf="!isNetworkAdmin && !isLocalAgency" class="col-lg-2 col-md-2">
         <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
           <option value="-1" selected>{{ 'DOCUMENTS.ALL_COUNTRIES' | translate }}</option>
-          <option *ngFor="let country of CountriesEnum; let i = index"
-                  [value]="country"
-                  [selected]="locationId == i">{{COUNTRIES[i] | translate}}
+          <option *ngFor="let country of countries; let i = index"
+                  [value]="country.location"
+                  [selected]="locationId == country.location">{{COUNTRIES[country.location] | translate}}
           </option>
         </select>
       </div>
@@ -73,8 +73,8 @@
       <div *ngIf="isNetworkAdmin" class="col-lg-2 col-md-2">
         <select name="Country" id="Country" class="form-control" [(ngModel)]="countrySelected" (change)="filter()">
           <option value="-1" selected>{{ 'DOCUMENTS.ALL_COUNTRIES' | translate }}</option>
-          <option *ngFor="let country of CountriesEnum; let i = index"
-                  [value]="i">{{COUNTRIES[i] | translate}}
+          <option *ngFor="let country of countries; let i = index"
+                  [value]="country.location">{{COUNTRIES[country.location] | translate}}
           </option>
         </select>
       </div>
@@ -104,7 +104,7 @@
 
     <div class="Ribbon__section__wrap Spaced">
       <template *ngIf="!isNetworkAdmin" ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
-
+        <ng-container *ngIf="countrySelected == -1 || country.location == countrySelected">
         <div class="Accordion--b-white Accordion__hide-links">
           <div class="row align-items-center no-gutters">
             <div class="col-sm-1 text-center">
@@ -150,6 +150,7 @@
             <div class="col-lg-2 col-md-2">{{doc.time | date:'shortDate'}}</div>
           </div>
         </div>
+        </ng-container>
       </template>
 
       <template *ngIf="isNetworkAdmin" ngFor let-country [ngForOf]="countries" let-moduleIdx="index">

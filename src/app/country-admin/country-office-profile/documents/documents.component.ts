@@ -35,6 +35,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
 
+  private allCountries: any[] = [];
   private countries: any[] = [];
   private users: any[] = [];
 
@@ -157,10 +158,12 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
             this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + idObj["value"]["id"])
               .takeUntil(this.ngUnsubscribe)
               .subscribe(_ => {
-              this.countries = _;
-
+                this.countries = [];
+                this.countries = _;
+                console.log(this.countries);
+              console.log(this.countries);
               Object.keys(this.countries).map(country => {
-                console.log(this.countries[country])
+                console.log(this.countries[country]);
                 let key = this.countries[country].$key;
 
                 this.locationId = this.countries[country].location;
@@ -191,7 +194,6 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
 
               })
             })
-
           })
 
         });
@@ -219,7 +221,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
               this.countries.push(countries[country])
               //this.countriesFilterSubject.next(Countries[this.locationId]);
 
-
+              console.log("COUNTRY OFFICE - LOCAL AGENCY: "+this.countries);
               this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(_ => {
@@ -290,7 +292,9 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
             this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(_ => {
+                this.countries.length = 0;
                 this.countries = _;
+                console.log("COUNTRY OFFICE: "+this.countries);
                 Object.keys(this.countries).map(country => {
                   let key = this.countries[country].$key;
 
@@ -356,7 +360,9 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
             this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId, this.countriesFilter)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(_ => {
+                this.countries.length = 0;
                 this.countries = _;
+                console.log("COUNTRY OFFICE: "+this.countries);
                 Object.keys(this.countries).map(country => {
                   let key = this.countries[country].$key;
 
@@ -369,7 +375,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(_ => {
                       let docs = _;
-                      console.log(docs)
+                    //  console.log(docs)
                       docs = docs.filter(doc => {
                         if (this.userSelected == "-1")
                           return true;
@@ -389,6 +395,12 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
                       this.countries[country]['hasDocs'] = (docs.length > 0);
                     });
                 });
+              });
+
+            this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(_ => {
+                this.allCountries = _;
               });
 
             this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
