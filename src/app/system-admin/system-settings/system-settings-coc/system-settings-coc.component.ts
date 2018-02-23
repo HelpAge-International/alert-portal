@@ -6,6 +6,7 @@ import {Constants} from "../../../utils/Constants";
   templateUrl: './system-settings-coc.component.html',
   styleUrls: ['./system-settings-coc.component.scss']
 })
+
 export class SystemSettingsCocComponent implements OnInit {
 
   private isEditing: boolean = false;
