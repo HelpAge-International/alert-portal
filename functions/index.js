@@ -428,75 +428,75 @@ exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
       });
     }
   });
-
-exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-      admin.auth().createUser({
-        uid: userId,
-        email: currData.email,
-        password: TEMP_PASS
-      })
-        .then(user => {
-          console.log("(handleUserAccountTest)Successfully created new user: " + user.uid)
-        })
-        .catch(error => {
-          console.log("(handleUserAccountTest)Error creating new user:", error)
-        })
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
-
-exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-      admin.auth().createUser({
-        uid: userId,
-        email: currData.email,
-        password: TEMP_PASS
-      })
-        .then(user => {
-          console.log("(handleUserAccountUat)Successfully created new user: " + user.uid)
-        })
-        .catch(error => {
-          console.log("(handleUserAccountUat)Error creating new user:", error)
-        })
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
-
+//
+// exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//       admin.auth().createUser({
+//         uid: userId,
+//         email: currData.email,
+//         password: TEMP_PASS
+//       })
+//         .then(user => {
+//           console.log("(handleUserAccountTest)Successfully created new user: " + user.uid)
+//         })
+//         .catch(error => {
+//           console.log("(handleUserAccountTest)Error creating new user:", error)
+//         })
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
+//
+// exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//       admin.auth().createUser({
+//         uid: userId,
+//         email: currData.email,
+//         password: TEMP_PASS
+//       })
+//         .then(user => {
+//           console.log("(handleUserAccountUat)Successfully created new user: " + user.uid)
+//         })
+//         .catch(error => {
+//           console.log("(handleUserAccountUat)Error creating new user:", error)
+//         })
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
+//
 // exports.handleUserAccountUat2 = functions.database.ref('/uat-2/userPublic/{userId}')
 //   .onWrite(event => {
 //     console.log("agency node triggered");
@@ -519,7 +519,7 @@ exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}'
 //       });
 //     }
 //   });
-
+//
 // exports.handleUserAccountD1s1 = functions.database.ref('/d1s1/userPublic/{userId}')
 //   .onWrite(event => {
 //     console.log("agency node triggered");
@@ -4339,7 +4339,7 @@ exports.sendEmailToExternalForAlertChangeRed_UAT = functions.database.ref('/uat/
     } else {
       console.log("error!!")
     }
-  })
+  });
 
 // exports.sendEmailToExternalForIndicatorUpdate_SAND = functions.database.ref('/sand/indicator/{hazardId}/{indicatorId}/triggerSelected')
 //   .onWrite(event => {
@@ -4441,7 +4441,7 @@ exports.sendEmailToExternalForIndicatorUpdate_TEST = functions.database.ref('/te
         }
       })
     }
-  })
+  });
 
 exports.sendEmailToExternalForIndicatorUpdate_UAT = functions.database.ref('/uat/indicator/{hazardId}/{indicatorId}/triggerSelected')
   .onWrite(event => {
@@ -4492,7 +4492,7 @@ exports.sendEmailToExternalForIndicatorUpdate_UAT = functions.database.ref('/uat
         }
       })
     }
-  })
+  });
 
 // exports.sendEmailToExternalForPlanExpired_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/isActive')
 //   .onWrite(event => {
@@ -4534,7 +4534,7 @@ exports.sendEmailToExternalForPlanExpired_TEST = functions.database.ref('/test/r
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_EXPIRED);
       })
     }
-  })
+  });
 
 exports.sendEmailToExternalForPlanExpired_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/isActive')
   .onWrite(event => {
@@ -4555,7 +4555,7 @@ exports.sendEmailToExternalForPlanExpired_UAT = functions.database.ref('/uat/res
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_EXPIRED);
       })
     }
-  })
+  });
 
 // exports.sendEmailPlanRejectedByCountryDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
 //   .onWrite(event => {
@@ -4597,7 +4597,7 @@ exports.sendEmailPlanRejectedByCountryDirector_TEST = functions.database.ref('/t
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
       })
     }
-  })
+  });
 
 exports.sendEmailPlanRejectedByCountryDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
   .onWrite(event => {
@@ -4618,7 +4618,7 @@ exports.sendEmailPlanRejectedByCountryDirector_UAT = functions.database.ref('/ua
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
       })
     }
-  })
+  });
 
 // exports.sendEmailPlanRejectedByRegionDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
 //   .onWrite(event => {
@@ -4658,7 +4658,7 @@ exports.sendEmailPlanRejectedByRegionDirector_TEST = functions.database.ref('/te
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
       })
     }
-  })
+  });
 
 exports.sendEmailPlanRejectedByRegionDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
   .onWrite(event => {
@@ -4678,7 +4678,7 @@ exports.sendEmailPlanRejectedByRegionDirector_UAT = functions.database.ref('/uat
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
       })
     }
-  })
+  });
 
 // exports.sendEmailPlanRejectedByGlobalDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
 //   .onWrite(event => {
@@ -4718,7 +4718,7 @@ exports.sendEmailPlanRejectedByGlobalDirector_TEST = functions.database.ref('/te
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
       })
     }
-  })
+  });
 
 exports.sendEmailPlanRejectedByGlobalDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
   .onWrite(event => {
@@ -4732,22 +4732,140 @@ exports.sendEmailPlanRejectedByGlobalDirector_UAT = functions.database.ref('/uat
       let planId = event.params['planId'];
 
       admin.database().ref('/uat/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
-        let plan = data.val()
-        let title = `Response plan was rejected`
-        let content = `The following response plan:${plan.name}, was rejected by global director.`
+        let plan = data.val();
+        let title = `Response plan was rejected`;
+        let content = `The following response plan:${plan.name}, was rejected by global director.`;
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
       })
     }
-  })
+  });
 
-////private functions
+
+/**
+ * Resetting latest coc agreed upon coc updated by the system admin*/
+
+exports.updateLatestCoCAllUsers_SAND = functions.database.ref('/sand/system/{systemId}/coc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('sand/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('sand/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
+              //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestCoCAllUsers_TEST = functions.database.ref('/test/system/{systemId}/coc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('test/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('test/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
+              //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestCoCAllUsers_UAT = functions.database.ref('/uat/system/{systemId}/coc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('uat/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('uat/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
+              //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+
+exports.updateLatestCoCAllUsers_UAT_2 = functions.database.ref('/uat-2/system/{systemId}/coc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('uat-2/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('uat-2/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
+              //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+// exports.updateLatestCoCAllUsers_LIVE = functions.database.ref('/live/system/{systemId}/coc')
+//   .onWrite(event => {
+//     const currData = event.data.current.val();
+//     if (currData) {
+//       admin.database().ref('live/userPublic/').once('value', (data) => {
+//         let usersJson = data.val();
+//         if(usersJson) {
+//           let userIds = Object.keys(usersJson);
+//           console.log(userIds);
+//           userIds.forEach(userId => {
+//             admin.database().ref('live/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
+//               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+//             });
+//           });
+//         }
+//       }, error => {
+//         console.log(error.message);
+//       })
+//     }
+//     return true;
+//   });
+
+/**
+ * Private functions
+*/
+
 function fetchUsersAndSendEmail(node, countryId, title, content, setting) {
   admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
     let exObj = data.val();
     if (exObj) {
       let recipients = Object.keys(exObj).map(key => {
         return exObj[key]
-      })
+      });
       for (let i = 0, len = recipients.length; i < len; i++) {
         if (recipients[i].notificationsSettings[setting]) {
           sendEmail(recipients[i].email, title, content)

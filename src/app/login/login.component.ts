@@ -130,11 +130,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private showCoC(){
-    this.af.database.object(Constants.APP_STATUS + "/coc/", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + +"system/"+"wFCEPYdAzCO2YLDKoYssas46t402/"+"/coc/", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val().cocText){
-          this.cocText = snap.val().cocText;
+        if(snap.val()){
+          this.cocText = snap.val();
           this.loaderInactive = true;
           jQuery("#coc-window").modal("show");
         }else{
