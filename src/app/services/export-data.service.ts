@@ -13,6 +13,8 @@ import {PartnerOrganisationService} from "./partner-organisation.service";
 import {Observable} from "rxjs/Rx";
 import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
+import {SettingsService} from "./settings.service";
+import {NoteService} from "./note.service";
 
 @Injectable()
 export class ExportDataService {
@@ -25,87 +27,32 @@ export class ExportDataService {
               private userService: UserService,
               private partnerService: PartnerOrganisationService,
               private surgeCapacityService: SurgeCapacityService,
+              private settingService: SettingsService,
               private commonService: CommonService) {
   }
 
   public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>) {
     //TODO MAKE SURE TOTAL NUMBER FOR SHEETS IS RIGHT!! (16 now)
-    this.total = 14
+    this.total = 15
     this.counter = 0
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new()
 
     //fetch country alert data
     this.fetchCustomHazardNameForAlertsCountry(countryId).then((customNameMap: Map<string, string>) => {
+      console.log(customNameMap)
       //fetch alerts data
       this.fetchCountryAlertsData(countryId, customNameMap, areaContent, wb);
     })
 
     //fetch risk monitoring data
-    this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryId)
-      .first()
-      .subscribe(countryIndicators => {
-        let allIndicators = []
-        //first fetch country context indicators
-        let indicators = countryIndicators.map(item => {
-          let obj = {}
-          obj["Hazard"] = "Country Context"
-          obj["Indicator Name"] = item["name"]
-          obj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
-          obj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
-          obj["Green trigger name"] = item["trigger"][0]["triggerValue"]
-          obj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
-          obj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
-          obj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
-          obj["Red trigger name"] = item["trigger"][2]["triggerValue"]
-          obj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
-          obj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
-          obj["Location"] = this.getIndicatorLocation(item, areaContent)
-          return obj
-        })
-        allIndicators = allIndicators.concat(indicators)
-
-        //then fetch all other indicators
-        this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
-          .first()
-          .subscribe(hazards => {
-            let hazardIndicatorCounter = 0
-            hazards.forEach(hazard => {
-              this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazard.$key)
-                .first()
-                .subscribe(hazardIndicatorList => {
-                  let hazardIndicators = hazardIndicatorList.map(item => {
-                    let indicatorObj = {}
-                    indicatorObj["Hazard"] = item.hazardScenario.hazardScenario
-                    indicatorObj["Indicator Name"] = item["name"]
-                    indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
-                    indicatorObj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
-                    indicatorObj["Green trigger name"] = item["trigger"][0]["triggerValue"]
-                    indicatorObj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
-                    indicatorObj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
-                    indicatorObj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
-                    indicatorObj["Red trigger name"] = item["trigger"][2]["triggerValue"]
-                    indicatorObj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
-                    indicatorObj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
-                    indicatorObj["Location"] = this.getIndicatorLocation(item, areaContent)
-                    return indicatorObj
-                  })
-                  allIndicators = allIndicators.concat(hazardIndicators)
-                  hazardIndicatorCounter++
-
-                  if (hazards.length === hazardIndicatorCounter) {
-                    console.log(allIndicators)
-                  }
-                })
-            })
-          })
-      })
+    this.fetchRiskMonitoringData(countryId, staffMap, areaContent, wb);
 
     //fetch response plan data
     this.fetchResponsePlanData(countryId, wb);
 
     //fetch preparedness actions data
-    this.fetchActionsData(countryId, wb);
+    this.fetchActionsData(agencyId, countryId, staffMap, wb);
 
     //fetch point of contacts
     this.fetchPointOfContactData(countryId, wb);
@@ -139,6 +86,126 @@ export class ExportDataService {
 
     //fetch sector expertise
     this.fetchSectorExpertiseData(countryId, wb);
+  }
+
+  private fetchRiskMonitoringData(countryId: string, staffMap: Map<string, string>, areaContent: any, wb: WorkBook) {
+    this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryId)
+      .first()
+      .subscribe(countryIndicators => {
+        let allIndicators = []
+        //first fetch country context indicators
+        let indicators = countryIndicators.map(item => {
+          let obj = {}
+          obj["Hazard"] = "Country Context"
+          obj["Indicator Name"] = item["name"]
+          obj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
+          obj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
+          obj["Green trigger name"] = item["trigger"][0]["triggerValue"]
+          obj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
+          obj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
+          obj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
+          obj["Red trigger name"] = item["trigger"][2]["triggerValue"]
+          obj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
+          obj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
+          obj["Location"] = this.getIndicatorLocation(item, areaContent)
+          return obj
+        })
+        allIndicators = allIndicators.concat(indicators)
+
+        //then fetch all other indicators
+        this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
+          .first()
+          .subscribe(hazards => {
+            if (hazards.length > 0) {
+              let hazardIndicatorCounter = 0
+              hazards.forEach(hazard => {
+                this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazard.$key)
+                  .first()
+                  .subscribe(hazardIndicatorList => {
+                    //dealing with pre-defined hazard
+                    let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario != -1).map(item => {
+                      let indicatorObj = {}
+                      indicatorObj["Hazard"] = this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario])
+                      indicatorObj["Indicator Name"] = item["name"]
+                      indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
+                      indicatorObj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
+                      indicatorObj["Green trigger name"] = item["trigger"][0]["triggerValue"]
+                      indicatorObj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
+                      indicatorObj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
+                      indicatorObj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
+                      indicatorObj["Red trigger name"] = item["trigger"][2]["triggerValue"]
+                      indicatorObj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
+                      indicatorObj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
+                      indicatorObj["Location"] = this.getIndicatorLocation(item, areaContent)
+                      return indicatorObj
+                    })
+                    allIndicators = allIndicators.concat(hazardIndicators)
+
+                    //dealing with custom hazards
+                    let hazardIndicatorsCustom = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario == -1).map(item => {
+                      let indicatorObj = {}
+                      indicatorObj["Hazard"] = item.hazardScenario.otherName
+                      indicatorObj["Indicator Name"] = item["name"]
+                      indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
+                      indicatorObj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
+                      indicatorObj["Green trigger name"] = item["trigger"][0]["triggerValue"]
+                      indicatorObj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
+                      indicatorObj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
+                      indicatorObj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
+                      indicatorObj["Red trigger name"] = item["trigger"][2]["triggerValue"]
+                      indicatorObj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
+                      indicatorObj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
+                      indicatorObj["Location"] = this.getIndicatorLocation(item, areaContent)
+                      return indicatorObj
+                    })
+
+                    if (hazardIndicatorsCustom.length > 0) {
+                      let transformedCustomNameList = []
+                      hazardIndicatorsCustom.forEach(custom => {
+                        this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + custom["Hazard"])
+                          .first()
+                          .subscribe(customName => {
+                            custom["Hazard"] = customName.name
+                            transformedCustomNameList.push(custom)
+                            if (transformedCustomNameList.length == hazardIndicatorsCustom.length) {
+                              allIndicators = allIndicators.concat(hazardIndicatorsCustom)
+                              hazardIndicatorCounter++
+
+                              if (hazards.length === hazardIndicatorCounter) {
+                                console.log(allIndicators)
+                                const indicatorSheet = XLSX.utils.json_to_sheet(allIndicators);
+                                XLSX.utils.book_append_sheet(wb, indicatorSheet, "Risk Monitoring")
+                                this.counter++
+                                this.exportFile(this.counter, this.total, wb)
+                              }
+                            }
+                          })
+                      })
+                    } else {
+                      hazardIndicatorCounter++
+
+                      if (hazards.length === hazardIndicatorCounter) {
+                        console.log(allIndicators)
+                        const indicatorSheet = XLSX.utils.json_to_sheet(allIndicators);
+                        XLSX.utils.book_append_sheet(wb, indicatorSheet, "Risk Monitoring")
+                        this.counter++
+                        this.exportFile(this.counter, this.total, wb)
+                      }
+                    }
+                  })
+              })
+            } else {
+              if (allIndicators.length > 0) {
+                const indicatorSheet = XLSX.utils.json_to_sheet(allIndicators);
+                XLSX.utils.book_append_sheet(wb, indicatorSheet, "Risk Monitoring")
+                this.counter++
+                this.exportFile(this.counter, this.total, wb)
+              } else {
+                this.passEmpty(wb)
+              }
+            }
+          })
+      })
   }
 
   private fetchSectorExpertiseData(countryId: string, wb: WorkBook) {
@@ -176,7 +243,11 @@ export class ExportDataService {
             let obj = {}
             obj["Sector"] = this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[mapping["sector"]])
             obj["What"] = mapping["what"]
-            obj["Where"] = this.translateService.instant(Constants.COUNTRIES[mapping["where"]])
+            if (!mapping["where"] || (mapping["where"] && typeof (mapping["where"]) === 'string' && Number.isNaN(parseInt(mapping["where"])))) {
+              obj["Where"] = mapping["where"]
+            } else {
+              obj["Where"] = this.translateService.instant(Constants.COUNTRIES[mapping["where"]])
+            }
             obj["To Whom"] = mapping["toWho"]
             obj["When"] = moment(mapping["when"]).format("MM/YYYY")
             obj["Notes"] = mapping["programmeNotes"] ? Object.keys(mapping["programmeNotes"]).length : 0
@@ -284,7 +355,7 @@ export class ExportDataService {
             obj["Contact Email"] = surge["email"]
             obj["Sector(s) of expertise"] = ""
             obj["Location"] = surge["location"]
-            obj["ETA"] = surge["arrivalTimeValue"] + " " + this.translateService.instant(Constants.DURATION_TYPE[surge["arrivalTimeType"]])
+            obj["ETA"] = surge["arrivalTimeValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[surge["arrivalTimeType"]])
             obj["Length of deployment"] = surge["durationOfDeployment"]
             return obj
           })
@@ -589,37 +660,46 @@ export class ExportDataService {
       })
   }
 
-  private fetchActionsData(countryId: string, wb: WorkBook) {
-    this.af.database.list(Constants.APP_STATUS + "/action/" + countryId)
-      .first()
-      .subscribe(actionList => {
-        if (actionList.length > 0) {
-          let actions = actionList.map(action => {
-            let obj = {}
-            obj["Action title"] = action["type"]
-            obj["Preparedness action level"] = action["level"]
-            obj["Type"] = action["type"]
-            obj["Department"] = action["department"]
-            obj["Assigned to"] = action["asignee"]
-            obj["Due Date"] = action["dueDate"]
-            obj["Budget"] = action["budget"]
-            obj["Document Required"] = action["requireDoc"]
-            obj["Status"] = "test status"
-            obj["Expires"] = action["dueDate"]
-            obj["Notes"] = "test 5"
-            return obj
+  private fetchActionsData(agencyId: string, countryId: string, staffMap:Map<string,string>, wb: WorkBook) {
+    this.fetchDepartmentsForAgencyAndCountry(agencyId, countryId).then((departmentMap: Map<string, string>) => {
+      console.log(departmentMap)
+      this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap:Map<string,number>) => {
+        console.log(noteNumberMap)
+        this.af.database.list(Constants.APP_STATUS + "/action/" + countryId)
+          .first()
+          .subscribe(actionList => {
+            if (actionList.length > 0) {
+              let actions = actionList.map(action => {
+                let obj = {}
+                obj["Action title"] = action["task"]
+                obj["Preparedness action level"] = this.translateService.instant(Constants.ACTION_LEVEL[action["level"]])
+                obj["Type"] = this.translateService.instant(Constants.ACTION_TYPE[action["type"]])
+                obj["Department"] = action["department"] ? departmentMap.get(action["department"]) : ""
+                obj["Assigned to"] = action["asignee"] ? staffMap.get(action["asignee"]) : ""
+                obj["Due Date"] = moment(action["dueDate"]).format("DD/MM/YYYY")
+                obj["Budget"] = action["budget"]
+                obj["Document Required"] = action["requireDoc"] ? "Yes" : "No"
+                obj["Status"] = action[""]
+                obj["Expires"] = action[""]
+                obj["Notes"] = noteNumberMap.get(action.$key) ? noteNumberMap.get(action.$key) : 0
+                obj["Completed with due date?"] = action[""]
+                return obj
+              })
+
+              const actionSheet = XLSX.utils.json_to_sheet(actions);
+              XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
+
+              this.counter++
+
+              this.exportFile(this.counter, this.total, wb)
+            } else {
+              this.passEmpty(wb)
+            }
           })
-
-          const actionSheet = XLSX.utils.json_to_sheet(actions);
-          XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
-
-          this.counter++
-
-          this.exportFile(this.counter, this.total, wb)
-        } else {
-          this.passEmpty(wb)
-        }
       })
+
+    })
+
   }
 
   private fetchResponsePlanData(countryId: string, wb: WorkBook) {
@@ -689,7 +769,7 @@ export class ExportDataService {
     }
   }
 
-  public fetchCustomHazardNameForAlertsCountry(countryId) {
+  private fetchCustomHazardNameForAlertsCountry(countryId) {
     return new Promise((res,) => {
       this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
         query: {
@@ -709,7 +789,7 @@ export class ExportDataService {
               this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
                 .first()
                 .subscribe(obj => {
-                  customNameMap.set(alert.$key, obj.name)
+                  customNameMap.set(alert.otherName, obj.name)
                   customCounter++
 
                   if (totalCustomAlerts === customCounter) {
@@ -742,5 +822,42 @@ export class ExportDataService {
     return Object.keys(indicator.source).map(key => {
       return indicator.source[key]["link"] ? indicator.source[key]["name"] + " (" + indicator.source[key]["link"] + ")" : indicator.source[key]["name"]
     })
+  }
+
+  private fetchDepartmentsForAgencyAndCountry(agencyId, countryId) {
+    let depMap = new Map<string, string>()
+    return new Promise((res,) => {
+      this.settingService.getAgencyDepartments(agencyId)
+        .first()
+        .subscribe(agencyDepts => {
+          agencyDepts.forEach(dep => depMap.set(dep.id, dep.name))
+          this.settingService.getCountryLocalDepartments(agencyId, countryId)
+            .first()
+            .subscribe(countryDepts => {
+              countryDepts.forEach(cdept => depMap.set(cdept.id, cdept.name))
+              res(depMap)
+            })
+        })
+    })
+
+  }
+
+  private fetchNotesForActionUnderCountry(countryId) {
+    let notesNumberMap = new Map<string, number>()
+    return new Promise((res,) => {
+      this.af.database.object(Constants.APP_STATUS + "/note/" + countryId, {preserveSnapshot:true})
+        .first()
+        .subscribe(snap =>{
+          if (snap && snap.val()) {
+            Object.keys(snap.val()).forEach(key => {
+              notesNumberMap.set(key, Object.keys(snap.val()[key]).length)
+            })
+            res(notesNumberMap)
+          } else {
+            res(notesNumberMap)
+          }
+        })
+    })
+
   }
 }

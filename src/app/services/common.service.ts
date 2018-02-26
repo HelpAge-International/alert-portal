@@ -49,7 +49,6 @@ export class CommonService {
     let areaList = Object.keys(areas).map(key => Object.keys(areas[key]).map(id => areas[key][id]).reverse())
     let names = "";
     areaList.forEach(area => {
-      console.log(area)
       if (area.length == 1 || (area.length == 2 && area[0] == -1) || (area.length == 3 && area[0] == -1 && area[1] == -1)) {
         let country = area[0];
         if (area.length == 2) {
