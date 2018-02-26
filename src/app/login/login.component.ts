@@ -130,12 +130,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private showCoC(){
-    this.af.database.object(Constants.APP_STATUS + +"/system/"+"o8XIEoROEcZgFwzFeRpjtXMXnOr1"+"/coc", {preserveSnapshot: true})
+    //TODO Download the system obj here instead of the system id
+    this.af.database.object(Constants.APP_STATUS +"/system/o8XIEoROEcZgFwzFeRpjtXMXnOr1/", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((coc) => {
-        console.log("coc:"+coc);
-        if(coc){
-          this.cocText = coc;
+      .subscribe((snap) => {
+        if(snap){
+          this.cocText = snap.val().coc;
           this.loaderInactive = true;
           jQuery("#coc-window").modal("show");
         }else{
@@ -146,8 +146,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onAgreeCoC(){
     this.loaderInactive = false;
-    let data = {"latestCoCAgreed" : true};
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).set(data);
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestCoCAgreed").set(true);
     this.checkLogins();
   }
 
