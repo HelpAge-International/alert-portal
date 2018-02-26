@@ -98,10 +98,10 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
             .takeUntil(this.ngUnsubscribe)
             .subscribe((snap) => {
-                if(snap.val()){
-                  this.checkLogins();
-                }else{
+                if(snap.val() == false){
                   this.showCoC();
+                }else{
+                  this.checkLogins();
                 }
             });
 
@@ -130,11 +130,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private showCoC(){
-    this.af.database.object(Constants.APP_STATUS + +"system/"+"wFCEPYdAzCO2YLDKoYssas46t402/"+"/coc/", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + +"/system/"+"o8XIEoROEcZgFwzFeRpjtXMXnOr1"+"/coc", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        if(snap.val()){
-          this.cocText = snap.val();
+      .subscribe((coc) => {
+        console.log("coc:"+coc);
+        if(coc){
+          this.cocText = coc;
           this.loaderInactive = true;
           jQuery("#coc-window").modal("show");
         }else{
