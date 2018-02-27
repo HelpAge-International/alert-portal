@@ -991,7 +991,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
     if (!this.hasUsers) {
       this.hasUsers = true
-      if (this.networkUserType == NetworkUserAccountType.NetworkCountryAdmin) {
+      if (this.networkUserType == NetworkUserAccountType.NetworkCng serountryAdmin) {
         this.userService.getUser(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((user) => {

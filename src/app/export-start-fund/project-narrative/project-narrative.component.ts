@@ -29,6 +29,258 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private ResponsePlanSectors = ResponsePlanSectors;
   private responsePlan: ResponsePlan = new ResponsePlan;
 
+  private COUNTRIES = [
+    "Afghanistan",
+    "Åland Islands",
+    "Albania",
+    "Algeria",
+    "American Samoa",
+    "Andorra",
+    "Angola",
+    "Anguilla",
+    "Antarctica",
+    "Antigua and Barbuda",
+    "Argentina",
+    "Armenia",
+    "Aruba",
+    "Australia",
+    "Austria",
+    "Azerbaijan",
+    "Bahamas",
+    "Bahrain",
+    "Bangladesh",
+    "Barbados",
+    "Belarus",
+    "Belgium",
+    "Belize",
+    "Benin",
+    "Bermuda",
+    "Bhutan",
+    "Bolivia",
+    "Bonaire, Sint Eustatius and Saba",
+    "Bosnia and Herzegovina",
+    "Botswana",
+    "Bouvet Island",
+    "Brazil",
+    "British Indian Ocean Territory",
+    "Brunei",
+    "Bulgaria",
+    "Burkina Faso",
+    "Burundi",
+    "Cambodia",
+    "Cameroon",
+    "Canada",
+    "Cape Verde",
+    "Cayman Islands",
+    "Central African Republic",
+    "Chad",
+    "Chile",
+    "China",
+    "Christmas Island",
+    "Cocos (Keeling) Islands",
+    "Colombia",
+    "Comoros",
+    "Congo",
+    "Congo, the Democratic Republic of the",
+    "Cook Islands",
+    "Costa Rica",
+    "Ivory Coast",
+    "Croatia",
+    "Cuba",
+    "Curaçao",
+    "Cyprus",
+    "Czech Republic",
+    "Denmark",
+    "Djibouti",
+    "Dominica",
+    "Dominican Republic",
+    "Ecuador",
+    "Egypt",
+    "El Salvador",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Estonia",
+    "Ethiopia",
+    "Falkland Islands",
+    "Faroe Islands",
+    "Fiji",
+    "Finland",
+    "France",
+    "French Guiana",
+    "French Polynesia",
+    "French Southern Territories",
+    "Gabon",
+    "Gambia",
+    "Georgia",
+    "Germany",
+    "Ghana",
+    "Gibraltar",
+    "Greece",
+    "Greenland",
+    "Grenada",
+    "Guadeloupe",
+    "Guam",
+    "Guatemala",
+    "Guernsey",
+    "Guinea",
+    "Guinea-Bissau",
+    "Guyana",
+    "Haiti",
+    "Heard Island and McDonald Islands",
+    "Holy See (Vatican City State)",
+    "Honduras",
+    "Hong Kong",
+    "Hungary",
+    "Iceland",
+    "India",
+    "Indonesia",
+    "Iran, Islamic Republic of",
+    "Iraq",
+    "Ireland",
+    "Isle of Man",
+    "Israel",
+    "Italy",
+    "Jamaica",
+    "Japan",
+    "Jersey",
+    "Jordan",
+    "Kazakhstan",
+    "Kenya",
+    "Kiribati",
+    "Korea, Democratic People's Republic of",
+    "Korea, Republic of",
+    "Kuwait",
+    "Kyrgyzstan",
+    "Lao People's Democratic Republic",
+    "Latvia",
+    "Lebanon",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Liechtenstein",
+    "Lithuania",
+    "Luxembourg",
+    "Macao",
+    "Macedonia, the former Yugoslav Republic of",
+    "Madagascar",
+    "Malawi",
+    "Malaysia",
+    "Maldives",
+    "Mali",
+    "Malta",
+    "Marshall Islands",
+    "Martinique",
+    "Mauritania",
+    "Mauritius",
+    "Mayotte",
+    "Mexico",
+    "Micronesia, Federated States of",
+    "Moldova, Republic of",
+    "Monaco",
+    "Mongolia",
+    "Montenegro",
+    "Montserrat",
+    "Morocco",
+    "Mozambique",
+    "Myanmar",
+    "Namibia",
+    "Nauru",
+    "Nepal",
+    "Netherlands",
+    "New Caledonia",
+    "New Zealand",
+    "Nicaragua",
+    "Niger",
+    "Nigeria",
+    "Niue",
+    "Norfolk Island",
+    "Northern Mariana Islands",
+    "Norway",
+    "Oman",
+    "Pakistan",
+    "Palau",
+    "Palestinian Territory, Occupied",
+    "Panama",
+    "Papua New Guinea",
+    "Paraguay",
+    "Peru",
+    "Philippines",
+    "Pitcairn",
+    "Poland",
+    "Portugal",
+    "Puerto Rico",
+    "Qatar",
+    "Réunion",
+    "Romania",
+    "Russian Federation",
+    "Rwanda",
+    "Saint Barthélemy",
+    "Saint Helena, Ascension and Tristan da Cunha",
+    "Saint Kitts and Nevis",
+    "Saint Lucia",
+    "Saint Martin (French part)",
+    "Saint Pierre and Miquelon",
+    "Saint Vincent and the Grenadines",
+    "Samoa",
+    "San Marino",
+    "Sao Tome and Principe",
+    "Saudi Arabia",
+    "Senegal",
+    "Serbia",
+    "Seychelles",
+    "Sierra Leone",
+    "Singapore",
+    "Sint Maarten (Dutch part)",
+    "Slovakia",
+    "Slovenia",
+    "Solomon Islands",
+    "Somalia",
+    "South Africa",
+    "South Georgia and the South Sandwich Islands",
+    "South Sudan",
+    "Spain",
+    "Sri Lanka",
+    "Sudan",
+    "Suriname",
+    "Svalbard and Jan Mayen",
+    "Swaziland",
+    "Sweden",
+    "Switzerland",
+    "Syrian Arab Republic",
+    "Taiwan, Province of China",
+    "Tajikistan",
+    "Tanzania, United Republic of",
+    "Thailand",
+    "Timor-Leste",
+    "Togo",
+    "Tokelau",
+    "Tonga",
+    "Trinidad and Tobago",
+    "Tunisia",
+    "Turkey",
+    "Turkmenistan",
+    "Turks and Caicos Islands",
+    "Tuvalu",
+    "Uganda",
+    "Ukraine",
+    "United Arab Emirates",
+    "United Kingdom",
+    "United States",
+    "United States Minor Outlying Islands",
+    "Uruguay",
+    "Uzbekistan",
+    "Vanuatu",
+    "Venezuela",
+    "Vietnam",
+    "Virgin Islands, British",
+    "Virgin Islands, U.S.",
+    "Wallis and Futuna",
+    "Western Sahara",
+    "Yemen",
+    "Zambia",
+    "Zimbabwe"
+  ]
+
   private planLeadName: string = '';
   private planLeadEmail: string = '';
   private planLeadPhone: string = '';
@@ -47,7 +299,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
   private vulnerableGroupsToShow = [];
   private userPath: string;
   private systemAdminUid: string;
-
+  private agencyCountry: string;
 
   private agencyId: string;
   private networkCountryId: string;
@@ -105,11 +357,13 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           this.systemAdminUid = params["systemId"]
           this.downloadResponsePlanData();
           this.downloadAgencyData(null);
+          console.log(this.countryId, this.agencyId, this.networkCountryId, 'ID')
         } else {
           this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
             this.uid = user.uid;
             this.downloadResponsePlanData();
             this.downloadAgencyData(null);
+
           });
         }
       } else {
@@ -119,7 +373,9 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           this.downloadData();
         });
       }
+
     })
+
   }
 
   ngOnDestroy() {
@@ -143,6 +399,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           });
 
       });
+
   }
 
   private downloadDataLocalAgency() {
@@ -200,7 +457,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlan = responsePlan;
-        console.log(responsePlan);
+        console.log(responsePlan, 'check data here');
         this.configGroups(responsePlan);
 
         if (responsePlan.sectorsRelatedTo) {
@@ -225,9 +482,19 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
             if (name != null) {
               this.memberAgencyName = name.$value;
             }
+
+            console.log(agencyId, 'ID')
+            this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId + '/country')
+              .subscribe( country => {
+                this.agencyCountry = country.$value;
+              })
+
           });
+
         });
     };
+
+
 
     const networkUser = () => {
       this.af.database.object(Constants.APP_STATUS + "/agency/" + this.responsePlan.planLead + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
@@ -250,6 +517,13 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           });
   }
 
+  private getCountry() {
+    console.log(this.countryId, this.agencyId, this.networkCountryId, 'ID')
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/country')
+      .subscribe( country => {
+        console.log(country, 'this is the country');
+      })
+  }
 
   private bindProjectLeadData(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
@@ -268,6 +542,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           });
         });
     }
+
   }
 
   private bindProjectLeadDataLocalAgency(responsePlan: ResponsePlan) {
