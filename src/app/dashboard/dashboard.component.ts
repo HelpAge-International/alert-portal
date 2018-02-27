@@ -104,6 +104,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private networkMap: Map<string, string>;
   private localNetworks: any;
   private alertsLocalNetwork: Observable<any>;
+  private showCoCBanner: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -124,7 +125,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.systemId = systemId;
       this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
 
-      //get networks for country
+      this.checkCoCUpdated();
+
       this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(networkMap => {
@@ -177,6 +179,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }));
 
     });
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
   }
 
   ngOnDestroy() {

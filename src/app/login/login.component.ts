@@ -104,7 +104,6 @@ export class LoginComponent implements OnInit, OnDestroy {
                   this.checkLogins();
                 }
             });
-
           })
         .catch((error) => {
           // An error occured with logging in the user

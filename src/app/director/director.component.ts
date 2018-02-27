@@ -63,7 +63,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private countryIds: string[] = [];
   private countryOffices = [];
   private regionalCountryOffices = [];
-
+  private showCoCBanner: boolean;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -98,6 +98,9 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.userType = userType;
       this.agencyId = agencyId;
       this.systemAdminId = systemId;
+
+      this.checkCoCUpdated();
+
       if (this.userType == UserType.RegionalDirector) {
         this.userService.getRegionId(Constants.USER_PATHS[userType], this.uid)
           .takeUntil(this.ngUnsubscribe)
@@ -109,6 +112,16 @@ export class DirectorComponent implements OnInit, OnDestroy {
         this.loadData();
       }
     });
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
   }
 
   ngOnDestroy() {
