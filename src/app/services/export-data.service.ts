@@ -8,13 +8,21 @@ import {CommonService} from "./common.service";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "./user.service";
-import {GeoLocation, SkillType, StockType} from "../utils/Enums";
+import {
+  ActionLevel,
+  ActionStatus,
+  AlertLevels,
+  AlertStatus,
+  DurationType,
+  GeoLocation,
+  SkillType,
+  StockType
+} from "../utils/Enums";
 import {PartnerOrganisationService} from "./partner-organisation.service";
 import {Observable} from "rxjs/Rx";
 import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
-import {NoteService} from "./note.service";
 
 @Injectable()
 export class ExportDataService {
@@ -660,42 +668,50 @@ export class ExportDataService {
       })
   }
 
-  private fetchActionsData(agencyId: string, countryId: string, staffMap:Map<string,string>, wb: WorkBook) {
+  private fetchActionsData(agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook) {
     this.fetchDepartmentsForAgencyAndCountry(agencyId, countryId).then((departmentMap: Map<string, string>) => {
       console.log(departmentMap)
-      this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap:Map<string,number>) => {
+      this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap: Map<string, number>) => {
         console.log(noteNumberMap)
-        this.af.database.list(Constants.APP_STATUS + "/action/" + countryId)
-          .first()
-          .subscribe(actionList => {
-            if (actionList.length > 0) {
-              let actions = actionList.map(action => {
-                let obj = {}
-                obj["Action title"] = action["task"]
-                obj["Preparedness action level"] = this.translateService.instant(Constants.ACTION_LEVEL[action["level"]])
-                obj["Type"] = this.translateService.instant(Constants.ACTION_TYPE[action["type"]])
-                obj["Department"] = action["department"] ? departmentMap.get(action["department"]) : ""
-                obj["Assigned to"] = action["asignee"] ? staffMap.get(action["asignee"]) : ""
-                obj["Due Date"] = moment(action["dueDate"]).format("DD/MM/YYYY")
-                obj["Budget"] = action["budget"]
-                obj["Document Required"] = action["requireDoc"] ? "Yes" : "No"
-                obj["Status"] = action[""]
-                obj["Expires"] = action[""]
-                obj["Notes"] = noteNumberMap.get(action.$key) ? noteNumberMap.get(action.$key) : 0
-                obj["Completed with due date?"] = action[""]
-                return obj
+        this.fetchActionClockSettings(agencyId, countryId).then((expireDuration: number) => {
+          console.log("expire dutaion: " + expireDuration)
+          this.fetchAlertScenarioForCountry(countryId).then((alertScenarioMap: Map<string, boolean>) => {
+            console.log(alertScenarioMap)
+            this.af.database.list(Constants.APP_STATUS + "/action/" + countryId)
+              .first()
+              .subscribe(actionList => {
+                if (actionList.length > 0) {
+                  let actions = actionList.map(action => {
+                    let obj = {}
+                    obj["Action title"] = action["task"]
+                    obj["Preparedness action level"] = this.translateService.instant(Constants.ACTION_LEVEL[action["level"]])
+                    obj["Type"] = this.translateService.instant(Constants.ACTION_TYPE[action["type"]])
+                    obj["Department"] = action["department"] ? departmentMap.get(action["department"]) : ""
+                    obj["Assigned to"] = action["asignee"] ? staffMap.get(action["asignee"]) : ""
+                    obj["Due Date"] = moment(action["dueDate"]).format("DD/MM/YYYY")
+                    obj["Budget"] = action["budget"]
+                    obj["Document Required"] = action["requireDoc"] ? "Yes" : "No"
+                    obj["Status"] = this.translateService.instant(this.getActionStatus(expireDuration, action, alertScenarioMap))
+                    obj["Expires"] = this.getExpireDate(expireDuration, action)
+                    obj["Notes"] = noteNumberMap.get(action.$key) ? noteNumberMap.get(action.$key) : 0
+                    obj["Completed within due date?"] = action[""]
+                    return obj
+                  })
+
+                  const actionSheet = XLSX.utils.json_to_sheet(actions);
+                  XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
+
+                  this.counter++
+
+                  this.exportFile(this.counter, this.total, wb)
+                } else {
+                  this.passEmpty(wb)
+                }
               })
-
-              const actionSheet = XLSX.utils.json_to_sheet(actions);
-              XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
-
-              this.counter++
-
-              this.exportFile(this.counter, this.total, wb)
-            } else {
-              this.passEmpty(wb)
-            }
           })
+
+        })
+
       })
 
     })
@@ -718,6 +734,9 @@ export class ExportDataService {
             obj["Status"] = this.translateService.instant(Constants.RESPONSE_PLAN_STATUS[plan["status"]])
             obj["Completion percentage"] = toInteger(plan["sectionsCompleted"] / plan["totalSections"] * 100)
             obj["Last update"] = moment(plan["timeUpdated"]).format("DD/MM/YYYY")
+            obj["In-Progress Status"] = this.getTimeTrackingInfo(plan, "amber")
+            obj["Completed Status"] = ""
+            obj["Expired/Needs Reviewing Status"] = ""
             return obj
           })
 
@@ -845,9 +864,9 @@ export class ExportDataService {
   private fetchNotesForActionUnderCountry(countryId) {
     let notesNumberMap = new Map<string, number>()
     return new Promise((res,) => {
-      this.af.database.object(Constants.APP_STATUS + "/note/" + countryId, {preserveSnapshot:true})
+      this.af.database.object(Constants.APP_STATUS + "/note/" + countryId, {preserveSnapshot: true})
         .first()
-        .subscribe(snap =>{
+        .subscribe(snap => {
           if (snap && snap.val()) {
             Object.keys(snap.val()).forEach(key => {
               notesNumberMap.set(key, Object.keys(snap.val()[key]).length)
@@ -858,6 +877,227 @@ export class ExportDataService {
           }
         })
     })
+  }
+
+  private fetchActionClockSettings(agencyId, countryId) {
+    return new Promise((res,) => {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings/preparedness/", {preserveSnapshot: true})
+        .first()
+        .subscribe(snap => {
+          let durationType = snap.val().durationType;
+          let value = snap.val().value;
+          let expireDuration = 0
+          switch (durationType) {
+            case DurationType.Week: {
+              expireDuration = moment.duration(value, 'weeks').asMilliseconds()
+              break
+            }
+            case DurationType.Month : {
+              expireDuration = moment.duration(value, 'months').asMilliseconds()
+              break
+            }
+            case DurationType.Year : {
+              expireDuration = moment.duration(value, 'years').asMilliseconds()
+              break
+            }
+            default: {
+              throw Error("duration type is illegal!")
+            }
+          }
+          res(expireDuration)
+        })
+    })
+  }
+
+  private fetchAlertScenarioForCountry(countryId) {
+    let alertScenarioMap = new Map<string, boolean>()
+    return new Promise((res,) => {
+      this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId)
+        .first()
+        .subscribe(alertList => {
+          alertList
+            .filter(alert => (alert.alertLevel == AlertLevels.Red && this.checkAlertApproval(alert)))
+            .forEach(alert => {
+              alert.hazardScenario != -1 ? alertScenarioMap.set(alert.hazardScenario, true) : alertScenarioMap.set(alert.otherName, true)
+            })
+          res(alertScenarioMap)
+        })
+    })
+  }
+
+  private checkAlertApproval(alert): boolean {
+    let approveStatus = false
+    if (alert.approval) {
+      let approves = []
+      Object.keys(alert.approval).map(key => alert.approval[key]).map(item => Object.keys(item).map(id => item[id]))
+        .forEach(one => approves = approves.concat(one))
+      let temp = true
+      approves.forEach(approve => {
+        if (approve != AlertStatus.Approved) {
+          temp = false
+        }
+      })
+      approveStatus = temp
+    }
+    return approveStatus
+  }
+
+  private getExpireDate(defaultExpireDuration: number, action: any) {
+    let expireDate = moment((action.updatedAt ? action.updatedAt : action.createdAt) + defaultExpireDuration).format("DD/MM/YYYY")
+    if (action.frequencyValue && action.frequencyBase) {
+      switch (Number(action.frequencyBase)) {
+        case DurationType.Week : {
+          expireDate = moment(action.updatedAt + moment.duration(action.frequencyValue, 'weeks').asMilliseconds()).format("DD/MM/YYYY")
+          break
+        }
+        case DurationType.Month : {
+          expireDate = moment(action.updatedAt + moment.duration(action.frequencyValue, 'months').asMilliseconds()).format("DD/MM/YYYY")
+          break
+        }
+        case DurationType.Year : {
+          expireDate = moment(action.updatedAt + moment.duration(action.frequencyValue, 'years').asMilliseconds()).format("DD/MM/YYYY")
+          break
+        }
+        default : {
+          throw Error("local frequency value invalid!")
+        }
+      }
+    }
+    return expireDate
+  }
+
+  private getExpireValue(defaultExpireDuration: number, action: any) {
+    let expireValue = moment((action.updatedAt ? action.updatedAt : action.createdAt) + defaultExpireDuration).valueOf()
+    if (action.frequencyValue && action.frequencyBase) {
+      switch (Number(action.frequencyBase)) {
+        case DurationType.Week : {
+          expireValue = moment(action.updatedAt + moment.duration(action.frequencyValue, 'weeks').asMilliseconds()).valueOf()
+          break
+        }
+        case DurationType.Month : {
+          expireValue = moment(action.updatedAt + moment.duration(action.frequencyValue, 'months').asMilliseconds()).valueOf()
+          break
+        }
+        case DurationType.Year : {
+          expireValue = moment(action.updatedAt + moment.duration(action.frequencyValue, 'years').asMilliseconds()).valueOf()
+          break
+        }
+        default : {
+          throw Error("local frequency value invalid!")
+        }
+      }
+    }
+    return expireValue
+  }
+
+  private getActionStatus(expireDuration: number, action: any, alertScenarioMap: Map<string, boolean>) {
+    let status = ActionStatus.InProgress
+    if (action.isComplete) {
+      status = ActionStatus.Completed
+    } else if (!action.asignee) {
+      status = ActionStatus.Unassigned
+    } else if (moment().valueOf() > this.getExpireValue(expireDuration, action)) {
+      status = ActionStatus.Expired
+    } else {
+      if (action.level == ActionLevel.MPA) {
+        status = ActionStatus.InProgress
+      } else {
+        //need logic for apa with alert checking info
+        if (action.assignHazard) {
+          if (this.checkMapContainItemInList(action.assignHazard, alertScenarioMap)) {
+            status = ActionStatus.InProgress
+          } else {
+            status = ActionStatus.Inactive
+          }
+        } else {
+          if (alertScenarioMap.size > 0) {
+            status = ActionStatus.InProgress
+          } else {
+            status = ActionStatus.Inactive
+          }
+        }
+      }
+
+    }
+    return Constants.ACTION_STATUS[status]
+  }
+
+  private checkMapContainItemInList(list: number[], map: Map<string, boolean>): boolean {
+    let contains = false
+    list.forEach(item => {
+      if (CommonUtils.convertMapToKeysInArray(map).includes(item)) {
+        contains = true
+      }
+    })
+    return contains
+  }
+
+  private getTimeTrackingInfo(plan: any, status: string) {
+    if (!plan.timeTracking) {
+      return ""
+    }
+    let timeList = []
+    let timeSpentInAmber = []
+    let timeSpentInGreen = []
+    let timeSpentInRed = []
+    if (plan.timeTracking["timeSpentInAmber"]) {
+      plan.timeTracking["timeSpentInAmber"].forEach(item => {
+        timeList.push(item.start, item.finish)
+        timeSpentInAmber.push(item.start, item.finish)
+      })
+    }
+    if (plan.timeTracking["timeSpentInGreen"]) {
+      plan.timeTracking["timeSpentInGreen"].forEach(item => {
+        timeList.push(item.start, item.finish)
+        timeSpentInGreen.push(item.start, item.finish)
+      })
+    }
+    if (plan.timeTracking["timeSpentInRed"]) {
+      plan.timeTracking["timeSpentInRed"].forEach(item => {
+        timeList.push(item.start, item.finish)
+        timeSpentInRed.push(item.start, item.finish)
+      })
+    }
+    let now = moment().valueOf()
+    let sortedListTotal = timeList.map(item => {
+      if (item === -1) {
+        item = now
+      }
+      return item
+    }).sort((a,b) => a-b)
+    let totalDuration = sortedListTotal[sortedListTotal.length-1] - sortedListTotal[0]
+
+    let amberList = timeSpentInAmber.map(item => {
+      if (item === -1) {
+        item = now
+      }
+      return item
+    }).sort((a,b) => a-b)
+    console.log(amberList)
+    let amberDuration = amberList[amberList.length - 1] - amberList[0]
+
+    let greenList = timeSpentInGreen.map(item => {
+      if (item === -1) {
+        item = now
+      }
+      return item
+    }).sort((a,b) => a-b)
+    console.log(greenList)
+    let greenDuration = greenList[greenList.length - 1] - greenList[0]
+
+    let redList = timeSpentInRed.map(item => {
+      if (item === -1) {
+        item = now
+      }
+      return item
+    }).sort((a,b) => a-b)
+    console.log(redList)
+    let redDuration = redList[redList.length - 1] - redList[0]
+
+    //do final calculation stuff
+    console.log(amberDuration/totalDuration*100)
+    console.log(greenDuration/totalDuration*100)
+    console.log(redDuration/totalDuration*100)
 
   }
 }
