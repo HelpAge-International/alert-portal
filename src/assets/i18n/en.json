@@ -287,6 +287,10 @@
   "OTHER":"Other",
   "SUCCESSFULLY_VALIDATE_PARTNERSHIP":"Successfully validate partnership!",
   "GLOBAL":{
+    "SUCCESS_COC_AGREE":"Thank you for agreeing to the Code of Conduct",
+    "SUCCESS_TOC_AGREE":"Thank you for agreeing to the Terms and Conditions",
+    "COC_TITLE": "Code of Conduct",
+    "TOC_TITLE": "Terms and Conditions",
     "LANGUAGES":{
       "EN": "English",
       "FR": "French",

@@ -20,7 +20,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   uid: string;
   private agencyToUpdate;
   private doActivate;
-
+  private showCoCBanner;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
@@ -35,7 +35,18 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
           orderByChild: 'name'
         }
       });
+      this.checkCoCUpdated();
     });
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
   }
 
   ngOnDestroy() {

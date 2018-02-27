@@ -356,6 +356,8 @@ import { PageFooterComponent } from './commons/page-footer/page-footer.component
 import { PageFooterTocComponent } from './commons/page-footer-toc/page-footer-toc.component';
 import {SystemSettingsTocComponent} from "./system-admin/system-settings/system-settings-toc/system-settings-toc.component";
 import {SystemSettingsCocComponent} from "./system-admin/system-settings/system-settings-coc/system-settings-coc.component";
+import { ViewCocComponent } from './commons/view-coc/view-coc.component';
+import { ViewTocComponent } from './commons/view-toc/view-toc.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -715,6 +717,8 @@ const firebaseAuthConfig = {
     SystemSettingsCocComponent,
     PageFooterComponent,
     PageFooterTocComponent,
+    ViewCocComponent,
+    ViewTocComponent,
   ],
   imports: [
     CookieLawModule,

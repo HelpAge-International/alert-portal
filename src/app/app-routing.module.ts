@@ -262,6 +262,8 @@ import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/loca
 import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
+import {ViewCocComponent} from "./commons/view-coc/view-coc.component";
+import {ViewTocComponent} from "./commons/view-toc/view-toc.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -302,6 +304,7 @@ const routes: Routes = [
   {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
   {path: 'system-admin/system-settings/system-settings-toc', component: SystemSettingsTocComponent},
   {path: 'system-admin/system-settings/system-settings-coc', component: SystemSettingsCocComponent},
+  {path: 'system-admin/account-settings/view-coc/view-coc', component: ViewCocComponent},
   {
     path: 'system-admin/system-settings/system-settings-response-plans',
     component: SystemSettingsResponsePlansComponent
@@ -692,6 +695,7 @@ const routes: Routes = [
   {path: 'local-agency/agency-account-settings/agency-change-password', component: LocalAgencyChangePasswordComponent},
   {path: 'local-agency/agency-account-details', component: LocalAgencyAccountDetailsComponent},
   {path: 'local-agency/dashboard/dashboard-seasonal-calendar', component: LocalAgencyDashboardSeasonalCalendarComponent},
+
   /**
    * Maintanace page
    * */
