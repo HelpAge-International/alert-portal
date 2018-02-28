@@ -59,9 +59,28 @@ export class MinPrepComponent implements OnInit, OnDestroy {
   }
 
   protected deleteAction() {
-    this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + this.actionToDelete.id).set(null)
+    // Delete reference CHS
+    let actionToDelete = this.actionToDelete.id;
+    this.af.database.object(Constants.APP_STATUS + "/actionCHS/" + this.systemUid + "/" + actionToDelete).set(null)
       .then(_ => {
-        jQuery("#delete-action").modal("hide");
+        // Deleteing custom action
+        this.af.database.object(Constants.APP_STATUS + "/action/", {preserveSnapshot: true})
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((snap) => {
+              if (snap.val() != null) {
+                for (let countryId in snap.val()) {
+                  if (snap.val().hasOwnProperty(countryId)) {
+                    for (let actionId in snap.val()[countryId]) {
+                      if (actionId == actionToDelete) {
+                        this.af.database.object(Constants.APP_STATUS + "/action/" + countryId + "/" + actionToDelete).set(null);
+                        this.af.database.object(Constants.APP_STATUS + "/note/" + countryId + "/" + actionToDelete).set(null);
+                      }
+                    }
+                  }
+                }
+              }
+              jQuery("#delete-action").modal("hide");
+            });
       });
   }
 
