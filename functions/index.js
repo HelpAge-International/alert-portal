@@ -37,6 +37,20 @@ const PLAN_NEEDREVIEWING = 3
 const NOTIFICATION_ALERT = 0
 const NOTIFICATION_INDICATOR_ASSIGNED = 1
 const NOTIFICATION_INDICATOR_RESCHEDULE = 2
+const NOTIFICATION_ACTION_ASSIGNED = 3
+const NOTIFICATION_ACTION_RESCHEDULE = 4
+const NOTIFICATION_ACTION_COUNTRY_RESCHEDULE = 5
+const NOTIFICATION_ACTION_LOCAL_NETWORK_RESCHEDULE = 6
+const NOTIFICATION_ACTION_NETWORK_COUNTRY_RESCHEDULE = 7
+const NOTIFICATION_RESPONSE_PLAN_RESCHEDULE = 8
+const NOTIFICATION_RESPONSE_PLAN_COUNTRY_RESCHEDULE = 9
+
+const NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED = 0
+const NOTIFICATION_SETTING_RED_ALERT_REQUEST = 1
+const NOTIFICATION_SETTING_UPDATE_HAZARD_INDICATOR = 2
+const NOTIFICATION_SETTING_MPA_APA_EXPIRED = 3
+const NOTIFICATION_SETTING_RESPONSE_PLAN_EXPIRED = 4
+const NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED = 5
 
 const HAZARDS = {
   "0": "Cold Wave",
@@ -4467,15 +4481,30 @@ exports.sendIndicatorAssignedMobileNotification_SAND = functions.database.ref('/
     return sendIndicatorAssignedMobileNotification(event, "sand")
   })
 
+exports.sendIndicatorAssignedMobileNotification_TEST = functions.database.ref('/test/indicator/{hazardId}/{indicatorId}/')
+  .onWrite(event => {
+    return sendIndicatorAssignedMobileNotification(event, "test")
+  })
+
 function sendIndicatorAssignedMobileNotification(event, env){
   const preIndicatorData = event.data.previous.val();
   const currIndicatorData = event.data.current.val();
 
-  const preIndicatorAssignee = preIndicatorData.assignee
-  const currIndicatorAssignee = currIndicatorData.assignee
+  var preIndicatorAssignee = null
+  var currIndicatorAssignee = null
 
-  const preIndicatorDueDate = preIndicatorData.dueDate
-  const currIndicatorDueDate = currIndicatorData.dueDate
+  var preIndicatorDueDate = null
+  var currIndicatorDueDate = null
+
+  if(preIndicatorData){
+    preIndicatorAssignee = preIndicatorData.assignee
+    preIndicatorDueDate = preIndicatorData.dueDate
+  }
+
+  if(currIndicatorData){
+    currIndicatorAssignee = currIndicatorData.assignee
+    currIndicatorDueDate = currIndicatorData.dueDate
+  }
 
   const hazardId = event.params.hazardId
   const indicatorId = event.params.indicatorId
@@ -4484,20 +4513,289 @@ function sendIndicatorAssignedMobileNotification(event, env){
   var assignedNotification = createIndicatorAssignedNotification(currIndicatorData, hazardId, indicatorId)
 
   var promises = []
+  console.log("SENDING: " + currIndicatorAssignee)
 
-  if(currIndicatorDueDate != preIndicatorDueDate){
-    promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
-  }
-  else if(currIndicatorAssignee != preIndicatorAssignee){
-    promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
-    promises.push(sendNotification(env, assignedNotification, currIndicatorAssignee))
+  if(currIndicatorAssignee != preIndicatorAssignee){
+      console.log("SENDING: " + currIndicatorAssignee)
+    if(currIndicatorAssignee != null){
+      promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
+      promises.push(sendNotification(env, assignedNotification, currIndicatorAssignee))
+    }
     if(preIndicatorAssignee != null){
       promises.push(sendNotification(env, rescheduleNotification, preIndicatorAssignee))
     }
   }
+  else if(currIndicatorDueDate != preIndicatorDueDate){
+    promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
+  }
 
   return Promise.all(promises)
+}
 
+exports.sendResponsePlanApprovalNotification_SAND = functions.database.ref('/sand/responsePlan/{groupId}/{responsePlanId}/approval/{groupName}/{approverId}')
+  .onWrite(event => {
+    return sendResponsePlanApprovalNotification(event, "sand")
+  })
+exports.sendResponsePlanApprovalNotification_TEST = functions.database.ref('/test/responsePlan/{groupId}/{responsePlanId}/approval/{groupName}/{approverId}')
+  .onWrite(event => {
+    return sendResponsePlanApprovalNotification(event, "test")
+  })
+
+function sendResponsePlanApprovalNotification(event, env){
+  const preData = event.data.previous.val();
+  const currData = event.data.current.val();
+
+  const approverId = event.params.approverId
+  const groupId = event.params.groupId
+  const responsePlanId = event.params.responsePlanId
+
+  const groupName = event.params.groupName
+
+  if(preData != currData && (currData == PLAN_WAITINGAPPROVAL || currData == PLAN_REJECTED)){
+    return admin.database().ref(`/${env}/responsePlan/${groupId}/${responsePlanId}`).once('value').then(responsePlanSnap => {
+      const responsePlan = responsePlanSnap.val()
+
+      if(currData == PLAN_WAITINGAPPROVAL) {
+        const notification = createResponsePlanApprovalSubmittedNotification(responsePlan);
+        if(groupName == "countryDirector"){
+          return admin.database().ref(`/${env}/directorCountry/${approverId}`).once('value').then(directorCountrySnap => {
+            return sendNotification(env, notification, directorCountrySnap.val())
+          })
+        }
+        else if(groupName == "globalDirector"){
+          return admin.database().ref(`/${env}/globalDirector`).orderByChild(`agencyAdmin/${approverId}`).equalTo(true).once('value').then(globalDirectorSnap => {
+
+            return globalDirectorSnap.forEach(function(childSnapshot) {
+              var key = childSnapshot.key;
+              return sendNotification(env, notification, key)
+            });
+          })
+        }
+        else if(groupName == "regionDirector"){
+          return admin.database().ref(`/${env}/directorRegion/${approverId}`).once('value').then(directorRegionSnap => {
+            return sendNotification(env, notification, directorRegionSnap.val())
+          })
+        }
+        else if(groupName == "partner"){
+          return sendNotification(env, notification, approverId)
+        }
+      }
+      else if(currData == PLAN_REJECTED){
+        console.log("Plan rejected.")
+        const notification = createResponsePlanApprovalRejectedNotification(responsePlan)
+        sendCountryNetworkNetworkCountryNotification(env, notification, groupId, NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED)
+      }
+    });
+  }
+
+}
+
+exports.countryOfficeClockSettingsChange_SAND = functions.database.ref('/sand/countryOffice/{agencyId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "sand")
+  })
+exports.countryOfficeClockSettingsChange_TEST = functions.database.ref('/test/countryOffice/{agencyId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "test")
+  })
+
+function countryOfficeClockSettingsChange(event, env){
+
+  const preClockSettingsData = event.data.previous.val()
+  const currClockSettingsData = event.data.current.val()
+
+  const agencyId = event.params.agencyId
+  const countryId = event.params.countryId
+
+  const prePreparednessClockSettings = preClockSettingsData.preparedness
+  const currPreparednessClockSettings = currClockSettingsData.preparedness
+
+  const preResponsePlanClockSettings = preClockSettingsData.responsePlans
+  const currResponsePlanClockSettings = currClockSettingsData.responsePlans
+
+  if(prePreparednessClockSettings != currPreparednessClockSettings){
+    var notification = createActionCountryRescheduleNotification(agencyId, countryId)
+    return sendNotificationToCountryUsers(env, notification, countryId)
+  }
+  if(preResponsePlanClockSettings != currResponsePlanClockSettings){
+    var notification = createResponsePlanCountryRescheduleNotification(agencyId, countryId)
+    return sendNotificationToCountryUsers(env, notification, countryId)
+  }
+}
+
+exports.networkClockSettingsChange_SAND = functions.database.ref('/sand/network/{networkId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "sand")
+  })
+exports.networkClockSettingsChange_TEST = functions.database.ref('/test/network/{networkId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "test")
+  })
+
+function networkClockSettingsChange(event, env){
+
+  const preClockSettingsData = event.data.previous.val()
+  const currClockSettingsData = event.data.current.val()
+
+  const networkId = event.params.networkId
+
+  const prePreparednessClockSettings = preClockSettingsData.preparedness
+  const currPreparednessClockSettings = currClockSettingsData.preparedness
+
+  if(prePreparednessClockSettings != currPreparednessClockSettings){
+    var notification = createActionNetworkRescheduleNotification(networkId)
+    return sendNotificationToNetworkUsers(env, notification, networkId)
+  }
+}
+
+
+exports.networkCountryClockSettingsChange_SAND = functions.database.ref('/sand/networkCountry/{networkId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return networkCountryClockSettingsChange(event, "sand")
+  })
+exports.networkCountryClockSettingsChange_TEST = functions.database.ref('/test/networkCountry/{networkId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return networkCountryClockSettingsChange(event, "test")
+  })
+
+function networkCountryClockSettingsChange(event, env){
+
+  const preClockSettingsData = event.data.previous.val()
+  const currClockSettingsData = event.data.current.val()
+
+  const networkId = event.params.networkId
+  const countryId = event.params.countryId
+
+  const prePreparednessClockSettings = preClockSettingsData.preparedness
+  const currPreparednessClockSettings = currClockSettingsData.preparedness
+
+  if(prePreparednessClockSettings != currPreparednessClockSettings){
+    var notification = createActionNetworkCountryRescheduleNotification(networkId, countryId)
+    return sendNotificationToCountryUsers(env, notification, countryId)
+  }
+}
+
+
+exports.sendActionMobileNotification_SAND = functions.database.ref('/sand/action/{groupId}/{actionId}/')
+  .onWrite(event => {
+    return sendActionMobileNotification(event, "sand")
+  })
+exports.sendActionMobileNotification_TEST = functions.database.ref('/test/action/{groupId}/{actionId}/')
+  .onWrite(event => {
+    return sendActionMobileNotification(event, "test")
+  })
+
+function sendActionMobileNotification(event, env){
+  const preActionData = event.data.previous.val();
+  const currActionData = event.data.current.val();
+
+  var preActionAssignee = null
+  var currActionAssignee = null
+  var preActionDueDate = null
+  var currActionDueDate = null
+  var preActionCompletedAt = null
+  var currActionCompletedAt = null
+  var preActionUpdatedAt = null
+  var currActionUpdatedAt = null
+  var preActionCreatedAt = null
+  var currActionCreatedAt = null
+  var preActionFrequencyBase = null
+  var currActionFrequencyBase = null
+  var preActionFrequencyValue = null
+  var currActionFrequencyValue = null
+
+  if(preActionData != null){
+    preActionAssignee = preActionData.asignee
+    preActionDueDate = preActionData.dueDate
+    preActionCompletedAt = preActionData.isCompleteAt
+    preActionUpdatedAt = preActionData.updatedAt
+    preActionCreatedAt = preActionData.createdAt
+    preActionFrequencyBase = preActionData.frequencyBase
+    preActionFrequencyValue = preActionData.frequencyValue
+  }
+
+  if(currActionData != null){
+    currActionAssignee = currActionData.asignee
+    currActionDueDate = currActionData.dueDate
+    currActionCompletedAt = currActionData.isCompleteAt
+    currActionUpdatedAt = currActionData.updatedAt
+    currActionCreatedAt = currActionData.createdAt
+    currActionFrequencyBase = currActionData.frequencyBase
+    currActionFrequencyValue = currActionData.frequencyValue
+  }
+  
+  const groupId = event.params.groupId
+  const actionId = event.params.actionId
+
+  if(currActionData.type == 1 || currActionData.type == 2){
+    var rescheduleNotification = createActionRescheduleNotification(currActionData, groupId, actionId)
+    var assignedNotification = createActionAssignedNotification(currActionData, groupId, actionId)
+
+    var promises = []
+
+    if(currActionAssignee != preActionAssignee){
+      if(currActionAssignee != null){
+        promises.push(sendNotification(env, rescheduleNotification, currActionAssignee))
+        promises.push(sendNotification(env, assignedNotification, currActionAssignee))
+      }
+      if(preActionAssignee != null){
+        promises.push(sendNotification(env, rescheduleNotification, preActionAssignee))
+      }
+    }
+    else if(currActionDueDate != preActionDueDate || 
+      currActionCompletedAt != preActionCompletedAt ||
+      currActionUpdatedAt != preActionUpdatedAt ||
+      currActionCreatedAt != preActionCreatedAt ||
+      currActionFrequencyBase != preActionFrequencyBase ||
+      currActionFrequencyValue != preActionFrequencyValue
+      ){
+      promises.push(sendNotification(env, rescheduleNotification, currActionAssignee))
+    }
+
+    return Promise.all(promises)
+  }
+}
+
+exports.sendResponsePlanMobileNotification_SAND = functions.database.ref('/sand/action/{groupId}/{responsePlanId}/')
+  .onWrite(event => {
+    return sendResponsePlanMobileNotification(event, "sand")
+  })
+exports.sendResponsePlanMobileNotification_TEST = functions.database.ref('/test/action/{groupId}/{responsePlanId}/')
+  .onWrite(event => {
+    return sendResponsePlanMobileNotification(event, "test")
+  })
+
+function sendResponsePlanMobileNotification(event, env){
+  const preResponsePlanData = event.data.previous.val();
+  const currResponsePlanData = event.data.current.val();
+
+  var preResponsePlanTimeCreated = null
+  var currResponsePlanTimeCreated = null
+  var preResponsePlanTimeUpdated = null
+  var currResponsePlanTimeUpdated = null
+
+  if(preResponsePlanData != null){
+    preResponsePlanTimeCreated = preResponsePlanData.timeCreated
+    preResponsePlanTimeUpdated = preResponsePlanData.timeUpdated
+  }
+  if(currResponsePlanData != null){
+    currResponsePlanTimeCreated = currResponsePlanData.timeCreated
+    currResponsePlanTimeUpdated = currResponsePlanData.timeUpdated
+  }
+  //For Expiration
+
+  const groupId = event.params.groupId
+  const responsePlanId = event.params.responsePlanId
+
+  var rescheduleNotification = createResponsePlanRescheduleNotification(groupId, responsePlanId)
+
+  if(
+    (currResponsePlanTimeCreated != preResponsePlanTimeCreated ||
+    currResponsePlanTimeUpdated != preResponsePlanTimeUpdated) &&
+    currResponsePlanAssignee != null
+    ){
+    return sendNotification(env, rescheduleNotification, currResponsePlanAssignee)
+  }
 }
 
 exports.sendAlertMobileNotification_SAND = functions.database.ref('/sand/alert/{id}/{alertId}')
@@ -4545,50 +4843,93 @@ function sendAlertMobileNotification(event, env){
         alert = alertSnap.val()
         if(toGreenAmber){
           let notification = createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel)
-          return sendCountryNetworkNetworkCountryNotification(env, notification, id, 0)
+          return sendCountryNetworkNetworkCountryNotification(env, notification, id, NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED)
         }
         else if(toApprovedRed){
           let notification = createRedAlertApprovedNotification(alert, alertId)
-          return sendCountryNetworkNetworkCountryNotification(env, notification, id, 0)
+          return sendCountryNetworkNetworkCountryNotification(env, notification, id, NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED)
         }
         else if(redAlertRequested){
           let notification = createRedAlertRequestedNotification(alert, alertId, preAlertLevel, currAlertLevel)
-          return sendCountryNetworkNetworkCountryNotification(env, notification, id, 1)
+          return sendCountryNetworkNetworkCountryNotification(env, notification, id, NOTIFICATION_SETTING_RED_ALERT_REQUEST)
         }
       })
     }
   }
 }
 
+function sendNotificaitonToLocalNetworkUsers(env, notification, id, notificationSetting){
+  let networkPromise = admin.database().ref(`/${env}/network/${id}`).once('value');
+
+  return networkPromise.then(networkSnap => {
+    let network = networkSnap.val()
+
+    if(network){
+      let agencyPromises = []
+      for (var agencyName in network.agencies) {
+        if (network.agencies.hasOwnProperty(agencyName) && network.agencies[agencyName].hasOwnProperty('countryCode') && network.agencies[agencyName].isApproved) {
+          let countryId = network.agencies[agencyName].countryCode
+          agencyPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
+        }
+      }            
+      return Promise.all(agencyPromises)
+    }
+    else{
+      return Promise.reject(new Error('Network doesnt exist'))
+    }            
+  })
+}
+
+function sendNotificationToNetworkCountry(env, notification, id, notificationSetting){
+  //Sorry for the climb
+  return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
+    let networkCountryBase = networkCountryBaseSnap.val()
+    for (var networkId in networkCountryBase) {
+      //networkCountry/{networkId}
+      if (networkCountryBase.hasOwnProperty(networkId)) {
+        for(var networkCountryId in networkCountryBase[networkId]){
+          //networkCountry/{networkId}/{networkCountryId}
+          if(networkCountryBase[networkId].hasOwnProperty(networkCountryId)){
+            if(networkCountryId == id){
+              let networkCountry = networkCountryBase[networkId][networkCountryId]
+              let networkCountryPromises = []
+              if(networkCountry.agencyCountries){
+                for(var agencyId in networkCountry.agencyCountries){
+                  //networkCountry/{networkId}/{networkCountryId}/{agencyId*ignored*}
+                  if(networkCountry.agencyCountries.hasOwnProperty(agencyId)){
+                    for(var countryId in networkCountry.agencyCountries[agencyId]){
+                      //networkCountry/{networkId}/{networkCountryId}/{countryId*ignored*}/{countryId}/
+                      if(networkCountry.agencyCountries[agencyId].hasOwnProperty(countryId)){
+                        var country = networkCountry.agencyCountries[agencyId][countryId]
+                        if(country.isApproved){
+                          networkCountryPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              return Promise.all(networkCountryPromises)
+            }
+          }
+        }
+      }
+    }
+    return Promise.reject(new Error('Network Country doesnt exist'))
+  })
+}
+
 //I know.. Country, Network, or NetworkCountry
 function sendCountryNetworkNetworkCountryNotification(env, notification, id, notificationSetting){
-  return sendNotificationToCountryUsers(env, notification, id, notificationSetting).then(
+  return sendNotificationToCountryUsers(env, notification, id, notificationSetting)
+  .then(
     //Success
     function(){
       return Promise.resolve()
     },
     //Fail
     function(error){
-      let networkPromise = admin.database().ref(`/${env}/network/${id}`).once('value');
-
-      return networkPromise.then(networkSnap => {
-        let network = networkSnap.val()
-
-        
-        if(network){
-          let agencyPromises = []
-          for (var agencyName in network.agencies) {
-            if (network.agencies.hasOwnProperty(agencyName) && network.agencies[agencyName].hasOwnProperty('countryCode') && network.agencies[agencyName].isApproved) {
-              let countryId = network.agencies[agencyName].countryCode
-              agencyPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
-            }
-          }            
-          return Promise.all(agencyPromises)
-        }
-        else{
-          return Promise.reject(new Error('Network doesnt exist'))
-        }            
-      })
+      return sendNotificationToLocalNetworkUsers(env, notification, id, notificationSetting);
     }
   )
   .then(
@@ -4596,48 +4937,13 @@ function sendCountryNetworkNetworkCountryNotification(env, notification, id, not
       return Promise.resolve()
     },
     function(error){
-
-      //Sorry for the climb
-      return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
-        let networkCountry = networkCountrySnap.val()
-        for (var networkCountryId in networkCountry) {
-          //networkCountry/{networkCountryId}
-          if (networkCountry.hasOwnProperty(networkCountryId)) {
-            for(var networkCountryAlertId in networkCountry[networkCountryId]){
-              //networkCountry/{networkCountryId}/{networkCountryAlertId}
-              if(networkCountry[networkCountryId].hasOwnProperty(networkCountryAlertId)){
-                if(networkCountryAlertId == id){
-                  let networkCountryAlert = networkCountry[networkCountryId][networkCountryAlertId]
-
-                  let networkCountryPromises = []
-                  if(networkCountryAlert.agencyCountries){
-                    for(var agencyCountryId in networkCountryAlert.agencyCountries){
-                      //networkCountry/{networkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}
-
-                      if(networkCountryAlert.agencyCountries.hasOwnProperty(agencyCountryId)){
-                        for(var countryId in networkCountryAlert.agencyCountries[agencyCountryId]){
-                          //networkCountry/{networkCountryId}/{networkCountryAlertId}/{agencyCountryId*ignored*}/{countryId}/
-                          if(networkCountryAlert.agencyCountries[agencyCountryId].hasOwnProperty(countryId)){
-                            var country = networkCountryAlert.agencyCountries[agencyCountryId][countryId]
-                            if(country.isApproved){
-                              networkCountryPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-        
-                  return Promise.all(networkCountryPromises)
-                }
-              }
-            }   
-          }
-        }
-        return Promise.reject(new Error('Network Country doesnt exist'))
-      })
+      return sendNotificationToNetworkCountry(env, notification, id, notificationSetting)
     }
   )
+}
+
+function sendNotificationToCountryUsers(env, notification, countryId){
+  return sendNotificationToCountryUsers(env, notification, countryId, null)
 }
 
 function sendNotificationToCountryUsers(env, notification, countryId, notificationSetting){
@@ -4649,8 +4955,13 @@ function sendNotificationToCountryUsers(env, notification, countryId, notificati
       var sendAlertPromises = []
       for (var userId in countryGroup.countryallusersgroup) {              
         if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {   
-          //env, payload, userId, countryId, notificationGroup               
-          sendAlertPromises.push(sendNotificationWithSetting(env, notification, userId, countryId, notificationSetting))
+          //env, payload, userId, countryId, notificationGroup
+          if(notificationSetting == null){            
+            sendAlertPromises.push(sendNotification(env, notification, userId))
+          }
+          else{
+            sendAlertPromises.push(sendNotificationWithSetting(env, notification, userId, countryId, notificationSetting))
+          }
         }
       }
       return Promise.all(sendAlertPromises)
@@ -4720,6 +5031,96 @@ function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId)
         'indicatorId': indicatorId,
         'hazardId': hazardId,
         'type': NOTIFICATION_INDICATOR_RESCHEDULE.toString()
+      }
+    }
+}
+
+function createActionAssignedNotification(action, groupId, actionId){
+  return {
+      'notification': {
+          'title': `An ${action.type == 1 ? "minimum" : "advanced"} has been assigned to you`,
+          'body': `The following ${action.type == 1 ? "minimum" : "advanced"} preparedness action: ${action.task} has been assigned to you`
+      },
+      'data': {
+        'actionId': actionId,
+        'groupId': groupId,
+        'actionType': action.type.toString(),
+        'type': NOTIFICATION_ACTION_ASSIGNED.toString()
+      }
+    }
+}
+
+function createActionRescheduleNotification(action, groupId, actionId){
+  console.log("Sending reschedule: " + groupId + " - " + actionId)
+  return {
+      'data': {
+        'actionId': actionId,
+        'groupId': groupId,
+        'actionType': action.type.toString(),
+        'type': NOTIFICATION_ACTION_RESCHEDULE.toString()
+      }
+    }
+}
+function createResponsePlanRescheduleNotification(groupId, responsePlanId){
+  return {
+      'data': {
+        'responsePlanId': responsePlanId,
+        'groupId': groupId,
+        'type': NOTIFICATION_RESPONSE_PLAN_RESCHEDULE.toString()
+      }
+    }
+}
+
+function createActionCountryRescheduleNotification(agencyId, countryId){
+  return {
+      'data': {
+        'agencyId': agencyId,
+        'countryId': countryId,
+        'type': NOTIFICATION_ACTION_COUNTRY_RESCHEDULE.toString()
+      }
+    }
+}
+
+function createResponsePlanCountryRescheduleNotification(agencyId, countryId){
+  return {
+      'data': {
+        'agencyId': agencyId,
+        'countryId': countryId,
+        'type': NOTIFICATION_RESPONSE_PLAN_COUNTRY_RESCHEDULE.toString()
+      }
+    }
+}
+
+function createActionLocalNetworkRescheduleNotification(networkId){
+  return {
+      'data': {
+        'networkId': networkId,
+        'type': NOTIFICATION_ACTION_LOCAL_NETWORK_RESCHEDULE.toString()
+      }
+    }
+}
+function createActionNetworkCountryRescheduleNotification(networkId, countryId){
+  return {
+      'data': {
+        'networkId': networkId,
+        'countryId': countryId,
+        'type': NOTIFICATION_ACTION_NETWORK_COUNTRY_RESCHEDULE.toString()
+      }
+    }
+}
+function createResponsePlanApprovalSubmittedNotification(responsePlan){
+  return {
+      'notification': {
+          'title': "A response plan has been submitted for approval",
+          'body': `The following response plan: ${responsePlan.name} has been submitted for approval`
+      }
+    }
+}
+function createResponsePlanApprovalRejectedNotification(responsePlan){
+  return {
+      'notification': {
+          'title': "A response plan has been rejected",
+          'body': `The following response plan: ${responsePlan.name} has been rejected`
       }
     }
 }
