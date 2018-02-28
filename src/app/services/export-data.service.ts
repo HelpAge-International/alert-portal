@@ -48,7 +48,6 @@ export class ExportDataService {
 
     //fetch country alert data
     this.fetchCustomHazardNameForAlertsCountry(countryId).then((customNameMap: Map<string, string>) => {
-      console.log(customNameMap)
       //fetch alerts data
       this.fetchCountryAlertsData(countryId, customNameMap, areaContent, wb);
     })
@@ -103,20 +102,7 @@ export class ExportDataService {
         let allIndicators = []
         //first fetch country context indicators
         let indicators = countryIndicators.map(item => {
-          let obj = {}
-          obj["Hazard"] = "Country Context"
-          obj["Indicator Name"] = item["name"]
-          obj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
-          obj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
-          obj["Green trigger name"] = item["trigger"][0]["triggerValue"]
-          obj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
-          obj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
-          obj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
-          obj["Red trigger name"] = item["trigger"][2]["triggerValue"]
-          obj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
-          obj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
-          obj["Location"] = this.getIndicatorLocation(item, areaContent)
-          return obj
+          return this.transformIndicator(item, staffMap, areaContent, "Country Context")
         })
         allIndicators = allIndicators.concat(indicators)
 
@@ -132,39 +118,13 @@ export class ExportDataService {
                   .subscribe(hazardIndicatorList => {
                     //dealing with pre-defined hazard
                     let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario != -1).map(item => {
-                      let indicatorObj = {}
-                      indicatorObj["Hazard"] = this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario])
-                      indicatorObj["Indicator Name"] = item["name"]
-                      indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
-                      indicatorObj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
-                      indicatorObj["Green trigger name"] = item["trigger"][0]["triggerValue"]
-                      indicatorObj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
-                      indicatorObj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
-                      indicatorObj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
-                      indicatorObj["Red trigger name"] = item["trigger"][2]["triggerValue"]
-                      indicatorObj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
-                      indicatorObj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
-                      indicatorObj["Location"] = this.getIndicatorLocation(item, areaContent)
-                      return indicatorObj
+                      return this.transformIndicator(item, staffMap, areaContent, this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario]))
                     })
                     allIndicators = allIndicators.concat(hazardIndicators)
 
                     //dealing with custom hazards
                     let hazardIndicatorsCustom = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario == -1).map(item => {
-                      let indicatorObj = {}
-                      indicatorObj["Hazard"] = item.hazardScenario.otherName
-                      indicatorObj["Indicator Name"] = item["name"]
-                      indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
-                      indicatorObj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
-                      indicatorObj["Green trigger name"] = item["trigger"][0]["triggerValue"]
-                      indicatorObj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
-                      indicatorObj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
-                      indicatorObj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
-                      indicatorObj["Red trigger name"] = item["trigger"][2]["triggerValue"]
-                      indicatorObj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
-                      indicatorObj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
-                      indicatorObj["Location"] = this.getIndicatorLocation(item, areaContent)
-                      return indicatorObj
+                      return this.transformIndicator(item, staffMap, areaContent, item.hazardScenario.otherName);
                     })
 
                     if (hazardIndicatorsCustom.length > 0) {
@@ -214,6 +174,29 @@ export class ExportDataService {
             }
           })
       })
+  }
+
+  private transformIndicator(item, staffMap: Map<string, string>, areaContent: any, hazard: any) {
+    let indicatorObj = {}
+    indicatorObj["Hazard"] = hazard
+    indicatorObj["Indicator Name"] = item["name"]
+    indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
+    indicatorObj["Current status"] = this.translateService.instant(Constants.INDICATOR_STATUS[item["triggerSelected"]])
+    indicatorObj["Green trigger name"] = item["trigger"][0]["triggerValue"]
+    indicatorObj["Green trigger value"] = item["trigger"][0]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][0]["durationType"]])
+    indicatorObj["Amber trigger name"] = item["trigger"][1]["triggerValue"]
+    indicatorObj["Amber trigger value"] = item["trigger"][1]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][1]["durationType"]])
+    indicatorObj["Red trigger name"] = item["trigger"][2]["triggerValue"]
+    indicatorObj["Red trigger value"] = item["trigger"][2]["frequencyValue"] + " " + this.translateService.instant(Constants.DETAILED_DURATION_TYPE[item["trigger"][2]["durationType"]])
+    indicatorObj["Assigned to"] = item["assignee"] ? staffMap.get(item["assignee"]) : ""
+    indicatorObj["Location"] = this.getIndicatorLocation(item, areaContent)
+    indicatorObj["Green State instances"] = item.timeTracking ? item.timeTracking["timeSpentInGreen"] ? Object.keys(item.timeTracking["timeSpentInGreen"]).length : 0 : ""
+    indicatorObj["Amber State instances"] = item.timeTracking ? item.timeTracking["timeSpentInAmber"] ? Object.keys(item.timeTracking["timeSpentInAmber"]).length : 0 : ""
+    indicatorObj["Red State instances"] = item.timeTracking ? item.timeTracking["timeSpentInRed"] ? Object.keys(item.timeTracking["timeSpentInRed"]).length : 0 : ""
+    indicatorObj["Green State duration"] = this.getTimeTrackingInfoInNumber(item, "green")
+    indicatorObj["Amber State duration"] = this.getTimeTrackingInfoInNumber(item, "amber")
+    indicatorObj["Red State duration"] = this.getTimeTrackingInfoInNumber(item, "red")
+    return indicatorObj
   }
 
   private fetchSectorExpertiseData(countryId: string, wb: WorkBook) {
@@ -694,7 +677,10 @@ export class ExportDataService {
                     obj["Status"] = this.translateService.instant(this.getActionStatus(expireDuration, action, alertScenarioMap))
                     obj["Expires"] = this.getExpireDate(expireDuration, action)
                     obj["Notes"] = noteNumberMap.get(action.$key) ? noteNumberMap.get(action.$key) : 0
-                    obj["Completed within due date?"] = action[""]
+                    obj["Completed within due date?"] = !action.isCompleteAt || !action.dueDate ? "" : action.isCompleteAt < action.dueDate ? "Yes" : "No"
+                    obj["Green state"] = this.getTimeTrackingInfoInPercentage(action, "green")
+                    obj["Amber state"] = this.getTimeTrackingInfoInPercentage(action, "amber")
+                    obj["Red state"] = this.getTimeTrackingInfoInPercentage(action, "red")
                     return obj
                   })
 
@@ -704,9 +690,13 @@ export class ExportDataService {
                   this.counter++
 
                   this.exportFile(this.counter, this.total, wb)
+
                 } else {
                   this.passEmpty(wb)
                 }
+
+                //do more work, export apa activation sheet
+                this.fetchAPActivationData(actionList, countryId, wb)
               })
           })
 
@@ -734,9 +724,9 @@ export class ExportDataService {
             obj["Status"] = this.translateService.instant(Constants.RESPONSE_PLAN_STATUS[plan["status"]])
             obj["Completion percentage"] = toInteger(plan["sectionsCompleted"] / plan["totalSections"] * 100)
             obj["Last update"] = moment(plan["timeUpdated"]).format("DD/MM/YYYY")
-            obj["In-Progress Status"] = this.getTimeTrackingInfo(plan, "amber")
-            obj["Completed Status"] = ""
-            obj["Expired/Needs Reviewing Status"] = ""
+            obj["In-Progress Status"] = this.getTimeTrackingInfoInPercentage(plan, "amber")
+            obj["Completed Status"] = this.getTimeTrackingInfoInPercentage(plan, "green")
+            obj["Expired/Needs Reviewing Status"] = this.getTimeTrackingInfoInPercentage(plan, "red")
             return obj
           })
 
@@ -925,6 +915,21 @@ export class ExportDataService {
     })
   }
 
+  private fetchAlertsForCountry(countryId) {
+    let alertMap = new Map<string, any>()
+    return new Promise((res,) => {
+      this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId)
+        .first()
+        .subscribe(alertList => {
+          alertList
+            .forEach(alert => {
+              alertMap.set(alert.$key, alert)
+            })
+          res(alertMap)
+        })
+    })
+  }
+
   private checkAlertApproval(alert): boolean {
     let approveStatus = false
     if (alert.approval) {
@@ -1032,30 +1037,83 @@ export class ExportDataService {
     return contains
   }
 
-  private getTimeTrackingInfo(plan: any, status: string) {
-    if (!plan.timeTracking) {
+  private getTimeTrackingInfoInPercentage(item: any, status: string) {
+    if (!item.timeTracking) {
       return ""
     }
+    let durations = this.getTimeTrackingInfo(item.timeTracking);
+
+    let result = ""
+    switch (status) {
+      case "amber" : {
+        result = Math.round(durations.amberDuration / durations.totalDuration * 100) + "%"
+        break
+      }
+      case "green" : {
+        result = Math.round(durations.greenDuration / durations.totalDuration * 100) + "%"
+        break
+      }
+      case "red" : {
+        result = Math.round(durations.redDuration / durations.totalDuration * 100) + "%"
+        break
+      }
+    }
+    return result
+
+  }
+
+  private getTimeTrackingInfoInNumber(item: any, status: string) {
+    if (!item.timeTracking) {
+      return ""
+    }
+    let durations = this.getTimeTrackingInfo(item.timeTracking);
+
+    let result = ""
+    switch (status) {
+      case "amber" : {
+        result = durations.amberDuration ? Math.round(moment.duration(durations.amberDuration).asDays()) + " days" : ""
+        break
+      }
+      case "green" : {
+        result = durations.greenDuration ? Math.round(moment.duration(durations.greenDuration).asDays()) + " days" : ""
+        break
+      }
+      case "red" : {
+        result = durations.redDuration ? Math.round(moment.duration(durations.redDuration).asDays()) + " days" : ""
+        break
+      }
+    }
+    return result
+
+  }
+
+  private getTimeTrackingInfo(timeTracking: any) {
     let timeList = []
-    let timeSpentInAmber = []
-    let timeSpentInGreen = []
-    let timeSpentInRed = []
-    if (plan.timeTracking["timeSpentInAmber"]) {
-      plan.timeTracking["timeSpentInAmber"].forEach(item => {
+    let amberDurationMap = new Map<number, any>()
+    let greenDurationMap = new Map<number, any>()
+    let redDurationMap = new Map<number, any>()
+    if (timeTracking["timeSpentInAmber"]) {
+      let index = 0
+      timeTracking["timeSpentInAmber"].forEach(item => {
         timeList.push(item.start, item.finish)
-        timeSpentInAmber.push(item.start, item.finish)
+        amberDurationMap.set(index, {"start": item.start, "finish": item.finish})
+        index++
       })
     }
-    if (plan.timeTracking["timeSpentInGreen"]) {
-      plan.timeTracking["timeSpentInGreen"].forEach(item => {
+    if (timeTracking["timeSpentInGreen"]) {
+      let index = 0
+      timeTracking["timeSpentInGreen"].forEach(item => {
         timeList.push(item.start, item.finish)
-        timeSpentInGreen.push(item.start, item.finish)
+        greenDurationMap.set(index, {"start": item.start, "finish": item.finish})
+        index++
       })
     }
-    if (plan.timeTracking["timeSpentInRed"]) {
-      plan.timeTracking["timeSpentInRed"].forEach(item => {
+    if (timeTracking["timeSpentInRed"]) {
+      let index = 0
+      timeTracking["timeSpentInRed"].forEach(item => {
         timeList.push(item.start, item.finish)
-        timeSpentInRed.push(item.start, item.finish)
+        redDurationMap.set(index, {"start": item.start, "finish": item.finish})
+        index++
       })
     }
     let now = moment().valueOf()
@@ -1064,40 +1122,46 @@ export class ExportDataService {
         item = now
       }
       return item
-    }).sort((a,b) => a-b)
-    let totalDuration = sortedListTotal[sortedListTotal.length-1] - sortedListTotal[0]
+    }).sort((a, b) => a - b)
+    let totalDuration = sortedListTotal[sortedListTotal.length - 1] - sortedListTotal[0]
 
-    let amberList = timeSpentInAmber.map(item => {
-      if (item === -1) {
-        item = now
+    let amberDuration = this.getTotalDurationFromMap(amberDurationMap, now)
+
+    let greenDuration = this.getTotalDurationFromMap(greenDurationMap, now)
+
+    let redDuration = this.getTotalDurationFromMap(redDurationMap, now)
+
+    return {
+      "totalDuration": totalDuration,
+      "amberDuration": amberDuration,
+      "greenDuration": greenDuration,
+      "redDuration": redDuration
+    };
+  }
+
+  private getTotalDurationFromMap(durationMap, timeNow) {
+    let totalDuration = 0
+    CommonUtils.convertMapToValuesInArray(durationMap).forEach(durationObj => {
+      totalDuration += (durationObj.finish != -1 ? durationObj.finish : timeNow) - durationObj.start
+    })
+    return totalDuration
+
+  }
+
+  private fetchAPActivationData(actionList: any[], countryId: string, wb: WorkBook) {
+    this.fetchAlertsForCountry(countryId).then((alertMap:Map<string,any>) => {
+      console.log(alertMap)
+      let apaList = actionList.filter(action => action.level = ActionLevel.APA && action.redAlerts)
+      console.log(apaList)
+      if (apaList.length > 0) {
+        apaList.forEach(apa => {
+          apa.redAlerts.forEach(alertId => {
+
+          })
+        })
+      } else {
+        this.passEmpty(wb)
       }
-      return item
-    }).sort((a,b) => a-b)
-    console.log(amberList)
-    let amberDuration = amberList[amberList.length - 1] - amberList[0]
-
-    let greenList = timeSpentInGreen.map(item => {
-      if (item === -1) {
-        item = now
-      }
-      return item
-    }).sort((a,b) => a-b)
-    console.log(greenList)
-    let greenDuration = greenList[greenList.length - 1] - greenList[0]
-
-    let redList = timeSpentInRed.map(item => {
-      if (item === -1) {
-        item = now
-      }
-      return item
-    }).sort((a,b) => a-b)
-    console.log(redList)
-    let redDuration = redList[redList.length - 1] - redList[0]
-
-    //do final calculation stuff
-    console.log(amberDuration/totalDuration*100)
-    console.log(greenDuration/totalDuration*100)
-    console.log(redDuration/totalDuration*100)
-
+    })
   }
 }
