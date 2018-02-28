@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import {Subject} from "rxjs/Subject";
-import {PageControlService} from "../../services/pagecontrol.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Constants} from "../../../utils/Constants";
 import {AngularFire, FirebaseAuthState} from "angularfire2";
-import {Constants} from "../../utils/Constants";
+import {Subject} from "rxjs/Subject";
+import {PageControlService} from "../../../services/pagecontrol.service";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
-  selector: 'app-view-coc',
-  templateUrl: './view-coc.component.html',
-  styleUrls: ['./view-coc.component.scss']
+  selector: 'app-director-account-settings-view-coc',
+  templateUrl: './director-account-settings-view-coc.component.html',
+  styleUrls: ['./director-account-settings-view-coc.component.scss']
 })
-export class ViewCocComponent implements OnInit {
+export class DirectorAccountSettingsViewCocComponent implements OnInit {
 
   private uid: string;
   authState: FirebaseAuthState;
@@ -37,7 +37,7 @@ export class ViewCocComponent implements OnInit {
   }
 
   private downloadCoC(){
-    this.af.database.object(Constants.APP_STATUS + "/system/" + this.uid)
+    this.af.database.object(Constants.APP_STATUS + "/system/o8XIEoROEcZgFwzFeRpjtXMXnOr1/")
       .takeUntil(this.ngUnsubscribe).subscribe(x => {
       this.cocText = x.coc;
     });
@@ -59,4 +59,5 @@ export class ViewCocComponent implements OnInit {
     this.alertSuccess = true;
     this.alertMessage = "";
   }
+
 }

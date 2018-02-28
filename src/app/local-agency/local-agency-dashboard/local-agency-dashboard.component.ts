@@ -101,6 +101,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   private networkMap: Map<string, string>;
   private localNetworks: any;
   private alertsLocalNetwork: Observable<any>;
+  private showCoCBanner: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -120,19 +121,25 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       console.log(agencyId)
 
+      this.checkCoCUpdated();
 
       if (userType == UserType.LocalAgencyDirector) {
         this.DashboardTypeUsed = DashboardType.director;
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
-
-
-
       this.loadData();
-
-
     });
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
   }
 
   ngOnDestroy() {

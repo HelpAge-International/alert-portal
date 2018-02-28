@@ -1,8 +1,11 @@
 <app-director-header></app-director-header>
 <app-director-menu></app-director-menu>
 
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
+
     <div class="Header-title__wrap">
       <h1>{{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}</h1>
     </div>
@@ -15,8 +18,13 @@
       <li class="section-nav__item active"><a [routerLink]="['/director/director-account-settings/director-account-settings-view-coc']">{{"SYSTEM_ADMIN.SETTING.COC" | translate}}</a></li>
     </ul>
 
-    <app-account-setting-profile *ngIf="showProfile" [isDirector]="true"></app-account-setting-profile>
-    <app-account-setting-password *ngIf="!showProfile" [isDirector]="true"></app-account-setting-password>
+    <div class="Sub-header-title__wrap">
+      <h2>{{"GLOBAL.COC_TITLE" | translate}}</h2>
+      <button class="btn btn-primary" (click)="onAgree()">{{"GLOBAL.IAGREE" | translate | uppercase}}</button>
+    </div>
 
+    <div class="wrapper" align="left">
+      <p class="coc-text">{{cocText}}</p>
+    </div>
   </div>
 </div>

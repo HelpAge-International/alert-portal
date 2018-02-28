@@ -1,9 +1,7 @@
-<app-system-admin-header></app-system-admin-header>
-<app-system-admin-menu></app-system-admin-menu>
+<app-country-admin-header></app-country-admin-header>
+<app-country-admin-menu></app-country-admin-menu>
 
 <app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
-
-<div *ngIf="isSaved" class="Alert-success">{{successMessage | translate}}</div>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
@@ -13,11 +11,11 @@
     </div>
 
     <ul class="section-nav">
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
+      <li class="section-nav__item"><a [routerLink]="['/country-admin/country-account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
         | translate}}</a></li>
-      <li class="section-nav__item "><a [routerLink]="['/system-admin/account-settings/change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
+      <li class="section-nav__item"><a [routerLink]="['/country-admin/country-account-settings/country-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
         | translate}}</a></li>
-      <li class="section-nav__item active"><a [routerLink]="['/system-admin/account-settings/view-coc/view-coc']">{{"SYSTEM_ADMIN.SETTING.COC" | translate}}</a></li>
+      <li class="section-nav__item active"><a [routerLink]="['/country-admin/country-account-settings/country-admin-settings-coc-view']">{{"SYSTEM_ADMIN.SETTING.COC" | translate}}</a></li>
     </ul>
 
     <div class="Sub-header-title__wrap">
@@ -28,7 +26,5 @@
     <div class="wrapper" align="left">
       <p class="coc-text">{{cocText}}</p>
     </div>
-
   </div>
 </div>
-

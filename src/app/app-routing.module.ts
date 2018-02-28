@@ -262,8 +262,13 @@ import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/loca
 import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
-import {ViewCocComponent} from "./commons/view-coc/view-coc.component";
-import {ViewTocComponent} from "./commons/view-toc/view-toc.component";
+import {SystemAdminViewCocComponent} from "./system-admin/account-settings/view-coc/system-admin-view-coc.component";
+import {AgencyAdminViewCocComponent} from "./agency-admin/agency-account-settings/agency-admin-view-coc/agency-admin-view-coc.component";
+import {CountryAdminSettingsCocViewComponent} from "./country-admin/country-account-settings/country-admin-settings-coc-view/country-admin-settings-coc-view.component";
+import {DirectorAccountSettingsViewCocComponent} from "./director/director-account-settings/director-account-settings-view-coc/director-account-settings-view-coc.component";
+import {LocalAgencyViewCocComponent} from "./local-agency/local-agency-account-details/local-agency-view-coc/local-agency-view-coc.component";
+import {NetworkAdminViewCocComponent} from "./network-admin/network-account-settings/network-admin-view-coc/network-admin-view-coc.component";
+import {NetworkCountryAdminViewCocComponent} from "./network-country-admin/network-country-account-settings/network-country-admin-view-coc/network-country-admin-view-coc.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -304,7 +309,7 @@ const routes: Routes = [
   {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
   {path: 'system-admin/system-settings/system-settings-toc', component: SystemSettingsTocComponent},
   {path: 'system-admin/system-settings/system-settings-coc', component: SystemSettingsCocComponent},
-  {path: 'system-admin/account-settings/view-coc/view-coc', component: ViewCocComponent},
+  {path: 'system-admin/account-settings/view-coc/system-admin-view-coc', component: SystemAdminViewCocComponent},
   {
     path: 'system-admin/system-settings/system-settings-response-plans',
     component: SystemSettingsResponsePlansComponent
@@ -343,6 +348,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-notifications/agency-notifications', component: AgencyNotificationsComponent},
   {path: 'agency-admin/agency-overview', component: AgencyOverviewComponent},
   {path: 'agency-admin/agency-overview/:countryId/:isViewing', component: AgencyOverviewComponent},
+  {path: 'agency-admin/account-settings/agency-admin-view-coc/agency-admin-view-coc', component: AgencyAdminViewCocComponent},
 
   /**
    * Country admin
@@ -424,6 +430,7 @@ const routes: Routes = [
   },
   {path: 'country-admin/country-office-profile/documents', component: CountryOfficeDocumentsComponent},
   {path: 'country-admin/country-notifications', component: CountryNotificationsComponent},
+  {path: 'country-admin/country-account-settings/country-admin-settings-coc-view', component: CountryAdminSettingsCocViewComponent},
 
   /**
    * Dashboard
@@ -494,6 +501,7 @@ const routes: Routes = [
   {path: 'director/director-overview/:countryId/:isViewing', component: DirectorOverviewComponent},
   {path: 'director/director-notifications', component: DirectorNotificationsComponent},
   {path: 'director/director-account-settings', component: DirectorAccountSettingsComponent},
+  {path: 'director/director-account-settings/director-account-settings-view-coc', component: DirectorAccountSettingsViewCocComponent},
 
   /**
    * Donor
@@ -543,6 +551,7 @@ const routes: Routes = [
   {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent},
   {path: 'network-admin/network-notifications', component: NetworkNotificationsComponent},
   {path: 'network/network-account-selection', component: NetworkAccountSelectionComponent},
+  {path: 'network/network-account-settings-view-coc', component: NetworkAdminViewCocComponent},
 
 
   /**
@@ -578,9 +587,6 @@ const routes: Routes = [
   {path: 'network/local-network-risk-monitoring/add-indicator/:hazardID', component: AddIndicatorLocalNetworkComponent},
   {path: 'network/local-network-risk-monitoring/add-hazard', component: AddHazardLocalNetworkComponent},
   {path: 'network/local-network-risk-monitoring/create-alert', component: LocalNetworkCreateAlertComponent},
-
-
-
   {path: 'network/local-network-dashboard/dashboard-update-alert-level', component: LocalNetworkDashboardUpdateAlertLevelComponent},
   {path: 'network/local-network-dashboard/dashboard-update-alert-level//:id/:networkId', component: LocalNetworkDashboardUpdateAlertLevelComponent},
 
@@ -629,6 +635,7 @@ const routes: Routes = [
   {path: 'network-country/network-country-office-profile-documents', component: NetworkCountryProfileDocumentsComponent},
   {path: 'network-country/network-country-office-profile-contacts', component: NetworkCountryProfileContactsComponent},
   {path: 'network-country/network-calendar', component: NetworkCalendarComponent},
+  {path: 'network-country/account-settings-view-coc', component: NetworkCountryAdminViewCocComponent},
 
 
   /* Local Agency */
@@ -661,6 +668,7 @@ const routes: Routes = [
   {path: 'local-agency/response-plans/view-plan', component: LocalAgencyViewPlanComponent},
   {path: 'local-agency/response-plans/view-plan/:id', component: LocalAgencyViewPlanComponent},
   {path: 'local-agency/profile', component: LocalAgencyProfileComponent},
+  {path: 'local-agency/account-settings/local-agency-view-coc', component: LocalAgencyViewCocComponent},
 
 
   {path: 'local-agency/profile/partners', component: LocalAgencyPartnersComponent},

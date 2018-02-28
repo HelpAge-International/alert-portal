@@ -144,7 +144,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private networkModules: ModuleSettingsModel[]
 
   private Hazard_Conflict = 1
-
+  private showCoCBanner: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -180,6 +180,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
       if (params["uid"]) {
         this.uid = params["uid"];
+        this.checkCoCUpdated();
       }
       if (!this.isLocalNetworkAdmin) {
         this.networkCountryId = params["networkCountryId"];
@@ -188,11 +189,23 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     })
   }
 
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
+  }
+
   private initNetworkAccess() {
     this.DashboardTypeUsed = DashboardType.default;
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
+      this.checkCoCUpdated();
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -273,6 +286,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
+      this.checkCoCUpdated();
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)

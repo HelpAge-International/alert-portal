@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewCocComponent } from './view-coc.component';
+import { AgencyAdminViewCocComponent } from './agency-admin-view-coc.component';
 
-describe('ViewCocComponent', () => {
-  let component: ViewCocComponent;
-  let fixture: ComponentFixture<ViewCocComponent>;
+describe('AgencyAdminViewCocComponent', () => {
+  let component: AgencyAdminViewCocComponent;
+  let fixture: ComponentFixture<AgencyAdminViewCocComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ViewCocComponent ]
+      declarations: [ AgencyAdminViewCocComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCocComponent);
+    fixture = TestBed.createComponent(AgencyAdminViewCocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

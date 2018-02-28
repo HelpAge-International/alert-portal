@@ -356,8 +356,14 @@ import { PageFooterComponent } from './commons/page-footer/page-footer.component
 import { PageFooterTocComponent } from './commons/page-footer-toc/page-footer-toc.component';
 import {SystemSettingsTocComponent} from "./system-admin/system-settings/system-settings-toc/system-settings-toc.component";
 import {SystemSettingsCocComponent} from "./system-admin/system-settings/system-settings-coc/system-settings-coc.component";
-import { ViewCocComponent } from './commons/view-coc/view-coc.component';
+import { SystemAdminViewCocComponent } from './system-admin/account-settings/view-coc/system-admin-view-coc.component';
 import { ViewTocComponent } from './commons/view-toc/view-toc.component';
+import { AgencyAdminViewCocComponent } from './agency-admin/agency-account-settings/agency-admin-view-coc/agency-admin-view-coc.component';
+import { CountryAdminSettingsCocViewComponent } from './country-admin/country-account-settings/country-admin-settings-coc-view/country-admin-settings-coc-view.component';
+import {DirectorAccountSettingsViewCocComponent} from "./director/director-account-settings/director-account-settings-view-coc/director-account-settings-view-coc.component";
+import { LocalAgencyViewCocComponent } from './local-agency/local-agency-account-details/local-agency-view-coc/local-agency-view-coc.component';
+import { NetworkAdminViewCocComponent } from './network-admin/network-account-settings/network-admin-view-coc/network-admin-view-coc.component';
+import { NetworkCountryAdminViewCocComponent } from './network-country-admin/network-country-account-settings/network-country-admin-view-coc/network-country-admin-view-coc.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -717,8 +723,14 @@ const firebaseAuthConfig = {
     SystemSettingsCocComponent,
     PageFooterComponent,
     PageFooterTocComponent,
-    ViewCocComponent,
+    SystemAdminViewCocComponent,
     ViewTocComponent,
+    AgencyAdminViewCocComponent,
+    CountryAdminSettingsCocViewComponent,
+    DirectorAccountSettingsViewCocComponent,
+    LocalAgencyViewCocComponent,
+    NetworkAdminViewCocComponent,
+    NetworkCountryAdminViewCocComponent,
   ],
   imports: [
     CookieLawModule,
