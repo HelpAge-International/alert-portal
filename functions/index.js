@@ -5139,12 +5139,16 @@ function createResponsePlanApprovalRejectedNotification(responsePlan){
 
 function sendNotification(env, payload, userId){
   console.log("Sending Notification")
-  return admin.database().ref(`/${env}/userPublic/${userId}/deviceNotificationId`).once('value')
-    .then(deviceNotificationIdSnap => {
-      let deviceNotificationId = deviceNotificationIdSnap.val()
-      if(deviceNotificationId){
-        console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`)
-        return admin.messaging().sendToDevice(deviceNotificationId, payload);
+  return admin.database().ref(`/${env}/userPublic/${userId}/deviceNotificationIds`).once('value')
+    .then(deviceNotificationIdsSnap => {
+      let deviceNotificationIds = deviceNotificationIdsSnap.val()
+      if(deviceNotificationIds){
+        let promises = []
+        for(deviceNotificationId in deviceNotificationIds){
+          console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`)
+          promises.push(admin.messaging().sendToDevice(deviceNotificationId, payload))
+        }
+        return Promise.all(promises)
       }
       else{
         return Promise.resolve()
