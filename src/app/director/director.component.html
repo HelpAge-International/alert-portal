@@ -1,5 +1,7 @@
-<app-director-header></app-director-header>
-<app-director-menu></app-director-menu>
+<ng-container *ngIf="!agencyAdminIs">
+  <app-director-header></app-director-header>
+  <app-director-menu></app-director-menu>
+</ng-container>
 
 <app-alert-loader [hidden]="loaderInactive"></app-alert-loader>
 
@@ -14,128 +16,130 @@
 
     <div class="Ribbon__section__wrap Spaced">
 
-      <!--empty ribbon for director dashboard-->
-      <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
-        <div *ngIf="approvalPlans.length == 0 && approvalPlansNetwork.length ==0 && approvalPlansNetworkLocal.length ==0">
+      <ng-container *ngIf="!agencyAdminIs">
+        <!--empty ribbon for director dashboard-->
+        <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
+          <div *ngIf="approvalPlans.length == 0 && approvalPlansNetwork.length ==0 && approvalPlansNetworkLocal.length ==0">
+            <div class="Widget"
+                 *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && approvalPlans.length == 0">
+              <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+              <div class="My-Tasks container-fluid">
+                <div class="Empty--ribbon">
+                  {{"DASHBOARD.EMPTY_DIRECTOR" | translate}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--my tasks-->
+        <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
           <div class="Widget"
-               *ngIf="actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && approvalPlans.length == 0">
-            <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
-            <div class="My-Tasks container-fluid">
-              <div class="Empty--ribbon">
-                {{"DASHBOARD.EMPTY_DIRECTOR" | translate}}
+               *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0 || approvalPlansNetworkLocal.length>0">
+            <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
+            <br>
+
+            <!--response plans-->
+            <div class="row" *ngFor="let plan of approvalPlans">
+              <div class="col-sm-9">
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!--my tasks-->
-      <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
-        <div class="Widget"
-             *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0 || approvalPlansNetworkLocal.length>0">
-          <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
-          <br>
-
-          <!--response plans-->
-          <div class="row" *ngFor="let plan of approvalPlans">
-            <div class="col-sm-9">
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
-              </button>
-            </div>
-          </div>
-
-          <!--response plans network-->
-          <div class="row" *ngFor="let plan of approvalPlansNetwork">
-            <div class="col-sm-9">
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
-              </button>
-            </div>
-          </div>
-
-          <!--response plans local network-->
-          <div class="row" *ngFor="let plan of approvalPlansNetworkLocal">
-            <div class="col-sm-9">
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
-              </button>
-            </div>
-          </div>
-
-          <!--actions and indicators-->
-          <div
-            *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ">
-
-            <div *ngFor="let action of actionsToday" class="row alert-danger">
-              <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-              <div class="col-md-8"><a href="">{{getActionTitle(action)}}
-                <strong>{{"TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
               <div class="col-md-3">
-                <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
-                  translate}}
+                <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
                 </button>
               </div>
             </div>
 
-            <div *ngFor="let indicator of indicatorsToday" class="row alert-danger">
-              <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
-              <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"TODAY" | translate}}</strong>.<span>{{indicator.name}}</span></a>
+            <!--response plans network-->
+            <div class="row" *ngFor="let plan of approvalPlansNetwork">
+              <div class="col-sm-9">
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
               </div>
               <div class="col-md-3">
-                <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
-                  translate}}
+                <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
                 </button>
               </div>
             </div>
 
-            <div *ngFor="let action of actionsThisWeek" class="row">
-              <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-              <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
-                )</strong>.<span>{{action.task}}</span></a></div>
-              <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
-                | translate}}</a>
+            <!--response plans local network-->
+            <div class="row" *ngFor="let plan of approvalPlansNetworkLocal">
+              <div class="col-sm-9">
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key, plan.countryId)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}
+                </button>
               </div>
             </div>
 
-            <div *ngFor="let indicator of indicatorsThisWeek" class="row">
-              <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
-              <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
-                translate}}</strong>.<span>{{indicator?.name}}</span></a>
+            <!--actions and indicators-->
+            <div
+              *ngIf="actionsToday.length>0 || indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ">
+
+              <div *ngFor="let action of actionsToday" class="row alert-danger">
+                <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+                <div class="col-md-8"><a href="">{{getActionTitle(action)}}
+                  <strong>{{"TODAY" | translate}}</strong>.<span>{{action.task}}</span></a></div>
+                <div class="col-md-3">
+                  <button class="btn btn-danger btn-block" routerLink="/preparedness/advanced">{{"GLOBAL.UPDATE" |
+                    translate}}
+                  </button>
+                </div>
               </div>
-              <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
-                | translate}}</a>
+
+              <div *ngFor="let indicator of indicatorsToday" class="row alert-danger">
+                <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-danger" aria-hidden="true"></i></div>
+                <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"TODAY" | translate}}</strong>.<span>{{indicator.name}}</span></a>
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-danger btn-block" routerLink="/preparedness/minimum">{{"GLOBAL.UPDATE" |
+                    translate}}
+                  </button>
+                </div>
               </div>
+
+              <div *ngFor="let action of actionsThisWeek" class="row">
+                <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+                <div class="col-md-8"><a href="">{{getActionTitle(action)}} <strong>{{"DASHBOARD.THIS_WEEK" | translate}}
+                  )</strong>.<span>{{action.task}}</span></a></div>
+                <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+                  | translate}}</a>
+                </div>
+              </div>
+
+              <div *ngFor="let indicator of indicatorsThisWeek" class="row">
+                <div class="col-md-1"><i class="fa fa-exclamation-circle fa-2x text-warning" aria-hidden="true"></i></div>
+                <div class="col-md-8"><a href="">{{getIndicatorName(indicator)}} <strong>{{"DASHBOARD.THIS_WEEK" |
+                  translate}}</strong>.<span>{{indicator?.name}}</span></a>
+                </div>
+                <div class="col-md-3"><a href="#" class="btn btn-primary btn-block" routerLink="/risk-monitoring">{{"GLOBAL.UPDATE"
+                  | translate}}</a>
+                </div>
+              </div>
+
             </div>
 
           </div>
-
         </div>
-      </div>
+      </ng-container>
 
       <!--regions-->
       <div class="Ribbon__section__wrap Spaced">

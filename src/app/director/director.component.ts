@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
@@ -63,6 +63,9 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private countryIds: string[] = [];
   private countryOffices = [];
   private regionalCountryOffices = [];
+
+  //phase 2 sprint 4 task
+  @Input() agencyAdminIs:boolean
 
 
   constructor(private pageControl: PageControlService,
@@ -232,6 +235,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
         this.regionalCountryOffices[region.regionId] = this.countryOffices.filter(x => region.countries.has(x.$key));
       });
 
+      console.log(this.regions)
       // other regions
       this.regionalCountryOffices[this.otherRegion.regionId] = this.countryOffices.filter(x => this.otherRegion.countries.has(x.$key));
 
