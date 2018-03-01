@@ -4975,12 +4975,11 @@ function sendNotificationToCountryUsers(env, notification, countryId, notificati
 
 function createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel){
   return {
-      'notification': {
-          'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
-          'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${LEVELS[preAlertLevel]} to ${LEVELS[currAlertLevel]}`
-      },
       'data': {
         'alertId': alertId,
+        'preAlertLevel': preAlertLevel.toString(),
+        'currAlertLevel': currAlertLevel.toString(),
+        'hazardScenario': hazardScenario.toString(),
         'type': NOTIFICATION_ALERT.toString()
       }
     }
@@ -5030,7 +5029,7 @@ function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId)
       'data': {
         'indicatorId': indicatorId,
         'hazardId': hazardId,
-        'type': NOTIFICATION_INDICATOR_RESCHEDULE.toString()
+        'type': NOTIFICATION_INDICATOR_RESCHEDULE.toString
       }
     }
 }
@@ -5044,7 +5043,6 @@ function createActionAssignedNotification(action, groupId, actionId){
       'data': {
         'actionId': actionId,
         'groupId': groupId,
-        'actionType': action.type.toString(),
         'type': NOTIFICATION_ACTION_ASSIGNED.toString()
       }
     }
