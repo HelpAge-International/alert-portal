@@ -1156,7 +1156,12 @@ export class ExportDataService {
       if (apaList.length > 0) {
         apaList.forEach(apa => {
           apa.redAlerts.forEach(alertId => {
-
+            let obj = {}
+            obj["Action title"] = apa["task"]
+            obj["Date activated"] = ""
+            obj["Activating hazard"] = ""
+            obj["Location"] = ""
+            obj["Time taken for completion"] = ""
           })
         })
       } else {
