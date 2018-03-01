@@ -101,6 +101,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.userType = userType;
       this.agencyId = agencyId;
       this.systemAdminId = systemId;
+      console.log(agencyId)
+      console.log(UserType[userType])
       if (this.userType == UserType.RegionalDirector) {
         this.userService.getRegionId(Constants.USER_PATHS[userType], this.uid)
           .takeUntil(this.ngUnsubscribe)
@@ -232,10 +234,12 @@ export class DirectorComponent implements OnInit, OnDestroy {
       }
 
       this.regions.forEach(region => {
+        jQuery('#mapParent-' + region.regionId).collapse();
         this.regionalCountryOffices[region.regionId] = this.countryOffices.filter(x => region.countries.has(x.$key));
       });
 
       console.log(this.regions)
+      jQuery('#mapParent-' + this.otherRegion.regionId).collapse();
       // other regions
       this.regionalCountryOffices[this.otherRegion.regionId] = this.countryOffices.filter(x => this.otherRegion.countries.has(x.$key));
 
@@ -331,6 +335,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.otherRegion.regionId = "Unassigned";
       this.otherRegion.regionName = this.translate.instant("AGENCY_ADMIN.COUNTRY_OFFICES.OTHER_COUNTRIES");
       this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[this.userType], (key, obj) => {
+        console.log(key)
+        console.log(obj)
         let hRegion = new RegionHolder();
         hRegion.regionName = obj.name;
         hRegion.directorId = obj.directorId;
@@ -360,8 +366,10 @@ export class DirectorComponent implements OnInit, OnDestroy {
   }
 
   private evaluateOthers() {
+    console.log("evaluateOthers called")
     if (this.allCountries.size > 0) {
       this.allCountries.forEach(country => {
+        console.log(country)
         if (!this.countryIdsForOther.has(country)) {
           this.otherRegion.countries.add(country);
         } else {

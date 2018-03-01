@@ -17,6 +17,7 @@
     <div class="Ribbon__section__wrap Spaced">
 
       <ng-container *ngIf="!agencyAdminIs">
+
         <!--empty ribbon for director dashboard-->
         <div *ngIf="userType != UserType.GlobalUser && userType != UserType.CountryUser">
           <div *ngIf="approvalPlans.length == 0 && approvalPlansNetwork.length ==0 && approvalPlansNetworkLocal.length ==0">
@@ -167,7 +168,7 @@
 
             <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType"
                                   [countryOfficeData]="regionalCountryOffices[x.regionId]"
-                                  [isDirector]="true"></app-country-overview>
+                                  [isDirector]="true" [agencyAdminIs]="agencyAdminIs"></app-country-overview>
 
           </div>
         </div>
@@ -185,7 +186,7 @@
           <div id="{{otherRegion.getRegionId()}}" class="Ribbon__section__wrap Spaced collapse">
             <app-country-overview [systemId]="systemAdminId" [agencyId]="agencyId" [userId]="uid" [userType]="userType"
                                   [countryOfficeData]="regionalCountryOffices[otherRegion.regionId]"
-                                  [isDirector]="true"></app-country-overview>
+                                  [isDirector]="true" [agencyAdminIs]="agencyAdminIs"></app-country-overview>
           </div>
         </div>
       </div>
