@@ -32,6 +32,8 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
 
+  private showLoader:boolean = false
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private userService: UserService,
@@ -71,17 +73,13 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
     });
   }
 
-  permissionList(list: AgencyPermissionObject[]) {
-    // Check the header items and a self-aware check
-  }
-
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 
   exportData() {
-    console.log("try to export country office data")
+    this.showLoader = true
     // get the country levels values first
     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .first()
@@ -108,12 +106,16 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
                         if (staffMap.size === staffs.length + 1) {
                           //start export data
                           this.dataService.exportOfficeData(this.agencyId, this.countryId, content, staffMap)
+                            .first()
+                            .subscribe(value => this.showLoader = !value)
                         }
                       })
                   })
                 } else {
                   //start export data
                   this.dataService.exportOfficeData(this.agencyId, this.countryId, content, staffMap)
+                    .first()
+                    .subscribe(value => this.showLoader = !value)
                 }
               })
 

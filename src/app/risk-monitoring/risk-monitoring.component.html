@@ -322,14 +322,15 @@
 
               </div>
             </div>
+            <div *ngIf="!indicatorsCC || !indicatorsCC.length">
+              <div class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div *ngIf="!indicatorsCC || !indicatorsCC.length">
-          <div class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-            <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
-          </div>
-        </div>
+
       </div>
 
       <div class="Ribbon__section__wrap--risk align-items-right"

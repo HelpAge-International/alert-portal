@@ -23,12 +23,14 @@ import {Observable} from "rxjs/Rx";
 import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
+import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class ExportDataService {
 
   private total: number
   private counter: number
+  private exportSubject: Subject<boolean>
 
   constructor(private af: AngularFire,
               private translateService: TranslateService,
@@ -40,8 +42,10 @@ export class ExportDataService {
   }
 
   public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>) {
-    //TODO MAKE SURE TOTAL NUMBER FOR SHEETS IS RIGHT!! (16 now)
-    this.total = 15
+
+    this.exportSubject = new Subject<boolean>()
+    // MAKE SURE TOTAL NUMBER FOR SHEETS IS RIGHT!! (16 now)
+    this.total = 16
     this.counter = 0
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new()
@@ -59,7 +63,7 @@ export class ExportDataService {
     this.fetchResponsePlanData(countryId, wb);
 
     //fetch preparedness actions data
-    this.fetchActionsData(agencyId, countryId, staffMap, wb);
+    this.fetchActionsData(areaContent, agencyId, countryId, staffMap, wb);
 
     //fetch point of contacts
     this.fetchPointOfContactData(countryId, wb);
@@ -93,6 +97,9 @@ export class ExportDataService {
 
     //fetch sector expertise
     this.fetchSectorExpertiseData(countryId, wb);
+
+    return this.exportSubject
+
   }
 
   private fetchRiskMonitoringData(countryId: string, staffMap: Map<string, string>, areaContent: any, wb: WorkBook) {
@@ -651,7 +658,7 @@ export class ExportDataService {
       })
   }
 
-  private fetchActionsData(agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook) {
+  private fetchActionsData(areaContent, agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook) {
     this.fetchDepartmentsForAgencyAndCountry(agencyId, countryId).then((departmentMap: Map<string, string>) => {
       console.log(departmentMap)
       this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap: Map<string, number>) => {
@@ -696,7 +703,7 @@ export class ExportDataService {
                 }
 
                 //do more work, export apa activation sheet
-                this.fetchAPActivationData(actionList, countryId, wb)
+                this.fetchAPActivationData(areaContent, actionList, countryId, wb)
               })
           })
 
@@ -775,6 +782,7 @@ export class ExportDataService {
     if (counter == total) {
       //try export see if works
       XLSX.writeFile(wb, 'SheetJS.xlsx')
+      this.exportSubject.next(true)
     }
   }
 
@@ -1148,25 +1156,60 @@ export class ExportDataService {
 
   }
 
-  private fetchAPActivationData(actionList: any[], countryId: string, wb: WorkBook) {
-    this.fetchAlertsForCountry(countryId).then((alertMap:Map<string,any>) => {
+  private fetchAPActivationData(areaContent, actionList: any[], countryId: string, wb: WorkBook) {
+    this.fetchAlertsForCountry(countryId).then((alertMap: Map<string, any>) => {
       console.log(alertMap)
       let apaList = actionList.filter(action => action.level = ActionLevel.APA && action.redAlerts)
-      console.log(apaList)
       if (apaList.length > 0) {
+        let activeApaList = []
+        let apaCounter = 0
         apaList.forEach(apa => {
-          apa.redAlerts.forEach(alertId => {
-            let obj = {}
-            obj["Action title"] = apa["task"]
-            obj["Date activated"] = ""
-            obj["Activating hazard"] = ""
-            obj["Location"] = ""
-            obj["Time taken for completion"] = ""
+          let redInstanceMap = this.getRedInstanceMap(apa)
+          redInstanceMap.forEach((instanceNumbers, alertId) => {
+            let alertObj = alertMap.get(alertId);
+            let activationDateList = this.getAlertTimeSpendInRedList(instanceNumbers, alertObj)
+            activationDateList.forEach(date => {
+              let obj = {}
+              obj["Action title"] = apa["task"]
+              obj["Date activated"] = moment(date).format("DD/MM/YYYY")
+              obj["Activating hazard"] = alertObj.hazardScenario != -1 ? this.translateService.instant(Constants.HAZARD_SCENARIOS[alertObj.hazardScenario]) : alertObj.otherName
+              obj["Location"] = this.commonService.getAreaNameListFromObj(areaContent, alertObj.affectedAreas)
+              obj["Time taken for completion"] = apa.isCompleteAt ? Math.round(moment.duration(apa.isCompleteAt - apa.updatedAt).asDays()) + " days" : ""
+              activeApaList.push(obj)
+            })
+
           })
+          apaCounter++
+          if (apaCounter === apaList.length) {
+            const activateAPASheet = XLSX.utils.json_to_sheet(activeApaList);
+            XLSX.utils.book_append_sheet(wb, activateAPASheet, "APA Activation")
+            this.counter++
+            this.exportFile(this.counter, this.total, wb)
+          }
         })
       } else {
         this.passEmpty(wb)
       }
     })
+  }
+
+  private getRedInstanceMap(apa: any) {
+    let map = new Map<string, number>()
+    apa.redAlerts.forEach(alertId => {
+      if (map.has(alertId)) {
+        let instances = map.get(alertId) + 1
+        map.set(alertId, instances)
+      } else {
+        map.set(alertId, 1)
+      }
+    })
+    return map
+  }
+
+  private getAlertTimeSpendInRedList(instanceNumbers: number, alertObj: any) {
+    if (alertObj && alertObj.timeTracking && alertObj.timeTracking.timeSpentInRed) {
+      return alertObj.timeTracking.timeSpentInRed.sort((a, b) => b.start - a.start).slice(0, instanceNumbers + 1).map(item => item.start)
+    }
+    return []
   }
 }

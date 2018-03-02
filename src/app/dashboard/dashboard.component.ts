@@ -597,10 +597,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 .first()
                 .subscribe(nameObj => {
                   hazard.otherName = nameObj.name;
-                  this.hazards.push(hazard);
+                  if (!this.hazards.map(item => item.$key).includes(hazard.$key)) {
+                    this.hazards.push(hazard);
+                  }
                 });
             } else {
-              this.hazards.push(hazard);
+              if (!this.hazards.map(item => item.$key).includes(hazard.$key)) {
+                this.hazards.push(hazard);
+              }
             }
             tempList.push(hazard);
           }
