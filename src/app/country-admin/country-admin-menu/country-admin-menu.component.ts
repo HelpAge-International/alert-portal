@@ -32,6 +32,7 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
 
+  //export loader
   private showLoader:boolean = false
 
   constructor(private pageControl: PageControlService,
@@ -77,6 +78,7 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
+
 
   exportData() {
     this.showLoader = true
