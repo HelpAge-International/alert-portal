@@ -1,5 +1,5 @@
 <ng-container *ngIf="!isLocalAgency">
-  <div *ngIf="userType != UserType.Donor">
+  <div *ngIf="userType != (UserType.Donor && UserType.GlobalUser)">
     <app-agency-admin-header *ngIf="isAgencyAdmin"></app-agency-admin-header>
     <app-agency-admin-menu *ngIf="isAgencyAdmin"></app-agency-admin-menu>
 
@@ -14,6 +14,12 @@
     <app-donor-header></app-donor-header>
     <app-donor-menu></app-donor-menu>
   </div>
+
+  <div *ngIf="userType == UserType.GlobalUser">
+    <app-director-header></app-director-header>
+    <app-director-menu></app-director-menu>
+  </div>
+
 </ng-container>
 
 <ng-container *ngIf="isLocalAgency">
