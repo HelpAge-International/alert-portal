@@ -129,17 +129,20 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private showCoC(){
-    //TODO Download the system obj here instead of the system id
-    this.af.database.object(Constants.APP_STATUS +"/system/o8XIEoROEcZgFwzFeRpjtXMXnOr1/", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        if(snap){
-          this.cocText = snap.val().coc;
-          this.loaderInactive = true;
-          jQuery("#coc-window").modal("show");
-        }else{
-          this.checkLogins();
-        }
+      .subscribe((systemAdminId) => {
+          this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((snap) => {
+              if(snap){
+                this.cocText = snap.val().coc;
+                this.loaderInactive = true;
+                jQuery("#coc-window").modal("show");
+              }else{
+                this.checkLogins();
+              }
+          });
     });
   }
 
