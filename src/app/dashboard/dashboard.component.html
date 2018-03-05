@@ -1,13 +1,17 @@
+
 <app-country-admin-header (partnerAgencyRequest)="requestAgencyPartner($event)"></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<div class="Page-top__wrap--w_sub_header--no-paddng--grey">
+<div class="Page-top__wrap--w_sub_header--no-paddng--grey" >
   <div class="Full-page__wrap--inner">
 
     <app-country-statistics-ribbon></app-country-statistics-ribbon>
 
+
+
+
     <!--alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring">
+    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring" class="canvas">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">

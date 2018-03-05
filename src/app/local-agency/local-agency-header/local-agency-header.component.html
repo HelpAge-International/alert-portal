@@ -52,6 +52,7 @@
             class="dropdown-item" routerLink="/local-agency/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |
             translate}}</a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -81,7 +82,8 @@
 
         <div *ngFor="let language of userLang">
           <hr/>
-          <div class="hover-selection"> <a (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></div>
+          <div class="hover-selection">
+            <a (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></div>
         </div>
 
       </div>
@@ -90,3 +92,5 @@
     </div>
   </div>
 </div>
+
+<app-report-problem ></app-report-problem>

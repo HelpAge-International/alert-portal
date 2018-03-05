@@ -356,6 +356,9 @@ import {ExportDataService} from "./services/export-data.service";
 import {PartnerOrganisationService} from "./services/partner-organisation.service";
 import {SurgeCapacityService} from "./services/surge-capacity.service";
 import { ViewCountriesComponent } from './agency-admin/view-countries/view-countries.component';
+import { BugReportingService } from './services/bug-reporting.service';
+import { ReportProblemComponent } from './report-problem/report-problem.component';
+
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -712,7 +715,9 @@ const firebaseAuthConfig = {
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
     AgencyOverviewComponent,
-    ViewCountriesComponent
+    ViewCountriesComponent,
+    ReportProblemComponent
+
   ],
   imports: [
     BrowserModule,
@@ -763,7 +768,9 @@ const firebaseAuthConfig = {
     FieldOfficeService,
     ExportDataService,
     PartnerOrganisationService,
-    SurgeCapacityService
+    SurgeCapacityService,
+    FieldOfficeService,
+    BugReportingService
   ],
   bootstrap: [AppComponent]
 })

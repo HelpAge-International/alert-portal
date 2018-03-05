@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../../services/user.service";
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs/Subject";
@@ -9,6 +9,8 @@ import {Constants} from "../../utils/Constants";
 import * as XLSX from 'xlsx';
 import {ExportDataService} from "../../services/export-data.service";
 import {CommonService} from "../../services/common.service";
+import { ReportProblemComponent } from "../../report-problem/report-problem.component";
+import { BugReportingService } from "../../services/bug-reporting.service";
 
 @Component({
   selector: 'app-country-admin-menu',

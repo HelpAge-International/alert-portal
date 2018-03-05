@@ -103,7 +103,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    jQuery('.float').hide();
       this.showLoader = true;
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.systemId = systemId;
@@ -393,6 +393,9 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
     };
 
+  reportProblem(){
+      jQuery('.float').show();
+  }
 
     changeLanguage(language: string) {
       this.language = language;

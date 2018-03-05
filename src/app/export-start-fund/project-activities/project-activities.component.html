@@ -1,4 +1,112 @@
-<table class="tg" align="center" id="tableProjectActivities">
+<table class="tg" style="width: 100%;" text-align="center">
+
+  <tr style="width: 100%; background-color: #CD0000; color: white; padding: 10px;">
+    <td style="width: 50%;" colspan="10"><p style="margin-bottom: 0; text-align: center;">IMPLEMENTATION</p></td>
+    <td style="width: 50%;" colspan="14"><strong style="margin-bottom: 0;">START FUND REACH (Proposed) </strong>
+    <p style="display: inline; float: right;" >&nbsp;&nbsp;&nbsp;NB: Please do not include reach from co-financing</p></td>
+
+  </tr>
+  <tr style="width: 100%; background-color: #CD0000; text-align: center; color:white; padding: 10px; ">
+    <td colspan="10"></td>
+    <td colspan="3"><strong>Female</strong></td>
+    <td colspan="3"><strong>Male</strong></td>
+    <td colspan="2"><strong>Migration Status</strong></td>
+    <td colspan="3"><strong>Disability</strong></td>
+    <td colspan="1"><strong>Total</strong></td>
+  </tr>
+  <tr style="width: 100%; background-color: #d8d8d8; text-align: center; padding: 10px; ">
+    <td colspan="3"><p>What type of activities are planned?</p></td>
+    <td colspan="3"><p>Principal Activity Type (please select)</p></td>
+    <td colspan="2"><p>What is the planned output of this activity?</p></td>
+    <td colspan="2"><p>What change is your output intended to make for the affected population?</p></td>
+    <td colspan="1"><p>Under 18</p></td>
+    <td colspan="1"><p>Between 18-50</p></td>
+    <td colspan="1"><p>Over 50</p></td>
+    <td colspan="1"><p>Under 18</p></td>
+    <td colspan="1"><p>Between 18-50</p></td>
+    <td colspan="1"><p>Over 50</p></td>
+    <td colspan="1"><p>Internally Displaced Person</p></td>
+    <td colspan="1"><p>Refugee</p></td>
+    <td colspan="1"><p>Physical</p></td>
+    <td colspan="1"><p>Psychological</p></td>
+    <td colspan="1"><p>Sensory (e.g. hearing, sight)</p></td>
+    <td colspan="1" style="background-color: #CD0000; text-align: center; color:white;" ><strong>TOTALS</strong></td>
+  </tr>
+
+  <!-- ENTRIES -->
+  <ng-container *ngFor="let sector of sectors">
+    <tr *ngFor="let activity of activityMap.get(sector.id)" style="width: 100%; text-align: center; padding: 10px; ">
+      <td colspan="3"><p>{{SECTORS[sector.id] | translate}}</p></td>
+      <td colspan="3"><p></p></td>
+      <td colspan="2"><p>{{activity.output}}</p></td>
+      <td colspan="2"><p>Text</p></td>
+  <ng-container *ngIf="!activity.hasFurtherBeneficiary">
+      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
+      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
+      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
+      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
+      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
+      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
+  </ng-container>
+  <ng-container>
+      <td colspan="1"><p></p></td>
+      <td colspan="1"><p></p></td>
+      <td colspan="1"><p></p></td>
+      <td colspan="1"><p></p></td>
+      <td colspan="1"><p></p></td>
+      <td colspan="1" style="background-color: #d8d8d8; text-align: center;" ><strong>{{getOverallTotalPopulation(activity)}}</strong></td>
+ </ng-container>
+    </tr>
+ </ng-container>
+
+
+
+  <!-- TOTAL -->
+  <tr style="width: 100%; text-align: center; padding: 10px; ">
+    <td colspan="8" style="border-bottom: none; border-left: none;"><p></p></td>
+    <td colspan="2" style="text-align: left" ><strong>TOTAL</strong></td>
+    <td colspan="1"><p>{{totalFemaleUnder18}}</p></td>
+    <td colspan="1"><p>{{totalFemale18To50}}</p></td>
+    <td colspan="1"><p>{{totalFemaleOver50}}</p></td>
+    <td colspan="1"><p>{{totalMaleUnder18}}</p></td>
+    <td colspan="1"><p>{{totalMale18To50}}</p></td>
+    <td colspan="1"><p>{{totalMaleOver50}}</p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1" style="background-color: #d8d8d8; text-align: center;" ><strong>{{totalOverallPopulation}}</strong></td>
+  </tr>
+
+
+  <!-- DOUBLE COUNTING -->
+  <tr style="width: 100%; text-align: center; padding: 10px; ">
+    <td colspan="8" style="border-top: none; border-bottom: none; border-left: none"><p></p></td>
+    <td colspan="2" style="text-align: left" ><strong>TOTAL ADJUSTED FOR DOUBLE COUNTING (unique count of individuals)</strong></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[0]">{{responsePlan.doubleCounting[0].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[1]">{{responsePlan.doubleCounting[1].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[2]">{{responsePlan.doubleCounting[2].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[3]">{{responsePlan.doubleCounting[3].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[4]">{{responsePlan.doubleCounting[4].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[5]">{{responsePlan.doubleCounting[5].value}}</p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1"><p></p></td>
+    <td colspan="1" style="background-color: #d8d8d8; text-align: center;" ><strong>{{dcTotal ? dcTotal : 0}}</strong></td>
+  </tr>
+
+</table>
+
+<br>
+<br>
+<hr>
+
+
+<!-- Previous table, leaving in case need values  -->
+<table class="tg" hidden align="center" id="tableProjectActivities">
 
   <tr>
     <td class="tg" colspan="4" style="width: 40%; text-align: center;">

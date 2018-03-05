@@ -1,5 +1,396 @@
 <table class="tg" style="width: 100%;" align="center" id="tableProjectBudget">
 
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; border-bottom: none; border-left: none;">
+      <strong style=""></strong>
+    </td>
+
+    <td colspan="10" style="text-align: center; width: 25%;">
+      <a style="color:red; text-decoration: underline;" href="http://www.xe.com/currencyconverter/">Please report all expenditure in GBP - (click this text for a conversion website)</a>
+    </td>
+  </tr>
+
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; border-bottom: none; border-left: none;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>Budget Category</p>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>Budget <br>(GBP)</p>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>Description</p>
+    </td>
+  </tr>
+  <!-- Implementation -->
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-bottom:none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>WaSH</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputWaSHBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputWaSHNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Health</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputHealthBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputHealthNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Shelter</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputShelterBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputShelterNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Nutrition</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputNutritionBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputNutritionNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; text-align: center; color: white; background: #CD0000;">
+      <strong style="">IMPLEMENTATION</strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Camp Management</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputCampBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputCampNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Education</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputEduBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputEduNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Protection</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputProtectionBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputProtectionNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Food Security & Livelihoods</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputFoodSecBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{inputFoodSecNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Cash</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p></p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p></p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none;  background: #CD0000">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background: #F2CBAD; width: 25%;">
+      <strong>Total</strong>
+    </td>
+    <td colspan="4" style="text-align: center; background: #F2CBAD; width: 25%;">
+      <strong>£ {{total}}</strong>
+    </td>
+    <td colspan="4" style="text-align: center; background: #F2CBAD; width: 25%;">
+      <p></p>
+    </td>
+  </tr>
+
+  <!-- Operations -->
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%;border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Transport</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{transportBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{transportNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000; color: white; ">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Security</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{securityBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{securityNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; background: #CD0000; text-align: center; color: white; ">
+      <strong style="">OPERATIONS</strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Logistics & Overheads</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{logisticsAndOverheadsBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{logisticsAndOverheadsNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; text-align: center; color:white; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Staffing & Support</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{staffingAndSupportBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{staffingAndSupportNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; text-align: center; color:white; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Monitoring & Evaluation</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{monitoringAndEvolutionBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{monitoringAndEvolutionNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; text-align: center; color:white; border: none; background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>Capital items</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{capitalItemsBudget}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{capitalItemsNarrative}}</p>
+    </td>
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; background: #CD0000">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background: #F2CBAD; width: 25%;">
+      <strong>Total</strong>
+    </td>
+    <td colspan="4" style="text-align: center; background: #F2CBAD; width: 25%;">
+      <strong>£ {{!t ? 0 : t}} </strong>
+    </td>
+    <td colspan="4" style="text-align: center; background: #F2CBAD; width: 25%;">
+      <p></p>
+    </td>
+  </tr>
+
+  <!-- Management Support -->
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; background: #CD0000; text-align: center;">
+      <strong style="color: white;">MANAGEMENT SUPPORT</strong>
+    </td>
+    <td colspan="4" style="text-align: center; border-right: none; width: 25%;">
+      <strong>Management Support (max. 100% of direct costs)</strong>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>£ {{totalOfAllCosts}}</p>
+    </td>
+    <td colspan="4" style="text-align: center; width: 25%;">
+      <p>{{managementSupportNarrative}}</p>
+    </td>
+  </tr>
+
+  <!-- Totals -->
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; border-bottom: none; border-left: none;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; width: 25%;">
+      <strong>TOTALS</strong>
+    </td>
+    <td colspan="6" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>Agency Budget</p>
+    </td>
+  </tr>
+
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; border-bottom: none; border-left: none;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; width: 25%;">
+      <strong>Implementation</strong>
+    </td>
+    <td colspan="6" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>£ {{total}}</p>
+    </td>
+  </tr>
+
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; border-bottom: none; border-left: none;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; width: 25%;">
+      <strong>Operations</strong>
+    </td>
+    <td colspan="6" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>£ {{total}}</p>
+    </td>
+  </tr>
+
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; border-bottom: none; border-left: none;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; width: 25%;">
+      <strong>Management Support</strong>
+    </td>
+    <td colspan="6" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>{{totalOfAllCosts}}</p>
+    </td>
+  </tr>
+
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-top: none; border-bottom: none; border-left: none;">
+      <strong style=""></strong>
+    </td>
+    <td colspan="4" style="background-color: #d8d8d8; width: 25%;">
+      <strong>ALL</strong>
+    </td>
+    <td colspan="6" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p>£ {{total}}</p>
+    </td>
+  </tr>
+
+  <!-- Capital item cost breakdown -->
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border-bottom: none;  background: #CD0000;">
+      <strong style=""></strong>
+    </td>
+
+    <td colspan="10" style="width: 25%;">
+      <p style="color:red;">Please note that capital item costs cannot be used for programme set-up costs
+        (e.g. vehicles and laptops). Please specify any individual items costing more than £1,000</p>
+    </td>
+  </tr>
+
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; text-align: center; background: #CD0000;">
+      <strong style="color: white;">CAPITAL ITEM COST</strong>
+    </td>
+
+    <td colspan="4" style="background-color: #d8d8d8;width: 25%;">
+      <strong>Cost</strong>
+    </td>
+    <td colspan="6" style="background-color: #d8d8d8; text-align: center; width: 25%;">
+      <p></p>
+    </td>
+
+  </tr>
+  <tr style="width: 100%;">
+    <td colspan="4" style="width: 25%; border: none; text-align: center; background: #CD0000;">
+      <strong style="color: white;">BREAKDOWN</strong>
+    </td>
+
+    <td colspan="4" style="width: 25%;">
+      <strong>£ {{capitalItemsBudget}}</strong>
+    </td>
+    <td colspan="6" style="text-align: center; width: 25%;">
+      <p>{{capitalItemsNarrative}}</p>
+    </td>
+
+  </tr>
+</table>
+
+<br>
+<hr>
+<br>
+
+
+<!--
+<table class="tg" style="width: 100%;" align="center" id="tableProjectBudget">
+
   <tr>
     <td class="tg" colspan="3" style="width: 40%; text-align: center;">
       <h2>Start Fund</h2>
@@ -169,3 +560,4 @@
   </tr>
 
 </table>
+-->

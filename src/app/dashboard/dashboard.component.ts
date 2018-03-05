@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -22,6 +22,9 @@ import {NetworkViewModel} from "../country-admin/country-admin-header/network-vi
 import {PrepActionService, PreparednessAction} from "../services/prepactions.service";
 import {forEach} from "@angular/router/src/utils/collection";
 import {MinimumPreparednessComponent} from "../preparedness/minimum/minimum.component";
+import { BugReportingService } from "../services/bug-reporting.service";
+import { ReportProblemComponent } from "../report-problem/report-problem.component";
+import * as html2canvas from "html2canvas";
 
 declare var Chronoline, document, DAY_IN_MILLISECONDS, isFifthDay, prevMonth, nextMonth: any;
 declare var jQuery: any;
@@ -34,6 +37,10 @@ declare var jQuery: any;
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
+
+  // Reporting problem
+  @Input() showIcon: boolean;
+
 
   private alertList: ModelAlert[];
 
@@ -112,7 +119,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private networkService: NetworkService,
               private storageService: LocalStorageService,
-              private actionService: ActionsService) {
+              private actionService: ActionsService,
+              private bugReport: BugReportingService) {
   }
 
   ngOnInit() {

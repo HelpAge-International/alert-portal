@@ -3480,7 +3480,90 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
 /***********************************************************************************************************************/
 
 /***********************************************************************************************************************/
+//Bug Reporting
 //for sand
+
+exports.sendBugReportingEmailSand = functions.database.ref('/sand/bugReporting/{countryId}/{bugId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    console.log(currData)
+
+    let eParams = event.params;
+    // Set variables to parameters of the data returned, ready to construct for the email
+    let countryId = eParams['countryId'];
+    let bugId = eParams['bugId'];
+
+    console.log("countyId: " + countryId);
+
+    const mailOptions = {
+      from: '"ALERT Network" <noreply@firebase.com>',
+      to: 'dan@rolleragency.co.uk'
+    };
+    mailOptions.subject = `ALERT Platform: A problem has been reported`;
+    mailOptions.html = `Hello,
+                          <br>
+                          <br> A problem was reported at ${currData.date}
+                          <br>  
+                          <br> Description: <br>
+                          ${currData.description}
+                          <br> <br>        
+                          <a href="${currData.downloadLink}"> Click for image </a>                                          
+                          <br> <br>                         
+                          User details: <br>
+                          ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName}, ${currData.email}
+                          <br>
+                          <br>
+                          System Information: <br>
+                          ${currData.systemInfo}
+                          `;
+
+    return mailTransport.sendMail(mailOptions).then(() => {
+      console.log('New bug reporting email:');
+    });
+
+    // admin.database().ref("/sand/bugReporting/" + countryId + '/' + bugId)
+    //   .once("value", data => {
+    //     let userDb = data.val();
+    //     console.log(userDb, ' : loggin userDb');
+    //     const mailOptions = {
+    //       from: '"ALERT Network" <noreply@firebase.com>',
+    //       to: 'dan@rolleragency.co.uk'
+    //     };
+    //     mailOptions.subject = `ALERT Platform: A problem has been reported`;
+    //     mailOptions.text = `Hello,
+    //                       \n
+    //                       \n A problem was reported at ${date}
+    //                       \n
+    //                       \n Description: \n
+    //                       ${description}
+    //                       \n
+    //                       ${downloadURL}
+    //                       \n
+    //                       \n
+    //                       User details: \n
+    //                       ${firstName} ${lastName}, ${country}, ${agencyName} \n
+    //                       ${email}
+    //                       \n
+    //                       \n
+    //                       System Information: \n
+    //                       ${systemInfo}
+    //                       `;
+    //     return mailTransport.sendMail(mailOptions).then(() => {
+    //       console.log('New welcome email sent to:', email);
+    //     });
+    //   }, error => {
+    //     console.log(error.message);
+    //   });
+
+  })
+
+/***********************************************************************************************************************/
+
+
+
 exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();

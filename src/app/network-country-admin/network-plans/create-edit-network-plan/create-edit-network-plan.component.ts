@@ -684,7 +684,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     //   jQuery("#navigate-back").modal("hide");
     // }
 
-    console.log("Finish button pressed");
+
     this.checkAllSections();
 
     let newResponsePlan: ResponsePlan = new ResponsePlan;

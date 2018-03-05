@@ -58,6 +58,8 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    jQuery('.float').hide();
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.USER_TYPE = this.userPaths[userType];
@@ -146,6 +148,10 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
   logout() {
     console.log("logout");
     this.af.auth.logout().then(()=>{this.router.navigateByUrl(Constants.LOGIN_PATH).then()});
+  }
+
+  reportProblem(){
+    jQuery('.float').show();
   }
 
   goToHome() {

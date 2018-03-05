@@ -293,7 +293,9 @@
       "BN": "Bengali"
     },
     "SWITCH": "Switch language",
+    "REPORT":"Report a problem",
     "MODAL_HEADER":"Select a language",
+    "REPORT_PROBLEM":"Report a problem",
     "WELCOME":"Welcome",
     "HOME":"Home",
     "NAME":"Name",
