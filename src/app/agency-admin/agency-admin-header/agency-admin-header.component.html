@@ -19,9 +19,8 @@
                   <a class="dropdown-item" routerLink="/agency-admin/view-countries">{{"VIEW_MY_AGENCY" | translate}}</a>
                   <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
                   <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
-                    <a class="dropdown-item" (click)="logout()">
-                        {{"GLOBAL.LOGOUT" | translate}}
-                    </a>
+                  <a class="dropdown-item" (click)="exportData()">{{"EXPORT_AGENCY_DATA" | translate}}</a>
+                  <a class="dropdown-item" (click)="logout()">{{"GLOBAL.LOGOUT" | translate}}</a>
                 </div>
             </li>
             <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="uid"></app-notification-badge>

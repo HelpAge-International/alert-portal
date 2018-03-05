@@ -24,6 +24,7 @@ import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
 import {Subject} from "rxjs/Subject";
+import {AgencyService} from "./agency-service.service";
 
 @Injectable()
 export class ExportDataService {
@@ -37,6 +38,7 @@ export class ExportDataService {
               private userService: UserService,
               private partnerService: PartnerOrganisationService,
               private surgeCapacityService: SurgeCapacityService,
+              private agencyService: AgencyService,
               private settingService: SettingsService,
               private commonService: CommonService) {
   }
@@ -99,6 +101,112 @@ export class ExportDataService {
     this.fetchSectorExpertiseData(countryId, wb);
 
     return this.exportSubject
+
+  }
+
+  public exportAgencyData(agencyId: string) {
+    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .first()
+      .subscribe(areaContent => {
+        //TODO fix this
+        // this.agencyService.getAllCountryIdsForAgency(agencyId)
+        //   .first()
+        //   .subscribe(countryIds => {
+        //     let totalCountries = countryIds.length
+        //     countryIds.forEach(countryId => {
+        //       //get all staff for this country
+        //       this.userService.getStaffList(countryId)
+        //         .first()
+        //         .subscribe(staffs => {
+        //           let staffMap = new Map<string, string>()
+        //           //get country admin first
+        //           this.userService.getUser(this.uid)
+        //             .first()
+        //             .subscribe(admin => {
+        //               staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
+        //
+        //               if (staffs.length > 0) {
+        //                 //get rest staffs for country
+        //                 staffs.forEach(staff => {
+        //                   this.userService.getUser(staff.id)
+        //                     .first()
+        //                     .subscribe(user => {
+        //                       staffMap.set(user.id, user.firstName + " " + user.lastName)
+        //
+        //                       if (staffMap.size === staffs.length + 1) {
+        //                         //start export data
+        //                         this.dataService.exportOfficeData(this.agencyId, this.countryId, content, staffMap)
+        //                           .first()
+        //                           .subscribe(value => this.showLoader = !value)
+        //                       }
+        //                     })
+        //                 })
+        //               } else {
+        //                 //start export data
+        //                 this.dataService.exportOfficeData(this.agencyId, this.countryId, content, staffMap)
+        //                   .first()
+        //                   .subscribe(value => this.showLoader = !value)
+        //               }
+        //             })
+        //
+        //         })
+        //     })
+        //   })
+      })
+
+    // MAKE SURE TOTAL NUMBER FOR SHEETS IS RIGHT!! (16 now)
+    this.total = 16
+    this.counter = 0
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new()
+
+    // //fetch country alert data
+    // this.fetchCustomHazardNameForAlertsCountry(countryId).then((customNameMap: Map<string, string>) => {
+    //   //fetch alerts data
+    //   this.fetchCountryAlertsData(countryId, customNameMap, areaContent, wb);
+    // })
+    //
+    // //fetch risk monitoring data
+    // this.fetchRiskMonitoringData(countryId, staffMap, areaContent, wb);
+    //
+    // //fetch response plan data
+    // this.fetchResponsePlanData(countryId, wb);
+    //
+    // //fetch preparedness actions data
+    // this.fetchActionsData(areaContent, agencyId, countryId, staffMap, wb);
+    //
+    // //fetch point of contacts
+    // this.fetchPointOfContactData(countryId, wb);
+    //
+    // //fetch office contacts
+    // this.fetchCountryOfficeDetail(agencyId, countryId, wb);
+    //
+    // //fetch stock capacity - external and  in-country stock
+    // this.fetchStockCapacity(countryId, areaContent, wb);
+    //
+    // //fetch coordination data
+    // this.fetchCoordinationData(countryId, wb);
+    //
+    // //fetch equipment data
+    // this.fetchEquipmentData(countryId, areaContent, wb);
+    //
+    // //fetch surge equipment data
+    // this.fetchSurgeEquipmentData(countryId, wb);
+    //
+    // //fetch partner orgs data
+    // this.fetchPartnerOrgData(agencyId, countryId, wb);
+    //
+    // //fetch surge capacity data
+    // this.fetchSurgeCapacityData(countryId, wb);
+    //
+    // //fetch office capacity (staff) data
+    // this.fetchOfficeCapacityData(countryId, wb);
+    //
+    // //fetch programme 4w
+    // this.fetchProgram4wData(countryId, wb);
+    //
+    // //fetch sector expertise
+    // this.fetchSectorExpertiseData(countryId, wb);
 
   }
 

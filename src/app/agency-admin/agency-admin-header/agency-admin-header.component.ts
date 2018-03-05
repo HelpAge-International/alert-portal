@@ -151,32 +151,8 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl("/agency-admin/country-office");
   }
 
-  // test() {
-  //   switch (this.counter) {
-  //     case 0:
-  //       this.translate.use("en");
-  //       break;
-  //     case 1:
-  //       this.translate.use("fr");
-  //       break;
-  //     case 2:
-  //       this.translate.use("es");
-  //       break;
-  //     case 3:
-  //       this.translate.use("pt");
-  //       break;
-  //     default:
-  //       this.translate.use("en");
-  //       break;
-  //   }
-  //   this.counter++;
-  //   if (this.counter == 4) {
-  //     this.counter = 0;
-  //   }
-  //   // if (this.counter % 2 == 0) {
-  //   //   this.translate.use("en");
-  //   // } else {
-  //   //   this.translate.use("fr");
-  //   // }
-  // }
+  exportData() {
+    console.log("start exporting agency data")
+  }
+
 }
