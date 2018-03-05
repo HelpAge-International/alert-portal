@@ -1209,6 +1209,77 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
     var urlToUpdate;
 
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1,level: triggerSelected};
+    let id = hazardID == 'countryContext' ? this.agencyId : hazardID;
+
+    if(indicator["timeTracking"]){
+      dataToSave["timeTracking"] = indicator["timeTracking"];
+
+      if(indicator.triggerSelected == 0){
+        if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+          dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+
+      }
+      if(indicator.triggerSelected == 1){
+        if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+          dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+
+      }
+      if(indicator.triggerSelected == 2){
+        if(!dataToSave["timeTracking"]["timeSpentInRed"]){
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+          dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+      }
+
+
+      if(triggerSelected == 0){
+        if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+      if(triggerSelected == 1){
+        if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+      if(triggerSelected == 2){
+        if(!dataToSave["timeTracking"]["timeSpentInRed"]){
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+      
+    }else{
+
+      dataToSave["timeTracking"] = {}
+      if(triggerSelected == 0){
+        dataToSave["timeTracking"]["timeSpentInGreen"] = []
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+
+      if(triggerSelected == 1){
+        dataToSave["timeTracking"]["timeSpentInAmber"] = []
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+
+      if(triggerSelected == 2){
+        dataToSave["timeTracking"]["timeSpentInRed"] = []
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+    }
+
+
     if (hazardID == 'countryContext') {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.agencyId + '/' + indicatorID;
     } else {
@@ -1462,7 +1533,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
         doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE') + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
 
         if (y > pageHeight) {
-          y = 10;
+          y = 10; 
           doc.addPage();
         }
         doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));

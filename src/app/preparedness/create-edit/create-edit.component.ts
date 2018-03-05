@@ -656,7 +656,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
                   // Change from complete to in progress
                   if(action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
-                    console.log('switch from complete to in progress')
                     action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
                       if(timeObject.finish == -1){
                         action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime

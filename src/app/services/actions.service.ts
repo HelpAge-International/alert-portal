@@ -419,6 +419,7 @@ export class ActionsService {
   getAlert(alertId, countryId) {
     return this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId)
       .map(alert => {
+        console.log(alert)
         let modelAlert = new ModelAlert();
         modelAlert.id = alert.$key;
         modelAlert.alertLevel = alert.alertLevel;
@@ -430,6 +431,7 @@ export class ActionsService {
         modelAlert.timeCreated = alert.timeCreated;
         modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
         modelAlert.createdBy = alert.createdBy;
+        modelAlert.timeTracking = alert.timeTracking;        ;
 
         let affectedAreas: ModelAffectedArea[] = [];
         let ids: string[] = Object.keys(alert.affectedAreas);
@@ -588,7 +590,7 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
-
+    updateData["timeTracking"] = alert.timeTracking;
     console.log(updateData);
     if (networkCountryId) {
 
@@ -664,9 +666,11 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
-
+    updateData["timeTracking"] = alert.timeTracking;
 
     this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alert.id).set(updateData).then(() => {
+
+      
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;
       let riskNameTranslated = "";

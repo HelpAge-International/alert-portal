@@ -1255,12 +1255,82 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     var urlToUpdate;
 
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1,level: triggerSelected};
+    let id = hazardID == 'countryContext' ? this.countryID : hazardID;
+
+    if(indicator["timeTracking"]){
+      dataToSave["timeTracking"] = indicator["timeTracking"];
+
+      if(indicator.triggerSelected == 0){
+        if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+          dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+
+      }
+      if(indicator.triggerSelected == 1){
+        if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+          dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+
+      }
+      if(indicator.triggerSelected == 2){
+        if(!dataToSave["timeTracking"]["timeSpentInRed"]){
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+          dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+      }
+
+
+      if(triggerSelected == 0){
+        if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+      if(triggerSelected == 1){
+        if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+      if(triggerSelected == 2){
+        if(!dataToSave["timeTracking"]["timeSpentInRed"]){
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+      
+    }else{
+
+      dataToSave["timeTracking"] = {}
+      if(triggerSelected == 0){
+        dataToSave["timeTracking"]["timeSpentInGreen"] = []
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+
+      if(triggerSelected == 1){
+        dataToSave["timeTracking"]["timeSpentInAmber"] = []
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+
+      if(triggerSelected == 2){
+        dataToSave["timeTracking"]["timeSpentInRed"] = []
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+    }
+
+
     if (hazardID == 'countryContext') {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + indicatorID;
     } else {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + hazardID + '/' + indicatorID;
     }
-
+        
     this.af.database.object(urlToUpdate)
       .update(dataToSave)
       .then(_ => {

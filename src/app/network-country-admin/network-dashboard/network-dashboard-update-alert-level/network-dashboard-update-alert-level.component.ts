@@ -14,6 +14,7 @@ import {OperationAreaModel} from "../../../model/operation-area.model";
 import {CommonService} from "../../../services/common.service";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
+import {PrepActionService} from "../../../services/prepactions.service";
 
 
 @Component({
@@ -68,7 +69,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
               private alertService: ActionsService,
               private userService: UserService,
               private storage: LocalStorageService,
-              private networkService: NetworkService) {
+              private networkService: NetworkService,
+              private prepActionService: PrepActionService) {
     this.initAlertData();
   }
 
@@ -189,6 +191,10 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
   private loadAlert(alertId: string, countryId: string) {
 
+
+    this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, false,
+      this.networkCountryId, this.networkId, '');
+
     this.alertService.getAlert(alertId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alert: ModelAlert) => {
@@ -265,40 +271,176 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
   submit() {
     
+
+
     let hazard = this.hazards.find(x => x.hazardScenario == this.loadedAlert.hazardScenario)
-    let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
+    let hazardTrackingNode;
+
+    if(hazard && hazard.timeTracking && hazard.timeTracking[this.loadedAlert.id]){
+      hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[this.loadedAlert.id] : undefined;
+    }
+
     let currentTime = new Date().getTime()
-    let newTimeObject = {raisedAt: currentTime, level: this.loadedAlert.alertLevel == AlertLevels.Red ? AlertLevels.Red : AlertLevels.Amber};
+    let newTimeObject = {start: currentTime, finish: -1,level: this.loadedAlert.alertLevel};
     let id = this.networkCountryId;
 
-    //Checks to see if hazards exists on the network
+
+    let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+    if(this.loadedAlertLevel != this.loadedAlert.alertLevel && this.loadedAlert.alertLevel == AlertLevels.Red && this.userType == UserType.CountryDirector){
+
+        apaActions.forEach( action => {
+
+          if(!action["redAlerts"]){
+            action["redAlerts"] = [];
+          }
+          if(action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
+            action["redAlerts"].push(this.loadedAlert.id)
+            this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id + '/redAlerts')
+            .update(action["redAlerts"])
+          }
+    
+        })
+
+    }
+
+    //Checks to see if hazards exists on the country office 
     if(hazard){
-      if(this.loadedAlertLevel != this.loadedAlert.alertLevel && (this.loadedAlert.alertLevel == AlertLevels.Red || this.loadedAlert.alertLevel == AlertLevels.Amber)){
-        if(this.loadedAlert.alertLevel == AlertLevels.Red){
-          if(this.userType == UserType.CountryDirector){
+      if(this.loadedAlertLevel != this.loadedAlert.alertLevel){
+
+        if(hazardTrackingNode){
+          if(this.loadedAlertLevel == AlertLevels.Red){
+            hazardTrackingNode["timeSpentInRed"][hazardTrackingNode["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+          }
+  
+          if(this.loadedAlertLevel == AlertLevels.Amber){
+            hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+          }
+        }
+
+
+        if(this.loadedAlert.alertLevel == AlertLevels.Red){ 
+          if(this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector){
             if(hazardTrackingNode){
-              hazardTrackingNode.push(newTimeObject)
-              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
-              .update({timeTracking: hazardTrackingNode})
+              if(!hazardTrackingNode["timeSpentInRed"]){
+                hazardTrackingNode["timeSpentInRed"] = [];
+              }
+              hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update(hazardTrackingNode)
             }else{
-              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
-              .update({timeTracking: [newTimeObject]})
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id) 
+              .update({timeSpentInRed: [newTimeObject]})
+            }
+             
+          }
+          
+        }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+          if(hazardTrackingNode){
+            if(!hazardTrackingNode["timeSpentInAmber"]){
+              hazardTrackingNode["timeSpentInAmber"] = [];
             }
             
-          }
-        }else if(this.loadedAlert.alertLevel == AlertLevels.Amber){
-          if(hazardTrackingNode){
-            hazardTrackingNode.push(newTimeObject)
-            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
-            .update({timeTracking: hazardTrackingNode})
+            if(this.loadedAlert.alertLevel == AlertLevels.Amber){
+              hazardTrackingNode["timeSpentInAmber"].push(newTimeObject)
+            }
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update(hazardTrackingNode)
+            
           }else{
-            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
-            .update({timeTracking: [newTimeObject]})
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+            .update({timeSpentInAmber: [newTimeObject]})
           }
           
         } 
       }
-    } 
+    }
+
+
+
+    // let hazard = this.hazards.find(x => x.hazardScenario == this.loadedAlert.hazardScenario)
+    // let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
+    // let currentTime = new Date().getTime()
+    // let newTimeObject = {raisedAt: currentTime, level: this.loadedAlert.alertLevel};
+    // let id = this.networkCountryId;
+
+    // //Checks to see if hazards exists on the network
+    // if(hazard){
+    //   if(this.loadedAlertLevel != this.loadedAlert.alertLevel && (this.loadedAlert.alertLevel == AlertLevels.Red || this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green)){
+    //     if(this.loadedAlert.alertLevel == AlertLevels.Red){
+    //       if(this.userType == UserType.CountryDirector){
+    //         if(hazardTrackingNode){
+    //           hazardTrackingNode.push(newTimeObject)
+    //           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //           .update({timeTracking: hazardTrackingNode})
+    //         }else{
+    //           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //           .update({timeTracking: [newTimeObject]})
+    //         }
+            
+    //       }
+    //     }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+    //       if(hazardTrackingNode){
+    //         hazardTrackingNode.push(newTimeObject)
+    //         this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //         .update({timeTracking: hazardTrackingNode})
+    //       }else{
+    //         this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //         .update({timeTracking: [newTimeObject]})
+    //       }
+          
+    //     } 
+    //   }
+    // } 
+
+    // Alert tracking
+    if(this.loadedAlertLevel != this.loadedAlert.alertLevel){
+
+      if(this.loadedAlert["timeTracking"]){
+        if(this.loadedAlertLevel == AlertLevels.Red){
+          this.loadedAlert["timeTracking"]["timeSpentInRed"][this.loadedAlert["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+  
+        if(this.loadedAlertLevel == AlertLevels.Amber){
+          this.loadedAlert["timeTracking"]["timeSpentInAmber"][this.loadedAlert["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+      }
+      
+
+
+      if(this.loadedAlert.alertLevel == AlertLevels.Red){
+        if(this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector){
+          if(this.loadedAlert["timeTracking"]){
+            if(!this.loadedAlert["timeTracking"]["timeSpentInRed"]){
+              this.loadedAlert["timeTracking"]["timeSpentInRed"] = [];
+            }
+            this.loadedAlert["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+          }else{
+            this.loadedAlert.timeTracking = {};
+            this.loadedAlert.timeTracking["timeSpentInRed"] = [];
+            this.loadedAlert.timeTracking["timeSpentInRed"].push(newTimeObject);
+          }
+           
+        }
+        
+      }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+        if(this.loadedAlert["timeTracking"]){
+          if(!this.loadedAlert["timeTracking"]["timeSpentInAmber"]){
+            this.loadedAlert["timeTracking"]["timeSpentInAmber"] = [];
+          }
+          
+          if(this.loadedAlert.alertLevel == AlertLevels.Amber){
+            this.loadedAlert["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+          }
+          
+        }else{
+          this.loadedAlert.timeTracking = {};
+            this.loadedAlert.timeTracking["timeSpentInRed"] = [];
+            this.loadedAlert.timeTracking["timeSpentInRed"].push(newTimeObject);
+        }
+        
+      } 
+    }
 
     this.loadedAlert.estimatedPopulation = this.estimatedPopulation;
     this.loadedAlert.infoNotes = this.infoNotes;

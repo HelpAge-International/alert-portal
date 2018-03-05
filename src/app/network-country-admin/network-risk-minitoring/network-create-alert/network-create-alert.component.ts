@@ -238,40 +238,58 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
         }
         console.log(dataToSave);
 
-        let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario).id
-        let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
-        let currentTime = new Date().getTime()
-        let newTimeObject = {raisedAt: currentTime, level: dataToSave.alertLevel == AlertLevels.Red ? AlertLevels.Red : AlertLevels.Amber};
-        
-        if(hazard){
-          if(dataToSave.alertLevel == AlertLevels.Red){
-            if(this.UserType == UserType.CountryDirector){
-              if(hazardTrackingNode){
-                hazardTrackingNode.push(newTimeObject)
-                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId+ '/' + hazard.id)
-                .update({timeTracking: hazardTrackingNode})
-              }else{
-                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id)
-                .update({timeTracking: [newTimeObject]})
-              }
-              
-            }
-          }else{
-            if(hazardTrackingNode){
-              hazardTrackingNode.push(newTimeObject)
-              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId+ '/' + hazard.id)
-              .update({timeTracking: hazardTrackingNode})
-            }else{
-              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id)
-              .update({timeTracking: [newTimeObject]})
-            }
-            
-          } 
-        }
+      
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.networkCountryId)
           .push(dataToSave)
-          .then(() => {
+          .then(alert => {
+
+            let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+            let hazardTrackingNode;
+
+            if(hazard && hazard.timeTracking && hazard.timeTracking[alert.key]){
+              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : undefined;
+            }
+
+            let currentTime = new Date().getTime()
+            let newTimeObject = {start: currentTime, finish: -1,level: dataToSave.alertLevel};
+
+
+            if(hazard){
+              if(dataToSave.alertLevel == AlertLevels.Red){
+                if(this.UserType == UserType.CountryDirector){
+                  if(hazardTrackingNode){
+                    hazardTrackingNode.push(newTimeObject)
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update(hazardTrackingNode)
+                  }else{
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update({timeSpentInRed: [newTimeObject]})
+                  }
+                  
+                }
+              }else{
+                if(hazardTrackingNode){
+                  hazardTrackingNode.push(newTimeObject)
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update(hazardTrackingNode)
+                }else{
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update({timeSpentInAmber: [newTimeObject]})
+                }
+                
+              } 
+            } 
+
+            if(dataToSave.alertLevel == AlertLevels.Red){
+              if(this.UserType == UserType.CountryDirector){
+                  this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkCountryId + '/' + alert.key + '/timeTracking/')
+                  .update({timeSpentInRed: [newTimeObject]})
+              }
+            }else{
+                this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkCountryId + '/' + alert.key + '/timeTracking/')
+                .update({timeSpentInAmber: [newTimeObject]})
+            } 
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -288,7 +306,21 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
               let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario) || action.assignedHazards.length == 0)
 
-              console.log(affectedActions)
+              let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+              if(this.UserType == UserType.CountryDirector){
+                apaActions.forEach( action => {
+                  if(!action["redAlerts"]){
+                    action["redAlerts"] = []; 
+                  }
+                  if(action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
+                    action["redAlerts"].push(alert.key)
+                    this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + action.id + '/redAlerts')
+                    .update(action["redAlerts"])
+                  }
+  
+                })
+              }
 
               affectedActions.forEach( affectedAction => {
                 // push activated datetime to each apa

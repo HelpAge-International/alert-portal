@@ -765,9 +765,11 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         isCompleteAt: new Date().getTime()
       } 
 
-      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id)
+      let id = this.isLocalAgency ? this.agencyId : this.countryId;
+
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(action => { 
+        .subscribe(action => {
 
           // Change from in progress to complete
           let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
@@ -835,7 +837,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         isCompleteAt: new Date().getTime()
       }
 
-      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id)
+      this.af.database.object(Constants.APP_STATUS + "/action/" + action.networkCountryId + "/" + action.id)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(action => {
 

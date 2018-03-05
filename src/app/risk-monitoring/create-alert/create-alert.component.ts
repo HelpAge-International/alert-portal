@@ -138,10 +138,10 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    console.log('SAVING ALERT....')
 
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
+
 
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
@@ -159,41 +159,55 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         dataToSave.hazardScenario = parseInt(dataToSave.hazardScenario)
 
 
-        let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
-        let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
-        let currentTime = new Date().getTime()
-        let newTimeObject = {raisedAt: currentTime, level: dataToSave.alertLevel == AlertLevels.Red ? AlertLevels.Red : AlertLevels.Amber};
-      
-        if(hazard){
-          if(dataToSave.alertLevel == AlertLevels.Red){
-            if(this.UserType == UserType.CountryDirector){
-              if(hazardTrackingNode){
-                hazardTrackingNode.push(newTimeObject)
-                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
-                .update({timeTracking: hazardTrackingNode})
-              }else{
-                this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
-                .update({timeTracking: [newTimeObject]})
-              }
-              
-            }
-          }else{
-            if(hazardTrackingNode){
-              hazardTrackingNode.push(newTimeObject)
-              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
-              .update({timeTracking: hazardTrackingNode})
-            }else{
-              this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id)
-              .update({timeTracking: [newTimeObject]})
-            }
-            
-          } 
-        } 
-
-
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
           .push(dataToSave)
-          .then(() => {
+          .then(alert => {
+
+            let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+            let hazardTrackingNode;
+
+            if(hazard && hazard.timeTracking && hazard.timeTracking[alert.key]){
+              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : undefined;
+            }
+
+            let currentTime = new Date().getTime()
+            let newTimeObject = {start: currentTime, finish: -1,level: dataToSave.alertLevel};
+
+            if(hazard){
+              if(dataToSave.alertLevel == AlertLevels.Red){
+                if(this.UserType == UserType.CountryDirector){
+                  if(hazardTrackingNode){
+                    hazardTrackingNode.push(newTimeObject)
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update({timeSpentInRed: hazardTrackingNode})
+                  }else{
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update({timeSpentInRed: [newTimeObject]})
+                  }
+                  
+                }
+              }else{
+                if(hazardTrackingNode){
+                  hazardTrackingNode.push(newTimeObject)
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update({timeSpentInAmber: hazardTrackingNode})
+                }else{
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update({timeSpentInAmber: [newTimeObject]})
+                }
+                
+              } 
+            } 
+
+            if(dataToSave.alertLevel == AlertLevels.Red){
+              if(this.UserType == UserType.CountryDirector){
+                  this.af.database.object(Constants.APP_STATUS + '/alert/' + this.countryID + '/' + alert.key + '/timeTracking/')
+                  .update({timeSpentInRed: [newTimeObject]})
+              }
+            }else{
+                this.af.database.object(Constants.APP_STATUS + '/alert/' + this.countryID + '/' + alert.key + '/timeTracking/')
+                .update({timeSpentInAmber: [newTimeObject]})
+            } 
  
 
             if (dataToSave.alertLevel == 2) {
@@ -209,14 +223,28 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
               let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario))
 
-              console.log(affectedActions)
+              let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
 
+              if(this.UserType == UserType.CountryDirector){
+                apaActions.forEach( action => {
+                  if(!action["redAlerts"]){
+                    action["redAlerts"] = []; 
+                  }
+
+                  if(action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
+                    action["redAlerts"].push(alert.key)
+                    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + action.id + '/redAlerts')
+                    .update(action["redAlerts"])
+                  }
+  
+                })
+              }
+  
               affectedActions.forEach( affectedAction => {
                 // push activated datetime to each apa
                 let action = this.prepActionService.findAction(affectedAction.id);
                 action["raisedAt"] = new Date().getTime();
-                console.log(action)
-                console.log(Constants.APP_STATUS + '/action/' + this.countryID + affectedAction.id)
+
                 this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + affectedAction.id)
                   .update(action)
 
@@ -230,10 +258,10 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             }
 
 
-
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
             this.router.navigateByUrl('dashboard');
-          }).catch((error: any) => {
+          })
+          .catch((error: any) => {
           console.log(error, 'You do not have access!')
         });
       }

@@ -893,7 +893,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
             action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
             timeTrackingNode = action['timeTracking']
-            console.log(timeTrackingNode)
           } 
 
       })
