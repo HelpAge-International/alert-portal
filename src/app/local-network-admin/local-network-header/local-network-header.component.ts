@@ -92,6 +92,7 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
 
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
+
         }
 
       });
@@ -160,6 +161,7 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
   }
 
   private checkAlerts() {
+    // console.log("netowrkid " + this.networkId);
     this.alertService.getAlerts(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {

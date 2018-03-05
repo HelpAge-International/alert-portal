@@ -649,8 +649,7 @@
                 <h6 class="col-sm-7 text-gray-dark"><strong>{{alert.updatedByName ? alert.updatedByName :
                   alert.createdByName}}</strong>
                   has set the alert to Amber Level on
-                  <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated |
-                    date:"dd/MM/yyyy"}}</strong></h6>
+                  <strong>{{(alert.timeUpdated ? alert.timeUpdated : alert.timeCreated) | date:"dd/MM/yyyy"}}</strong></h6>
               </div>
             </div>
             <br>

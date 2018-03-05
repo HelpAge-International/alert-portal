@@ -307,7 +307,10 @@ export class LoginComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
         if (snapshot.val() != null) {
-          if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
+          if(snapshot.val().firstLogin == null && userNodeName == "partnerUser") {
+            this.router.navigateByUrl(directToIfFirst);
+          }
+          else if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
             // If there's no first directory or firstLogin is not defined or false, go to success (as if it's a regular login)
             this.router.navigateByUrl(directToIfSuccess);
           }

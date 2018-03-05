@@ -239,7 +239,14 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
           directorExists = true;
           if (this.isEdit && this.userType == UserType.CountryDirector) {
             console.log("no filter out");
-          } else {
+          }
+          else if(this.isEdit && this.userType == UserType.NonAlert) {
+            this.userTypeConstant = this.userTypeConstant.filter(function (el) {
+              return el == "GLOBAL.USER_TYPE.NON_ALERT";
+            });
+            this.userTypeSelection = [this.UserType.NonAlert]
+          }
+          else {
             this.userTypeSelection = this.userTypeSelection.filter(function (el) {
               return el !== UserType.CountryDirector;
             });
@@ -257,7 +264,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   validateForm() {
-
 
     if (!this.title) {
       this.warningMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_TITLE';

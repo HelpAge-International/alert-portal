@@ -69,8 +69,7 @@
               </div>
             </div>
 
-            <div *ngIf="indicatorsCC && indicatorsCC.length > 0"
-            >
+            <div *ngIf="indicatorsCC && indicatorsCC.length > 0">
               <div class="indicators-to-hazards" *ngFor="let indicatorC of indicatorsCC; let indicatorKey = index;"
                    id="indicators-to-hazards_CC_{{indicatorKey}}">
                 <div class="edit__wrap--risk row Small-spaced align-items-center Header">
@@ -329,8 +328,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
 
       <div class="Ribbon__section__wrap--risk align-items-right"
@@ -524,7 +521,7 @@
                          *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save" id="hideSave"
                            *ngIf="indicator.fromNetwork"
-                           (click)="updateIndicatorStatus(indicator.hazardId, indicator, indicatorKey)">
+                           (click)="updateNetworkIntdicatorStatus(hazard.id, indicator.hazardId, indicator, indicatorKey)">
                         {{"GLOBAL.SAVE_CHANGES" | translate}}
                       </div>
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
@@ -854,7 +851,7 @@
                            *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                         <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                              *ngIf="indicator.fromNetwork"
-                             (click)="updateIndicatorStatus(indicator.hazardId, indicator, indicatorKey)">
+                             (click)="updateNetworkIntdicatorStatus(hazard.id, indicator.hazardId, indicator, indicatorKey)">
                           {{"GLOBAL.SAVE_CHANGES" | translate}}
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
