@@ -28,6 +28,7 @@ import {Location} from "@angular/common";
 import {LocalStorageService} from "angular-2-local-storage";
 import {HazardImages} from "../../../utils/HazardImages";
 import {AgencyService} from "../../../services/agency-service.service";
+import {ModelAgency} from "../../../model/agency.model";
 
 declare var jQuery: any;
 
@@ -112,7 +113,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   private hazardRedAlert: Map<HazardScenario, boolean> = new Map<HazardScenario, boolean>();
 
   private now: Date = new Date();
-
+  private isApproved: boolean;
+  private agencyName: string;
+  private selectedAgency = [];
+  private agenciesInNetwork = [];
 
   //for local network admin
   private isLocalNetworkAdmin: boolean;
@@ -190,11 +194,14 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       }
 
       this.isViewing ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
+
     })
+
 
   }
 
   private initNetworkAccess() {
+
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       console.log('network access')
       this.showLoader = true;
@@ -211,6 +218,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           this.networkCountryId = selection["networkCountryId"];
           this.userType = selection["userType"];
           this.networkUserType = selection["userType"];
+          this.agencyId = selection["agencyId"];
 
           this.getStaffDetails(this.uid, true);
 
@@ -238,8 +246,11 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               else {
                 this.action.isAllHazards = true;
               }
+              this.getAgencyList();
             });
         });
+
+
     });
   }
 
@@ -309,6 +320,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     }
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES)
+    console.log(this.agencyId, 'agency id');
   }
 
   ngOnDestroy() {
@@ -316,6 +328,40 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     this.ngUnsubscribe.complete();
   }
 
+
+  getAgencyList() {
+
+    // get agencies in network
+    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + this.networkId + '/' + this.networkCountryId + '/agencyCountries', {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(list => {
+
+        let filterList = Object.keys(list.val()).map(key => {
+          let obj = {}
+          obj["agencyId"] = key
+          let approved = Object.keys(list.val()[key]).map(id => list.val()[key][id])[0].isApproved
+          obj["isApproved"] = approved;
+          this.selectedAgency.push(key);
+          return obj
+        }).filter(obj => obj["isApproved"]).map(item => item["agencyId"])
+
+
+        filterList.forEach(item => {
+          this._agencyService.getAgencyModel(item)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(get => {
+              console.log(get, 'get in here');
+              // let name = get.name;
+              // let id = get.agencyId;
+              this.agenciesInNetwork.push(get);
+              console.log(this.agenciesInNetwork)
+            })
+
+        })
+
+      })
+
+  }
   /**
    * Initialisation
    */
@@ -634,7 +680,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
       }
 
-      if (updateObj.asignee) {
+        if (updateObj.asignee) {
         console.log('there is an assignee')
         console.log(updateObj.asignee)
         this._userService.getUserType(updateObj.asignee)
@@ -692,7 +738,13 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                         updateObj.createdAt = new Date().getTime();
                         updateObj.networkId = this.networkId;
                         console.log(updateObj);
-                        this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
+                        this.af.database.list(Constants.APP_STATUS + "/action/" + id)
+                          .push(updateObj)
+                          .update({
+                            asignee: '',
+                            agencyAssign: this.action.asignee
+                          })
+                          .then(() => {
 
                           // Send notification to the assignee
                           let notification = new MessageModel();
@@ -711,25 +763,32 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                 })
             })
 
-      }else{
+      }else {
 
-        if (this.action.id != null) {
-          // Updating
-          console.log(updateObj);
-          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-            this._location.back();
-          });
-        } else {
-          // Saving
-          updateObj.createdAt = new Date().getTime();
-          updateObj.networkId = this.networkId;
-          console.log(updateObj);
-          this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj).then(() => {
-            this._location.back();
-          });
-        }
+            if (this.action.id != null) {
+              // Updating
+              console.log(updateObj);
+              this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+                this._location.back();
+              });
+            } else {
+              // Saving
+              updateObj.createdAt = new Date().getTime();
+              updateObj.networkId = this.networkId;
 
-      }
+              console.log(updateObj, 'update obj');
+              this.af.database.list(Constants.APP_STATUS + "/action/" + id)
+                .push(updateObj)
+                .update({
+                  asignee: '',
+                  agencyAssign: this.action.asignee
+                })
+                .then(() => {
+                  this._location.back();
+                });
+            }
+
+          }
 
     }
   }
@@ -991,7 +1050,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
     if (!this.hasUsers) {
       this.hasUsers = true
-      if (this.networkUserType == NetworkUserAccountType.NetworkCng serountryAdmin) {
+      if (this.networkUserType == NetworkUserAccountType.NetworkCountryAdmin) {
         this.userService.getUser(this.uid)
           .takeUntil(this.ngUnsubscribe)
           .subscribe((user) => {

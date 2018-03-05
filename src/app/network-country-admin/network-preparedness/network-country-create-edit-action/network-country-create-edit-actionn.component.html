@@ -129,12 +129,13 @@
       <div class="col-lg-8 col-md-10">
         <div class="form-group">
           <label for="n-AssignTo">{{"ASSIGN_TO" | translate}}</label>
-          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee">
-            <option selected value="">{{"UNASSIGNED" | translate}}</option>
-            <option *ngFor="let userAssign of usersForAssign" value="{{userAssign.userID}}">{{userAssign.name}}
+          <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" >
+            <option  selected value="">{{"UNASSIGNED" | translate}}</option>
+            <option *ngFor="let agencies of agenciesInNetwork" value="{{agencies.id}}">{{agencies.name}}
             </option>
           </select>
-          <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
+
+            <!-- TODO: ADD PARTNER USER TO THIS IF STATEMENT BELOW FOR ACTION ASSIGNMENT -->
           <!--<select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"-->
           <!--*ngIf="!userType || userType == userTypes.Ert || userType == userTypes.PartnerUser ">-->
           <!--<option selected value="">{{"UNASSIGNED" | translate}}</option>-->
@@ -150,7 +151,6 @@
       </div>
     </div>
 
-
     <!--
           DUE DATE
     -->
@@ -161,7 +161,7 @@
           <material-datepicker id="n-DueDate"
                                placeholder="{{action.dueDate ? (action.dueDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
                                class="form-control col-sm-5"
-                               dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)" [rangeStart]="getNowDate()"
+                                dateFormat="DD-MM-YYYY" (onSelect)="selectDate(dueDate)" [rangeStart]="getNowDate()"
                                [(date)]="dueDate"></material-datepicker>
         </div>
         <div [hidden]="(dueDate != undefined || filterLockDueDate) || !showDueDate" class="alert alert-danger">
