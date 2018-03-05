@@ -888,16 +888,64 @@ export class ExportDataService {
 
   private exportFile(counter, total, wb) {
     if (counter == total) {
-      this.countryCounter++
-      console.log(this.countryCounter)
-      //try export see if works
-      XLSX.writeFile(wb, 'SheetJS.xlsx')
-      this.exportSubject.next(true)
+      switch (this.exportFrom) {
+        case EXPORT_FROM.FromAgency : {
+          this.countryCounter++
+          this.exportFileAgency(this.countryCounter, this.totalCountries, this.wbAgency)
+          break
+        }
+        case EXPORT_FROM.FromSystem: {
+          break
+        }
+        default: {
+          //try export see if works
+          XLSX.writeFile(wb, 'SheetJS.xlsx')
+          this.exportSubject.next(true)
+          break
+        }
+      }
     }
   }
 
   private exportFileAgency(counter, total, wb) {
+    console.log("agency total: " + total)
+    console.log("agency counter: " + counter)
     if (counter == total) {
+      // private alertsForAgency = []
+      // private indicatorsForAgency = []
+      // private plansForAgency = []
+      // private actionsForAgency = []
+      // private activeAPAForAgency = []
+      // private pointOfContactsForAgency = []
+      // private officesDetailsForAgency = []
+      // private stockInCountryForAgency = []
+      // private stockOutCountryForAgency = []
+      // private coordsForAgency = []
+      // private equipmentsForAgency = []
+      // private surgeEquipmentsForAgency = []
+      // private organisationsForAgency = []
+      // private surgesForAgency = []
+      // private officesCapacityForAgency = []
+      // private program4wForAgency = []
+      // private sectorsForAgency = []
+      const alertsForAgencySheet = XLSX.utils.json_to_sheet(this.alertsForAgency);
+      const indicatorsForAgencySheet = XLSX.utils.json_to_sheet(this.indicatorsForAgency);
+      const plansForAgencySheet = XLSX.utils.json_to_sheet(this.plansForAgency);
+      const actionsForAgencySheet = XLSX.utils.json_to_sheet(this.actionsForAgency);
+      const activeAPAForAgencySheet = XLSX.utils.json_to_sheet(this.activeAPAForAgency);
+      const pointOfContactsForAgencySheet = XLSX.utils.json_to_sheet(this.pointOfContactsForAgency);
+      const officesDetailsForAgencySheet = XLSX.utils.json_to_sheet(this.officesDetailsForAgency);
+      const stockInCountryForAgencySheet = XLSX.utils.json_to_sheet(this.stockInCountryForAgency);
+      const stockOutCountryForAgencySheet = XLSX.utils.json_to_sheet(this.stockOutCountryForAgency);
+      const coordsForAgencySheet = XLSX.utils.json_to_sheet(this.coordsForAgency);
+      const equipmentsForAgencySheet = XLSX.utils.json_to_sheet(this.equipmentsForAgency);
+      const surgeEquipmentsForAgencySheet = XLSX.utils.json_to_sheet(this.surgeEquipmentsForAgency);
+      const organisationsForAgencySheet = XLSX.utils.json_to_sheet(this.organisationsForAgency);
+      const surgesForAgencySheet = XLSX.utils.json_to_sheet(this.surgesForAgency);
+      const officesCapacityForAgencySheet = XLSX.utils.json_to_sheet(this.officesCapacityForAgency);
+      const program4wForAgencySheet = XLSX.utils.json_to_sheet(this.program4wForAgency);
+      const sectorsForAgencySheet = XLSX.utils.json_to_sheet(this.sectorsForAgency);
+      XLSX.utils.book_append_sheet(wb, alertsForAgencySheet, "Alerts")
       XLSX.writeFile(wb, 'SheetJS.xlsx')
     }
   }
