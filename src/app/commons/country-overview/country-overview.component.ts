@@ -112,6 +112,7 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   @Input() isDirector: boolean;
   @Input() agencyOverview: boolean = false;
+  @Input() agencyAdminIs: boolean
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -182,8 +183,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   filterAlertLevel(event: any) {
     this.filter = event.target.value;
     this.filteredCountryOfficeData = (!this.filter || this.filter == 'all') ? this._countryOfficeData : this._countryOfficeData.filter(x => x.alertLevel === +this.filter);
-    this.filteredNetworkCountryData = (!this.filter || this.filter == 'all') ? this._networkCountryData : this._networkCountryData.filter(x => x.alertLevel === +this.filter);
-    this.filteredLocalNetworkData = (!this.filter || this.filter == 'all') ? this._localNetworks : this._localNetworks.filter(x => x.alertLevel === +this.filter);
+    this.filteredNetworkCountryData = this._networkCountryData ? ((!this.filter || this.filter == 'all') ? this._networkCountryData : this._networkCountryData.filter(x => x.alertLevel === +this.filter)) : []
+    this.filteredLocalNetworkData = this._localNetworks ? ((!this.filter || this.filter == 'all') ? this._localNetworks : this._localNetworks.filter(x => x.alertLevel === +this.filter)) : []
   }
 
   _loadData() {
@@ -766,6 +767,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "uid": this._userId
     };
     if (this.isDirector) {
+      if (this.agencyAdminIs) {
+        data["agencyAdminIs"] = true
+      }
       this.router.navigate(["/director/director-overview", data]);
     } else {
       data["canCopy"] = true;
@@ -790,6 +794,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
     };
     // this.router.navigate(["/dashboard/dashboard-overview", data]);
     if (this.isDirector) {
+      if (this.agencyAdminIs) {
+        data["agencyAdminIs"] = true
+      }
       this.router.navigate(["/director/director-overview", data]);
     } else {
       data["canCopy"] = true;
@@ -812,6 +819,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "networkId": networkId
     };
     if (this.isDirector) {
+      if (this.agencyAdminIs) {
+        data["agencyAdminIs"] = true
+      }
       this.router.navigate(["/director/director-overview", data]);
     } else {
       data["canCopy"] = true;

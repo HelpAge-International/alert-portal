@@ -281,6 +281,7 @@ export class PageControlService {
   ]);
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*",
+    "director*",
     "response-plans/view-plan*"
   ]);
 

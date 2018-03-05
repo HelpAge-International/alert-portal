@@ -355,6 +355,7 @@ import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-ove
 import {ExportDataService} from "./services/export-data.service";
 import {PartnerOrganisationService} from "./services/partner-organisation.service";
 import {SurgeCapacityService} from "./services/surge-capacity.service";
+import { ViewCountriesComponent } from './agency-admin/view-countries/view-countries.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -710,7 +711,8 @@ const firebaseAuthConfig = {
     LocalAgencyAccountDetailsComponent,
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
-    AgencyOverviewComponent
+    AgencyOverviewComponent,
+    ViewCountriesComponent
   ],
   imports: [
     BrowserModule,

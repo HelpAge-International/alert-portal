@@ -1,8 +1,14 @@
-<app-director-header></app-director-header>
-<app-director-menu></app-director-menu>
+<ng-container *ngIf="!agencyAdminIs; else agency">
+  <app-director-header></app-director-header>
+  <app-director-menu></app-director-menu>
+</ng-container>
+<ng-template #agency>
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-template>
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button" routerLink="/director">{{agencyName}} : {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+    <div class="Back--button" [routerLink]="agencyAdminIs ? '/agency-admin/view-countries' : '/director'">{{agencyName}} : {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
       translate}}
     </div>
   </div>

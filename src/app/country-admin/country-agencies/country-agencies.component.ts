@@ -70,10 +70,10 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
           this._loadData();
         });
       }
-      
+
     })
 
-    
+
   }
 
   ngOnDestroy() {
@@ -138,7 +138,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
           this.globalNetworks[localNetwork.networkId] = localNetwork
         })
       })
-  } 
+  }
 
   // Getting all country offices with the same location in other agencies
   private getCountryOfficesWithSameLocationsInOtherAgencies() {
@@ -163,7 +163,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
           }else{
             countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location && countryItem.isActive);
           }
-          
+
 
           if (countries.length > 0) {
             // An agency should only have one country office per country
