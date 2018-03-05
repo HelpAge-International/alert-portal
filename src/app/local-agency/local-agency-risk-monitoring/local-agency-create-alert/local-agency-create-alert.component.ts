@@ -14,6 +14,7 @@ import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
+import {PrepActionService} from "../../../services/prepactions.service";
 declare var jQuery: any;
 
 @Component({
@@ -65,6 +66,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               private _commonService: CommonService,
               private translate: TranslateService,
               private userService: UserService,
+              private prepActionService: PrepActionService,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -91,6 +93,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.countryID = countryId;
       this._getHazards();
       this._getDirectorLocalAgencyId();
+
+      console.log(this.prepActionService.actions)
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
 
 
 
@@ -134,9 +139,59 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         }
         console.log(dataToSave);
 
+        
+
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
-          .then(() => {
+          .then(alert => {
+
+            let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+            let hazardTrackingNode;
+
+            if(hazard && hazard.timeTracking && hazard.timeTracking[alert.key]){
+              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : undefined;
+            }
+
+            let currentTime = new Date().getTime()
+            let newTimeObject = {start: currentTime, finish: -1,level: dataToSave.alertLevel};
+
+
+            if(hazard){
+              if(dataToSave.alertLevel == AlertLevels.Red){
+                if(this.UserType == UserType.CountryDirector){
+                  if(hazardTrackingNode){
+                    hazardTrackingNode.push(newTimeObject)
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update(hazardTrackingNode)
+                  }else{
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update({timeSpentInRed: [newTimeObject]})
+                  }
+                  
+                }
+              }else{
+                if(hazardTrackingNode){
+                  hazardTrackingNode.push(newTimeObject)
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update(hazardTrackingNode)
+                }else{
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update({timeSpentInAmber: [newTimeObject]})
+                }
+                
+              }
+            }
+
+            if(dataToSave.alertLevel == AlertLevels.Red){
+              if(this.UserType == UserType.CountryDirector){
+                  this.af.database.object(Constants.APP_STATUS + '/alert/' + this.agencyId + '/' + alert.key + '/timeTracking/')
+                  .update({timeSpentInRed: [newTimeObject]})
+              }
+            }else{
+                this.af.database.object(Constants.APP_STATUS + '/alert/' + this.agencyId + '/' + alert.key + '/timeTracking/')
+                .update({timeSpentInAmber: [newTimeObject]})
+            } 
+
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -148,6 +203,40 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               else {
                 riskNameTranslated = dataToSave.otherName;
               }
+
+              console.log(this.prepActionService.actions)
+              console.log(dataToSave.hazardScenario)
+              let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario) || action.assignedHazards.length == 0)
+
+              let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+              if(this.UserType == UserType.LocalAgencyDirector){
+                apaActions.forEach( action => {
+                  if(!action["redAlerts"]){
+                    action["redAlerts"] = []; 
+                  }
+
+                  if(action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
+                    action["redAlerts"].push(alert.key)
+                    this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id + '/redAlerts')
+                    .update(action["redAlerts"])
+                  }
+  
+                })
+              }
+
+              let raisedAt = new Date().getTime();
+
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = raisedAt;
+                console.log(action)
+                console.log(Constants.APP_STATUS + '/action/' + this.agencyId + affectedAction.id)
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + affectedAction.id)
+                  .update(action)
+
+              })
 
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
@@ -229,6 +318,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               this.nonMonitoredHazards.splice(index, 1)
             }
           }
+          value.id = x.key
           this.hazards.push(value);
         }
         console.log(this.hazards);

@@ -169,7 +169,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       if (params['isCHS']) {
         this.filterType = 0;
       }
-
     });
   }
 
@@ -177,41 +176,43 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
-  initLocalAgency() {
+  initLocalAgency(){
 
-    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
-      this.assignActionAsignee = this.uid;
-      this.userType = userType;
-      this.filterAssigned = "0";
-      this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.assignActionAsignee = this.uid;
+          this.userType = userType;
+          this.filterAssigned = "0";
+          this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
 
-      this.systemAdminId = systemId;
+          this.systemAdminId = systemId;
 
-      this.agencyId = agencyId;
-      this.countryId = countryId;
+          this.agencyId = agencyId;
+          this.countryId = countryId;
 
-      this.getStaffDetails(this.uid, true);
+          this.getStaffDetails(this.uid, true);
 
-      //overview
-      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
-        this.agencyId, this.systemAdminId);
-      this.initStaff();
-      this.initDepartments();
-      this.initDocumentTypes();
 
-      // Initialise the page control information
-      PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
-        this.modulesAreEnabled = isEnabled;
-      });
+          //overview
+          this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, true,
+            this.agencyId, this.systemAdminId);
+          this.initStaff();
+          this.initDepartments();
+          this.initDocumentTypes();
 
-      // Currency
-      this.calculateCurrency();
-    })
+          // Initialise the page control information
+          PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+            this.modulesAreEnabled = isEnabled;
+          });
+
+
+          // Currency
+          this.calculateCurrency();
+        })
 
   }
 
-  initCountryOffice() {
+  initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -328,7 +329,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
               })
           }
-
         });
 
       });
@@ -502,39 +502,84 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       return;
     }
     if (this.isLocalAgency) {
-      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-        .then(() => {
 
-          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-            .subscribe(task => {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-              console.log(notification.content);
+      let currentTime = new Date().getTime()
+      let newTimeObject = {start: currentTime, finish: -1};
+      let timeTrackingNode;
 
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
-              });
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId+ "/" + this.assignActionId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => {
+
+          // Change from unassigned to in progress
+
+          action['timeTracking']['timeSpentInAmber'] = []
+
+            if (action['timeTracking']['timeSpentInRed'][0].finish == -1){
+              action['timeTracking']['timeSpentInRed'][0].finish = currentTime
+              action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+              timeTrackingNode = action['timeTracking']
+            }
+
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
+            .then(() => {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+            .then(() => {
+
+              this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+                .subscribe(task => {
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+                  console.log(notification.content);
+
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+                  });
+                });
             });
-        });
+          })
+        })
     } else {
-      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-        .then(() => {
+      let currentTime = new Date().getTime()
+      let newTimeObject = {start: currentTime, finish: -1};
+      let timeTrackingNode;
 
-          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-            .subscribe(task => {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-              console.log(notification.content);
+      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId+ "/" + this.assignActionId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => {
 
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
-              });
+          // Change from unassigned to in progress
+
+          action['timeTracking']['timeSpentInAmber'] = []
+
+            if (action['timeTracking']['timeSpentInRed'][0].finish == -1){
+              action['timeTracking']['timeSpentInRed'][0].finish = currentTime
+              action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+              timeTrackingNode = action['timeTracking']
+            }
+
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
+            .then(() => {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+            .then(() => {
+
+              this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+                .subscribe(task => {
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+                  console.log(notification.content);
+
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+                  });
+                });
             });
-        });
+        })
+    })
     }
 
     this.closeModal();
@@ -730,13 +775,41 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+
       let data = {
         isComplete: true,
         isCompleteAt: new Date().getTime()
       }
+
+      let id = this.isLocalAgency ? this.agencyId : this.countryId;
+
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => {
+
+          // Change from in progress to complete
+          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInGreen']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
+            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            data['timeTracking'] = action['timeTracking']
+          }
+
+        })
+
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -777,6 +850,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   protected completeActionNetwork(action: PreparednessAction) {
 
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -784,6 +860,26 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         isComplete: true,
         isCompleteAt: new Date().getTime()
       }
+
+      this.af.database.object(Constants.APP_STATUS + "/action/" + action.networkCountryId + "/" + action.id)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => {
+
+          // Change from in progress to complete
+          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInGreen']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
+            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            data['timeTracking'] = action['timeTracking']
+          }
+
+        })
+
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -827,6 +923,30 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   // (Dan) - this new function is for the undo completed MPA
   protected undoCompleteAction(action: PreparednessAction) {
 
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let timeTrackingNode;
+
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(action => {
+
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInAmber']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInGreen'][index].finish == -1){
+            action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            timeTrackingNode = action['timeTracking']
+            console.log(timeTrackingNode)
+          }
+
+      })
+
     action.actualCost = null
     // Call to firebase to update values to revert back to
     if (this.isLocalAgency) {
@@ -834,14 +954,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost: null
+        actualCost: null,
+        timeTracking: timeTrackingNode
       });
     } else {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost: null
+        actualCost: null,
+        timeTracking: timeTrackingNode
       });
     }
 
@@ -868,7 +990,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       uploadedBy: this.uid
     };
 
-    if (this.isLocalAgency) {
+    if(this.isLocalAgency){
       this.af.database.list(Constants.APP_STATUS + '/document/' + this.agencyId).push(document)
         .then(_ => {
           let docKey = _.key;
@@ -1193,5 +1315,4 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, "", this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
   }
-
 }

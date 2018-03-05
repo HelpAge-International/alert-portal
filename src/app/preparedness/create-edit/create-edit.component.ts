@@ -588,6 +588,9 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
 
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     // Save/update the action
     if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
@@ -625,7 +628,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         updateObj.task = this.action.task;
         updateObj.level = this.action.level;
       }
-      updateObj.updatedAt = new Date().getTime();
+      updateObj.updatedAt = currentTime;
 
       if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
         console.log("Removing complete status!");
@@ -635,50 +638,114 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       }
 
       if (this.action.id != null) {
-        // Updating
-        if(this.isLocalAgency){
-          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
 
-            if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
-              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
-              console.log("Updating:");
-              console.log(notification.content);
 
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
-              });
+            // Updating
+            if(this.isLocalAgency){
+
+              this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(action => {
+                  console.log(action['timeTracking'])
+                  // Change from unassigned to in progress
+                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
+                  }
+
+                  // Change from complete to in progress
+                  if(action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if(timeObject.finish == -1){
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+
+
+                  // this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + "/" + this.action.id + )
+                  this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
+
+                    if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+                      // Send notification to the assignee
+                      let notification = new MessageModel();
+                      const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+                      notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+                      notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+                      console.log("Updating:");
+                      console.log(notification.content);
+
+                      notification.time = new Date().getTime();
+                      this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+                      });
+                    }
+
+                    this._location.back();
+                  })
+                })
+            } else {
+
+              this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(action => {
+
+                  // Change from unassigned to in progress
+                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
+                  }
+
+                  // Change from complete to in progress
+                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                    console.log('switch from complete to in progress')
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if(timeObject.finish == -1){
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+
+
+                  this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+
+                    if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+                      // Send notification to the assignee
+                      let notification = new MessageModel();
+                      const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+                      notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+                      notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+                      console.log("Updating:");
+                      console.log(notification.content);
+
+                      notification.time = new Date().getTime();
+                      this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+                      });
+                    }
+
+                    this._location.back();
+                  })
+                })
             }
-
-            this._location.back();
-          })
-        } else {
-          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
-
-            if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
-              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
-              console.log("Updating:");
-              console.log(notification.content);
-
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
-              });
-            }
-
-            this._location.back();
-          })
-        }
       }
       else {
         // Saving
-        updateObj.createdAt = new Date().getTime();
+
+        updateObj['timeTracking'] = {}
+        if(updateObj.asignee){
+          updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+        }else{
+          updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+        }
+
+        updateObj.createdAt = currentTime;
         if(this.isLocalAgency){
           this.af.database.list(Constants.APP_STATUS + "/action/" + this.agencyId).push(updateObj).then(_ => {
 

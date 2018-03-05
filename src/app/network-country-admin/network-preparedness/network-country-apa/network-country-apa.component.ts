@@ -628,19 +628,49 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => { 
+
+          console.log(action)
+          // Change from in progress to complete
+          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInGreen']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          console.log(index)
+          console.log(action['timeTracking'])
+          console.log(action['timeTracking']['timeSpentInAmber'][index])
+
+          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
+            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            data['timeTracking'] = action['timeTracking']
+          } 
+
+        })
+
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update(data);
           this.addNote(action);
           this.closePopover(action);
         }
@@ -655,10 +685,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update(data);
         this.addNote(action);
         console.log(Constants.APP_STATUS + '/action/' + id + '/' + action.id, 'in complete');
         this.closePopover(action);
@@ -674,6 +701,32 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   // (Dan) - this new function is for the undo completed APA
   protected undoCompleteAction(action: PreparednessAction) {
 
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let timeTrackingNode;
+
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(action => {
+
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInAmber']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInGreen'][index].finish == -1){
+            action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            timeTrackingNode = action['timeTracking']
+          } 
+
+      })
+
+
     action.actualCost = null
 
     console.log(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id, 'in undo');
@@ -682,7 +735,8 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
       isComplete: false,
       isCompleteAt: null,
       updatedAt: new Date().getTime(),
-      actualCost : null
+      actualCost : null,
+      timeTracking: timeTrackingNode
     });
 
   }

@@ -225,10 +225,10 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if (isLocalAgency) {
+          if(isLocalAgency){
             modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
             modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else {
+          } else{
             if (alert.approval && alert.approval['countryDirector']) {
               modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
               modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
@@ -345,10 +345,10 @@ export class ActionsService {
             affectedAreas.push(modelAffectedArea);
           });
           modelAlert.affectedAreas = affectedAreas;
-          if (isLocalAgency) {
+          if(isLocalAgency){
             modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
             modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else {
+          } else{
             modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
             modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
           }
@@ -437,6 +437,7 @@ export class ActionsService {
         modelAlert.timeCreated = alert.timeCreated;
         modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
         modelAlert.createdBy = alert.createdBy;
+        modelAlert.timeTracking = alert.timeTracking;        ;
 
         let affectedAreas: ModelAffectedArea[] = [];
         let ids: string[] = Object.keys(alert.affectedAreas);
@@ -600,6 +601,7 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
+    updateData["timeTracking"] = alert.timeTracking;
 
     updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
 
@@ -678,6 +680,7 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
+    updateData["timeTracking"] = alert.timeTracking;
 
     updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
 
@@ -1217,7 +1220,7 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        if (plans && plans.length > 0) {
+        if (plans && plans.length>0) {
           plans.forEach(plan => {
             let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
             this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
