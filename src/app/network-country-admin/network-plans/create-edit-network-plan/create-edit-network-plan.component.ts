@@ -932,7 +932,43 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private saveToFirebase(newResponsePlan: ResponsePlan) {
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
     let id = (this.isLocalNetworkAdmin || !this.networkCountryId || this.networkCountryId == "undefined") ? this.networkId : this.networkCountryId;
+    /* Set tracking info here */
+
+    console.log(this.idOfResponsePlanToEdit)
+    if(newResponsePlan.status == 0 && !this.idOfResponsePlanToEdit){
+      console.log('shold be in here')
+      newResponsePlan['timeTracking'] = {}
+      newResponsePlan['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+    }
+
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(plan => {
+
+          console.log(plan)
+        if((newResponsePlan.status == ApprovalStatus.InProgress || newResponsePlan.status == ApprovalStatus.WaitingApproval) && this.idOfResponsePlanToEdit){
+          // Change from Green to Amber
+          if(plan['timeTracking']['timeSpentInGreen'] && plan['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1) != -1){
+            let index = plan['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+            plan['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+            plan['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            newResponsePlan['timeTracking'] = plan['timeTracking']
+          }
+          // Change from Red to Amber
+          if(plan['timeTracking']['timeSpentInRed'] && plan['timeTracking']['timeSpentInRed'].findIndex(x => x.finish == -1) != -1){
+            let index = plan['timeTracking']['timeSpentInRed'].findIndex(x => x.finish == -1);
+            plan['timeTracking']['timeSpentInRed'][index].finish = currentTime
+            plan['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            newResponsePlan['timeTracking'] = plan['timeTracking']
+          }
+        }
+    })
+
+
+
     let numOfSectionsCompleted: number = 0;
     this.sectionsCompleted.forEach((v,) => {
       if (v) {

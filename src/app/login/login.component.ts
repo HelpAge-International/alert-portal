@@ -67,7 +67,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
             this.emailEntered = params["emailEntered"];
             this.showAlert(false, "");
-            console.log("From Forgot Password");
           }
         });
     }
@@ -80,7 +79,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    console.log('logging in ....')
     this.loaderInactive = false;
     this.successInactive = true;
     if (this.validate()) {
@@ -94,6 +92,16 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
         .then((success) => {
           this.uid = success.uid;
+
+          // Check if we are a network admin!
+          this.checkNetworkLogin(success.uid,
+            (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
+              //TODO:
+              this.router.navigateByUrl("network/network-account-selection")
+            },
+            () => {// REGULAR LOGIN
+              this.regularLogin(success.uid);
+            })
 
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
             .takeUntil(this.ngUnsubscribe)
@@ -110,8 +118,6 @@ export class LoginComponent implements OnInit, OnDestroy {
           console.log(error.message);
           let ran: boolean = false;
           this.mErrorCodes.forEach((val, key) => {
-            console.log(key);
-            console.log(error.message.indexOf(key));
             if (error.message.indexOf(key) != -1) {
               this.showAlert(true, this.mErrorCodes.get(key));
               ran = true;
@@ -177,7 +183,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/" + userNode + "/" + successUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        console.log(snap.val())
         if (userNode == this.NETWORK_NODE_ADMIN) {
           if (snap.val() && snap.val().networkIds) {
             Object.keys(snap.val().networkIds).forEach(networkId => {
@@ -195,8 +200,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.networkCount++
             this.checkNetworkAll(isNetwork, isNotNetwork);
           }
-          // this.networkAdmin = (snap.val() != null);
-          console.log(this.networkAdmin)
         }
         else if (userNode == this.NETWORK_NODE_COUNTRY_ADMIN) {
           if (snap.val() && snap.val().networkCountryIds) {
@@ -242,8 +245,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.networkCount++
             this.checkNetworkAll(isNetwork, isNotNetwork);
           }
-          // this.networkCountryAdmin = (snap.val() != null);
-          console.log(this.networkCountryAdmin)
         }
         this.checkNetworkAll(isNetwork, isNotNetwork);
       })
@@ -251,7 +252,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private checkNetworkAll(isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
     this.networkCount--;
-    console.log(this.networkCount)
     if (this.networkCount == 0) {
       // Final method!
       if (!this.networkAdmin && !this.networkCountryAdmin) {
@@ -286,6 +286,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     // => go to if first login
     this.loginCheckingFirstLoginValue(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "localAgencyDirector", 'local-agency/dashboard', 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "partnerUser", Constants.COUNTRY_ADMIN_HOME, 'new-user-password');

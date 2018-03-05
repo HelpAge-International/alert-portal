@@ -256,6 +256,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             // Initialise everything here but we need to get countryId, agencyId, systemId
             this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
               this.countryId, this.agencyId, this.systemAdminId);
+
+            console.log(this.prepActionService.actions)
             this.initStaff();
             this.initDepartments();
             this.initDocumentTypes();
@@ -761,6 +763,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -768,6 +774,28 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         isComplete: true,
         isCompleteAt: new Date().getTime()
       }
+
+      let id = this.isLocalAgency ? this.agencyId : this.countryId
+
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => {
+
+          // Change from in progress to complete
+          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInGreen']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
+            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            data['timeTracking'] = action['timeTracking']
+          } 
+
+        })
+
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -807,6 +835,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   protected completeActionNetwork(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -814,6 +846,26 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         isComplete: true,
         isCompleteAt: new Date().getTime()
       }
+
+      this.af.database.object(Constants.APP_STATUS + "/action/" + action.networkCountryId + "/" + action.id)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => {
+
+          // Change from in progress to complete
+          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInGreen']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
+            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            data['timeTracking'] = action['timeTracking']
+          } 
+
+        })
+
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -854,6 +906,32 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
   // (Dan) - this new function is for the undo completed APA
   protected undoCompleteAction(action: PreparednessAction){
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let timeTrackingNode;
+
+    this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + action.id)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(action => {
+
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInAmber']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInGreen'][index].finish == -1){
+            action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            timeTrackingNode = action['timeTracking']
+            console.log(timeTrackingNode)
+          } 
+
+      })
+
+
     action.actualCost = null
     // Call to firebase to update values to revert back to
     if (this.isLocalAgency) {

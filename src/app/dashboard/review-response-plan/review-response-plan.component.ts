@@ -51,6 +51,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private agencyRegionMap = new Map<string, string>();
   private agenciesNeedToApprove: ModelAgency[];
 
+  private isLocalAgency = false;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -84,7 +86,6 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
           this.responsePlanId = params["id"];
         }
 
-        console.log(this.accessToken);
         if (this.accessToken) {
           let invalid = true;
 
@@ -93,8 +94,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
           });
 
           firebase.auth().onAuthStateChanged(user => {
-            console.log("onAuthStateChanged");
-            console.log(user.isAnonymous);
+
             if (user) {
               if (user.isAnonymous) {
                 //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
@@ -141,6 +141,10 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
             this.userType = userType;
             this.agencyId = agencyId;
             this.countryId = countryId;
+
+            if(this.userType == UserType.LocalAgencyDirector){
+              this.isLocalAgency = true;
+            }
             if (this.userType === UserType.RegionalDirector) {
               this.userService.getRegionId(Constants.USER_PATHS[this.userType], this.uid)
                 .takeUntil(this.ngUnsubscribe)
@@ -162,7 +166,12 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
                 }
                 if (params["id"]) {
                   this.responsePlanId = params["id"];
-                  this.loadResponsePlan(this.responsePlanId);
+                  if(this.isLocalAgency){
+                    this.loadResponsePlanLocalAgency(this.responsePlanId);
+                  }else{
+                    this.loadResponsePlan(this.responsePlanId);
+                  }
+                  
                 }
               });
           });
@@ -183,6 +192,19 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         if (this.networkCountryId) {
           this.handleNetworkAgencyApproval(responsePlan);
         }
+      });
+  }
+
+  private loadResponsePlanLocalAgency(responsePlanId: string) {
+
+    let id = this.agencyId;
+    this.responsePlanService.getResponsePlan(id, responsePlanId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(responsePlan => {
+        this.loadedResponseplan = responsePlan;
+        console.log(this.loadedResponseplan);
+        this.handlePlanApproval(this.loadedResponseplan);
+        
       });
   }
 
@@ -218,7 +240,6 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
           item["status"] = partners[key];
           return item;
         });
-        console.log(this.partnerApproveList);
         this.partnerApproveList.forEach(partner => {
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + partner.id, {preserveSnapshot: true})
             .take(1)
@@ -227,7 +248,6 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
                 this.userService.getUser(partner.id)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(user => {
-                    console.log(user);
                     partner.name = user.firstName + " " + user.lastName;
                   });
               } else {
@@ -278,12 +298,45 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   approvePlan() {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+          
+
+
+    // Change from Amber to Green 
+    if(this.loadedResponseplan['timeTracking']['timeSpentInAmber'] && this.loadedResponseplan['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) != -1){
+      let index = this.loadedResponseplan['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+      this.loadedResponseplan['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+      if(!this.loadedResponseplan['timeTracking']['timeSpentInGreen']){
+        this.loadedResponseplan['timeTracking']['timeSpentInGreen'] = [] 
+      }
+      this.loadedResponseplan['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+
+      if(this.isLocalAgency){
+        this.af.database.object(Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + this.responsePlanId + '/timeTracking')
+        .update(this.loadedResponseplan['timeTracking'])
+      }else{
+        this.af.database.object(Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId + '/timeTracking')
+        .update(this.loadedResponseplan['timeTracking'])
+      }
+    }
+
     if (this.accessToken) {
-      this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+      if(this.isLocalAgency){
+        this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.agencyId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+      }else{
+        this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+      }
     } else {
       let approvalUid = this.getRightUidForApproval();
-      let id = this.networkCountryId ? this.networkCountryId : this.countryId;
-      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      let id = this.isLocalAgency ? this.agencyId : this.networkCountryId ? this.networkCountryId : this.countryId;
+      if(this.isLocalAgency){
+        this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      }else{
+        this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      }
+      
     }
   }
 
@@ -294,7 +347,11 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     } else if (this.userType === UserType.RegionalDirector) {
       approvalUid = this.regionId;
     } else if (this.userType === UserType.CountryDirector) {
-      approvalUid = this.countryId;
+      if(this.isLocalAgency){
+        approvalUid = this.agencyId;
+      }else{
+        approvalUid = this.countryId;
+      }
     } else if (this.userType === UserType.PartnerUser) {
       approvalUid = this.uid;
     }
@@ -302,7 +359,6 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   rejectPlan() {
-    console.log("reject plan");
     let toggleValue = this.rejectToggleMap.get(this.responsePlanId);
     if (toggleValue) {
       //this.rejectToggleMap.set(this.responsePlanId, !toggleValue);
@@ -326,11 +382,39 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
   confirmReject() {
     jQuery("#rejectPlan").modal("hide");
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
+    // Change from Amber to Red
+    if(this.loadedResponseplan['timeTracking']['timeSpentInAmber'] && this.loadedResponseplan['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) != -1){
+      let index = this.loadedResponseplan['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+      this.loadedResponseplan['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+      if(!this.loadedResponseplan['timeTracking']['timeSpentInRed']){
+        this.loadedResponseplan['timeTracking']['timeSpentInRed'] = []
+      }
+      this.loadedResponseplan['timeTracking']['timeSpentInRed'].push(newTimeObject)
+
+      if(this.isLocalAgency){
+        this.af.database.object(Constants.APP_STATUS + '/responsePlan/' + this.agencyId + '/' + this.responsePlanId + '/timeTracking')
+        .update(this.loadedResponseplan['timeTracking'])
+      }else{
+        this.af.database.object(Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId + '/timeTracking')
+        .update(this.loadedResponseplan['timeTracking'])
+      }
+      
+    }
+
     if (this.accessToken) {
-      this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+      if(this.isLocalAgency){
+        this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.agencyId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+      }else{
+        this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
+      }
+      
     } else {
       let approvalUid = this.getRightUidForApproval();
-      let id = this.networkCountryId ? this.networkCountryId : this.countryId;
+      let id = this.isLocalAgency ? this.agencyId : this.networkCountryId ? this.networkCountryId : this.countryId;
       this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
     }
   }

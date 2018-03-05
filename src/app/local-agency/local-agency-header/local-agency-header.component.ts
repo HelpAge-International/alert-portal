@@ -195,7 +195,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
             }
 
             //get networks
-            console.log('getting stuff');
             this.getNetworks(agencyId, countryId);
 
             this.getLocalNetworks(agencyId, countryId)
@@ -217,7 +216,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
       this.af.database.list(Constants.APP_STATUS + "/partnerUser/" + this.uid + "/agencies")
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountries => {
-          console.log(agencyCountries);
           // this.agencyId = agencyCountries[0].$key;
           // this.countryId = agencyCountries[0].$value;
           this.agencyId = agencyId;
@@ -234,7 +232,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
             this.userService.getAgencyDetail(ids.$key)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agency => {
-                // console.log(this.partnerAgencies);
                 agency["relatedCountryId"] = ids.$value;
                 this.agenciesMap.set(ids.$key, agency);
                 this.partnerAgencies = this.getPartnerAgencies(this.agenciesMap);
@@ -328,7 +325,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
       this.isViewingNetwork = true;
       // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
       this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
-      console.log(network)
       //build emit value
       let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, this.networkCountryMap.get(this.selectedNetwork.id), true)
       // this.networkRequest.emit(model)
@@ -344,7 +340,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
       this.isViewingNetwork = true;
       // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
       this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, network.id);
-      console.log(network);
       //build emit value
       let model = new LocalNetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, true)
       // this.networkRequest.emit(model)
@@ -387,7 +382,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
     openLanguageModal() {
 
-      console.log('Open language modal');
       jQuery("#language-selection").modal("show");
 
     };
@@ -398,7 +392,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
     changeLanguage(language: string) {
       this.language = language;
-      console.log(this.uid);
 
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
 
@@ -412,7 +405,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
 
     logout() {
-      console.log("logout");
       this.af.auth.logout().then(() => {
         this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
         this.router.navigateByUrl(Constants.LOGIN_PATH)
@@ -461,7 +453,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
                 if (!CommonUtils.itemExistInList(network.id, this.networks)) {
                   if (!(this.selectedNetwork && network.id == this.selectedNetwork.id)) {
                     this.networks.push(network);
-                    console.log(this.networks, 'dan');
 
                   }
                 }
@@ -477,7 +468,6 @@ export class LocalAgencyHeaderComponent implements OnInit {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(list => {
           this.localNetworkList = list
-          console.log(this.localNetworkList)
         })
 
       this.networkService.getLocalNetworkModelsForCountry(agencyId, countryId)

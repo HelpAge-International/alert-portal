@@ -651,25 +651,49 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       return;
     }
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-      .then(() => {
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let timeTrackingNode;
 
-        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-          .subscribe(task => {
-            // Send notification to the assignee
-            let notification = new MessageModel();
-            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-            notification.time = new Date().getTime();
-            this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id+ "/" + this.assignActionId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(action => {
+
+        // Change from unassigned to in progress
+
+        action['timeTracking']['timeSpentInAmber'] = []
+
+          if (action['timeTracking']['timeSpentInRed'][0].finish == -1){
+            action['timeTracking']['timeSpentInRed'][0].finish = currentTime
+            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            timeTrackingNode = action['timeTracking']
+          } 
+
+        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
+          .then(() => {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+            .then(() => {
+      
+              this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+                .subscribe(task => {
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+                  });
+                });
             });
-          });
-      });
-    if (this.isViewing) {
-      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByAgencyId").set(this.agencyId)
-      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByCountryId").set(this.countryId)
-    }
-    this.closeModal();
+        });
+        if (this.isViewing) {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByAgencyId").set(this.agencyId)
+          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByCountryId").set(this.countryId)
+        }
+        this.closeModal();
+
+      })
+    
   }
 
   /**
@@ -805,6 +829,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
@@ -813,6 +839,31 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         isComplete: true,
         isCompleteAt: new Date().getTime()
       }
+
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => { 
+
+          console.log(action)
+          // Change from in progress to complete
+          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInGreen']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          console.log(index)
+          console.log(action['timeTracking'])
+          console.log(action['timeTracking']['timeSpentInAmber'][index])
+
+          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
+            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            data['timeTracking'] = action['timeTracking']
+          } 
+
+        })
+
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -850,6 +901,32 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   // (Dan) - this new function is for the undo completed MPA
   protected undoCompleteAction(action: PreparednessAction) {
 
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let timeTrackingNode;
+
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(action => {
+
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+
+          if(!action['timeTracking']['timeSpentInAmber']){
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (action['timeTracking']['timeSpentInGreen'][index].finish == -1){
+            action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            timeTrackingNode = action['timeTracking']
+          } 
+
+      })
+
     action.actualCost = null
 
     // Call to firebase to update values to revert back to *In Progress*
@@ -858,7 +935,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       isCompleteAt: null,
       // Set updatedAt to time it was undone
       updatedAt: new Date().getTime(),
-      actualCost : null
+      actualCost : null,
+      timeTracking: timeTrackingNode
     });
 
   }

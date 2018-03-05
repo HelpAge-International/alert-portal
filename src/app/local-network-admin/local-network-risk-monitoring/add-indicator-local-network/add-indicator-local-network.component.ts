@@ -517,8 +517,16 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
     }
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
+
+
+        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : undefined;
+        let currentTime = new Date().getTime()
+        let newTimeObject = {start: currentTime, finish: -1,level: this.indicatorData.triggerSelected};
+        let id = this.hazardID == 'countryContext' ? this.networkId : this.hazardID;
+
         if (!this.isEdit) {
           this.indicatorData.triggerSelected = 0;
+          newTimeObject.level = 0
         }
         this.indicatorData.category = parseInt(this.indicatorData.category);
         console.log(this.indicatorData.trigger)
@@ -571,7 +579,11 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         if (!this.isEdit) {
           this.af.database.list(urlToPush)
             .push(dataToSave)
-            .then(() => {
+            .then(indicator => {
+
+              this.af.database.object(Constants.APP_STATUS + '/indicator/' + id  + '/' + indicator.key + '/timeTracking')
+                    .update([{timeSpentInGreen: newTimeObject}])
+
               if (dataToSave.assignee) {
                 // Send notification to the assignee
                 let notification = new MessageModel();

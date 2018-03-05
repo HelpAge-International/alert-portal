@@ -298,7 +298,9 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-password",
     "agency-admin/new-agency/new-agency-details",
     "export-start-fund*",
-    "export-proposal*"
+    "export-proposal*",
+    "new-user-password",
+    "dashboard/review-response-plan*"
   ]);
 
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
@@ -479,6 +481,7 @@ export class PageControlService {
       if (auth) {
         this.checkAuth(ngUnsubscribe, auth.auth.uid, ModelUserTypeReturn.list(), 0, (userType, userObj) => {
           if (userObj != null || userType != null) {
+
             // To make it here we are signed in and we have the user type userType
             // userObj is the object under <status>/<usertype>/<uid> for my user
             // Exception logic for the partner user. This needs to return the selection agency/country info
@@ -524,9 +527,8 @@ export class PageControlService {
               }
             }
 
-            // IF YOU'RE AN AGENCY ADMIN OR A LOCAL AGENCY ADMIN
-            if (userType == UserType.AgencyAdmin || userType == UserType.LocalAgencyAdmin) {
-
+            // IF YOU'RE AN AGENCY ADMIN, LOCAL AGENCY DIRECTOR OR A LOCAL AGENCY ADMIN
+            if (userType == UserType.AgencyAdmin || userType == UserType.LocalAgencyAdmin || userType == UserType.LocalAgencyDirector) {
               if (userObj.hasOwnProperty('agencyId')) {
                 agencyId = userObj.agencyId;
               }
@@ -537,6 +539,7 @@ export class PageControlService {
                 }
               }
             }
+            
             this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, userCallback, authStateCallback);
           }
         });
@@ -628,29 +631,49 @@ export class PageControlService {
       this.af.database.object(Constants.APP_STATUS + "/" + modelTypes[index].path + "/" + uid, {preserveSnapshot: true})
         .takeUntil(ngUnsubscribe)
         .subscribe((snap) => {
+
           if (snap.val() != null) {
-            // It's this user type!
-            if(modelTypes[index].userType == UserType.AgencyAdmin){ //checks to see if user type is agency admin
-              //checks to make sure it ins't actually a local agency admin as they exist in both nodes
-              this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
-                .takeUntil(ngUnsubscribe)
-                .subscribe((innerSnap) => {
-                  if (innerSnap.val() != null) {
 
-                    fun(UserType.LocalAgencyAdmin, innerSnap.val());
+              // It's this user type!
+              if(modelTypes[index].userType == UserType.AgencyAdmin){ //checks to see if user type is agency admin
+
+                this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
+                  .takeUntil(ngUnsubscribe)
+                  .subscribe((innerSnapDirector) => { 
+
+                    // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
+                  if(innerSnapDirector.val()){
+                    fun(UserType.LocalAgencyDirector, innerSnapDirector.val());
                   }else{
+                    //checks to make sure it ins't actually a local agency admin as they exist in both nodes
+                    this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+                    .takeUntil(ngUnsubscribe)
+                    .subscribe((innerSnap) => {
+                      if (innerSnap.val() != null) {
+    
+                        fun(UserType.LocalAgencyAdmin, innerSnap.val());
+                      }else{
+    
+                        fun(modelTypes[index].userType, snap.val());
+                      }
 
-                    fun(modelTypes[index].userType, snap.val());
+
+
+                    })
                   }
+                  
                 })
-            }else{
-              fun(modelTypes[index].userType, snap.val());
-            }
+              }else{
+                fun(modelTypes[index].userType, snap.val());
+              }
+            
 
 
           }
           else {
+
             this.checkAuth(ngUnsubscribe, uid, modelTypes, index + 1, fun);
+            
           }
         });
     }

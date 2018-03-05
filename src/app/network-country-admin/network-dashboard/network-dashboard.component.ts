@@ -943,9 +943,81 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   }
 
-  approveRedAlert(alertId) {
+  approveRedAlert(alertId, hazardScenario, alert) {
+
+
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    console.log(id)
+
+    let hazard = this.hazards.find(x => x.hazardScenario == hazardScenario)
+    let hazardTrackingNode;
+
+    if(hazard && hazard.timeTracking && hazard.timeTracking[alertId]){
+      hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alertId] : undefined;
+    }
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1, level: AlertLevels.Red};
+
+
+    // saves alert key to apa to retrieve locations affected
+    this.af.database.list(Constants.APP_STATUS + '/action/' + id, {
+      query: {
+        orderByChild: 'level',
+        equalTo: 2
+       }
+    })
+    .takeUntil(this.ngUnsubscribe)
+    .subscribe(actions => {
+      actions.forEach(action => {
+        if(!action.redAlerts){
+          action.redAlerts = [];
+        }
+        if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+          action.redAlerts.push(alertId)
+          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/redAlerts')
+          .update(action.redAlerts)
+        }
+      });
+    })
+
+
+    if(hazard){
+        
+        if(hazardTrackingNode["timeSpentInAmber"]){
+          hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+
+        if(hazardTrackingNode){
+          if(!hazardTrackingNode["timeSpentInRed"]){
+            hazardTrackingNode["timeSpentInRed"] = [];
+          }
+    
+          hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
+          .update(hazardTrackingNode)
+        }else{
+          this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
+          .update({timeSpentInRed: [newTimeObject]})
+        }
+      
+    }
+
+    
+    if(alert["timeTracking"]){
+      console.log('first here')
+      if(!alert["timeTracking"]["timeSpentInRed"]){
+        alert["timeTracking"]["timeSpentInRed"] = [];
+      }
+
+      alert["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      this.af.database.object(Constants.APP_STATUS + '/alert/' + id + '/' + alertId + '/timeTracking/')
+      .update(alert["timeTracking"])
+    }else{
+      console.log('here')
+      this.af.database.object(Constants.APP_STATUS + '/alert/' + id + '/' + alertId + '/timeTracking/')
+        .update({timeSpentInRed: [newTimeObject]})
+    }
+
     this.actionService.approveRedAlertNetwork(this.countryId, alertId, id).then(() => {
       if (this.isLocalNetworkAdmin) {
         this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)

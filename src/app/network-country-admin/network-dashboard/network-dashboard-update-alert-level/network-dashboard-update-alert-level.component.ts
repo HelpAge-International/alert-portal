@@ -1,3 +1,4 @@
+import { UserType } from './../../../utils/Enums';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -14,6 +15,7 @@ import {CommonService} from "../../../services/common.service";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
 import * as moment from "moment";
+import {PrepActionService} from "../../../services/prepactions.service";
 
 
 @Component({
@@ -55,6 +57,11 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
   private countryID: string;
   private systemId: string;
 
+  private userType: number;
+  private hazards: any[] = [];
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
+  private loadedAlertLevel: AlertLevels;
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private router: Router,
@@ -63,7 +70,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
               private alertService: ActionsService,
               private userService: UserService,
               private storage: LocalStorageService,
-              private networkService: NetworkService) {
+              private networkService: NetworkService,
+              private prepActionService: PrepActionService) {
     this.initAlertData();
   }
 
@@ -108,6 +116,7 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
           this.uid = params["uid"];
         }
 
+        this._getHazards()
         if(this.isViewing){
 
                 this.route.params
@@ -138,8 +147,9 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
             });
 
         } else {
-          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+          this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
             this.uid = user.uid;
+            this.userType = userType
 
             //get network id
             this.networkService.getSelectedIdObj(user.uid)
@@ -182,9 +192,14 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
   private loadAlert(alertId: string, countryId: string) {
 
+
+    this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, false,
+      this.networkCountryId, this.networkId, '');
+
     this.alertService.getAlert(alertId, countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alert: ModelAlert) => {
+        this.loadedAlertLevel = alert.alertLevel;
         this.loadedAlert = alert;
         this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
         this.infoNotes = this.loadedAlert.infoNotes;
@@ -256,7 +271,177 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
   // }
 
   submit() {
-    console.log(this.loadedAlert);
+
+
+
+    let hazard = this.hazards.find(x => x.hazardScenario == this.loadedAlert.hazardScenario)
+    let hazardTrackingNode;
+
+    if(hazard && hazard.timeTracking && hazard.timeTracking[this.loadedAlert.id]){
+      hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[this.loadedAlert.id] : undefined;
+    }
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1,level: this.loadedAlert.alertLevel};
+    let id = this.networkCountryId;
+
+
+    let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+    if(this.loadedAlertLevel != this.loadedAlert.alertLevel && this.loadedAlert.alertLevel == AlertLevels.Red && this.userType == UserType.CountryDirector){
+
+        apaActions.forEach( action => {
+
+          if(!action["redAlerts"]){
+            action["redAlerts"] = [];
+          }
+          if(action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
+            action["redAlerts"].push(this.loadedAlert.id)
+            this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id + '/redAlerts')
+            .update(action["redAlerts"])
+          }
+
+        })
+
+    }
+
+    //Checks to see if hazards exists on the country office
+    if(hazard){
+      if(this.loadedAlertLevel != this.loadedAlert.alertLevel){
+
+        if(hazardTrackingNode){
+          if(this.loadedAlertLevel == AlertLevels.Red){
+            hazardTrackingNode["timeSpentInRed"][hazardTrackingNode["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+          }
+
+          if(this.loadedAlertLevel == AlertLevels.Amber){
+            hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+          }
+        }
+
+
+        if(this.loadedAlert.alertLevel == AlertLevels.Red){
+          if(this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector){
+            if(hazardTrackingNode){
+              if(!hazardTrackingNode["timeSpentInRed"]){
+                hazardTrackingNode["timeSpentInRed"] = [];
+              }
+              hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update(hazardTrackingNode)
+            }else{
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update({timeSpentInRed: [newTimeObject]})
+            }
+
+          }
+
+        }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+          if(hazardTrackingNode){
+            if(!hazardTrackingNode["timeSpentInAmber"]){
+              hazardTrackingNode["timeSpentInAmber"] = [];
+            }
+
+            if(this.loadedAlert.alertLevel == AlertLevels.Amber){
+              hazardTrackingNode["timeSpentInAmber"].push(newTimeObject)
+            }
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update(hazardTrackingNode)
+
+          }else{
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+            .update({timeSpentInAmber: [newTimeObject]})
+          }
+
+        }
+      }
+    }
+
+
+
+    // let hazard = this.hazards.find(x => x.hazardScenario == this.loadedAlert.hazardScenario)
+    // let hazardTrackingNode = hazard ? hazard.timeTracking : undefined;
+    // let currentTime = new Date().getTime()
+    // let newTimeObject = {raisedAt: currentTime, level: this.loadedAlert.alertLevel};
+    // let id = this.networkCountryId;
+
+    // //Checks to see if hazards exists on the network
+    // if(hazard){
+    //   if(this.loadedAlertLevel != this.loadedAlert.alertLevel && (this.loadedAlert.alertLevel == AlertLevels.Red || this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green)){
+    //     if(this.loadedAlert.alertLevel == AlertLevels.Red){
+    //       if(this.userType == UserType.CountryDirector){
+    //         if(hazardTrackingNode){
+    //           hazardTrackingNode.push(newTimeObject)
+    //           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //           .update({timeTracking: hazardTrackingNode})
+    //         }else{
+    //           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //           .update({timeTracking: [newTimeObject]})
+    //         }
+
+    //       }
+    //     }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+    //       if(hazardTrackingNode){
+    //         hazardTrackingNode.push(newTimeObject)
+    //         this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //         .update({timeTracking: hazardTrackingNode})
+    //       }else{
+    //         this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id)
+    //         .update({timeTracking: [newTimeObject]})
+    //       }
+
+    //     }
+    //   }
+    // }
+
+    // Alert tracking
+    if(this.loadedAlertLevel != this.loadedAlert.alertLevel){
+
+      if(this.loadedAlert["timeTracking"]){
+        if(this.loadedAlertLevel == AlertLevels.Red){
+          this.loadedAlert["timeTracking"]["timeSpentInRed"][this.loadedAlert["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+
+        if(this.loadedAlertLevel == AlertLevels.Amber){
+          this.loadedAlert["timeTracking"]["timeSpentInAmber"][this.loadedAlert["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+      }
+
+
+
+      if(this.loadedAlert.alertLevel == AlertLevels.Red){
+        if(this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector){
+          if(this.loadedAlert["timeTracking"]){
+            if(!this.loadedAlert["timeTracking"]["timeSpentInRed"]){
+              this.loadedAlert["timeTracking"]["timeSpentInRed"] = [];
+            }
+            this.loadedAlert["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+          }else{
+            this.loadedAlert.timeTracking = {};
+            this.loadedAlert.timeTracking["timeSpentInRed"] = [];
+            this.loadedAlert.timeTracking["timeSpentInRed"].push(newTimeObject);
+          }
+
+        }
+
+      }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+        if(this.loadedAlert["timeTracking"]){
+          if(!this.loadedAlert["timeTracking"]["timeSpentInAmber"]){
+            this.loadedAlert["timeTracking"]["timeSpentInAmber"] = [];
+          }
+
+          if(this.loadedAlert.alertLevel == AlertLevels.Amber){
+            this.loadedAlert["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+          }
+
+        }else{
+          this.loadedAlert.timeTracking = {};
+            this.loadedAlert.timeTracking["timeSpentInRed"] = [];
+            this.loadedAlert.timeTracking["timeSpentInRed"].push(newTimeObject);
+        }
+
+      }
+    }
 
     this.loadedAlert.estimatedPopulation = this.estimatedPopulation;
     this.loadedAlert.infoNotes = this.infoNotes;
@@ -311,6 +496,38 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
     }
 
   }
+
+
+
+  _getHazards() {
+
+    let id = this.networkCountryId;
+
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        for (let x of snapshot) {
+          let value = x.val();
+          if (value.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + value.otherName, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                value.hazardName = snap.val().name;
+              });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
+          }
+          console.log(x)
+          value.id = x.key
+          this.hazards.push(value);
+        }
+        console.log(this.hazards);
+      });
+  }
+
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
