@@ -22,8 +22,6 @@ const ALERT_LEVEL_CHANGED = 0
 const RED_ALERT_REQUEST = 1
 const UPDATE_HAZARD = 2
 const ACTION_EXPIRED = 3
-const PLAN_EXPIRED = 4
-const PLAN_REJECTED = 5
 
 const WAITING_RESPONSE = 0
 const APPROVED = 1
@@ -32,7 +30,7 @@ const REJECTED = 2
 const PLAN_IN_PROGRESS = 0
 const PLAN_WAITINGAPPROVAL = 1
 const PLAN_APPROVED = 2
-const PLAN_NEEDREVIEWING = 3
+const PLAN_REJECTED = 3
 
 const NOTIFICATION_ALERT = 0
 const NOTIFICATION_INDICATOR_ASSIGNED = 1
@@ -4551,6 +4549,8 @@ function sendResponsePlanApprovalNotification(event, env){
 
   const groupName = event.params.groupName
 
+  console.log("Response Plan Updated: " + currData)
+
   if(preData != currData && (currData == PLAN_WAITINGAPPROVAL || currData == PLAN_REJECTED)){
     return admin.database().ref(`/${env}/responsePlan/${groupId}/${responsePlanId}`).once('value').then(responsePlanSnap => {
       const responsePlan = responsePlanSnap.val()
@@ -4581,9 +4581,9 @@ function sendResponsePlanApprovalNotification(event, env){
         }
       }
       else if(currData == PLAN_REJECTED){
-        console.log("Plan rejected.")
+        console.log("Plan rejected. " + groupId)
         const notification = createResponsePlanApprovalRejectedNotification(responsePlan)
-        sendCountryNetworkNetworkCountryNotification(env, notification, groupId, NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED)
+        return sendCountryNetworkNetworkCountryNotification(env, notification, groupId, NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED)
       }
     });
   }
@@ -4947,19 +4947,23 @@ function sendNotificationToCountryUsers(env, notification, countryId){
 }
 
 function sendNotificationToCountryUsers(env, notification, countryId, notificationSetting){
-
+   
+  console.log("Sending notification to country: " + countryId)
   return admin.database().ref(`/${env}/group/country/${countryId}/`).once('value').then(countryGroupSnap => {
     let countryGroup = countryGroupSnap.val()
+  console.log("Got country group : " + countryGroup)
 
     if(countryGroup){
       var sendAlertPromises = []
-      for (var userId in countryGroup.countryallusersgroup) {              
-        if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {   
-          //env, payload, userId, countryId, notificationGroup
-          if(notificationSetting == null){            
+      for (var userId in countryGroup.countryallusersgroup) {
+        if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {
+          console.log("Sending notificaiton to: " + userId)
+          if(notificationSetting == null){
+            console.log("Notification Setting Null")          
             sendAlertPromises.push(sendNotification(env, notification, userId))
           }
           else{
+            console.log("Notification Setting Not Null")
             sendAlertPromises.push(sendNotificationWithSetting(env, notification, userId, countryId, notificationSetting))
           }
         }
@@ -5156,12 +5160,19 @@ function sendNotification(env, payload, userId){
     })
 }
 function sendNotificationWithSetting(env, payload, userId, countryId, notificationGroup){
-  return admin.database().ref(`/${env}/staff/${countryId}/${userId}/notification/${notificationGroup}`).once('value')
-  .then(notificationGroupSnap => {
-    if(notificationGroupSnap.val() != null){
-      return Promise.resolve()
+  console.log("Send Notification With Setting " + userId + " - " + notificationGroup)
+  return admin.database().ref(`/${env}/staff/${countryId}/${userId}/notification/`).once('value')
+  .then(notificationSnap => {
+    if(notificationSnap.val() != null){
+      for (var i = notificationSnap.val().length - 1; i >= 0; i--) {
+        if(notificationSnap.val()[i] == notificationGroup){
+          return Promise.resolve()
+        }
+      }
+      return Promise.reject(new Error('fail'))
     }
     else{
+      console.log(`Notification Setting Error: user (${userId}) setting (${notificationGroup})`)
       return Promise.reject(new Error('fail'))
     }
   })
