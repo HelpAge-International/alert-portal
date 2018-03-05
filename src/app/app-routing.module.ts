@@ -262,6 +262,7 @@ import {LocalAgencyDashboardSeasonalCalendarComponent} from "./local-agency/loca
 import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
 import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
 import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
+import {ViewCountriesComponent} from "./agency-admin/view-countries/view-countries.component";
 import {SystemAdminViewCocComponent} from "./system-admin/account-settings/view-coc/system-admin-view-coc.component";
 import {AgencyAdminViewCocComponent} from "./agency-admin/agency-account-settings/agency-admin-view-coc/agency-admin-view-coc.component";
 import {CountryAdminSettingsCocViewComponent} from "./country-admin/country-account-settings/country-admin-settings-coc-view/country-admin-settings-coc-view.component";
@@ -349,6 +350,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-overview', component: AgencyOverviewComponent},
   {path: 'agency-admin/agency-overview/:countryId/:isViewing', component: AgencyOverviewComponent},
   {path: 'agency-admin/account-settings/agency-admin-view-coc/agency-admin-view-coc', component: AgencyAdminViewCocComponent},
+  {path: 'agency-admin/view-countries', component: ViewCountriesComponent},
 
   /**
    * Country admin
@@ -414,6 +416,7 @@ const routes: Routes = [
   },
   {path: 'country-admin/country-my-agency', component: CountryMyAgencyComponent},
   {path: 'country-admin/country-agencies', component: CountryAgenciesComponent},
+  {path: 'local-agency/country-agencies', component: CountryAgenciesComponent},
   {path: 'country-admin/country-office-profile/programme', component: CountryOfficeProgrammeComponent},
   {
     path: 'country-admin/country-office-profile/mapping-programme-add-edit',

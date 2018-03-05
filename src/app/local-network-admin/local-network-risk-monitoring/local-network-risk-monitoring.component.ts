@@ -1,5 +1,8 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../../utils/Enums";
+import {
+  AlertMessageType, Countries, DetailedDurationType, HazardScenario, ModuleNameNetwork, Privacy,
+  UserType
+} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -23,6 +26,7 @@ import App = firebase.app.App;
 import {NetworkCountryModel} from "../../network-country-admin/network-country.model";
 import {ModelNetwork} from "../../model/network.model";
 import {SettingsService} from "../../services/settings.service";
+import {ModuleSettingsModel} from "../../model/module-settings.model";
 
 declare var jQuery: any;
 
@@ -137,6 +141,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private level2: string;
 
   private Hazard_Conflict = 1
+  private previousIndicatorTrigger:number = -1
+  private modules: ModuleSettingsModel[];
+  private ModuleNameNetwork = ModuleNameNetwork
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -253,9 +260,6 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                 this.networkId = selection["id"];
                 this.UserType = selection["userType"];
 
-                console.log(selection)
-
-
                 this.networkService.getNetworkDetail(this.networkId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(network => {
@@ -289,6 +293,11 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                 this._getCountryContextIndicators();
                 this.getUsersForAssign();
 
+                this.settingService.getCountryModulesSettings(this.networkId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(modules => {
+                    this.modules = modules
+                  })
 
               });
           })
@@ -765,6 +774,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
 
   setCheckedTrigger(indicatorID: string, triggerSelected: number) {
     this.indicatorTrigger[indicatorID] = triggerSelected;
+    this.previousIndicatorTrigger = triggerSelected
   }
 
   setClassForIndicator(trigger: number, triggerSelected: number) {
@@ -811,8 +821,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     this.af.database.object(urlToUpdate)
       .update(dataToSave)
       .then(_ => {
-
         this.changeIndicatorState(false, hazardID, indicatorKey);
+        //create log model for pushing - phase 2
+        this.networkService.saveIndicatorLogMoreParams(this.previousIndicatorTrigger, triggerSelected, this.uid, indicator.$key).then(()=>this.previousIndicatorTrigger = -1)
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
     });

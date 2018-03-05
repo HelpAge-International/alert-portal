@@ -34,11 +34,10 @@
 
         <label *ngIf="agencyDetail" class="Checkbox--agency col-lg-3 col-md-4 col-sm-5 font-weight-bold">
           <img src="{{agencyDetail?.logoPath ? agencyDetail.logoPath : 'assets/images/alert_logo--grey.svg'}}">
-          <p>{{UserType[userType]}} {{"GLOBAL.OF" | translate}} {{agencyDetail?.name}}</p>
+          <p>{{UserType[userType] | splitOnCaps }} {{"GLOBAL.OF" | translate}} {{agencyDetail?.name}}, {{Countries[agencyDetail.country] | translate}}</p>
           <input type="radio" name="Action-type" (click)="onSelectedRegularAccount(agencyDetail.$key)">
         </label>
       </div>
-
 
       <div class="Form-submit__wrapper">
         <div class="btn btn-primary" (click)="onSubmit()">{{"GLOBAL.CONTINUE" | translate | uppercase}}</div>

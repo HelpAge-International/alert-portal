@@ -9,3 +9,17 @@
 li.Header_bar__username {
   text-transform: capitalize;
 }
+
+.modal-body{
+  padding: 25px;
+}
+
+textarea{
+  resize: none;
+}
+
+.btn.btn-primary{
+  color: #ffffff;
+}
+
+

@@ -120,8 +120,12 @@ export class SuperMapComponents {
     this.af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
-        for (let key in result.agencyAdmin) {
-          s = key;
+        if (result.agencyAdmin) {
+          for (let key in result.agencyAdmin) {
+            s = key;
+          }
+        } else {
+          s = result.agencyId
         }
         return s;
       })
@@ -164,6 +168,8 @@ export class SuperMapComponents {
     this.getCountryOfficePreserveSnapshot(uid, folder)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
+        console.log(result)
+        console.log(result.val())
         this.agencyAdminId = result.key;
         for (let x in result.val()) {
           this.mDepCounter++;
@@ -182,9 +188,12 @@ export class SuperMapComponents {
    *    - Could return null, and this needs to be handled! Absense determines view type
    */
   public getRegionsForAgency(uid: string, folder: string, funct: (key: string, region: ModelRegion) => void) {
+    console.log(uid)
+    console.log(folder)
     this.fbgetRegionsForAgency(uid, folder)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((result) => {
+        console.log(result)
         if (result.childCount == 0) {
           funct("", null);
         }
@@ -270,18 +279,26 @@ export class SuperMapComponents {
     return this.fbgetObjectBasedOnAgencyAdmin(uid, agencyAdminRefFolder, "region");
   }
   private fbgetObjectBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
+    console.log(agencyAdminRefFolder)
+    console.log(objectFolder)
     return this.af.database.object(Constants.APP_STATUS + "/" + agencyAdminRefFolder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
         let s: string;
-        for (let key in result.agencyAdmin) {
-          s = key;
+        if (result.agencyAdmin) {
+          for (let key in result.agencyAdmin) {
+            s = key;
+          }
+        } else {
+          s = result.agencyId
         }
         return s;
       })
       .flatMap((agencyAdmin: string) => {
+        console.log(agencyAdmin)
         return this.af.database.object(Constants.APP_STATUS + "/" + objectFolder + "/" + agencyAdmin, {preserveSnapshot: true})
       });
   }
+
   private fbgetListBasedOnAgencyAdmin(uid: string, agencyAdminRefFolder: string, objectFolder: string) {
     return this.af.database.object(Constants.APP_STATUS + "/" + agencyAdminRefFolder + "/" + uid)
       .map((result: AgencyAdminPlaceholder) => {
@@ -889,4 +906,5 @@ export class SDepHolder {
 
 export class AgencyAdminPlaceholder {
   public agencyAdmin: Map<string, boolean>;
+  public agencyId:string
 }

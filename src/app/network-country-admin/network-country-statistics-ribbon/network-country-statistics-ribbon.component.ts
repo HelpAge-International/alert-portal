@@ -155,6 +155,14 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.userPermissions = matrix);
 
+          //init module status
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              console.log(modules)
+              this.networkModules = modules
+            })
+
         });
     });
   }
@@ -202,6 +210,14 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.userPermissions = matrix);
+
+          //init module status
+          this.settingService.getCountryModulesSettings(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(modules => {
+              console.log(modules)
+              this.networkModules = modules
+            })
 
         });
     });
@@ -540,7 +556,7 @@ export class NetworkCountryStatisticsRibbonComponent implements OnInit, OnDestro
   }
 
   goToCHS() {
-    if ((this.networkViewValues && this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status) || !this.networkViewValues) {
+    if (this.networkModules[ModuleNameNetwork.CHSPreparednessActions].status) {
       this.networkViewValues ? this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)]) : this.router.navigate(["/network-country/network-country-mpa", Object.assign({}, {"isCHS": true}, this.networkViewValues)])
         :
         this.isLocalNetworkAdmin ? this.router.navigate(["/network/local-network-preparedness-mpa", {"isCHS": true}])

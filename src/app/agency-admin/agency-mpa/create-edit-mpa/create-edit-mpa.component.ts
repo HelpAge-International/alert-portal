@@ -42,6 +42,7 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private buttonText: string = 'PREPAREDNESS.SAVE_NEW_ACTION';
   private textArea: string;
   private forEditing: boolean = false;
+  private addDepartmentSelectedAction: string = null;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -147,12 +148,20 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
     this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        this.departments = [];
         snap.forEach((snapshot) => {
-          let x: ModelDepartment = new ModelDepartment();
-          x.id = snapshot.key;
-          x.name = snapshot.val().name;
-          this.departments.push(x);
+          let found = false;
+          for (let x of this.departments) {
+            if (x.id == snapshot.key) {
+              found = true;
+              x.name = snapshot.val().name;
+            }
+          }
+          if (!found) {
+            let x: ModelDepartment = new ModelDepartment();
+            x.id = snapshot.key;
+            x.name = snapshot.val().name;
+            this.departments.push(x);
+          }
         });
       });
   }
@@ -163,10 +172,14 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       let dep = {
         name: this.newDepartment
       };
-      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").push(dep).then(_ => {
+      this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").push(dep).then(snapshot => {
         jQuery("#add_department").modal("hide");
-        this.departmentSelected = this.newDepartment;
+        this.departmentSelected = snapshot.key;
         this.newDepartment = '';
+        // if (this.addDepartmentSelectedAction != null) {
+        //   this.departmentSelected = this.addDepartmentSelectedAction;
+        //   this.addDepartmentSelectedAction = null;
+        // }
       });
     } else {
       this.showAlert(true);
@@ -187,6 +200,10 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
         this.successInactive = true;
       });
     }
+  }
+
+  public addDepartmentDialogClicked(action) {
+    this.addDepartmentSelectedAction = action.id;
   }
 
   /**

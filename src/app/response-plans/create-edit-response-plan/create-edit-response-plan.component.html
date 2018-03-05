@@ -1498,14 +1498,14 @@
                 <input type="number" class="form-control" placeholder=" % " [(ngModel)]="managementSupportPercentage"
                        min="0"
                        (change)="calculateBudget(null, null, false)">
-                <br/> {{CURRENCIES[currency]}} {{totalOfAllCosts}}
+                <br/> {{CURRENCIES[currency]}} {{totalOfAllCosts | number : '1.0-2'}}
               </div>
               <div class="col-lg-4 col-5">
                 <input type="text" class="form-control" [(ngModel)]="managementSupportNarrative"></div>
             </div>
             <div class="row Line-row Header Spaced">
               <div class="col-lg-3 col-4 text-right">{{"GLOBAL.TOTAL" | translate}}</div>
-              <div class="col-lg-2 col-3">{{CURRENCIES[currency]}} {{totalBudget}}</div>
+              <div class="col-lg-2 col-3">{{CURRENCIES[currency]}} {{totalBudget | number : '1.0-2'}}</div>
               <div class="col-lg-4 col-5"></div>
             </div>
           </div>

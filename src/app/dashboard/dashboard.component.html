@@ -1,13 +1,17 @@
+
 <app-country-admin-header (partnerAgencyRequest)="requestAgencyPartner($event)"></app-country-admin-header>
 <app-country-admin-menu></app-country-admin-menu>
 
-<div class="Page-top__wrap--w_sub_header--no-paddng--grey">
+<div class="Page-top__wrap--w_sub_header--no-paddng--grey" >
   <div class="Full-page__wrap--inner">
 
     <app-country-statistics-ribbon></app-country-statistics-ribbon>
 
+
+
+
     <!--alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring">
+    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring" class="canvas">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
@@ -645,8 +649,7 @@
                 <h6 class="col-sm-7 text-gray-dark"><strong>{{alert.updatedByName ? alert.updatedByName :
                   alert.createdByName}}</strong>
                   has set the alert to Amber Level on
-                  <strong>{{alert.timeUpdated ? alert.timeUpdated : alert.timeCreated |
-                    date:"dd/MM/yyyy"}}</strong></h6>
+                  <strong>{{(alert.timeUpdated ? alert.timeUpdated : alert.timeCreated) | date:"dd/MM/yyyy"}}</strong></h6>
               </div>
             </div>
             <br>
@@ -1054,35 +1057,37 @@
 
     <div class="Widget-Group" *ngIf="DashboardTypeUsed == DashboardType.default">
 
-      <div class="Widget Risk-Monitoring" [hidden]="!moduleSettings.riskMonitoring">
-        <h3>{{"RISK_MONITORING_TEXT" | translate}}</h3>
-        <ul class="list-inline">
-          <li class="list-inline-item">
-            <div class="Icon">
-              <div
-                class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
-            </div>
-            <span>{{"DASHBOARD.CONTEXT" | translate}}</span>
-            {{countryContextIndicators.length}} {{"DASHBOARD.INDICATORS" | translate}}
-          </li>
-          <li class="list-inline-item" *ngFor="let hazard of hazards">
-            <div class="Icon">
-              <div
-                class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
-            </div>
+      <ng-container *ngIf="moduleSettings.riskMonitoring">
+        <div class="Widget Risk-Monitoring">
+          <h3>{{"RISK_MONITORING_TEXT" | translate}}</h3>
+          <ul class="list-inline">
+            <li class="list-inline-item">
+              <div class="Icon">
+                <div
+                  class="Icon--md Icon__circle Icon--b-dark-blue Icon__country--{{getCountryCodeFromLocation(countryLocation)}}"></div>
+              </div>
+              <span>{{"DASHBOARD.CONTEXT" | translate}}</span>
+              {{countryContextIndicators.length}} {{"DASHBOARD.INDICATORS" | translate}}
+            </li>
+            <li class="list-inline-item" *ngFor="let hazard of hazards">
+              <div class="Icon">
+                <div
+                  class="Icon--md Icon__circle Icon--b-dark-blue {{(isNumber(hazard.hazardScenario) ? getCSSHazard(hazard.hazardScenario) : 'Icon--alert')}}"></div>
+              </div>
 
-            <span>{{hazard.hazardScenario != -1 ? (HazardScenariosList[hazard.hazardScenario] | translate) : hazard.otherName}}</span>
-            {{numberOfIndicatorsObject[hazard.$key]}} {{"DASHBOARD.INDICATORS" | translate}}
-          </li>
-        </ul>
-      </div>
+              <span>{{hazard.hazardScenario != -1 ? (HazardScenariosList[hazard.hazardScenario] | translate) : hazard.otherName}}</span>
+              {{numberOfIndicatorsObject[hazard.$key]}} {{"DASHBOARD.INDICATORS" | translate}}
+            </li>
+          </ul>
+        </div>
 
-      <div class="Widget Calendar-Widget">
-        <h3>{{"DASHBOARD.CALENDAR.SEASONAL_CALENDAR" | translate}}</h3>
-        <div id="target2" class="timeline-tgt Spaced"></div>
-        <a href="javascript:void(0)" routerLink="/dashboard/dashboard-seasonal-calendar">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
-          | translate}}</a>
-      </div>
+        <div class="Widget Calendar-Widget">
+          <h3>{{"DASHBOARD.CALENDAR.SEASONAL_CALENDAR" | translate}}</h3>
+          <div id="target2" class="timeline-tgt Spaced"></div>
+          <a href="javascript:void(0)" routerLink="/dashboard/dashboard-seasonal-calendar">{{"DASHBOARD.CALENDAR.VIEW_FULL_CALENDAR"
+            | translate}}</a>
+        </div>
+      </ng-container>
 
     </div>
 

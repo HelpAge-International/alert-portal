@@ -368,7 +368,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   submitForApproval(plan) {
-    this.resetDirectorSelection()
+    this.resetDirectorSelection();
     if (plan.partnerOrganisations) {
       this.getPartnersToApprove(plan)
     }
@@ -387,6 +387,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     }
     // this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
+    console.log(this.planToApproval);
     // if (this.needShowDialog) {
     //   jQuery("#dialog-action").modal("show");
     //   this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
@@ -484,7 +485,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     // if (this.needShowDialog) {
     //   jQuery("#dialog-action").modal("hide");
     // }
-    if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
+    if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert || this.userType == UserType.CountryDirector) {
       jQuery("#directorSelection").modal("show");
       console.log(this.planToApproval)
       if (this.planToApproval.approval && this.planToApproval.approval["countryDirector"]) {

@@ -1421,39 +1421,56 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
     let partnerOrganisation = event.data.val();
     let isApproved = partnerOrganisation.isApproved;
 
-    if (!preData && currData) {
-      console.log("Partner Organisation created");
+    admin.database().ref('test/userPublic/' + partnerOrganisation.userId).once("value", (data) => {
+      let username = data.val().firstName + " " + data.val().lastName;
+      let userEmail = data.val().email;
 
-      let partnerId = event.params['partnerId'];
-      let email = partnerOrganisation.email;
-      let expiry = moment.utc().add(1, 'weeks').valueOf();
+      admin.database().ref('test/agency/' + partnerOrganisation.agencyId).once("value", (agency) => {
+        let agencyName = agency.val().name;
 
-      let validationToken = {'token': uuidv4(), 'expiry': expiry};
+        admin.database().ref('test/countryOffice/' + partnerOrganisation.agencyId + '/' + partnerOrganisation.countryId).once("value", (country) => {
+          var countryName = country.val().location;
+          countryName = COUNTRIES[countryName];
 
-      console.log("email: " + email);
+          if (!preData && currData) {
+            console.log("Partner Organisation created");
 
-      admin.database().ref('test/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-        console.log('success validationToken');
-        const mailOptions = {
-          from: '"ALERT partner organisation" <noreply@firebase.com>',
-          to: email
-        };
+            let partnerId = event.params['partnerId'];
+            let email = partnerOrganisation.email;
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
 
-        // \n https://uat.portal.alertpreparedness.org
-        mailOptions.subject = `Welcome to ${APP_NAME}!`;
-        mailOptions.text = `Hello,
-                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            console.log("email: " + email);
+
+            admin.database().ref('test/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT partner organisation" <noreply@firebase.com>',
+                to: email
+              };
+
+              // \n https://uat.portal.alertpreparedness.org
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \n Your Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                          \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://test.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
-        return mailTransport.sendMail(mailOptions).then(() => {
-          console.log('New welcome email sent to:', email);
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+          }
         });
-      }, error => {
-        console.log(error.message);
       });
-    }
+    });
+
+
   });
 
 //for uat
@@ -1465,39 +1482,56 @@ exports.sendPartnerOrganisationValidationEmailUat = functions.database.ref('/uat
     let partnerOrganisation = event.data.val();
     let isApproved = partnerOrganisation.isApproved;
 
-    if (!preData && currData) {
-      console.log("Partner Organisation created");
+    admin.database().ref('uat/userPublic/' + partnerOrganisation.userId).once("value", (data) => {
+      let username = data.val().firstName + " " + data.val().lastName;
+      let userEmail = data.val().email;
 
-      let partnerId = event.params['partnerId'];
-      let email = partnerOrganisation.email;
-      let expiry = moment.utc().add(1, 'weeks').valueOf();
+      admin.database().ref('uat/agency/' + partnerOrganisation.agencyId).once("value", (agency) => {
+        let agencyName = agency.val().name;
 
-      let validationToken = {'token': uuidv4(), 'expiry': expiry};
+        admin.database().ref('uat/countryOffice/' + partnerOrganisation.agencyId + '/' + partnerOrganisation.countryId).once("value", (country) => {
+          var countryName = country.val().location;
+          countryName = COUNTRIES[countryName];
 
-      console.log("email: " + email);
+          if (!preData && currData) {
+            console.log("Partner Organisation created");
 
-      admin.database().ref('uat/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-        console.log('success validationToken');
-        const mailOptions = {
-          from: '"ALERT partner organisation" <noreply@firebase.com>',
-          to: email
-        };
+            let partnerId = event.params['partnerId'];
+            let email = partnerOrganisation.email;
+            let expiry = moment.utc().add(1, 'weeks').valueOf();
 
-        // \n https://uat.portal.alertpreparedness.org
-        mailOptions.subject = `Welcome to ${APP_NAME}!`;
-        mailOptions.text = `Hello,
-                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+            console.log("email: " + email);
+
+            admin.database().ref('uat/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+              console.log('success validationToken');
+              const mailOptions = {
+                from: '"ALERT partner organisation" <noreply@firebase.com>',
+                to: email
+              };
+
+              // \n https://uat.portal.alertpreparedness.org
+              mailOptions.subject = `Welcome to ${APP_NAME}!`;
+              mailOptions.text = `Hello,
+                          \n Your Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                          \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://uat.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
-        return mailTransport.sendMail(mailOptions).then(() => {
-          console.log('New welcome email sent to:', email);
+              return mailTransport.sendMail(mailOptions).then(() => {
+                console.log('New welcome email sent to:', email);
+              });
+            }, error => {
+              console.log(error.message);
+            });
+          }
         });
-      }, error => {
-        console.log(error.message);
       });
-    }
+    });
+
+
   });
 
 //for uat-2
@@ -3446,7 +3480,90 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
 /***********************************************************************************************************************/
 
 /***********************************************************************************************************************/
+//Bug Reporting
 //for sand
+
+exports.sendBugReportingEmailSand = functions.database.ref('/sand/bugReporting/{countryId}/{bugId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    console.log(currData)
+
+    let eParams = event.params;
+    // Set variables to parameters of the data returned, ready to construct for the email
+    let countryId = eParams['countryId'];
+    let bugId = eParams['bugId'];
+
+    console.log("countyId: " + countryId);
+
+    const mailOptions = {
+      from: '"ALERT Network" <noreply@firebase.com>',
+      to: 'dan@rolleragency.co.uk'
+    };
+    mailOptions.subject = `ALERT Platform: A problem has been reported`;
+    mailOptions.html = `Hello,
+                          <br>
+                          <br> A problem was reported at ${currData.date}
+                          <br>  
+                          <br> Description: <br>
+                          ${currData.description}
+                          <br> <br>        
+                          <a href="${currData.downloadLink}"> Click for image </a>                                          
+                          <br> <br>                         
+                          User details: <br>
+                          ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName}, ${currData.email}
+                          <br>
+                          <br>
+                          System Information: <br>
+                          ${currData.systemInfo}
+                          `;
+
+    return mailTransport.sendMail(mailOptions).then(() => {
+      console.log('New bug reporting email:');
+    });
+
+    // admin.database().ref("/sand/bugReporting/" + countryId + '/' + bugId)
+    //   .once("value", data => {
+    //     let userDb = data.val();
+    //     console.log(userDb, ' : loggin userDb');
+    //     const mailOptions = {
+    //       from: '"ALERT Network" <noreply@firebase.com>',
+    //       to: 'dan@rolleragency.co.uk'
+    //     };
+    //     mailOptions.subject = `ALERT Platform: A problem has been reported`;
+    //     mailOptions.text = `Hello,
+    //                       \n
+    //                       \n A problem was reported at ${date}
+    //                       \n
+    //                       \n Description: \n
+    //                       ${description}
+    //                       \n
+    //                       ${downloadURL}
+    //                       \n
+    //                       \n
+    //                       User details: \n
+    //                       ${firstName} ${lastName}, ${country}, ${agencyName} \n
+    //                       ${email}
+    //                       \n
+    //                       \n
+    //                       System Information: \n
+    //                       ${systemInfo}
+    //                       `;
+    //     return mailTransport.sendMail(mailOptions).then(() => {
+    //       console.log('New welcome email sent to:', email);
+    //     });
+    //   }, error => {
+    //     console.log(error.message);
+    //   });
+
+  })
+
+/***********************************************************************************************************************/
+
+
+
 exports.createUserNetworkCountry_SAND = functions.database.ref('/sand/administratorNetworkCountry/{adminId}')
   .onWrite(event => {
     const preData = event.data.previous.val();
@@ -4884,5 +5001,3 @@ function getAlertName(level) {
     return "RED ALERT"
   }
 }
-
-/*********************************************************************************************************************************************/

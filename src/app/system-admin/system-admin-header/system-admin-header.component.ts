@@ -42,6 +42,7 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    jQuery('.float').hide();
     this.showLoader = true;
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
@@ -93,6 +94,11 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     console.log("logout");
     this.af.auth.logout();
   }
+
+  reportProblem(){
+    jQuery('.float').show();
+  }
+
 
   goToHome() {
     this.router.navigateByUrl("/system-admin/agency");

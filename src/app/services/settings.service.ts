@@ -298,4 +298,18 @@ export class SettingsService {
       });
   }
 
+  getAgencyDepartments(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/departments", {preserveSnapshot: true})
+      .map((snapshot) => {
+        let depts:ModelDepartment[] = [];
+        snapshot.forEach((snap) => {
+          let y: ModelDepartment = new ModelDepartment();
+          y.id = snap.key;
+          y.name = snap.val().name;
+          depts.push(y);
+        });
+        return depts
+      });
+  }
+
 }

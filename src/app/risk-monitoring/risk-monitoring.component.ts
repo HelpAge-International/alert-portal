@@ -1,5 +1,8 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../utils/Enums";
+import {
+  AlertLevels, AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy,
+  UserType
+} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -20,6 +23,7 @@ import {AgencyService} from "../services/agency-service.service";
 import {SettingsService} from "../services/settings.service";
 import {NetworkService} from "../services/network.service";
 import {CommonUtils} from "../utils/CommonUtils";
+import {Trigger} from "@ng-bootstrap/ng-bootstrap/util/triggers";
 import {CommonService} from "../services/common.service";
 import {OperationAreaModel} from "../model/operation-area.model";
 
@@ -124,6 +128,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private userAgencyId: string;
   private userCountryId: string;
   private withinNetwork: boolean;
+  private previousIndicatorTrigger:number = -1
   private countryLevelsValues: any;
 
   private subnationalName: string;
@@ -1363,9 +1368,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
-    console.log("IndicatorKey: " + indicatorKey)
-    console.log("HazardKey: " + hazardID)
-
     var key = hazardID + '_' + indicatorKey;
     if (state) {
       this.isIndicatorUpdate[key] = true;
@@ -1376,6 +1378,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   setCheckedTrigger(indicatorID: string, triggerSelected: number) {
     this.indicatorTrigger[indicatorID] = triggerSelected;
+    this.previousIndicatorTrigger = triggerSelected
   }
 
   setClassForIndicator(trigger: number, triggerSelected: number) {
@@ -1393,7 +1396,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     return indicatorClass;
   }
 
-  updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number) {
+  updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number, state : boolean = false) {
     const indicatorID = indicator.$key;
 
     if (!hazardID || !indicatorID) {
@@ -1412,16 +1415,23 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + hazardID + '/' + indicatorID;
     }
+    this.changeIndicatorState(state, hazardID, indicatorKey);
 
     this.af.database.object(urlToUpdate)
       .update(dataToSave)
       .then(_ => {
-        this.changeIndicatorState(false, hazardID, indicatorKey);
+        this.changeIndicatorState(state, hazardID, indicatorKey);
+        //create log model for pushing - phase 2
+        this.networkService.saveIndicatorLogMoreParams(this.previousIndicatorTrigger, triggerSelected, this.uid, indicator.$key).then(() => this.previousIndicatorTrigger = -1)
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
     });
 
+  }
 
+  updateNetworkIntdicatorStatus(id : string, hazardID: string, indicator, indicatorKey: number, state : boolean = false) {
+    this.changeIndicatorState(false, id, indicatorKey)
+    this.updateIndicatorStatus(hazardID, indicator, indicatorKey, state)
   }
 
   saveLog(indicatorID: string, triggerSelected: number) {

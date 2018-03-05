@@ -51,6 +51,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    jQuery('.float').hide();
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
       this.USER_TYPE = Constants.USER_PATHS[UserType.AgencyAdmin];
@@ -117,7 +118,9 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     console.log("logout");
     this.af.auth.logout();
   }
-
+  reportProblem(){
+    jQuery('.float').show();
+  }
   // Dan's Modal functions
 
   loadJSON(){

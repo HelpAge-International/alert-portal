@@ -65,6 +65,7 @@ import {SystemSettingsResponsePlansComponent} from './system-admin/system-settin
 import {SystemSettingsDocumentsComponent} from './system-admin/system-settings/system-settings-documents/system-settings-documents.component';
 import {NewAgencyPasswordComponent} from './agency-admin/new-agency/new-agency-password/new-agency-password.component';
 import {NewAgencyDetailsComponent} from './agency-admin/new-agency/new-agency-details/new-agency-details.component';
+import {SplitOnCapsPipe} from './utils/pipes/split-by-caps.pipe';
 import {KeysPipe} from './utils/pipes/keys.pipe';
 import {EnumKeysPipe} from './utils/pipes/enum-keys.pipe';
 import {KeyValuesPipe} from './utils/pipes/key-values.pipe';
@@ -364,6 +365,13 @@ import {DirectorAccountSettingsViewCocComponent} from "./director/director-accou
 import { LocalAgencyViewCocComponent } from './local-agency/local-agency-account-details/local-agency-view-coc/local-agency-view-coc.component';
 import { NetworkAdminViewCocComponent } from './network-admin/network-account-settings/network-admin-view-coc/network-admin-view-coc.component';
 import { NetworkCountryAdminViewCocComponent } from './network-country-admin/network-country-account-settings/network-country-admin-view-coc/network-country-admin-view-coc.component';
+import {ExportDataService} from "./services/export-data.service";
+import {PartnerOrganisationService} from "./services/partner-organisation.service";
+import {SurgeCapacityService} from "./services/surge-capacity.service";
+import { ViewCountriesComponent } from './agency-admin/view-countries/view-countries.component';
+import { BugReportingService } from './services/bug-reporting.service';
+import { ReportProblemComponent } from './report-problem/report-problem.component';
+
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -465,6 +473,7 @@ const firebaseAuthConfig = {
     SystemSettingsDocumentsComponent,
     NewAgencyPasswordComponent,
     NewAgencyDetailsComponent,
+    SplitOnCapsPipe,
     KeysPipe,
     EnumKeysPipe,
     EnumKeyValuesPipe,
@@ -719,6 +728,8 @@ const firebaseAuthConfig = {
     CountryFieldOfficeSettingsComponent,
     CountryOfficeAddEditFieldOfficeComponent,
     AgencyOverviewComponent,
+    ViewCountriesComponent,
+    ReportProblemComponent,
     SystemSettingsTocComponent,
     SystemSettingsCocComponent,
     PageFooterComponent,
@@ -779,7 +790,12 @@ const firebaseAuthConfig = {
     NetworkMapService,
     NetworkCountryService,
     ActionsService,
-    FieldOfficeService
+    FieldOfficeService,
+    ExportDataService,
+    PartnerOrganisationService,
+    SurgeCapacityService,
+    FieldOfficeService,
+    BugReportingService
   ],
   bootstrap: [AppComponent]
 })

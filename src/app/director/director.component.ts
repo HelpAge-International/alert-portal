@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
 import {Constants} from "../utils/Constants";
@@ -64,6 +64,10 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private countryOffices = [];
   private regionalCountryOffices = [];
   private showCoCBanner: boolean;
+
+  //phase 2 sprint 4 task
+  @Input() agencyAdminIs:boolean
+
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -242,9 +246,12 @@ export class DirectorComponent implements OnInit, OnDestroy {
       }
 
       this.regions.forEach(region => {
+        jQuery('#mapParent-' + region.regionId).collapse();
         this.regionalCountryOffices[region.regionId] = this.countryOffices.filter(x => region.countries.has(x.$key));
       });
 
+      console.log(this.regions)
+      jQuery('#mapParent-' + this.otherRegion.regionId).collapse();
       // other regions
       this.regionalCountryOffices[this.otherRegion.regionId] = this.countryOffices.filter(x => this.otherRegion.countries.has(x.$key));
 

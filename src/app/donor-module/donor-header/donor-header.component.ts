@@ -52,6 +52,8 @@ export class DonorHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    jQuery('.float').hide();
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
@@ -103,6 +105,9 @@ export class DonorHeaderComponent implements OnInit {
     this.ngUnsubscribe.complete();
   }
 
+  reportProblem(){
+    jQuery('.float').show();
+  }
   // Dan's Modal functions
 
   loadJSON(){

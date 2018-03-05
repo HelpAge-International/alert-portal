@@ -41,10 +41,10 @@
               <!--<div class="btn disabled" [ngClass]="{'btn-success': module.status == true, 'btn-outline-success': module.status == false}" (click)="showAlert()">{{"GLOBAL.ENABLED" | translate}}</div>-->
             <!--</div>-->
             <div class="col-md-6">
-              <div class="btn" [ngClass]="{'btn-success': module.status == true, 'btn-outline-success': module.status == false}" (click)="changeStatus(i, true)">{{"GLOBAL.ENABLED" | translate}}</div>
+              <button class="btn" [ngClass]="{'btn-success': module.status == true, 'btn-outline-success': module.status == false}" (click)="changeStatus(i, true)" [disabled]="(modules[ModuleNameNetwork.MinimumPreparednessActions]?.status == false && i == ModuleNameNetwork.CHSPreparednessActions) || (modules[ModuleNameNetwork.RiskMonitoring]?.status == false && i == ModuleNameNetwork.ConflictIndicators)">{{"GLOBAL.ENABLED" | translate}}</button>
             </div>
             <div class="col-md-6">
-              <div class="btn" [ngClass]="{'btn-danger': module.status == false, 'btn-outline-danger': module.status == true}" (click)="changeStatus(i, false)">{{"GLOBAL.DISABLED" | translate}}</div>
+              <button class="btn" [ngClass]="{'btn-danger': module.status == false, 'btn-outline-danger': module.status == true}" (click)="changeStatus(i, false)">{{"GLOBAL.DISABLED" | translate}}</button>
             </div>
           </div>
         </div>
