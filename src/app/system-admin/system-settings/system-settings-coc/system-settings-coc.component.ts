@@ -10,6 +10,7 @@ import {AngularFire} from "angularfire2";
   templateUrl: './system-settings-coc.component.html',
   styleUrls: ['./system-settings-coc.component.scss']
 })
+
 export class SystemSettingsCocComponent implements OnInit {
 
   private isEditing: boolean = false;
