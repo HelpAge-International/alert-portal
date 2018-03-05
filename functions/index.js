@@ -5148,7 +5148,8 @@ function sendNotification(env, payload, userId){
       let deviceNotificationIds = deviceNotificationIdsSnap.val()
       if(deviceNotificationIds){
         let promises = []
-        for(deviceNotificationId in deviceNotificationIds){
+        for (var i = deviceNotificationIds.length - 1; i >= 0; i--) {
+          let deviceNotificationId = deviceNotificationIds[i].val()
           console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`)
           promises.push(admin.messaging().sendToDevice(deviceNotificationId, payload))
         }
