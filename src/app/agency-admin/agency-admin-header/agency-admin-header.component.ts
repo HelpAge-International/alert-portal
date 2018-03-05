@@ -4,11 +4,12 @@ import {Constants} from "../../utils/Constants";
 import {UserType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
-import {Message} from "../../model/message";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {Http, Response} from '@angular/http';
+import {ExportDataService} from "../../services/export-data.service";
+
 declare var jQuery: any;
 
 @Component({
@@ -35,6 +36,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private USER_TYPE: string;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private agencyId: string;
 
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
@@ -42,6 +44,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private http: Http,
+              private exportService: ExportDataService,
               private translate: TranslateService) {
 
 
@@ -60,7 +63,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
 
       this.loadJSON().subscribe(data => {
 
-        for (var key in data){
+        for (var key in data) {
 
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
@@ -73,7 +76,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
-          if(user.language) {
+          if (user.language) {
             this.language = user.language;
             this.translate.use(this.language.toLowerCase());
           } else {
@@ -93,6 +96,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
           if (id.$value == null) {
             this.router.navigateByUrl("/login");
           } else {
+            this.agencyId = id.$value
             this.af.database.object(Constants.APP_STATUS + "/agency/" + id.$value)
               .takeUntil(this.ngUnsubscribe).subscribe(agency => {
               this.agencyName = agency.name;
@@ -118,14 +122,16 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     console.log("logout");
     this.af.auth.logout();
   }
-  reportProblem(){
+
+  reportProblem() {
     jQuery('.float').show();
   }
+
   // Dan's Modal functions
 
-  loadJSON(){
+  loadJSON() {
     return this.http.get(this.languageSelectPath)
-      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
   }
 
   openLanguageModal() {
@@ -133,7 +139,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
     jQuery("#language-selection").modal("show");
   };
 
-  changeLanguage(language: string){
+  changeLanguage(language: string) {
     this.language = language;
     console.log(this.uid);
 
@@ -153,6 +159,8 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
 
   exportData() {
     console.log("start exporting agency data")
+    console.log(this.agencyId)
+    this.exportService.exportAgencyData(this.agencyId)
   }
 
 }

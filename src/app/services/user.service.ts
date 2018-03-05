@@ -164,6 +164,14 @@ export class UserService {
     return countryAdminSubscription;
   }
 
+  getCountryAdmin(agencyId: string, countryId: string) : Observable<ModelUserPublic> {
+    return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + "/" + countryId)
+      .flatMap(country => {
+        return this.getUser(country.adminId)
+      });
+
+  }
+
   getLocalAgencyAdminUser(uid: string) {
     if (!uid) {
       return null;
@@ -541,7 +549,7 @@ export class UserService {
             .flatMap((mySnap) => {
               if (mySnap.val() != null) {
 
-                      console.log('local agency return')
+                console.log('local agency return')
 
                 return Observable.of(UserType.LocalAgencyAdmin);
 
