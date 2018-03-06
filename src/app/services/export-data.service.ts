@@ -37,7 +37,7 @@ export class ExportDataService {
 
   //for agency export
   private totalCountries: number
-  private countryCounter: number
+  // private countryCounter: number
   private wbAgency: XLSX.WorkBook
   private countryNameMap = new Map<string, string>()
   private alertsForAgency = []
@@ -73,8 +73,19 @@ export class ExportDataService {
 
     this.exportSubject = new Subject<boolean>()
     // MAKE SURE TOTAL NUMBER FOR SHEETS IS RIGHT!! (16 now)
-    this.total = 16
-    this.counter = 0
+    switch (this.exportFrom) {
+      case EXPORT_FROM.FromAgency: {
+        break
+      }
+      case EXPORT_FROM.FromSystem: {
+        break
+      }
+      default: {
+        this.total = 16
+        this.counter = 0
+        break
+      }
+    }
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new()
 
@@ -132,7 +143,8 @@ export class ExportDataService {
 
   public exportAgencyData(agencyId: string) {
     this.resetAgencyData()
-    this.countryCounter = 0
+    // this.countryCounter = 0
+    this.counter = 0
     this.exportFrom = EXPORT_FROM.FromAgency
     this.wbAgency = XLSX.utils.book_new()
     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -142,6 +154,7 @@ export class ExportDataService {
           .first()
           .subscribe(countryIds => {
             this.totalCountries = countryIds.length
+            this.total = this.totalCountries * 16
             let tempCounter = 0
             countryIds.forEach(countryId => {
               this.agencyService.getCountryOffice(countryId, agencyId)
@@ -890,8 +903,8 @@ export class ExportDataService {
     if (counter == total) {
       switch (this.exportFrom) {
         case EXPORT_FROM.FromAgency : {
-          this.countryCounter++
-          this.exportFileAgency(this.countryCounter, this.totalCountries, this.wbAgency)
+          // this.countryCounter++
+          this.exportFileAgency(this.counter, this.total, this.wbAgency)
           break
         }
         case EXPORT_FROM.FromSystem: {
@@ -911,6 +924,7 @@ export class ExportDataService {
     console.log("agency total: " + total)
     console.log("agency counter: " + counter)
     if (counter == total) {
+      //TODO NOT FINISHED YET, START FROM HERE
       // private alertsForAgency = []
       // private indicatorsForAgency = []
       // private plansForAgency = []
