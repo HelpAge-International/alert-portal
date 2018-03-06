@@ -4538,6 +4538,10 @@ exports.sendResponsePlanApprovalNotification_TEST = functions.database.ref('/tes
   .onWrite(event => {
     return sendResponsePlanApprovalNotification(event, "test")
   })
+exports.sendResponsePlanApprovalNotification_UAT = functions.database.ref('/uat/responsePlan/{groupId}/{responsePlanId}/approval/{groupName}/{approverId}')
+  .onWrite(event => {
+    return sendResponsePlanApprovalNotification(event, "uat")
+  })
 
 function sendResponsePlanApprovalNotification(event, env){
   const preData = event.data.previous.val();
@@ -4598,6 +4602,10 @@ exports.countryOfficeClockSettingsChange_TEST = functions.database.ref('/test/co
   .onWrite(event => {
     return countryOfficeClockSettingsChange(event, "test")
   })
+exports.countryOfficeClockSettingsChange_UAT = functions.database.ref('/uat/countryOffice/{agencyId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "uat")
+  })
 
 function countryOfficeClockSettingsChange(event, env){
 
@@ -4631,6 +4639,10 @@ exports.networkClockSettingsChange_TEST = functions.database.ref('/test/network/
   .onWrite(event => {
     return countryOfficeClockSettingsChange(event, "test")
   })
+exports.networkClockSettingsChange_UAT = functions.database.ref('/uat/network/{networkId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "uat")
+  })
 
 function networkClockSettingsChange(event, env){
 
@@ -4656,6 +4668,10 @@ exports.networkCountryClockSettingsChange_SAND = functions.database.ref('/sand/n
 exports.networkCountryClockSettingsChange_TEST = functions.database.ref('/test/networkCountry/{networkId}/{countryId}/clockSettings')
   .onWrite(event => {
     return networkCountryClockSettingsChange(event, "test")
+  })
+exports.networkCountryClockSettingsChange_UAT = functions.database.ref('/uat/networkCountry/{networkId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return networkCountryClockSettingsChange(event, "uat")
   })
 
 function networkCountryClockSettingsChange(event, env){
@@ -4683,6 +4699,10 @@ exports.sendActionMobileNotification_SAND = functions.database.ref('/sand/action
 exports.sendActionMobileNotification_TEST = functions.database.ref('/test/action/{groupId}/{actionId}/')
   .onWrite(event => {
     return sendActionMobileNotification(event, "test")
+  })
+exports.sendActionMobileNotification_UAT = functions.database.ref('/uat/action/{groupId}/{actionId}/')
+  .onWrite(event => {
+    return sendActionMobileNotification(event, "uat")
   })
 
 function sendActionMobileNotification(event, env){
@@ -4764,6 +4784,10 @@ exports.sendResponsePlanMobileNotification_TEST = functions.database.ref('/test/
   .onWrite(event => {
     return sendResponsePlanMobileNotification(event, "test")
   })
+exports.sendResponsePlanMobileNotification_UAT = functions.database.ref('/uat/action/{groupId}/{responsePlanId}/')
+  .onWrite(event => {
+    return sendResponsePlanMobileNotification(event, "uat")
+  })
 
 function sendResponsePlanMobileNotification(event, env){
   const preResponsePlanData = event.data.previous.val();
@@ -4806,6 +4830,10 @@ exports.sendAlertMobileNotification_SAND = functions.database.ref('/sand/alert/{
 exports.sendAlertMobileNotification_TEST = functions.database.ref('/test/alert/{id}/{alertId}')
   .onWrite(event => {
     return sendAlertMobileNotification(event, "test")
+  })
+exports.sendAlertMobileNotification_UAT = functions.database.ref('/uat/alert/{id}/{alertId}')
+  .onWrite(event => {
+    return sendAlertMobileNotification(event, "uat")
   })
 
 function sendAlertMobileNotification(event, env){
@@ -5039,28 +5067,30 @@ function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId)
     }
 }
 
+//LEVEL is apa/mpa
 function createActionAssignedNotification(action, groupId, actionId){
   return {
       'notification': {
-          'title': `An ${action.type == 1 ? "minimum" : "advanced"} has been assigned to you`,
-          'body': `The following ${action.type == 1 ? "minimum" : "advanced"} preparedness action: ${action.task} has been assigned to you`
+          'title': `An ${action.level == 1 ? "minimum" : "advanced"} has been assigned to you`,
+          'body': `The following ${action.level == 1 ? "minimum" : "advanced"} preparedness action: ${action.task} has been assigned to you`
       },
       'data': {
         'actionId': actionId,
         'groupId': groupId,
-        'actionType': action.type.toString(),
+        'actionType': action.level.toString(),//TODO: DELETE THIS LINE if you're reading this in April+, just here for backwards compatibility
+        'actionLevel': action.level.toString(),
         'type': NOTIFICATION_ACTION_ASSIGNED.toString()
       }
     }
 }
 
 function createActionRescheduleNotification(action, groupId, actionId){
-  console.log("Sending reschedule: " + groupId + " - " + actionId)
   return {
       'data': {
         'actionId': actionId,
         'groupId': groupId,
-        'actionType': action.type.toString(),
+        'actionType': action.level.toString(),//TODO: DELETE THIS LINE if you're reading this in April+, just here for backwards compatibility
+        'actionLevel': action.level.toString(),
         'type': NOTIFICATION_ACTION_RESCHEDULE.toString()
       }
     }
