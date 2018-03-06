@@ -3,11 +3,13 @@ import {Http} from "@angular/http";
 import {Observable} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {TranslateService} from "@ngx-translate/core";
+import {AngularFire} from "angularfire2";
 
 @Injectable()
 export class CommonService {
 
   constructor(private _http: Http,
+              private af:AngularFire,
               private translate:TranslateService) {
   }
 
@@ -86,5 +88,23 @@ export class CommonService {
     })
 
     return names;
+  }
+
+  getCountryTotalForSystem() {
+    let totalCountries = 0
+    let totalAgency = 9
+    this.af.database.list(Constants.APP_STATUS + "/agency/")
+      .flatMap(agencies => {
+        totalAgency = agencies.length
+        return Observable.from(agencies)
+      })
+      .flatMap(agencyId =>{
+        return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      })
+      .take(totalAgency)
+      .subscribe(countries => {
+        totalCountries += countries.length
+      })
+    return totalCountries
   }
 }

@@ -6,6 +6,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Http, Response} from '@angular/http';
+import {ExportDataService} from "../../services/export-data.service";
 
 declare var jQuery: any;
 
@@ -33,7 +34,13 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
 
   // End
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService, private http: Http) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private translate: TranslateService,
+              private exportService:ExportDataService,
+              private http: Http) {
 
     translate.setDefaultLang("en");
 
@@ -131,6 +138,17 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     jQuery("#language-selection").modal("hide");
 
 
+  }
+
+  exportData() {
+    console.log("start exporting agency data")
+    // this.showLoader = true
+    //TODO JUST TEST FOR NOW, ID NEED TO BE UPDATED
+    console.log(this.uid)
+    this.exportService.exportSystemData()
+    // this.exportService.exportAgencyData(this.uid)
+    //   .first()
+    //   .subscribe(value => this.showLoader = !value)
   }
 
 }

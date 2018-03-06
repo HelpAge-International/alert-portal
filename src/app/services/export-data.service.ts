@@ -25,6 +25,7 @@ import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
 import {Subject} from "rxjs/Subject";
 import {AgencyService} from "./agency-service.service";
+import {map} from "rxjs/operator/map";
 
 @Injectable()
 export class ExportDataService {
@@ -37,7 +38,7 @@ export class ExportDataService {
 
   //for agency export
   private totalCountries: number
-  // private countryCounter: number
+  private subjectAgency: Subject<boolean>
   private wbAgency: XLSX.WorkBook
   private countryNameMap = new Map<string, string>()
   private alertsForAgency = []
@@ -57,6 +58,27 @@ export class ExportDataService {
   private officesCapacityForAgency = []
   private program4wForAgency = []
   private sectorsForAgency = []
+
+  //for system export
+  private subjectSystem: Subject<boolean>
+  private wbSystem: XLSX.WorkBook
+  private alertsForSystem = []
+  private indicatorsForSystem = []
+  private plansForSystem = []
+  private actionsForSystem = []
+  private activeAPAForSystem = []
+  private pointOfContactsForSystem = []
+  private officesDetailsForSystem = []
+  private stockInCountryForSystem = []
+  private stockOutCountryForSystem = []
+  private coordsForSystem = []
+  private equipmentsForSystem = []
+  private surgeEquipmentsForSystem = []
+  private organisationsForSystem = []
+  private surgesForSystem = []
+  private officesCapacityForSystem = []
+  private program4wForSystem = []
+  private sectorsForSystem = []
 
 
   constructor(private af: AngularFire,
@@ -142,6 +164,7 @@ export class ExportDataService {
   }
 
   public exportAgencyData(agencyId: string) {
+    this.subjectAgency = new Subject<boolean>()
     this.resetAgencyData()
     // this.countryCounter = 0
     this.counter = 0
@@ -204,6 +227,75 @@ export class ExportDataService {
             })
           })
       })
+    return this.subjectAgency
+  }
+
+  public exportSystemData() {
+    this.subjectSystem = new Subject<boolean>()
+    this.resetSystemData()
+    this.counter = 0
+    this.exportFrom = EXPORT_FROM.FromSystem
+    this.wbSystem = XLSX.utils.book_new()
+    let value = this.commonService.getCountryTotalForSystem()
+    console.log(value)
+    // this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+    //   .first()
+    //   .subscribe(areaContent => {
+    //     this.agencyService.getAllCountryIdsForAgency(agencyId)
+    //       .first()
+    //       .subscribe(countryIds => {
+    //         this.totalCountries = countryIds.length
+    //         this.total = this.totalCountries * 16
+    //         let tempCounter = 0
+    //         countryIds.forEach(countryId => {
+    //           this.agencyService.getCountryOffice(countryId, agencyId)
+    //             .first()
+    //             .subscribe(countryOffice => {
+    //               this.countryNameMap.set(countryOffice.$key, this.translateService.instant(Constants.COUNTRIES[countryOffice.location]))
+    //               tempCounter++
+    //               if (tempCounter === this.totalCountries) {
+    //                 //loop again to fetch info
+    //                 countryIds.forEach(id => {
+    //                   //get all staff for this country
+    //                   this.userService.getStaffList(id)
+    //                     .first()
+    //                     .subscribe(staffs => {
+    //                       let staffMap = new Map<string, string>()
+    //                       //get country admin first
+    //                       this.userService.getCountryAdmin(agencyId, id)
+    //                         .first()
+    //                         .subscribe(admin => {
+    //                           staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
+    //
+    //                           if (staffs.length > 0) {
+    //                             //get rest staffs for country
+    //                             staffs.forEach(staff => {
+    //                               this.userService.getUser(staff.id)
+    //                                 .first()
+    //                                 .subscribe(user => {
+    //                                   staffMap.set(user.id, user.firstName + " " + user.lastName)
+    //
+    //                                   if (staffMap.size === staffs.length + 1) {
+    //                                     //start export data
+    //                                     this.exportOfficeData(agencyId, id, areaContent, staffMap)
+    //                                   }
+    //                                 })
+    //                             })
+    //                           } else {
+    //                             //start export data
+    //                             this.exportOfficeData(agencyId, id, areaContent, staffMap)
+    //                           }
+    //                         })
+    //
+    //                     })
+    //                 })
+    //               }
+    //             })
+    //
+    //         })
+    //       })
+    //   })
+    return this.subjectAgency
   }
 
   private fetchRiskMonitoringData(countryId: string, staffMap: Map<string, string>, areaContent: any, wb: WorkBook) {
@@ -213,7 +305,7 @@ export class ExportDataService {
         let allIndicators = []
         //first fetch country context indicators
         let indicators = countryIndicators.map(item => {
-          return this.transformIndicator(item, staffMap, areaContent, "Country Context")
+          return this.transformIndicator(item, staffMap, areaContent, "Country Context", countryId)
         })
         allIndicators = allIndicators.concat(indicators)
 
@@ -229,13 +321,13 @@ export class ExportDataService {
                   .subscribe(hazardIndicatorList => {
                     //dealing with pre-defined hazard
                     let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario != -1).map(item => {
-                      return this.transformIndicator(item, staffMap, areaContent, this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario]))
+                      return this.transformIndicator(item, staffMap, areaContent, this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario]), countryId)
                     })
                     allIndicators = allIndicators.concat(hazardIndicators)
 
                     //dealing with custom hazards
                     let hazardIndicatorsCustom = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario == -1).map(item => {
-                      return this.transformIndicator(item, staffMap, areaContent, item.hazardScenario.otherName);
+                      return this.transformIndicator(item, staffMap, areaContent, item.hazardScenario.otherName, countryId);
                     })
 
                     if (hazardIndicatorsCustom.length > 0) {
@@ -288,8 +380,11 @@ export class ExportDataService {
       })
   }
 
-  private transformIndicator(item, staffMap: Map<string, string>, areaContent: any, hazard: any) {
+  private transformIndicator(item, staffMap: Map<string, string>, areaContent: any, hazard: any, countryId: string) {
     let indicatorObj = {}
+    if (this.exportFrom != EXPORT_FROM.FromCountry) {
+      indicatorObj["Country Office"] = this.countryNameMap.get(countryId)
+    }
     indicatorObj["Hazard"] = hazard
     indicatorObj["Indicator Name"] = item["name"]
     indicatorObj["Name of Source"] = this.getIndicatorSourceAndLink(item).join("\n")
@@ -319,6 +414,9 @@ export class ExportDataService {
           let sectors = []
           let expertise = sectorList.map(sector => this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[sector.$key])).toString()
           let obj = {}
+          if (this.exportFrom != EXPORT_FROM.FromCountry) {
+            obj["Country Office"] = this.countryNameMap.get(countryId)
+          }
           obj["Sectors of expertise"] = expertise
           sectors.push(obj)
 
@@ -345,6 +443,9 @@ export class ExportDataService {
         if (mappings.length > 0) {
           let program4w = mappings.map(mapping => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Sector"] = this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[mapping["sector"]])
             obj["What"] = mapping["what"]
             if (!mapping["where"] || (mapping["where"] && typeof (mapping["where"]) === 'string' && Number.isNaN(parseInt(mapping["where"])))) {
@@ -396,6 +497,9 @@ export class ExportDataService {
                         .first()
                         .subscribe(user => {
                           let obj = {}
+                          if (this.exportFrom != EXPORT_FROM.FromCountry) {
+                            obj["Country Office"] = this.countryNameMap.get(countryId)
+                          }
                           obj["Name"] = user.firstName + " " + user.lastName
                           obj["Position"] = staff.position
                           obj["Office Type"] = this.translateService.instant(Constants.OFFICE_TYPE[staff.officeType])
@@ -422,6 +526,9 @@ export class ExportDataService {
                 .first()
                 .subscribe(user => {
                   let obj = {}
+                  if (this.exportFrom != EXPORT_FROM.FromCountry) {
+                    obj["Country Office"] = this.countryNameMap.get(countryId)
+                  }
                   obj["Name"] = user.firstName + " " + user.lastName
                   obj["Position"] = staff.position
                   obj["Office Type"] = this.translateService.instant(Constants.OFFICE_TYPE[staff.officeType])
@@ -455,6 +562,9 @@ export class ExportDataService {
         if (surgeCapacityList.length > 0) {
           let surges = surgeCapacityList.map(surge => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Organisation"] = surge["orgnization"]
             obj["Relationship"] = surge["relationship"]
             obj["Contact Name"] = surge["name"]
@@ -498,6 +608,9 @@ export class ExportDataService {
                 let organisations = orgs.filter(org => org.isApproved).map(org => {
                   console.log(org["projects"])
                   let obj = {}
+                  if (this.exportFrom != EXPORT_FROM.FromCountry) {
+                    obj["Country Office"] = this.countryNameMap.get(countryId)
+                  }
                   obj["Partner Organisation"] = org["organisationName"]
                   obj["Relationship"] = org["relationship"]
                   obj["Projects"] = org["projects"].length
@@ -532,6 +645,9 @@ export class ExportDataService {
         if (surgeEquipmentList.length > 0) {
           let surgeEquipments = surgeEquipmentList.map(sEquipment => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Supplier"] = sEquipment["supplier"]
             obj["Relationship"] = sEquipment["relationship"]
             obj["Equipment Provided"] = sEquipment["equipmentProvided"]
@@ -559,6 +675,9 @@ export class ExportDataService {
         if (countryEquipments.length > 0) {
           let equipments = countryEquipments.map(equipment => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Equipment"] = equipment["name"]
             if (Number.isInteger(equipment["location"]) || (typeof equipment["location"] === 'string' && !Number.isNaN(parseInt(equipment["location"])))) {
               let temp1 = {}
@@ -600,6 +719,9 @@ export class ExportDataService {
         if (cos.length > 0) {
           let coordinations = cos.map(co => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Sector"] = this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[co["sector"]])
             obj["Sector Lead"] = co["sectorLead"]
             obj["Contact Name"] = co["contactName"]
@@ -640,6 +762,9 @@ export class ExportDataService {
         if (stockInCountry.length > 0) {
           let stocksInCountry = stockInCountry.filter(stock => stock.stockType == StockType.Country).map(stock => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Description"] = stock["description"]
             obj["Quantity"] = stock["quantity"]
             if (Number.isInteger(stock["location"]) || (typeof stock["location"] === 'string' && !Number.isNaN(parseInt(stock["location"])))) {
@@ -663,6 +788,9 @@ export class ExportDataService {
 
           let stocksExternalCountry = stockInCountry.filter(stock => stock.stockType == StockType.External).map(stock => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Description"] = stock["description"]
             obj["Quantity"] = stock["quantity"]
             if (Number.isInteger(stock["location"]) || (typeof stock["location"] === 'string' && !Number.isNaN(parseInt(stock["location"])))) {
@@ -705,6 +833,9 @@ export class ExportDataService {
       .subscribe(countryOffice => {
         let offices = []
         let office = {}
+        if (this.exportFrom != EXPORT_FROM.FromCountry) {
+          office["Country Office"] = this.countryNameMap.get(countryId)
+        }
         office["Address Line 1"] = countryOffice.addressLine1
         office["Address Line 2"] = countryOffice.addressLine2
         office["Address Line 3"] = countryOffice.addressLine3
@@ -735,6 +866,9 @@ export class ExportDataService {
         if (contactsList.length > 0) {
           let contacts = contactsList.map(contact => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Skype Name"] = contact["skypeName"]
             obj["Office Telephone"] = contact["phone"]
             obj["staffId"] = contact["staffMember"]
@@ -791,6 +925,9 @@ export class ExportDataService {
                 if (actionList.length > 0) {
                   let actions = actionList.map(action => {
                     let obj = {}
+                    if (this.exportFrom != EXPORT_FROM.FromCountry) {
+                      obj["Country Office"] = this.countryNameMap.get(countryId)
+                    }
                     obj["Action title"] = action["task"]
                     obj["Preparedness action level"] = this.translateService.instant(Constants.ACTION_LEVEL[action["level"]])
                     obj["Type"] = this.translateService.instant(Constants.ACTION_TYPE[action["type"]])
@@ -841,6 +978,9 @@ export class ExportDataService {
         if (planList.length > 0) {
           let plans = planList.map(plan => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Plan Name"] = plan["name"]
             if (plan["hazardScenario"] != -1) {
               obj["Hazard"] = this.translateService.instant(Constants.HAZARD_SCENARIOS[plan["hazardScenario"]])
@@ -874,6 +1014,9 @@ export class ExportDataService {
         if (alertList.length > 0) {
           let alerts = alertList.map(alert => {
             let obj = {}
+            if (this.exportFrom != EXPORT_FROM.FromCountry) {
+              obj["Country Office"] = this.countryNameMap.get(countryId)
+            }
             obj["Date Raised"] = moment(alert.timeCreated).format("DD/MM/YYYY")
             obj["Alert level"] = this.translateService.instant(Constants.ALERTS[alert.alertLevel])
             if (alert.hazardScenario != -1) {
@@ -924,24 +1067,6 @@ export class ExportDataService {
     console.log("agency total: " + total)
     console.log("agency counter: " + counter)
     if (counter == total) {
-      //TODO NOT FINISHED YET, START FROM HERE
-      // private alertsForAgency = []
-      // private indicatorsForAgency = []
-      // private plansForAgency = []
-      // private actionsForAgency = []
-      // private activeAPAForAgency = []
-      // private pointOfContactsForAgency = []
-      // private officesDetailsForAgency = []
-      // private stockInCountryForAgency = []
-      // private stockOutCountryForAgency = []
-      // private coordsForAgency = []
-      // private equipmentsForAgency = []
-      // private surgeEquipmentsForAgency = []
-      // private organisationsForAgency = []
-      // private surgesForAgency = []
-      // private officesCapacityForAgency = []
-      // private program4wForAgency = []
-      // private sectorsForAgency = []
       const alertsForAgencySheet = XLSX.utils.json_to_sheet(this.alertsForAgency);
       const indicatorsForAgencySheet = XLSX.utils.json_to_sheet(this.indicatorsForAgency);
       const plansForAgencySheet = XLSX.utils.json_to_sheet(this.plansForAgency);
@@ -960,7 +1085,24 @@ export class ExportDataService {
       const program4wForAgencySheet = XLSX.utils.json_to_sheet(this.program4wForAgency);
       const sectorsForAgencySheet = XLSX.utils.json_to_sheet(this.sectorsForAgency);
       XLSX.utils.book_append_sheet(wb, alertsForAgencySheet, "Alerts")
+      XLSX.utils.book_append_sheet(wb, indicatorsForAgencySheet, "Risk Monitoring")
+      XLSX.utils.book_append_sheet(wb, plansForAgencySheet, "Response Plans")
+      XLSX.utils.book_append_sheet(wb, actionsForAgencySheet, "Preparedness")
+      XLSX.utils.book_append_sheet(wb, activeAPAForAgencySheet, "APA Activation")
+      XLSX.utils.book_append_sheet(wb, pointOfContactsForAgencySheet, "CO - Contacts(Point of Contact)")
+      XLSX.utils.book_append_sheet(wb, officesDetailsForAgencySheet, "CO - Contacts (Office Details)")
+      XLSX.utils.book_append_sheet(wb, stockInCountryForAgencySheet, "Stock Capacity(In-country)")
+      XLSX.utils.book_append_sheet(wb, stockOutCountryForAgencySheet, "Stock Capacity(External)")
+      XLSX.utils.book_append_sheet(wb, coordsForAgencySheet, "CO - Coordination")
+      XLSX.utils.book_append_sheet(wb, equipmentsForAgencySheet, "CO - Equipment(Equipment)")
+      XLSX.utils.book_append_sheet(wb, surgeEquipmentsForAgencySheet, "CO - Surge Equipment")
+      XLSX.utils.book_append_sheet(wb, organisationsForAgencySheet, "CO - Partners")
+      XLSX.utils.book_append_sheet(wb, surgesForAgencySheet, "CO - Surge Capacity")
+      XLSX.utils.book_append_sheet(wb, officesCapacityForAgencySheet, "CO - Office Capacity")
+      XLSX.utils.book_append_sheet(wb, program4wForAgencySheet, "CO - Programme Mapping")
+      XLSX.utils.book_append_sheet(wb, sectorsForAgencySheet, "CO - Sector Expertise")
       XLSX.writeFile(wb, 'SheetJS.xlsx')
+      this.subjectAgency.next(true)
     }
   }
 
@@ -1348,6 +1490,9 @@ export class ExportDataService {
             let activationDateList = this.getAlertTimeSpendInRedList(instanceNumbers, alertObj)
             activationDateList.forEach(date => {
               let obj = {}
+              if (this.exportFrom != EXPORT_FROM.FromCountry) {
+                obj["Country Office"] = this.countryNameMap.get(countryId)
+              }
               obj["Action title"] = apa["task"]
               obj["Date activated"] = moment(date).format("DD/MM/YYYY")
               obj["Activating hazard"] = alertObj.hazardScenario != -1 ? this.translateService.instant(Constants.HAZARD_SCENARIOS[alertObj.hazardScenario]) : alertObj.otherName
@@ -1410,6 +1555,26 @@ export class ExportDataService {
     this.officesCapacityForAgency = []
     this.program4wForAgency = []
     this.sectorsForAgency = []
+  }
+
+  private resetSystemData() {
+    this.alertsForSystem = []
+    this.indicatorsForSystem = []
+    this.plansForSystem = []
+    this.actionsForSystem = []
+    this.activeAPAForSystem = []
+    this.pointOfContactsForSystem = []
+    this.officesDetailsForSystem = []
+    this.stockInCountryForSystem = []
+    this.stockOutCountryForSystem = []
+    this.coordsForSystem = []
+    this.equipmentsForSystem = []
+    this.surgeEquipmentsForSystem = []
+    this.organisationsForSystem = []
+    this.surgesForSystem = []
+    this.officesCapacityForSystem = []
+    this.program4wForSystem = []
+    this.sectorsForSystem = []
   }
 
 }

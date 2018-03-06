@@ -37,6 +37,7 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private agencyId: string;
+  private showLoader: boolean
 
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
@@ -159,8 +160,10 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
 
   exportData() {
     console.log("start exporting agency data")
-    console.log(this.agencyId)
+    this.showLoader = true
     this.exportService.exportAgencyData(this.agencyId)
+      .first()
+      .subscribe(value => this.showLoader = !value)
   }
 
 }
