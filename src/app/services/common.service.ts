@@ -4,13 +4,14 @@ import {Observable} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {TranslateService} from "@ngx-translate/core";
 import {AngularFire} from "angularfire2";
+import {count} from "rxjs/operator/count";
 
 @Injectable()
 export class CommonService {
 
   constructor(private _http: Http,
-              private af:AngularFire,
-              private translate:TranslateService) {
+              private af: AngularFire,
+              private translate: TranslateService) {
   }
 
 
@@ -62,7 +63,7 @@ export class CommonService {
         names += this.translate.instant(key)
         names += "\n"
       }
-      else if (area.length == 2 || (area.length ==3 && area[0] == -1)) {
+      else if (area.length == 2 || (area.length == 3 && area[0] == -1)) {
         let level1 = area[0];
         let country = area[1];
         if (area.length == 3) {
@@ -90,21 +91,31 @@ export class CommonService {
     return names;
   }
 
+  getTotalAgencies() {
+    return this.af.database.list(Constants.APP_STATUS + "/agency")
+      .map(agencies => agencies.length)
+  }
+
   getCountryTotalForSystem() {
-    let totalCountries = 0
-    let totalAgency = 9
-    this.af.database.list(Constants.APP_STATUS + "/agency/")
+    return this.af.database.list(Constants.APP_STATUS + "/agency")
       .flatMap(agencies => {
-        totalAgency = agencies.length
         return Observable.from(agencies)
       })
-      .flatMap(agencyId =>{
-        return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .flatMap((agency:any) => {
+        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agency.$key, {preserveSnapshot:true})
       })
-      .take(totalAgency)
-      .subscribe(countries => {
-        totalCountries += countries.length
+      .map(snap => {
+        if (snap.val()) {
+          return Object.keys(snap.val()).map(key => {
+            return {agencyId:snap.key, countryId:key}
+          })
+        } else {
+          return []
+        }
       })
-    return totalCountries
+      // .map(countries => {
+      //   countries.map(country => country["agencyId"] = countries.$)
+      // })
   }
+
 }

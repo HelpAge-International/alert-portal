@@ -30,6 +30,7 @@ import {map} from "rxjs/operator/map";
 @Injectable()
 export class ExportDataService {
 
+  private COUNTRY_SHEETS = 16
   private exportFrom = EXPORT_FROM.FromCountry
 
   private total: number
@@ -103,7 +104,7 @@ export class ExportDataService {
         break
       }
       default: {
-        this.total = 16
+        this.total = this.COUNTRY_SHEETS
         this.counter = 0
         break
       }
@@ -177,7 +178,7 @@ export class ExportDataService {
           .first()
           .subscribe(countryIds => {
             this.totalCountries = countryIds.length
-            this.total = this.totalCountries * 16
+            this.total = this.totalCountries * this.COUNTRY_SHEETS
             let tempCounter = 0
             countryIds.forEach(countryId => {
               this.agencyService.getCountryOffice(countryId, agencyId)
@@ -234,10 +235,31 @@ export class ExportDataService {
     this.subjectSystem = new Subject<boolean>()
     this.resetSystemData()
     this.counter = 0
+    this.totalCountries = 0
     this.exportFrom = EXPORT_FROM.FromSystem
     this.wbSystem = XLSX.utils.book_new()
-    let value = this.commonService.getCountryTotalForSystem()
-    console.log(value)
+    this.commonService.getTotalAgencies()
+      .first()
+      .subscribe(totalAgency => {
+
+        let agencyCounter = 0
+        let countryAgencyMap = new Map<string,string>()
+        this.commonService.getCountryTotalForSystem()
+          .take(totalAgency)
+          .subscribe(countries => {
+            console.log(countries)
+            countries.forEach(item => countryAgencyMap.set(item.countryId, item.agencyId) )
+            this.totalCountries += countries.length
+            this.total = this.totalCountries * this.COUNTRY_SHEETS
+            agencyCounter++
+            if (agencyCounter === totalAgency) {
+              console.log(this.total)
+              console.log(countryAgencyMap)
+            }
+          })
+
+      })
+
     // this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
     //   .first()
     //   .subscribe(areaContent => {
