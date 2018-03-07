@@ -282,7 +282,9 @@ export class PageControlService {
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*",
     "director*",
-    "response-plans/view-plan*"
+    "response-plans/view-plan*",
+    "system-admin/agency",
+    "system-admin/add-agency"
   ]);
 
   public static LocalAgencyAdmin = PageUserType.create(UserType.LocalAgencyAdmin, "local-agency/dashboard", [
@@ -407,9 +409,11 @@ export class PageControlService {
       router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
     }
     else {
+      console.log("in page control now***************")
       af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
           if (auth) {
             UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
+              console.log(userType)
               if (userType == null) {
                 if (authUser != null) {
                   authUser(auth.auth, null);
@@ -447,6 +451,7 @@ export class PageControlService {
                   });
                 }
                 else {
+                  console.log("called here*************")
                   router.navigateByUrl(type.redirectTo);
                 }
               }
@@ -539,7 +544,7 @@ export class PageControlService {
                 }
               }
             }
-            
+
             this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, userCallback, authStateCallback);
           }
         });
@@ -619,6 +624,7 @@ export class PageControlService {
       });
     }
     else {
+      console.log("check page control*****")
       router.navigateByUrl(type.redirectTo);
     }
   }
@@ -639,7 +645,7 @@ export class PageControlService {
 
                 this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
                   .takeUntil(ngUnsubscribe)
-                  .subscribe((innerSnapDirector) => { 
+                  .subscribe((innerSnapDirector) => {
 
                     // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
                   if(innerSnapDirector.val()){
@@ -650,10 +656,10 @@ export class PageControlService {
                     .takeUntil(ngUnsubscribe)
                     .subscribe((innerSnap) => {
                       if (innerSnap.val() != null) {
-    
+
                         fun(UserType.LocalAgencyAdmin, innerSnap.val());
                       }else{
-    
+
                         fun(modelTypes[index].userType, snap.val());
                       }
 
@@ -661,19 +667,19 @@ export class PageControlService {
 
                     })
                   }
-                  
+
                 })
               }else{
                 fun(modelTypes[index].userType, snap.val());
               }
-            
+
 
 
           }
           else {
 
             this.checkAuth(ngUnsubscribe, uid, modelTypes, index + 1, fun);
-            
+
           }
         });
     }
@@ -682,6 +688,8 @@ export class PageControlService {
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
+    console.log(current)
+    console.log(type)
 
     for (let x of type.urls) {
       if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {

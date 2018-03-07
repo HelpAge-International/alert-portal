@@ -396,6 +396,34 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
+  _getIndicatorFutureTimestampUpdated(indicator, selectedTrigger) {
+    let triggers: any[] = indicator.trigger;
+    let trigger = triggers[selectedTrigger];
+    if (indicator.updatedAt != null) {
+      let updatedAt = new Date(indicator.updatedAt);
+      if (trigger.durationType == DetailedDurationType.Hour) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * Constants.UTC_ONE_HOUR * 1000));
+      } else if (trigger.durationType == DetailedDurationType.Day) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * Constants.UTC_ONE_DAY * 1000));
+      } else if (trigger.durationType == DetailedDurationType.Week) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * 7 * Constants.UTC_ONE_DAY * 1000));
+      }
+      else if (trigger.durationType == DetailedDurationType.Month) {
+        return updatedAt.setMonth(updatedAt.getUTCMonth() + (+trigger.frequencyValue));
+      }
+      else if (trigger.durationType == DetailedDurationType.Year) {
+        return updatedAt.setFullYear(updatedAt.getFullYear() + (+trigger.frequencyValue));
+      }
+      else {
+        // Error
+        return updatedAt;
+      }
+    }
+    else {
+      return new Date();
+    }
+  }
+
   _getCountryContextIndicators() {
     this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
       indicators.forEach((indicator, key) => {
@@ -1406,7 +1434,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     var triggerSelected = this.indicatorTrigger[indicatorID];
     var dataToSave = {triggerSelected: triggerSelected, updatedAt: new Date().getTime()};
-    dataToSave['dueDate'] = this._getIndicatorFutureTimestamp(indicator); // update the due date
+    dataToSave['dueDate'] = this._getIndicatorFutureTimestampUpdated(indicator, triggerSelected); // update the due date
+    console.log(dataToSave)
 
     var urlToUpdate;
 

@@ -511,7 +511,6 @@ export class UserService {
    * Static method for getting the user type
    */
   static getUserType(af: AngularFire, uid: string): Observable<any> {
-    console.trace('where is this being called form ????')
     const paths = [
       {path: Constants.APP_STATUS + "/administratorCountry/" + uid, type: UserType.CountryAdmin},
       {path: Constants.APP_STATUS + "/countryDirector/" + uid, type: UserType.CountryDirector},
@@ -545,12 +544,12 @@ export class UserService {
                 return af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
                 .flatMap((mySnap) => {
                   if (mySnap.val() != null) {
-    
+
                     return Observable.of(UserType.LocalAgencyAdmin);
-    
+
                   }else{
 
-                  
+
                     //TODO: for this to work we need to push the local agency admins to /administratorLocalAgency when creating the local agency within system admin.
                     return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
                       .flatMap((snap) => {
