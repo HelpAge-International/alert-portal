@@ -407,6 +407,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/" + userNodeName + "/" + successUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snapshot) => {
+        console.log(snapshot.val())
         if (snapshot.val() != null) {
           if (snapshot.val().firstLogin != null && snapshot.val().firstLogin) {
             firstLogin(snapshot.val());
@@ -454,6 +455,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           });
       },
       (snap) => {
+      console.log(directToIfFirst)
         this.router.navigateByUrl(directToIfFirst);
       });
   }

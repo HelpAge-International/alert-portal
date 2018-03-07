@@ -282,7 +282,8 @@ export class PageControlService {
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*",
     "director*",
-    "response-plans/view-plan*"
+    "response-plans/view-plan*",
+    "agency-admin/new-agency/new-agency-password"
   ]);
 
   public static LocalAgencyAdmin = PageUserType.create(UserType.LocalAgencyAdmin, "local-agency/dashboard", [
@@ -407,6 +408,7 @@ export class PageControlService {
       router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
     }
     else {
+      console.log("in page control now***************")
       af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
           if (auth) {
             UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
@@ -447,6 +449,7 @@ export class PageControlService {
                   });
                 }
                 else {
+                  console.log("called here*************")
                   router.navigateByUrl(type.redirectTo);
                 }
               }
@@ -539,7 +542,7 @@ export class PageControlService {
                 }
               }
             }
-            
+
             this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, userCallback, authStateCallback);
           }
         });
@@ -639,7 +642,7 @@ export class PageControlService {
 
                 this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
                   .takeUntil(ngUnsubscribe)
-                  .subscribe((innerSnapDirector) => { 
+                  .subscribe((innerSnapDirector) => {
 
                     // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
                   if(innerSnapDirector.val()){
@@ -650,10 +653,10 @@ export class PageControlService {
                     .takeUntil(ngUnsubscribe)
                     .subscribe((innerSnap) => {
                       if (innerSnap.val() != null) {
-    
+
                         fun(UserType.LocalAgencyAdmin, innerSnap.val());
                       }else{
-    
+
                         fun(modelTypes[index].userType, snap.val());
                       }
 
@@ -661,19 +664,19 @@ export class PageControlService {
 
                     })
                   }
-                  
+
                 })
               }else{
                 fun(modelTypes[index].userType, snap.val());
               }
-            
+
 
 
           }
           else {
 
             this.checkAuth(ngUnsubscribe, uid, modelTypes, index + 1, fun);
-            
+
           }
         });
     }
