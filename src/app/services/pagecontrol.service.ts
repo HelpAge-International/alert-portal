@@ -283,7 +283,8 @@ export class PageControlService {
     "agency-admin*",
     "director*",
     "response-plans/view-plan*",
-    "agency-admin/new-agency/new-agency-password"
+    "system-admin/agency",
+    "system-admin/add-agency"
   ]);
 
   public static LocalAgencyAdmin = PageUserType.create(UserType.LocalAgencyAdmin, "local-agency/dashboard", [
@@ -412,6 +413,7 @@ export class PageControlService {
       af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
           if (auth) {
             UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
+              console.log(userType)
               if (userType == null) {
                 if (authUser != null) {
                   authUser(auth.auth, null);
@@ -622,6 +624,7 @@ export class PageControlService {
       });
     }
     else {
+      console.log("check page control*****")
       router.navigateByUrl(type.redirectTo);
     }
   }
@@ -685,6 +688,8 @@ export class PageControlService {
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
+    console.log(current)
+    console.log(type)
 
     for (let x of type.urls) {
       if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {
