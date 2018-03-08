@@ -135,17 +135,14 @@
     <br>
 
     <div class="row Spaced-above">
-      <div class="col-sm-4">
+      <div class="col-sm-2">
         <div class="row">
           <h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.FROM" | translate}}</h6>
           <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT4.LEVEL1'"></tooltip>
         </div>
-        <div class="row">
-          <material-datepicker id="fromDate"
-                               placeholder="{{programme.when ? (programme.when | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
-                               [(date)]="programme.when"
-                               (onSelect)="setWhenDate(programme)"></material-datepicker>
-        </div>
+        <input id="fromDate" name="fromDate" [(ngModel)]="when" type="text" bsDatepicker class="form-control"
+               value="{{ programme.when ? (programme.when | date:'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+               (ngModelChange)="setWhenDate(when)">
       </div>
 
       <div class="col-sm-2">
@@ -153,15 +150,11 @@
           <h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO" | translate}}</h6>
           <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT12.LEVEL1'"></tooltip>
         </div>
-        <div class="row">
-          <material-datepicker id="toDate"
-                               placeholder="{{programme.toDate ? (programme.toDate | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
-                               [(date)]="programme.toDate"
-                               (onSelect)="setToDate(programme)"></material-datepicker>
-        </div>
+        <input id="toDate" name="toDate" [(ngModel)]="toDate" type="text" bsDatepicker class="form-control"
+               value="{{ programme.toDate ? (programme.toDate | date:'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+               (ngModelChange)="setToDate(toDate)">
       </div>
     </div>
-
 
     <div class="row Spaced-above">
       <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="!isLocalAgency" (click)="saveMapping()">

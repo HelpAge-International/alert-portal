@@ -180,7 +180,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   checkLevel2() {
-
     if (this.levelTwoDisplay.length == 1) {
       console.log('do nothing');
     } else {
@@ -196,8 +195,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         programme.id = programme.$key;
         this.programme.setData(programme);
         console.log(this.programme)
-         this.setWhenDate(programme);
-         this.setToDate(programme)
+         this.setWhenDate(programme.when);
+         this.setToDate(programme.toDate)
       });
   }
 
@@ -208,8 +207,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme = new ProgrammeMappingModel();
         programme.id = programme.$key;
         this.programme.setData(programme);
-        this.setWhenDate(programme);
-        this.setToDate(programme);
+        this.setWhenDate(programme.when);
+        this.setToDate(programme.toDate)
         // this._convertTimestampToDate(programme.when);
         // this._convertTimestampToDate(programme.toDate)
       });
@@ -254,13 +253,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
-              //this.when = 0;
-              // this.toDate = 0;
-                //this.when = this.programme.when;
-              //this.toDate = this.programme.toDate;
-
-              console.log("From date: "+this.when +" To: "+this.toDate);
-
               this.router.navigate(['/country-admin/country-office-profile/programme/']);
             }).catch((error: any) => {
             console.log(error, 'You do not have access!')
@@ -296,13 +288,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
             .then(() => {
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
-              //this.when = [];
-
-              this.when = this.programme.when;
-              this.toDate = this.programme.toDate;
-
-              console.log("From date Agency: "+this.when +" To: "+this.toDate);
-
               this.router.navigate(['/local-agency/profile/programme/']);
             }).catch((error: any) => {
             console.log(error, 'You do not have access!')
@@ -325,18 +310,12 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     }
   }
 
-  setWhenDate(programme: ProgrammeMappingModel) {
-    // programme.when = whenDate;
-    let whenDate =  moment(this.when).format("DD/MM/YYYY");
-    //programme.when = whenDate;
-    this.when = whenDate;
-    //console.log(this.when)
+  setWhenDate(when) {
+    when = moment(when).valueOf();
   }
 
-  setToDate(programme: ProgrammeMappingModel) {
-    let toDate =  moment(this.toDate).format("DD/MM/YYYY");
-    this.toDate = toDate;
-   // programme.toDate = toDate;
+  setToDate(to) {
+    to = moment(to).valueOf();
   }
 
   deleteMapping() {
