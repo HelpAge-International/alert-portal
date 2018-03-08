@@ -93,7 +93,6 @@ export class CommonService {
 
   getTotalAgencies() {
     return this.af.database.list(Constants.APP_STATUS + "/agency")
-      .map(agencies => agencies.length)
   }
 
   getCountryTotalForSystem() {

@@ -145,7 +145,10 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     // this.showLoader = true
     //TODO JUST TEST FOR NOW, ID NEED TO BE UPDATED
     console.log(this.uid)
+    this.showLoader = true
     this.exportService.exportSystemData()
+      .first()
+      .subscribe(value => this.showLoader = !value)
     // this.exportService.exportAgencyData(this.uid)
     //   .first()
     //   .subscribe(value => this.showLoader = !value)
