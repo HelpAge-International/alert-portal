@@ -189,38 +189,7 @@ export class ExportDataService {
                   if (tempCounter === this.totalCountries) {
                     //loop again to fetch info
                     countryIds.forEach(id => {
-                      //get all staff for this country
-                      this.userService.getStaffList(id)
-                        .first()
-                        .subscribe(staffs => {
-                          let staffMap = new Map<string, string>()
-                          //get country admin first
-                          this.userService.getCountryAdmin(agencyId, id)
-                            .first()
-                            .subscribe(admin => {
-                              staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
-
-                              if (staffs.length > 0) {
-                                //get rest staffs for country
-                                staffs.forEach(staff => {
-                                  this.userService.getUser(staff.id)
-                                    .first()
-                                    .subscribe(user => {
-                                      staffMap.set(user.id, user.firstName + " " + user.lastName)
-
-                                      if (staffMap.size === staffs.length + 1) {
-                                        //start export data
-                                        this.exportOfficeData(agencyId, id, areaContent, staffMap)
-                                      }
-                                    })
-                                })
-                              } else {
-                                //start export data
-                                this.exportOfficeData(agencyId, id, areaContent, staffMap)
-                              }
-                            })
-
-                        })
+                      this.getCountryStuff(id, agencyId, areaContent);
                     })
                   }
                 })
@@ -231,6 +200,41 @@ export class ExportDataService {
     return this.subjectAgency
   }
 
+  private getCountryStuff(countryId: string, agencyId: string, areaContent) {
+    //get all staff for this country
+    this.userService.getStaffList(countryId)
+      .first()
+      .subscribe(staffs => {
+        let staffMap = new Map<string, string>()
+        //get country admin first
+        this.userService.getCountryAdmin(agencyId, countryId)
+          .first()
+          .subscribe(admin => {
+            staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
+
+            if (staffs.length > 0) {
+              //get rest staffs for country
+              staffs.forEach(staff => {
+                this.userService.getUser(staff.id)
+                  .first()
+                  .subscribe(user => {
+                    staffMap.set(user.id, user.firstName + " " + user.lastName)
+
+                    if (staffMap.size === staffs.length + 1) {
+                      //start export data
+                      this.exportOfficeData(agencyId, countryId, areaContent, staffMap)
+                    }
+                  })
+              })
+            } else {
+              //start export data
+              this.exportOfficeData(agencyId, countryId, areaContent, staffMap)
+            }
+          })
+
+      })
+  }
+
   public exportSystemData() {
     this.subjectSystem = new Subject<boolean>()
     this.resetSystemData()
@@ -238,27 +242,35 @@ export class ExportDataService {
     this.totalCountries = 0
     this.exportFrom = EXPORT_FROM.FromSystem
     this.wbSystem = XLSX.utils.book_new()
-    this.commonService.getTotalAgencies()
+    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .first()
-      .subscribe(totalAgency => {
+      .subscribe(areaContent => {
+        this.commonService.getTotalAgencies()
+          .first()
+          .subscribe(totalAgency => {
 
-        let agencyCounter = 0
-        let countryAgencyMap = new Map<string,string>()
-        this.commonService.getCountryTotalForSystem()
-          .take(totalAgency)
-          .subscribe(countries => {
-            console.log(countries)
-            countries.forEach(item => countryAgencyMap.set(item.countryId, item.agencyId) )
-            this.totalCountries += countries.length
-            this.total = this.totalCountries * this.COUNTRY_SHEETS
-            agencyCounter++
-            if (agencyCounter === totalAgency) {
-              console.log(this.total)
-              console.log(countryAgencyMap)
-            }
+            let agencyCounter = 0
+            let countryAgencyMap = new Map<string, string>()
+            this.commonService.getCountryTotalForSystem()
+              .take(totalAgency)
+              .subscribe(countries => {
+                console.log(countries)
+                countries.forEach(item => countryAgencyMap.set(item.countryId, item.agencyId))
+                this.totalCountries += countries.length
+                this.total = this.totalCountries * this.COUNTRY_SHEETS
+                agencyCounter++
+                if (agencyCounter === totalAgency) {
+                  console.log(this.total)
+                  console.log(countryAgencyMap)
+                  countryAgencyMap.forEach((countryId, agencyId) => {
+                    this.getCountryStuff(countryId, agencyId, areaContent)
+                  })
+                }
+              })
+
           })
-
       })
+
 
     // this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
     //   .first()
