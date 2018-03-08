@@ -921,7 +921,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
 
   // (Dan) - this new function is for the undo completed MPA
-  protected undoCompleteAction(action: PreparednessAction) {
+  protected undoCompleteAction(action: PreparednessAction) { 
 
     let currentTime = new Date().getTime()
     let newTimeObject = {start: currentTime, finish: -1};

@@ -566,6 +566,9 @@ export class PrepActionService {
       this.actions[i].frequencyValue = action.frequencyValue;
       applyCustom = true;
     }
+    if (action.hasOwnProperty('timeTracking')) {
+      this.actions[i].timeTracking = action.timeTracking;
+    }
     else action.frequencyValue = null;
     this.initNotes(af, id, run);
 
@@ -1082,6 +1085,7 @@ export class PreparednessAction {
   public createdByCountryId: string;
   public networkId: string;
   public networkCountryId: string;
+  public timeTracking: {};
 
   public computedClockSetting: number;
 

@@ -313,10 +313,36 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                   if(!action["redAlerts"]){
                     action["redAlerts"] = []; 
                   }
-                  if(action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
-                    action["redAlerts"].push(alert.key)
-                    this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkId + '/' + action.id + '/redAlerts')
-                    .update(action["redAlerts"])
+                  if(!action["timeTracking"]){
+                    action["timeTracking"] = {};
+                  }
+
+                  if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
+                    if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+                      action["redAlerts"].push(alert.key);
+      
+
+                      action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+
+                      if(!action.asignee){
+                        if(!action["timeTracking"]["timeSpentInRed"]){
+                          action['timeTracking']['timeSpentInRed'] = [];
+                        }
+                        action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                      }else if(action.isComplete){
+                        if(!action["timeTracking"]["timeSpentInGreen"]){
+                          action['timeTracking']['timeSpentInGreen'] = [];
+                        }
+                        action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                      }else{ 
+                        if(!action["timeTracking"]["timeSpentInAmber"]){
+                          action['timeTracking']['timeSpentInAmber'] = [];
+                        }
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                      }
+                      this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkId + '/' + action.id)
+                      .update(action)
+                    }
                   }
   
                 })
