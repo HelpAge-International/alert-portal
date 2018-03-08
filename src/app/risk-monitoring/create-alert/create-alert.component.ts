@@ -23,7 +23,8 @@ declare var jQuery: any;
   selector: 'app-create-alert',
   templateUrl: './create-alert.component.html',
   styleUrls: ['./create-alert.component.css']
-})
+}) 
+
 export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   private UserType: number;
@@ -223,6 +224,17 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
               let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario))
 
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = new Date().getTime(); 
+
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + affectedAction.id)
+                  .update(action)
+
+              })
+
+
               let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
 
               if(this.UserType == UserType.CountryDirector){
@@ -231,24 +243,42 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                     action["redAlerts"] = []; 
                   }
 
-                  if(action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
-                    action["redAlerts"].push(alert.key)
-                    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + action.id + '/redAlerts')
-                    .update(action["redAlerts"])
+                  if(!action["timeTracking"]){
+                    action["timeTracking"] = {};
                   }
-  
+
+                  if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
+                    if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+                      action["redAlerts"].push(alert.key);
+      
+
+                      action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+
+                      if(!action.asignee){
+                        if(!action["timeTracking"]["timeSpentInRed"]){ 
+                          action['timeTracking']['timeSpentInRed'] = [];
+                        }
+                        action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                      }else if(action.isComplete){
+                        if(!action["timeTracking"]["timeSpentInGreen"]){
+                          action['timeTracking']['timeSpentInGreen'] = [];
+                        }
+                        action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                      }else{ 
+                        if(!action["timeTracking"]["timeSpentInAmber"]){
+                          action['timeTracking']['timeSpentInAmber'] = [];
+                        }
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                      }
+                      this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + action.id)
+                      .update(action)
+                    }
+                  }
                 })
               }
+              
   
-              affectedActions.forEach( affectedAction => {
-                // push activated datetime to each apa
-                let action = this.prepActionService.findAction(affectedAction.id);
-                action["raisedAt"] = new Date().getTime();
-
-                this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + affectedAction.id)
-                  .update(action)
-
-              })
+              
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
               notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", {riskName: riskNameTranslated});
