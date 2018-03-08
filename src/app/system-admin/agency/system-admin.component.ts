@@ -6,6 +6,7 @@ import {Modal} from "angular2-modal/plugins/bootstrap";
 import {Overlay} from "angular2-modal";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {UserType} from "../../utils/Enums";
 declare var jQuery: any;
 
 @Component({
@@ -29,13 +30,17 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency", {
-        query: {
-          orderByChild: 'name'
-        }
-      });
-      this.checkCoCUpdated();
+      if (userType === UserType.SystemAdmin) {
+        this.uid = user.uid;
+        this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency", {
+          query: {
+            orderByChild: 'name'
+          }
+        });
+        this.checkCoCUpdated();
+      } else {
+        this.router.navigateByUrl("/login")
+      }
     });
   }
 
