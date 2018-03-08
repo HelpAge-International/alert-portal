@@ -233,8 +233,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   saveMapping() {
     //this.setDate();
     this.alertMessage = this.programme.validate();
-    var dataToSave = this.programme;
-    dataToSave.updatedAt = new Date().getTime();
+    // var dataToSave = this.programme;
+    // dataToSave.updatedAt = new Date().getTime();
 
     if (!this.alertMessage) {
       let dataToSave = this.programme;
