@@ -30,6 +30,7 @@ export class ModelAlert extends BaseModel {
   public displayName: string;
   public networkCountryId?: string
   public networkId?: string
+  public timeTracking?: {};
 
   public previousIsAmber?: boolean
 

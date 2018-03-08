@@ -29,6 +29,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {HazardImages} from "../../../utils/HazardImages";
 import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
+import { identifierModuleUrl } from '@angular/compiler';
 
 declare var jQuery: any;
 
@@ -194,14 +195,11 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       }
 
       this.isViewing ? this.initViewNetworkAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
-
     })
-
 
   }
 
   private initNetworkAccess() {
-
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       console.log('network access')
       this.showLoader = true;
@@ -249,8 +247,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               this.getAgencyList();
             });
         });
-
-
     });
   }
 
@@ -320,7 +316,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     }
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES)
-    console.log(this.agencyId, 'agency id');
   }
 
   ngOnDestroy() {
@@ -624,15 +619,19 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     this.removeFilterLockLevel();
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
-    console.log("TEST: \n" + this.dueDate + "\n" + this.filterLockDueDate);
+
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     // Save/update the action
     if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
       console.log(this.showDueDate);
       console.log(this.action.dueDate);
-      //if (this.showDueDate) {
+      // if (this.showDueDate) {
         updateObj.dueDate = this.action.dueDate;
-      //}
+      // }
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
       updateObj.budget = this.action.budget;
@@ -709,6 +708,30 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
                       if (this.action.id != null) {
                         console.log('action is is not null')
+
+                        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(action => {
+                            console.log(action['timeTracking'])
+                            // Change from unassigned to in progress
+                            if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                              action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                              action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                              updateObj['timeTracking'] = action['timeTracking']
+                            }
+
+                            // Change from complete to in progress
+                            if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                              console.log('switch from complete to in progress')
+                              action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                                if(timeObject.finish == -1){
+                                  action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                                  action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                                  updateObj['timeTracking'] = action['timeTracking']
+                                  return;
+                                }
+                              })
+                            }
                         // Updating
                         console.log(updateObj)
                         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
@@ -730,34 +753,41 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                           }else{
                             this._location.back()
                           }
+                        })
 
                         });
                       } else {
                         console.log('action id is null')
-                        // Saving
-                        updateObj.createdAt = new Date().getTime();
-                        updateObj.networkId = this.networkId;
-                        console.log(updateObj);
-                        this.af.database.list(Constants.APP_STATUS + "/action/" + id)
-                          .push(updateObj)
-                          .update({
-                            asignee: '',
-                            agencyAssign: this.action.asignee
-                          })
-                          .then(() => {
 
-                          // Send notification to the assignee
-                          let notification = new MessageModel();
-                          notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-                            : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-                          notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-                            : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+                        updateObj['timeTracking'] = {}
+                        if(updateObj.asignee){
+                          updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                        }else{
+                          updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                        }
+                          // Saving
+                          updateObj.createdAt = new Date().getTime();
+                          updateObj.networkId = this.networkId;
+                          console.log(updateObj);
+                          this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj)
+                            .update({
+                              asignee: '',
+                              agencyAssign: this.action.asignee
+                            })
+                            .then(() => {
 
-                          notification.time = new Date().getTime();
-                          this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
-                            this._location.back();
+                            // Send notification to the assignee
+                            let notification = new MessageModel();
+                            notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+                            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+
+                            notification.time = new Date().getTime();
+                            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+                              this._location.back();
+                            });
                           });
-                        });
                       }
                     })
                 })
@@ -765,28 +795,57 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
       }else {
 
-            if (this.action.id != null) {
-              // Updating
-              console.log(updateObj);
-              this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-                this._location.back();
-              });
-            } else {
-              // Saving
-              updateObj.createdAt = new Date().getTime();
-              updateObj.networkId = this.networkId;
+        if (this.action.id != null) {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(action => {
+              console.log(action['timeTracking'])
+              // Change from unassigned to in progress
+              if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                updateObj['timeTracking'] = action['timeTracking']
+              }
 
-              console.log(updateObj, 'update obj');
-              this.af.database.list(Constants.APP_STATUS + "/action/" + id)
-                .push(updateObj)
-                .update({
-                  asignee: '',
-                  agencyAssign: this.action.asignee
+              // Change from complete to in progress
+              if(action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                console.log('switch from complete to in progress')
+                action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                  if(timeObject.finish == -1){
+                    action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                    action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                    updateObj['timeTracking'] = action['timeTracking']
+                    return;
+                  }
                 })
-                .then(() => {
-                  this._location.back();
-                });
-            }
+              }
+            // Updating
+            console.log(updateObj);
+            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+              this._location.back();
+            });
+        })
+        } else {
+
+          updateObj['timeTracking'] = {}
+          if(updateObj.asignee){
+            updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+          }else{
+            updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+          }
+          // Saving
+          updateObj.createdAt = new Date().getTime();
+          updateObj.networkId = this.networkId;
+          console.log(updateObj);
+          this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj)
+            .update({
+              asignee: '',
+              agencyAssign: this.action.asignee
+            })
+            .then(() => {
+            this._location.back();
+          });
+        }
 
           }
 

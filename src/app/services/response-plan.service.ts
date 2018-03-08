@@ -176,7 +176,12 @@ export class ResponsePlanService {
                 if (hasToken) {
                   this.router.navigate(["/after-validation", {"plan": true}], {skipLocationChange: true}).then();
                 } else {
-                  isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+                  if(userType == UserType.LocalAgencyDirector){
+                    this.router.navigateByUrl("/local-agency/dashboard");
+                  }else{
+                    isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+                  }
+
                 }
               }
             }
@@ -218,6 +223,8 @@ export class ResponsePlanService {
       return "partner"
     } else if (userType == UserType.PartnerOrganisation) {
       return "partnerOrganisation"
+    } else if (userType == UserType.LocalAgencyDirector){
+      return "localAgencyDirector"
     } else {
       return "";
     }

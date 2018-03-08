@@ -291,10 +291,8 @@ export class UserService {
           return this.savePartnerUser(systemId, agencyId, countryId, partner, userPublic);
         })
         .catch(err => {
-          // console.log((err as firebase.FirebaseError).code)
-          // console.log(err.message)
+
           if (err['code'] && err['code'].match(Constants.EMAIL_DUPLICATE_ERROR)) {
-            // console.log('email in use')
             return Promise.reject(err);
           } else {
             return Promise.reject('FIREBASE.' + (err as firebase.FirebaseError).code);
@@ -350,7 +348,6 @@ export class UserService {
         + '/validationPartnerUserId/'] = partner.id; // add the partner who as permission to organisation validationPartnerUserId node
       }
 
-      console.log(partnerData);
       return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
   }
@@ -421,7 +418,6 @@ export class UserService {
         + '/validationPartnerUserId/'] = partner.id; // add the partner who as permission to organisation validationPartnerUserId node
       }
 
-      console.log(partnerData);
       return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
   }
@@ -544,27 +540,33 @@ export class UserService {
           return Observable.of(UserType.SystemAdmin);
         }
         else {
-          console.log(uid)
-          return af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+          return af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
             .flatMap((mySnap) => {
               if (mySnap.val() != null) {
 
-                console.log('local agency return')
-
-                return Observable.of(UserType.LocalAgencyAdmin);
+                return Observable.of(UserType.LocalAgencyDirector);
 
               }
               else {
 
-                //TODO: for this to work we need to push the local agency admins to /administratorLocalAgency when creating the local agency within system admin.
-                return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
-                  .flatMap((snap) => {
-                    if (snap.val() != null) {
-                      console.log('agency return')
-                      return Observable.of(UserType.AgencyAdmin);
-                    } else {
-                      console.log('returning the other thing')
-                      return UserService.recursiveUserMap(af, paths, 0);
+                return af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+                .flatMap((mySnap) => {
+                  if (mySnap.val() != null) {
+
+                    return Observable.of(UserType.LocalAgencyAdmin);
+
+                  }else{
+
+
+                    //TODO: for this to work we need to push the local agency admins to /administratorLocalAgency when creating the local agency within system admin.
+                    return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+                      .flatMap((snap) => {
+                        if (snap.val() != null) {
+                          return Observable.of(UserType.AgencyAdmin);
+                        } else {
+                          return UserService.recursiveUserMap(af, paths, 0);
+                        }
+                      })
                     }
                   })
               }
@@ -666,7 +668,6 @@ export class UserService {
   }
 
   getSystemAdminId(userType: string, uid): Observable<string> {
-    console.log(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
       .map(systemIds => {
         if (systemIds.length > 0 && systemIds[0].$value) {

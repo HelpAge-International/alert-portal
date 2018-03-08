@@ -5,6 +5,8 @@
   </div>
 </ng-container>
 
+
+
 <ng-container *ngIf="!isLocalAgency">
   <div *ngIf="!isViewing">
     <app-country-admin-header></app-country-admin-header>
@@ -221,7 +223,7 @@
 
 
                         <!--<div *ngIf="((!action.isComplete && action.asignee != '' && action.asignee != null && action.assignee == uid) && action.id == updateActionId)">-->
-                        <!--{{callScrollTo(action);}}-->
+                          <!--{{callScrollTo(action);}}-->
                         <!--</div>-->
                         <!--
                        Everywhere that the following line is used it's just way of handling the "Expired on" state with the clock settings.
@@ -234,27 +236,23 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}}<strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
-                          ''yy")
+                          {{"DUE_ON" | translate}}<strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM yyyy")
                           : '-'}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
-                          {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          {{"EXPIRED_ON" | translate}}<strong>{{(action.updatedAt + action.computedClockSetting) |
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
-                          {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          {{"EXPIRED_ON" | translate}}<strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
-                          {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          {{"EXPIRES_ON" | translate}}<strong>{{(action.isCompleteAt + action.computedClockSetting) |
+                          date:"d MMM yyyy"}}</strong>
                         </div>
 
                         <div class="col-md-10 col-sm-10">
@@ -594,27 +592,23 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
-                          ''yy")
+                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM yyyy")
                           : '-'}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
                           {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
 
 
@@ -937,24 +931,23 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
-                          ''yy")
+                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM yyyy")
                           : '-'}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>
-                          {{(action.updatedAt + action.computedClockSetting) |date:"d MMM yy"}}</strong>
+                          {{(action.updatedAt + action.computedClockSetting) |date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>
-                          {{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM yy"}}</strong>
+                          {{(action.isCompleteAt + action.computedClockSetting) | date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
                           {{"EXPIRES_ON" | translate}} <strong>
-                          {{(action.isCompleteAt + action.computedClockSetting) |date:"d MMM yy"}}</strong>
+                          {{(action.isCompleteAt + action.computedClockSetting) |date:"d MMM yyyy"}}</strong>
                         </div>
 
 
@@ -1294,27 +1287,23 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
-                          ''yy")
+                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM yyyy")
                           : '-'}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
                           {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
 
 
@@ -1377,8 +1366,7 @@
                             <div class="col-md-3 col-sm-4 btn-block">
                               <div
                                 *ngIf="!action.isComplete && !(!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())) && action.asignee == uid">
-                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)"
-                                   aria-expanded="false"
+                                <a href="javascript:void(0)" data-toggle="collapse" (click)="closePopover(action)" aria-expanded="false"
                                    aria-controls="popover_content"
                                    class="btn btn-outline-primary btn-block ">{{"MARK_AS_COMPLETE" | translate}}</a>
                               </div>
@@ -1638,27 +1626,23 @@
                         <!-- Logic for the clock settings -->
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting >= getNow())">
-                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM
-                          ''yy")
+                          {{"DUE_ON" | translate}} <strong>{{action.dueDate != null ? (action.dueDate | date:"d MMM yyyy")
                           : '-'}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="!action.isComplete && (action.updatedAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>{{(action.updatedAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting < getNow())">
                           {{"EXPIRED_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
                         <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date"
                              *ngIf="action.isComplete && (action.isCompleteAt + action.computedClockSetting >= getNow())">
                           {{"EXPIRES_ON" | translate}} <strong>{{(action.isCompleteAt + action.computedClockSetting) |
-                          date:"d MMM
-                          ''yy"}}</strong>
+                          date:"d MMM yyyy"}}</strong>
                         </div>
 
 
@@ -1928,7 +1912,7 @@
     <!--
              START :: UNASSIGNED
     -->
-    <div *ngIf="!isLocalAgency" class="Ribbon__section__wrap Spaced">
+    <div  *ngIf="!isLocalAgency" class="Ribbon__section__wrap Spaced">
       <div class="Accordion--b-white Accordion__hide-links">
         <div class="row align-items-center no-gutters">
           <div class="col-sm-12">
@@ -1962,7 +1946,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -2079,14 +2063,12 @@
                                 <div class="col-6 text-bold text-right"
                                      *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                  <a
-                                    *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
-                                    href="javascript:void(0);" class="text-primary"
-                                    (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                  | <a
-                                  *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
-                                  href="javascript:void(0);" class="text-danger"
-                                  (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
+                                  <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
+                                     href="javascript:void(0);" class="text-primary"
+                                     (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
+                                  | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
+                                       href="javascript:void(0);" class="text-danger"
+                                       (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                 </div>
                                 <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
                                   {{"EDITING" | translate}}
@@ -2180,7 +2162,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -2412,7 +2394,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -2448,7 +2430,7 @@
                             </a>
 
                           </div>
-                          <div class="col-md-3 col-sm-4 btn-block">
+                          <div class="col-md-3 col-sm-4 btn-block" >
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                                aria-expanded="false" aria-controls="popover_content"
                                class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
@@ -2626,7 +2608,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -2662,7 +2644,7 @@
                             </a>
 
                           </div>
-                          <div class="col-md-3 col-sm-4 btn-block">
+                          <div class="col-md-3 col-sm-4 btn-block" >
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#leadAgencySelection"
                                aria-expanded="false" aria-controls="popover_content"
                                class="btn btn-outline-primary btn-block" (click)="assignActionDialogAdv(action)">{{"ASSIGN_THIS_ACTION"
@@ -2860,7 +2842,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -2976,14 +2958,12 @@
                                   <div class="col-6 text-bold text-right"
                                        *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                    <a
-                                      *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
-                                      href="javascript:void(0);" class="text-primary"
-                                      (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                    | <a
-                                    *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
-                                    href="javascript:void(0);" class="text-danger"
-                                    (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
+                                    <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
+                                       href="javascript:void(0);" class="text-primary"
+                                       (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
+                                    | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
+                                         href="javascript:void(0);" class="text-danger"
+                                         (click)="deleteNote(note, action)">{{"DELETE" | translate}}</a>
                                   </div>
                                   <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
                                     {{"EDITING" | translate}}
@@ -3070,7 +3050,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -3275,7 +3255,7 @@
                   <div class="Accordion Preparedness-list">
                     <div class="row Preparedness-list__item">
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
-                        <strong>{{action.dueDate != null ? (action.dueDate| date:"d MMM ''yy") : '-'}}</strong></div>
+                        <strong>{{action.dueDate != null ? (action.dueDate| date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -3499,7 +3479,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -3707,7 +3687,7 @@
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
                         <strong>{{action.dueDate
                           != null ? (action.dueDate
-                          | date:"d MMM ''yy") : '-'}}</strong></div>
+                          | date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -3912,7 +3892,7 @@
                   <div class="Accordion Preparedness-list">
                     <div class="row Preparedness-list__item">
                       <div class="col-md-2 col-sm-2 border-right Preparedness-list__item--date">{{"DUE_ON" | translate}}
-                        <strong>{{action.dueDate != null ? (action.dueDate| date:"d MMM ''yy") : '-'}}</strong></div>
+                        <strong>{{action.dueDate != null ? (action.dueDate| date:"d MMM yyyy") : '-'}}</strong></div>
                       <div class="col-md-10 col-sm-10">
                         <div class="row">
                           <div class="col-md-5 col-sm-4" (click)="checkIfLink(action.task)">{{action.task}}</div>
@@ -4025,14 +4005,12 @@
                                   <div class="col-6 text-bold text-right"
                                        *ngIf="userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin
                                                 || note.uploadedBy == uid && note.id != action.noteId">
-                                    <a
-                                      *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
-                                      href="javascript:void(0);" class="text-primary"
-                                      (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
-                                    | <a
-                                    *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
-                                    href="javascript:void(0);" class="text-danger"
-                                    (click)="deleteNoteNetwork(note, action)">{{"DELETE" | translate}}</a>
+                                    <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Edit) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
+                                       href="javascript:void(0);" class="text-primary"
+                                       (click)="editNote(note, action)">{{"EDIT" | translate}}</a>
+                                    | <a *ngIf="(note.uploadedBy == uid && permissionsAreEnabled.notes.Delete) || userType == userTypes.CountryDirector || userType == userTypes.RegionalDirector || userType == userTypes.CountryAdmin"
+                                         href="javascript:void(0);" class="text-danger"
+                                         (click)="deleteNoteNetwork(note, action)">{{"DELETE" | translate}}</a>
                                   </div>
                                   <div class="col-6 text-bold text-right" *ngIf="note.id == action.noteId">
                                     {{"EDITING" | translate}}

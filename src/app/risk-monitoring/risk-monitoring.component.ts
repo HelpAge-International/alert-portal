@@ -396,6 +396,34 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
+  _getIndicatorFutureTimestampUpdated(indicator, selectedTrigger) {
+    let triggers: any[] = indicator.trigger;
+    let trigger = triggers[selectedTrigger];
+    if (indicator.updatedAt != null) {
+      let updatedAt = new Date(indicator.updatedAt);
+      if (trigger.durationType == DetailedDurationType.Hour) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * Constants.UTC_ONE_HOUR * 1000));
+      } else if (trigger.durationType == DetailedDurationType.Day) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * Constants.UTC_ONE_DAY * 1000));
+      } else if (trigger.durationType == DetailedDurationType.Week) {
+        return updatedAt.setTime(updatedAt.getTime() + (trigger.frequencyValue * 7 * Constants.UTC_ONE_DAY * 1000));
+      }
+      else if (trigger.durationType == DetailedDurationType.Month) {
+        return updatedAt.setMonth(updatedAt.getUTCMonth() + (+trigger.frequencyValue));
+      }
+      else if (trigger.durationType == DetailedDurationType.Year) {
+        return updatedAt.setFullYear(updatedAt.getFullYear() + (+trigger.frequencyValue));
+      }
+      else {
+        // Error
+        return updatedAt;
+      }
+    }
+    else {
+      return new Date();
+    }
+  }
+
   _getCountryContextIndicators() {
     this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
       indicators.forEach((indicator, key) => {
@@ -1406,9 +1434,80 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     var triggerSelected = this.indicatorTrigger[indicatorID];
     var dataToSave = {triggerSelected: triggerSelected, updatedAt: new Date().getTime()};
-    dataToSave['dueDate'] = this._getIndicatorFutureTimestamp(indicator); // update the due date
+    dataToSave['dueDate'] = this._getIndicatorFutureTimestampUpdated(indicator, triggerSelected); // update the due date
+    console.log(dataToSave)
 
     var urlToUpdate;
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1, level: triggerSelected};
+    let id = hazardID == 'countryContext' ? this.countryID : hazardID;
+
+    if (indicator["timeTracking"]) {
+      dataToSave["timeTracking"] = indicator["timeTracking"];
+
+      if (indicator.triggerSelected == 0) {
+        if (!dataToSave["timeTracking"]["timeSpentInGreen"]) {
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+
+      }
+      if (indicator.triggerSelected == 1) {
+        if (!dataToSave["timeTracking"]["timeSpentInAmber"]) {
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+
+      }
+      if (indicator.triggerSelected == 2) {
+        if (!dataToSave["timeTracking"]["timeSpentInRed"]) {
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+      }
+
+
+      if (triggerSelected == 0) {
+        if (!dataToSave["timeTracking"]["timeSpentInGreen"]) {
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+      if (triggerSelected == 1) {
+        if (!dataToSave["timeTracking"]["timeSpentInAmber"]) {
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+      if (triggerSelected == 2) {
+        if (!dataToSave["timeTracking"]["timeSpentInRed"]) {
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+
+    } else {
+
+      dataToSave["timeTracking"] = {}
+      if (triggerSelected == 0) {
+        dataToSave["timeTracking"]["timeSpentInGreen"] = []
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+
+      if (triggerSelected == 1) {
+        dataToSave["timeTracking"]["timeSpentInAmber"] = []
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+
+      if (triggerSelected == 2) {
+        dataToSave["timeTracking"]["timeSpentInRed"] = []
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+    }
+
 
     if (hazardID == 'countryContext') {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + indicatorID;
@@ -1426,7 +1525,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
     });
-
   }
 
   updateNetworkIntdicatorStatus(id : string, hazardID: string, indicator, indicatorKey: number, state : boolean = false) {

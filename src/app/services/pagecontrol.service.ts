@@ -282,7 +282,9 @@ export class PageControlService {
   public static AgencyAdmin = PageUserType.create(UserType.AgencyAdmin, "agency-admin/country-office", [
     "agency-admin*",
     "director*",
-    "response-plans/view-plan*"
+    "response-plans/view-plan*",
+    "system-admin/agency",
+    "system-admin/add-agency"
   ]);
 
   public static LocalAgencyAdmin = PageUserType.create(UserType.LocalAgencyAdmin, "local-agency/dashboard", [
@@ -298,7 +300,9 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-password",
     "agency-admin/new-agency/new-agency-details",
     "export-start-fund*",
-    "export-proposal*"
+    "export-proposal*",
+    "new-user-password",
+    "dashboard/review-response-plan*"
   ]);
 
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
@@ -405,9 +409,11 @@ export class PageControlService {
       router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
     }
     else {
+      console.log("in page control now***************")
       af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
           if (auth) {
             UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
+              console.log(userType)
               if (userType == null) {
                 if (authUser != null) {
                   authUser(auth.auth, null);
@@ -445,6 +451,7 @@ export class PageControlService {
                   });
                 }
                 else {
+                  console.log("called here*************")
                   router.navigateByUrl(type.redirectTo);
                 }
               }
@@ -479,6 +486,7 @@ export class PageControlService {
       if (auth) {
         this.checkAuth(ngUnsubscribe, auth.auth.uid, ModelUserTypeReturn.list(), 0, (userType, userObj) => {
           if (userObj != null || userType != null) {
+
             // To make it here we are signed in and we have the user type userType
             // userObj is the object under <status>/<usertype>/<uid> for my user
             // Exception logic for the partner user. This needs to return the selection agency/country info
@@ -524,9 +532,8 @@ export class PageControlService {
               }
             }
 
-            // IF YOU'RE AN AGENCY ADMIN OR A LOCAL AGENCY ADMIN
-            if (userType == UserType.AgencyAdmin || userType == UserType.LocalAgencyAdmin) {
-
+            // IF YOU'RE AN AGENCY ADMIN, LOCAL AGENCY DIRECTOR OR A LOCAL AGENCY ADMIN
+            if (userType == UserType.AgencyAdmin || userType == UserType.LocalAgencyAdmin || userType == UserType.LocalAgencyDirector) {
               if (userObj.hasOwnProperty('agencyId')) {
                 agencyId = userObj.agencyId;
               }
@@ -537,6 +544,7 @@ export class PageControlService {
                 }
               }
             }
+
             this.checkPageControl(auth, ngUnsubscribe, route, router, userType, countryId, agencyId, systemId, userCallback, authStateCallback);
           }
         });
@@ -616,6 +624,7 @@ export class PageControlService {
       });
     }
     else {
+      console.log("check page control*****")
       router.navigateByUrl(type.redirectTo);
     }
   }
@@ -628,29 +637,49 @@ export class PageControlService {
       this.af.database.object(Constants.APP_STATUS + "/" + modelTypes[index].path + "/" + uid, {preserveSnapshot: true})
         .takeUntil(ngUnsubscribe)
         .subscribe((snap) => {
+
           if (snap.val() != null) {
-            // It's this user type!
-            if(modelTypes[index].userType == UserType.AgencyAdmin){ //checks to see if user type is agency admin
-              //checks to make sure it ins't actually a local agency admin as they exist in both nodes
-              this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
-                .takeUntil(ngUnsubscribe)
-                .subscribe((innerSnap) => {
-                  if (innerSnap.val() != null) {
 
-                    fun(UserType.LocalAgencyAdmin, innerSnap.val());
+              // It's this user type!
+              if(modelTypes[index].userType == UserType.AgencyAdmin){ //checks to see if user type is agency admin
+
+                this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
+                  .takeUntil(ngUnsubscribe)
+                  .subscribe((innerSnapDirector) => {
+
+                    // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
+                  if(innerSnapDirector.val()){
+                    fun(UserType.LocalAgencyDirector, innerSnapDirector.val());
                   }else{
+                    //checks to make sure it ins't actually a local agency admin as they exist in both nodes
+                    this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+                    .takeUntil(ngUnsubscribe)
+                    .subscribe((innerSnap) => {
+                      if (innerSnap.val() != null) {
 
-                    fun(modelTypes[index].userType, snap.val());
+                        fun(UserType.LocalAgencyAdmin, innerSnap.val());
+                      }else{
+
+                        fun(modelTypes[index].userType, snap.val());
+                      }
+
+
+
+                    })
                   }
+
                 })
-            }else{
-              fun(modelTypes[index].userType, snap.val());
-            }
+              }else{
+                fun(modelTypes[index].userType, snap.val());
+              }
+
 
 
           }
           else {
+
             this.checkAuth(ngUnsubscribe, uid, modelTypes, index + 1, fun);
+
           }
         });
     }
@@ -659,6 +688,8 @@ export class PageControlService {
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
+    console.log(current)
+    console.log(type)
 
     for (let x of type.urls) {
       if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {

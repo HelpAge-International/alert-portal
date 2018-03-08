@@ -226,7 +226,7 @@
               </div>
               <div class="Centered row Spaced">
                 <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
-                        (click)="approveRedAlert(alert.id)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
+                        (click)="approveRedAlert(alert.id, alert.hazardScenario, alert)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
               <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert)">{{"OR_REJECT_THIS_REQUEST"
@@ -350,7 +350,7 @@
               </div>
               <div class="Centered row Spaced">
                 <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
-                        (click)="approveRedAlertNetwork(alert)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
+                        (click)="approveRedAlertNetwork(alert, alert.hazardScenario)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
               <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequestNetwork(alert)">{{"OR_REJECT_THIS_REQUEST"
@@ -474,7 +474,7 @@
               </div>
               <div class="Centered row Spaced">
                 <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
-                        (click)="approveRedAlertLocalNetwork(alert)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
+                        (click)="approveRedAlertLocalNetwork(alert, alert.hazardScenario)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
                 </button>
               </div>
               <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequestNetwork(alert)">{{"OR_REJECT_THIS_REQUEST"
