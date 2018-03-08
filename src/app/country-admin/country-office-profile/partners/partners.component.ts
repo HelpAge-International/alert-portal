@@ -298,6 +298,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   showAffectedAreasForPartner(projectsToDisplay: any[]) {
+    console.log(projectsToDisplay)
     this.currProjectsToDisplay = projectsToDisplay;
     jQuery("#view-areas").modal("show");
   }
