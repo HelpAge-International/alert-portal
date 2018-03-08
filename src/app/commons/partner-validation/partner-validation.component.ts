@@ -123,6 +123,8 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
     }, error => {
       this.alertMessage = new AlertMessageModel(error.message);
     })
+
+    this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + this.partnerOrgId + "/isActive").set(true);
   }
 
   ngOnDestroy(): void {

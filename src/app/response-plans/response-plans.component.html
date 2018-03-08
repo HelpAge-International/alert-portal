@@ -582,7 +582,7 @@
       </div>
       <br>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="resendCountryNotification('countryDirector')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="resendCountryNotification('countryDirector', '#confirm-resend-country')">{{"CONFIRM"| translate}}</button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-country')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
@@ -602,7 +602,7 @@
       </div>
       <br>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="resendNotification('regionDirector')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="resendNotification('regionDirector', '#confirm-resend-regional')">{{"CONFIRM"| translate}}</button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-regional')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
@@ -622,7 +622,7 @@
       </div>
       <br>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="resendNotification('globalDirector')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="resendNotification('globalDirector', '#confirm-resend-global')">{{"CONFIRM"| translate}}</button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-global')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>

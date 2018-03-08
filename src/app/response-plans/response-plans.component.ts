@@ -981,7 +981,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     jQuery("#"+model).modal("show");
   }
 
-  resendCountryNotification(user){
+  resendCountryNotification(user, tag){
+    console.log(this.planToApproval);
+    this.closeModal(tag);
+
     let notification = new MessageModel();
     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
@@ -990,15 +993,19 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       this.notificationService.saveUserNotificationLocalAgency(this.directorIdMap.get(user), notification, UserType.LocalAgencyDirector, this.agencyId)
       :
       this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId)
-    this.closeModal('#confirm-resend');
+
   }
 
-  resendNotification(user){
+  resendNotification(user, tag){
+    console.log(this.planToApproval);
+    this.closeModal(tag);
+
     let notification = new MessageModel();
     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
     notification.time = new Date().getTime();
-    this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId)
+    this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId);
+
   }
 
   submitPlanToApproval() {
