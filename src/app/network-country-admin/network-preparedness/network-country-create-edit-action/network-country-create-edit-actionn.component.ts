@@ -712,19 +712,37 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                           .takeUntil(this.ngUnsubscribe)
                           .subscribe(action => {
 
-                            if(!action["timeTracking"]){
-                              action["timeTracking"] = {}
-                            }
+                            if (action.timeTracking) {
 
-                            if(action.level == 2){
-                              if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                              if(action.level == 2){
+                                if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                                  // Change from unassigned to in progress
+                                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                                    updateObj['timeTracking'] = action['timeTracking']
+                                  }
+
+                                  // Change from complete to in progress
+                                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                                      if(timeObject.finish == -1){
+                                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                                        updateObj['timeTracking'] = action['timeTracking']
+                                        return;
+                                      }
+                                    })
+                                  }
+                                }
+                              }else{
                                 // Change from unassigned to in progress
                                 if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
                                   action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
                                   action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
                                   updateObj['timeTracking'] = action['timeTracking']
                                 }
-    
+
                                 // Change from complete to in progress
                                 if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
                                   action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
@@ -737,28 +755,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                                   })
                                 }
                               }
-                            }else{
-                                // Change from unassigned to in progress
-                                if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
-                                  action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
-                                  action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                                  updateObj['timeTracking'] = action['timeTracking']
-                                }
-    
-                                // Change from complete to in progress
-                                if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
-                                  action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                                    if(timeObject.finish == -1){
-                                      action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
-                                      action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-                                      updateObj['timeTracking'] = action['timeTracking']
-                                      return;
-                                    }
-                                  })
-                                }
                             }
-          
-                            
+
+
                         // Updating
                         console.log(updateObj)
                         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
@@ -798,7 +797,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                               }
                             })
                           }
-                          
+
 
                           if(updateObj.level == 2){
                             if(isRedAlert){
@@ -852,12 +851,30 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(action => {
-              if(!action["timeTracking"]){
-                action["timeTracking"] = {}
-              }
+              if (action.timeTracking) {
 
-              if(action.level == 2){
-                if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                if(action.level == 2){
+                  if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                    // Change from unassigned to in progress
+                    if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                      action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                      action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                      updateObj['timeTracking'] = action['timeTracking']
+                    }
+
+                    // Change from complete to in progress
+                    if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                      action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                        if(timeObject.finish == -1){
+                          action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                          action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                          updateObj['timeTracking'] = action['timeTracking']
+                          return;
+                        }
+                      })
+                    }
+                  }
+                }else{
                   // Change from unassigned to in progress
                   if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
                     action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
@@ -877,25 +894,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                     })
                   }
                 }
-              }else{
-                  // Change from unassigned to in progress
-                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
-                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
-                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                    updateObj['timeTracking'] = action['timeTracking']
-                  }
-
-                  // Change from complete to in progress
-                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
-                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                      if(timeObject.finish == -1){
-                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
-                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-                        updateObj['timeTracking'] = action['timeTracking']
-                        return;
-                      }
-                    })
-                  }
               }
 
             // Updating

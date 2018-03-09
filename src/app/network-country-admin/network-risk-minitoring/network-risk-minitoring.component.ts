@@ -895,8 +895,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
       }
 
-      
-    }else{
+
+    }
+    else{
 
       dataToSave["timeTracking"] = {}
       if(triggerSelected == 0){

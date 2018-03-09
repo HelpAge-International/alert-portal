@@ -45,6 +45,7 @@ import {ModelNetwork} from "../../../model/network.model";
 import {MandatedListModel} from "../../../agency-admin/agency-mpa/agency-mpa.component";
 import {Observable} from "rxjs/Observable";
 import {ModelStaff} from "../../../model/staff.model";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
 
@@ -209,7 +210,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       if (params['updateActionID']) {
         this.updateActionId = params['updateActionID'];
 
-        console.log("UPD ActionID: "+this.updateActionId)
+        console.log("UPD ActionID: " + this.updateActionId)
         Observable.interval(5000)
           .takeWhile(() => !this.stopCondition)
           .subscribe(i => {
@@ -244,7 +245,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
 
           this.networkUserType = selection["userType"]
-          if(selection["userType"] == NetworkUserAccountType.NetworkCountryAdmin){
+          if (selection["userType"] == NetworkUserAccountType.NetworkCountryAdmin) {
             this.getNetworkCountryAdminAssignees()
           }
 
@@ -271,7 +272,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .subscribe(agencyCountryMap => {
               this.initAgencies(agencyCountryMap)
             });
-        this.getMandatedPrepActions();
+          this.getMandatedPrepActions();
           // Currency
           // this.calculateCurrency();
         });
@@ -292,7 +293,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
           this.networkUserType = selection["userType"]
-          if(selection["userType"] == NetworkUserAccountType.NetworkAdmin){
+          if (selection["userType"] == NetworkUserAccountType.NetworkAdmin) {
             this.getLocalNetworkAdminAssignees()
           }
           this.networkId = selection["id"];
@@ -409,46 +410,46 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  private getLocalNetworkAdminAssignees(){
-      this.networkService.getLocalNetwork(this.networkId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(network => {
-          console.log(network)
-          if (network.agencies) {
-            Object.keys(network.agencies).forEach(agencyKey => {
-              console.log(agencyKey)
-              if(network.agencies[agencyKey].isApproved) {
-                this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + '/' + network.agencies[agencyKey].countryCode)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(data => {
+  private getLocalNetworkAdminAssignees() {
+    this.networkService.getLocalNetwork(this.networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(network => {
+        console.log(network)
+        if (network.agencies) {
+          Object.keys(network.agencies).forEach(agencyKey => {
+            console.log(agencyKey)
+            if (network.agencies[agencyKey].isApproved) {
+              this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + '/' + network.agencies[agencyKey].countryCode)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(data => {
 
-                    if (data.adminId) {
-                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-                        var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-                        console.log(userToPush)
-                        this.ASSIGNED_TOO.push(userToPush);
-                      });
-                    }
-                  });
-                //Obtaining other staff data
-                this.af.database.object(Constants.APP_STATUS + "/staff/" + network.agencies[agencyKey].countryCode).subscribe((data: {}) => {
-                  for (let userID in data) {
-                    if (!userID.startsWith('$')) {
-                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-                        var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-                        this.ASSIGNED_TOO.push(userToPush);
-                      });
-                    }
+                  if (data.adminId) {
+                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
+                      var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
+                      console.log(userToPush)
+                      this.ASSIGNED_TOO.push(userToPush);
+                    });
                   }
-                })
-              }
-            })
-          }
-        })
+                });
+              //Obtaining other staff data
+              this.af.database.object(Constants.APP_STATUS + "/staff/" + network.agencies[agencyKey].countryCode).subscribe((data: {}) => {
+                for (let userID in data) {
+                  if (!userID.startsWith('$')) {
+                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
+                      var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
+                      this.ASSIGNED_TOO.push(userToPush);
+                    });
+                  }
+                }
+              })
+            }
+          })
+        }
+      })
   }
 
 
-  private getNetworkCountryAdminAssignees(){
+  private getNetworkCountryAdminAssignees() {
     this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(network => {
@@ -581,7 +582,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
 
-
   /**
    * Initialisation method for the staff under the country office
    */
@@ -655,37 +655,40 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     let newTimeObject = {start: currentTime, finish: -1};
     let timeTrackingNode;
 
-    this.af.database.object(Constants.APP_STATUS + "/action/" + id+ "/" + this.assignActionId)
+    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(action => {
 
         // Change from unassigned to in progress
+        if (action.timeTracking) {
+          action['timeTracking']['timeSpentInAmber'] = []
 
-        action['timeTracking']['timeSpentInAmber'] = []
-
-          if (action['timeTracking']['timeSpentInRed'][0].finish == -1){
+          if (action['timeTracking']['timeSpentInRed'][0].finish == -1) {
             action['timeTracking']['timeSpentInRed'][0].finish = currentTime
             action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
             timeTrackingNode = action['timeTracking']
-          } 
+          }
+        } else {
+          timeTrackingNode = null
+        }
 
         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
           .then(() => {
-          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-            .then(() => {
-      
-              this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-                .subscribe(task => {
-                  // Send notification to the assignee
-                  let notification = new MessageModel();
-                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-                  notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
+              .then(() => {
+
+                this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+                  .subscribe(task => {
+                    // Send notification to the assignee
+                    let notification = new MessageModel();
+                    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+                    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+                    notification.time = new Date().getTime();
+                    this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+                    });
                   });
-                });
-            });
-        });
+              });
+          });
         if (this.isViewing) {
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByAgencyId").set(this.agencyId)
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByCountryId").set(this.countryId)
@@ -693,7 +696,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.closeModal();
 
       })
-    
+
   }
 
   /**
@@ -840,29 +843,27 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         isCompleteAt: new Date().getTime()
       }
 
-      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(action => { 
 
-          console.log(action)
-          // Change from in progress to complete
-          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+      if (action.timeTracking) {
+        console.log(action)
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
 
-          if(!action['timeTracking']['timeSpentInGreen']){
-            action['timeTracking']['timeSpentInGreen'] = []
-          }
+        if (!action['timeTracking']['timeSpentInGreen']) {
+          action['timeTracking']['timeSpentInGreen'] = []
+        }
 
-          console.log(index)
-          console.log(action['timeTracking'])
-          console.log(action['timeTracking']['timeSpentInAmber'][index])
+        console.log(index)
+        console.log(action['timeTracking'])
+        console.log(action['timeTracking']['timeSpentInAmber'][index])
 
-          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
-            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
-            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-            data['timeTracking'] = action['timeTracking']
-          } 
+        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+          action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+          action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+          data['timeTracking'] = action['timeTracking']
+        }
+      }
 
-        })
 
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
@@ -908,24 +909,24 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
 
-    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(action => {
 
-        // Change from in progress to complete
-        let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+    if (action.timeTracking) {
+      // Change from in progress to complete
+      let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
 
-          if(!action['timeTracking']['timeSpentInAmber']){
-            action['timeTracking']['timeSpentInGreen'] = []
-          }
+      if (!action['timeTracking']['timeSpentInAmber']) {
+        action['timeTracking']['timeSpentInGreen'] = []
+      }
 
-          if (action['timeTracking']['timeSpentInGreen'][index].finish == -1){
-            action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
-            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-            timeTrackingNode = action['timeTracking']
-          } 
+      if (action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
+        action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+        timeTrackingNode = action['timeTracking']
+      }
+    } else {
+      timeTrackingNode = null
+    }
 
-      })
 
     action.actualCost = null
 
@@ -935,7 +936,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       isCompleteAt: null,
       // Set updatedAt to time it was undone
       updatedAt: new Date().getTime(),
-      actualCost : null,
+      actualCost: null,
       timeTracking: timeTrackingNode
     });
 
@@ -955,8 +956,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     action.actualCost = null
     this.closePopover(action)
   }
-
-
 
 
   // Uploading a file to Firebase

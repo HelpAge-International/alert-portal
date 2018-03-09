@@ -813,6 +813,8 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     let newTimeObject = {start: currentTime, finish: -1,level: triggerSelected};
     let id = hazardID == 'countryContext' ? this.networkId : hazardID;
 
+    console.log(indicator.triggerSelected)
+    console.log(triggerSelected)
     if(indicator["timeTracking"]){
       dataToSave["timeTracking"] = indicator["timeTracking"];
 
@@ -820,21 +822,27 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
           dataToSave["timeTracking"]["timeSpentInGreen"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 1){
         if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
           dataToSave["timeTracking"]["timeSpentInAmber"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 2){
         if(!dataToSave["timeTracking"]["timeSpentInRed"]){
           dataToSave["timeTracking"]["timeSpentInRed"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
       }
 
 
@@ -857,8 +865,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
       }
 
-      
-    }else{
+
+    }
+    else{
 
       dataToSave["timeTracking"] = {}
       if(triggerSelected == 0){

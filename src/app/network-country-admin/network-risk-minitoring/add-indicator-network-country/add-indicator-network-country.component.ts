@@ -533,7 +533,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
       if (isValid) {
 
 
-        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : undefined;
+        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : null;
         let currentTime = new Date().getTime()
         let newTimeObject = {start: currentTime, finish: -1,level: this.indicatorData.triggerSelected};
         let id = this.hazardID == 'countryContext' ? this.networkCountryId : this.hazardID;
@@ -596,7 +596,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
 
 
               this.af.database.object(Constants.APP_STATUS + '/indicator/' + id  + '/' + indicator.key + '/timeTracking')
-                    .update([{timeSpentInGreen: newTimeObject}])
+                    .update({timeSpentInGreen: [newTimeObject]})
 
               if (dataToSave.assignee) {
                 // Send notification to the assignee

@@ -319,7 +319,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   /**
    * Hazard filtering
    */
-  public isChosenHazard(hazard:number, action:any){
+  public isChosenHazard(hazard: number, action: any) {
     return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
   }
 
@@ -641,29 +641,25 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
         isCompleteAt: new Date().getTime()
       }
 
-      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(action => { 
+      console.log(action)
+      if (action.timeTracking) {
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
 
-          console.log(action)
-          // Change from in progress to complete
-          let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+        if (!action['timeTracking']['timeSpentInGreen']) {
+          action['timeTracking']['timeSpentInGreen'] = []
+        }
 
-          if(!action['timeTracking']['timeSpentInGreen']){
-            action['timeTracking']['timeSpentInGreen'] = []
-          }
+        console.log(index)
+        console.log(action['timeTracking'])
+        console.log(action['timeTracking']['timeSpentInAmber'][index])
 
-          console.log(index)
-          console.log(action['timeTracking'])
-          console.log(action['timeTracking']['timeSpentInAmber'][index])
-
-          if (action['timeTracking']['timeSpentInAmber'][index].finish == -1){
-            action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
-            action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-            data['timeTracking'] = action['timeTracking']
-          } 
-
-        })
+        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+          action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+          action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+          data['timeTracking'] = action['timeTracking']
+        }
+      }
 
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
@@ -707,24 +703,22 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
 
-    this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(action => {
+    if (action.timeTracking) {
+      // Change from in progress to complete
+      let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
 
-        // Change from in progress to complete
-        let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+      if (!action['timeTracking']['timeSpentInAmber']) {
+        action['timeTracking']['timeSpentInGreen'] = []
+      }
 
-          if(!action['timeTracking']['timeSpentInAmber']){
-            action['timeTracking']['timeSpentInGreen'] = []
-          }
-
-          if (action['timeTracking']['timeSpentInGreen'][index].finish == -1){
-            action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
-            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-            timeTrackingNode = action['timeTracking']
-          } 
-
-      })
+      if (action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
+        action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+        timeTrackingNode = action['timeTracking']
+      }
+    } else {
+      timeTrackingNode = null
+    }
 
 
     action.actualCost = null
@@ -735,7 +729,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
       isComplete: false,
       isCompleteAt: null,
       updatedAt: new Date().getTime(),
-      actualCost : null,
+      actualCost: null,
       timeTracking: timeTrackingNode
     });
 
