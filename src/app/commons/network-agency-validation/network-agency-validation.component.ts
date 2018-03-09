@@ -37,7 +37,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        if (params["token"] && params["networkId"] && params["agencyId"]) {
+        if (params["token"] && params["networkId"] && params["agencyId"]) { 
           this.accessToken = params["token"];
           this.networkId = params["networkId"];
           this.agencyId = params["agencyId"];
@@ -52,7 +52,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
             if (user) {
               if (user.isAnonymous) {
                 //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
-                let validationId = this.countryId ? this.countryId : this.agencyId
+                let validationId = this.countryId && this.countryId != 'undefined' ? this.countryId : this.agencyId
                 this.networkService.validateNetworkAgencyToken(validationId, this.accessToken)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(validate => {
