@@ -487,7 +487,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       })
   }
 
-
   /**
    * Get staff member public user data (names, etc.)
    */
@@ -602,7 +601,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
           this.STAFF.set(agencyId, snapshot.val());
-          console.log(this.STAFF.get(agencyId));
+          //console.log(this.STAFF.get(agencyId));
           // snapshot.forEach((data) => {
           //   this.STAFF.set(data.key, data.val());
           //   console.log(this.STAFF.get('position'))
@@ -667,13 +666,13 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             action['timeTracking']['timeSpentInRed'][0].finish = currentTime
             action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
             timeTrackingNode = action['timeTracking']
-          } 
+          }
 
         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
           .then(() => {
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
             .then(() => {
-      
+
               this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
                 .subscribe(task => {
                   // Send notification to the assignee
@@ -693,7 +692,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.closeModal();
 
       })
-    
+
   }
 
   /**
@@ -842,7 +841,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
       this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe(action => { 
+        .subscribe(action => {
 
           console.log(action)
           // Change from in progress to complete
@@ -860,7 +859,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
             action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
             data['timeTracking'] = action['timeTracking']
-          } 
+          }
 
         })
 
@@ -923,7 +922,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
             action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
             timeTrackingNode = action['timeTracking']
-          } 
+          }
 
       })
 

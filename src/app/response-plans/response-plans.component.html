@@ -144,7 +144,7 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
-                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[0]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-country')">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[0]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-country', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
                       </div>
                     </div>
 
@@ -167,7 +167,7 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
-                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[2]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-regional')">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[2]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-regional', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
                           translate}}</a>
                       </div>
                       <div *ngIf="(isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key))
@@ -183,7 +183,7 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
-                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global')">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
                           translate}}</a>
                       </div>
                     </div>
@@ -203,7 +203,7 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
-                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global')">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
                           translate}}</a>
                       </div>
                     </div>
@@ -582,7 +582,7 @@
       </div>
       <br>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="resendCountryNotification('countryDirector', '#confirm-resend-country')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="resendNotification('countryDirector', '#confirm-resend-country')">{{"CONFIRM"| translate}}</button>
         <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-country')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
