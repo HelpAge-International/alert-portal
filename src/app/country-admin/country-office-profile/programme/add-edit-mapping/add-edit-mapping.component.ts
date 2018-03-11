@@ -88,7 +88,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   private isPresetValue: any;
 
   private when: any;
-  private  toDate: any;
+  private toDate: any;
 
   @Input() isLocalAgency: boolean;
 
@@ -207,7 +207,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme = new ProgrammeMappingModel();
         programme.id = programme.$key;
         this.programme.setData(programme);
-        this.setWhenDate(programme.when);
+       this.setWhenDate(programme.when);
         this.setToDate(programme.toDate)
         // this._convertTimestampToDate(programme.when);
         // this._convertTimestampToDate(programme.toDate)
@@ -232,9 +232,12 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   saveMapping() {
     //this.setDate();
+    debugger
+    console.log("FAIZ TEST")
     this.alertMessage = this.programme.validate();
     // var dataToSave = this.programme;
     // dataToSave.updatedAt = new Date().getTime();
+    console.log(this.programme)
 
     if (!this.alertMessage) {
       let dataToSave = this.programme;
@@ -263,9 +266,19 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       } else {
         dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
+        console.log('url',  Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
+        const newData = {};
+        Object.keys(dataToSave).forEach((key) => {
+          if (dataToSave[key]) {
+            newData[key] = dataToSave[key]
+          }
+        })
+        console.log('data', dataToSave)
+        console.log('new', newData)
         this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
-          .update(dataToSave && postData)
-          .then(() => {
+          .update(newData)
+          .then((newData) => {
+            console.log('saved', newData)
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
             this.router.navigate(['/country-admin/country-office-profile/programme/']);
           }).catch((error: any) => {
@@ -298,9 +311,11 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       } else {
         dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
+
         this.af.database.object(Constants.APP_STATUS + "/localAgencyProfile/programme/" + this.agencyID + '/4WMapping/' + this.programmeId)
           .update(dataToSave)
-          .then(() => {
+          .then((newData) => {
+            console.log('saved', newData)
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
             this.router.navigate(['/local-agency/profile/programme/']);
           }).catch((error: any) => {
@@ -311,11 +326,14 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   setWhenDate(when) {
-    when = moment(when).valueOf();
+
+    console.log("setWhenDATE ", this.programme)
+   // console.log("Event ", event)
+    this.programme.when = moment(when).valueOf();
   }
 
   setToDate(to) {
-    to = moment(to).valueOf();
+    this.programme.toDate = moment(to).valueOf();
   }
 
   deleteMapping() {
