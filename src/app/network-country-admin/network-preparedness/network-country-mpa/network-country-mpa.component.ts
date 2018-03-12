@@ -589,6 +589,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
+          let admin = new ModelStaff();
+          admin.position = "Admin";
+          this.STAFF.set(snap.val().adminId, admin)
           this.getStaffDetails(snap.val().adminId, false);
         }
       });
@@ -600,8 +603,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.STAFF.set(agencyId, snapshot.val());
-          //console.log(this.STAFF.get(agencyId));
+          this.STAFF.set(snapshot.key, snapshot.val());
           // snapshot.forEach((data) => {
           //   this.STAFF.set(data.key, data.val());
           //   console.log(this.STAFF.get('position'))
