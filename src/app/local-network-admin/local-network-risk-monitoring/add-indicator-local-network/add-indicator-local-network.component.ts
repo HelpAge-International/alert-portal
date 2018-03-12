@@ -582,7 +582,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
             .then(indicator => {
 
               this.af.database.object(Constants.APP_STATUS + '/indicator/' + id  + '/' + indicator.key + '/timeTracking')
-                    .update([{timeSpentInGreen: newTimeObject}])
+                    .update({timeSpentInGreen: [newTimeObject]})
 
               if (dataToSave.assignee) {
                 // Send notification to the assignee

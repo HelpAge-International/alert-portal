@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageModel} from "../../../model/alert-message.model";
+import { ActionsService } from './../../../services/actions.service';
 import {
   ActionLevel,
   ActionType,
@@ -138,6 +139,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               private _userService: UserService,
               private route: ActivatedRoute,
               private translate: TranslateService,
+              private actionsService: ActionsService,
               private router: Router) {
 
     /* if selected generic action */
@@ -396,7 +398,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.asignee = action.asignee;
       this.action.department = action.department;
       this.action.budget = action.budget;
-      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards && action.assignedHazards.length == 0 : true);
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
@@ -448,7 +450,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.asignee = action.asignee;
       this.action.department = action.department;
       this.action.budget = action.budget;
-      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards && action.assignedHazards.length == 0 : true);
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
@@ -680,8 +682,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       }
 
         if (updateObj.asignee) {
-        console.log('there is an assignee')
-        console.log(updateObj.asignee)
         this._userService.getUserType(updateObj.asignee)
           .subscribe(x => {
             console.log('mapping x to user type')
@@ -707,31 +707,57 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                       }
 
                       if (this.action.id != null) {
-                        console.log('action is is not null')
 
                         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
                           .takeUntil(this.ngUnsubscribe)
                           .subscribe(action => {
-                            console.log(action['timeTracking'])
-                            // Change from unassigned to in progress
-                            if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
-                              action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
-                              action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                              updateObj['timeTracking'] = action['timeTracking']
+
+                            if (action.timeTracking) {
+
+                              if(action.level == 2){
+                                if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                                  // Change from unassigned to in progress
+                                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                                    updateObj['timeTracking'] = action['timeTracking']
+                                  }
+
+                                  // Change from complete to in progress
+                                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                                      if(timeObject.finish == -1){
+                                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                                        updateObj['timeTracking'] = action['timeTracking']
+                                        return;
+                                      }
+                                    })
+                                  }
+                                }
+                              }else{
+                                // Change from unassigned to in progress
+                                if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                                  action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                                  action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                                  updateObj['timeTracking'] = action['timeTracking']
+                                }
+
+                                // Change from complete to in progress
+                                if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                                  action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                                    if(timeObject.finish == -1){
+                                      action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                                      action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                                      updateObj['timeTracking'] = action['timeTracking']
+                                      return;
+                                    }
+                                  })
+                                }
+                              }
                             }
 
-                            // Change from complete to in progress
-                            if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
-                              console.log('switch from complete to in progress')
-                              action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                                if(timeObject.finish == -1){
-                                  action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
-                                  action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-                                  updateObj['timeTracking'] = action['timeTracking']
-                                  return;
-                                }
-                              })
-                            }
+
                         // Updating
                         console.log(updateObj)
                         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
@@ -757,14 +783,39 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
                         });
                       } else {
-                        console.log('action id is null')
 
                         updateObj['timeTracking'] = {}
-                        if(updateObj.asignee){
-                          updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                        }else{
-                          updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
-                        }
+                        this.actionsService.getAlerts(this.agencyId, true)
+                        .subscribe(alerts => {
+                          let isRedAlert = false;
+                          if(updateObj.level == 2){
+                            alerts.forEach(alert => {
+                              if(!updateObj.assignHazard){
+                                isRedAlert = true;
+                              }else if(updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2){
+                                isRedAlert = true;
+                              }
+                            })
+                          }
+
+
+                          if(updateObj.level == 2){
+                            if(isRedAlert){
+                              if(updateObj.asignee){
+                                updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                              }else{
+                                updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                              }
+                            }else{
+                              updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
+                            }
+                          }else{
+                            if(updateObj.asignee){
+                              updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                            }else{
+                              updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                            }
+                          }
                           // Saving
                           updateObj.createdAt = new Date().getTime();
                           updateObj.networkId = this.networkId;
@@ -788,6 +839,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                               this._location.back();
                             });
                           });
+                        })
                       }
                     })
                 })
@@ -799,26 +851,51 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(action => {
-              console.log(action['timeTracking'])
-              // Change from unassigned to in progress
-              if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
-                action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
-                action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                updateObj['timeTracking'] = action['timeTracking']
+              if (action.timeTracking) {
+
+                if(action.level == 2){
+                  if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                    // Change from unassigned to in progress
+                    if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                      action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                      action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                      updateObj['timeTracking'] = action['timeTracking']
+                    }
+
+                    // Change from complete to in progress
+                    if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                      action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                        if(timeObject.finish == -1){
+                          action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                          action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                          updateObj['timeTracking'] = action['timeTracking']
+                          return;
+                        }
+                      })
+                    }
+                  }
+                }else{
+                  // Change from unassigned to in progress
+                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
+                  }
+
+                  // Change from complete to in progress
+                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if(timeObject.finish == -1){
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+                }
               }
 
-              // Change from complete to in progress
-              if(action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
-                console.log('switch from complete to in progress')
-                action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                  if(timeObject.finish == -1){
-                    action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
-                    action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-                    updateObj['timeTracking'] = action['timeTracking']
-                    return;
-                  }
-                })
-              }
             // Updating
             console.log(updateObj);
             this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
@@ -828,10 +905,35 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         } else {
 
           updateObj['timeTracking'] = {}
-          if(updateObj.asignee){
-            updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+
+          this.actionsService.getAlerts(this.agencyId, true)
+            .subscribe(alerts => {
+              let isRedAlert = false;
+              if(updateObj.level == 2){
+                alerts.forEach(alert => {
+                  if(!updateObj.assignHazard){
+                      isRedAlert = true;
+                  }else if(updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2){
+                    isRedAlert = true;
+                  }
+              })
+            }
+          if(updateObj.level == 2){
+            if(isRedAlert){
+              if(updateObj.asignee){
+                updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+              }else{
+                updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+              }
+            }else{
+              updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
+            }
           }else{
-            updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+            if(updateObj.asignee){
+              updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+            }else{
+              updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+            }
           }
           // Saving
           updateObj.createdAt = new Date().getTime();
@@ -845,9 +947,9 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
             .then(() => {
             this._location.back();
           });
+        })
         }
-
-          }
+      }
 
     }
   }

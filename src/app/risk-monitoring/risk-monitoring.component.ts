@@ -128,7 +128,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private userAgencyId: string;
   private userCountryId: string;
   private withinNetwork: boolean;
-  private previousIndicatorTrigger:number = -1
+  private previousIndicatorTrigger: number = -1
   private countryLevelsValues: any;
 
   private subnationalName: string;
@@ -1424,7 +1424,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     return indicatorClass;
   }
 
-  updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number, state : boolean = false) {
+  updateIndicatorStatus(hazardID: string, indicator, indicatorKey: number, state: boolean = false) {
     const indicatorID = indicator.$key;
 
     if (!hazardID || !indicatorID) {
@@ -1488,7 +1488,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       }
 
 
-    } else {
+    }
+    else {
 
       dataToSave["timeTracking"] = {}
       if (triggerSelected == 0) {
@@ -1527,7 +1528,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateNetworkIntdicatorStatus(id : string, hazardID: string, indicator, indicatorKey: number, state : boolean = false) {
+  updateNetworkIntdicatorStatus(id: string, hazardID: string, indicator, indicatorKey: number, state: boolean = false) {
     this.changeIndicatorState(false, id, indicatorKey)
     this.updateIndicatorStatus(hazardID, indicator, indicatorKey, state)
   }

@@ -713,8 +713,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if(!action.redAlerts){
           action.redAlerts = [];
         }
-        if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+
+        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
           action.redAlerts.push(alertId)
+
+          if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+
+            action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+            if(!action.asignee){
+              if(!action["timeTracking"]["timeSpentInRed"]){
+                action['timeTracking']['timeSpentInRed'] = [];
+              }
+              action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+            }else if(action.isComplete){
+              if(!action["timeTracking"]["timeSpentInGreen"]){
+                action['timeTracking']['timeSpentInGreen'] = [];
+              }
+              action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            }else{ 
+              if(!action["timeTracking"]["timeSpentInAmber"]){
+                action['timeTracking']['timeSpentInAmber'] = [];
+              }
+              action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            }
+          }
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.$key + '/timeTracking')
+          .update(action.timeTracking)
           this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.$key + '/redAlerts')
           .update(action.redAlerts)
         }
@@ -771,6 +796,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       let hazard = hazards.find(x => x.hazardScenario == hazardScenario)
       let hazardTrackingNode;
 
+      let currentTime = new Date().getTime()
+      let newTimeObject = {start: currentTime, finish: -1, level: AlertLevels.Red};
 
       // saves alert key to apa to retrieve locations affected
         this.af.database.list(Constants.APP_STATUS + '/action/' + alert.networkCountryId, {
@@ -785,9 +812,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
             if(!action.redAlerts){
               action.redAlerts = [];
             }
-            if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+            if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
               action.redAlerts.push(alert.id)
-              this.af.database.object(Constants.APP_STATUS + '/action/' +  alert.networkCountryId + '/' + action.$key + '/redAlerts')
+    
+              if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+    
+                action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+                if(!action.asignee){
+                  if(!action["timeTracking"]["timeSpentInRed"]){
+                    action['timeTracking']['timeSpentInRed'] = [];
+                  }
+                  action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                }else if(action.isComplete){
+                  if(!action["timeTracking"]["timeSpentInGreen"]){
+                    action['timeTracking']['timeSpentInGreen'] = [];
+                  }
+                  action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                }else{ 
+                  if(!action["timeTracking"]["timeSpentInAmber"]){
+                    action['timeTracking']['timeSpentInAmber'] = [];
+                  }
+                  action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                }
+              }
+    
+              this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkCountryId + '/' + action.$key + '/timeTracking')
+              .update(action.timeTracking)
+              this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkCountryId + '/' + action.$key + '/redAlerts')
               .update(action.redAlerts)
             }
           });
@@ -797,26 +848,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if(hazard && hazard.timeTracking && hazard.timeTracking[alert.networkCountryId]){
         hazardTrackingNode = hazard ? hazard.timeTracking[alert.networkCountryId] : undefined;
       }
-
-      let currentTime = new Date().getTime()
-      let newTimeObject = {start: currentTime, finish: -1, level: AlertLevels.Red};
-
-      // saves alert key to apa to retrieve locations affected
-      this.af.database.list(Constants.APP_STATUS + '/action/' + alert.networkCountryId, {
-        query: {
-          orderByChild: 'level',
-          equalTo: 2
-         }
-      })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(actions => {
-        actions.forEach(action => {
-          if(!action.redAlerts){
-            action.redAlerts = [];
-          }
-          action.redAlerts.push(alert.id)
-        });
-      })
+  
 
       if(hazard){
 
@@ -900,29 +932,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
           if(!action.redAlerts){
             action.redAlerts = [];
           }
-          if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+          if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
             action.redAlerts.push(alert.id)
-            this.af.database.object(Constants.APP_STATUS + '/action/' +  alert.networkId + '/' + action.$key + '/redAlerts')
+  
+            if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+  
+              action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+              if(!action.asignee){
+                if(!action["timeTracking"]["timeSpentInRed"]){
+                  action['timeTracking']['timeSpentInRed'] = [];
+                }
+                action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+              }else if(action.isComplete){
+                if(!action["timeTracking"]["timeSpentInGreen"]){
+                  action['timeTracking']['timeSpentInGreen'] = [];
+                }
+                action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+              }else{ 
+                if(!action["timeTracking"]["timeSpentInAmber"]){
+                  action['timeTracking']['timeSpentInAmber'] = [];
+                }
+                action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+              }
+            }
+  
+            this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkId + '/' + action.$key + '/timeTracking')
+            .update(action.timeTracking)
+            this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkId + '/' + action.$key + '/redAlerts')
             .update(action.redAlerts)
           }
-        });
-      })
-
-
-      // saves alert key to apa to retrieve locations affected
-      this.af.database.list(Constants.APP_STATUS + '/action/' + alert.networkId, {
-        query: {
-          orderByChild: 'level',
-          equalTo: 2
-         }
-      })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(actions => {
-        actions.forEach(action => {
-          if(!action.redAlerts){
-            action.redAlerts = [];
-          }
-          action.redAlerts.push(alert.id)
         });
       })
 
