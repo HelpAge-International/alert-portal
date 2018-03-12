@@ -715,7 +715,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                             if (action.timeTracking) {
 
                               if(action.level == 2){
-                                if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                                if(action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
                                   // Change from unassigned to in progress
                                   if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
                                     action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
@@ -854,7 +854,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               if (action.timeTracking) {
 
                 if(action.level == 2){
-                  if(!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                  if(action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
                     // Change from unassigned to in progress
                     if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
                       action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
