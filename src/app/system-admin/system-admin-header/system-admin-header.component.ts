@@ -6,7 +6,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Http, Response} from '@angular/http';
-import {ExportDataService} from "../../services/export-data.service";
+import {EXPORT_FROM, ExportDataService} from "../../services/export-data.service";
 
 declare var jQuery: any;
 
@@ -146,7 +146,7 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     //TODO JUST TEST FOR NOW, ID NEED TO BE UPDATED
     console.log(this.uid)
     this.showLoader = true
-    this.exportService.exportSystemData()
+    this.exportService.exportSystemData(EXPORT_FROM.FromSystem)
       .first()
       .subscribe(value => this.showLoader = !value)
     // this.exportService.exportAgencyData(this.uid)

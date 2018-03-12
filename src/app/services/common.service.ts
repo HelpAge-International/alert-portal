@@ -105,16 +105,15 @@ export class CommonService {
       })
       .map(snap => {
         if (snap.val()) {
-          return Object.keys(snap.val()).map(key => {
+          console.log(snap.key)
+          console.log(snap.val())
+          return Object.keys(snap.val()).filter(key => key != "undefined").map(key => {
             return {agencyId:snap.key, countryId:key}
           })
         } else {
           return []
         }
       })
-      // .map(countries => {
-      //   countries.map(country => country["agencyId"] = countries.$)
-      // })
   }
 
 }
