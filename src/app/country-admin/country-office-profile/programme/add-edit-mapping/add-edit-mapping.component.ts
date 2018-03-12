@@ -149,7 +149,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         }
         // });
       });
-
   }
 
   initCountrySelection() {
@@ -163,7 +162,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         console.log("countryID", this.countryID);
         console.log("getCountry", getCountry);
 
-        this.selectedCountry = getCountry.$value;
+       // this.selectedCountry = getCountry.$value;
         console.log(getCountry.$value, 'initCountrySelection');
 
         /**
@@ -195,8 +194,11 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         programme.id = programme.$key;
         this.programme.setData(programme);
         console.log(this.programme)
-         this.setWhenDate(programme.when);
-         this.setToDate(programme.toDate)
+        this.setWhenDate(programme.when);
+        this.setToDate(programme.toDate)
+        this.selectedCountry = programme.where;
+        this.selectedValue = programme.level1;
+        this.selectedValueL2 = programme.level2;
       });
   }
 
@@ -207,10 +209,10 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme = new ProgrammeMappingModel();
         programme.id = programme.$key;
         this.programme.setData(programme);
-       this.setWhenDate(programme.when);
-        this.setToDate(programme.toDate)
-        // this._convertTimestampToDate(programme.when);
-        // this._convertTimestampToDate(programme.toDate)
+        this.setWhenDate(programme.when);
+        this.setToDate(programme.toDate);
+        this.selectedValue = programme.level1;
+        this.selectedValueL2 = programme.level2;
       });
   }
 
@@ -231,23 +233,18 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   saveMapping() {
-    //this.setDate();
-    debugger
-    console.log("FAIZ TEST")
     this.alertMessage = this.programme.validate();
-    // var dataToSave = this.programme;
-    // dataToSave.updatedAt = new Date().getTime();
-    console.log(this.programme)
+    console.log(this.programme);
 
     if (!this.alertMessage) {
       let dataToSave = this.programme;
       let postData = {
-        where: this.selectedCountry,
-        level1: this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null,
-        level2: this.selectedValueL2 ? this.selectedValueL2 : null,
+        where: this.programme.where,
+        level1: this.programme.level1 ? this.programme.level1 : null,
+        level2: this.programme.level2 ? this.programme.level2 : null,
         agencyId: this.agencyID
       };
-      dataToSave.updatedAt = new Date().getTime();
+
       if (!this.programmeId) {
         if (this.countryID) {
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
@@ -266,13 +263,15 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       } else {
         dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
-        console.log('url',  Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
+        //console.log('url',  Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
+
         const newData = {};
         Object.keys(dataToSave).forEach((key) => {
           if (dataToSave[key]) {
             newData[key] = dataToSave[key]
           }
-        })
+        });
+
         console.log('data', dataToSave)
         console.log('new', newData)
         this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
@@ -289,10 +288,16 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   saveMappingLocalAgency() {
-   // this.setDate();
     this.alertMessage = this.programme.validate();
+
     if (!this.alertMessage) {
       var dataToSave = this.programme;
+      let postData = {
+        where: this.programme.where,
+        level1: this.programme.level1 ? this.programme.level1 : null,
+        level2: this.programme.level2 ? this.programme.level2 : null,
+        agencyId: this.agencyID
+      };
 
       if (!this.programmeId) {
         if (this.agencyID) {
@@ -312,10 +317,17 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
 
+        const newData = {};
+        Object.keys(dataToSave).forEach((key) => {
+          if (dataToSave[key]) {
+            newData[key] = dataToSave[key]
+          }
+        });
+
         this.af.database.object(Constants.APP_STATUS + "/localAgencyProfile/programme/" + this.agencyID + '/4WMapping/' + this.programmeId)
-          .update(dataToSave)
+          .update(newData)
           .then((newData) => {
-            console.log('saved', newData)
+            console.log('saved', newData);
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
             this.router.navigate(['/local-agency/profile/programme/']);
           }).catch((error: any) => {
@@ -326,9 +338,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   setWhenDate(when) {
-
-    console.log("setWhenDATE ", this.programme)
-   // console.log("Event ", event)
     this.programme.when = moment(when).valueOf();
   }
 
@@ -388,24 +397,29 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   // This function below is to determine the country selected
   // TODO: Return the array of level1 areas in the country selected.
-  setCountryLevel() {
+  setCountryLevel(selectedC) {
+    this.programme.where = selectedC;
+    console.log("Country: ", this.programme.where);
+
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
         // TODO: Below needs to return the level1 array of the id selected
-        this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
-
-
+        this.levelOneDisplay = content[selectedC].levelOneValues;
       });
-
   }
 
-  setLevel1Value() {
-
+  setLevel1Value(selected) {
+    this.programme.level1 = selected;
+    console.log("LEVEL 1: ", this.programme.level1);
     console.log(this.selectedValue, 'preset value');
-    this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
+    this.levelTwoDisplay = this.levelOneDisplay[selected].levelTwoValues;
+  }
 
+  setLevel2Value(selected){
+    this.programme.level2 = selected;
+    console.log("LEVEL 2: ", this.programme.level2);
   }
 
   checkTypeof(param: any) {
@@ -441,7 +455,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
 }
-
 
 
 
