@@ -33,6 +33,7 @@ export class ExportDataService {
   // MAKE SURE TOTAL NUMBER FOR SHEETS IS RIGHT!! (16 now)
   private COUNTRY_SHEETS = 16
   private exportFrom = EXPORT_FROM.FromCountry
+  private PRIVATE = "Private"
 
   private total: number
   private counter: number
@@ -247,7 +248,7 @@ export class ExportDataService {
       })
   }
 
-  public exportSystemData(fromWhere:EXPORT_FROM) {
+  public exportSystemData(fromWhere: EXPORT_FROM) {
     this.subjectSystem = new Subject<boolean>()
     this.resetSystemData()
     this.counter = 0
@@ -1003,13 +1004,13 @@ export class ExportDataService {
                     if (this.exportFrom != EXPORT_FROM.FromCountry) {
                       obj["Country Office"] = this.countryNameMap.get(countryId)
                     }
-                    obj["Action title"] = action["task"]
+                    obj["Action title"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : action["task"]
                     obj["Preparedness action level"] = this.translateService.instant(Constants.ACTION_LEVEL[action["level"]])
                     obj["Type"] = this.translateService.instant(Constants.ACTION_TYPE[action["type"]])
                     obj["Department"] = action["department"] ? departmentMap.get(action["department"]) : ""
-                    obj["Assigned to"] = (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) ? (action["asignee"] ? 1 : 0)  : (action["asignee"] ? staffMap.get(action["asignee"]) : "")
+                    obj["Assigned to"] = (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) ? (action["asignee"] ? 1 : 0) : (action["asignee"] ? staffMap.get(action["asignee"]) : "")
                     obj["Due Date"] = moment(action["dueDate"]).format("DD/MM/YYYY")
-                    obj["Budget"] = action["budget"]
+                    obj["Budget"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : action["budget"]
                     obj["Document Required"] = action["requireDoc"] ? "Yes" : "No"
                     obj["Status"] = this.translateService.instant(this.getActionStatus(expireDuration, action, alertScenarioMap))
                     obj["Expires"] = this.getExpireDate(expireDuration, action)
@@ -1111,7 +1112,7 @@ export class ExportDataService {
             obj["Population affected"] = alert.estimatedPopulation
             obj["Affected areas"] = this.commonService.getAreaNameListFromObj(areaContent, alert.affectedAreas)
             obj["Information sources"] = alert.infoNotes
-            // obj["Duration"] = "need more info"
+            obj["Duration"] = this.getLastUpdateDuration(alert)
             return obj
           })
           this.alertsForAgency = this.alertsForAgency.concat(alerts)
@@ -1625,6 +1626,25 @@ export class ExportDataService {
 
   }
 
+  private getLastUpdateDuration(item: any) {
+    let duration = ""
+    if (item.timeTracking) {
+      let timeTrackingList = Object
+        .keys(item.timeTracking)
+        .map(key => item.timeTracking[key])
+        .map(item => Object.keys(item).map(id => item[id]))
+        .reduce((acc, cur) => acc.concat(cur), [])
+      console.log(timeTrackingList)
+      let lastUpdateIndex = timeTrackingList.findIndex(obj => obj.finish == -1)
+      console.log(lastUpdateIndex)
+      if (lastUpdateIndex != -1) {
+        let durationDays = Math.round(moment.duration(moment.now().valueOf() - timeTrackingList[lastUpdateIndex].start).asDays())
+        duration = `${durationDays} days`
+      }
+    }
+    return duration
+  }
+
   private fetchAPActivationData(areaContent, actionList: any[], countryId: string, wb: WorkBook, agencyId?: string) {
     this.fetchAlertsForCountry(countryId).then((alertMap: Map<string, any>) => {
       console.log(alertMap)
@@ -1645,7 +1665,7 @@ export class ExportDataService {
               if (this.exportFrom != EXPORT_FROM.FromCountry) {
                 obj["Country Office"] = this.countryNameMap.get(countryId)
               }
-              obj["Action title"] = apa["task"]
+              obj["Action title"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : apa["task"]
               obj["Date activated"] = moment(date).format("DD/MM/YYYY")
               obj["Activating hazard"] = alertObj.hazardScenario && alertObj.hazardScenario != -1 && Constants.HAZARD_SCENARIOS[alertObj.hazardScenario] ? this.translateService.instant(Constants.HAZARD_SCENARIOS[alertObj.hazardScenario]) : alertObj.otherName
               obj["Location"] = this.commonService.getAreaNameListFromObj(areaContent, alertObj.affectedAreas)
