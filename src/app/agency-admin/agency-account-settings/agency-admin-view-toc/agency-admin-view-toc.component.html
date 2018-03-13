@@ -1,0 +1,38 @@
+<ng-container *ngIf="!isLocalAgency">
+  <app-agency-admin-header></app-agency-admin-header>
+  <app-agency-admin-menu></app-agency-admin-menu>
+</ng-container>
+<ng-container *ngIf="isLocalAgency">
+  <app-local-agency-header></app-local-agency-header>
+  <app-local-agency-menu></app-local-agency-menu>
+</ng-container>
+
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Header-title__wrap">
+      <h1>{{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item"><a [routerLink]="isLocalAgency ? ['/local-agency/agency-account-settings'] : ['/agency-admin/agency-account-settings']">{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE"
+        | translate}}</a></li>
+      <li class="section-nav__item"><a
+        [routerLink]="isLocalAgency ? ['/local-agency/agency-account-settings/agency-change-password'] : ['/agency-admin/agency-account-settings/agency-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
+        | translate}}</a></li>
+      <li class="section-nav__item"><a [routerLink]="this.isLocalAgency ? ['/local-agency/account-settings/local-agency-view-coc'] : ['/agency-admin/account-settings/agency-admin-view-coc/agency-admin-view-coc']">{{"SYSTEM_ADMIN.SETTING.COC" | translate}}</a></li>
+      <li class="section-nav__item active"><a [routerLink]="this.isLocalAgency ? ['/local-agency/account-settings/local-agency-view-toc'] : ['/agency-admin/account-settings/agency-admin-view-toc/agency-admin-view-toc']">{{"SYSTEM_ADMIN.SETTING.TOC" | translate}}</a></li>
+    </ul>
+
+    <div class="Sub-header-title__wrap">
+      <h2>{{"GLOBAL.TOC_TITLE" | translate}}</h2>
+      <button class="btn btn-primary" (click)="onAgree()">{{"GLOBAL.IAGREE" | translate | uppercase}}</button>
+    </div>
+
+    <div class="wrapper" align="left">
+      <p class="coc-text">{{tocText}}</p>
+    </div>
+  </div>
+</div>

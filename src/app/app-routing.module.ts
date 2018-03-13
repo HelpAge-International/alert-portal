@@ -270,6 +270,8 @@ import {DirectorAccountSettingsViewCocComponent} from "./director/director-accou
 import {LocalAgencyViewCocComponent} from "./local-agency/local-agency-account-details/local-agency-view-coc/local-agency-view-coc.component";
 import {NetworkAdminViewCocComponent} from "./network-admin/network-account-settings/network-admin-view-coc/network-admin-view-coc.component";
 import {NetworkCountryAdminViewCocComponent} from "./network-country-admin/network-country-account-settings/network-country-admin-view-coc/network-country-admin-view-coc.component";
+import {AgencyAdminViewTocComponent} from "./agency-admin/agency-account-settings/agency-admin-view-toc/agency-admin-view-toc.component";
+import {LocalAgencyViewTocComponent} from "./local-agency/local-agency-account-details/local-agency-view-toc/local-agency-view-toc.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -350,6 +352,7 @@ const routes: Routes = [
   {path: 'agency-admin/agency-overview', component: AgencyOverviewComponent},
   {path: 'agency-admin/agency-overview/:countryId/:isViewing', component: AgencyOverviewComponent},
   {path: 'agency-admin/account-settings/agency-admin-view-coc/agency-admin-view-coc', component: AgencyAdminViewCocComponent},
+  {path: 'agency-admin/account-settings/agency-admin-view-toc/agency-admin-view-toc', component: AgencyAdminViewTocComponent},
   {path: 'agency-admin/view-countries', component: ViewCountriesComponent},
 
   /**
@@ -672,7 +675,7 @@ const routes: Routes = [
   {path: 'local-agency/response-plans/view-plan/:id', component: LocalAgencyViewPlanComponent},
   {path: 'local-agency/profile', component: LocalAgencyProfileComponent},
   {path: 'local-agency/account-settings/local-agency-view-coc', component: LocalAgencyViewCocComponent},
-
+  {path: 'local-agency/account-settings/local-agency-view-toc', component: LocalAgencyViewTocComponent},
 
   {path: 'local-agency/profile/partners', component: LocalAgencyPartnersComponent},
   {path: 'local-agency/profile/equipment', component: LocalAgencyEquipmentComponent},

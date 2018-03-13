@@ -650,7 +650,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                 // Change from unassigned to in progress
 
                 if (updateObj.level == 2) {
-                  if (!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
+                  if (action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
 
                     if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
                       action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
@@ -722,7 +722,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
               if (action.timeTracking) {
 
                 if (updateObj.level) {
-                  if (!action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
+                  if (action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
 
                     // Change from unassigned to in progress
                     if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
