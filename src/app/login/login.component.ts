@@ -36,6 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private mErrorCodes: Map<string, string> = new Map<string, string>();
   private uid: string;
   private cocText: string;
+  private tocText: string;
 
   // Temporary values for the login user type.
   //  - Won't be used for anything else
@@ -98,7 +99,31 @@ export class LoginComponent implements OnInit, OnDestroy {
                 if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
                   this.showCoC();
                 }else{
-                  this.checkLogins();
+                  let isAgencyAdmin: boolean = false;
+                  this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
+                    .take(1)
+                    .subscribe(snapshots =>{
+                      console.log(snapshots);
+                      snapshots.forEach(snap => {
+                        if(!isAgencyAdmin){
+                          isAgencyAdmin = snap != null && snap.$key == this.uid;
+                        }
+                      });
+                      if(isAgencyAdmin){
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                          .take(1)
+                          .subscribe((snap) => {
+                            if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
+                              this.showToC();
+                            }else{
+                              this.checkLogins();
+                            }
+                          });
+
+                      }else{
+                        this.checkLogins();
+                      }
+                    });
                 }
             });
           })
@@ -141,9 +166,57 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
+  private showToC(){
+    this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
+      .take(1)
+      .subscribe((systemAdminId) => {
+        this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
+          .take(1)
+          .subscribe((snap) => {
+            if(snap){
+              this.tocText = snap.val().toc;
+              console.log(this.tocText);
+              this.loaderInactive = true;
+              jQuery("#toc-window").modal("show");
+            }else{
+              this.checkLogins();
+            }
+          });
+      });
+  }
+
   onAgreeCoC(){
     this.loaderInactive = false;
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestCoCAgreed").set(true);
+    let isAgencyAdmin: boolean = false;
+    this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
+      .take(1)
+      .subscribe(snapshots =>{
+        console.log(snapshots);
+        snapshots.forEach(snap => {
+          if(!isAgencyAdmin){
+            isAgencyAdmin = snap != null && snap.$key == this.uid;
+          }
+        });
+        if(isAgencyAdmin){
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+            .take(1)
+            .subscribe((snap) => {
+              if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
+                this.showToC();
+              }else{
+                this.checkLogins();
+              }
+            });
+        }else{
+          this.checkLogins();
+        }
+      });
+  }
+
+  onAgreeToC(){
+    this.loaderInactive = false;
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestToCAgreed").set(true);
     this.checkLogins();
   }
 

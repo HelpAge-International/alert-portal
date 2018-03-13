@@ -8,15 +8,16 @@
     </div>
 
     <ul class="section-nav">
-      <li class="section-nav__item" [class.active]="showProfile" (click)="profileClicked()"><a>{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE" |
+      <li class="section-nav__item" [class.active]="showProfile && !showCoC" (click)="profileClicked()"><a>{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE" |
         translate}}</a></li>
-      <li class="section-nav__item" [class.active]="!showProfile" (click)="passwordClicked()"><a>{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
+      <li class="section-nav__item" [class.active]="!showProfile && !showCoC" (click)="passwordClicked()"><a>{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
         | translate}}</a></li>
-      <li class="section-nav__item active"><a [routerLink]="['/director/director-account-settings/director-account-settings-view-coc']">{{"SYSTEM_ADMIN.SETTING.COC" | translate}}</a></li>
+      <li class="section-nav__item" [class.active]="!showProfile && showCoC" (click)="cocClicked()"><a>{{"SYSTEM_ADMIN.SETTING.COC" | translate}}</a></li>
     </ul>
 
-    <app-account-setting-profile *ngIf="showProfile" [isDirector]="true"></app-account-setting-profile>
-    <app-account-setting-password *ngIf="!showProfile" [isDirector]="true"></app-account-setting-password>
+    <app-account-setting-profile *ngIf="showProfile && !showCoC" [isDirector]="true"></app-account-setting-profile>
+    <app-account-setting-password *ngIf="!showProfile  && !showCoC" [isDirector]="true"></app-account-setting-password>
+    <app-director-account-settings-view-coc *ngIf="!showProfile && showCoC"></app-director-account-settings-view-coc>
 
   </div>
 </div>
