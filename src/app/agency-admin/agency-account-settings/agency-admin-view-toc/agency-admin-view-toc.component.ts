@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {Subject} from "rxjs/Subject";
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -6,19 +6,21 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 
 @Component({
-  selector: 'app-country-admin-settings-coc-view',
-  templateUrl: './country-admin-settings-coc-view.component.html',
-  styleUrls: ['./country-admin-settings-coc-view.component.scss']
+  selector: 'app-agency-admin-view-toc',
+  templateUrl: './agency-admin-view-toc.component.html',
+  styleUrls: ['./agency-admin-view-toc.component.scss']
 })
-export class CountryAdminSettingsCocViewComponent implements OnInit {
+export class AgencyAdminViewTocComponent implements OnInit {
 
   private uid: string;
   authState: FirebaseAuthState;
   private alertMessage: string = "";
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
-  private cocText: string = "";
+  private tocText: string = "";
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
   }
@@ -44,20 +46,20 @@ export class CountryAdminSettingsCocViewComponent implements OnInit {
           .take(1)
           .subscribe((snap) => {
             if(snap){
-              this.cocText = snap.val().coc;
+              this.tocText = snap.val().toc;
             }
           });
       });
   }
 
   onAgree(){
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestCoCAgreed").set(true).then(() =>{
-      console.log("successfully agreed to coc");
-      this.alertMessage = "GLOBAL.SUCCESS_COC_AGREE";
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestToCAgreed").set(true).then(() =>{
+      console.log("successfully agreed to toc");
+      this.alertMessage = "GLOBAL.SUCCESS_TOC_AGREE";
       this.alertShow = true;
       this.alertSuccess = true;
     }).catch(() => {
-      console.log("failed to agreed to coc");
+      console.log("failed to agreed to toc");
     });
   }
 

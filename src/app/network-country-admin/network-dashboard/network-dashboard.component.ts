@@ -194,7 +194,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val() == false){
+        if(snap.val() == null || snap.val() == false){
           this.showCoCBanner = true;
         }
       });
@@ -988,7 +988,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
                 action['timeTracking']['timeSpentInGreen'] = [];
               }
               action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-            }else{ 
+            }else{
               if(!action["timeTracking"]["timeSpentInAmber"]){
                 action['timeTracking']['timeSpentInAmber'] = [];
               }
@@ -1006,7 +1006,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
 
     if(hazard){
-        
+
         if(hazardTrackingNode["timeSpentInAmber"]){
           hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
         }
@@ -1015,7 +1015,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           if(!hazardTrackingNode["timeSpentInRed"]){
             hazardTrackingNode["timeSpentInRed"] = [];
           }
-    
+
           hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
           .update(hazardTrackingNode)
@@ -1023,10 +1023,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
           .update({timeSpentInRed: [newTimeObject]})
         }
-      
+
     }
 
-    
+
     if(alert["timeTracking"]){
       console.log('first here')
       if(!alert["timeTracking"]["timeSpentInRed"]){

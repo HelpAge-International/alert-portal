@@ -43,6 +43,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private systemId: string;
   private userType: UserType;
   private showCoCBanner: boolean;
+  private showToCBanner: boolean;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -65,7 +66,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       });
 
       this.checkCoCUpdated();
-
+      this.checkToCUpdated();
       this.checkAnyCountryNoRegion();
     });
   }
@@ -79,8 +80,18 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val() == false){
+        if(snap.val() == null || snap.val() == false){
           this.showCoCBanner = true;
+        }
+      });
+  }
+
+  private checkToCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestToCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == null || snap.val() == false){
+          this.showToCBanner = true;
         }
       });
   }

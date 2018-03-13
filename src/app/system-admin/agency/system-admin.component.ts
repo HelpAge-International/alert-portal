@@ -48,7 +48,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val() == false){
+        if(snap.val() == null || snap.val() == false){
           this.showCoCBanner = true;
         }
       });

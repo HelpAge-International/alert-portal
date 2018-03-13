@@ -45,10 +45,17 @@ ngOnDestroy() {
 }
 
 private downloadCoC(){
-  this.af.database.object(Constants.APP_STATUS + "/system/o8XIEoROEcZgFwzFeRpjtXMXnOr1/")
-    .takeUntil(this.ngUnsubscribe).subscribe(x => {
-    this.cocText = x.coc;
-  });
+  this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
+    .take(1)
+    .subscribe((systemAdminId) => {
+      this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
+        .take(1)
+        .subscribe((snap) => {
+          if(snap){
+            this.cocText = snap.val().coc;
+          }
+        });
+    });
 }
 
 onAgree(){

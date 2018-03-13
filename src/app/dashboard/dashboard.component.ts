@@ -192,7 +192,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val() == false){
+        if(snap.val() == null || snap.val() == false){
           this.showCoCBanner = true;
         }
       });
@@ -730,7 +730,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 action['timeTracking']['timeSpentInGreen'] = [];
               }
               action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-            }else{ 
+            }else{
               if(!action["timeTracking"]["timeSpentInAmber"]){
                 action['timeTracking']['timeSpentInAmber'] = [];
               }
@@ -814,9 +814,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
             if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
               action.redAlerts.push(alert.id)
-    
+
               if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
-    
+
                 action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
                 if(!action.asignee){
                   if(!action["timeTracking"]["timeSpentInRed"]){
@@ -828,14 +828,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     action['timeTracking']['timeSpentInGreen'] = [];
                   }
                   action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-                }else{ 
+                }else{
                   if(!action["timeTracking"]["timeSpentInAmber"]){
                     action['timeTracking']['timeSpentInAmber'] = [];
                   }
                   action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
                 }
               }
-    
+
               this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkCountryId + '/' + action.$key + '/timeTracking')
               .update(action.timeTracking)
               this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkCountryId + '/' + action.$key + '/redAlerts')
@@ -848,7 +848,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if(hazard && hazard.timeTracking && hazard.timeTracking[alert.networkCountryId]){
         hazardTrackingNode = hazard ? hazard.timeTracking[alert.networkCountryId] : undefined;
       }
-  
+
 
       if(hazard){
 
@@ -934,9 +934,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
           if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
             action.redAlerts.push(alert.id)
-  
+
             if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
-  
+
               action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
               if(!action.asignee){
                 if(!action["timeTracking"]["timeSpentInRed"]){
@@ -948,14 +948,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
                   action['timeTracking']['timeSpentInGreen'] = [];
                 }
                 action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-              }else{ 
+              }else{
                 if(!action["timeTracking"]["timeSpentInAmber"]){
                   action['timeTracking']['timeSpentInAmber'] = [];
                 }
                 action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
               }
             }
-  
+
             this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkId + '/' + action.$key + '/timeTracking')
             .update(action.timeTracking)
             this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkId + '/' + action.$key + '/redAlerts')

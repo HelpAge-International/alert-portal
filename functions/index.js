@@ -5013,10 +5013,6 @@ exports.sendEmailPlanRejectedByGlobalDirector_UAT = functions.database.ref('/uat
     }
   });
 
-
-/**
- * Resetting latest coc agreed upon coc updated by the system admin*/
-
 exports.updateLatestCoCAllUsers_SAND = functions.database.ref('/sand/system/{systemId}/coc')
   .onWrite(event => {
     const currData = event.data.current.val();
@@ -5025,10 +5021,32 @@ exports.updateLatestCoCAllUsers_SAND = functions.database.ref('/sand/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('sand/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_SAND = functions.database.ref('/sand/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('sand/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('sand/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5047,10 +5065,32 @@ exports.updateLatestCoCAllUsers_TEST = functions.database.ref('/test/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('test/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_TEST = functions.database.ref('/test/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('test/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('test/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5069,7 +5109,7 @@ exports.updateLatestCoCAllUsers_UAT = functions.database.ref('/uat/system/{syste
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('uat/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
@@ -5083,6 +5123,27 @@ exports.updateLatestCoCAllUsers_UAT = functions.database.ref('/uat/system/{syste
     return true;
   });
 
+exports.updateLatestToCAllUsers_UAT = functions.database.ref('/uat/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('uat/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('uat/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
 
 exports.updateLatestCoCAllUsers_UAT_2 = functions.database.ref('/uat-2/system/{systemId}/coc')
   .onWrite(event => {
@@ -5092,10 +5153,32 @@ exports.updateLatestCoCAllUsers_UAT_2 = functions.database.ref('/uat-2/system/{s
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('uat-2/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_UAT_2 = functions.database.ref('/uat-2/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('uat-2/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('uat-2/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5114,10 +5197,32 @@ exports.updateLatestCoCAllUsers_D1S1 = functions.database.ref('/d1s1/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('d1s1/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_D1S1 = functions.database.ref('/d1s1/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('d1s1/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('d1s1/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5136,10 +5241,32 @@ exports.updateLatestCoCAllUsers_D1S2 = functions.database.ref('/d1s2/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('d1s2/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_D1S2 = functions.database.ref('/d1s2/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('d1s2/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('d1s2/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5158,10 +5285,32 @@ exports.updateLatestCoCAllUsers_D2S1 = functions.database.ref('/d2s1/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('d2s1/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_D2S1 = functions.database.ref('/d2s1/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('d2s1/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('d2s1/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5180,10 +5329,32 @@ exports.updateLatestCoCAllUsers_D2S2 = functions.database.ref('/d2s2/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('d2s2/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_D2S2 = functions.database.ref('/d2s2/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('d2s2/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('d2s2/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5202,10 +5373,32 @@ exports.updateLatestCoCAllUsers_D3S1 = functions.database.ref('/d3s1/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('d3s1/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_D3S1 = functions.database.ref('/d3s1/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('d3s1/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('d3s1/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5224,10 +5417,32 @@ exports.updateLatestCoCAllUsers_D3S2 = functions.database.ref('/d3s2/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          console.log(userIds);
+          //console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('d3s2/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+exports.updateLatestToCAllUsers_D3S2 = functions.database.ref('/d3s2/system/{systemId}/toc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('d3s2/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('d3s2/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+              //console.log("latestToCAgreed is set to false for user with id: "+ userId);
             });
           });
         }
@@ -5246,10 +5461,32 @@ exports.updateLatestCoCAllUsers_D3S2 = functions.database.ref('/d3s2/system/{sys
 //         let usersJson = data.val();
 //         if(usersJson) {
 //           let userIds = Object.keys(usersJson);
-//           console.log(userIds);
+//           //console.log(userIds);
 //           userIds.forEach(userId => {
 //             admin.database().ref('live/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
 //               //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+//             });
+//           });
+//         }
+//       }, error => {
+//         console.log(error.message);
+//       })
+//     }
+//     return true;
+//   });
+
+// exports.updateLatestToCAllUsers_LIVE = functions.database.ref('/live/system/{systemId}/toc')
+//   .onWrite(event => {
+//     const currData = event.data.current.val();
+//     if (currData) {
+//       admin.database().ref('live/userPublic/').once('value', (data) => {
+//         let usersJson = data.val();
+//         if(usersJson) {
+//           let userIds = Object.keys(usersJson);
+//           //console.log(userIds);
+//           userIds.forEach(userId => {
+//             admin.database().ref('live/userPublic/'+userId+'/latestToCAgreed').set(false).then(() =>{
+//               //console.log("latestToCAgreed is set to false for user with id: "+ userId);
 //             });
 //           });
 //         }

@@ -92,21 +92,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
         .then((success) => {
           this.uid = success.uid;
-
-          // Check if we are a network admin!
-          // this.checkNetworkLogin(success.uid,
-          //   (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
-          //     //TODO:
-          //     this.router.navigateByUrl("network/network-account-selection")
-          //   },
-          //   () => {// REGULAR LOGIN
-          //     this.regularLogin(success.uid);
-          //   })
-
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
-            .takeUntil(this.ngUnsubscribe)
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+            .take(1)
             .subscribe((snap) => {
-                if(!snap || !snap.val()){
+                if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
                   this.showCoC();
                 }else{
                   this.checkLogins();
@@ -136,12 +125,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private showCoC(){
     this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+      .take(1)
       .subscribe((systemAdminId) => {
           this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
-            .takeUntil(this.ngUnsubscribe)
+            .take(1)
             .subscribe((snap) => {
-              if(snap && snap.val() && snap.val().coc){
+              if(snap){
                 this.cocText = snap.val().coc;
                 this.loaderInactive = true;
                 jQuery("#coc-window").modal("show");

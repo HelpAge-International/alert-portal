@@ -371,6 +371,8 @@ import {SurgeCapacityService} from "./services/surge-capacity.service";
 import { ViewCountriesComponent } from './agency-admin/view-countries/view-countries.component';
 import { BugReportingService } from './services/bug-reporting.service';
 import { ReportProblemComponent } from './report-problem/report-problem.component';
+import { AgencyAdminViewTocComponent } from './agency-admin/agency-account-settings/agency-admin-view-toc/agency-admin-view-toc.component';
+import { LocalAgencyViewTocComponent } from './local-agency/local-agency-account-details/local-agency-view-toc/local-agency-view-toc.component';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -742,6 +744,8 @@ const firebaseAuthConfig = {
     LocalAgencyViewCocComponent,
     NetworkAdminViewCocComponent,
     NetworkCountryAdminViewCocComponent,
+    AgencyAdminViewTocComponent,
+    LocalAgencyViewTocComponent,
   ],
   imports: [
     CookieLawModule,
