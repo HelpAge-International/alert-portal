@@ -40,6 +40,7 @@ export class ExportDataService {
   private total: number
   private counter: number
   private exportSubject: Subject<boolean>
+  private exportSubjectLocalAgency: Subject<boolean>
   private countryCanExport: boolean = true
 
   //for agency export
@@ -103,6 +104,7 @@ export class ExportDataService {
   public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>, localAgencyIs?: boolean) {
 
     this.exportSubject = new Subject<boolean>()
+    this.countryCanExport = true
 
     switch (this.exportFrom) {
       case EXPORT_FROM.FromAgency: {
@@ -145,7 +147,7 @@ export class ExportDataService {
     this.fetchPointOfContactData(id, wb, agencyId, localAgencyIs);
 
     //fetch office contacts
-    this.fetchCountryOfficeDetail(agencyId, id, wb);
+    this.fetchCountryOfficeDetail(agencyId, id, wb, localAgencyIs);
 
     //fetch stock capacity - external and  in-country stock
     this.fetchStockCapacity(id, areaContent, wb, agencyId, localAgencyIs);
@@ -820,7 +822,7 @@ export class ExportDataService {
       .first()
       .subscribe(stockInCountry => {
         if (stockInCountry.length > 0) {
-          let stocksInCountry = stockInCountry.filter(stock => stock.stockType == StockType.Country).map(stock => {
+          let stocksInCountry = stockInCountry.filter(stock => stock.stockType == (localAgencyIs ? StockType.Agency : StockType.Country)).map(stock => {
             let obj = {}
             if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
               obj["Agency"] = this.agencyNameMap.get(agencyId)
@@ -849,7 +851,7 @@ export class ExportDataService {
             return obj
           })
 
-          let stocksExternalCountry = stockInCountry.filter(stock => stock.stockType == StockType.External).map(stock => {
+          let stocksExternalCountry = stockInCountry.filter(stock => stock.stockType == (localAgencyIs ? StockType.AgencyExternal : StockType.External)).map(stock => {
             let obj = {}
             if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
               obj["Agency"] = this.agencyNameMap.get(agencyId)
@@ -917,7 +919,6 @@ export class ExportDataService {
         office["Postcode"] = countryOffice.postCode
         office["Phone Number"] = countryOffice.phone
 
-        console.log(countryOffice.adminId)
         this.userService.getUser(countryOffice.adminId)
           .first()
           .subscribe(countryAdmin => {

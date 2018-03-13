@@ -103,7 +103,7 @@ export class LocalAgencyMenuComponent implements OnInit {
 
                         if (staffMap.size === staffs.length + 1) {
                           //start export data
-                          this.dataService.exportOfficeData(this.agencyId, null, content, staffMap, true)
+                          this.dataService.exportOfficeData(this.agencyId, this.agencyId, content, staffMap, true)
                             .first()
                             .subscribe(value => this.showLoader = !value)
                         }
