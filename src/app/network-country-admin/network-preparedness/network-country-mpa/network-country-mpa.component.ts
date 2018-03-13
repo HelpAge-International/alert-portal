@@ -488,7 +488,6 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       })
   }
 
-
   /**
    * Get staff member public user data (names, etc.)
    */
@@ -590,6 +589,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
+          let admin = new ModelStaff();
+          admin.position = "Admin";
+          this.STAFF.set(snap.val().adminId, admin)
           this.getStaffDetails(snap.val().adminId, false);
         }
       });
@@ -601,8 +603,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          this.STAFF.set(agencyId, snapshot.val());
-          console.log(this.STAFF.get(agencyId));
+          this.STAFF.set(snapshot.key, snapshot.val());
           // snapshot.forEach((data) => {
           //   this.STAFF.set(data.key, data.val());
           //   console.log(this.STAFF.get('position'))
@@ -843,6 +844,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         isCompleteAt: new Date().getTime()
       }
 
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + action.id)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(action => {
 
       if (action.timeTracking) {
         console.log(action)
@@ -863,7 +867,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           data['timeTracking'] = action['timeTracking']
         }
       }
-
+        })
 
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost

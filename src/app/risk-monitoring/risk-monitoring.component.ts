@@ -131,6 +131,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private previousIndicatorTrigger: number = -1
   private countryLevelsValues: any;
 
+  private subnationalAreas: any[];
   private subnationalName: string;
   private countryName: string;
   private level1: string;
@@ -339,12 +340,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   showSubNationalAreas(areas) {
+    this.subnationalAreas = areas;
     for (let area in areas) {
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .subscribe(content => {
           this.countryLevelsValues = content;
-          // console.log(this.getLocationName(areas[area]));
-          this.setLocationName(areas[area]);
           err => console.log(err);
         });
     }
@@ -352,12 +352,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   setLocationName(location) {
-    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country) {
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country >= 0) {
       this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
       this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
       this.subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
-    } else if ((location.level1 && location.level1 != -1) && location.country) {
+    } else if ((location.level1 && location.level1 != -1) && location.country >= 0) {
       this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
       this.subnationalName = this.countryName + ", " + this.level1;
@@ -365,7 +365,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
       this.subnationalName = this.countryName;
     }
-    console.log(this.countryName + ", " + this.level2 + ", " + this.level1)
   }
 
   _getIndicatorFutureTimestamp(indicator) {

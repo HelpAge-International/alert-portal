@@ -15,6 +15,7 @@ import {AgencyService} from "../services/agency-service.service";
 import * as moment from "moment";
 import {ModelUserPublic} from "../model/user-public.model";
 import {CommonUtils} from "../utils/CommonUtils";
+import {$} from "protractor";
 
 declare const jQuery: any;
 
@@ -55,6 +56,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private notesMap = new Map();
+  private planToResend: any;
   private needShowDialog: boolean;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
@@ -977,28 +979,27 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.partnerApprovalIdMap.set(id, hasChecked)
   }
 
-  confirmResendNotification(model){
+  confirmResendNotification(model, plan){
+    this.planToResend = plan;
     jQuery("#"+model).modal("show");
   }
 
-  resendCountryNotification(user){
-    let notification = new MessageModel();
-    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
-    notification.time = new Date().getTime();
-    this.isLocalAgency ?
-      this.notificationService.saveUserNotificationLocalAgency(this.directorIdMap.get(user), notification, UserType.LocalAgencyDirector, this.agencyId)
-      :
-      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId)
-    this.closeModal('#confirm-resend');
-  }
+  resendNotification(user, tag){
+    this.closeModal(tag);
+    jQuery("#"+this.planToResend.$key).collapse('hide')
 
-  resendNotification(user){
     let notification = new MessageModel();
     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToResend.name});
     notification.time = new Date().getTime();
-    this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId)
+
+    if(user == 'countryDirector') {
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId);
+    } else if(user == 'regionDirector'){
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId);
+    } else if(user == 'globalDirector'){
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.GlobalDirector, this.agencyId, this.countryId);
+    }
   }
 
   submitPlanToApproval() {

@@ -302,8 +302,8 @@
                         <!--<strong>{{DEPARTMENT_MAP.get(action.department)}}</strong></div>-->
                         <div class="subrow-line">{{"ASSIGNED_TO" | translate}}:
                           <strong>{{CURRENT_USERS.get(action.asignee) != null ? action.createdByAgencyId ? agencyId != action.createdByAgencyId ?
-                            STAFF.get(action.createdByAgencyId).position+', '+agencyNamesMap.get(action.createdByAgencyId)?.name
-                          :
+                            STAFF.get(action.asignee)?.position+', '+agencyNamesMap.get(action.createdByAgencyId)?.name
+                            :
                           CURRENT_USERS.get(action.asignee).firstName + ' ' +
                           CURRENT_USERS.get(action.asignee).lastName +', ' +
                           agencyNamesMap.get(action.createdByAgencyId)?.name
@@ -312,6 +312,7 @@
                           CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}
                         </strong>
+
                         </div>
                       </div>
                     </div>
