@@ -1,3 +1,4 @@
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
 <div class="Sub-header_bar">
   <div class="Hamburger">
     <span></span>
@@ -40,6 +41,7 @@
             | translate}}</a>
           <a class="dropdown-item" routerLink="/local-agency/agency-messages">{{"LOCAL_AGENCY_ADMIN.MESSAGES.TITLE_TEXT" |
             translate}}</a>
+          <a class="dropdown-item" (click)="exportData()">Export Data</a>
         </div>
       </div>
     </li>

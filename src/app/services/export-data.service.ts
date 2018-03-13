@@ -25,6 +25,7 @@ import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
 import {Subject} from "rxjs/Subject";
 import {AgencyService} from "./agency-service.service";
+import {isBoolean} from "util";
 
 @Injectable()
 export class ExportDataService {
@@ -39,6 +40,7 @@ export class ExportDataService {
   private total: number
   private counter: number
   private exportSubject: Subject<boolean>
+  private countryCanExport: boolean = true
 
   //for agency export
   private totalCountries: number
@@ -62,6 +64,7 @@ export class ExportDataService {
   private officesCapacityForAgency = []
   private program4wForAgency = []
   private sectorsForAgency = []
+  private agencyCanExport: boolean = true
 
   //for system export
   private subjectSystem: Subject<boolean>
@@ -97,7 +100,7 @@ export class ExportDataService {
               private commonService: CommonService) {
   }
 
-  public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>) {
+  public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>, localAgencyIs?:boolean) {
 
     this.exportSubject = new Subject<boolean>()
 
@@ -122,53 +125,54 @@ export class ExportDataService {
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new()
 
+    let id = localAgencyIs ? agencyId : countryId
     //fetch country alert data
-    this.fetchCustomHazardNameForAlertsCountry(countryId).then((customNameMap: Map<string, string>) => {
+    this.fetchCustomHazardNameForAlertsCountry(id).then((customNameMap: Map<string, string>) => {
       //fetch alerts data
-      this.fetchCountryAlertsData(countryId, customNameMap, areaContent, wb, agencyId);
+      this.fetchCountryAlertsData(id, customNameMap, areaContent, wb, agencyId);
     })
 
     //fetch risk monitoring data
-    this.fetchRiskMonitoringData(countryId, staffMap, areaContent, wb, agencyId);
+    this.fetchRiskMonitoringData(id, staffMap, areaContent, wb, agencyId);
 
     //fetch response plan data
-    this.fetchResponsePlanData(countryId, wb, agencyId);
+    this.fetchResponsePlanData(id, wb, agencyId);
 
     //fetch preparedness actions data
-    this.fetchActionsData(areaContent, agencyId, countryId, staffMap, wb);
+    this.fetchActionsData(areaContent, agencyId, id, staffMap, wb, localAgencyIs);
 
     //fetch point of contacts
-    this.fetchPointOfContactData(countryId, wb, agencyId);
+    this.fetchPointOfContactData(id, wb, agencyId);
 
     //fetch office contacts
-    this.fetchCountryOfficeDetail(agencyId, countryId, wb);
+    this.fetchCountryOfficeDetail(agencyId, id, wb);
 
     //fetch stock capacity - external and  in-country stock
-    this.fetchStockCapacity(countryId, areaContent, wb, agencyId);
+    this.fetchStockCapacity(id, areaContent, wb, agencyId);
 
     //fetch coordination data
-    this.fetchCoordinationData(countryId, wb, agencyId);
+    this.fetchCoordinationData(id, wb, agencyId);
 
     //fetch equipment data
-    this.fetchEquipmentData(countryId, areaContent, wb, agencyId);
+    this.fetchEquipmentData(id, areaContent, wb, agencyId);
 
     //fetch surge equipment data
-    this.fetchSurgeEquipmentData(countryId, wb, agencyId);
+    this.fetchSurgeEquipmentData(id, wb, agencyId);
 
     //fetch partner orgs data
-    this.fetchPartnerOrgData(agencyId, countryId, wb);
+    this.fetchPartnerOrgData(agencyId, id, wb);
 
     //fetch surge capacity data
-    this.fetchSurgeCapacityData(countryId, wb, agencyId);
+    this.fetchSurgeCapacityData(id, wb, agencyId);
 
     //fetch office capacity (staff) data
-    this.fetchOfficeCapacityData(countryId, wb, agencyId);
+    this.fetchOfficeCapacityData(id, wb, agencyId);
 
     //fetch programme 4w
-    this.fetchProgram4wData(countryId, wb, agencyId);
+    this.fetchProgram4wData(id, wb, agencyId);
 
     //fetch sector expertise
-    this.fetchSectorExpertiseData(countryId, wb, agencyId);
+    this.fetchSectorExpertiseData(id, wb, agencyId);
 
     return this.exportSubject
 
@@ -984,7 +988,7 @@ export class ExportDataService {
       })
   }
 
-  private fetchActionsData(areaContent, agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook) {
+  private fetchActionsData(areaContent, agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook, localAgencyIs?:boolean) {
     this.fetchDepartmentsForAgencyAndCountry(agencyId, countryId).then((departmentMap: Map<string, string>) => {
       console.log(departmentMap)
       this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap: Map<string, number>) => {
@@ -1152,9 +1156,16 @@ export class ExportDataService {
 
       default: {
         //try export see if works
-        if (counter == total) {
-          XLSX.writeFile(wb, 'SheetJS.xlsx')
-          this.exportSubject.next(true)
+        // if (counter == total) {
+        //   XLSX.writeFile(wb, 'SheetJS.xlsx')
+        //   this.exportSubject.next(true)
+        // }
+        if (total - counter < this.tolerateNumber && this.countryCanExport) {
+          this.countryCanExport = false
+          Observable.timer(this.delayTime).first().subscribe(() => {
+            XLSX.writeFile(wb, 'SheetJS.xlsx')
+            this.exportSubject.next(true)
+          })
         }
         break
       }
@@ -1348,9 +1359,10 @@ export class ExportDataService {
     })
   }
 
-  private fetchActionClockSettings(agencyId, countryId) {
+  private fetchActionClockSettings(agencyId, countryId, localAgencyIs?:boolean) {
     return new Promise((res,) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings/preparedness/", {preserveSnapshot: true})
+      let path = localAgencyIs ? Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/preparedness/" : Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings/preparedness/"
+      this.af.database.object(path, {preserveSnapshot: true})
         .first()
         .subscribe(snap => {
           let durationType = snap.val().durationType;
