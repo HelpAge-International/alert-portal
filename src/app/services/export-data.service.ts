@@ -917,6 +917,7 @@ export class ExportDataService {
         office["Postcode"] = countryOffice.postCode
         office["Phone Number"] = countryOffice.phone
 
+        console.log(countryOffice.adminId)
         this.userService.getUser(countryOffice.adminId)
           .first()
           .subscribe(countryAdmin => {
@@ -1169,7 +1170,7 @@ export class ExportDataService {
         //   XLSX.writeFile(wb, 'SheetJS.xlsx')
         //   this.exportSubject.next(true)
         // }
-        if (total - counter < this.tolerateNumber && this.countryCanExport) {
+        if ((total - counter < this.tolerateNumber) && this.countryCanExport) {
           this.countryCanExport = false
           Observable.timer(this.delayTime).first().subscribe(() => {
             XLSX.writeFile(wb, 'SheetJS.xlsx')
