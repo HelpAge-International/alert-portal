@@ -1,22 +1,7 @@
-<app-director-header></app-director-header>
-<app-director-menu></app-director-menu>
-
 <app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-
-    <div class="Header-title__wrap">
-      <h1>{{"GLOBAL.ACCOUNT_SETTINGS.TITLE" | translate}}</h1>
-    </div>
-
-    <ul class="section-nav">
-      <li class="section-nav__item" [class.active]="showProfile" (click)="profileClicked()"><a>{{"GLOBAL.ACCOUNT_SETTINGS.PROFILE" |
-        translate}}</a></li>
-      <li class="section-nav__item" [class.active]="!showProfile" (click)="passwordClicked()"><a>{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
-        | translate}}</a></li>
-      <li class="section-nav__item active"><a [routerLink]="['/director/director-account-settings/director-account-settings-view-coc']">{{"SYSTEM_ADMIN.SETTING.COC" | translate}}</a></li>
-    </ul>
 
     <div class="Sub-header-title__wrap">
       <h2>{{"GLOBAL.COC_TITLE" | translate}}</h2>
