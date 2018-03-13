@@ -100,7 +100,7 @@ export class ExportDataService {
               private commonService: CommonService) {
   }
 
-  public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>, localAgencyIs?:boolean) {
+  public exportOfficeData(agencyId: string, countryId: string, areaContent: any, staffMap: Map<string, string>, localAgencyIs?: boolean) {
 
     this.exportSubject = new Subject<boolean>()
 
@@ -142,25 +142,25 @@ export class ExportDataService {
     this.fetchActionsData(areaContent, agencyId, id, staffMap, wb, localAgencyIs);
 
     //fetch point of contacts
-    this.fetchPointOfContactData(id, wb, agencyId);
+    this.fetchPointOfContactData(id, wb, agencyId, localAgencyIs);
 
     //fetch office contacts
     this.fetchCountryOfficeDetail(agencyId, id, wb);
 
     //fetch stock capacity - external and  in-country stock
-    this.fetchStockCapacity(id, areaContent, wb, agencyId);
+    this.fetchStockCapacity(id, areaContent, wb, agencyId, localAgencyIs);
 
     //fetch coordination data
-    this.fetchCoordinationData(id, wb, agencyId);
+    this.fetchCoordinationData(id, wb, agencyId, localAgencyIs);
 
     //fetch equipment data
-    this.fetchEquipmentData(id, areaContent, wb, agencyId);
+    this.fetchEquipmentData(id, areaContent, wb, agencyId, localAgencyIs);
 
     //fetch surge equipment data
-    this.fetchSurgeEquipmentData(id, wb, agencyId);
+    this.fetchSurgeEquipmentData(id, wb, agencyId, localAgencyIs);
 
     //fetch partner orgs data
-    this.fetchPartnerOrgData(agencyId, id, wb);
+    this.fetchPartnerOrgData(agencyId, id, wb, localAgencyIs);
 
     //fetch surge capacity data
     this.fetchSurgeCapacityData(id, wb, agencyId);
@@ -169,7 +169,7 @@ export class ExportDataService {
     this.fetchOfficeCapacityData(id, wb, agencyId);
 
     //fetch programme 4w
-    this.fetchProgram4wData(id, wb, agencyId);
+    this.fetchProgram4wData(id, wb, agencyId, localAgencyIs);
 
     //fetch sector expertise
     this.fetchSectorExpertiseData(id, wb, agencyId);
@@ -413,8 +413,9 @@ export class ExportDataService {
     return indicatorObj
   }
 
-  private fetchSectorExpertiseData(countryId: string, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + countryId + '/sectorExpertise/')
+  private fetchSectorExpertiseData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?:boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/programme/" + countryId + '/sectorExpertise/' : Constants.APP_STATUS + "/countryOfficeProfile/programme/" + countryId + '/sectorExpertise/'
+    this.af.database.list(path)
       .first()
       .subscribe(sectorList => {
         if (sectorList.length > 0) {
@@ -449,8 +450,9 @@ export class ExportDataService {
     this.exportFile(this.counter, this.total, wb)
   }
 
-  private fetchProgram4wData(countryId: string, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + countryId + '/4WMapping/')
+  private fetchProgram4wData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/programme/" + countryId + '/4WMapping/' : Constants.APP_STATUS + "/countryOfficeProfile/programme/" + countryId + '/4WMapping/'
+    this.af.database.list(path)
       .first()
       .subscribe(mappings => {
         if (mappings.length > 0) {
@@ -622,8 +624,9 @@ export class ExportDataService {
       })
   }
 
-  private fetchPartnerOrgData(agencyId: string, countryId: string, wb: WorkBook) {
-    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
+  private fetchPartnerOrgData(agencyId: string, countryId: string, wb: WorkBook, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + '/agency/' + countryId + '/partnerOrganisations' : Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations'
+    this.af.database.list(path)
       .first()
       .subscribe(partnerOrganisations => {
         if (partnerOrganisations.length > 0) {
@@ -676,8 +679,9 @@ export class ExportDataService {
 
   }
 
-  private fetchSurgeEquipmentData(countryId: string, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/surgeEquipment/" + countryId)
+  private fetchSurgeEquipmentData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/surgeEquipment/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/surgeEquipment/" + countryId
+    this.af.database.list(path)
       .first()
       .subscribe(surgeEquipmentList => {
         if (surgeEquipmentList.length > 0) {
@@ -711,8 +715,9 @@ export class ExportDataService {
       })
   }
 
-  private fetchEquipmentData(countryId: string, areaContent: any, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/equipment/" + countryId)
+  private fetchEquipmentData(countryId: string, areaContent: any, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/equipment/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/equipment/" + countryId
+    this.af.database.list(path)
       .first()
       .subscribe(countryEquipments => {
         if (countryEquipments.length > 0) {
@@ -760,8 +765,9 @@ export class ExportDataService {
       })
   }
 
-  private fetchCoordinationData(countryId: string, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/coordination/" + countryId)
+  private fetchCoordinationData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/coordination/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/coordination/" + countryId
+    this.af.database.list(path)
       .first()
       .subscribe(cos => {
         if (cos.length > 0) {
@@ -808,8 +814,9 @@ export class ExportDataService {
       })
   }
 
-  private fetchStockCapacity(countryId: string, areaContent: any, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + countryId)
+  private fetchStockCapacity(countryId: string, areaContent: any, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/capacity/stockCapacity/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + countryId
+    this.af.database.list(path)
       .first()
       .subscribe(stockInCountry => {
         if (stockInCountry.length > 0) {
@@ -889,8 +896,9 @@ export class ExportDataService {
       })
   }
 
-  private fetchCountryOfficeDetail(agencyId: string, countryId: string, wb: WorkBook) {
-    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId)
+  private fetchCountryOfficeDetail(agencyId: string, countryId: string, wb: WorkBook, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/agency/" + agencyId : Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId
+    this.af.database.object(path)
       .first()
       .subscribe(countryOffice => {
         let offices = []
@@ -926,8 +934,9 @@ export class ExportDataService {
       })
   }
 
-  private fetchPointOfContactData(countryId: string, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/contacts/" + countryId)
+  private fetchPointOfContactData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
+    let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/contacts/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/contacts/" + countryId
+    this.af.database.list(path)
       .first()
       .subscribe(contactsList => {
         if (contactsList.length > 0) {
@@ -988,12 +997,12 @@ export class ExportDataService {
       })
   }
 
-  private fetchActionsData(areaContent, agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook, localAgencyIs?:boolean) {
+  private fetchActionsData(areaContent, agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook, localAgencyIs?: boolean) {
     this.fetchDepartmentsForAgencyAndCountry(agencyId, countryId).then((departmentMap: Map<string, string>) => {
       console.log(departmentMap)
       this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap: Map<string, number>) => {
         console.log(noteNumberMap)
-        this.fetchActionClockSettings(agencyId, countryId).then((expireDuration: number) => {
+        this.fetchActionClockSettings(agencyId, countryId, localAgencyIs).then((expireDuration: number) => {
           console.log("expire dutaion: " + expireDuration)
           this.fetchAlertScenarioForCountry(countryId).then((alertScenarioMap: Map<string, boolean>) => {
             console.log(alertScenarioMap)
@@ -1359,7 +1368,7 @@ export class ExportDataService {
     })
   }
 
-  private fetchActionClockSettings(agencyId, countryId, localAgencyIs?:boolean) {
+  private fetchActionClockSettings(agencyId, countryId, localAgencyIs?: boolean) {
     return new Promise((res,) => {
       let path = localAgencyIs ? Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/preparedness/" : Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings/preparedness/"
       this.af.database.object(path, {preserveSnapshot: true})
