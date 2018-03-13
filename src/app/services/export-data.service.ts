@@ -25,7 +25,6 @@ import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
 import {Subject} from "rxjs/Subject";
 import {AgencyService} from "./agency-service.service";
-import {map} from "rxjs/operator/map";
 
 @Injectable()
 export class ExportDataService {
@@ -34,6 +33,8 @@ export class ExportDataService {
   private COUNTRY_SHEETS = 16
   private exportFrom = EXPORT_FROM.FromCountry
   private PRIVATE = "Private"
+  private delayTime: number = 1000;
+  private tolerateNumber: number = 10
 
   private total: number
   private counter: number
@@ -516,11 +517,11 @@ export class ExportDataService {
                           if (this.exportFrom != EXPORT_FROM.FromCountry) {
                             obj["Country Office"] = this.countryNameMap.get(countryId)
                           }
-                          obj["Name"] = user.firstName + " " + user.lastName
+                          obj["Name"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : user.firstName + " " + user.lastName
                           obj["Position"] = staff.position
                           obj["Office Type"] = Constants.OFFICE_TYPE[staff.officeType] ? this.translateService.instant(Constants.OFFICE_TYPE[staff.officeType]) : ""
-                          obj["Technical Skills"] = techList
-                          obj["Support Skills"] = supList
+                          obj["Technical Skills"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : techList
+                          obj["Support Skills"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : supList
                           obj["Training Needs"] = staff.training
                           obj["Notes"] = staff.notes ? Object.keys(staff.notes).length : 0
                           obj["Last updated"] = moment(staff.updatedAt).format("MM/YYYY")
@@ -593,10 +594,10 @@ export class ExportDataService {
             }
             obj["Organisation"] = surge["orgnization"]
             obj["Relationship"] = surge["relationship"]
-            obj["Contact Name"] = surge["name"]
+            obj["Contact Name"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : surge["name"]
             obj["Contact Position"] = surge["position"]
-            obj["Contact Email"] = surge["email"]
-            obj["Sector(s) of expertise"] = ""
+            obj["Contact Email"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : surge["email"]
+            obj["Sector(s) of expertise"] = surge["sectors"].map(item => this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[item])).join()
             obj["Location"] = surge["location"]
             obj["ETA"] = surge["arrivalTimeValue"] + " " + Constants.DETAILED_DURATION_TYPE[surge["arrivalTimeType"]] ? this.translateService.instant(Constants.DETAILED_DURATION_TYPE[surge["arrivalTimeType"]]) : ""
             obj["Length of deployment"] = surge["durationOfDeployment"]
@@ -645,12 +646,12 @@ export class ExportDataService {
                   obj["Partner Organisation"] = org["organisationName"]
                   obj["Relationship"] = org["relationship"]
                   obj["Projects"] = org["projects"].length
-                  obj["Contact Title"] = Constants.PERSON_TITLE[org["title"]] ? this.translateService.instant(Constants.PERSON_TITLE[org["title"]]) : ""
-                  obj["Contact First Name"] = org["firstName"]
-                  obj["Contact Last Name"] = org["lastName"]
+                  obj["Contact Title"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : (Constants.PERSON_TITLE[org["title"]] ? this.translateService.instant(Constants.PERSON_TITLE[org["title"]]) : "")
+                  obj["Contact First Name"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : org["firstName"]
+                  obj["Contact Last Name"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : org["lastName"]
                   obj["Contact Position"] = org["position"]
-                  obj["Contact Email"] = org["email"]
-                  obj["Contact Phone Number"] = org["phone"]
+                  obj["Contact Email"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : org["email"]
+                  obj["Contact Phone Number"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : org["phone"]
                   return obj
                 })
 
@@ -687,9 +688,9 @@ export class ExportDataService {
             obj["Supplier"] = sEquipment["supplier"]
             obj["Relationship"] = sEquipment["relationship"]
             obj["Equipment Provided"] = sEquipment["equipmentProvided"]
-            obj["Contact Name"] = sEquipment["contactName"]
-            obj["Contact Email"] = sEquipment["contactEmail"]
-            obj["Contact Telephone"] = sEquipment["contactPhone"]
+            obj["Contact Name"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : sEquipment["contactName"]
+            obj["Contact Email"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : sEquipment["contactEmail"]
+            obj["Contact Telephone"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : sEquipment["contactPhone"]
             return obj
           })
 
@@ -732,9 +733,9 @@ export class ExportDataService {
               }
               temp1["0"] = temp2
               console.log(temp1)
-              obj["Location"] = this.commonService.getAreaNameListFromObj(areaContent, temp1)
+              obj["Location"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : this.commonService.getAreaNameListFromObj(areaContent, temp1)
             } else {
-              obj["Location"] = equipment["location"]
+              obj["Location"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : equipment["location"]
             }
             obj["Quantity"] = equipment["quantity"]
             obj["Status"] = equipment["status"]
@@ -770,11 +771,11 @@ export class ExportDataService {
             }
             obj["Sector"] = Constants.RESPONSE_PLANS_SECTORS[co["sector"]] ? this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[co["sector"]]) : ""
             obj["Sector Lead"] = co["sectorLead"]
-            obj["Contact Name"] = co["contactName"]
-            obj["Contact Email"] = co["contactEmail"]
-            obj["Contact Telephone"] = co["contactPhone"]
+            obj["Contact Name"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : co["contactName"]
+            obj["Contact Email"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : co["contactEmail"]
+            obj["Contact Telephone"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : co["contactPhone"]
             co["isAMember"] ? obj["Is your agency a member?"] = "Yes" : obj["Is your agency a member?"] = "No"
-            obj["Staff member represting your agency?"] = co["staffMember"]
+            obj["Staff member represting your agency?"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : co["staffMember"]
             return obj
           })
 
@@ -829,9 +830,9 @@ export class ExportDataService {
                 temp2["level2"] = stock["level2"]
               }
               temp1["0"] = temp2
-              obj["Location"] = this.commonService.getAreaNameListFromObj(areaContent, temp1)
+              obj["Location"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : this.commonService.getAreaNameListFromObj(areaContent, temp1)
             } else {
-              obj["Location"] = stock["location"]
+              obj["Location"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : stock["location"]
             }
             obj["Lead time"] = stock["leadTime"]
             return obj
@@ -858,9 +859,9 @@ export class ExportDataService {
                 temp2["level2"] = stock["level2"]
               }
               temp1["0"] = temp2
-              obj["Location"] = this.commonService.getAreaNameListFromObj(areaContent, temp1)
+              obj["Location"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : this.commonService.getAreaNameListFromObj(areaContent, temp1)
             } else {
-              obj["Location"] = stock["location"]
+              obj["Location"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : stock["location"]
             }
             obj["Lead time"] = stock["leadTime"]
             return obj
@@ -961,8 +962,8 @@ export class ExportDataService {
                 }
                 contact["Name of contact"] = tempObj["Name of contact"]
                 contact["Contact Email"] = tempObj["Contact Email"]
-                contact["Skype Name"] = tempObj["Skype Name"]
-                contact["Direct Telephone"] = tempObj["Direct Telephone"]
+                contact["Skype Name"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : tempObj["Skype Name"]
+                contact["Direct Telephone"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : tempObj["Direct Telephone"]
                 contact["Office Telephone"] = tempObj["Office Telephone"]
 
                 contactCounter++
@@ -1208,9 +1209,9 @@ export class ExportDataService {
   private exportFileSystem(counter, total, wb) {
     console.log("system total: " + total)
     console.log("system counter: " + counter)
-    if (total - counter < 10 && this.systemCanExport) {
+    if (total - counter < this.tolerateNumber && this.systemCanExport) {
       this.systemCanExport = false
-      Observable.timer(1000).first().subscribe(() => {
+      Observable.timer(this.delayTime).first().subscribe(() => {
         // if (counter == total - 2) {
         console.log("system export triggered*****")
         const alertsForSystemSheet = XLSX.utils.json_to_sheet(this.alertsForSystem);
