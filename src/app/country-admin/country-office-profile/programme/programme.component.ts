@@ -424,7 +424,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   saveSectors() {
-
     if (!this.TmpSectorExpertise || !this.TmpSectorExpertise.length) {
       this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SAVE_SELECTORS', AlertMessageType.Error);
       return false;
@@ -445,7 +444,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   saveSectorsLocalAgency() {
-
     if (!this.TmpSectorExpertise || !this.TmpSectorExpertise.length) {
       this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SAVE_SELECTORS', AlertMessageType.Error);
       return false;

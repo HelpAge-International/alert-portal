@@ -11,6 +11,7 @@ import {Subject} from "rxjs/Subject";
 import {LocalStorageService} from "angular-2-local-storage";
 import {SettingsService} from "../../../services/settings.service";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
+import {CommonService} from "../../../services/common.service";
 
 declare var jQuery: any;
 
@@ -42,6 +43,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   private sectorExpertise = new Map<string, any[]>()
   private logContent: any[] = [];
   private noteTmp: any[] = [];
+  private locationObjs: any[] = [];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private agencyId: string;
@@ -74,6 +76,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
               private router: Router,
+              private jsonService: CommonService,
               private storageService: LocalStorageService,
               private networkService: NetworkService,
               private agencyService: AgencyService,
@@ -365,6 +368,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
             this.sectorExpertise.get(key).push(obj);
 
           }
+          this.generateLocations();
           console.log(this.sectorExpertise)
         });
     })
@@ -499,6 +503,28 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
         this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_SELECTORS', AlertMessageType.Success);
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
+    });
+  }
+  generateLocations(){
+    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
+      this.mapping.forEach(mapping => {
+        let obj = {
+          country: "",
+          areas: ""
+        };
+        console.log(mapping)
+        
+        // if (mapping.where && mapping.where > -1) {
+        //   obj.country = this.countries[mapping.where];
+        // }
+        // if (mapping.level1 && mapping.level1 > -1) {
+        //   obj.areas = ", " + json[mapping.where].levelOneValues[mapping.level1].value
+        // }
+        // if (mapping.level2 && mapping.level2 > -1) {
+        //   obj.areas = obj.areas + ", " + json[mapping.where].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
+        // }
+        this.locationObjs.push(obj);
+      });
     });
   }
 

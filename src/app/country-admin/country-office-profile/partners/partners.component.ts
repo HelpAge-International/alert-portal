@@ -182,7 +182,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                   this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
                 });
               });
-
             // get the country levels values
             this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
               .subscribe(content => {
