@@ -33,6 +33,7 @@ export class ModelAlert extends BaseModel {
   public timeTracking?: {};
 
   public previousIsAmber?: boolean
+  public redAlertApproved?: boolean
 
   constructor() {
     super();

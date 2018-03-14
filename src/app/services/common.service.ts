@@ -99,7 +99,7 @@ export class CommonService {
     return this.af.database.list(Constants.APP_STATUS + "/agency", {
       query : {
         orderByChild:"isGlobalAgency",
-        equalTo:true
+        equalTo:false
       }
     })
   }
@@ -114,8 +114,6 @@ export class CommonService {
       })
       .map(snap => {
         if (snap.val()) {
-          console.log(snap.key)
-          console.log(snap.val())
           return Object.keys(snap.val()).filter(key => key != "undefined").map(key => {
             return {agencyId:snap.key, countryId:key}
           })

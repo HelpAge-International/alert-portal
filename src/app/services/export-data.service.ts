@@ -218,13 +218,10 @@ export class ExportDataService {
   }
 
   private getCountryStuff(countryId: string, agencyId: string, areaContent) {
-    console.log("country id: " + countryId)
-    console.log("agency id: " + agencyId)
     //get all staff for this country
     this.userService.getStaffList(countryId)
       .first()
       .subscribe(staffs => {
-        console.log(staffs)
         let staffMap = new Map<string, string>()
         //get country admin first
         this.userService.getCountryAdmin(agencyId, countryId)
@@ -260,7 +257,6 @@ export class ExportDataService {
     this.userService.getStaffList(agencyId)
       .first()
       .subscribe(staffs => {
-        console.log(staffs)
         let staffMap = new Map<string, string>()
         //get country admin first
         this.userService.getLocalAgencyAdmin(agencyId)
@@ -314,8 +310,13 @@ export class ExportDataService {
             this.commonService.getTotalLocalAgencies()
               .first()
               .subscribe(localAgencies => {
+                this.totalCountries += localAgencies.length
+                this.total = this.totalCountries * this.COUNTRY_SHEETS
                 localAgencies.forEach(localAgency => {
                   this.agencyNameMap.set(localAgency.$key, localAgency.name)
+                  let countryName = Constants.COUNTRIES[localAgency.countryCode] ? this.translateService.instant(Constants.COUNTRIES[localAgency.countryCode]) : ""
+                  this.countryNameMap.set(localAgency.$key, countryName)
+                  this.getLocalAgencyStuff(localAgency.$key, areaContent)
                 })
               })
             //endregion
@@ -323,15 +324,12 @@ export class ExportDataService {
             this.commonService.getCountryTotalForSystem()
               .take(totalAgency)
               .subscribe(countries => {
-                console.log(countries)
                 this.updateCountryName(countries).then(() => {
                   countries.forEach(item => countryAgencyMap.set(item.countryId, item.agencyId))
                   this.totalCountries += countries.length
                   this.total = this.totalCountries * this.COUNTRY_SHEETS
                   agencyCounter++
                   if (agencyCounter === totalAgency) {
-                    console.log(this.total)
-                    console.log(countryAgencyMap)
                     countryAgencyMap.forEach((agencyId, countryId) => {
                       this.getCountryStuff(countryId, agencyId, areaContent)
                     })
@@ -395,7 +393,7 @@ export class ExportDataService {
                                 const indicatorSheet = XLSX.utils.json_to_sheet(allIndicators);
                                 XLSX.utils.book_append_sheet(wb, indicatorSheet, "Risk Monitoring")
                                 this.counter++
-                                console.log("indicator: " + this.counter)
+                                // console.log("indicator: " + this.counter)
                                 this.exportFile(this.counter, this.total, wb)
                               }
                             }
@@ -410,7 +408,7 @@ export class ExportDataService {
                         const indicatorSheet = XLSX.utils.json_to_sheet(allIndicators);
                         XLSX.utils.book_append_sheet(wb, indicatorSheet, "Risk Monitoring")
                         this.counter++
-                        console.log("indicator: " + this.counter)
+                        // console.log("indicator: " + this.counter)
                         this.exportFile(this.counter, this.total, wb)
                       }
                     }
@@ -423,7 +421,7 @@ export class ExportDataService {
                 const indicatorSheet = XLSX.utils.json_to_sheet(allIndicators);
                 XLSX.utils.book_append_sheet(wb, indicatorSheet, "Risk Monitoring")
                 this.counter++
-                console.log("indicator: " + this.counter)
+                // console.log("indicator: " + this.counter)
                 this.exportFile(this.counter, this.total, wb)
               } else {
                 this.passEmpty(wb)
@@ -462,7 +460,7 @@ export class ExportDataService {
     return indicatorObj
   }
 
-  private fetchSectorExpertiseData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?:boolean) {
+  private fetchSectorExpertiseData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/programme/" + countryId + '/sectorExpertise/' : Constants.APP_STATUS + "/countryOfficeProfile/programme/" + countryId + '/sectorExpertise/'
     this.af.database.list(path)
       .first()
@@ -485,7 +483,7 @@ export class ExportDataService {
           const sectorSheet = XLSX.utils.json_to_sheet(sectors);
           XLSX.utils.book_append_sheet(wb, sectorSheet, "CO - Sector Expertise")
           this.counter++
-          console.log("Sector Expertise: " + this.counter)
+          // console.log("Sector Expertise: " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb);
@@ -495,7 +493,7 @@ export class ExportDataService {
 
   private passEmpty(wb: WorkBook) {
     this.counter++
-    console.log("empty: " + this.counter)
+    // console.log("empty: " + this.counter)
     this.exportFile(this.counter, this.total, wb)
   }
 
@@ -532,7 +530,7 @@ export class ExportDataService {
           const program4wSheet = XLSX.utils.json_to_sheet(program4w);
           XLSX.utils.book_append_sheet(wb, program4wSheet, "CO - Programme Mapping")
           this.counter++
-          console.log("Programme Mapping: " + this.counter)
+          // console.log("Programme Mapping: " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb)
@@ -587,7 +585,7 @@ export class ExportDataService {
                             const officeCapacitySheet = XLSX.utils.json_to_sheet(transformedList);
                             XLSX.utils.book_append_sheet(wb, officeCapacitySheet, "CO - Office Capacity")
                             this.counter++
-                            console.log("Office Capacity: " + this.counter)
+                            // console.log("Office Capacity: " + this.counter)
                             this.exportFile(this.counter, this.total, wb)
                           }
                         })
@@ -621,7 +619,7 @@ export class ExportDataService {
                     const officeCapacitySheet = XLSX.utils.json_to_sheet(transformedList);
                     XLSX.utils.book_append_sheet(wb, officeCapacitySheet, "CO - Office Capacity")
                     this.counter++
-                    console.log("Office Capacity: " + this.counter)
+                    // console.log("Office Capacity: " + this.counter)
                     this.exportFile(this.counter, this.total, wb)
                   }
                 })
@@ -664,7 +662,7 @@ export class ExportDataService {
           const surgesSheet = XLSX.utils.json_to_sheet(surges);
           XLSX.utils.book_append_sheet(wb, surgesSheet, "CO - Surge Capacity")
           this.counter++
-          console.log("Surge Capacity: " + this.counter)
+          // console.log("Surge Capacity: " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb)
@@ -689,9 +687,7 @@ export class ExportDataService {
             .subscribe(org => {
               orgs.push(org)
               if (orgs.length == total) {
-                console.log(orgs)
                 let organisations = orgs.filter(org => org.isApproved).map(org => {
-                  console.log(org["projects"])
                   let obj = {}
                   if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
                     obj["Agency"] = this.agencyNameMap.get(agencyId)
@@ -716,7 +712,7 @@ export class ExportDataService {
                 const organisationSheet = XLSX.utils.json_to_sheet(organisations);
                 XLSX.utils.book_append_sheet(wb, organisationSheet, "CO - Partners")
                 this.counter++
-                console.log("Partners: " + this.counter)
+                // console.log("Partners: " + this.counter)
                 this.exportFile(this.counter, this.total, wb)
 
               }
@@ -756,7 +752,7 @@ export class ExportDataService {
           const surgeEquipmentSheet = XLSX.utils.json_to_sheet(surgeEquipments);
           XLSX.utils.book_append_sheet(wb, surgeEquipmentSheet, "CO - Surge Equipment")
           this.counter++
-          console.log("Surge Equipment: " + this.counter)
+          // console.log("Surge Equipment: " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb)
@@ -805,7 +801,7 @@ export class ExportDataService {
           const equipmentSheet = XLSX.utils.json_to_sheet(equipments);
           XLSX.utils.book_append_sheet(wb, equipmentSheet, "CO - Equipment(Equipment)")
           this.counter++
-          console.log("Equipment(Equipment): " + this.counter)
+          // console.log("Equipment(Equipment): " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb)
@@ -852,7 +848,7 @@ export class ExportDataService {
                   const coordSheet = XLSX.utils.json_to_sheet(coordinations);
                   XLSX.utils.book_append_sheet(wb, coordSheet, "CO - Coordination")
                   this.counter++
-                  console.log("Coordination: " + this.counter)
+                  // console.log("Coordination: " + this.counter)
                   this.exportFile(this.counter, this.total, wb)
                 }
               })
@@ -936,7 +932,7 @@ export class ExportDataService {
           XLSX.utils.book_append_sheet(wb, stocksInCountrySheet, "Stock Capacity(In-country)")
           XLSX.utils.book_append_sheet(wb, stocksExternalCountrySheet, "Stock Capacity(External)")
           this.counter++
-          console.log("Stock Capacity: " + this.counter)
+          // console.log("Stock Capacity: " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb)
@@ -977,7 +973,7 @@ export class ExportDataService {
             const officeSheet = XLSX.utils.json_to_sheet(offices);
             XLSX.utils.book_append_sheet(wb, officeSheet, "CO - Contacts (Office Details)")
             this.counter++
-            console.log("Office Detail: " + this.counter)
+            // console.log("Office Detail: " + this.counter)
             this.exportFile(this.counter, this.total, wb)
           })
       })
@@ -1035,7 +1031,7 @@ export class ExportDataService {
                   const planSheet = XLSX.utils.json_to_sheet(contacts);
                   XLSX.utils.book_append_sheet(wb, planSheet, "CO - Contacts(Point of Contact)")
                   this.counter++
-                  console.log("Contacts(POC): " + this.counter)
+                  // console.log("Contacts(POC): " + this.counter)
                   this.exportFile(this.counter, this.total, wb)
                 }
               })
@@ -1048,13 +1044,9 @@ export class ExportDataService {
 
   private fetchActionsData(areaContent, agencyId: string, countryId: string, staffMap: Map<string, string>, wb: WorkBook, localAgencyIs?: boolean) {
     this.fetchDepartmentsForAgencyAndCountry(agencyId, countryId).then((departmentMap: Map<string, string>) => {
-      console.log(departmentMap)
       this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap: Map<string, number>) => {
-        console.log(noteNumberMap)
         this.fetchActionClockSettings(agencyId, countryId, localAgencyIs).then((expireDuration: number) => {
-          console.log("expire dutaion: " + expireDuration)
           this.fetchAlertScenarioForCountry(countryId).then((alertScenarioMap: Map<string, boolean>) => {
-            console.log(alertScenarioMap)
             this.af.database.list(Constants.APP_STATUS + "/action/" + countryId)
               .first()
               .subscribe(actionList => {
@@ -1091,7 +1083,7 @@ export class ExportDataService {
                   XLSX.utils.book_append_sheet(wb, actionSheet, "Preparedness")
 
                   this.counter++
-                  console.log("Preparedness: " + this.counter)
+                  // console.log("Preparedness: " + this.counter)
                   this.exportFile(this.counter, this.total, wb)
 
                 } else {
@@ -1144,7 +1136,7 @@ export class ExportDataService {
           const planSheet = XLSX.utils.json_to_sheet(plans);
           XLSX.utils.book_append_sheet(wb, planSheet, "Response Plans")
           this.counter++
-          console.log("Response Plans: " + this.counter)
+          // console.log("Response Plans: " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb)
@@ -1183,7 +1175,7 @@ export class ExportDataService {
           const alertSheet = XLSX.utils.json_to_sheet(alerts)
           XLSX.utils.book_append_sheet(wb, alertSheet, "Alerts")
           this.counter++
-          console.log("Alerts: " + this.counter)
+          // console.log("Alerts: " + this.counter)
           this.exportFile(this.counter, this.total, wb)
         } else {
           this.passEmpty(wb)
@@ -1193,8 +1185,8 @@ export class ExportDataService {
   }
 
   private exportFile(counter, total, wb) {
-    console.log("counter: " + counter)
-    console.log("total: " + total)
+    // console.log("counter: " + counter)
+    // console.log("total: " + total)
     // if (counter == total-2) {
     switch (this.exportFrom) {
       case EXPORT_FROM.FromAgency : {
@@ -1232,8 +1224,6 @@ export class ExportDataService {
   }
 
   private exportFileAgency(counter, total, wb) {
-    console.log("agency total: " + total)
-    console.log("agency counter: " + counter)
     if (counter == total) {
       const alertsForAgencySheet = XLSX.utils.json_to_sheet(this.alertsForAgency);
       const indicatorsForAgencySheet = XLSX.utils.json_to_sheet(this.indicatorsForAgency);
@@ -1276,8 +1266,8 @@ export class ExportDataService {
   }
 
   private exportFileSystem(counter, total, wb) {
-    console.log("system total: " + total)
-    console.log("system counter: " + counter)
+    // console.log("system total: " + total)
+    // console.log("system counter: " + counter)
     if (total - counter < this.tolerateNumber && this.systemCanExport) {
       this.systemCanExport = false
       Observable.timer(this.delayTime).first().subscribe(() => {
@@ -1718,7 +1708,6 @@ export class ExportDataService {
 
   private fetchAPActivationData(areaContent, actionList: any[], countryId: string, wb: WorkBook, agencyId?: string) {
     this.fetchAlertsForCountry(countryId).then((alertMap: Map<string, any>) => {
-      console.log(alertMap)
       let apaList = actionList.filter(action => action.level = ActionLevel.APA && action.redAlerts)
       if (apaList.length > 0) {
         let activeApaList = []
@@ -1751,7 +1740,7 @@ export class ExportDataService {
             const activateAPASheet = XLSX.utils.json_to_sheet(activeApaList);
             XLSX.utils.book_append_sheet(wb, activateAPASheet, "APA Activation")
             this.counter++
-            console.log("APA Activation: " + this.counter)
+            // console.log("APA Activation: " + this.counter)
             this.exportFile(this.counter, this.total, wb)
           }
         })

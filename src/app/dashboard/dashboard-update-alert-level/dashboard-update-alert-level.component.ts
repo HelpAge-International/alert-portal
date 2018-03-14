@@ -143,7 +143,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             operationArea.level2 = y.affectedLevel2;
             x.push(operationArea);
           }
-  
+
           this.loadedAlert.affectedAreas.forEach(area => {
             this.alertService.getAllLevelInfo(area.affectedCountry)
               .takeUntil(this.ngUnsubscribe)
@@ -151,9 +151,9 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
                 this.geoMap.set(area.affectedCountry, geoInfo);
               });
           });
-  
+
           this.loadedAlert.affectedAreas = x;
-  
+
           console.log(this.loadedAlert);
         });
     })
@@ -186,7 +186,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
               operationArea.level2 = y.affectedLevel2;
               x.push(operationArea);
             }
-    
+
             this.loadedAlert.affectedAreas.forEach(area => {
               this.alertService.getAllLevelInfo(area.affectedCountry)
                 .takeUntil(this.ngUnsubscribe)
@@ -194,9 +194,9 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
                   this.geoMap.set(area.affectedCountry, geoInfo);
                 });
             });
-    
+
             this.loadedAlert.affectedAreas = x;
-    
+
           });
     })
   }
@@ -254,13 +254,13 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
                     action['timeTracking']['timeSpentInGreen'] = [];
                   }
                   action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-                }else{ 
+                }else{
                   if(!action["timeTracking"]["timeSpentInAmber"]){
                     action['timeTracking']['timeSpentInAmber'] = [];
                   }
                   action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
                 }
-  
+
                 if(this.loadedAlert.alertLevel == AlertLevels.Red){
                   this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id)
                   .update(action)
@@ -303,7 +303,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
                   this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id)
                     .update(action)
               }
-  
+
             }else{
                 this.alerts.forEach( alert => {
                   if(alert.hazardScenario == this.loadedAlert.hazardScenario && alert.$key != this.loadedAlert.id && alert.alertLevel == AlertLevels.Red){
@@ -316,7 +316,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
                       if(action["timeTracking"]["timeSpentInRed"] && action["timeTracking"]["timeSpentInRed"].find(x => x.finish == -1)){
                         action["timeTracking"]["timeSpentInRed"][action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime;
                       }
-  
+
                       if(action["timeTracking"]["timeSpentInAmber"] && action["timeTracking"]["timeSpentInAmber"].find(x => x.finish == -1)){
                         action["timeTracking"]["timeSpentInAmber"][action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime;
                       }
@@ -324,12 +324,12 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
                       if(action["timeTracking"]["timeSpentInGreen"] && action["timeTracking"]["timeSpentInGreen"].find(x => x.finish == -1)){
                         action["timeTracking"]["timeSpentInGreen"][action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime;
                       }
-  
+
                       if(!action["timeTracking"]["timeSpentInGrey"]){
                         action['timeTracking']['timeSpentInGrey'] = [];
                       }
                       action['timeTracking']['timeSpentInGrey'].push(newTimeObject)
-  
+
                     }
 
                     this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id)
@@ -478,6 +478,8 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             this.networkService.updateNetworkField(obj)
           })
         })
+
+      this.loadedAlert.redAlertApproved = null
     }
 
     //new property "previousIsAmber" will be pushed if updated from amber, otherwise, this property will be deleted

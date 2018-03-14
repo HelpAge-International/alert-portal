@@ -225,10 +225,10 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if(isLocalAgency){
+          if (isLocalAgency) {
             modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
             modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else{
+          } else {
             if (alert.approval && alert.approval['countryDirector']) {
               modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
               modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
@@ -345,10 +345,10 @@ export class ActionsService {
             affectedAreas.push(modelAffectedArea);
           });
           modelAlert.affectedAreas = affectedAreas;
-          if(isLocalAgency){
+          if (isLocalAgency) {
             modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
             modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else{
+          } else {
             modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
             modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
           }
@@ -437,7 +437,8 @@ export class ActionsService {
         modelAlert.timeCreated = alert.timeCreated;
         modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
         modelAlert.createdBy = alert.createdBy;
-        modelAlert.timeTracking = alert.timeTracking;        ;
+        modelAlert.timeTracking = alert.timeTracking;
+        ;
 
         let affectedAreas: ModelAffectedArea[] = [];
         let ids: string[] = Object.keys(alert.affectedAreas);
@@ -1110,14 +1111,15 @@ export class ActionsService {
   }
 
   approveRedAlert(countryId, alertId, uid, isNetwork?) {
-    if (isNetwork) {
-      console.log(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId)
-      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
-
-      //TODO send alert to each country office in the network with a notification to their country directors
-    } else {
-      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
-    }
+    // if (isNetwork) {
+    //   console.log(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId)
+    //   this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+    //
+    //   //TODO send alert to each country office in the network with a notification to their country directors
+    // } else {
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/redAlertApproved").set(true);
+    // }
 
   }
 
@@ -1220,7 +1222,7 @@ export class ActionsService {
       }
     }))
       .map(plans => {
-        if (plans && plans.length>0) {
+        if (plans && plans.length > 0) {
           plans.forEach(plan => {
             let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
             this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
