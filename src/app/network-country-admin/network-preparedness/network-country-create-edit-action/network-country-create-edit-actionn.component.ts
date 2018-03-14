@@ -403,7 +403,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
         console.log("Frequency Values are here!");
-        this.action.isFrequencyActive = true;
+        this.action.isFrequencyActive = true; 
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
       }

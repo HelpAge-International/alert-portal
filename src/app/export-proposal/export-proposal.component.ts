@@ -124,6 +124,14 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
       if (params['isLocalAgency']) {
+        if (params["excel"]) {
+          this.isExcel = params["excel"];
+          if (this.isExcel == 1) {
+            this.docType = "Excel";
+          } else {
+            this.docType = "Word";
+          }
+        }
         this.isLocalAgency = true;
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemAdminId) => {
           this.uid = user.uid;
@@ -144,6 +152,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
             this.docType = "Word";
           }
         }
+
+
         if (params["id"] && params["networkCountryId"]) {
           this.responsePlanId = params["id"];
           this.networkCountryId = params["networkCountryId"];

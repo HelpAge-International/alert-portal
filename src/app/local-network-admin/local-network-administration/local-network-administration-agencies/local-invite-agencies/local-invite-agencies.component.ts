@@ -75,10 +75,22 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
                             .takeUntil(this.ngUnsubscribe)
                             .subscribe(agency => {
                               this.agencies.push(agency)
-                              console.log(this.agencies)
                             })
                         }
                       })
+
+
+                    this.agencyService.getAllLocalAgencyByNetworkCountry(network.countryCode, agency.id)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(x => {
+                      if (x.countryCode == network.countryCode) {
+                        this.agencyService.getAgency(agency.id)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(agency => {
+                            this.agencies.push(agency)
+                          })
+                      }
+                    })
                   })
 
                 })
