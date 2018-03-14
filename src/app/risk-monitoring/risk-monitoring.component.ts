@@ -1465,6 +1465,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
 
     var dataToUpdate = {isActive: this.tmpHazardData['activeStatus']};
+    console.log(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID']);
     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
       .update(dataToUpdate)
       .then(_ => {
