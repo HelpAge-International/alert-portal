@@ -428,7 +428,7 @@ exports.handleUserAccount = functions.database.ref('/sand/userPublic/{userId}')
       });
     }
   });
-//
+
 exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId}')
   .onWrite(event => {
     console.log("agency node triggered");
@@ -462,7 +462,7 @@ exports.handleUserAccountTest = functions.database.ref('/test/userPublic/{userId
       });
     }
   });
-//
+
 exports.handleUserAccountUat = functions.database.ref('/uat/userPublic/{userId}')
   .onWrite(event => {
     console.log("agency node triggered");
@@ -506,6 +506,17 @@ exports.handleUserAccountUat2 = functions.database.ref('/uat-2/userPublic/{userI
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
+      admin.auth().createUser({
+        uid: userId,
+        email: currData.email,
+        password: TEMP_PASS
+      })
+        .then(user => {
+          console.log("(handleUserAccountUat)Successfully created new user: " + user.uid)
+        })
+        .catch(error => {
+          console.log("(handleUserAccountUat)Error creating new user:", error)
+        })
     } else if (preData && currData) {
       //user account change
       console.log("user data changed: " + userId);
@@ -520,29 +531,29 @@ exports.handleUserAccountUat2 = functions.database.ref('/uat-2/userPublic/{userI
     }
   });
 
-exports.handleUserAccountD1s1 = functions.database.ref('/d1s1/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
-
+// exports.handleUserAccountD1s1 = functions.database.ref('/d1s1/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
+//
 exports.handleUserAccountD1s2 = functions.database.ref('/d1s2/userPublic/{userId}')
   .onWrite(event => {
     console.log("agency node triggered");
@@ -552,6 +563,17 @@ exports.handleUserAccountD1s2 = functions.database.ref('/d1s2/userPublic/{userId
     if (!preData && currData) {
       //add user account
       console.log("user added: " + userId);
+      admin.auth().createUser({
+        uid: userId,
+        email: currData.email,
+        password: TEMP_PASS
+      })
+        .then(user => {
+          console.log("(handleUserAccountUat)Successfully created new user: " + user.uid)
+        })
+        .catch(error => {
+          console.log("(handleUserAccountUat)Error creating new user:", error)
+        })
     } else if (preData && currData) {
       //user account change
       console.log("user data changed: " + userId);
@@ -566,97 +588,97 @@ exports.handleUserAccountD1s2 = functions.database.ref('/d1s2/userPublic/{userId
     }
   });
 
-exports.handleUserAccountD2s1 = functions.database.ref('/d2s1/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
-
-exports.handleUserAccountD2s2 = functions.database.ref('/d2s2/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
-
-exports.handleUserAccountD3s1 = functions.database.ref('/d3s1/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
-
-exports.handleUserAccountD3s2 = functions.database.ref('/d3s2/userPublic/{userId}')
-  .onWrite(event => {
-    console.log("agency node triggered");
-    const userId = event.params.userId;
-    const preData = event.data.previous.val();
-    const currData = event.data.current.val();
-    if (!preData && currData) {
-      //add user account
-      console.log("user added: " + userId);
-    } else if (preData && currData) {
-      //user account change
-      console.log("user data changed: " + userId);
-    } else if (preData && !currData) {
-      //delete user account
-      console.log("delete user: " + userId);
-      admin.auth().deleteUser(userId).then(() => {
-        console.log("successfully deleted user: " + userId);
-      }, error => {
-        console.log(error.message);
-      });
-    }
-  });
+// exports.handleUserAccountD2s1 = functions.database.ref('/d2s1/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
+//
+// exports.handleUserAccountD2s2 = functions.database.ref('/d2s2/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
+//
+// exports.handleUserAccountD3s1 = functions.database.ref('/d3s1/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
+//
+// exports.handleUserAccountD3s2 = functions.database.ref('/d3s2/userPublic/{userId}')
+//   .onWrite(event => {
+//     console.log("agency node triggered");
+//     const userId = event.params.userId;
+//     const preData = event.data.previous.val();
+//     const currData = event.data.current.val();
+//     if (!preData && currData) {
+//       //add user account
+//       console.log("user added: " + userId);
+//     } else if (preData && currData) {
+//       //user account change
+//       console.log("user data changed: " + userId);
+//     } else if (preData && !currData) {
+//       //delete user account
+//       console.log("delete user: " + userId);
+//       admin.auth().deleteUser(userId).then(() => {
+//         console.log("successfully deleted user: " + userId);
+//       }, error => {
+//         console.log(error.message);
+//       });
+//     }
+//   });
 
 //UNCOMMENT BELOW ONLY FOR LIVE AND COMMENT ALL ABOVE
 
@@ -4714,7 +4736,7 @@ exports.sendEmailToExternalForIndicatorUpdate_TEST = functions.database.ref('/te
         }
       })
     }
-  });
+  })
 
 exports.sendEmailToExternalForIndicatorUpdate_UAT = functions.database.ref('/uat/indicator/{hazardId}/{indicatorId}/triggerSelected')
   .onWrite(event => {
@@ -4765,7 +4787,7 @@ exports.sendEmailToExternalForIndicatorUpdate_UAT = functions.database.ref('/uat
         }
       })
     }
-  });
+  })
 
 // exports.sendEmailToExternalForPlanExpired_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/isActive')
 //   .onWrite(event => {
@@ -4807,7 +4829,7 @@ exports.sendEmailToExternalForPlanExpired_TEST = functions.database.ref('/test/r
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_EXPIRED);
       })
     }
-  });
+  })
 
 exports.sendEmailToExternalForPlanExpired_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/isActive')
   .onWrite(event => {
@@ -4828,7 +4850,7 @@ exports.sendEmailToExternalForPlanExpired_UAT = functions.database.ref('/uat/res
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_EXPIRED);
       })
     }
-  });
+  })
 
 // exports.sendEmailPlanRejectedByCountryDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
 //   .onWrite(event => {
@@ -4870,7 +4892,7 @@ exports.sendEmailPlanRejectedByCountryDirector_TEST = functions.database.ref('/t
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
       })
     }
-  });
+  })
 
 exports.sendEmailPlanRejectedByCountryDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
   .onWrite(event => {
@@ -4891,7 +4913,7 @@ exports.sendEmailPlanRejectedByCountryDirector_UAT = functions.database.ref('/ua
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
       })
     }
-  });
+  })
 
 // exports.sendEmailPlanRejectedByRegionDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
 //   .onWrite(event => {
@@ -4931,7 +4953,7 @@ exports.sendEmailPlanRejectedByRegionDirector_TEST = functions.database.ref('/te
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
       })
     }
-  });
+  })
 
 exports.sendEmailPlanRejectedByRegionDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
   .onWrite(event => {
@@ -4951,7 +4973,7 @@ exports.sendEmailPlanRejectedByRegionDirector_UAT = functions.database.ref('/uat
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
       })
     }
-  });
+  })
 
 // exports.sendEmailPlanRejectedByGlobalDirector_SAND = functions.database.ref('/sand/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
 //   .onWrite(event => {
@@ -4991,7 +5013,7 @@ exports.sendEmailPlanRejectedByGlobalDirector_TEST = functions.database.ref('/te
         fetchUsersAndSendEmail('test', countryId, title, content, PLAN_REJECTED)
       })
     }
-  });
+  })
 
 exports.sendEmailPlanRejectedByGlobalDirector_UAT = functions.database.ref('/uat/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
   .onWrite(event => {
@@ -5005,9 +5027,9 @@ exports.sendEmailPlanRejectedByGlobalDirector_UAT = functions.database.ref('/uat
       let planId = event.params['planId'];
 
       admin.database().ref('/uat/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
-        let plan = data.val();
-        let title = `Response plan was rejected`;
-        let content = `The following response plan:${plan.name}, was rejected by global director.`;
+        let plan = data.val()
+        let title = `Response plan was rejected`
+        let content = `The following response plan:${plan.name}, was rejected by global director.`
         fetchUsersAndSendEmail('uat', countryId, title, content, PLAN_REJECTED)
       })
     }
@@ -5507,7 +5529,7 @@ function fetchUsersAndSendEmail(node, countryId, title, content, setting) {
     if (exObj) {
       let recipients = Object.keys(exObj).map(key => {
         return exObj[key]
-      });
+      })
       for (let i = 0, len = recipients.length; i < len; i++) {
         if (recipients[i].notificationsSettings[setting]) {
           sendEmail(recipients[i].email, title, content)
@@ -5526,3 +5548,5 @@ function getAlertName(level) {
     return "RED ALERT"
   }
 }
+
+/*********************************************************************************************************************************************/

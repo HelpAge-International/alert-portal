@@ -110,7 +110,6 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
                     });
                   }
                 });
-
             });
         });
     });

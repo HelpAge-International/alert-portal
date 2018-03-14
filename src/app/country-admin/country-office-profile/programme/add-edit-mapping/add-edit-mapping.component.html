@@ -65,12 +65,12 @@
 
     <!--START-->
 
-    <h6 class="font-weight-bold row Spaced-above">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" |
+    <h6 class="font-weight-bold row">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.WHERE" |
       translate}}</h6><br>
     <div class="row">
       <div class="col-sm-3">
         <div class="form-group-risk-frequency row">
-          <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control"
+          <select (click)="resetValue()" [(ngModel)]="selectedCountry" (ngModelChange)="setCountryLevel(selectedCountry)" class="form-control"
                   name="CountryArea">
             <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
             <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] |
@@ -79,6 +79,9 @@
           </select>
         </div>
       </div>
+      <!--<input id="fromDate" name="fromDate" [(ngModel)]="when" type="text" bsDatepicker class="form-control"-->
+             <!--value="{{ programme.when ? (programme.when | date:'dd/MM/yyyy') : ('DD/MM/YYYY')}}"-->
+             <!--(ngModelChange)="setWhenDate(when)">-->
 
 
       <!--LEVEL 1 START-->
@@ -86,7 +89,7 @@
       <div class="col-sm-3">
         <div class="form-group-risk-frequency">
           <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue"
-                  (change)="setLevel1Value()">
+                  (ngModelChange)="setLevel1Value(selectedValue)">
             <option value="undefined" disabled selected hidden>
               {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
             </option>
@@ -102,7 +105,7 @@
 
       <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3">
         <div class="form-group-risk-frequency ">
-          <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2">
+          <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValueL2" (ngModelChange)="setLevel2Value(selectedValueL2)">
             <option value="undefined" disabled selected hidden>
               {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
             </option>
@@ -114,12 +117,9 @@
 
       <!--==LEVEL 2 END==-->
 
-
     </div>
 
-
     <!--END-->
-
 
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO_WHO" |
@@ -135,34 +135,38 @@
     <br>
 
     <div class="row Spaced-above">
-      <div class="col-sm-4">
-        <div class="row">
+      <div class="col-sm-2">
+        <div class="row padding-right-two">
           <h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.FROM" | translate}}</h6>
           <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT4.LEVEL1'"></tooltip>
         </div>
-        <div class="row">
-          <material-datepicker id="fromDate"
-                               dateFormat="DD-MM-YYYY"
-                               [(ngModel)]="programme.when"
-                               (onSelect)="setWhenDate(programme)"></material-datepicker>
-        </div>
       </div>
-
       <div class="col-sm-2">
         <div class="row">
           <h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.TO" | translate}}</h6>
           <tooltip [level1]="'TOOLTIPS.COUNTRY_OFFICE_PROFILE.TT12.LEVEL1'"></tooltip>
         </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="row padding-right-two">
+          <input id="fromDate" name="fromDate" [(ngModel)]="when" type="text" bsDatepicker class="form-control"
+                 value="{{ programme.when ? (programme.when | date:'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                 (ngModelChange)="setWhenDate(when)">
+        </div>
+      </div>
+      <div class="col-sm-2">
         <div class="row">
-          <material-datepicker id="toDate"
-                               dateFormat="DD-MM-YYYY"
-                               [(ngModel)]="programme.toDate"
-                               (onSelect)="setToDate(programme)" ></material-datepicker>
+          <input id="toDate" name="toDate" [(ngModel)]="toDate" type="text" bsDatepicker class="form-control"
+                 value="{{ programme.toDate ? (programme.toDate | date:'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                 (ngModelChange)="setToDate(toDate)">
         </div>
       </div>
     </div>
 
-    <br>
+
     <div class="row Spaced-above">
       <button class="btn btn-primary text-uppercase col-sm-2" *ngIf="!isLocalAgency" (click)="saveMapping()">
         {{"COUNTRY_ADMIN.PROFILE.PROGRAMME.EDIT_MAPPING.SAVE_CHANGES" | translate}}

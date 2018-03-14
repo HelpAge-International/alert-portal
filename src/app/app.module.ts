@@ -369,6 +369,7 @@ import {ExportDataService} from "./services/export-data.service";
 import {PartnerOrganisationService} from "./services/partner-organisation.service";
 import {SurgeCapacityService} from "./services/surge-capacity.service";
 import { ViewCountriesComponent } from './agency-admin/view-countries/view-countries.component';
+import { BsDatepickerModule} from "ngx-bootstrap/datepicker";
 import { BugReportingService } from './services/bug-reporting.service';
 import { ReportProblemComponent } from './report-problem/report-problem.component';
 import { AgencyAdminViewTocComponent } from './agency-admin/agency-account-settings/agency-admin-view-toc/agency-admin-view-toc.component';
@@ -766,6 +767,7 @@ const firebaseAuthConfig = {
     BootstrapModalModule,
     DatepickerModule,
     BrowserAnimationsModule,
+    BsDatepickerModule.forRoot(),
     LocalStorageModule.withConfig({
       prefix: 'my-app',
       storageType: 'localStorage'
