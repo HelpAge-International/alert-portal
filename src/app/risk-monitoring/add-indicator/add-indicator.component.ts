@@ -437,7 +437,6 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         // Delete the indicator from under the old hazard
         // console.log("COMPARING [" + this.hazardID + "] [" + this.originHazardID + "]");
         if (this.hazardID != this.originHazardID) {
-          console.log("ORIGIN HAZARD > " + this.originHazardID);
           if (this.originHazardID == "countryContext") {
             this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.countryID + "/" + this.indicatorID).set(null);
           }
