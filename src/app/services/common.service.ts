@@ -95,6 +95,15 @@ export class CommonService {
     return this.af.database.list(Constants.APP_STATUS + "/agency")
   }
 
+  getTotalLocalAgencies() {
+    return this.af.database.list(Constants.APP_STATUS + "/agency", {
+      query : {
+        orderByChild:"isGlobalAgency",
+        equalTo:true
+      }
+    })
+  }
+
   getCountryTotalForSystem() {
     return this.af.database.list(Constants.APP_STATUS + "/agency")
       .flatMap(agencies => {

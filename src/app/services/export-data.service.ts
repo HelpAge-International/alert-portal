@@ -255,6 +255,42 @@ export class ExportDataService {
       })
   }
 
+  private getLocalAgencyStuff(agencyId: string, areaContent) {
+    //get all staff for this country
+    this.userService.getStaffList(agencyId)
+      .first()
+      .subscribe(staffs => {
+        console.log(staffs)
+        let staffMap = new Map<string, string>()
+        //get country admin first
+        this.userService.getLocalAgencyAdmin(agencyId)
+          .first()
+          .subscribe(admin => {
+            staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
+
+            if (staffs.length > 0) {
+              //get rest staffs for country
+              staffs.forEach(staff => {
+                this.userService.getUser(staff.id)
+                  .first()
+                  .subscribe(user => {
+                    staffMap.set(user.id, user.firstName + " " + user.lastName)
+
+                    if (staffMap.size === staffs.length + 1) {
+                      //start export data
+                      this.exportOfficeData(agencyId, agencyId, areaContent, staffMap, true)
+                    }
+                  })
+              })
+            } else {
+              //start export data
+              this.exportOfficeData(agencyId, agencyId, areaContent, staffMap, true)
+            }
+          })
+
+      })
+  }
+
   public exportSystemData(fromWhere: EXPORT_FROM) {
     this.subjectSystem = new Subject<boolean>()
     this.resetSystemData()
@@ -273,6 +309,17 @@ export class ExportDataService {
             let agencyCounter = 0
             let countryAgencyMap = new Map<string, string>()
             agencies.forEach(agency => this.agencyNameMap.set(agency.$key, agency.name))
+
+            //region get local agencies
+            this.commonService.getTotalLocalAgencies()
+              .first()
+              .subscribe(localAgencies => {
+                localAgencies.forEach(localAgency => {
+                  this.agencyNameMap.set(localAgency.$key, localAgency.name)
+                })
+              })
+            //endregion
+
             this.commonService.getCountryTotalForSystem()
               .take(totalAgency)
               .subscribe(countries => {

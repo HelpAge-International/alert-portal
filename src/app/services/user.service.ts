@@ -172,6 +172,14 @@ export class UserService {
 
   }
 
+  getLocalAgencyAdmin(agencyId: string) : Observable<ModelUserPublic> {
+    return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId)
+      .flatMap(localAgency => {
+        return this.getUser(localAgency.adminId)
+      });
+
+  }
+
   getLocalAgencyAdminUser(uid: string) {
     if (!uid) {
       return null;
