@@ -35,7 +35,7 @@
     <div class="Ribbon__section__wrap--risk align-items-right" role="tablist" aria-multiselectable="true">
 
       <!-- START: Country Context - Active state -->
-      <!-- THIS HAS BEEN COPIED INTO THE INACTIVE SECTION - Find in document 'countryContextArchived' to find it -->
+      <!-- THIS HAS BEEN COPIED INTO THE INACTIVE SECTION - Find in document 'countryContextIsActive' to find it -->
       <div class="card" *ngIf="countryContextIsActive">
         <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
              aria-controls="collapseOne">
@@ -667,7 +667,7 @@
 
 
         <!-- START: Country Context - Inactive / archived state -->
-        <!-- THIS HAS BEEN COPIED FROM THE ACTIVE SECTION - Find in document 'countryContextArchived' to find it -->
+        <!-- THIS HAS BEEN COPIED FROM THE ACTIVE SECTION - Find in document 'countryContextIsActive' to find it -->
         <div class="card" *ngIf="!countryContextIsActive">
           <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
                aria-controls="collapseOne">

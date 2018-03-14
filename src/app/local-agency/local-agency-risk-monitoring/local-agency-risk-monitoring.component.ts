@@ -110,7 +110,9 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private assignedHazard: any;
   private assignedUser: string;
 
-
+  // Variable for Country Context being active or not. Defaults to true as
+  //   /<env>/hazardCountryContext/<country_id> may not exist. If it doesn't, then default to true
+  private countryContextIsActive: boolean = true;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -215,6 +217,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   }
 
   _getHazards() {
+    this.loadCountryContextIsArchived();
     let promise = new Promise((res, rej) => {
       console.log(Constants.APP_STATUS + "/hazard/" + this.agencyId)
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
@@ -704,6 +707,70 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
         this.getNetworkIndicators()
       })
   }
+
+
+
+
+
+
+
+  /**
+   * Country Context specific methods. These methods reference the new node
+   *  /<environment>/hazardCountryContext/<country_id> will store an 'archived' field.
+   *
+   * This is separate from the /hazards/ node because it'll mess up the ordering when the
+   * node is queried - Unsure why this isn't just accounted for and handled.
+   *
+   * - Checking if they are archived
+   * - Marking is as archived
+   *
+   * Note: In the dialog when `archived` is confirmed, that method (updateHazardActiveStatus()) will
+   * call markCountryContextArchived(_, true) which should trigger the isCountryContextArchived listener to update
+   * the global variable countryContextArchived, therefore moving it backwards and forwards
+   *
+   * CountryContext element is copied into the archived section and enabled / disabled based on this
+   * global this.countryContextArchived variable, because I don't know enough about the system to move it into
+   * the list of other hazards where it should be (rather than the exception it is at the moment). This should
+   * probably be moved into the list
+   */
+  /// <reference path="updateHazardActiveStatus()" />
+  private loadCountryContextIsArchived() {
+    console.log(">> Listening for Country Context IsActive");
+    this.isCountryContextArchived(this.countryID, (isActive => {
+      console.log(">> Listening for Country Context IsActive :: " + isActive);
+      this.countryContextIsActive = isActive;
+    }));
+  }
+  private isCountryContextArchived(countryId: string, done: (isActive: boolean) => void) {
+    this.af.database.object(Constants.APP_STATUS + "/hazardCountryContext/" + countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null && snap.val().hasOwnProperty("isActive")) {
+          done(snap.val().isActive);
+        }
+        else {
+          done(false)
+        }
+      });
+  }
+  private markCountryContextArchived(countryId: string, isActive: boolean, done: (error) => void) {
+    // isActive = false is the same as archived = true (inverse states)
+    this.af.database.object(Constants.APP_STATUS + "/hazardCountryContext/" + countryId + "/isActive")
+      .set(isActive)
+      .then(_ => {
+        done(null);
+      })
+      .catch(error => {
+        done(error);
+      });
+  }
+
+
+
+
+
+
+
 
   getNetworkIndicators() {
     this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/networks')
@@ -1328,16 +1395,35 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
       return false;
     }
 
-    var dataToUpdate = {isActive: this.tmpHazardData['activeStatus']};
-    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + this.tmpHazardData['ID'])
-      .update(dataToUpdate)
-      .then(_ => {
-        this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCESS_UPDATE_HAZARD', AlertMessageType.Success);
-        return true;
-      }).catch(error => {
-      console.log("Message creation unsuccessful" + error);
-    });
-    jQuery("#" + modalID).modal("hide");
+    if (this.tmpHazardData['ID'] == "countryContext") {
+      // this.tmpHazardData['ID'] = this.countryID;
+      // Country Context
+      this.markCountryContextArchived(this.agencyId, this.tmpHazardData['activeStatus'], (error) => {
+        if (error == null) {
+          this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCESS_UPDATE_HAZARD', AlertMessageType.Success);
+          return true;
+        }
+        else {
+          // Errored.
+          this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR', AlertMessageType.Error);
+          //TODO: This should have a specific error message relating to hazards - At the moment generic is used because lack of translations
+          return true;
+        }
+      });
+      jQuery("#" + modalID).modal("hide");
+    }
+    else {
+      var dataToUpdate = {isActive: this.tmpHazardData['activeStatus']};
+      this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + this.tmpHazardData['ID'])
+        .update(dataToUpdate)
+        .then(_ => {
+          this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCESS_UPDATE_HAZARD', AlertMessageType.Success);
+          return true;
+        }).catch(error => {
+        console.log("Message creation unsuccessful" + error);
+      });
+      jQuery("#" + modalID).modal("hide");
+    }
 
   }
 

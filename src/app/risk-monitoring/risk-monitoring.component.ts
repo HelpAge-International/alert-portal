@@ -1534,16 +1534,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       // this.tmpHazardData['ID'] = this.countryID;
       // Country Context
       this.markCountryContextArchived(this.countryID, this.tmpHazardData['activeStatus'], (error) => {
-        console.log("MARKING COUNTRY CONTEXT ARCHIVED CALLBACK");
-        console.log(error);
         if (error == null) {
           this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCESS_UPDATE_HAZARD', AlertMessageType.Success);
           return true;
         }
         else {
           // Errored.
-          console.log("Error occured saving country context archiving state");
-          console.log(error);
           this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR', AlertMessageType.Error);
           //TODO: This should have a specific error message relating to hazards - At the moment generic is used because lack of translations
           return true;
@@ -1554,7 +1550,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     else {
       // Normal hazard
       var dataToUpdate = {isActive: this.tmpHazardData['activeStatus']};
-      console.log(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID']);
       this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
         .update(dataToUpdate)
         .then(_ => {
@@ -1565,20 +1560,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
       });
       jQuery("#" + modalID).modal("hide");
     }
-
-    console.log(this.tmpHazardData);
-
-    // var dataToUpdate = {isActive: this.tmpHazardData['activeStatus']};
-    // console.log(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID']);
-    // this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + this.tmpHazardData['ID'])
-    //   .update(dataToUpdate)
-    //   .then(_ => {
-    //     this.alertMessage = new AlertMessageModel('RISK_MONITORING.MAIN_PAGE.SUCESS_UPDATE_HAZARD', AlertMessageType.Success);
-    //     return true;
-    //   }).catch(error => {
-    //   console.log("Message creation unsuccessful" + error);
-    // });
-    // jQuery("#" + modalID).modal("hide");
 
   }
 
