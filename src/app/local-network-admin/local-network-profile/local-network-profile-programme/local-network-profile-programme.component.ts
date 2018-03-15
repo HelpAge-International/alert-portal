@@ -38,8 +38,10 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
   private ResponsePlanSectors = Constants.RESPONSE_PLANS_SECTORS;
   private ResponsePlanSectorsIcons = Constants.RESPONSE_PLANS_SECTORS_ICONS;
+  private countries = Constants.COUNTRIES;
 
-  private mapping = new Map<string, any[]>()
+  private mapping = new Map<string, any[]>();
+  private countriesMap : any[] = [];
   private sectorExpertise = new Map<string, any[]>()
   private logContent: any[] = [];
   private noteTmp: any[] = [];
@@ -325,6 +327,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
       this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + value)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((programms: any) => {
+          this.countriesMap = [];
           console.log(programms)
           this.mapping.set(key, []);
           this.sectorExpertise.set(key, []);
@@ -356,6 +359,7 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
             mapping[m].notes = arrayNotes;
             console.log(key)
             console.log(this.mapping)
+            this.countriesMap.push(mapping[m]);
             this.mapping.get(key).push(mapping[m]);
 
           }
@@ -507,22 +511,25 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
   }
   generateLocations(){
     this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
-      this.mapping.forEach(mapping => {
+      this.countriesMap.forEach(mapping => {
         let obj = {
           country: "",
           areas: ""
         };
-        console.log(mapping)
-        
-        // if (mapping.where && mapping.where > -1) {
-        //   obj.country = this.countries[mapping.where];
-        // }
-        // if (mapping.level1 && mapping.level1 > -1) {
-        //   obj.areas = ", " + json[mapping.where].levelOneValues[mapping.level1].value
-        // }
-        // if (mapping.level2 && mapping.level2 > -1) {
-        //   obj.areas = obj.areas + ", " + json[mapping.where].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
-        // }
+       // console.log(mapping.where);
+
+        if (mapping.where && mapping.where > -1) {
+          obj.country = this.countries[mapping.where];
+          console.log(obj.country)
+        }
+        if (mapping.level1 && mapping.level1 > -1) {
+          obj.areas = ", " + json[mapping.where].levelOneValues[mapping.level1].value
+          console.log(obj.country)
+        }
+        if (mapping.level2 && mapping.level2 > -1) {
+          obj.areas = obj.areas + ", " + json[mapping.where].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
+          console.log(obj.country)
+        }
         this.locationObjs.push(obj);
       });
     });
