@@ -1989,8 +1989,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private getStaffLocalAgency() {
-    console.log('test')
-    this.af.database.list(Constants.APP_STATUS + '/staff/' + this.agencyId)
+    let staffPathRef = Constants.APP_STATUS + '/staff/' + this.agencyId;
+    console.log("Staff Path: "+staffPathRef);
+
+    this.af.database.list(staffPathRef)
       .flatMap(list => {
         console.log(list)
         this.staffMembers = [];

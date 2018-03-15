@@ -19,6 +19,7 @@ export class SystemSettingsCocComponent implements OnInit {
   private alertMessage: string = "";
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
+  private previousText: string = "";
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -45,10 +46,12 @@ export class SystemSettingsCocComponent implements OnInit {
   }
 
   edit() {
+    this.previousText = this.cocText;
     this.isEditing = true;
   }
 
   cancelEdit() {
+    this.cocText = this.previousText;
     this.isEditing = false;
   }
 
