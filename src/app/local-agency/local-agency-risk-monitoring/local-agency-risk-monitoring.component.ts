@@ -810,7 +810,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
           done(snap.val().isActive);
         }
         else {
-          done(false)
+          done(true)
         }
       });
   }
@@ -1394,7 +1394,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
         dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
       }
 
-      
+
     }else{
 
       dataToSave["timeTracking"] = {}
@@ -1698,7 +1698,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
         doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.DATE') + ' ' + moment(log['timeStamp']).format("DD/MM/YYYY"));
 
         if (y > pageHeight) {
-          y = 10; 
+          y = 10;
           doc.addPage();
         }
         doc.text(x, y += 10, this.translate.instant('RISK_MONITORING.EXPORT_LOG.INDICATOR_STATUS') + ' ' + this.translate.instant(Constants.INDICATOR_STATUS[log.triggerAtCreation]));

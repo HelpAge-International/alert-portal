@@ -902,7 +902,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         }
       }
     }
-    console.log('surely route form here?')
   }
 
   public getNow() {

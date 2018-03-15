@@ -537,7 +537,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           done(snap.val().isActive);
         }
         else {
-          done(false)
+          done(true)
         }
       });
   }
