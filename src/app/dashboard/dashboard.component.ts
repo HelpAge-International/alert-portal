@@ -1064,11 +1064,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
           // Display APA only if there is a red alert
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
 
+          this.actionsOverdueNetwork = actions.filter(action => action.dueDate < startOfToday);
+          this.actionsTodayNetwork = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
+          this.actionsThisWeekNetwork = actions.filter(action => action.dueDate > endOfToday);
 
-
-          this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
-          this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
-          this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
+          // this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
+          // this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
+          // this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
 
           for (let x of this.actionsOverdueNetwork) {
             this.updateTaskDataForActionsNetwork(x.$key, x, networkCountryId, (action) => {
@@ -1110,7 +1112,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
           // Display APA only if there is a red alert
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
-
+          
           this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
           this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
           this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));
@@ -1153,11 +1155,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(indicators => {
           let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
-          this.indicatorsOverdueNetwork = this.indicatorsOverdueNetwork.concat(overdueIndicators);
+          //this.indicatorsOverdueNetwork = this.indicatorsOverdueNetwork.concat(overdueIndicators);
           let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
-          this.indicatorsTodayNetwork = this.indicatorsTodayNetwork.concat(dayIndicators);
+          //this.indicatorsTodayNetwork = this.indicatorsTodayNetwork.concat(dayIndicators);
           let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
-          this.indicatorsThisWeekNetwork = this.indicatorsThisWeekNetwork.concat(weekIndicators);
+          //this.indicatorsThisWeekNetwork = this.indicatorsThisWeekNetwork.concat(weekIndicators);
           if (overdueIndicators.length > 0) {
             overdueIndicators.forEach(indicator => {
               if (this.actionService.isExist(indicator.$key, this.indicatorsOverdueNetwork)) {
@@ -1208,11 +1210,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(indicators => {
           let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
-          this.indicatorsOverdueNetwork = this.indicatorsOverdueNetwork.concat(overdueIndicators);
+          //this.indicatorsOverdueNetwork = this.indicatorsOverdueNetwork.concat(overdueIndicators);
           let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
-          this.indicatorsTodayNetwork = this.indicatorsTodayNetwork.concat(dayIndicators);
+          //this.indicatorsTodayNetwork = this.indicatorsTodayNetwork.concat(dayIndicators);
           let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
-          this.indicatorsThisWeekNetwork = this.indicatorsThisWeekNetwork.concat(weekIndicators);
+          //this.indicatorsThisWeekNetwork = this.indicatorsThisWeekNetwork.concat(weekIndicators);
           if (overdueIndicators.length > 0) {
             overdueIndicators.forEach(indicator => {
               if (this.actionService.isExist(indicator.$key, this.indicatorsOverdueNetwork)) {
