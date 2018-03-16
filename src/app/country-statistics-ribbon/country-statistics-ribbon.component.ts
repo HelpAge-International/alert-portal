@@ -222,7 +222,6 @@ export class CountryStatisticsRibbonComponent implements OnInit, OnDestroy {
   }
 
   private recalculateAll() {
-    console.log(this.prepActionService.actions);
     let minTotal: number = 0;
     let minGreen: number = 0;
     let advTotal: number = 0;
