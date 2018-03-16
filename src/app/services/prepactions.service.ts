@@ -515,6 +515,9 @@ export class PrepActionService {
         this.actions[i].assignedHazards.push(x);
       }
     }
+    if (action.hasOwnProperty('agencyAssign')) {
+      this.actions[i].agencyAssign = action.agencyAssign;
+    }
     // else {
     //   this.actions[i].assignedHazards = null;
     // }
@@ -1090,6 +1093,7 @@ export class PreparednessAction {
   public computedClockSetting: number;
 
   public actualCost: number
+  public agencyAssign?:string
 
   public setComputedClockSetting(value: number, type: number) {
     this.computedClockSetting = PrepActionService.clockCalculation(value, type);

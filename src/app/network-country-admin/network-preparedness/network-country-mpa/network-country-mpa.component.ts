@@ -147,6 +147,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private assignActionId: string = "0";
   private assignActionCategoryUid: string = "0";
   private assignActionAsignee: string = "0";
+  private assignActionAgency: string = "0";
   private assignActionTask: string = "";
 
   // Module permissions settings
@@ -160,6 +161,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private isNetworkAccess: boolean;
   private isViewingFromExternal: boolean;
   private networkUserType: any;
+  private agencyModels: ModelAgency[] = [];
 
 
   constructor(private pageControl: PageControlService,
@@ -231,7 +233,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
-      this.assignActionAsignee = this.uid;
+      // this.assignActionAsignee = this.uid;
       this.filterAssigned = "0";
       this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
       this.isNetworkAccess = true;
@@ -284,7 +286,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
-      this.assignActionAsignee = this.uid;
+      // this.assignActionAsignee = this.uid;
       this.filterAssigned = "0";
       this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
 
@@ -647,8 +649,11 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   // TODO: Check what's happening in this function below
   public saveAssignedUser() {
-    if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
-      this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
+    // if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
+    //   this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
+    //   return;
+    // }
+    if (this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
@@ -660,36 +665,74 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(action => {
 
+        console.log(action)
+
         // Change from unassigned to in progress
         if (action.timeTracking) {
-          action['timeTracking']['timeSpentInAmber'] = []
 
-          if (action['timeTracking']['timeSpentInRed'][0].finish == -1) {
-            action['timeTracking']['timeSpentInRed'][0].finish = currentTime
-            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-            timeTrackingNode = action['timeTracking']
+          if (this.isViewing) {
+            action['timeTracking']['timeSpentInAmber'] = []
+
+            if (action['timeTracking']['timeSpentInRed'] && action['timeTracking']['timeSpentInRed'][0].finish == -1) {
+              action['timeTracking']['timeSpentInRed'][0].finish = currentTime
+              action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+              timeTrackingNode = action['timeTracking']
+            }
+          } else {
+            timeTrackingNode = action.timeTracking
           }
+
+
         } else {
           timeTrackingNode = null
         }
 
-        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
-          .then(() => {
-            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-              .then(() => {
+        let obj = {}
+        obj["/action/" + id + "/" + this.assignActionId + "/timeTracking"] = timeTrackingNode
+        if (this.assignActionAsignee != "0") {
+          obj["/action/" + id + "/" + this.assignActionId + "/asignee"] = this.assignActionAsignee
+        }
+        if (this.assignActionAgency != "0") {
+          obj["/action/" + id + "/" + this.assignActionId + "/agencyAssign"] = this.assignActionAgency
+        }
 
-                this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-                  .subscribe(task => {
-                    // Send notification to the assignee
-                    let notification = new MessageModel();
-                    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-                    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-                    notification.time = new Date().getTime();
-                    this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
-                    });
-                  });
+        this.af.database.object(Constants.APP_STATUS).update(obj).then(() =>{
+          if (this.isViewing) {
+            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").first()
+              .subscribe(task => {
+                // Send notification to the assignee
+                let notification = new MessageModel();
+                notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+                notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+                notification.time = new Date().getTime();
+                this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).first().subscribe(() => {
+                });
               });
-          });
+          }
+        })
+
+        // this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
+        //   .then(() => {
+        //     this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee ? this.assignActionAsignee : null)
+        //       .then(() => {
+        //
+        //         this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/agencyAssign").set(this.assignActionAgency ? this.assignActionAgency : null)
+        //           .then(() =>{
+        //             this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").first()
+        //               .subscribe(task => {
+        //                 // Send notification to the assignee
+        //                 let notification = new MessageModel();
+        //                 notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+        //                 notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+        //                 notification.time = new Date().getTime();
+        //                 this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).first().subscribe(() => {
+        //                 });
+        //               });
+        //           })
+        //
+        //
+        //       });
+        //   });
         if (this.isViewing) {
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByAgencyId").set(this.agencyId)
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/createdByCountryId").set(this.countryId)
@@ -1193,6 +1236,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((agency: ModelAgency) => {
           this.agencyNamesMap.set(agencyId, agency)
+          this.agencyModels.push(agency)
         })
     })
 
