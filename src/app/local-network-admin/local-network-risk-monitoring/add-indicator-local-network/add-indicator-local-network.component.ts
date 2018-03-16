@@ -515,7 +515,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
   saveIndicator() {
 
-    if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+    if (typeof (this.indicatorData.hazardScenario) == 'undefined' || typeof (this.indicatorData.hazardScenario) == 'number') {
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {

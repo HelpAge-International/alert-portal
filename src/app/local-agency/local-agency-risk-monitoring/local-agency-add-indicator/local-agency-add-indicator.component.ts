@@ -357,7 +357,7 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
 
   saveIndicator() {
 
-    if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+    if (typeof (this.indicatorData.hazardScenario) == 'undefined' || typeof (this.indicatorData.hazardScenario) == 'number') {
       console.log(this.hazardsObject)
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
