@@ -403,7 +403,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
         console.log("Frequency Values are here!");
-        this.action.isFrequencyActive = true; 
+        this.action.isFrequencyActive = true;
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
       }
@@ -819,25 +819,25 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                           // Saving
                           updateObj.createdAt = new Date().getTime();
                           updateObj.networkId = this.networkId;
+                          updateObj.asignee = null;
+                          updateObj.agencyAssign = this.action.asignee
                           console.log(updateObj);
-                          this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj)
-                            .update({
-                              asignee: '',
-                              agencyAssign: this.action.asignee
-                            })
+                          this.af.database.list(Constants.APP_STATUS + "/action/" + id)
+                            .push(updateObj)
                             .then(() => {
-
-                            // Send notification to the assignee
-                            let notification = new MessageModel();
-                            notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-                              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-                            notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-                              : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
-
-                            notification.time = new Date().getTime();
-                            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
                               this._location.back();
-                            });
+
+                            // // Send notification to the assignee
+                            // let notification = new MessageModel();
+                            // notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                            //   : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+                            // notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                            //   : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+                            //
+                            // notification.time = new Date().getTime();
+                            // this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
+                            //   this._location.back();
+                            // });
                           });
                         })
                       }
@@ -940,10 +940,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           updateObj.networkId = this.networkId;
           console.log(updateObj);
           this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj)
-            .update({
-              asignee: '',
-              agencyAssign: this.action.asignee
-            })
             .then(() => {
             this._location.back();
           });
