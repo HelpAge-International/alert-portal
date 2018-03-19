@@ -37,7 +37,7 @@
           <div class="col-sm-11 row">
             <div class="col-sm-3">
               <div class="form-group-risk-frequency row">
-                <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
+                <select (click)="resetValue()" [(ngModel)]="selectedCountry" (ngModelChange)="setCountryLevel(selectedCountry)" class="form-control" name="CountryArea">
                   <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
                   <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
                     translate}}
@@ -51,11 +51,11 @@
 
             <div class="col-sm-3">
               <div class="form-group-risk-frequency">
-                <select id="level1" class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
+                <select id="level1" class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (ngModelChange)="setLevel1Value(selectedValue)" >
                   <option value="undefined" disabled selected hidden >
                     {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
                   </option>
-                  <option *ngFor="let x of levelOneDisplay" [value]="x.id" (click)="check()"> {{x.value}}
+                  <option *ngFor="let x of levelOneDisplay" [value]="x.id"> {{x.value}}
                   </option>
                 </select>
               </div>
@@ -67,7 +67,7 @@
 
             <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3" >
               <div class="form-group-risk-frequency ">
-                <select class="form-control" name="level2" [(ngModel)]="selectedValueL2" >
+                <select class="form-control" name="level2" [(ngModel)]="selectedValueL2" (ngModelChange)="setLevel2Value(selectedValueL2)">
                   <option value="undefined" disabled selected hidden >
                     {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
                   </option>
