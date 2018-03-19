@@ -515,6 +515,9 @@ export class PrepActionService {
         this.actions[i].assignedHazards.push(x);
       }
     }
+    if (action.hasOwnProperty('agencyAssign')) {
+      this.actions[i].agencyAssign = action.agencyAssign;
+    }
     // else {
     //   this.actions[i].assignedHazards = null;
     // }
@@ -565,6 +568,9 @@ export class PrepActionService {
     if (action.hasOwnProperty('frequencyValue')) {
       this.actions[i].frequencyValue = action.frequencyValue;
       applyCustom = true;
+    }
+    if (action.hasOwnProperty('timeTracking')) {
+      this.actions[i].timeTracking = action.timeTracking;
     }
     else action.frequencyValue = null;
     this.initNotes(af, id, run);
@@ -1082,10 +1088,12 @@ export class PreparednessAction {
   public createdByCountryId: string;
   public networkId: string;
   public networkCountryId: string;
+  public timeTracking: {};
 
   public computedClockSetting: number;
 
   public actualCost: number
+  public agencyAssign?:string
 
   public setComputedClockSetting(value: number, type: number) {
     this.computedClockSetting = PrepActionService.clockCalculation(value, type);

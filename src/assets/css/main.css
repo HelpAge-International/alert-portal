@@ -8009,6 +8009,22 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   padding-left: 2em;
 }
 
+.padding-right-one {
+  padding-right: 0.5em !important;
+}
+
+.padding-right-two {
+  padding-right: 1em !important;
+}
+
+.padding-right-three {
+  padding-right: 1.5em !important;
+}
+
+.padding-right-four {
+  padding-right: 2em !important;
+}
+
 .no-padding-right {
   padding-right: 0em !important;
 }

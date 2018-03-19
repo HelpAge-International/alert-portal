@@ -623,6 +623,8 @@
                           CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}</strong></div>
 
+                        <div *ngIf="action.agencyAssign" class="subrow-line"><strong>{{agencyNamesMap?.get(action.agencyAssign)?.name}}</strong></div>
+
                       </div>
                     </div>
                   </div>
@@ -998,7 +1000,7 @@
         <p class="col-sm-12"><strong>{{"ASSIGN_TO" | translate}}</strong></p>
         <div class="col-sm-12">
           <select class="form-control" [(ngModel)]="assignActionAsignee"
-                  *ngIf="userType == UserType.CountryDirector || userType == UserType.CountryAdmin || userType == UserType.ErtLeader || networkUserType == NetworkUserAccountType.NetworkAdmin || networkUserType == NetworkUserAccountType.NetworkCountryAdmin">
+                  *ngIf="(userType == UserType.CountryDirector || userType == UserType.CountryAdmin || userType == UserType.ErtLeader) && !(networkUserType == NetworkUserAccountType.NetworkAdmin || networkUserType == NetworkUserAccountType.NetworkCountryAdmin)">
             <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let x of ASSIGNED_TOO; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.firstName +
               ' ' + x.lastName}}
@@ -1009,6 +1011,12 @@
                   *ngIf="userType == UserType.Ert || (!userType && !(networkUserType == NetworkUserAccountType.NetworkAdmin || networkUserType == NetworkUserAccountType.NetworkCountryAdmin))">
             <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
+          </select>
+
+          <select class="form-control" [(ngModel)]="assignActionAgency"
+                  *ngIf="networkUserType == NetworkUserAccountType.NetworkAdmin || networkUserType == NetworkUserAccountType.NetworkCountryAdmin">
+            <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+            <option *ngFor="let x of agencyModels; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.name}}</option>
           </select>
         </div>
       </div>

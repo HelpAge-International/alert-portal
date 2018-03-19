@@ -625,7 +625,7 @@ export class PageControlService {
     }
     else {
       console.log("check page control*****")
-      router.navigateByUrl(type.redirectTo);
+     // router.navigateByUrl(type.redirectTo);
     }
   }
 

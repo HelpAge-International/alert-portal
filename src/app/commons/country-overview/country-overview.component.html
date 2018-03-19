@@ -85,7 +85,8 @@
 </div>
 
 <ng-container *ngIf="!_agencyId">
-  <h4>Network Countries</h4>
+  <h4 *ngIf="agencyOverview">Networks</h4>
+  <h4 *ngIf="!agencyOverview">Network Countries</h4>
 
   <div class="Ribbon__section__wrap Spaced" *ngIf="filteredNetworkCountryData && filteredNetworkCountryData.length > 0">
     <div class="Accordion Preparedness__agency-list" *ngFor="let networkCountryData of filteredNetworkCountryData">

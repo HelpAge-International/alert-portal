@@ -185,6 +185,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.validate()) {
       console.log("submit");
+      console.log(this.selectedUserAccountType)
       switch (this.selectedUserAccountType) {
         case NetworkUserAccountType.NetworkAdmin:
           if (this.isGlobal) {
@@ -198,9 +199,10 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
           this.goToNetworkCountryAdmin();
           break;
         default:
-          this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          console.log("regular login")
+          // this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
             let path = ""
-            switch (userType) {
+            switch (this.selectedUserAccountType) {
               case UserType.CountryAdmin:
                 path = Constants.COUNTRY_ADMIN_HOME
                 break
@@ -229,8 +231,9 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
                 path = Constants.G_OR_R_DIRECTOR_DASHBOARD
                 break
             }
+            console.log(path)
             this.router.navigateByUrl(path)
-          });
+          // });
           break;
       }
     }

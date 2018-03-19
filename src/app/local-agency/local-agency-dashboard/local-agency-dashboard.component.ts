@@ -102,6 +102,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   private localNetworks: any;
   private alertsLocalNetwork: Observable<any>;
   private showCoCBanner: boolean;
+  private showToCBanner: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -122,6 +123,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       console.log(agencyId)
 
       this.checkCoCUpdated();
+      this.checkToCUpdated();
 
       if (userType == UserType.LocalAgencyDirector) {
         this.DashboardTypeUsed = DashboardType.director;
@@ -136,8 +138,18 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val() == false){
+        if(snap.val() == null || snap.val() == false){
           this.showCoCBanner = true;
+        }
+      });
+  }
+
+  private checkToCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestToCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == null || snap.val() == false){
+          this.showToCBanner = true;
         }
       });
   }
@@ -605,8 +617,32 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         if(!action.redAlerts){
           action.redAlerts = [];
         }
-        if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
           action.redAlerts.push(alertId)
+
+          if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+
+            action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+            if(!action.asignee){
+              if(!action["timeTracking"]["timeSpentInRed"]){
+                action['timeTracking']['timeSpentInRed'] = [];
+              }
+              action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+            }else if(action.isComplete){
+              if(!action["timeTracking"]["timeSpentInGreen"]){
+                action['timeTracking']['timeSpentInGreen'] = [];
+              }
+              action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            }else{
+              if(!action["timeTracking"]["timeSpentInAmber"]){
+                action['timeTracking']['timeSpentInAmber'] = [];
+              }
+              action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            }
+          }
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.$key + '/timeTracking')
+          .update(action.timeTracking)
           this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.$key + '/redAlerts')
           .update(action.redAlerts)
         }
@@ -684,11 +720,35 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
           if(!action.redAlerts){
             action.redAlerts = [];
           }
-          if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
-            action.redAlerts.push(alert.id)
-            this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkCountryId + '/' + action.$key + '/redAlerts')
-            .update(action.redAlerts)
-          }
+          if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+              action.redAlerts.push(alert.id)
+
+              if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+
+                action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+                if(!action.asignee){
+                  if(!action["timeTracking"]["timeSpentInRed"]){
+                    action['timeTracking']['timeSpentInRed'] = [];
+                  }
+                  action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                }else if(action.isComplete){
+                  if(!action["timeTracking"]["timeSpentInGreen"]){
+                    action['timeTracking']['timeSpentInGreen'] = [];
+                  }
+                  action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                }else{
+                  if(!action["timeTracking"]["timeSpentInAmber"]){
+                    action['timeTracking']['timeSpentInAmber'] = [];
+                  }
+                  action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                }
+              }
+
+              this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkCountryId + '/' + action.$key + '/timeTracking')
+              .update(action.timeTracking)
+              this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkCountryId + '/' + action.$key + '/redAlerts')
+              .update(action.redAlerts)
+            }
         });
       })
 
@@ -761,8 +821,32 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
           if(!action.redAlerts){
             action.redAlerts = [];
           }
-          if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+          if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
             action.redAlerts.push(alert.id)
+
+            if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+
+              action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+              if(!action.asignee){
+                if(!action["timeTracking"]["timeSpentInRed"]){
+                  action['timeTracking']['timeSpentInRed'] = [];
+                }
+                action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+              }else if(action.isComplete){
+                if(!action["timeTracking"]["timeSpentInGreen"]){
+                  action['timeTracking']['timeSpentInGreen'] = [];
+                }
+                action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+              }else{
+                if(!action["timeTracking"]["timeSpentInAmber"]){
+                  action['timeTracking']['timeSpentInAmber'] = [];
+                }
+                action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+              }
+            }
+
+            this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkId + '/' + action.$key + '/timeTracking')
+            .update(action.timeTracking)
             this.af.database.object(Constants.APP_STATUS + '/action/' + alert.networkId + '/' + action.$key + '/redAlerts')
             .update(action.redAlerts)
           }

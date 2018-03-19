@@ -124,13 +124,13 @@ export class ExportDataService {
                   .first()
                   .subscribe(hazardIndicatorList => {
                     //dealing with pre-defined hazard
-                    let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario != -1).map(item => {
+                    let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario && item.hazardScenario.hazardScenario != -1).map(item => {
                       return this.transformIndicator(item, staffMap, areaContent, this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario]))
                     })
                     allIndicators = allIndicators.concat(hazardIndicators)
 
                     //dealing with custom hazards
-                    let hazardIndicatorsCustom = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario == -1).map(item => {
+                    let hazardIndicatorsCustom = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario && item.hazardScenario.hazardScenario == -1).map(item => {
                       return this.transformIndicator(item, staffMap, areaContent, item.hazardScenario.otherName);
                     })
 
@@ -229,6 +229,7 @@ export class ExportDataService {
 
   private passEmpty(wb: WorkBook) {
     this.counter++
+    console.log(this.counter)
     this.exportFile(this.counter, this.total, wb)
   }
 
@@ -674,7 +675,7 @@ export class ExportDataService {
                   let actions = actionList.map(action => {
                     let obj = {}
                     obj["Action title"] = action["task"]
-                    obj["Preparedness action level"] = this.translateService.instant(Constants.ACTION_LEVEL[action["level"]])
+                    obj["Preparedness action level"] = action["level"] ? this.translateService.instant(Constants.ACTION_LEVEL[action["level"]]) : this.translateService.instant(Constants.ACTION_LEVEL[1])
                     obj["Type"] = this.translateService.instant(Constants.ACTION_TYPE[action["type"]])
                     obj["Department"] = action["department"] ? departmentMap.get(action["department"]) : ""
                     obj["Assigned to"] = action["asignee"] ? staffMap.get(action["asignee"]) : ""
@@ -779,6 +780,8 @@ export class ExportDataService {
   }
 
   private exportFile(counter, total, wb) {
+    // console.log("counter: "+counter)
+    // console.log("total: "+total)
     if (counter == total) {
       //try export see if works
       XLSX.writeFile(wb, 'SheetJS.xlsx')
@@ -1159,7 +1162,7 @@ export class ExportDataService {
   private fetchAPActivationData(areaContent, actionList: any[], countryId: string, wb: WorkBook) {
     this.fetchAlertsForCountry(countryId).then((alertMap: Map<string, any>) => {
       console.log(alertMap)
-      let apaList = actionList.filter(action => action.level = ActionLevel.APA && action.redAlerts)
+      let apaList = actionList.filter(action => action.level && action.level == ActionLevel.APA && action.redAlerts)
       if (apaList.length > 0) {
         let activeApaList = []
         let apaCounter = 0

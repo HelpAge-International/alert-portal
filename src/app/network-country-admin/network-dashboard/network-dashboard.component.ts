@@ -194,7 +194,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val() == false){
+        if(snap.val() == null || snap.val() == false){
           this.showCoCBanner = true;
         }
       });
@@ -972,8 +972,32 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         if(!action.redAlerts){
           action.redAlerts = [];
         }
-        if(action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
-          action.redAlerts.push(alertId)
+        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+          action.redAlerts.push(alert.id)
+
+          if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+
+            action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+            if(!action.asignee){
+              if(!action["timeTracking"]["timeSpentInRed"]){
+                action['timeTracking']['timeSpentInRed'] = [];
+              }
+              action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+            }else if(action.isComplete){
+              if(!action["timeTracking"]["timeSpentInGreen"]){
+                action['timeTracking']['timeSpentInGreen'] = [];
+              }
+              action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+            }else{
+              if(!action["timeTracking"]["timeSpentInAmber"]){
+                action['timeTracking']['timeSpentInAmber'] = [];
+              }
+              action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            }
+          }
+
+          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/timeTracking')
+          .update(action.timeTracking)
           this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/redAlerts')
           .update(action.redAlerts)
         }
@@ -982,7 +1006,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
 
     if(hazard){
-        
+
         if(hazardTrackingNode["timeSpentInAmber"]){
           hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
         }
@@ -991,7 +1015,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           if(!hazardTrackingNode["timeSpentInRed"]){
             hazardTrackingNode["timeSpentInRed"] = [];
           }
-    
+
           hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
           .update(hazardTrackingNode)
@@ -999,10 +1023,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
           .update({timeSpentInRed: [newTimeObject]})
         }
-      
+
     }
 
-    
+
     if(alert["timeTracking"]){
       console.log('first here')
       if(!alert["timeTracking"]["timeSpentInRed"]){
