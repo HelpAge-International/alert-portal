@@ -127,13 +127,10 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
       this.loadJSON().subscribe(data => {
-
         for (var key in data) {
-
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
         }
-
       });
 
 
@@ -392,7 +389,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   loadJSON() {
 
     return this.http.get(this.languageSelectPath)
-      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
+      .map((res: Response) =>  res.json().GLOBAL.LANGUAGES);
 
   }
 
@@ -417,8 +414,6 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
     if (language.toLowerCase()) {
       this.translate.use(language.toLowerCase());
       jQuery("#language-selection").modal("hide");
-
-
     }
   }
 
