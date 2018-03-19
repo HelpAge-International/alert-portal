@@ -722,7 +722,7 @@
          approvalPlansNetwork.length>0 ||
          approvalPlansNetworkLocal.length>0">
 
-      <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
+      <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
       <br>
       <!--director-->
       <div *ngIf="DashboardTypeUsed == DashboardType.director">
@@ -841,7 +841,6 @@
          <!--indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ||-->
           <!--actionsOverdueNetwork.length>0 || actionsTodayNetwork.length>0 || actionsThisWeekNetwork.length>0 ||-->
           <!--indicatorsOverdueNetwork.length > 0 || indicatorsThisWeekNetwork.length > 0 || indicatorsTodayNetwork.length > 0">-->
-<p>{{indicatorsThisWeekNetwork.length}}</p>
         <div *ngFor="let action of actionsOverdue">
           <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
             <div class="col-md-1">
