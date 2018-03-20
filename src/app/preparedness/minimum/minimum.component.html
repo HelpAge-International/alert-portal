@@ -2442,6 +2442,9 @@
                             CURRENT_USERS.get(action.asignee).firstName + ' ' +
                             CURRENT_USERS.get(action.asignee).lastName
                             : ("UNASSIGNED" | translate)}}</strong></div>
+                          <div *ngIf="action.networkId" class="subrow-line">
+                            {{"GLOBAL.NETWORK" | translate}}:<strong>{{networkModelMap?.get(action.networkId)?.name}}</strong>
+                          </div>
 
                         </div>
                       </div>

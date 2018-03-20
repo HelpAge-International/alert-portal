@@ -278,7 +278,7 @@
                             || isNetworkAccess
                             || (isViewing && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && permissionsAreEnabled.customMPA.Edit)
                             || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && permissionsAreEnabled.customAPA.Edit)))"
-                            [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
+                            [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : (isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id])"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           <a
                             *ngIf="action.isComplete" (click)="undoCompleteAction(action)"
@@ -544,7 +544,7 @@
             <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
             <!-- BELONGING IN THE MODULE IF STATEMENT -->
             <div
-              *ngIf="!action.isArchived && !(action.asignee != '' && action.asignee != null && action.asignee != undefined)">
+              *ngIf="!action.isArchived && ((!(action.asignee != '' && action.asignee != null && action.asignee != undefined) && action.agencyAssign == agencyId) || (!(action.asignee != '' && action.asignee != null && action.asignee != undefined) && !action.agencyAssign))">
 
               <div class="Accordion Preparedness-list">
                 <div class="Accordion Preparedness-list">
@@ -600,7 +600,7 @@
 
                           <a
                             *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && isViewing) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && isViewing)) || !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !isViewing && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !isViewing && !permissionsAreEnabled.customAPA.Edit))"
-                            [routerLink]="isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
+                            [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : (isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id])"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                         </div>
                         <!--<div class="col-md-3 col-sm-4 btn-block"-->
@@ -623,7 +623,7 @@
                           CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}</strong></div>
 
-                        <div *ngIf="action.agencyAssign" class="subrow-line"><strong>{{agencyNamesMap?.get(action.agencyAssign)?.name}}</strong></div>
+                        <div *ngIf="action.agencyAssign" class="subrow-line"><strong>, {{agencyNamesMap?.get(action.agencyAssign)?.name}}</strong></div>
 
                       </div>
                     </div>
@@ -1014,7 +1014,7 @@
           </select>
 
           <select class="form-control" [(ngModel)]="assignActionAgency"
-                  *ngIf="networkUserType == NetworkUserAccountType.NetworkAdmin || networkUserType == NetworkUserAccountType.NetworkCountryAdmin">
+                  *ngIf="!userType && (networkUserType == NetworkUserAccountType.NetworkAdmin || networkUserType == NetworkUserAccountType.NetworkCountryAdmin)">
             <option value="0" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let x of agencyModels; let i = index" [attr.data-index]="i" value="{{x.id}}">{{x.name}}</option>
           </select>

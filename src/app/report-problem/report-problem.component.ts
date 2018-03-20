@@ -67,7 +67,7 @@ export class ReportProblemComponent implements OnInit {
       this.countryId = countryId;
       this.userType = userType;
       this.isAnonym = !(user && !user.anonymous);
-      console.log(agencyId, 'yoyo');
+      // console.log(agencyId, 'yoyo');
       this.getContentForEmail();
 
   })
@@ -75,13 +75,13 @@ export class ReportProblemComponent implements OnInit {
   }
 
   getContentForEmail(){
-    console.log(this.countryId);
-    console.log(Constants.APP_STATUS + '/agency/' + this.agencyId + '/name');
+    // console.log(this.countryId);
+    // console.log(Constants.APP_STATUS + '/agency/' + this.agencyId + '/name');
     // Subscribing to get names of agency
     this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(getName =>{
-        console.log(getName.name);
+        // console.log(getName.name);
         this.sendEmailModel.agencyName = getName.name;
         this.sendEmailModel.country = getName.country;
 
@@ -94,14 +94,14 @@ export class ReportProblemComponent implements OnInit {
         this.sendEmailModel.lName = getUserDetails.lastName;
         this.sendEmailModel.email = getUserDetails.email;
 
-        console.log(getUserDetails);
+        // console.log(getUserDetails);
       })
 
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
       .takeUntil(this.ngUnsubscribe)
       .subscribe((location: any) => {
         this.countryLocation = location.$value;
-        console.log(this.countryLocation, 'country location');
+        // console.log(this.countryLocation, 'country location');
       });
 
 
