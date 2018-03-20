@@ -563,10 +563,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     //   jQuery("#navigate-back").modal("show");
     // } else {
     this.isViewing ?
-      this.networkCountryId && this.networkCountryId != "undefined" ?
-        this.router.navigate(['/network-country/network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
-        :
-        this.router.navigate(['/network/local-network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+      this.router.navigate(this.networkCountryId && this.networkCountryId != "undefined" ? ['/network-country/network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)] : ['/network/local-network-plans', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
       :
       this.router.navigateByUrl(this.isLocalNetworkAdmin ? 'network/local-network-plans' : 'network-country/network-plans');
     // }
@@ -978,7 +975,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
         } else {
 
-          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id
+          let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id;
           this.af.database.list(responsePlansPath)
             .push(newResponsePlan)
             .then(plan => {

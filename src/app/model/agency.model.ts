@@ -14,6 +14,7 @@ export class ModelAgency extends BaseModel{
   public addressLine3:string;
   public city:string;
   public country:number;
+  public headOfficeCountry?: number;
   public currency:number;
   public isActive:boolean;
   public isDonor:boolean;

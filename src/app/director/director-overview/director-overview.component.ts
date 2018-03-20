@@ -35,6 +35,7 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
   private officeTarget: string;
   private alerts: Observable<any>;
   private affectedAreasToShow : any [];
+  private agencyAdminIs: boolean = false
 
   constructor(private route: ActivatedRoute, private userService: UserService, private alertService: ActionsService, private router: Router) {
     this.initMainMenu();
@@ -83,6 +84,9 @@ export class DirectorOverviewComponent implements OnInit, OnDestroy {
         if (params["officeTarget"]) {
           this.officeTarget = params["officeTarget"];
           this.handleOfficeSubMenu();
+        }
+        if (params["agencyAdminIs"]) {
+          this.agencyAdminIs = params["agencyAdminIs"];
         }
 
         if (!this.countryId && !this.agencyId && !this.isViewing) {

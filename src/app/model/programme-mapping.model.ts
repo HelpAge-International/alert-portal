@@ -36,6 +36,7 @@ export class ProgrammeMappingModel extends BaseModel {
     }
 
     if (!this.when && !this.isExcluded('when', excludedFields)) {
+      console.log('in here')
       return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_WHEN');
     }
 

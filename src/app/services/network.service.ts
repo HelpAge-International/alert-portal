@@ -965,7 +965,7 @@ export class NetworkService {
       .map(allNetworksObj => {
         let map = new Map()
         if (allNetworksObj) {
-          let networkCountryObjs = Object.keys(allNetworksObj).map(networkId => {
+          let networkCountryObjs = Object.keys(allNetworksObj).filter(key => !key.startsWith("$")).map(networkId => {
             let tempObj = {}
             tempObj["networkCountries"] = Object.keys(allNetworksObj[networkId]).map(countryId => {
               let tempCountryObj = allNetworksObj[networkId][countryId]
@@ -988,17 +988,19 @@ export class NetworkService {
   }
 
   getLocalNetworksWithSameLocationsInOtherNetworks(location: number) {
+
     return this.af.database.object(Constants.APP_STATUS + "/network")
       .map(allNetworksObj => {
         let localNetworks = []
         if (allNetworksObj) {
-          let networkObjs = Object.keys(allNetworksObj).map(networkId => {
+          let networkObjs = Object.keys(allNetworksObj).filter(key => !key.startsWith("$")).map(networkId => {
             let tempObj = allNetworksObj[networkId]
             tempObj["networkId"] = networkId
             return tempObj
           }).filter(network => network.countryCode == location && network.isActive)
           localNetworks = networkObjs
         }
+        console.log(localNetworks)
         return localNetworks
       })
   }
