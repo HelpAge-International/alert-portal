@@ -292,7 +292,9 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-password",
     "agency-admin/new-agency/new-agency-details",
     "export-start-fund*",
-    "export-proposal*"
+    "export-proposal*",
+    "response-plans*",
+    "preparedness*"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
@@ -624,7 +626,8 @@ export class PageControlService {
       });
     }
     else {
-      console.log("check page control*****")
+      console.log("check page control*****");
+      /**DONT UNCOMMENT BELOW AS THIS CAUSE ISSUES IN THE LOGIN*/
      // router.navigateByUrl(type.redirectTo);
     }
   }

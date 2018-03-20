@@ -265,7 +265,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private sectionEightNum: number = 0;
   private sectionNineNum: number = 0;
   private sectionTenNum: number = 0;
-
+  private isLocalAgencyAdmin: boolean = false;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
 
@@ -308,6 +308,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.auth.uid;
       this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
+      this.isLocalAgencyAdmin = userType == UserType.LocalAgencyAdmin;
+
       let userpath = Constants.USER_PATHS[userType];
 
 
@@ -1574,8 +1576,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   goBack() {
 
+    if(this.isLocalAgency){
+      this.router.navigateByUrl('local-agency/response-plans');
+    }else{
+      this.router.navigateByUrl('response-plans');
+    }
 
-    this.router.navigateByUrl('response-plans');
     /*
     if (numberOfCompletedSections > 0) {
       console.log("numberOfCompletedSections -- " + numberOfCompletedSections);
@@ -1989,14 +1995,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private getStaffLocalAgency() {
-    console.log('test')
-    this.af.database.list(Constants.APP_STATUS + '/staff/' + this.agencyId)
+    let staffPathRef = Constants.APP_STATUS + '/staff/' + this.agencyId;
+    console.log("Staff Path: "+staffPathRef);
+
+    this.af.database.list(staffPathRef)
       .flatMap(list => {
         console.log(list)
         this.staffMembers = [];
         let tempList = [];
         // If country admin add user to the list as country admin is not listed under staff
         if (this.isCountryAdmin) {
+          tempList.push(this.uid);
+        }
+        if(this.isLocalAgencyAdmin){
           tempList.push(this.uid);
         }
         list.forEach(x => {
