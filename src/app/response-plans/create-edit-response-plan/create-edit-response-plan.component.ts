@@ -312,7 +312,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
       let userpath = Constants.USER_PATHS[userType];
 
-
       this.agencyId = agencyId;
       this.systemAdminUid = systemId;
       this.prepareDataLocalAgency();
@@ -360,7 +359,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
                 this.systemAdminUid = systemAdminIds[0].$key;
                 this.getGroups();
               });
-
           });
       });
   }
@@ -443,6 +441,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
     this.newResponsePlan.beneficiariesNote = this.howBeneficiariesCalculatedText ? this.howBeneficiariesCalculatedText : '';
     this.newResponsePlan.vulnerableGroups = this.selectedVulnerableGroups;
+    console.log(this.newResponsePlan.vulnerableGroups)
     this.newResponsePlan.otherVulnerableGroup = this.otherGroup ? this.otherGroup : '';
     this.newResponsePlan.targetPopulationInvolvementList = this.convertTolist(this.targetPopulationInvolvementObject);
 
@@ -744,7 +743,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
 
     } else {
-
       // this will remove if input field is empty
       console.log("Bullet point not in list");
 
@@ -819,7 +817,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection2();
 
     this.handleContinueSave();
-
 
     this.onSave();
   }

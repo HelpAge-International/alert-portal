@@ -196,7 +196,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(getCountry => {
               this.selectedCountry = getCountry.$value;
-              console.log(getCountry.$value, 'initCountrySelection');
+             // console.log(getCountry.$value, 'initCountrySelection');
 
               this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
                 .takeUntil(this.ngUnsubscribe)
