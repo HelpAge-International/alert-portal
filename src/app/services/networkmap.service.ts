@@ -220,7 +220,7 @@ export class NetworkMapService {
     console.log(this.countries);
     for (const country of this.countries) {
       for (const agency of country.agencies) {
-        this.af.database.list(Constants.APP_STATUS + '/alert/' + this.networkId, {preserveSnapshot: true})
+        this.af.database.list(Constants.APP_STATUS + '/alert/' + agency.countryId, {preserveSnapshot: true})
           .takeUntil(this.ngUnsubscribe)
           .subscribe((snap) => {
             for (const element of snap) {
