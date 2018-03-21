@@ -3,7 +3,7 @@ import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {MapService} from './map.service';
-import {ActionLevel, ActionType, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
+import {ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
 import {CommonService} from './common.service';
 import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
@@ -61,14 +61,30 @@ export class NetworkMapService {
   public map: google.maps.Map;
   private geocoder: google.maps.Geocoder;
 
+  private networkId: String;
+  private networkCountryId: String;
+
   constructor(private jsonService: CommonService) {
     this.AGENCY_ID_NAME_MAP = new Map<string, string>();
     this.geocoder = new google.maps.Geocoder;
   }
 
-  public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string,
+  /**
+   * Get system MPA values
+   * (minYellow, minGreen) =>
+   *      Gets the agencies => [countries] of the network
+   *          Gets the CO of every country
+   *               (ALL DONE)
+   *               Initialises the hazards of everywhere
+   *               Loads the coloured layer with the countries
+   *                   Get the MPA values for each (mpaComplete / mpaTotal)
+   */
+  public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
               done: () => void, countryClicked: (country: string) => void) {
-
+    console.log("NetworkId: " + networkId);
+    console.log("Network Country Id: " + networkCountryId);
+    this.networkId = networkId;
+    this.networkCountryId = networkCountryId;
     this.af = af;
     this.ngUnsubscribe = ngUnsubscribe;
     // Get the agencies of a network
@@ -78,8 +94,8 @@ export class NetworkMapService {
     this.systemMpaGreenYellow(systemAdminId, (green, yellow) => {
       this.minGreen = green;
       this.minYellow = yellow;
-      console.log(this.minGreen);
-      console.log(this.minYellow);
+      console.log("Min Green: " + this.minGreen);
+      console.log("Min Yellow: " + this.minYellow);
       this.getAgencyCountriesOfNetwork(networkId,
         ((agencyHasCountriesMap, cVal) => {
           agencyHasCountriesMap.forEach((value, key) => {
@@ -200,26 +216,29 @@ export class NetworkMapService {
    * Find all the hazards for a given country and store them in relation to the country
    */
   private initHazards() {
+    console.log("INITIALISING HAZARDS");
+    console.log(this.countries);
     for (const country of this.countries) {
       for (const agency of country.agencies) {
-        this.af.database.list(Constants.APP_STATUS + '/alert/' + agency.countryId, {preserveSnapshot: true})
+        this.af.database.list(Constants.APP_STATUS + '/alert/' + this.networkId, {preserveSnapshot: true})
           .takeUntil(this.ngUnsubscribe)
           .subscribe((snap) => {
             for (const element of snap) {
-              let res: boolean = false;
+              let res: boolean = true;
               // let lock: boolean = false;
+              console.log(element.val());
               for (const userTypes in element.val().approval) {
                 for (const thisUid in element.val().approval[userTypes]) {
-                  if (element.val().approval[userTypes][thisUid] != 0) {
-                    res = true;
-                  }
-                  else {
-                    // lock = true;
+                  if (element.val().approval[userTypes][thisUid] != 1) {
                     res = false;
                   }
                 }
               }
+              if (element.val().alertLevel != AlertLevels.Red) {
+                res = false
+              }
               //if (!lock && res) {
+              console.log("RESULT OF DETERMINING IF IT'S APPROVED:" + res);
               if (res) {
                 // Everyone on the approval list has approved it. Uncomment the three 'lock' comments if you require ALL
                 //   on the approval list to approve
@@ -302,6 +321,8 @@ export class NetworkMapService {
         });
         marker.setMap(this.map);
         count++;
+
+        // Attempts to pseudo-randomise the markers on the map so they don't appear in the same place and get hidden
         if (count % 2 == 0) {
           position *= -1;
         }

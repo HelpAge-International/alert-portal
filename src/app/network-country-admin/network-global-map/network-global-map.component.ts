@@ -69,8 +69,9 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           if (params["isViewing"]) {
             this.isViewing = params["isViewing"];
           }
+          console.log("Network Country Id: " + this.networkCountryId);
           if (this.networkId != null && this.uid != null && this.systemAdminId) {
-            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, () => {
+            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, this.networkCountryId, () => {
               console.log("Network map initialised (viewing");
             }, (country) => {
               this.showDialog(country);
@@ -89,7 +90,7 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
                 // TODO: Delete this method when page control does auth properly
                 this.getSystemAdmin(this.uid, (systemAdminId => {
 
-                  this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId,
+                  this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
                     () => {
                       // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
                       console.log("Network map initialised");
