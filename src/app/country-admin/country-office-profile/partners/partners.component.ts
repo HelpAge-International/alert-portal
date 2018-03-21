@@ -179,7 +179,6 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                   this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
                 });
               });
-
             // get the country levels values
             this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
               .subscribe(content => {
@@ -298,6 +297,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   showAffectedAreasForPartner(projectsToDisplay: any[]) {
+    console.log(projectsToDisplay)
     this.currProjectsToDisplay = projectsToDisplay;
     jQuery("#view-areas").modal("show");
   }

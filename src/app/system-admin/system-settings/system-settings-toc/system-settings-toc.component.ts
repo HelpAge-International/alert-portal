@@ -18,7 +18,7 @@ export class SystemSettingsTocComponent implements OnInit {
   private alertMessage: string = "";
   private alertSuccess: boolean = true;
   private alertShow: boolean = false;
-
+  private previousText: string = "";
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
@@ -44,10 +44,12 @@ export class SystemSettingsTocComponent implements OnInit {
   }
 
   edit() {
+    this.previousText = this.tocText;
     this.isEditing = true;
   }
 
   cancelEdit() {
+    this.tocText = this.previousText;
     this.isEditing = false;
   }
 

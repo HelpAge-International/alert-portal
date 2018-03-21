@@ -92,7 +92,9 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
         editedAgency.addressLine1 = this.agencyAddressLine1;
         editedAgency.addressLine2 = this.agencyAddressLine2;
         editedAgency.addressLine3 = this.agencyAddressLine3;
-        editedAgency.headOfficeCountry = this.headOfficeCountry;
+        if(this.isLocalAgency){
+          editedAgency.headOfficeCountry = this.headOfficeCountry;
+        }
         editedAgency.country = this.agencyCountry;
         editedAgency.city = this.agencyCity;
         editedAgency.postCode = this.agencyPostCode;
@@ -109,7 +111,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
           && editedAgency.addressLine2 == this.modalAgency.addressLine2
           && editedAgency.addressLine3 == this.modalAgency.addressLine3
           && editedAgency.country == this.modalAgency.country
-          && editedAgency.headOfficeCountry == this.modalAgency.headOfficeCountry
+          && (this.isLocalAgency ? (editedAgency.headOfficeCountry == this.modalAgency.headOfficeCountry) : true)
           && editedAgency.city == this.modalAgency.city
           && editedAgency.postCode == this.modalAgency.postCode
           && editedAgency.phone == this.modalAgency.phone

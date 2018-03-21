@@ -297,10 +297,7 @@
       "EN": "English",
       "FR": "French",
       "ES": "Spanish",
-      "PT": "Portuguese",
-      "AR": "Arabic",
-      "UR": "Urdu",
-      "BN": "Bengali"
+      "PT": "Portuguese"
     },
     "SWITCH": "Switch Language",
     "COC": "Code of Conduct",
@@ -1754,7 +1751,7 @@
   "MAPS":{
     "MPA":"Minimum Preparedness Actions (MPAs)",
     "READINESS":"Readiness",
-    "DEPARTMENTS":"Departments",
+    "DEPARTMENTS":"Country Departments",
     "NO_DEPARTMENTS":"No Departments",
     "OVERALL":"Overall",
     "SEE_COUNTRIES_MAP":"See countries as a map",

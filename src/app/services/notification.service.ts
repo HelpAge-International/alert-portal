@@ -242,12 +242,13 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
 
           const userTypePath = Constants.USER_PATHS[userType];
           console.log(userTypePath)
-          console.log(userTypePath);
           return this._userService.getAgencyId(userTypePath, userId)
+            .first()
             .subscribe(agency => {
               console.log('first subscribe')
               let agencyId = agency;
               return this._userService.getCountryId(userTypePath, userId)
+                .first()
                 .subscribe(country => {
                   let countryId = country;
                   console.log('final return')

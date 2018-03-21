@@ -259,6 +259,7 @@ export class PrepActionService {
     // this.getDefaultClockSettings(af, agencyId, countryId, () => {
     networkMap.forEach((networkCountryId, networkId) => {
       console.log(networkId)
+      console.log(networkCountryId)
       // if (isMPA == null || isMPA) { // Don't load CHS actions if we're on advanced - They do not apply
       //   this.initNetwork(af, "actionCHS", this.systemAdminId, isMPA, PrepSourceTypes.SYSTEM);
       // }
@@ -515,6 +516,9 @@ export class PrepActionService {
         this.actions[i].assignedHazards.push(x);
       }
     }
+    if (action.hasOwnProperty('agencyAssign')) {
+      this.actions[i].agencyAssign = action.agencyAssign;
+    }
     // else {
     //   this.actions[i].assignedHazards = null;
     // }
@@ -721,6 +725,7 @@ export class PrepActionService {
     // Optional notifier method
     if (updated != null) {
       updated(this.actionsNetwork[i]);
+      console.log(this.actionsNetwork)
     }
 
 
@@ -1090,6 +1095,7 @@ export class PreparednessAction {
   public computedClockSetting: number;
 
   public actualCost: number
+  public agencyAssign?:string
 
   public setComputedClockSetting(value: number, type: number) {
     this.computedClockSetting = PrepActionService.clockCalculation(value, type);

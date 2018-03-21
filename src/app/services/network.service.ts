@@ -304,6 +304,20 @@ export class NetworkService {
       });
   }
 
+  getUnassignedNetworkActionsForAgency(agencyId:string, networkId:string) : Observable<any> {
+    return this.af.database.list(Constants.APP_STATUS + "/action/" + networkId, {
+      query : {
+        orderByChild:"agencyAssign",
+        equalTo:agencyId
+      }
+    })
+      .map(actions => actions.filter(action => !action.asignee).map(action => {
+        let obj = action
+        obj["idToQuery"] = networkId
+        return obj
+      }))
+  }
+
   getNetworkActionDetail(networkId, actionId): Observable<NetworkActionModel> {
     return this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId)
       .map(obj => {

@@ -216,7 +216,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
-        console.log("Frequency Values are here!");
         this.action.isFrequencyActive = true;
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
@@ -226,9 +225,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (!this.oldAction) {
         this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
       }
-
-      console.log(action);
-      console.log(this.action);
     });
   }
 
@@ -268,7 +264,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
-        console.log("Frequency Values are here!");
         this.action.isFrequencyActive = true;
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
@@ -278,9 +273,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (!this.oldAction) {
         this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
       }
-
-      console.log(action);
-      console.log(this.action);
     });
   }
 
@@ -594,8 +586,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     // Save/update the action
     if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
-      console.log(this.showDueDate);
-      console.log(this.action.dueDate);
       updateObj.dueDate = this.action.dueDate;
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
@@ -629,7 +619,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       updateObj.updatedAt = currentTime;
 
       if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
-        console.log("Removing complete status!");
         updateObj.isComplete = null;
         updateObj.isCompleteAt = null;
         updateObj.calculatedIsComplete = null;
@@ -646,7 +635,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             .subscribe(action => {
 
               if (action.timeTracking) {
-                console.log(action['timeTracking'])
                 // Change from unassigned to in progress
 
                 if (updateObj.level == 2) {
@@ -706,7 +694,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   console.log(notification.content);
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
                   });
                 }
 
@@ -716,7 +704,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         } else {
 
           this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id)
-            .takeUntil(this.ngUnsubscribe)
+            .first()
             .subscribe(action => {
 
               if (action.timeTracking) {
@@ -783,7 +771,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   console.log(notification.content);
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
                   });
                 }
 
@@ -914,7 +902,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         }
       }
     }
-    console.log('surely route form here?')
   }
 
   public getNow() {

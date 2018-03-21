@@ -219,7 +219,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
             //       .takeUntil(this.ngUnsubscribe)
             //       .subscribe(countryId => {
             //         this.countryId = countryId;
-            
+
             this._equipmentService.getEquipments(this.countryId)
               .subscribe(equipments => {
                 this.equipments = equipments;
@@ -312,7 +312,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
       }
     }else{
       if (equipmentId) {
-        this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}], {skipLocationChange: true});
+        this.router.navigate(['/country-admin/country-office-profile/equipment/add-edit-equipment', {id: equipmentId}]);
       } else {
         this.router.navigateByUrl('/country-admin/country-office-profile/equipment/add-edit-equipment');
       }

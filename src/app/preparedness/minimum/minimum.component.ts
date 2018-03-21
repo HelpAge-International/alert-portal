@@ -44,6 +44,7 @@ import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 import {Observable} from "rxjs/Observable";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
+import {NoteService} from "../../services/note.service";
 
 declare var jQuery: any;
 
@@ -141,6 +142,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   @Input() isAgencyAdmin: boolean;
 
+  private unassignedNetworkActions = []
+  private fromNetwork: boolean = false
+  private selectedNetworkId: string
+
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
               protected af: AngularFire,
@@ -153,6 +158,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               protected notificationService: NotificationService,
               private networkService: NetworkService,
               private windowService: WindowRefService,
+              private noteService:NoteService,
               protected translate: TranslateService) {
     this.firebase = firebaseApp;
     // Configure the toolbar based on who's loading this in
@@ -255,7 +261,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             this.agencyId = agencyId;
             this.countryId = countryId;
           }
-          this.getStaffDetails(this.uid, true);
+          // this.getStaffDetails(this.uid, true);
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
             this.permissionsAreEnabled = isEnabled;
@@ -284,6 +290,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
           //network
           if (!this.isViewing) {
+            console.log("need to fetch network actions")
             this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(networkMap => {
@@ -302,6 +309,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                     .subscribe(network => {
                       this.networkModelMap.set(networkId, network)
                     })
+
+                  this.fetchUnassignedNetworkActions(networkCountryId)
+
                 })
 
                 this.prepActionService.initActionsWithInfoAllNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, true, this.countryId, this.agencyId, this.systemAdminId, networkMap)
@@ -489,15 +499,26 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   /**
    * Assigning an action to someone
    */
-  public assignActionDialogAdv(action: PreparednessAction) {
-    if (action.dueDate == null || action.department == null || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
+  public assignActionDialogAdv(action: any, fromNetwork?: boolean) {
+    if (action.dueDate == null || (action.department == null && !action.agencyAssign) || action.budget == null || action.task == null || action.requireDoc == null || action.level == null) {
       this.isLocalAgency ? this.router.navigateByUrl("/local-agency/preparedness/create-edit-preparedness/" + action.id) : this.router.navigateByUrl("/preparedness/create-edit-preparedness/" + action.id);
     } else {
-      this.assignActionId = action.id;
+      this.assignActionId = action.id ? action.id : action.$key;
+      if (fromNetwork) {
+        this.selectedNetworkId = action['idToQuery']
+        this.fromNetwork = fromNetwork
+      } else {
+        this.selectedNetworkId = null
+        this.fromNetwork = false
+      }
     }
   }
 
   public saveAssignedUser() {
+    console.log(this.assignActionAsignee)
+    console.log(this.assignActionId)
+    console.log(this.fromNetwork)
+    console.log(this.selectedNetworkId)
     if (this.assignActionAsignee == null || this.assignActionAsignee === "0" || this.assignActionAsignee === undefined ||
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
@@ -550,7 +571,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       let newTimeObject = {start: currentTime, finish: -1};
       let timeTrackingNode;
 
-      this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId)
+      let id = this.fromNetwork ? this.selectedNetworkId : this.countryId
+      this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(action => {
 
@@ -558,34 +580,43 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           if (action.timeTracking) {
             action['timeTracking']['timeSpentInAmber'] = []
 
-            if (action['timeTracking']['timeSpentInRed'][0].finish == -1) {
+            if (action['timeTracking']['timeSpentInRed'] && action['timeTracking']['timeSpentInRed'][0] && action['timeTracking']['timeSpentInRed'][0].finish == -1) {
               action['timeTracking']['timeSpentInRed'][0].finish = currentTime
               action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
               timeTrackingNode = action['timeTracking']
+            } else {
+              timeTrackingNode = action.timeTracking
             }
           } else {
             timeTrackingNode = null
           }
 
-          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/timeTracking").set(timeTrackingNode)
-            .then(() => {
-              this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
-                .then(() => {
+          let obj = {}
+          obj["/action/" + id + "/" + this.assignActionId + "/timeTracking"] = timeTrackingNode
+          obj["/action/" + id + "/" + this.assignActionId + "/asignee"] = this.assignActionAsignee
+          if (this.fromNetwork) {
+            obj["/action/" + id + "/" + this.assignActionId + "/createdByCountryId"] = this.countryId
+          }
+          this.af.database.object(Constants.APP_STATUS).update(obj).then(() => {
+            if (this.fromNetwork) {
+              let index = this.unassignedNetworkActions.findIndex(action => action.$key == this.assignActionId)
+              if (index != -1) {
+                this.unassignedNetworkActions.splice(index, 1)
+              }
+            }
+            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+              .subscribe(task => {
+                // Send notification to the assignee
+                let notification = new MessageModel();
+                notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
+                notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
+                console.log(notification.content);
 
-                  this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
-                    .subscribe(task => {
-                      // Send notification to the assignee
-                      let notification = new MessageModel();
-                      notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
-                      notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
-                      console.log(notification.content);
-
-                      notification.time = new Date().getTime();
-                      this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
-                      });
-                    });
+                notification.time = new Date().getTime();
+                this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).first().subscribe(() => {
                 });
-            })
+              });
+          })
         })
     }
 
@@ -676,7 +707,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
-  public addNoteNetwork(action: PreparednessAction) {
+  public addNoteNetwork(action: any) {
+    console.log(action)
     if (action.note == undefined) {
       return;
     }
@@ -692,10 +724,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     action.noteId = '';
 
     if (noteId != null && noteId !== '') {
-      this.af.database.object(Constants.APP_STATUS + '/note/' + action.networkCountryId + '/' + action.id + '/' + noteId).set(note);
+      this.af.database.object(Constants.APP_STATUS + '/note/' + (action.networkCountryId ? action.networkCountryId : action.idToQuery)  + '/' + (action.id ? action.id : action.$key) + '/' + noteId).set(note);
     }
     else {
-      this.af.database.list(Constants.APP_STATUS + '/note/' + action.networkCountryId + '/' + action.id).push(note);
+      this.af.database.list(Constants.APP_STATUS + '/note/' + (action.networkCountryId ? action.networkCountryId : action.idToQuery) + '/' + (action.id ? action.id : action.$key)).push(note);
     }
   }
 
@@ -714,9 +746,12 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected deleteNoteNetwork(note: PreparednessUser, action: PreparednessAction) {
+  protected deleteNoteNetwork(note: any, action: any) {
+    console.log(action)
     if (action.networkCountryId) {
       this.af.database.list(Constants.APP_STATUS + '/note/' + action.networkCountryId + '/' + action.id + '/' + note.id).remove();
+    } else if (action.idToQuery) {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + action.idToQuery + '/' + action.$key + '/' + note.id).remove();
     }
   }
 
@@ -1313,5 +1348,23 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.storage.set(Constants.NETWORK_VIEW_SELECTED_ID, action.networkId)
     let viewModel = new NetworkViewModel(this.systemAdminId, this.agencyId, this.countryId, "", this.userType, this.uid, action.networkId, action.networkCountryId, true)
     this.storage.set(Constants.NETWORK_VIEW_VALUES, viewModel)
+  }
+
+  private fetchUnassignedNetworkActions(networkId: string) {
+    this.networkService.getUnassignedNetworkActionsForAgency(this.agencyId, networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkUnassignedActions => {
+        for (let i in networkUnassignedActions) {
+          let action = networkUnassignedActions[i]
+          let path = "/note/"+networkId+"/"+action.$key
+          this.noteService.getNotes(path)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(notes => {
+              networkUnassignedActions[i]['notes'] = notes
+            })
+        }
+        this.unassignedNetworkActions = this.unassignedNetworkActions.concat(networkUnassignedActions).filter((action, position, self) => self.indexOf(action) == position)
+        console.log(this.unassignedNetworkActions)
+      })
   }
 }

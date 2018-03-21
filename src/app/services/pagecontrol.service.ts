@@ -292,7 +292,9 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-password",
     "agency-admin/new-agency/new-agency-details",
     "export-start-fund*",
-    "export-proposal*"
+    "export-proposal*",
+    "response-plans*",
+    "preparedness*"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
@@ -624,7 +626,8 @@ export class PageControlService {
       });
     }
     else {
-      console.log("check page control*****")
+      console.log("check page control*****");
+      /**DONT UNCOMMENT BELOW AS THIS CAUSE ISSUES IN THE LOGIN*/
      // router.navigateByUrl(type.redirectTo);
     }
   }
@@ -688,8 +691,8 @@ export class PageControlService {
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
-    console.log(current)
-    console.log(type)
+    // console.log(current)
+    // console.log(type)
 
     for (let x of type.urls) {
       if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {

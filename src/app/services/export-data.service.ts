@@ -364,14 +364,14 @@ export class ExportDataService {
                   .first()
                   .subscribe(hazardIndicatorList => {
                     //dealing with pre-defined hazard
-                    let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario != -1).map(item => {
+                    let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario && item.hazardScenario.hazardScenario != -1).map(item => {
                       let hazardScenarioName = Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario] ? this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario]) : ""
                       return this.transformIndicator(item, staffMap, areaContent, hazardScenarioName, countryId, agencyId)
                     })
                     allIndicators = allIndicators.concat(hazardIndicators)
 
                     //dealing with custom hazards
-                    let hazardIndicatorsCustom = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario == -1).map(item => {
+                    let hazardIndicatorsCustom = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario && item.hazardScenario.hazardScenario == -1).map(item => {
                       return this.transformIndicator(item, staffMap, areaContent, item.hazardScenario.otherName, countryId, agencyId);
                     })
 
@@ -1060,7 +1060,7 @@ export class ExportDataService {
                       obj["Country Office"] = this.countryNameMap.get(countryId)
                     }
                     obj["Action title"] = this.exportFrom == EXPORT_FROM.FromSystem ? this.PRIVATE : action["task"]
-                    obj["Preparedness action level"] = this.translateService.instant(Constants.ACTION_LEVEL[action["level"]])
+                    obj["Preparedness action level"] = action["level"] ? this.translateService.instant(Constants.ACTION_LEVEL[action["level"]]) : this.translateService.instant(Constants.ACTION_LEVEL[1])
                     obj["Type"] = this.translateService.instant(Constants.ACTION_TYPE[action["type"]])
                     obj["Department"] = action["department"] ? departmentMap.get(action["department"]) : ""
                     obj["Assigned to"] = (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) ? (action["asignee"] ? 1 : 0) : (action["asignee"] ? staffMap.get(action["asignee"]) : "")
@@ -1708,7 +1708,7 @@ export class ExportDataService {
 
   private fetchAPActivationData(areaContent, actionList: any[], countryId: string, wb: WorkBook, agencyId?: string) {
     this.fetchAlertsForCountry(countryId).then((alertMap: Map<string, any>) => {
-      let apaList = actionList.filter(action => action.level = ActionLevel.APA && action.redAlerts)
+      let apaList = actionList.filter(action => action.level && action.level == ActionLevel.APA && action.redAlerts)
       if (apaList.length > 0) {
         let activeApaList = []
         let apaCounter = 0

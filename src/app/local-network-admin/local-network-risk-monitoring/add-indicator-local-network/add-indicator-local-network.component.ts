@@ -107,6 +107,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
   private usersForAssign: any = [];
   private isEdit: boolean = false;
   private hazardID: any;
+  private originHazardID: string;
   private indicatorID: any;
   private url: string;
   private hazards: Array<any> = [];
@@ -303,6 +304,8 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
 
         this.hazardID = params['hazardID'];
+        this.originHazardID = params['hazardID'];
+
         if(params["isViewing"]){
           if (params['indicatorID']) {
             this.isEdit = true;
@@ -512,7 +515,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
   saveIndicator() {
 
-    if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+    if (typeof (this.indicatorData.hazardScenario) == 'undefined' || typeof (this.indicatorData.hazardScenario) == 'number') {
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {
@@ -574,6 +577,16 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         } else {
           urlToPush = Constants.APP_STATUS + '/indicator/' + this.hazardID;
           urlToEdit = Constants.APP_STATUS + '/indicator/' + this.hazardID + '/' + this.indicatorID;
+        }
+        // Delete the indicator from under the old hazard
+        // console.log("COMPARING [" + this.hazardID + "] [" + this.originHazardID + "]");
+        if (this.hazardID != this.originHazardID) {
+          if (this.originHazardID == "countryContext") {
+            this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.networkId + "/" + this.indicatorID).set(null);
+          }
+          else {
+            this.af.database.object(Constants.APP_STATUS + "/indicator/" + this.originHazardID + "/" + this.indicatorID).set(null);
+          }
         }
 
         if (!this.isEdit) {
