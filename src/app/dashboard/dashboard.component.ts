@@ -139,7 +139,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(networkMap => {
           this.networkMap = networkMap
-          console.log(this.networkMap)
           if (userType == UserType.CountryDirector) {
             this.DashboardTypeUsed = DashboardType.director;
           } else {
@@ -160,7 +159,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(localNetworks => {
           this.localNetworks = localNetworks
-          console.log(this.localNetworks)
           if (userType == UserType.CountryDirector) {
             this.DashboardTypeUsed = DashboardType.director;
           } else {
@@ -349,7 +347,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
 
-        console.log(this.actionsThisWeekNetwork)
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
             if (action) {
@@ -436,7 +433,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.initLocalNetworkIndicators(startOfToday, endOfToday, this.localNetworks);
     }
     // plan approval
-    console.log(this.approvalPlans, 'approval pland before subscribe');
 
     if (this.userType == UserType.PartnerUser) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
@@ -490,7 +486,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlansNetwork = plans;
-          console.log(this.approvalPlansNetwork)
         });
     }
     if (this.responsePlansForApprovalNetworkLocal) {
@@ -562,7 +557,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.localNetworks) {
         this.alertsLocalNetwork = Observable.from([])
         this.localNetworks.forEach((networkId) => {
-          console.log("local network id: " + networkId)
           this.alertsLocalNetwork = Observable.merge(this.alertsLocalNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
         })
       }
@@ -770,7 +764,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 
       if(alert["timeTracking"]){
-        console.log('first here')
         if(!alert["timeTracking"]["timeSpentInRed"]){
           alert["timeTracking"]["timeSpentInRed"] = [];
         }
@@ -779,7 +772,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.af.database.object(Constants.APP_STATUS + '/alert/' + this.countryId + '/' + alertId + '/timeTracking/')
         .update(alert["timeTracking"])
       }else{
-        console.log('here')
         this.af.database.object(Constants.APP_STATUS + '/alert/' + this.countryId + '/' + alertId + '/timeTracking/')
           .update({timeSpentInRed: [newTimeObject]})
       }
@@ -1004,12 +996,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(agencyCountryMap => {
-            console.log(agencyCountryMap)
             this.actionService.getAlertObj(alert.networkId, alert.id)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(alertObj => {
-                console.log(alertObj)
-
                 this.actionService.copyRedAlertOverFromNetwork(agencyCountryMap, alert.id, alertObj)
               })
           })
@@ -1020,7 +1009,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   rejectRedRequest(alert) {
-    console.log(alert)
     this.actionService.rejectRedAlert(this.countryId, alert, this.uid);
   }
 
@@ -1029,7 +1017,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   planReview(plan, isLocal) {
-    console.log(plan)
     this.router.navigate(["/dashboard/review-response-plan", isLocal ? {
       "id": plan.$key,
       "networkCountryId": plan.networkCountryId,
@@ -1054,8 +1041,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   requestAgencyPartner(agency) {
-    console.log("called from dashboard");
-    console.log(agency);
     this.loadDataForPartnerUser(agency.$key, agency.relatedCountryId);
   }
 
@@ -1074,7 +1059,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToNetworkActions(action) {
-    console.log(action)
     let reverseMap = CommonUtils.reverseMap(this.networkMap);
     let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, model.networkId);
@@ -1150,7 +1134,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
           // Display APA only if there is a red alert
           actions = actions.filter(action => !action.level || action.level != ActionLevel.APA || this.isRedAlert);
-          
+
           this.actionsOverdueNetwork = this.actionsOverdueNetwork.concat(actions.filter(action => action.dueDate < startOfToday));
           this.actionsTodayNetwork = this.actionsTodayNetwork.concat(actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday));
           this.actionsThisWeekNetwork = this.actionsThisWeekNetwork.concat(actions.filter(action => action.dueDate > endOfToday));

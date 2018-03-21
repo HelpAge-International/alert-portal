@@ -1104,6 +1104,9 @@ export class CreateEditPrepActionHolder {
   public isFrequencyActive: boolean = false;
   public allHazardsEnabled: boolean;
 
+  public agencyAssign?:string
+  public timeTracking?:any
+
   constructor() {
     this.type = ActionType.custom;
   }

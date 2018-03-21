@@ -586,6 +586,8 @@
                           CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}</strong></div>
 
+                        <div *ngIf="action.agencyAssign" class="subrow-line"><strong>, {{agencyNamesMap?.get(action.agencyAssign)?.name}}</strong></div>
+
                       </div>
                     </div>
                   </div>
