@@ -156,7 +156,14 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   }
 
   confirmRemove(agencyId) {
+    //TODO DELETE NETWORK FROM AGENCY!!
     console.log(agencyId);
+    let countryId = this.agencyCountryAdminMap.get(agencyId)
+    console.log(countryId)
+    if (!countryId) {
+      this.alertMessage = new AlertMessageModel("Agency id not available!");
+      return
+    }
     if (this.leadAgencyId == agencyId) {
       this.alertMessage = new AlertMessageModel("DELETE_LEAD_AGENCY_ERROR");
     } else {
@@ -164,6 +171,9 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
       let validationPath = "/networkAgencyValidation/" + agencyId;
       this.networkService.deleteNetworkField(path);
       this.networkService.deleteNetworkField(validationPath);
+      //delete reference in countryOffice node
+      let node = "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks/" + this.networkId
+      this.networkService.deleteNetworkField(node)
     }
   }
 
