@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="col-sm-3">
-          <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="goBack()">{{"RESPONSE_PLAN_DONE"| translate}}</div></span>
+        <span class="pull-right Spaced"><div class="btn btn-primary btn-continue text-uppercase" (click)="goBack()">{{"RESPONSE_PLAN_DONE"| translate}}</div></span>
       </div>
     </div>
 
@@ -53,7 +53,7 @@
               <label for="P-name">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.PLAN_NAME" |
                 translate}}</label>
               <input type="text" class="form-control" id="P-name" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
-                [(ngModel)]="planName">
+                     [(ngModel)]="planName">
             </div>
             <div class="col-lg-6 col-md-6">
               <label for="G-location">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_DETAILS.GEO_LOCATION" |
@@ -88,7 +88,7 @@
           </div>
           <div class="Form-submit__wrapper">
             <div class="btn btn-primary btn-continue" onClick="continueToNextRibbonCreateEditResPlans(this)"
-                  (click)="continueButtonPressedOnSection1()">{{"RESPONSE_PLAN_CONTINUE" |
+                 (click)="continueButtonPressedOnSection1()">{{"RESPONSE_PLAN_CONTINUE" |
               translate}}
             </div>
           </div>
@@ -644,7 +644,7 @@
               translate}}</h4>
             <div class="Ribbon__header__status text-primary">{{section7Status | translate}}</div>
             <div id="header_section_7" class="Ribbon__header__chevron" onClick="ribbonClickCloseOthers(this)"
-                 (click)="checkAllSections()"></div>
+                 ></div>
           </div>
         </div>
         <div class="Response__content">
@@ -733,7 +733,7 @@
                                                                                             [(ngModel)]="activity.hasFurtherBeneficiary"> </span>|
                             <span><label class="no-bold">Disability</label>
                               <input type="checkbox" [(ngModel)]="activity.hasDisability"> </span>
-                              <!--type="checkbox" [(ngModel)]="active.hasDisability"> </span>-->
+                            <!--type="checkbox" [(ngModel)]="active.hasDisability"> </span>-->
                           </p>
 
 
