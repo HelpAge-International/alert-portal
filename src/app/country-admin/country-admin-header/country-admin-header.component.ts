@@ -266,7 +266,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private checkAlerts() {
-    let id = this.isViewingNetwork && this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.countryId;
+    let id = this.isViewingNetwork ? (this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.storageService.get(Constants.NETWORK_VIEW_SELECTED_ID).toString() ) : this.countryId;
     this.alertService.getAlerts(id)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {
