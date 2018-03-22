@@ -88,6 +88,9 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
                 this.networkCountryId = selection['networkCountryId'];
 
                 // TODO: Delete this method when page control does auth properly
+
+                console.log("Network Country Id: " + this.networkCountryId);
+
                 this.getSystemAdmin(this.uid, (systemAdminId => {
 
                   this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
