@@ -126,7 +126,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.isAnonym = !(user && !user.anonymous);
       this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
-      this.loadJSON().subscribe(data => {
+      this.loadJSON().first().subscribe(data => {
         for (var key in data) {
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
