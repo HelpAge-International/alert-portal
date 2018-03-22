@@ -617,13 +617,13 @@
                         <!--<div class="subrow-line">{{"GLOBAL.DEPARTMENT" | translate}}:-->
                         <!--<strong>{{DEPARTMENT_MAP.get(action.department)}}</strong>-->
                         <!--</div>-->
-                        <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
+                        <div class="subrow-line-no-end-padding">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
                           != null ?
                           CURRENT_USERS.get(action.asignee).firstName + ' ' +
                           CURRENT_USERS.get(action.asignee).lastName
                           : ("UNASSIGNED" | translate)}}</strong></div>
 
-                        <div *ngIf="action.agencyAssign" class="subrow-line"><strong>, {{agencyNamesMap?.get(action.agencyAssign)?.name}}</strong></div>
+                        <div *ngIf="action.agencyAssign" class="subrow-line-no-start-padding"><strong>, {{agencyNamesMap?.get(action.agencyAssign)?.name}}</strong></div>
 
                       </div>
                     </div>
