@@ -318,6 +318,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private prepareData() {
+    console.log("Called again!!!")
     this.getStaff();
     this.setupForEdit();
     this.getSettings();
@@ -1170,6 +1171,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private checkSection7() {
     let numOfActivities: number = this.activityMap.size;
+    console.log(this.activityMap.size)
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
@@ -1282,7 +1284,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
     this.checkSection9();
 
-    this.handleContinueSave();
+    // this.handleContinueSave();
 
     this.onSave(9);
   }
@@ -1668,7 +1670,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private setupForEdit() {
     this.route.params
-      .takeUntil(this.ngUnsubscribe)
+      .take(1)
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -1698,7 +1700,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
 
     this.af.database.object(responsePlansPath)
-      .takeUntil(this.ngUnsubscribe)
+      .take(1)
       .subscribe((responsePlan: ResponsePlan) => {
         //debugger
         console.log(responsePlan)
@@ -2390,7 +2392,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     }
 
     this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit)
-      .takeUntil(this.ngUnsubscribe)
+      .take(1)
       .subscribe(plan => {
         if (plan.timeTracking) {
           console.log(plan)
@@ -2448,8 +2450,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       } else {
         if (this.forEditing) {
 
-          console.log(this.sectorsRelatedTo)
-
+          console.log(newResponsePlan)
 
           let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.idOfResponsePlanToEdit;
 
