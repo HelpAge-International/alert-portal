@@ -311,7 +311,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.isLocalAgencyAdmin = userType == UserType.LocalAgencyAdmin;
 
       let userpath = Constants.USER_PATHS[userType];
-
+      PageControlService.localAgencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, countryId, userpath, (isEnabled) => {
+        this.moduleAccess = isEnabled;
+        if (!this.moduleAccess.countryOffice) {
+          this.methodOfImplementationSelectedDirect();
+        }
+      });
 
       this.agencyId = agencyId;
       this.systemAdminUid = systemId;
