@@ -201,8 +201,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   isNumber(n) {
@@ -708,7 +709,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           action.redAlerts = [];
         }
 
-        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+        if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))){
           action.redAlerts.push(alertId)
 
           if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
@@ -804,7 +805,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             if(!action.redAlerts){
               action.redAlerts = [];
             }
-            if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+            if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))){
               action.redAlerts.push(alert.id)
 
               if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
@@ -1009,11 +1010,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   rejectRedRequest(alert) {
-    this.actionService.rejectRedAlert(this.countryId, alert, this.uid);
+    this.actionService.rejectRedAlert(this.countryId, alert);
   }
 
   rejectRedRequestNetwork(alert) {
-    this.actionService.rejectRedAlertNetwork(this.countryId, alert, alert.networkCountryId ? alert.networkcountryId : alert.networkId);
+    this.actionService.rejectRedAlertNetwork(this.countryId, alert);
   }
 
   planReview(plan, isLocal) {

@@ -1150,9 +1150,9 @@ export class ActionsService {
 
   }
 
-  rejectRedAlert(countryId, alert, uid) {
+  rejectRedAlert(countryId, alert, approvalCountryId?) {
     let update = {};
-    update["/alert/" + countryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + countryId + "/" + alert.id + "/approval/countryDirector/" + (approvalCountryId ? approvalCountryId : countryId)] = AlertStatus.Rejected;
     update["/alert/" + countryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
@@ -1164,10 +1164,10 @@ export class ActionsService {
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  rejectRedAlertNetwork(countryId, alert, networkCountryId) {
+  rejectRedAlertNetwork(countryId, alert, networkCountryId?) {
     let update = {};
-    update["/alert/" + networkCountryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
-    update["/alert/" + networkCountryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
+    update["/alert/" + (alert.networkCountryId ? alert.networkCountryId : alert.networkId) + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + (alert.networkCountryId ? alert.networkCountryId : alert.networkId) + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
