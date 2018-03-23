@@ -2002,7 +2002,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.numOfHouseholds = responsePlan.numOfHouseholds;
     this.calculateBeneficiaries();
     this.howBeneficiariesCalculatedText = responsePlan.beneficiariesNote;
-    this.showBeneficiariesTextEntry = this.howBeneficiariesCalculatedText ? true : false;
+    this.showBeneficiariesTextEntry = !!this.howBeneficiariesCalculatedText;
 
     //vulnerable groups
     if (responsePlan.vulnerableGroups) {
