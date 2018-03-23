@@ -39,6 +39,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   private showLoader: boolean;
   private networkCountryCode: number | any;
   private agencyCountryAdminMap = new Map<String, ModelUserPublic>()
+  private agencyCountryMap: Map<string,string>;
 
 
   constructor(private pageControl: PageControlService,
@@ -70,6 +71,10 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
                 this.getCountries(network)
               }
             })
+
+          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyCountryMap => this.agencyCountryMap = agencyCountryMap)
 
           //fetch network agencies
           this.networkService.getAgenciesForNetwork(this.networkId)
@@ -156,10 +161,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   }
 
   confirmRemove(agencyId) {
-    //TODO DELETE NETWORK FROM AGENCY!!
-    console.log(agencyId);
-    let countryId = this.agencyCountryAdminMap.get(agencyId)
-    console.log(countryId)
+    let countryId = this.agencyCountryMap.get(agencyId)
     if (!countryId) {
       this.alertMessage = new AlertMessageModel("Agency id not available!");
       return
