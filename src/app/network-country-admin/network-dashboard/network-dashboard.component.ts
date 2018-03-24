@@ -600,6 +600,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
+
       if (this.networkCountryId) {
         console.log(this.networkCountryId);
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);

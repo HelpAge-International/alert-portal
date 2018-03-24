@@ -439,6 +439,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
       this.responsePlansForApprovalNetwork = Observable.of([])
       this.responsePlansForApprovalNetworkLocal = Observable.of([])
+
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkCountryId, this.uid, true));
@@ -459,14 +460,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
       this.responsePlansForApprovalNetwork = Observable.of([]);
       this.responsePlansForApprovalNetworkLocal = Observable.of([]);
+
+      console.log(this.networkMap)
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+          //console.log(this.responsePlansForApprovalNetwork)
         })
       }
       if (this.localNetworks) {
+        console.log("in local")
         this.localNetworks.forEach(networkId => {
+          console.log(networkId)
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
           this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
         })
@@ -480,12 +486,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlans = plans;
+          console.log(plans)
         });
     }
     if (this.responsePlansForApprovalNetwork) {
       this.responsePlansForApprovalNetwork
-        .takeUntil(this.ngUnsubscribe)
+        .take(2)
         .subscribe(plans => {
+          console.log(plans)
           this.approvalPlansNetwork = plans;
         });
     }
@@ -494,6 +502,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlansNetworkLocal = plans
+          console.log(this.approvalPlansNetworkLocal)
         });
     }
   }
