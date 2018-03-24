@@ -144,7 +144,7 @@
                           (click)="showSubNationalAreas(indicatorC.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
                     <span *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <ng-container *ngIf="!isViewingFromExternal">
-                      <a *ngIf="indicatorC.fromAgency"
+                      <a *ngIf="indicatorC.fromAgency && indicatorC.countryOfficeCode === countryID"
                          [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode]">{{"EDIT" | translate}}
                       </a>
                       <a *ngIf="!indicatorC.fromAgency"

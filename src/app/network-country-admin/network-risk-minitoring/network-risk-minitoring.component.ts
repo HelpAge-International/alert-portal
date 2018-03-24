@@ -492,9 +492,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       indicators.forEach((indicator, key) => {
         console.log(indicator)
         indicator.fromAgency = false;
-        this.getLogs(indicator.$key).subscribe((logs: any) => {
+        this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
           logs.forEach((log, key) => {
-            this.getUsers(log.addedBy).subscribe((user: any) => {
+            this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
               log.addedByFullName = user.firstName + ' ' + user.lastName;
             })
           });
