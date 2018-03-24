@@ -49,6 +49,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private planApprovalObjMap = new Map<string, object>();
   private agencyRegionMap = new Map<string, string>();
   private showLoader: boolean;
+  private planToResend: any;
 
   //for local network admin
   @Input() isLocalNetworkAdmin: boolean;
@@ -59,7 +60,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private countryId: string;
   private userType: UserType;
   private networkViewValues: {};
-
+  private directorIdMap = new Map<string, string>()
 
   //copy over from response plan
   private isViewing: boolean;
@@ -137,6 +138,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       if (!this.isLocalNetworkAdmin && params["networkCountryId"]) {
         this.networkCountryId = params["networkCountryId"];
       }
+      this.getDirectorId();
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.localNetworkAdminAccess() : this.networkCountryAccess();
     })
   }
@@ -328,6 +330,49 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       console.log("expire this plan");
       this.planService.expirePlan(countryId, plan.$key);
     }
+  }
+
+  getApproves(plan) {
+    if (!plan.approval) {
+      return [];
+    }
+    return Object.keys(plan.approval).filter(key => key != "partner").map(key => plan.approval[key])
+  }
+
+  getApproveStatus(approve) {
+    if (!approve) {
+      return -1;
+    }
+    let list = Object.keys(approve).map(key => approve[key]);
+    // return list[0] == ApprovalStatus.Approved;
+    return list[0];
+  }
+
+  confirmResendNotification(model, plan){
+    this.planToResend = plan;
+    jQuery("#"+model).modal("show");
+  }
+
+  resendNotification(user, tag){
+    this.closeModal(tag);
+    jQuery("#"+this.planToResend.$key).collapse('hide')
+
+    let notification = new MessageModel();
+    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToResend.name});
+    notification.time = new Date().getTime();
+
+    if(user == 'countryDirector') {
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId);
+    } else if(user == 'regionDirector'){
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId);
+    } else if(user == 'globalDirector'){
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.GlobalDirector, this.agencyId, this.countryId);
+    }
+  }
+
+  closeModal(model: string) {
+    jQuery(model).modal("hide");
   }
 
   private getNotes(plan) {
@@ -717,28 +762,25 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     // this.handleRequireSubmissionTagForDirectors();
   }
 
-  // private handleRequireSubmissionTagForDirectors() {
-  //   this.directorSubmissionRequireMap.set(1, false);
-  //   this.directorSubmissionRequireMap.set(2, false);
-  //   this.directorSubmissionRequireMap.set(3, false);
-  //   let counter = 0;
-  //   this.planService.getDirectors(this.countryId, this.agencyId)
-  //     .takeUntil(this.ngUnsubscribe)
-  //     .subscribe(result => {
-  //       counter++;
-  //       console.log(counter);
-  //       console.log(result);
-  //       if (counter === 1 && result.$value && result.$value != null) {
-  //         this.directorSubmissionRequireMap.set(1, true);
-  //       }
-  //       if (counter === 2 && result.$value && result.$value != null) {
-  //         this.directorSubmissionRequireMap.set(2, true);
-  //       }
-  //       if (counter === 3 && result.length > 0) {
-  //         this.directorSubmissionRequireMap.set(3, true);
-  //       }
-  //     });
-  // }
+  private getDirectorId() {
+    let counter = 0;
+    this.planService.getDirectors(this.countryId, this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(result => {
+        counter++;
+        console.log(counter);
+        console.log(result);
+        if (counter === 1 && result.$value && result.$value != null) {
+          this.directorIdMap.set("countryDirector", result.$value)
+        }
+        if (counter === 2 && result.$value && result.$value != null) {
+          this.directorIdMap.set("regionDirector", result.$value)
+        }
+        if (counter === 3 && result.length > 0) {
+          this.directorIdMap.set("globalDirector", result[0].$key)
+        }
+      });
+  }
 
   checkStatus(plan): boolean {
     let showSubmit = true;
