@@ -311,6 +311,12 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.isLocalAgencyAdmin = userType == UserType.LocalAgencyAdmin;
 
       let userpath = Constants.USER_PATHS[userType];
+      PageControlService.localAgencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, countryId, userpath, (isEnabled) => {
+        this.moduleAccess = isEnabled;
+        if (!this.moduleAccess.countryOffice) {
+          this.methodOfImplementationSelectedDirect();
+        }
+      });
 
       this.agencyId = agencyId;
       this.systemAdminUid = systemId;
@@ -320,7 +326,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private prepareData() {
-    console.log("Called again!!!")
     this.getStaff();
     this.setupForEdit();
     this.getSettings();
@@ -360,6 +365,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
                 this.systemAdminUid = systemAdminIds[0].$key;
                 this.getGroups();
               });
+
           });
       });
   }
@@ -1173,7 +1179,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   private checkSection7() {
     let numOfActivities: number = this.activityMap.size;
-    console.log(this.activityMap.size)
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
@@ -1601,7 +1606,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.checkSection6();
     this.checkSection7();
     this.checkSection8();
-
     // if (this.forEditing) {
     //   this.continueButtonPressedOnSection9();
     // }
@@ -1708,8 +1712,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     this.af.database.object(responsePlansPath)
       .take(1)
       .subscribe((responsePlan: ResponsePlan) => {
-        //debugger
-        console.log(responsePlan)
         this.loadResponsePlan = responsePlan;
         this.loadSection1(responsePlan);
         this.loadSection2(responsePlan);
@@ -1723,7 +1725,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.loadSection10(responsePlan);
         this.checkAllSections();
         this.reloadData(responsePlan);
-        console.log(this.newResponsePlan)
       });
   }
 
@@ -2502,7 +2503,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.object(responsePlansPath)
         .update(this.newResponsePlan)
         .then(() => {
-
           console.log('update');
         }).catch(error => {
         console.log("Response plan creation unsuccessful with error --> " + error.message);
@@ -2654,7 +2654,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private handleContinueSave() {
     if (this.forEditing && this.idOfResponsePlanToEdit) {
       console.log("editing mode");
-      //this.loadResponsePlanInfo(this.idOfResponsePlanToEdit);
     } else {
       console.log("create new mode");
     }

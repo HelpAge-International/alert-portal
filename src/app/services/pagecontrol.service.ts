@@ -772,6 +772,20 @@ export class PageControlService {
       });
   }
 
+  static localAgencyBuildPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (list: AgencyPermissionObject[]) => void) {
+    af.database.object(Constants.APP_STATUS + "/module/" + countryId)
+      .takeUntil(ngUnsubscribe)
+      .subscribe((val) =>{
+        let list = PageControlService.initModuleControlArray();
+        for (let x of list) {
+          if (val[x.permission] != null) {
+            x.isAuthorized = val[x.permission].status;
+          }
+        }
+        fun(list);
+      });
+  }
+
   static agencyQuickEnabledMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
     PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, uid, folder, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
@@ -799,6 +813,32 @@ export class PageControlService {
     });
   }
 
+  static localAgencyQuickEnabledMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
+    PageControlService.localAgencyBuildPermissionsMatrix(af, ngUnsubscribe, countryId, folder, (list) => {
+      let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
+      for (let x of list) {
+        if (x.permission === PermissionsAgency.MinimumPreparedness) {
+          agency.minimumPreparedness = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.AdvancedPreparedness) {
+          agency.advancedPreparedness = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.CHSPreparedness) {
+          agency.chsPreparedness = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.CountryOffice) {
+          agency.countryOffice = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.RiskMonitoring) {
+          agency.riskMonitoring = x.isAuthorized;
+        }
+        if (x.permission === PermissionsAgency.ResponsePlanning) {
+          agency.responsePlan = x.isAuthorized;
+        }
+      }
+      fun(agency);
+    });
+  }
 
   /**
    * Explicit copy of the agency permission smatrix. \
