@@ -147,7 +147,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               }
 
             });
-
         }
       }
     });

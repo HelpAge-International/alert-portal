@@ -89,6 +89,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private showLoader: boolean;
   private localNetworkList: string[];
   private localNetworks: ModelNetwork[] = [];
+  private networkViewValues: {};
 
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
@@ -117,6 +118,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     jQuery('.float').hide();
     //this.showIcon = false;
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     this.showLoader = true;
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.systemId = systemId;
@@ -126,7 +128,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.isAnonym = !(user && !user.anonymous);
       this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
-      this.loadJSON().subscribe(data => {
+      this.loadJSON().first().subscribe(data => {
         for (var key in data) {
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
@@ -266,7 +268,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private checkAlerts() {
-    let id = this.isViewingNetwork && this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.countryId;
+    let id = this.isViewingNetwork ? (this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.storageService.get(Constants.NETWORK_VIEW_SELECTED_ID).toString() ) : this.countryId;
     this.alertService.getAlerts(id)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {

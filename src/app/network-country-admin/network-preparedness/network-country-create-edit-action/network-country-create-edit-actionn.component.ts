@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageModel} from "../../../model/alert-message.model";
-import { ActionsService } from './../../../services/actions.service';
+import {ActionsService} from './../../../services/actions.service';
 import {
   ActionLevel,
   ActionType,
@@ -30,7 +30,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {HazardImages} from "../../../utils/HazardImages";
 import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
-import { identifierModuleUrl } from '@angular/compiler';
+import {identifierModuleUrl} from '@angular/compiler';
 import {CommonUtils} from "../../../utils/CommonUtils";
 import {Observable} from "rxjs/Observable";
 
@@ -64,7 +64,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   private successMessage: string = "AGENCY_ADMIN.MANDATED_PA.NEW_DEPARTMENT_SUCCESS";
 
   private uid: string;
-  private userType: UserType;
+  private userType: number;
   private networkUserType: NetworkUserAccountType;
   private userTypes = UserType;
   private networkUserTypes = NetworkUserAccountType;
@@ -152,7 +152,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.requireDoc = (typeof (this.actionSelected.requireDoc) != 'undefined') ? this.actionSelected.requireDoc : 0;
       this.action.budget = (typeof (this.actionSelected.budget) != 'undefined') ? this.actionSelected.budget : 0;
       this.copyDepartmentId = (typeof (this.actionSelected.department) != 'undefined') ? this.actionSelected.department : 0;
-      console.log(this.actionSelected);
       // TODO: Check if this is being used anywhere else and potentially remove it?
       // TODO: This causes a bug with going back and forth on the page
       this.storage.remove('selectedAction');
@@ -208,7 +207,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       console.log('network access')
       this.showLoader = true;
       this.uid = user.uid;
-      console.log(user)
 
 
       //get network id
@@ -228,7 +226,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           this.networkService.getNetworkModuleMatrix(this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(modules => {
-              console.log(modules)
               this.moduleAccess = modules
             });
 
@@ -273,7 +270,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           this.networkService.getNetworkModuleMatrix(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(modules => {
-              console.log(modules)
               this.moduleAccess = modules
             });
 
@@ -351,11 +347,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           this._agencyService.getAgencyModel(item)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(get => {
-              console.log(get, 'get in here');
-              // let name = get.name;
-              // let id = get.agencyId;
               this.agenciesInNetwork.push(get);
-              console.log(this.agenciesInNetwork)
             })
 
         })
@@ -363,6 +355,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       })
 
   }
+
   /**
    * Initialisation
    */
@@ -406,7 +399,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
-        console.log("Frequency Values are here!");
         this.action.isFrequencyActive = true;
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
@@ -417,8 +409,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
       }
 
-      console.log(action);
-      console.log(this.action.task, 'action task');
     });
   }
 
@@ -458,7 +448,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
-        console.log("Frequency Values are here!");
         this.action.isFrequencyActive = true;
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
@@ -469,8 +458,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
         this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
       }
 
-      console.log(action);
-      console.log(this.action);
     });
   }
 
@@ -625,7 +612,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
 
-
     let currentTime = new Date().getTime()
     let newTimeObject = {start: currentTime, finish: -1};
 
@@ -633,17 +619,19 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
       // if (this.showDueDate) {
-        updateObj.dueDate = this.action.dueDate;
+      updateObj.dueDate = this.action.dueDate;
       // }
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
       updateObj.budget = this.action.budget;
-      if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
+      if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined && this.action.asignee != 'null') {
         updateObj.asignee = this.action.asignee;
         // if (this.isViewing) {
         //   updateObj.createdByAgencyId = this.agencyId;
         //   updateObj.createdByCountryId = this.countryId;
         // }
+      } else {
+        updateObj.asignee = null
       }
       if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
         updateObj.assignHazard = [];
@@ -676,197 +664,46 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
       let id;
 
-      if(this.isViewing){
+      if (this.isViewing) {
         id = this.networkCountryId ? this.networkCountryId : this.networkId
-      }else{
+      } else {
         id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
       }
 
-        if (updateObj.asignee) {
-        this._userService.getUserType(updateObj.asignee)
-          .subscribe(x => {
-            console.log('mapping x to user type')
-            let userType = x;
-              const userTypePath = Constants.USER_PATHS[userType];
-              console.log(userTypePath)
-              console.log(userTypePath);
-              this._userService.getAgencyId(userTypePath, updateObj.asignee)
-                .subscribe(agency => {
-                  let agencyId = agency && agency != "undefined" ? agency : null;
-                  this._userService.getCountryId(userTypePath, updateObj.asignee)
-                    .subscribe(country => {
+      if (updateObj.asignee && updateObj.asignee == 'null') {
+        updateObj.asignee = null
+      }
 
-                      if(userType != NetworkUserAccountType.NetworkAdmin || userType != NetworkUserAccountType.NetworkCountryAdmin) {
+      if (updateObj.asignee) {
+        if (this.userType != NetworkUserAccountType.NetworkAdmin || this.userType != NetworkUserAccountType.NetworkCountryAdmin) {
+          updateObj.createdByAgencyId = this.agencyId;
+          updateObj.createdByCountryId = this.countryId;
 
-                        let countryId = country && country != "undefined" && country != undefined ? country : null;
-                        updateObj.createdByAgencyId = agencyId;
-                        updateObj.createdByCountryId = countryId;
-
-                      }else{
-                        updateObj.createdByAgencyId = null
-                        updateObj.createdByCountryId = null
-                      }
-
-                      if (this.action.id != null) {
-
-                        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(action => {
-
-                            if (action.timeTracking) {
-
-                              if(action.level == 2){
-                                if(action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
-                                  // Change from unassigned to in progress
-                                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
-                                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
-                                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                                    updateObj['timeTracking'] = action['timeTracking']
-                                  }
-
-                                  // Change from complete to in progress
-                                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
-                                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                                      if(timeObject.finish == -1){
-                                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
-                                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-                                        updateObj['timeTracking'] = action['timeTracking']
-                                        return;
-                                      }
-                                    })
-                                  }
-                                }
-                              }else{
-                                // Change from unassigned to in progress
-                                if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
-                                  action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
-                                  action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                                  updateObj['timeTracking'] = action['timeTracking']
-                                }
-
-                                // Change from complete to in progress
-                                if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
-                                  action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                                    if(timeObject.finish == -1){
-                                      action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
-                                      action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
-                                      updateObj['timeTracking'] = action['timeTracking']
-                                      return;
-                                    }
-                                  })
-                                }
-                              }
-                            }
-
-
-                        // Updating
-                        console.log(updateObj)
-                        this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-
-                          if (updateObj.asignee != this.oldAction.asignee) {
-
-                            // Send notification to the assignee
-                            let notification = new MessageModel();
-                            const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
-                            notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-                            notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
-                            console.log("Updating:");
-                            console.log(notification.content);
-
-                            notification.time = new Date().getTime();
-                            this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
-                              this._location.back();
-                            });
-                          }else{
-                            this._location.back()
-                          }
-                        })
-
-                        });
-                      } else {
-
-                        updateObj['timeTracking'] = {}
-                        this.actionsService.getAlerts(this.agencyId, true)
-                        .subscribe(alerts => {
-                          let isRedAlert = false;
-                          if(updateObj.level == 2){
-                            alerts.forEach(alert => {
-                              if(!updateObj.assignHazard){
-                                isRedAlert = true;
-                              }else if(updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2){
-                                isRedAlert = true;
-                              }
-                            })
-                          }
-
-
-                          if(updateObj.level == 2){
-                            if(isRedAlert){
-                              if(updateObj.asignee){
-                                updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                              }else{
-                                updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
-                              }
-                            }else{
-                              updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
-                            }
-                          }else{
-                            if(updateObj.asignee){
-                              updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-                            }else{
-                              updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
-                            }
-                          }
-                          // Saving
-                          updateObj.createdAt = new Date().getTime();
-                          updateObj.networkId = this.networkId;
-                          updateObj.asignee = null;
-                          updateObj.agencyAssign = this.action.asignee
-                          console.log(updateObj);
-                          this.af.database.list(Constants.APP_STATUS + "/action/" + id)
-                            .push(updateObj)
-                            .then(() => {
-                              this._location.back();
-
-                            // // Send notification to the assignee
-                            // let notification = new MessageModel();
-                            // notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-                            //   : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-                            // notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-                            //   : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
-                            //
-                            // notification.time = new Date().getTime();
-                            // this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).takeUntil(this.ngUnsubscribe).subscribe(() => {
-                            //   this._location.back();
-                            // });
-                          });
-                        })
-                      }
-                    })
-                })
-            })
-
-      }else {
+        } else {
+          updateObj.createdByAgencyId = null
+          updateObj.createdByCountryId = null
+        }
 
         if (this.action.id != null) {
           this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
-            .takeUntil(this.ngUnsubscribe)
+            .first()
             .subscribe(action => {
+
               if (action.timeTracking) {
 
-                if(action.level == 2){
-                  if(action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)){
+                if (action.level == 2) {
+                  if (action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
                     // Change from unassigned to in progress
-                    if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                    if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
                       action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
                       action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
                       updateObj['timeTracking'] = action['timeTracking']
                     }
 
                     // Change from complete to in progress
-                    if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                    if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
                       action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                        if(timeObject.finish == -1){
+                        if (timeObject.finish == -1) {
                           action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
                           action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
                           updateObj['timeTracking'] = action['timeTracking']
@@ -875,18 +712,18 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                       })
                     }
                   }
-                }else{
+                } else {
                   // Change from unassigned to in progress
-                  if(action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee){
+                  if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
                     action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
                     action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
                     updateObj['timeTracking'] = action['timeTracking']
                   }
 
                   // Change from complete to in progress
-                  if(action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete){
+                  if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
                     action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
-                      if(timeObject.finish == -1){
+                      if (timeObject.finish == -1) {
                         action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
                         action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
                         updateObj['timeTracking'] = action['timeTracking']
@@ -897,54 +734,184 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                 }
               }
 
-            // Updating
-            console.log(updateObj);
-            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-              this._location.back();
+              // Updating
+              console.log(updateObj)
+              this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+
+                if (updateObj.asignee != this.oldAction.asignee) {
+
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe();
+                }
+                this._location.back()
+              })
             });
-        })
+        } else {
+
+          updateObj['timeTracking'] = {}
+          this.actionsService.getAlerts(this.agencyId, true)
+            .first()
+            .subscribe(alerts => {
+              let isRedAlert = false;
+              if (updateObj.level == 2) {
+                alerts.forEach(alert => {
+                  if (!updateObj.assignHazard) {
+                    isRedAlert = true;
+                  } else if (updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2) {
+                    isRedAlert = true;
+                  }
+                })
+              }
+
+
+              if (updateObj.level == 2) {
+                if (isRedAlert) {
+                  if (updateObj.asignee) {
+                    updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                  } else {
+                    updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                  }
+                } else {
+                  updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
+                }
+              } else {
+                if (updateObj.asignee) {
+                  updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                } else {
+                  updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                }
+              }
+              // Saving
+              updateObj.createdAt = new Date().getTime();
+              updateObj.networkId = this.networkId;
+              updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign !='null' ? this.action.agencyAssign : null
+              console.log(updateObj);
+              this.af.database.list(Constants.APP_STATUS + "/action/" + id)
+                .push(updateObj)
+                .then(() => {
+                  // Send notification to the assignee
+                  if (updateObj.asignee) {
+                    let notification = new MessageModel();
+                    notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                      : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+                    notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                      : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+
+                    notification.time = new Date().getTime();
+                    this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe();
+                  }
+                  this._location.back();
+                });
+            })
+        }
+      } else {
+
+        if (this.action.id != null) {
+          this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id)
+            .first()
+            .subscribe(action => {
+              if (action.timeTracking) {
+
+                if (action.level == 2) {
+                  if (action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
+                    // Change from unassigned to in progress
+                    if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
+                      action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                      action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                      updateObj['timeTracking'] = action['timeTracking']
+                    }
+
+                    // Change from complete to in progress
+                    if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
+                      action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                        if (timeObject.finish == -1) {
+                          action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                          action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                          updateObj['timeTracking'] = action['timeTracking']
+                          return;
+                        }
+                      })
+                    }
+                  }
+                } else {
+                  // Change from unassigned to in progress
+                  if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
+                  }
+
+                  // Change from complete to in progress
+                  if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if (timeObject.finish == -1) {
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+                }
+              }
+
+              // Updating
+              updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign !='null' ? this.action.agencyAssign : null
+              console.log(updateObj);
+              this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
+                this._location.back();
+              });
+            })
         } else {
 
           updateObj['timeTracking'] = {}
 
           this.actionsService.getAlerts(this.agencyId, true)
+            .first()
             .subscribe(alerts => {
               let isRedAlert = false;
-              if(updateObj.level == 2){
+              if (updateObj.level == 2) {
                 alerts.forEach(alert => {
-                  if(!updateObj.assignHazard){
-                      isRedAlert = true;
-                  }else if(updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2){
+                  if (!updateObj.assignHazard) {
+                    isRedAlert = true;
+                  } else if (updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2) {
                     isRedAlert = true;
                   }
-              })
-            }
-          if(updateObj.level == 2){
-            if(isRedAlert){
-              if(updateObj.asignee){
-                updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-              }else{
-                updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                })
               }
-            }else{
-              updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
-            }
-          }else{
-            if(updateObj.asignee){
-              updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
-            }else{
-              updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
-            }
-          }
-          // Saving
-          updateObj.createdAt = new Date().getTime();
-          updateObj.networkId = this.networkId;
-          console.log(updateObj);
-          this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj)
-            .then(() => {
-            this._location.back();
-          });
-        })
+              if (updateObj.level == 2) {
+                if (isRedAlert) {
+                  if (updateObj.asignee) {
+                    updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                  } else {
+                    updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                  }
+                } else {
+                  updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
+                }
+              } else {
+                if (updateObj.asignee) {
+                  updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                } else {
+                  updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                }
+              }
+              // Saving
+              updateObj.createdAt = new Date().getTime();
+              updateObj.networkId = this.networkId;
+              updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign != 'null' ? this.action.agencyAssign : null
+              console.log(updateObj);
+              this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj)
+                .then(() => {
+                  this._location.back();
+                });
+            })
         }
       }
 
@@ -1058,351 +1025,6 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           }
         });
     }
-
-    // console.log(this.userType)
-    // console.log(this.networkUserType)
-    // if( this.networkUserType == NetworkUserAccountType.NetworkCountryAdmin ){
-    //   console.log('hereee')
-    //   this.userService.getUser(this.uid)
-    //     .takeUntil(this.ngUnsubscribe)
-    //     .subscribe( (user) => {
-    //       let prepUser: PreparednessUser = new PreparednessUser(this.uid, this.uid == this.uid);
-    //       prepUser.firstName = user.firstName
-    //       prepUser.lastName = user.firstName
-    //       this.CURRENT_USERS.set(this.uid, prepUser);
-    //     })
-    //
-    //   this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-    //     .takeUntil(this.ngUnsubscribe)
-    //     .subscribe(network => {
-    //       Object.keys(network.agencyCountries).forEach( agencyKey => {
-    //         this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
-    //           .takeUntil(this.ngUnsubscribe)
-    //           .subscribe(countryOffices => {
-    //             countryOffices.forEach(countryOffice => {
-    //               if(network.agencyCountries[agencyKey][countryOffice.$key]) {
-    //                 // Obtaining the country admin data
-    //                 this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
-    //                   if (data.adminId) {
-    //                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-    //
-    //                       let prepUser: PreparednessUser = new PreparednessUser(data.adminId, this.uid == data.adminId);
-    //                       prepUser.firstName = user.firstName
-    //                       prepUser.lastName = user.firstName
-    //                       this.CURRENT_USERS.set(data.admin, prepUser);
-    //                     });
-    //                   }
-    //                 });
-    //                 //Obtaining other staff data
-    //                 this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
-    //                   for (let userID in data) {
-    //                     if (!userID.startsWith('$')) {
-    //                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-    //                         let prepUser: PreparednessUser = new PreparednessUser(userID, this.uid == userID);
-    //                         prepUser.firstName = user.firstName
-    //                         prepUser.lastName = user.firstName
-    //                         this.CURRENT_USERS.set(userID, prepUser);
-    //                       });
-    //                     }
-    //                   }
-    //                 });
-    //               }
-    //             })
-    //           })
-    //       })
-    //     })
-    //
-    // }
-    // else if (this.userType == UserType.GlobalDirector) {
-    //   console.log('globalDirector')
-    //   this.userService.getUser(this.uid)
-    //     .takeUntil(this.ngUnsubscribe)
-    //     .subscribe( (user) => {
-    //
-    //       let prepUser: PreparednessUser = new PreparednessUser(this.uid, this.uid == this.uid);
-    //       prepUser.firstName = user.firstName
-    //       prepUser.lastName = user.firstName
-    //       this.CURRENT_USERS.set(this.uid, prepUser);
-    //     })
-    // } else if (this.userType == UserType.Ert || this.userType == UserType.PartnerUser) {
-    //   console.log('ert/ partner')
-    //   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode + "/" + this.uid)
-    //     .takeUntil(this.ngUnsubscribe)
-    //     .subscribe(staff => {
-    //       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
-    //         .takeUntil(this.ngUnsubscribe)
-    //         .subscribe((user) => {
-    //
-    //           let prepUser: PreparednessUser = new PreparednessUser(staff.$key, this.uid == staff.$key);
-    //           prepUser.firstName = user.firstName
-    //           prepUser.lastName = user.firstName
-    //           this.CURRENT_USERS.set(staff.$key, prepUser);
-    //         });
-    //     });
-    // } else {
-    //
-    //   this._agencyService.getAllCountryOffices()
-    //     .takeUntil(this.ngUnsubscribe)
-    //     .subscribe(agencies => {
-    //       console.log(this.uid)
-    //       agencies.forEach(agency => {
-    //         this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agency.$key)
-    //           .takeUntil(this.ngUnsubscribe)
-    //           .subscribe(countryOffices => {
-    //
-    //
-    //             if(this.isViewing){
-    //               countryOffices.filter( countryOffice => {
-    //                 console.log(countryOffice.$key)
-    //                 if(this.countryId == countryOffice.$key){
-    //                   this.agencyId = agency.$key
-    //
-    //                   // Obtaining the country admin data
-    //                   this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId).subscribe((data: any) => {
-    //                     if (data.adminId) {
-    //                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-    //                         let prepUser: PreparednessUser = new PreparednessUser(data.adminID, this.uid == data.adminID);
-    //                         prepUser.firstName = user.firstName
-    //                         prepUser.lastName = user.firstName
-    //                         this.CURRENT_USERS.set(data.adminID, prepUser);
-    //                       });
-    //                     }
-    //                   });
-    //                   //Obtaining other staff data
-    //                   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId).subscribe((data: {}) => {
-    //                     for (let userID in data) {
-    //                       if (!userID.startsWith('$')) {
-    //                         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-    //                           let prepUser: PreparednessUser = new PreparednessUser(userID, this.uid == userID);
-    //                           prepUser.firstName = user.firstName
-    //                           prepUser.lastName = user.firstName
-    //                           this.CURRENT_USERS.set(userID, prepUser);
-    //
-    //                         });
-    //                       }
-    //                     }
-    //                   });
-    //                 }
-    //               })
-    //             } else {
-    //               countryOffices.filter( countryOffice => {
-    //                 console.log(countryOffice.$key)
-    //                 if(this.copyCountryOfficeCode == countryOffice.$key){
-    //                   this.agencyId = agency.$key
-    //
-    //                   // Obtaining the country admin data
-    //                   this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
-    //                     if (data.adminId) {
-    //                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-    //                         let prepUser: PreparednessUser = new PreparednessUser(data.adminID, this.uid == data.adminID);
-    //                         prepUser.firstName = user.firstName
-    //                         prepUser.lastName = user.firstName
-    //                         this.CURRENT_USERS.set(data.adminID, prepUser);
-    //
-    //                       });
-    //                     }
-    //                   });
-    //                   //Obtaining other staff data
-    //                   this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
-    //                     for (let userID in data) {
-    //                       if (!userID.startsWith('$')) {
-    //                         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-    //                           let prepUser: PreparednessUser = new PreparednessUser(userID, this.uid == userID);
-    //                           prepUser.firstName = user.firstName
-    //                           prepUser.lastName = user.firstName
-    //                           this.CURRENT_USERS.set(userID, prepUser);
-    //                         });
-    //                       }
-    //                     }
-    //                   });
-    //                 }
-    //               })
-    //             }
-    //
-    //           })
-    //       });
-    //     })
-    //
-    // }
-
-    // if (!this.hasUsers) {
-    //   this.hasUsers = true
-    //   if (this.networkUserType == NetworkUserAccountType.NetworkCountryAdmin) {
-    //     this.userService.getUser(this.uid)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe((user) => {
-    //         console.log(user);
-    //         let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
-    //         this.usersForAssign.push(userToPush);
-    //       });
-    //
-    //     this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe(network => {
-    //         if (network.agencyCountries) {
-    //           Object.keys(network.agencyCountries).forEach(agencyKey => {
-    //             this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
-    //               .takeUntil(this.ngUnsubscribe)
-    //               .subscribe(countryOffices => {
-    //                 countryOffices.forEach(countryOffice => {
-    //                   if (network.agencyCountries[agencyKey][countryOffice.$key]) {
-    //                     // Obtaining the country admin data
-    //                     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
-    //                       if (data.adminId) {
-    //                         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-    //                           var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-    //                           this.usersForAssign.push(userToPush);
-    //                         });
-    //                       }
-    //                     });
-    //                     //Obtaining other staff data
-    //                     this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
-    //                       for (let userID in data) {
-    //                         if (!userID.startsWith('$')) {
-    //                           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-    //                             var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-    //                             this.usersForAssign.push(userToPush);
-    //                           });
-    //                         }
-    //                       }
-    //                     });
-    //                   }
-    //                 })
-    //               })
-    //           })
-    //         }
-    //       })
-    //
-    //   } else if (this.networkUserType == NetworkUserAccountType.NetworkAdmin) {
-    //     this.userService.getUser(this.uid)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe((user) => {
-    //         console.log(user)
-    //         let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
-    //         this.usersForAssign.push(userToPush);
-    //       })
-    //
-    //     this.networkService.getLocalNetwork(this.networkId)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe(network => {
-    //         console.log(network)
-    //         if (network.agencies) {
-    //           Object.keys(network.agencies).forEach(agencyKey => {
-    //             console.log(agencyKey)
-    //             if(network.agencies[agencyKey].isApproved) {
-    //               this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + '/' + network.agencies[agencyKey].countryCode)
-    //                 .takeUntil(this.ngUnsubscribe)
-    //                 .subscribe(data => {
-    //
-    //                   if (data.adminId) {
-    //                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-    //                       var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-    //                       this.usersForAssign.push(userToPush);
-    //                     });
-    //                   }
-    //                 });
-    //               //Obtaining other staff data
-    //               this.af.database.object(Constants.APP_STATUS + "/staff/" + network.agencies[agencyKey].countryCode).subscribe((data: {}) => {
-    //                 for (let userID in data) {
-    //                   if (!userID.startsWith('$')) {
-    //                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-    //                       var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-    //                       this.usersForAssign.push(userToPush);
-    //                     });
-    //                   }
-    //                 }
-    //               })
-    //             }
-    //           })
-    //         }
-    //       })
-    //
-    //   } else if (this.userType == UserType.GlobalDirector) {
-    //     console.log('globalDirector')
-    //     this.userService.getUser(this.uid)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe((user) => {
-    //         let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
-    //         this.usersForAssign.push(userToPush);
-    //       })
-    //   } else if (this.userType == UserType.Ert || this.userType == UserType.PartnerUser) {
-    //     console.log('ert/ partner')
-    //     this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode + "/" + this.uid)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe(staff => {
-    //         this.af.database.object(Constants.APP_STATUS + "/userPublic/" + staff.$key)
-    //           .takeUntil(this.ngUnsubscribe)
-    //           .subscribe((user) => {
-    //             let userToPush = {userID: staff.$key, name: user.firstName + " " + user.lastName};
-    //             this.usersForAssign.push(userToPush);
-    //           });
-    //       });
-    //   } else {
-    //
-    //     this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
-    //       .takeUntil(this.ngUnsubscribe)
-    //       .subscribe(countryOffices => {
-    //         console.log(countryOffices)
-    //         if (this.isViewing) {
-    //           countryOffices.forEach(countryOffice => {
-    //             console.log(countryOffice.$key)
-    //             console.log(this.countryId)
-    //             if (this.countryId == countryOffice.$key) {
-    //
-    //               // Obtaining the country admin data
-    //               this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId).subscribe((data: any) => {
-    //                 if (data.adminId) {
-    //                   this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-    //                     var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-    //                     this.usersForAssign.push(userToPush);
-    //                   });
-    //                 }
-    //               });
-    //               //Obtaining other staff data
-    //               this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId).subscribe((data: {}) => {
-    //                 for (let userID in data) {
-    //                   if (!userID.startsWith('$')) {
-    //                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-    //                       var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-    //                       this.usersForAssign.push(userToPush);
-    //                     });
-    //                   }
-    //                 }
-    //               });
-    //             }
-    //           })
-    //         } else {
-    //           countryOffices.filter(countryOffice => {
-    //             console.log(countryOffice.$key)
-    //             if (this.copyCountryOfficeCode == countryOffice.$key) {
-    //
-    //               // Obtaining the country admin data
-    //               this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.copyCountryOfficeCode).subscribe((data: any) => {
-    //                 if (data.adminId) {
-    //                   this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user) => {
-    //                     var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
-    //                     this.usersForAssign.push(userToPush);
-    //                   });
-    //                 }
-    //               });
-    //               //Obtaining other staff data
-    //               this.af.database.object(Constants.APP_STATUS + "/staff/" + this.copyCountryOfficeCode).subscribe((data: {}) => {
-    //                 for (let userID in data) {
-    //                   if (!userID.startsWith('$')) {
-    //                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user) => {
-    //                       var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
-    //                       this.usersForAssign.push(userToPush);
-    //                     });
-    //                   }
-    //                 }
-    //               });
-    //             }
-    //           })
-    //         }
-    //
-    //       })
-    //   }
-    // }
   }
 
   /**

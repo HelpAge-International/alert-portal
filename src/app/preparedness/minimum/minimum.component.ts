@@ -143,6 +143,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   @Input() isAgencyAdmin: boolean;
 
   private unassignedNetworkActions = []
+  private unassignedNetworkActionsLocal = []
   private fromNetwork: boolean = false
   private selectedNetworkId: string
 
@@ -322,18 +323,21 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe(localNetworks => {
                 console.log(localNetworks);
-                localNetworks.forEach((networkCountryId) => {
-                  this.networkService.getNetworkModuleMatrix(networkCountryId.id)
+                localNetworks.forEach((localNetwork) => {
+                  this.networkService.getNetworkModuleMatrix(localNetwork.id)
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(matrix => {
-                      this.networkModuleMap.set(networkCountryId.id, matrix)
+                      this.networkModuleMap.set(localNetwork.id, matrix)
                     })
 
-                  this.networkService.getNetworkDetail(networkCountryId.id)
+                  this.networkService.getNetworkDetail(localNetwork.id)
                     .takeUntil(this.ngUnsubscribe)
                     .subscribe(network => {
-                      this.networkModelMap.set(networkCountryId.id, network)
+                      this.networkModelMap.set(localNetwork.id, network)
                     })
+
+                  this.fetchUnassignedNetworkActions(localNetwork.id)
+
                 })
 
                 this.prepActionService.initActionsWithInfoAllLocalNetworksInCountry(this.af, this.ngUnsubscribe, this.uid, true, this.countryId, this.agencyId, this.systemAdminId, localNetworks)
@@ -530,7 +534,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       let timeTrackingNode;
 
       this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId)
-        .takeUntil(this.ngUnsubscribe)
+        .first()
         .subscribe(action => {
 
           // Change from unassigned to in progress
@@ -551,7 +555,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
               this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
                 .then(() => {
 
-                  this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+                  this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/task")
+                    .first()
                     .subscribe(task => {
                       // Send notification to the assignee
                       let notification = new MessageModel();
@@ -560,8 +565,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                       console.log(notification.content);
 
                       notification.time = new Date().getTime();
-                      this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
-                      });
+                      this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).first().subscribe();
                     });
                 });
             })
@@ -573,7 +577,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
       let id = this.fromNetwork ? this.selectedNetworkId : this.countryId
       this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId)
-        .takeUntil(this.ngUnsubscribe)
+        .first()
         .subscribe(action => {
 
           // Change from unassigned to in progress
@@ -596,6 +600,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
           obj["/action/" + id + "/" + this.assignActionId + "/asignee"] = this.assignActionAsignee
           if (this.fromNetwork) {
             obj["/action/" + id + "/" + this.assignActionId + "/createdByCountryId"] = this.countryId
+            obj["/action/" + id + "/" + this.assignActionId + "/createdByAgencyId"] = this.agencyId
           }
           this.af.database.object(Constants.APP_STATUS).update(obj).then(() => {
             if (this.fromNetwork) {
@@ -604,7 +609,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                 this.unassignedNetworkActions.splice(index, 1)
               }
             }
-            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
+            this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.assignActionId + "/task")
+              .first()
               .subscribe(task => {
                 // Send notification to the assignee
                 let notification = new MessageModel();
@@ -834,13 +840,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       if (action.timeTracking) {
 
         // Change from in progress to complete
-        let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
 
         if (!action['timeTracking']['timeSpentInGreen']) {
           action['timeTracking']['timeSpentInGreen'] = []
         }
 
-        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
           action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
           action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
           data['timeTracking'] = action['timeTracking']
@@ -901,13 +907,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
       if (action.timeTracking) {
         // Change from in progress to complete
-        let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
 
         if (!action['timeTracking']['timeSpentInGreen']) {
           action['timeTracking']['timeSpentInGreen'] = []
         }
 
-        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
           action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
           action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
           data['timeTracking'] = action['timeTracking']
@@ -965,13 +971,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     if (action.timeTracking) {
 
       // Change from in progress to complete
-      let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+      let index = action['timeTracking']['timeSpentInGreen'] ? action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1) : -1
 
       if (!action['timeTracking']['timeSpentInAmber']) {
         action['timeTracking']['timeSpentInGreen'] = []
       }
 
-      if (action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
+      if (index != -1 && action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
         action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
         action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
         timeTrackingNode = action['timeTracking']

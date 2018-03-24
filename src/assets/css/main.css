@@ -9342,6 +9342,17 @@ h3, h4 {
   padding: 10px 15px;
 }
 
+.Preparedness-list__item .subrow-line-no-start-padding{
+  white-space: nowrap;
+  padding-top: 10px;
+}
+
+.Preparedness-list__item .subrow-line-no-end-padding{
+  white-space: nowrap;
+  padding-top: 10px;
+  padding-left: 15px;
+}
+
 .Preparedness-list__item .notes-popover:before, .Preparedness-list__item .notes-popover:after {
   left: 69%;
 }

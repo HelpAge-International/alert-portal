@@ -130,7 +130,7 @@
         <div class="form-group">
           <label for="n-AssignTo">{{"ASSIGN_TO" | translate}}</label>
           <ng-container *ngIf="!isViewing">
-            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" >
+            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.agencyAssign" >
               <option  selected value=null>{{"UNASSIGNED" | translate}}</option>
               <option *ngFor="let agencies of agenciesInNetwork" value="{{agencies.id}}">{{agencies.name}}
               </option>

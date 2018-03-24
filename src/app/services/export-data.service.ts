@@ -34,7 +34,7 @@ export class ExportDataService {
   private COUNTRY_SHEETS = 16
   private exportFrom = EXPORT_FROM.FromCountry
   private PRIVATE = "Private"
-  private delayTime: number = 1000;
+  private delayTime: number = 5000;
   private tolerateNumber: number = 10
 
   private total: number
@@ -834,25 +834,35 @@ export class ExportDataService {
             return obj
           })
 
-          let coorTotal = coordinations.length
-          let counter = 0
-          coordinations.forEach(coor => {
-            this.userService.getUser(coor["Staff member represting your agency?"])
-              .first()
-              .subscribe(staff => {
-                coor["Staff member represting your agency?"] = staff.firstName + " " + staff.lastName
-                counter++
-                if (counter == coorTotal) {
-                  this.coordsForAgency = this.coordsForAgency.concat(coordinations)
-                  this.coordsForSystem = this.coordsForSystem.concat(coordinations)
-                  const coordSheet = XLSX.utils.json_to_sheet(coordinations);
-                  XLSX.utils.book_append_sheet(wb, coordSheet, "CO - Coordination")
-                  this.counter++
-                  // console.log("Coordination: " + this.counter)
-                  this.exportFile(this.counter, this.total, wb)
-                }
-              })
-          })
+          if (this.exportFrom == EXPORT_FROM.FromSystem) {
+            // this.coordsForAgency = this.coordsForAgency.concat(coordinations)
+            this.coordsForSystem = this.coordsForSystem.concat(coordinations)
+            // const coordSheet = XLSX.utils.json_to_sheet(coordinations);
+            // XLSX.utils.book_append_sheet(wb, coordSheet, "CO - Coordination")
+            // this.counter++
+            // // console.log("Coordination: " + this.counter)
+            // this.exportFile(this.counter, this.total, wb)
+          } else {
+            let coorTotal = coordinations.length
+            let counter = 0
+            coordinations.forEach(coor => {
+              this.userService.getUser(coor["Staff member represting your agency?"])
+                .first()
+                .subscribe(staff => {
+                  coor["Staff member represting your agency?"] = staff.firstName + " " + staff.lastName
+                  counter++
+                  if (counter == coorTotal) {
+                    this.coordsForAgency = this.coordsForAgency.concat(coordinations)
+                    this.coordsForSystem = this.coordsForSystem.concat(coordinations)
+                    const coordSheet = XLSX.utils.json_to_sheet(coordinations);
+                    XLSX.utils.book_append_sheet(wb, coordSheet, "CO - Coordination")
+                    this.counter++
+                    // console.log("Coordination: " + this.counter)
+                    this.exportFile(this.counter, this.total, wb)
+                  }
+                })
+            })
+          }
         } else {
           this.passEmpty(wb)
         }
@@ -1224,51 +1234,57 @@ export class ExportDataService {
   }
 
   private exportFileAgency(counter, total, wb) {
-    if (counter == total) {
-      const alertsForAgencySheet = XLSX.utils.json_to_sheet(this.alertsForAgency);
-      const indicatorsForAgencySheet = XLSX.utils.json_to_sheet(this.indicatorsForAgency);
-      const plansForAgencySheet = XLSX.utils.json_to_sheet(this.plansForAgency);
-      const actionsForAgencySheet = XLSX.utils.json_to_sheet(this.actionsForAgency);
-      const activeAPAForAgencySheet = XLSX.utils.json_to_sheet(this.activeAPAForAgency);
-      const pointOfContactsForAgencySheet = XLSX.utils.json_to_sheet(this.pointOfContactsForAgency);
-      const officesDetailsForAgencySheet = XLSX.utils.json_to_sheet(this.officesDetailsForAgency);
-      const stockInCountryForAgencySheet = XLSX.utils.json_to_sheet(this.stockInCountryForAgency);
-      const stockOutCountryForAgencySheet = XLSX.utils.json_to_sheet(this.stockOutCountryForAgency);
-      const coordsForAgencySheet = XLSX.utils.json_to_sheet(this.coordsForAgency);
-      const equipmentsForAgencySheet = XLSX.utils.json_to_sheet(this.equipmentsForAgency);
-      const surgeEquipmentsForAgencySheet = XLSX.utils.json_to_sheet(this.surgeEquipmentsForAgency);
-      const organisationsForAgencySheet = XLSX.utils.json_to_sheet(this.organisationsForAgency);
-      const surgesForAgencySheet = XLSX.utils.json_to_sheet(this.surgesForAgency);
-      const officesCapacityForAgencySheet = XLSX.utils.json_to_sheet(this.officesCapacityForAgency);
-      const program4wForAgencySheet = XLSX.utils.json_to_sheet(this.program4wForAgency);
-      const sectorsForAgencySheet = XLSX.utils.json_to_sheet(this.sectorsForAgency);
-      XLSX.utils.book_append_sheet(wb, alertsForAgencySheet, "Alerts")
-      XLSX.utils.book_append_sheet(wb, indicatorsForAgencySheet, "Risk Monitoring")
-      XLSX.utils.book_append_sheet(wb, plansForAgencySheet, "Response Plans")
-      XLSX.utils.book_append_sheet(wb, actionsForAgencySheet, "Preparedness")
-      XLSX.utils.book_append_sheet(wb, activeAPAForAgencySheet, "APA Activation")
-      XLSX.utils.book_append_sheet(wb, pointOfContactsForAgencySheet, "CO - Contacts(Point of Contact)")
-      XLSX.utils.book_append_sheet(wb, officesDetailsForAgencySheet, "CO - Contacts (Office Details)")
-      XLSX.utils.book_append_sheet(wb, stockInCountryForAgencySheet, "Stock Capacity(In-country)")
-      XLSX.utils.book_append_sheet(wb, stockOutCountryForAgencySheet, "Stock Capacity(External)")
-      XLSX.utils.book_append_sheet(wb, coordsForAgencySheet, "CO - Coordination")
-      XLSX.utils.book_append_sheet(wb, equipmentsForAgencySheet, "CO - Equipment(Equipment)")
-      XLSX.utils.book_append_sheet(wb, surgeEquipmentsForAgencySheet, "CO - Surge Equipment")
-      XLSX.utils.book_append_sheet(wb, organisationsForAgencySheet, "CO - Partners")
-      XLSX.utils.book_append_sheet(wb, surgesForAgencySheet, "CO - Surge Capacity")
-      XLSX.utils.book_append_sheet(wb, officesCapacityForAgencySheet, "CO - Office Capacity")
-      XLSX.utils.book_append_sheet(wb, program4wForAgencySheet, "CO - Programme Mapping")
-      XLSX.utils.book_append_sheet(wb, sectorsForAgencySheet, "CO - Sector Expertise")
-      XLSX.writeFile(wb, 'SheetJS.xlsx')
-      this.subjectAgency.next(true)
-      this.exportFrom = EXPORT_FROM.FromCountry
+    // console.log("agency counter: "+counter)
+    // console.log("agency total: "+total)
+    if (total - counter < Math.round(total/4) && this.agencyCanExport) {
+      this.agencyCanExport = false
+      Observable.timer(this.delayTime).first().subscribe(() => {
+        const alertsForAgencySheet = XLSX.utils.json_to_sheet(this.alertsForAgency);
+        const indicatorsForAgencySheet = XLSX.utils.json_to_sheet(this.indicatorsForAgency);
+        const plansForAgencySheet = XLSX.utils.json_to_sheet(this.plansForAgency);
+        const actionsForAgencySheet = XLSX.utils.json_to_sheet(this.actionsForAgency);
+        const activeAPAForAgencySheet = XLSX.utils.json_to_sheet(this.activeAPAForAgency);
+        const pointOfContactsForAgencySheet = XLSX.utils.json_to_sheet(this.pointOfContactsForAgency);
+        const officesDetailsForAgencySheet = XLSX.utils.json_to_sheet(this.officesDetailsForAgency);
+        const stockInCountryForAgencySheet = XLSX.utils.json_to_sheet(this.stockInCountryForAgency);
+        const stockOutCountryForAgencySheet = XLSX.utils.json_to_sheet(this.stockOutCountryForAgency);
+        const coordsForAgencySheet = XLSX.utils.json_to_sheet(this.coordsForAgency);
+        const equipmentsForAgencySheet = XLSX.utils.json_to_sheet(this.equipmentsForAgency);
+        const surgeEquipmentsForAgencySheet = XLSX.utils.json_to_sheet(this.surgeEquipmentsForAgency);
+        const organisationsForAgencySheet = XLSX.utils.json_to_sheet(this.organisationsForAgency);
+        const surgesForAgencySheet = XLSX.utils.json_to_sheet(this.surgesForAgency);
+        const officesCapacityForAgencySheet = XLSX.utils.json_to_sheet(this.officesCapacityForAgency);
+        const program4wForAgencySheet = XLSX.utils.json_to_sheet(this.program4wForAgency);
+        const sectorsForAgencySheet = XLSX.utils.json_to_sheet(this.sectorsForAgency);
+        XLSX.utils.book_append_sheet(wb, alertsForAgencySheet, "Alerts")
+        XLSX.utils.book_append_sheet(wb, indicatorsForAgencySheet, "Risk Monitoring")
+        XLSX.utils.book_append_sheet(wb, plansForAgencySheet, "Response Plans")
+        XLSX.utils.book_append_sheet(wb, actionsForAgencySheet, "Preparedness")
+        XLSX.utils.book_append_sheet(wb, activeAPAForAgencySheet, "APA Activation")
+        XLSX.utils.book_append_sheet(wb, pointOfContactsForAgencySheet, "CO - Contacts(Point of Contact)")
+        XLSX.utils.book_append_sheet(wb, officesDetailsForAgencySheet, "CO - Contacts (Office Details)")
+        XLSX.utils.book_append_sheet(wb, stockInCountryForAgencySheet, "Stock Capacity(In-country)")
+        XLSX.utils.book_append_sheet(wb, stockOutCountryForAgencySheet, "Stock Capacity(External)")
+        XLSX.utils.book_append_sheet(wb, coordsForAgencySheet, "CO - Coordination")
+        XLSX.utils.book_append_sheet(wb, equipmentsForAgencySheet, "CO - Equipment(Equipment)")
+        XLSX.utils.book_append_sheet(wb, surgeEquipmentsForAgencySheet, "CO - Surge Equipment")
+        XLSX.utils.book_append_sheet(wb, organisationsForAgencySheet, "CO - Partners")
+        XLSX.utils.book_append_sheet(wb, surgesForAgencySheet, "CO - Surge Capacity")
+        XLSX.utils.book_append_sheet(wb, officesCapacityForAgencySheet, "CO - Office Capacity")
+        XLSX.utils.book_append_sheet(wb, program4wForAgencySheet, "CO - Programme Mapping")
+        XLSX.utils.book_append_sheet(wb, sectorsForAgencySheet, "CO - Sector Expertise")
+        XLSX.writeFile(wb, 'SheetJS.xlsx')
+        this.subjectAgency.next(true)
+        this.exportFrom = EXPORT_FROM.FromCountry
+        this.agencyCanExport = true
+      })
     }
   }
 
   private exportFileSystem(counter, total, wb) {
     // console.log("system total: " + total)
     // console.log("system counter: " + counter)
-    if (total - counter < this.tolerateNumber && this.systemCanExport) {
+    if (total - counter < Math.round(total/4) && this.systemCanExport) {
       this.systemCanExport = false
       Observable.timer(this.delayTime).first().subscribe(() => {
         // if (counter == total - 2) {

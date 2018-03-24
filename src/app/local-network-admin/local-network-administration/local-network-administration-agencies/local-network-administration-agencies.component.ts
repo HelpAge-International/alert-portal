@@ -39,6 +39,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   private showLoader: boolean;
   private networkCountryCode: number | any;
   private agencyCountryAdminMap = new Map<String, ModelUserPublic>()
+  private agencyCountryMap: Map<string,string>;
 
 
   constructor(private pageControl: PageControlService,
@@ -70,6 +71,10 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
                 this.getCountries(network)
               }
             })
+
+          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agencyCountryMap => this.agencyCountryMap = agencyCountryMap)
 
           //fetch network agencies
           this.networkService.getAgenciesForNetwork(this.networkId)
@@ -156,7 +161,11 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   }
 
   confirmRemove(agencyId) {
-    console.log(agencyId);
+    let countryId = this.agencyCountryMap.get(agencyId)
+    if (!countryId) {
+      this.alertMessage = new AlertMessageModel("Agency id not available!");
+      return
+    }
     if (this.leadAgencyId == agencyId) {
       this.alertMessage = new AlertMessageModel("DELETE_LEAD_AGENCY_ERROR");
     } else {
@@ -164,6 +173,9 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
       let validationPath = "/networkAgencyValidation/" + agencyId;
       this.networkService.deleteNetworkField(path);
       this.networkService.deleteNetworkField(validationPath);
+      //delete reference in countryOffice node
+      let node = "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks/" + this.networkId
+      this.networkService.deleteNetworkField(node)
     }
   }
 

@@ -402,8 +402,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   isNumber(n) {
@@ -936,8 +937,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             isDirector: true
           }]);
       } else {
+        console.log(this.approveMap)
         let selection = this.approveMap.get(alertId);
         this.approveMap.set(alertId, !selection);
+        console.log(this.approveMap)
       }
     }
 
@@ -972,7 +975,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         if(!action.redAlerts){
           action.redAlerts = [];
         }
-        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+        if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))){
           action.redAlerts.push(alert.id)
 
           if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
@@ -1071,7 +1074,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   rejectRedRequest(alert) {
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    this.actionService.rejectRedAlert(id, alert, this.uid);
+    this.isViewing ? this.actionService.rejectRedAlert(id, alert, this.countryId) : this.actionService.rejectRedAlert(id, alert)
   }
 
   planReview(planId) {
