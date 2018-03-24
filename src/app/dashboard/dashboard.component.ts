@@ -1060,6 +1060,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToNetworkActions(action) {
+    //TODO CHECK FROM HERE
+    console.log(action)
     let reverseMap = CommonUtils.reverseMap(this.networkMap);
     let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, model.networkId);
