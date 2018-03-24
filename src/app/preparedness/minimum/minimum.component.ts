@@ -840,13 +840,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       if (action.timeTracking) {
 
         // Change from in progress to complete
-        let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
 
         if (!action['timeTracking']['timeSpentInGreen']) {
           action['timeTracking']['timeSpentInGreen'] = []
         }
 
-        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
           action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
           action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
           data['timeTracking'] = action['timeTracking']
@@ -907,13 +907,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
       if (action.timeTracking) {
         // Change from in progress to complete
-        let index = action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
 
         if (!action['timeTracking']['timeSpentInGreen']) {
           action['timeTracking']['timeSpentInGreen'] = []
         }
 
-        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
           action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
           action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
           data['timeTracking'] = action['timeTracking']
@@ -971,13 +971,13 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     if (action.timeTracking) {
 
       // Change from in progress to complete
-      let index = action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1);
+      let index = action['timeTracking']['timeSpentInGreen'] ? action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1) : -1
 
       if (!action['timeTracking']['timeSpentInAmber']) {
         action['timeTracking']['timeSpentInGreen'] = []
       }
 
-      if (action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
+      if (index != -1 && action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
         action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
         action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
         timeTrackingNode = action['timeTracking']

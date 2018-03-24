@@ -4,9 +4,13 @@
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
     <div class="logo" (click)="goToHome()"></div>
-    <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0"
+    <span *ngIf="!isAnonym && !isViewingNetwork" class="badge badge-pill" [class.badge-success]="alertLevel==0"
+                     [class.badge-warning]="alertLevel==1"
+                     [class.badge-danger]="alertLevel==2" routerLink="/risk-monitoring/create-alert">{{alertTitle | translate}}
+    </span>
+    <span *ngIf="!isAnonym && isViewingNetwork" class="badge badge-pill" [class.badge-success]="alertLevel==0"
           [class.badge-warning]="alertLevel==1"
-          [class.badge-danger]="alertLevel==2" routerLink="/risk-monitoring/create-alert">{{alertTitle | translate}}
+          [class.badge-danger]="alertLevel==2" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/create-alert', networkViewValues] : ['/network-country/network-risk-monitoring/create-alert']">{{alertTitle | translate}}
     </span>
     <ul *ngIf="!isAnonym">
       <li>
