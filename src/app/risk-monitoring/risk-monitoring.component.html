@@ -258,7 +258,7 @@
                         <div *ngFor="let log of indicatorC.logs">
                           <div class="row Spaced log-post__wrap--risk">
                             <div class="log-date__wrap--risk col-lg-1">
-                              <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                              <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                               <p>{{"GLOBAL.UPDATE" | translate}} <img
                                 src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                               </p>
@@ -588,7 +588,7 @@
                           <div *ngFor="let log of indicator.logs">
                             <div class="row Spaced log-post__wrap--risk">
                               <div class="log-date__wrap--risk col-lg-1">
-                                <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                                <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                                 <p>{{"GLOBAL.UPDATE" | translate}} <img
                                   src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                 </p>
@@ -911,7 +911,7 @@
                           <div *ngFor="let log of indicatorC.logs">
                             <div class="row Spaced log-post__wrap--risk">
                               <div class="log-date__wrap--risk col-lg-1">
-                                <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                                <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                                 <p>{{"GLOBAL.UPDATE" | translate}} <img
                                   src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                 </p>
@@ -1237,7 +1237,7 @@
                             <div *ngFor="let log of indicator.logs">
                               <div class="row Spaced log-post__wrap--risk">
                                 <div class="log-date__wrap--risk col-lg-1">
-                                  <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                                  <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                                   <p>{{"GLOBAL.STATUS" | translate}} <img
                                     src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                   </p>
