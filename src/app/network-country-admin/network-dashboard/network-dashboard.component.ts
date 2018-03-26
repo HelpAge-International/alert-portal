@@ -67,6 +67,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   //logic
   private networkId: string;
   private networkCountryId: string;
+  private localNetworks: any;
   private showLoader: boolean;
   private uid: string;
 
@@ -116,8 +117,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private approveMap = new Map();
   private responsePlansForApproval: Observable<any[]>;
   private responsePlansForApprovalNetwork: Observable<any[]>;
+  private responsePlansForApprovalNetworkLocal: Observable<any[]>;
   private approvalPlans = [];
   private approvalPlansNetwork = [];
+  private approvalPlansNetworkLocal = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
   private isRedAlert: boolean;
@@ -185,16 +188,29 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       if (!this.isLocalNetworkAdmin) {
         this.networkCountryId = params["networkCountryId"];
       }
+
+      this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(localNetworks => {
+          this.localNetworks = localNetworks
+        });
+
+      this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(networkMap => {
+          this.networkMap = networkMap
+        });
+
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
 
 
-  private checkCoCUpdated(){
+  private checkCoCUpdated() {
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        if(snap.val() == null || snap.val() == false){
+        if (snap.val() == null || snap.val() == false) {
           this.showCoCBanner = true;
         }
       });
@@ -282,9 +298,15 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   navigateToNetworkIndicator(indicator) {
     indicator.hazardScenario["key"] == "countryContext" ?
-      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["key"] }])
+      this.router.navigate(["/risk-monitoring", {
+        "updateIndicatorID": indicator.$key,
+        "hazardID": indicator.hazardScenario["key"]
+      }])
       :
-      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["hazardScenario"] }])
+      this.router.navigate(["/risk-monitoring", {
+        "updateIndicatorID": indicator.$key,
+        "hazardID": indicator.hazardScenario["hazardScenario"]
+      }])
   }
 
   private initLocalNetworkAccess() {
@@ -344,7 +366,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         } else {
           this.loadData();
         }
-
       })
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -381,6 +402,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         if (this.userType == UserType.PartnerUser) {
           this.loadDataForPartnerUser(this.agencyId, this.countryId);
         } else {
+          console.log("local view access")
           this.loadData();
         }
 
@@ -600,21 +622,40 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
+      this.responsePlansForApprovalNetworkLocal = Observable.of([])
 
       if (this.networkCountryId) {
-        console.log(this.networkCountryId);
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
       }
+
+      if (this.localNetworks) {
+        this.networkMap.forEach((networkCountryId) => {
+          this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId);
+        });
+
+        this.localNetworks.forEach(networkId => {
+          this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId);
+        })
+      }
+
     } else if (this.userType == UserType.CountryDirector) {
-      console.log('getting response plans c d ')
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
 
       if (this.networkCountryId) {
-        console.log('now net country')
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkCountryId);
+      }
 
+      if (this.localNetworks) {
+        this.networkMap.forEach((networkCountryId) => {
+          this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId);
+        });
+
+        this.localNetworks.forEach(networkId => {
+          this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId);
+        })
       }
     }
+
     if (this.responsePlansForApproval) {
       this.responsePlansForApproval
         .takeUntil(this.ngUnsubscribe)
@@ -627,7 +668,17 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApprovalNetwork
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
+          console.log(plans)
           this.approvalPlansNetwork = plans
+        });
+    }
+
+    if (this.responsePlansForApprovalNetworkLocal) {
+      this.responsePlansForApprovalNetworkLocal
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(plans => {
+          this.approvalPlansNetworkLocal = plans
+          console.log(this.approvalPlansNetworkLocal)
         });
     }
     console.log(this.approvalPlansNetwork, 'approval plan')
@@ -955,7 +1006,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     let hazard = this.hazards.find(x => x.hazardScenario == hazardScenario)
     let hazardTrackingNode;
 
-    if(hazard && hazard.timeTracking && hazard.timeTracking[alertId]){
+    if (hazard && hazard.timeTracking && hazard.timeTracking[alertId]) {
       hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alertId] : undefined;
     }
 
@@ -968,79 +1019,79 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       query: {
         orderByChild: 'level',
         equalTo: 2
-       }
+      }
     })
-    .takeUntil(this.ngUnsubscribe)
-    .subscribe(actions => {
-      actions.forEach(action => {
-        if(!action.redAlerts){
-          action.redAlerts = [];
-        }
-        if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))){
-          action.redAlerts.push(alert.id)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(actions => {
+        actions.forEach(action => {
+          if (!action.redAlerts) {
+            action.redAlerts = [];
+          }
+          if (action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))) {
+            action.redAlerts.push(alert.id)
 
-          if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+            if (action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)) {
 
-            action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
-            if(!action.asignee){
-              if(!action["timeTracking"]["timeSpentInRed"]){
-                action['timeTracking']['timeSpentInRed'] = [];
+              action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+              if (!action.asignee) {
+                if (!action["timeTracking"]["timeSpentInRed"]) {
+                  action['timeTracking']['timeSpentInRed'] = [];
+                }
+                action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+              } else if (action.isComplete) {
+                if (!action["timeTracking"]["timeSpentInGreen"]) {
+                  action['timeTracking']['timeSpentInGreen'] = [];
+                }
+                action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+              } else {
+                if (!action["timeTracking"]["timeSpentInAmber"]) {
+                  action['timeTracking']['timeSpentInAmber'] = [];
+                }
+                action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
               }
-              action['timeTracking']['timeSpentInRed'].push(newTimeObject)
-            }else if(action.isComplete){
-              if(!action["timeTracking"]["timeSpentInGreen"]){
-                action['timeTracking']['timeSpentInGreen'] = [];
-              }
-              action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-            }else{
-              if(!action["timeTracking"]["timeSpentInAmber"]){
-                action['timeTracking']['timeSpentInAmber'] = [];
-              }
-              action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
             }
+
+            this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/timeTracking')
+              .update(action.timeTracking)
+            this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/redAlerts')
+              .update(action.redAlerts)
           }
+        });
+      })
 
-          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/timeTracking')
-          .update(action.timeTracking)
-          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/redAlerts')
-          .update(action.redAlerts)
+
+    if (hazard) {
+
+      if (hazardTrackingNode["timeSpentInAmber"]) {
+        hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+      }
+
+      if (hazardTrackingNode) {
+        if (!hazardTrackingNode["timeSpentInRed"]) {
+          hazardTrackingNode["timeSpentInRed"] = [];
         }
-      });
-    })
 
-
-    if(hazard){
-
-        if(hazardTrackingNode["timeSpentInAmber"]){
-          hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
-        }
-
-        if(hazardTrackingNode){
-          if(!hazardTrackingNode["timeSpentInRed"]){
-            hazardTrackingNode["timeSpentInRed"] = [];
-          }
-
-          hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
-          this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
+        hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
           .update(hazardTrackingNode)
-        }else{
-          this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
+      } else {
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
           .update({timeSpentInRed: [newTimeObject]})
-        }
+      }
 
     }
 
 
-    if(alert["timeTracking"]){
+    if (alert["timeTracking"]) {
       console.log('first here')
-      if(!alert["timeTracking"]["timeSpentInRed"]){
+      if (!alert["timeTracking"]["timeSpentInRed"]) {
         alert["timeTracking"]["timeSpentInRed"] = [];
       }
 
       alert["timeTracking"]["timeSpentInRed"].push(newTimeObject)
       this.af.database.object(Constants.APP_STATUS + '/alert/' + id + '/' + alertId + '/timeTracking/')
-      .update(alert["timeTracking"])
-    }else{
+        .update(alert["timeTracking"])
+    } else {
       console.log('here')
       this.af.database.object(Constants.APP_STATUS + '/alert/' + id + '/' + alertId + '/timeTracking/')
         .update({timeSpentInRed: [newTimeObject]})
