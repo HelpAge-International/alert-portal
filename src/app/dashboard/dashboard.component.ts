@@ -1062,15 +1062,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   navigateToNetworkActions(action) {
     //TODO CHECK FROM HERE
     console.log(action)
+    console.log(this.networkMap)
     let reverseMap = CommonUtils.reverseMap(this.networkMap);
-    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, reverseMap.get(action.countryId), action.countryId, true);
+    let networkId = reverseMap.get(action.countryId) ? reverseMap.get(action.countryId) : action.countryId
+    let networkCountryId = this.networkMap.get(action.networkId) ? this.networkMap.get(action.networkId) : null
+    let model = new NetworkViewModel(this.systemId, this.agencyId, this.countryId, action.$key, this.userType, this.uid, networkId, networkCountryId, true);
     this.storageService.set(Constants.NETWORK_VIEW_SELECTED_ID, model.networkId);
-    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, model.networkCountryId);
+    this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, model.networkCountryId ? model.networkCountryId : model.networkId);
     this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
+    console.log(model.networkId)
+    console.log(model.networkCountryId)
     action.level == ActionLevel.MPA ?
-      this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+      this.networkMap.get(action.networkId) ? this.router.navigate(['/network-country/network-country-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)]) : this.router.navigate(['/network/local-network-preparedness-mpa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
       :
-      this.router.navigate(['/network-country/network-country-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
+      this.networkMap.get(action.networkId) ? this.router.navigate(['/network-country/network-country-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)]) : this.router.navigate(['/network/local-network-preparedness-apa', this.storageService.get(Constants.NETWORK_VIEW_VALUES)])
   }
 
   private navigateToLogin() {
