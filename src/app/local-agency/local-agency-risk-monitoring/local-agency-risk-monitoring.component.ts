@@ -1357,21 +1357,27 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
         if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
           dataToSave["timeTracking"]["timeSpentInGreen"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 1){
         if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
           dataToSave["timeTracking"]["timeSpentInAmber"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 2){
         if(!dataToSave["timeTracking"]["timeSpentInRed"]){
           dataToSave["timeTracking"]["timeSpentInRed"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
       }
 
 
@@ -1661,8 +1667,9 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   setExportLog(logs: any[]) {

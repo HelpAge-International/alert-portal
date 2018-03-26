@@ -925,21 +925,27 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
           dataToSave["timeTracking"]["timeSpentInGreen"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 1){
         if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
           dataToSave["timeTracking"]["timeSpentInAmber"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 2){
         if(!dataToSave["timeTracking"]["timeSpentInRed"]){
           dataToSave["timeTracking"]["timeSpentInRed"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
       }
 
 
