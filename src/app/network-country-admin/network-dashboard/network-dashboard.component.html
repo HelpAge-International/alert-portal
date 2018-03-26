@@ -32,7 +32,7 @@
 
     <!--alert screen-->
     <div
-      *ngIf="DashboardTypeUsed == DashboardType.default && (networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
+      *ngIf="DashboardTypeUsed == DashboardType.default">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
@@ -132,7 +132,7 @@
     </div>
 
     <!--director alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.director && (networkModules && networkModules[NETWORK_MODULE.RiskMonitoring].status)">
+    <div *ngIf="DashboardTypeUsed == DashboardType.director">
 
       <div *ngIf="alertsNetwork | async as alertList">
         <div *ngFor="let alert of alertList">
@@ -610,7 +610,6 @@
               </div>
             </div>
           </div>
-
         </div>
 
         <div *ngIf="approvalPlansNetwork">

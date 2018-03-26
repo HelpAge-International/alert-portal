@@ -528,6 +528,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initData(id) {
+    console.log(id)
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
     this.actionService.getActionsDueInWeek(id, this.uid)
@@ -569,7 +570,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             }
           });
         }
-        console.log(this.actionsThisWeek, 'YO')
+        //console.log(this.actionsThisWeek, 'YO')
         //this.loadMandated();
       });
 
@@ -577,6 +578,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.actionService.getIndicatorsDueInWeek(id, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
+        console.log(indicators)
         let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);

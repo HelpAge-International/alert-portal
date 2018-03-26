@@ -126,9 +126,9 @@
                 <!--directors tags-->
                 <div class="col-md-6">
                   <strong>{{"SYSTEM_ADMIN.MENU.AGENCIES" | translate}}</strong>
-
                   <!--not submit yet-->
                   <div class="Small-spaced" *ngFor="let agency of agenciesNeedToApprove">
+                    <!--<div *ngIf="checkAgency(agency, plan)">-->
                     <div class="col-12 text-left">{{agency.name}}</div>
                     <div class="col-md-12 text-left"
                          [class.text-success]="shouldShowSuccess(plan, agency.id)"
@@ -140,6 +140,7 @@
                       <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[2])==ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-regional', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
                       <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
                     </div>
+                    <!--</div>-->
                   </div>
                 </div>
               </div>
@@ -437,4 +438,4 @@
     </div>
   </div>
 </div>
- s
+

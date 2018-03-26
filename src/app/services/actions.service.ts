@@ -70,6 +70,7 @@ export class ActionsService {
       }
     })
       .map(indicators => {
+        console.log(indicators)
         let filteredIndicators = [];
         indicators.forEach(indicator => {
           if (indicator.assignee === uid) {

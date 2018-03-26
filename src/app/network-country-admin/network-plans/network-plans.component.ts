@@ -58,11 +58,13 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private systemId: string;
   private agencyId: string;
   private countryId: string;
+  private participatingAgenciesId: string[] = [];
   private userType: UserType;
   private networkViewValues: {};
   private directorIdMap = new Map<string, string>()
 
   //copy over from response plan
+
   private isViewing: boolean;
   private isGlobalDirectorMap = new Map<string, boolean>();
   private isRegionalDirectorMap = new Map<string, boolean>();
@@ -225,6 +227,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   private initViewAccess() {
+
+
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     this.networkService.getNetworkCountryResponsePlanClockSettingsDuration(this.networkId, this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
@@ -236,12 +240,18 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           .subscribe(map => {
             this.agencyCountryMap = map;
             this.agenciesNeedToApprove = [];
-            if (this.agencyCountryMap) {
-              CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
+            this.activePlans.forEach(plan => {
+              this.participatingAgenciesId = plan.participatingAgencies;
+
+              console.log(plan)
+            });
+
+              this.participatingAgenciesId.forEach(agencyId => {
                 this.userService.getAgencyModel(agencyId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(model => {
                     console.log(model);
+
                     this.agenciesNeedToApprove.push(model);
                   });
                 //prepare agency region map
@@ -251,7 +261,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
                     this.agencyRegionMap.set(agencyId, regionId);
                   });
               });
-            }
+
           });
       });
   }
@@ -300,6 +310,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .subscribe(plans => {
         this.activePlans = [];
         plans.forEach(plan => {
+console.log(plans)
           if (plan.isActive) {
             this.activePlans.push(plan);
             console.log(plan.approval);
@@ -896,4 +907,13 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     }
   }
 
+  checkAgency(agency, plan){
+    for(let agencyId in plan.participatingAgencies){
+      if(agency.id == agencyId){
+        return true
+      }else {
+        return false
+      }
+    }
+  }
 }

@@ -1,6 +1,6 @@
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, DurationType, PermissionsAgency, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -11,11 +11,14 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
 import {HazardImages} from "../../utils/HazardImages";
 import {PrepActionService} from "../../services/prepactions.service";
+import {Location} from "@angular/common";
+import {location} from "ngx-bootstrap/utils/facade/browser";
+
 
 declare var jQuery: any;
 
@@ -39,6 +42,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private directorCountryID: string;
   private alertData: any;
+  public permRiskMonitoring = false;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -73,6 +77,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private userService: UserService,
               private prepActionService: PrepActionService,
+              private locationService : Location,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -95,13 +100,26 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log("in ng on it")
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      console.log("page control")
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyId = agencyId;
       this.countryID = countryId;
       this._getHazards();
       this._getDirectorCountryID();
+
+      PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
+        for (const value of list) {
+
+          if (value.permission === PermissionsAgency.RiskMonitoring) {
+            this.permRiskMonitoring = !value.isAuthorized;
+          }
+
+          PageControlService.agencySelfCheck(userType, this.route, this.router, value);
+        }
+      });
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -432,5 +450,13 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
+  }
+
+  goBack(){
+    if(this.permRiskMonitoring){
+      this.locationService.back();
+    }else{
+      this.router.navigateByUrl('/risk-monitoring')
+    }
   }
 }

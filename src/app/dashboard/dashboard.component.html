@@ -11,7 +11,7 @@
 
 
     <!--alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring" class="canvas">
+    <div *ngIf="DashboardTypeUsed == DashboardType.default" class="canvas">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
