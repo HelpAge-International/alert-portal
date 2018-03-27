@@ -322,10 +322,10 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
 
     this.route.params.subscribe((params: Params) => {
 
-      if(params['isLocalAgency']){
+      if (params['isLocalAgency']) {
         this.isLocalAgency = true
         this.initLocalAgency()
-      }else{
+      } else {
         this.isLocalAgency = false
         this.initCountryOffice()
       }
@@ -334,17 +334,17 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
 
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
 
-        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.agencyId = agencyId
-          this.userPath = Constants.USER_PATHS[userType];
-          this.downloadDataLocalAgency();
-        });
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.agencyId = agencyId
+      this.userPath = Constants.USER_PATHS[userType];
+      this.downloadDataLocalAgency();
+    });
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.route.params.subscribe((params: Params) => {
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
@@ -393,10 +393,10 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
       .subscribe(usertype => {
         this.USER_TYPE = Constants.USER_PATHS[usertype];
 
-          this.getCountryId().then(() => {
-            this.downloadResponsePlanData();
-            this.downloadAgencyData(usertype);
-          });
+        this.getCountryId().then(() => {
+          this.downloadResponsePlanData();
+          this.downloadAgencyData(usertype);
+        });
 
       });
 
@@ -404,8 +404,8 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
 
   private downloadDataLocalAgency() {
 
-          this.downloadResponsePlanDataLocalAgency();
-          this.downloadAgencyDataLocalAgency();
+    this.downloadResponsePlanDataLocalAgency();
+    this.downloadAgencyDataLocalAgency();
 
   }
 
@@ -485,7 +485,7 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
 
             console.log(agencyId, 'ID')
             this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId + '/country')
-              .subscribe( country => {
+              .subscribe(country => {
                 this.agencyCountry = country.$value;
               })
 
@@ -493,7 +493,6 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
 
         });
     };
-
 
 
     const networkUser = () => {
@@ -510,17 +509,17 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
 
   private downloadAgencyDataLocalAgency() {
 
-          this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
-            if (name != null) {
-              this.memberAgencyName = name.$value;
-            }
-          });
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
+      if (name != null) {
+        this.memberAgencyName = name.$value;
+      }
+    });
   }
 
   private getCountry() {
     console.log(this.countryId, this.agencyId, this.networkCountryId, 'ID')
     this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/country')
-      .subscribe( country => {
+      .subscribe(country => {
         console.log(country, 'this is the country');
       })
   }
@@ -535,14 +534,29 @@ export class ProjectNarrativeComponent implements OnInit, OnDestroy {
           this.planLeadEmail = user.email;
           this.planLeadPhone = user.phone;
 
-          this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId + "/" + user.id + "/position").takeUntil(this.ngUnsubscribe).subscribe(position => {
-            if (position != null) {
-              this.planLeadPosition = position.$value;
-            }
-          });
+          this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryId + "/" + user.id + "/position")
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(position => {
+              console.log(position)
+              if (position != null && position.$value) {
+                this.planLeadPosition = position.$value;
+              } else {
+                this.getAdminTitle(user);
+              }
+            });
         });
     }
 
+  }
+
+  private getAdminTitle(user) {
+    this.userService.getCountryAdminUser(user.id)
+      .first()
+      .subscribe(countryAdmin => {
+        if (countryAdmin) {
+          this.planLeadPosition = "Country Administrator"
+        }
+      })
   }
 
   private bindProjectLeadDataLocalAgency(responsePlan: ResponsePlan) {
