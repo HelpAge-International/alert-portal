@@ -1,4 +1,6 @@
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 <div class="Header_bar">
     <div class="Header_bar__wrap--inner">
         <div class="logo" (click)="goToHome()"></div>
