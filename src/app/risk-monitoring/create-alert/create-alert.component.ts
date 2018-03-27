@@ -110,6 +110,9 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       this._getHazards();
       this._getDirectorCountryID();
 
+      this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.countryID, this.agencyId, systemId)
+      console.log(this.prepActionService.actions)
+
       PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
         for (const value of list) {
 
@@ -137,9 +140,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             area.country = country.location
           })
         })
-
-      this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.countryID, this.agencyId, systemId)
-      console.log(this.prepActionService.actions)
     })
 
   }
@@ -160,7 +160,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
 
-
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
         this.alertData.approval['countryDirector'] = [];
@@ -176,6 +175,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         }
         dataToSave.hazardScenario = parseInt(dataToSave.hazardScenario)
 
+        console.log(dataToSave)
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
           .push(dataToSave)
@@ -293,8 +293,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                   }
                 })
               }
-
-
 
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});

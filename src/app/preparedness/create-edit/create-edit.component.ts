@@ -20,6 +20,7 @@ import {ModelHazard} from "../../model/hazard.model";
 import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {MessageModel} from "../../model/message.model";
+import {takeUntil} from "rxjs/operator/takeUntil";
 
 declare var jQuery: any;
 
@@ -789,6 +790,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         if (this.isLocalAgency) {
 
           this.actionsService.getAlerts(this.agencyId, true)
+            .takeUntil(this.ngUnsubscribe)
             .subscribe(alerts => {
               let isRedAlert = false;
 
@@ -831,7 +833,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                     : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
                   });
                 }
 
@@ -845,6 +847,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         } else {
 
           this.actionsService.getAlerts(this.countryId, false)
+            .takeUntil(this.ngUnsubscribe)
             .subscribe(alerts => {
               let isRedAlert = false;
 
@@ -889,7 +892,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                     : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
                   });
                 }
 

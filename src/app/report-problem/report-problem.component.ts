@@ -1,12 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { BugReportingService } from "../services/bug-reporting.service";
-import { AngularFire, AngularFireDatabase, FirebaseListObservable } from "angularfire2";
-import { BugReportModel } from "../report-problem/bug-report-model";
+import {BugReportingService} from "../services/bug-reporting.service";
+import {AngularFire, AngularFireDatabase, FirebaseListObservable} from "angularfire2";
+import {BugReportModel} from "../report-problem/bug-report-model";
 import {Constants} from ".././utils/Constants";
-import { CountryAdminHeaderComponent } from "../country-admin/country-admin-header/country-admin-header.component";
+import {CountryAdminHeaderComponent} from "../country-admin/country-admin-header/country-admin-header.component";
 import {PageControlService} from ".././services/pagecontrol.service";
 import * as firebase from 'firebase';
 import * as html2canvas from 'html2canvas'
+
 declare const jQuery: any;
 import {Subject} from "rxjs/Rx";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -49,52 +50,62 @@ export class ReportProblemComponent implements OnInit {
               private db: AngularFireDatabase,
               private pageControl: PageControlService,
               private route: ActivatedRoute,
-              private router: Router,
-              ) {
-
+              private router: Router,) {
   }
-
-
 
   ngOnInit() {
 
     this.sendEmailModel.computerDetails = window.navigator.appVersion;
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-    // gives access to the Id's
+      // gives access to the Id's
 
       this.systemId = systemId;
       this.agencyId = agencyId;
       this.countryId = countryId;
       this.userType = userType;
       this.isAnonym = !(user && !user.anonymous);
-      // console.log(agencyId, 'yoyo');
-      this.getContentForEmail();
 
-  })
+      this.getContentForEmail();
+      if (this.userType != UserType.LocalAgencyAdmin) {
+        this.getUserData();
+      } else {
+        console.log(agencyId)
+        this.getUserDataForLocalAgency()
+      }
+    })
 
   }
 
-  getContentForEmail(){
-    // console.log(this.countryId);
-    // console.log(Constants.APP_STATUS + '/agency/' + this.agencyId + '/name');
-    // Subscribing to get names of agency
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(getName =>{
-        // console.log(getName.name);
-        this.sendEmailModel.agencyName = getName.name;
-        this.sendEmailModel.country = getName.country;
-
-      })
+  getUserData() {
     // subscribing to get user ID
     this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(getUserDetails =>{
+      .subscribe(getUserDetails => {
         this.sendEmailModel.fName = getUserDetails.firstName;
         this.sendEmailModel.lName = getUserDetails.lastName;
         this.sendEmailModel.email = getUserDetails.email;
+      })
+  }
 
-        // console.log(getUserDetails);
+  getUserDataForLocalAgency() {
+    // subscribing to get user ID
+    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getUserDetails => {
+        this.sendEmailModel.fName = getUserDetails.firstName;
+        this.sendEmailModel.lName = getUserDetails.lastName;
+        this.sendEmailModel.email = getUserDetails.email;
+      })
+  }
+
+  getContentForEmail() {
+    // Subscribing to get names of agency
+    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getName => {
+        // console.log(getName.name);
+        this.sendEmailModel.agencyName = getName.name;
+        this.sendEmailModel.country = getName.country;
       })
 
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
@@ -103,9 +114,6 @@ export class ReportProblemComponent implements OnInit {
         this.countryLocation = location.$value;
         // console.log(this.countryLocation, 'country location');
       });
-
-
-
   }
 
   public generateKeyForBugReport(): string {
@@ -121,14 +129,14 @@ export class ReportProblemComponent implements OnInit {
     console.log(this.bugId);
     let storageRef = firebase.storage().ref('reportingBug');
     const name = (+new Date()) + '-' + 'screenshot';
-    let uploadTask = storageRef.child( this.bugId + '/' + name);
+    let uploadTask = storageRef.child(this.bugId + '/' + name);
 
     // Screen shot the image and return base64
     html2canvas(document.getElementById('wrap')).then(canvas => {
 
       console.log(canvas);
 
-      canvas.toBlob(blob =>{
+      canvas.toBlob(blob => {
 
         uploadTask.put(blob).then(snapshot => {
           this.sendEmailModel.downloadUrl = snapshot.downloadURL;
@@ -137,11 +145,10 @@ export class ReportProblemComponent implements OnInit {
 
         })
       }),
-          error =>  {
-        this.error = error;
-        console.log(error)
-      }
-
+        error => {
+          this.error = error;
+          console.log(error)
+        }
 
 
     })
@@ -149,40 +156,55 @@ export class ReportProblemComponent implements OnInit {
   }
 
 
-
-  reportBugData(bugReportModel: BugReportModel){
-    this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.countryId + '/' + this.bugId)
-      .set({
-        country: this.sendEmailModel.country,
-        date : this.sendEmailModel.date.toLocaleString('en-GB', { timeZone: 'UTC' }) ,
-        email: this.sendEmailModel.email,
-        description: this.sendEmailModel.description,
-        firstName: this.sendEmailModel.fName,
-        lastName: this.sendEmailModel.lName,
-        agencyName: this.sendEmailModel.agencyName,
-        systemInfo: this.sendEmailModel.computerDetails,
-        downloadLink: this.sendEmailModel.downloadUrl,
-        fileName: this.sendEmailModel.file,
-
-
-  }),
-      error =>  {
-        this.error = error;
-        console.log(error)
-      }
-
+  reportBugData() {
+    if (this.userType != UserType.LocalAgencyAdmin) {
+      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.countryId + '/' + this.bugId)
+        .set({
+          country: this.sendEmailModel.country,
+          date: this.sendEmailModel.date.toLocaleString('en-GB', {timeZone: 'UTC'}),
+          email: this.sendEmailModel.email,
+          description: this.sendEmailModel.description,
+          firstName: this.sendEmailModel.fName,
+          lastName: this.sendEmailModel.lName,
+          agencyName: this.sendEmailModel.agencyName,
+          systemInfo: this.sendEmailModel.computerDetails,
+          downloadLink: this.sendEmailModel.downloadUrl,
+          fileName: this.sendEmailModel.file,
+        }),
+        error => {
+          this.error = error;
+          console.log(error)
+        }
+    } else {
+      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.agencyId + '/' + this.bugId)
+        .set({
+          country: this.sendEmailModel.country,
+          date: this.sendEmailModel.date.toLocaleString('en-GB', {timeZone: 'UTC'}),
+          email: this.sendEmailModel.email,
+          description: this.sendEmailModel.description,
+          firstName: this.sendEmailModel.fName,
+          lastName: this.sendEmailModel.lName,
+          agencyName: this.sendEmailModel.agencyName,
+          systemInfo: this.sendEmailModel.computerDetails,
+          downloadLink: this.sendEmailModel.downloadUrl,
+          fileName: this.sendEmailModel.file,
+        }),
+        error => {
+          this.error = error;
+          console.log(error)
+        }
+    }
     jQuery("#reporting").modal("hide");
 
   }
 
-  getImageName(){
+  getImageName() {
     this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.countryId + '/' + this.bugId)
       .subscribe(img => {
         console.log(img);
         this.imgFileName = img.fileName;
       })
   }
-
 
 
 }
