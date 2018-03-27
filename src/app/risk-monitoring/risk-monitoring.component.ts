@@ -597,10 +597,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               if (!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                                 this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
                                               } else {
-                                                var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
-                                                console.log(indicatorIndex)
-                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
-                                                this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                                let indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.findIndex(item => item.$key == indicator.$key)
+                                                if (indicatorIndex != -1) {
+                                                  this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators[indicatorIndex] = indicator
+                                                  // this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
+                                                  // this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                                }
                                               }
 
                                             });
@@ -630,10 +632,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                             if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                               hazard.indicators.push(indicator)
                                             } else {
-                                              var indicatorIndex = hazard.indicators.indexOf(indicator)
-                                              console.log(indicatorIndex)
-                                              hazard.indicators.splice(indicatorIndex, 1)
-                                              hazard.indicators.push(indicator)
+                                              let indicatorIndex = hazard.indicators.findIndex(item => item.$key == indicator.$key)
+                                              if (indicatorIndex != -1) {
+                                                hazard.indicators[indicatorIndex] = indicator
+                                                // hazard.indicators.splice(indicatorIndex, 1)
+                                                // hazard.indicators.push(indicator)
+                                              }
                                             }
                                           }
                                         })
@@ -676,10 +680,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                               if (!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                                 this.archivedHazards[archivedHazard].indicators.push(indicator)
                                               } else {
-                                                var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
-                                                console.log(indicatorIndex)
-                                                this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
-                                                this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                                let indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.findIndex(item => item.$key == indicator.$key)
+                                                if (indicatorIndex != -1) {
+                                                  this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators[indicatorIndex] = indicator
+                                                  // this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
+                                                  // this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                                }
                                               }
                                             })
                                           }
@@ -707,10 +713,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                             if (!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                               hazard.indicators.push(indicator)
                                             } else {
-                                              var indicatorIndex = hazard.indicators.indexOf(indicator)
-                                              console.log(indicatorIndex)
-                                              hazard.indicators.splice(indicatorIndex, 1)
-                                              hazard.indicators.push(indicator)
+                                              let indicatorIndex = hazard.indicators.findIndex(item => item.$key == indicator.$key)
+                                              if (indicatorIndex != -1) {
+                                                hazard.indicators[indicatorIndex] = indicator
+                                                // hazard.indicators.splice(indicatorIndex, 1)
+                                                // hazard.indicators.push(indicator)
+                                              }
                                             }
                                           }
                                         })
@@ -758,12 +766,16 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         if (!(this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                           console.log("push new one")
                                           this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
-                                        } else {
+                                        }
+                                        else {
                                           console.log("replace existing one")
-                                          var indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.indexOf(indicator)
+                                          let indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.map(item => item.$key).indexOf(indicator.$key)
                                           console.log(indicatorIndex)
-                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
-                                          this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                          if (indicatorIndex != -1) {
+                                            this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators[indicatorIndex] = indicator
+                                            // this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
+                                            // this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
+                                          }
                                         }
                                       })
 
@@ -777,9 +789,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                   hazard.indicators = []
                                   indicators.forEach(indicator => {
                                     if (indicator.countryOfficeId == this.countryID) {
-                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                      this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                                         logs.forEach((log, key) => {
-                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                          this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                                             log.addedByFullName = user.firstName + ' ' + user.lastName;
                                           })
                                         });
@@ -793,10 +805,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                       if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                         hazard.indicators.push(indicator)
                                       } else {
-                                        var indicatorIndex = hazard.indicators.indexOf(indicator)
-                                        console.log(indicatorIndex)
-                                        hazard.indicators.splice(indicatorIndex, 1)
-                                        hazard.indicators.push(indicator)
+                                        let indicatorIndex = hazard.indicators.findIndex(item => item.$key == indicator.$key)
+                                        if (indicatorIndex != -1) {
+                                          hazard.indicators[indicatorIndex] = indicator
+                                          // hazard.indicators.splice(indicatorIndex, 1)
+                                          // hazard.indicators.push(indicator)
+                                        }
                                       }
                                     }
                                   })
@@ -824,9 +838,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                   indicators.forEach(indicator => {
                                     if (indicator.countryOfficeId == this.countryID) {
 
-                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                      this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                                         logs.forEach((log, key) => {
-                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                          this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                                             log.addedByFullName = user.firstName + ' ' + user.lastName;
                                           })
                                         });
@@ -838,10 +852,13 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                         if (!(this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                           this.archivedHazards[archivedHazard].indicators.push(indicator)
                                         } else {
-                                          var indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.indexOf(indicator)
+                                          let indicatorIndex = this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.findIndex(item => item.$key == indicator.$key)
                                           console.log(indicatorIndex)
-                                          this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
-                                          this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                          if (indicatorIndex != -1) {
+                                            this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators[indicatorIndex] = indicator
+                                            // this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.splice(indicatorIndex, 1)
+                                            // this.archivedHazards[this.archivedHazards.indexOf(archivedHazard)].indicators.push(indicator)
+                                          }
                                         }
                                       })
                                     }
@@ -854,9 +871,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                   hazard.indicators = []
                                   indicators.forEach(indicator => {
                                     if (indicator.countryOfficeId == this.countryID) {
-                                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                                      this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                                         logs.forEach((log, key) => {
-                                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                                          this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                                             log.addedByFullName = user.firstName + ' ' + user.lastName;
                                           })
                                         });
@@ -870,10 +887,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                       if (!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                         hazard.indicators.push(indicator)
                                       } else {
-                                        var indicatorIndex = hazard.indicators.indexOf(indicator)
-                                        console.log(indicatorIndex)
-                                        hazard.indicators.splice(indicatorIndex, 1)
-                                        hazard.indicators.push(indicator)
+                                        let indicatorIndex = hazard.indicators.findIndex(item => item.$key == indicator.$key)
+                                        if (indicatorIndex != -1) {
+                                          hazard.indicators[indicatorIndex] = indicator
+                                          // hazard.indicators.splice(indicatorIndex, 1)
+                                          // hazard.indicators.push(indicator)
+                                        }
                                       }
                                     }
                                   })
@@ -915,10 +934,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                   if (!(hazard.indicators.some(activeIndicator => activeIndicator.$key == indicator.$key))) {
                                     hazard.indicators.push(indicator)
                                   } else {
-                                    var indicatorIndex = hazard.indicators.indexOf(indicator)
-                                    console.log(indicatorIndex)
-                                    hazard.indicators.splice(indicatorIndex, 1)
-                                    hazard.indicators.push(indicator)
+                                    let indicatorIndex = hazard.indicators.findIndex(item => item.$key == indicator.$key)
+                                    if (indicatorIndex != -1) {
+                                      hazard.indicators[indicatorIndex] = indicator
+                                      // hazard.indicators.splice(indicatorIndex, 1)
+                                      // hazard.indicators.push(indicator)
+                                    }
                                   }
                                 }
                               })
@@ -953,10 +974,12 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                   if (!(hazard.indicators.some(archivedIndicator => archivedIndicator.$key == indicator.$key))) {
                                     hazard.indicators.push(indicator)
                                   } else {
-                                    var indicatorIndex = hazard.indicators.indexOf(indicator)
-                                    console.log(indicatorIndex)
-                                    hazard.indicators.splice(indicatorIndex, 1)
-                                    hazard.indicators.push(indicator)
+                                    let indicatorIndex = hazard.indicators.findIndex(item => item.$key == indicator.$key)
+                                    if (indicatorIndex != -1) {
+                                      hazard.indicators[indicatorIndex] = indicator
+                                      // hazard.indicators.splice(indicatorIndex, 1)
+                                      // hazard.indicators.push(indicator)
+                                    }
                                   }
                                 }
                               })
@@ -976,7 +999,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
             })
         })
-        // this.getNetworkIndicators()
       })
   }
 
