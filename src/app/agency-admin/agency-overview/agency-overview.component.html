@@ -1,6 +1,8 @@
-<app-agency-admin-header></app-agency-admin-header>
-<app-agency-admin-menu></app-agency-admin-menu>
+<app-agency-admin-header *ngIf="!isLocalAgency"></app-agency-admin-header>
+<app-agency-admin-menu *ngIf="!isLocalAgency"></app-agency-admin-menu>
 
+<app-local-agency-header *ngIf="isLocalAgency"></app-local-agency-header>
+<app-local-agency-menu *ngIf="isLocalAgency"></app-local-agency-menu>
 
 <!--menu-->
 <app-view-country-menu (onMenuSelected)="menuSelection($event)"></app-view-country-menu>

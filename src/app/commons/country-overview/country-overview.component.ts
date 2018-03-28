@@ -112,7 +112,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   @Input() isDirector: boolean;
   @Input() agencyOverview: boolean = false;
-  @Input() agencyAdminIs: boolean
+  @Input() agencyAdminIs: boolean;
+  @Input() isLocalAgencyAdmin: boolean = false;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -771,6 +772,19 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         data["agencyAdminIs"] = true
       }
       this.router.navigate(["/director/director-overview", data]);
+    } else if(this.isLocalAgencyAdmin){
+      console.log("isLocalAgencyAdmin = true");
+      let localAgencyData = {
+        "countryId": countryId,
+        "isViewing": true,
+        "agencyId": agencyId,
+        "systemId": this._systemId,
+        "userType": this._userType,
+        "uid": this._userId,
+        "isLocalAgency": true
+      };
+
+      this.router.navigate(["/local-agency/agency-overview", localAgencyData]);
     } else {
       data["canCopy"] = true;
       if (this.agencyOverview) {
@@ -781,6 +795,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewNetworkCountry(networkCountryId, networkId) {
+    console.log("came over network country");
+
     let data = {
       "countryId": this.userCountryId,
       "isViewing": true,
@@ -798,6 +814,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
         data["agencyAdminIs"] = true
       }
       this.router.navigate(["/director/director-overview", data]);
+    } else if(this.isLocalAgencyAdmin){
+
     } else {
       data["canCopy"] = true;
       if (this.agencyOverview) {

@@ -36,7 +36,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   // //add network and network country offices
   private globalNetworks = [];
   private networkCountryData = [];
-  private localNetworkData = []
+  private localNetworkData = [];
 
   private isLocalAgency = false;
 
