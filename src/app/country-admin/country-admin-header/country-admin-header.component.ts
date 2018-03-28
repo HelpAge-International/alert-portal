@@ -24,7 +24,6 @@ import {NetworkWithCountryModel} from "./network-with-country.model";
 import {BugReportingService} from "../../services/bug-reporting.service";
 import {ReportProblemComponent} from "../../report-problem/report-problem.component";
 import * as html2canvas from 'html2canvas'
-import * as Canvas2Image from "Canvas2Image";
 declare const jQuery: any;
 
 
