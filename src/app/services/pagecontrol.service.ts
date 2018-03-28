@@ -294,7 +294,10 @@ export class PageControlService {
     "export-start-fund*",
     "export-proposal*",
     "response-plans*",
-    "preparedness*"
+    "preparedness*",
+    "agency-admin*",
+    "director*",
+    "system-admin/agency"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [

@@ -1,6 +1,8 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<app-country-admin-header *ngIf="!isLocalAgency"></app-country-admin-header>
+<app-country-admin-menu *ngIf="!isLocalAgency"></app-country-admin-menu>
 
+<app-local-agency-header *ngIf="isLocalAgency"></app-local-agency-header>
+<app-local-agency-menu *ngIf="isLocalAgency"></app-local-agency-menu>
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
@@ -9,7 +11,7 @@
         {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" | translate}}</h1>
     </div>
 
-    <app-country-overview [systemId]="systemAdminID" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices" [agencyOverview]="true" [networkCountryData]="networkCountryData" [globalNetworks]="globalNetworks" [localNetworks]="localNetworkData"></app-country-overview>
+    <app-country-overview [isLocalAgencyAdmin]="true"[systemId]="systemAdminID" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices" [agencyOverview]="true" [networkCountryData]="networkCountryData" [globalNetworks]="globalNetworks" [localNetworks]="localNetworkData"></app-country-overview>
 
   </div>
 
