@@ -126,6 +126,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log("edit apa");
+
     this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params['id']) {
         this.action.id = params['id'];

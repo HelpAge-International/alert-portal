@@ -795,7 +795,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   }
 
   overviewNetworkCountry(networkCountryId, networkId) {
-    console.log("came over network country");
 
     let data = {
       "countryId": this.userCountryId,

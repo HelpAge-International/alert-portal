@@ -10,7 +10,6 @@ export class ViewCountriesComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log("came here");
   }
 
 }
