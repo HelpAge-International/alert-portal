@@ -18,17 +18,17 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
   private isLocalNetworkAdmin: boolean;
 
   private isViewing: boolean;
-  private systemId:string;
-  private agencyId:string;
-  private countryId:string;
-  private userType:UserType;
-  private networkId:string;
-  private uid:string;
+  private systemId: string;
+  private agencyId: string;
+  private countryId: string;
+  private userType: UserType;
+  private networkId: string;
+  private uid: string;
   private networkViewValues: {};
   public isLocalAgency: boolean;
 
-  constructor(private route:ActivatedRoute,
-              private storageService:LocalStorageService) {
+  constructor(private route: ActivatedRoute,
+              private storageService: LocalStorageService) {
   }
 
   /**
@@ -37,12 +37,12 @@ export class ExportStartFundComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params
-      .subscribe((params:Params) =>{
-      if(params['isLocalAgency']){
-        this.isLocalAgency = true
-      }else{
-        this.isLocalAgency = false;
-      }
+      .subscribe((params: Params) => {
+        if (params['isLocalAgency']) {
+          this.isLocalAgency = true
+        } else {
+          this.isLocalAgency = false;
+        }
         if (params["networkCountryId"]) {
           this.networkCountryId = params["networkCountryId"];
         }

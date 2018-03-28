@@ -139,7 +139,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         }
         console.log(dataToSave);
 
-        
+
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
@@ -149,7 +149,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
             let hazardTrackingNode;
 
             if(hazard && hazard.timeTracking && hazard.timeTracking[alert.key]){
-              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : undefined;
+              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : null;
             }
 
             let currentTime = new Date().getTime()
@@ -167,7 +167,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
                     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
                     .update({timeSpentInRed: [newTimeObject]})
                   }
-                  
+
                 }
               }else{
                 if(hazardTrackingNode){
@@ -178,7 +178,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
                   this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
                   .update({timeSpentInAmber: [newTimeObject]})
                 }
-                
+
               }
             }
 
@@ -190,7 +190,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
             }else{
                 this.af.database.object(Constants.APP_STATUS + '/alert/' + this.agencyId + '/' + alert.key + '/timeTracking/')
                 .update({timeSpentInAmber: [newTimeObject]})
-            } 
+            }
 
 
             if (dataToSave.alertLevel == 2) {
@@ -210,20 +210,20 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
 
               let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
 
-              
+
               if(this.UserType == UserType.LocalAgencyDirector){
                 apaActions.forEach( action => {
                   if(!action["redAlerts"]){
-                    action["redAlerts"] = []; 
+                    action["redAlerts"] = [];
                   }
                   if(!action["timeTracking"]){
                     action["timeTracking"] = {};
                   }
 
-                  if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
-                    if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+                  if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario))){
+                    if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1) != -1){
                       action["redAlerts"].push(alert.key);
-      
+
 
                       action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
 
@@ -237,7 +237,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
                           action['timeTracking']['timeSpentInGreen'] = [];
                         }
                         action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-                      }else{ 
+                      }else{
                         if(!action["timeTracking"]["timeSpentInAmber"]){
                           action['timeTracking']['timeSpentInAmber'] = [];
                         }
@@ -392,8 +392,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
 }

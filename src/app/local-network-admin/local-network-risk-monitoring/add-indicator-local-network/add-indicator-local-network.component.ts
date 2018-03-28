@@ -127,6 +127,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
   private systemId: string;
   private isViewing: boolean;
   private networkViewValues: {};
+  private userAgencyCountryMap = new Map<string, {agencyId:string, countryOfficeId:string}>()
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -415,6 +416,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
                       var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
                       this.usersForAssign.push(userToPush);
+                      this.userAgencyCountryMap.set(userToPush.userID, {agencyId:agencyKey, countryOfficeId:countryOffice.$key})
                     });
                   }
                 });
@@ -425,6 +427,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
                         var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
                         this.usersForAssign.push(userToPush);
+                        this.userAgencyCountryMap.set(userToPush.userID, {agencyId:agencyKey, countryOfficeId:countryOffice.$key})
                       });
                     }
                   }
@@ -559,6 +562,12 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
           this.indicatorData['countryOfficeId'] = this.countryID
 
 
+        }
+
+        //if assign to country staff, need agencyid and countryofficeid info as well
+        if (this.indicatorData.assignee && this.userAgencyCountryMap.get(this.indicatorData.assignee)) {
+          this.indicatorData['agencyId'] = this.userAgencyCountryMap.get(this.indicatorData.assignee).agencyId
+          this.indicatorData['countryOfficeId'] = this.userAgencyCountryMap.get(this.indicatorData.assignee).countryOfficeId
         }
 
         var dataToSave = this.indicatorData;

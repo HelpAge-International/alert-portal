@@ -1,7 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, NavigationEnd, NavigationStart} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {LocalStorageService} from "angular-2-local-storage";
+import {Subject} from "rxjs/Subject";
 
 
 @Component({
@@ -9,7 +10,14 @@ import {LocalStorageService} from "angular-2-local-storage";
   templateUrl: './local-network-profile-menu.component.html',
   styleUrls: ['./local-network-profile-menu.component.css']
 })
-export class LocalNetworkProfileMenuComponent implements OnInit {
+export class LocalNetworkProfileMenuComponent implements OnInit,OnDestroy {
+
+  private ngUnSubscribe:Subject<any> = new Subject
+
+  ngOnDestroy(): void {
+    this.ngUnSubscribe.next()
+    this.ngUnSubscribe.complete()
+  }
 
   private isViewing: boolean;
   private activeMap = new Map<string, boolean>();
@@ -27,13 +35,13 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
   constructor(private route: ActivatedRoute, private storageService: LocalStorageService, private router: Router) {
     this.initMenuActive();
 
-    this.router.events.subscribe((event) => {
+    this.router.events.takeUntil(this.ngUnSubscribe).subscribe((event) => {
       //Update highlight on sub menu when navigating from dropdown menu
       if(event instanceof NavigationEnd) {
         if (event.url.includes("programme")) {
           this.handleMenuActive("programme");
         }
-        else if (event.url.includes("office-capacity")) {
+        else if (event.url.includes("officeCapacity")) {
           this.handleMenuActive("officeCapacity");
         }
         else if (event.url.includes("partners")) {
@@ -45,7 +53,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
         else if (event.url.includes("coordination")) {
           this.handleMenuActive("coordination");
         }
-        else if (event.url.includes("stock-capacity")) {
+        else if (event.url.includes("stockCapacity")) {
           this.handleMenuActive("stockCapacity");
         }
         else if (event.url.includes("documents")) {
@@ -119,6 +127,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
   }
 
   goToOfficeCapacity() {
+    console.log(this.networkViewValues)
     this.networkViewValues["officeTarget"] = "officeCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-office-capacity', this.networkViewValues] : ['/network/local-network-office-profile/office-capacity', this.networkViewValues])
   }

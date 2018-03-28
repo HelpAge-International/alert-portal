@@ -1,6 +1,6 @@
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../utils/Enums";
+import {AlertLevels, AlertMessageType, DurationType, PermissionsAgency, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -11,11 +11,14 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../services/user.service";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
 import {HazardImages} from "../../utils/HazardImages";
 import {PrepActionService} from "../../services/prepactions.service";
+import {Location} from "@angular/common";
+import {location} from "ngx-bootstrap/utils/facade/browser";
+
 
 declare var jQuery: any;
 
@@ -23,7 +26,7 @@ declare var jQuery: any;
   selector: 'app-create-alert',
   templateUrl: './create-alert.component.html',
   styleUrls: ['./create-alert.component.css']
-}) 
+})
 
 export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
@@ -39,6 +42,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private directorCountryID: string;
   private alertData: any;
+  public permRiskMonitoring = false;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -73,6 +77,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private userService: UserService,
               private prepActionService: PrepActionService,
+              private locationService : Location,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -95,14 +100,29 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
+    console.log("in ng on it")
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      console.log("page control")
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyId = agencyId;
       this.countryID = countryId;
       this._getHazards();
       this._getDirectorCountryID();
+
+      this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.countryID, this.agencyId, systemId)
+      console.log(this.prepActionService.actions)
+
+      PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
+        for (const value of list) {
+
+          if (value.permission === PermissionsAgency.RiskMonitoring) {
+            this.permRiskMonitoring = !value.isAuthorized;
+          }
+
+          PageControlService.agencySelfCheck(userType, this.route, this.router, value);
+        }
+      });
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -120,9 +140,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             area.country = country.location
           })
         })
-
-      this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.countryID, this.agencyId, systemId)
-      console.log(this.prepActionService.actions)
     })
 
   }
@@ -143,7 +160,6 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
 
-
         this.alertData.createdBy = this.uid;
         this.alertData.timeCreated = this._getCurrentTimestamp();
         this.alertData.approval['countryDirector'] = [];
@@ -159,6 +175,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         }
         dataToSave.hazardScenario = parseInt(dataToSave.hazardScenario)
 
+        console.log(dataToSave)
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.countryID)
           .push(dataToSave)
@@ -185,7 +202,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id + '/timeTracking/' + alert.key)
                     .update({timeSpentInRed: [newTimeObject]})
                   }
-                  
+
                 }
               }else{
                 if(hazardTrackingNode){
@@ -196,9 +213,9 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                   this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.countryID + '/' + hazard.id + '/timeTracking/' + alert.key)
                   .update({timeSpentInAmber: [newTimeObject]})
                 }
-                
-              } 
-            } 
+
+              }
+            }
 
             if(dataToSave.alertLevel == AlertLevels.Red){
               if(this.UserType == UserType.CountryDirector){
@@ -208,8 +225,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             }else{
                 this.af.database.object(Constants.APP_STATUS + '/alert/' + this.countryID + '/' + alert.key + '/timeTracking/')
                 .update({timeSpentInAmber: [newTimeObject]})
-            } 
- 
+            }
+
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -227,7 +244,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
               affectedActions.forEach( affectedAction => {
                 // push activated datetime to each apa
                 let action = this.prepActionService.findAction(affectedAction.id);
-                action["raisedAt"] = new Date().getTime(); 
+                action["raisedAt"] = new Date().getTime();
 
                 this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryID + '/' + affectedAction.id)
                   .update(action)
@@ -240,7 +257,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
               if(this.UserType == UserType.CountryDirector){
                 apaActions.forEach( action => {
                   if(!action["redAlerts"]){
-                    action["redAlerts"] = []; 
+                    action["redAlerts"] = [];
                   }
 
                   if(!action["timeTracking"]){
@@ -250,12 +267,12 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                   if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
                     if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
                       action["redAlerts"].push(alert.key);
-      
+
 
                       action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
 
                       if(!action.asignee){
-                        if(!action["timeTracking"]["timeSpentInRed"]){ 
+                        if(!action["timeTracking"]["timeSpentInRed"]){
                           action['timeTracking']['timeSpentInRed'] = [];
                         }
                         action['timeTracking']['timeSpentInRed'].push(newTimeObject)
@@ -264,7 +281,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                           action['timeTracking']['timeSpentInGreen'] = [];
                         }
                         action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-                      }else{ 
+                      }else{
                         if(!action["timeTracking"]["timeSpentInAmber"]){
                           action['timeTracking']['timeSpentInAmber'] = [];
                         }
@@ -276,9 +293,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
                   }
                 })
               }
-              
-  
-              
+
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
               notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", {riskName: riskNameTranslated});
@@ -379,7 +394,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
             let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
             if (index != -1) {
               this.nonMonitoredHazards.splice(index, 1)
-            } 
+            }
           }
           console.log(x)
           value.id = x.key
@@ -433,5 +448,13 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
 
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
+  }
+
+  goBack(){
+    if(this.permRiskMonitoring){
+      this.locationService.back();
+    }else{
+      this.router.navigateByUrl('/risk-monitoring')
+    }
   }
 }

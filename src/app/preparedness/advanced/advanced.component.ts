@@ -560,7 +560,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               console.log(notification.content);
 
               notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).take(1).subscribe(() => {
               });
             });
         });
@@ -576,7 +576,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               console.log(notification.content);
 
               notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).take(1).subscribe(() => {
               });
             });
         });

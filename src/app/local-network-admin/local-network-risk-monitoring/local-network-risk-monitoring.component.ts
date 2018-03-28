@@ -462,9 +462,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
       indicators.forEach((indicator, key) => {
         console.log(indicator)
         indicator.fromAgency = false;
-        this.getLogs(indicator.$key).subscribe((logs: any) => {
+        this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
           logs.forEach((log, key) => {
-            this.getUsers(log.addedBy).subscribe((user: any) => {
+            this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
               log.addedByFullName = user.firstName + ' ' + user.lastName;
             })
           });
@@ -489,16 +489,16 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                   this.af.database.list(Constants.APP_STATUS + "/indicator/" + value).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
                     indicators.forEach(indicator => {
                       indicator.fromAgency = true;
-                      indicator.countryOfficeCode = value
+                      indicator.countryOfficeCode = agencyKey
                       this.agencyService.getAgency(agencyKey)
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(agency => {
                           indicator.agency = agency;
 
                         })
-                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                      this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                         logs.forEach((log, key) => {
-                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                          this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                             log.addedByFullName = user.firstName + ' ' + user.lastName;
                           })
                         });
@@ -585,13 +585,13 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }
 
-          this.getIndicators(hazard.id).subscribe((indicators: any) => {
+          this.getIndicators(hazard.id).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
               console.log(indicator)
               indicator.fromAgency = false;
-              this.getLogs(indicator.$key).subscribe((logs: any) => {
+              this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                 logs.forEach((log, key) => {
-                  this.getUsers(log.addedBy).subscribe((user: any) => {
+                  this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                     log.addedByFullName = user.firstName + ' ' + user.lastName;
                   })
                 });
@@ -642,15 +642,15 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
 
 
                               indicator.fromAgency = true;
-                              indicator.countryOfficeCode = value
+                              indicator.countryOfficeCode = agencyKey
                               this.agencyService.getAgency(agencyKey)
                                 .takeUntil(this.ngUnsubscribe)
                                 .subscribe(agency => {
                                   indicator.agency = agency;
                                 })
-                              this.getLogs(indicator.$key).subscribe((logs: any) => {
+                              this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                                 logs.forEach((log, key) => {
-                                  this.getUsers(log.addedBy).subscribe((user: any) => {
+                                  this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                                     log.addedByFullName = user.firstName + ' ' + user.lastName;
                                   })
                                 });
