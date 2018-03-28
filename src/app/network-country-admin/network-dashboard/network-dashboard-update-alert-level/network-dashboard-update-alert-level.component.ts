@@ -218,7 +218,7 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
               operationArea.level2 = y.affectedLevel2;
               x.push(operationArea);
             }
-    
+
             this.loadedAlert.affectedAreas.forEach(area => {
               this.alertService.getAllLevelInfo(area.affectedCountry)
                 .takeUntil(this.ngUnsubscribe)
@@ -226,9 +226,9 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
                   this.geoMap.set(area.affectedCountry, geoInfo);
                 });
             });
-    
+
             this.loadedAlert.affectedAreas = x;
-    
+
             console.log(this.loadedAlert);
           });
     })
@@ -319,7 +319,7 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
                   action['timeTracking']['timeSpentInGreen'] = [];
                 }
                 action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-              }else{ 
+              }else{
                 if(!action["timeTracking"]["timeSpentInAmber"]){
                   action['timeTracking']['timeSpentInAmber'] = [];
                 }
@@ -336,7 +336,7 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
         //update action tracking active -> inactive
         if(this.loadedAlertLevel == AlertLevels.Red){
           let isOtherRedAlert = false;
- 
+
               this.alerts.forEach( alert => {
                 if(alert.hazardScenario == this.loadedAlert.hazardScenario && alert.$key != this.loadedAlert.id && alert.alertLevel == AlertLevels.Red){
                   isOtherRedAlert == true;
@@ -467,11 +467,11 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
     if(this.loadedAlertLevel != this.loadedAlert.alertLevel){
 
       if(this.loadedAlert["timeTracking"]){
-        if(this.loadedAlertLevel == AlertLevels.Red){
+        if(this.loadedAlertLevel == AlertLevels.Red && this.loadedAlert["timeTracking"]["timeSpentInRed"]){
           this.loadedAlert["timeTracking"]["timeSpentInRed"][this.loadedAlert["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
         }
 
-        if(this.loadedAlertLevel == AlertLevels.Amber){
+        if(this.loadedAlertLevel == AlertLevels.Amber && this.loadedAlert["timeTracking"]["timeSpentInAmber"]){
           this.loadedAlert["timeTracking"]["timeSpentInAmber"][this.loadedAlert["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
         }
       }
@@ -603,9 +603,10 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
     this.ngUnsubscribe.complete();
     this.alertService.unSubscribeNow();
   }
- 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   isNumber(n) {

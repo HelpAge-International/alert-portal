@@ -146,11 +146,6 @@ export class LocalAgencyAddHazardComponent implements OnInit {
     return HazardImages.init().getCSS((+key));
   }
 
-  _getHazardImageImg(key) {
-    console.log(key);
-    return HazardImages.init().get((+key));
-  }
-
   _getAgencyLocation() {
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyID)

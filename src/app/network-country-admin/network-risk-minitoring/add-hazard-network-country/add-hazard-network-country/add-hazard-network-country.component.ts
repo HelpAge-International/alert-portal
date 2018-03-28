@@ -351,7 +351,7 @@ export class AddHazardNetworkCountryComponent implements OnInit, OnDestroy {
 
   cancel() {
     if (this.editHazard){
-      this.router.navigate(['/risk-monitoring/']);
+      this.router.navigate(['/network-country/network-risk-monitoring']);
     } else {
       this.count = 1;
     }

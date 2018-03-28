@@ -3,11 +3,11 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
-import {AlertLevels, AlertStatus, Countries, UserType} from "../../utils/Enums";
+import {AlertLevels, AlertStatus, Countries, PermissionsAgency, UserType} from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {UserService} from "../../services/user.service";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
 import {Http, Response} from '@angular/http';
@@ -79,6 +79,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   private isAmber: boolean;
   private isRed: boolean;
   private isAnonym: boolean = false;
+  public permRiskMonitoring = false;
 
   private systemId: string;
   private networks: ModelNetwork[] = [];
@@ -134,6 +135,16 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
         }
       });
 
+      PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
+        for (const value of list) {
+
+          if (value.permission === PermissionsAgency.RiskMonitoring) {
+            this.permRiskMonitoring = !value.isAuthorized;
+          }
+
+          PageControlService.agencySelfCheck(userType, this.route, this.router, value);
+        }
+      });
 
       if (user) {
 
