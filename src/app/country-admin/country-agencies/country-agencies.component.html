@@ -1,6 +1,8 @@
-<app-country-admin-header></app-country-admin-header>
-<app-country-admin-menu></app-country-admin-menu>
+<app-country-admin-header *ngIf="!isLocalAgency"></app-country-admin-header>
+<app-country-admin-menu *ngIf="!isLocalAgency"></app-country-admin-menu>
 
+<app-local-agency-header *ngIf="isLocalAgency"></app-local-agency-header>
+<app-local-agency-menu *ngIf="isLocalAgency"></app-local-agency-menu>
 <!--Start Put page data-->
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
