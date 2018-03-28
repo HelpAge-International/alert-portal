@@ -108,6 +108,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
         this.systemId = systemId;
         this.agencyId = agencyId;
         this.userType = userType;
+        console.log(UserType[userType])
         this.isAnonym = !(user && !user.anonymous);
         this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
@@ -321,6 +322,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
     }
 
     selectNetwork(network: ModelNetwork) {
+    console.log("selected network")
       this.selectedNetwork = network;
       this.isViewingNetwork = true;
       // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
@@ -336,6 +338,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
 
     selectLocalNetwork(network: ModelNetwork) {
+    console.log("selected local network")
       this.selectedNetwork = network;
       this.isViewingNetwork = true;
       // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
