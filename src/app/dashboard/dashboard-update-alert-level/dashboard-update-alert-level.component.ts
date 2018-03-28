@@ -238,7 +238,6 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
           }
 
           // Update action tracking inactive -> some active state
-
           if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
             if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
                 action["redAlerts"].push(this.loadedAlert.id);
@@ -352,6 +351,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
           if(this.loadedAlertLevel == AlertLevels.Amber){
             hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+
           }
         }
 

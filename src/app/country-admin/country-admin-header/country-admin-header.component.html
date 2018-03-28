@@ -6,7 +6,7 @@
     <div class="logo" (click)="goToHome()"></div>
     <span *ngIf="!isAnonym && !isViewingNetwork" class="badge badge-pill" [class.badge-success]="alertLevel==0"
                      [class.badge-warning]="alertLevel==1"
-                     [class.badge-danger]="alertLevel==2" routerLink="/risk-monitoring/create-alert">{{alertTitle | translate}}
+                     [class.badge-danger]="alertLevel==2" [routerLink]="!permRiskMonitoring? ['/risk-monitoring/create-alert'] : ['/risk-monitoring/create-alert']">{{alertTitle | translate}}
     </span>
     <span *ngIf="!isAnonym && isViewingNetwork" class="badge badge-pill" [class.badge-success]="alertLevel==0"
           [class.badge-warning]="alertLevel==1"

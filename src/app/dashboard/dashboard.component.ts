@@ -151,6 +151,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.loadDataForPartnerUser(agencyId, countryId);
           } else {
             this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
+            console.log("local")
             this.loadData();
           }
         })
@@ -169,6 +170,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.countryId = countryId;
             this.loadDataForPartnerUser(agencyId, countryId);
           } else {
+            console.log("agency")
             this.NODE_TO_CHECK = Constants.USER_PATHS[userType];
             this.loadData();
           }
@@ -289,7 +291,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private initCalendar() {
     // Element is removed and re-added upon a data change
-    document.getElementById("target2").innerHTML = "";
+    // document.getElementById("target2").innerHTML = "";
     this.chronoline = new Chronoline(document.getElementById("target2"), this.seasonEvents,
       {
         visibleSpan: DAY_IN_MILLISECONDS * 91,
@@ -439,26 +441,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
       this.responsePlansForApprovalNetwork = Observable.of([])
       this.responsePlansForApprovalNetworkLocal = Observable.of([])
-      if (this.networkMap) {
-        this.networkMap.forEach((networkCountryId, networkId) => {
-          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkCountryId, this.uid, true));
-          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
-        })
-      }
-      if (this.localNetworks) {
-        this.localNetworks.forEach(networkId => {
-          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
-          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
-        })
-      }
-      // if (this.networkId) {
-      //   this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkId, this.uid, true);
-      // }
 
-    } else if (this.userType == UserType.CountryDirector) {
-      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
-      this.responsePlansForApprovalNetwork = Observable.of([]);
-      this.responsePlansForApprovalNetworkLocal = Observable.of([]);
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {
           this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
@@ -467,25 +450,43 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
       if (this.localNetworks) {
         this.localNetworks.forEach(networkId => {
-          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
-          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApproval(networkId, this.uid, true));
+          console.log(networkId)
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
         })
       }
-      //if (this.networkId) {
-       // this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkId);
-       //}
+
+    } else if (this.userType == UserType.CountryDirector) {
+      this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
+      this.responsePlansForApprovalNetwork = Observable.of([]);
+      this.responsePlansForApprovalNetworkLocal = Observable.of([]);
+
+      if (this.networkMap) {
+        this.networkMap.forEach((networkCountryId, networkId) => {
+          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+        })
+      }
+      if (this.localNetworks) {
+        this.localNetworks.forEach(networkId => {
+          console.log(networkId)
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+        })
+      }
+
     }
     if (this.responsePlansForApproval) {
       this.responsePlansForApproval
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlans = plans;
+          console.log(plans)
         });
     }
     if (this.responsePlansForApprovalNetwork) {
       this.responsePlansForApprovalNetwork
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
+          console.log(plans)
           this.approvalPlansNetwork = plans;
         });
     }
@@ -494,6 +495,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
           this.approvalPlansNetworkLocal = plans
+          console.log(this.approvalPlansNetworkLocal)
         });
     }
   }

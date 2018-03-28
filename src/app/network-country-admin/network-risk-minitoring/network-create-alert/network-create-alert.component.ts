@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../../utils/Enums";
+import {AlertLevels, AlertMessageType, DurationType, PermissionsAgency, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -11,12 +11,13 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../../services/user.service";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {AgencyPermissionObject, PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
 import {PrepActionService} from "../../../services/prepactions.service";
+import {Location} from "@angular/common";
 
 
 @Component({
@@ -42,6 +43,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private directorCountryID: string;
   private alertData: any;
+  public permRiskMonitoring = false;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -77,6 +79,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private userService: UserService,
               private storage: LocalStorageService,
+              private locationService : Location,
               private networkService: NetworkService,
               private prepActionService: PrepActionService,
               private notificationService: NotificationService) {
@@ -129,8 +132,20 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
           this.uid = params["uid"];
         }
 
-        if(this.isViewing){
+        PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, this.agencyId , (list: AgencyPermissionObject[]) => {
+          for (const value of list) {
 
+            if (value.permission === PermissionsAgency.RiskMonitoring) {
+              this.permRiskMonitoring = !value.isAuthorized;
+            }
+
+            //PageControlService.agencySelfCheck(this.UserType, this.route, this.router, value);
+          }
+        });
+
+
+        if(this.isViewing){
+          console.log('viewing')
           this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(network => {
@@ -166,6 +181,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                 this.networkId = selection["id"];
                 this.networkCountryId = selection["networkCountryId"];
                 this.UserType = selection["userType"];
+
 
                 this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
                   .takeUntil(this.ngUnsubscribe)
@@ -238,7 +254,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
         }
         console.log(dataToSave);
 
-      
+
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.networkCountryId)
           .push(dataToSave)
@@ -266,7 +282,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
                     .update({timeSpentInRed: [newTimeObject]})
                   }
-                  
+
                 }
               }else{
                 if(hazardTrackingNode){
@@ -277,9 +293,9 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                   this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
                   .update({timeSpentInAmber: [newTimeObject]})
                 }
-                
-              } 
-            } 
+
+              }
+            }
 
             if(dataToSave.alertLevel == AlertLevels.Red){
               if(this.UserType == UserType.CountryDirector){
@@ -289,7 +305,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
             }else{
                 this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkCountryId + '/' + alert.key + '/timeTracking/')
                 .update({timeSpentInAmber: [newTimeObject]})
-            } 
+            }
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -311,7 +327,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               if(this.UserType == UserType.CountryDirector){
                 apaActions.forEach( action => {
                   if(!action["redAlerts"]){
-                    action["redAlerts"] = []; 
+                    action["redAlerts"] = [];
                   }
                   if(!action["timeTracking"]){
                     action["timeTracking"] = {};
@@ -320,7 +336,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                   if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
                     if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
                       action["redAlerts"].push(alert.key);
-      
+
 
                       action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
 
@@ -334,7 +350,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                           action['timeTracking']['timeSpentInGreen'] = [];
                         }
                         action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-                      }else{ 
+                      }else{
                         if(!action["timeTracking"]["timeSpentInAmber"]){
                           action['timeTracking']['timeSpentInAmber'] = [];
                         }
@@ -344,7 +360,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                       .update(action)
                     }
                   }
-  
+
                 })
               }
 
@@ -495,6 +511,18 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
+  }
+
+  goBack(){
+    if(this.permRiskMonitoring){
+      this.locationService.back();
+    }else{
+      if(this.networkViewValues){
+        this.router.navigateByUrl('/network-country/network-risk-monitoring', this.networkViewValues)
+      }else{
+        this.router.navigateByUrl('/network-country/network-risk-monitoring')
+      }
+    }
   }
 
 }

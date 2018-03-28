@@ -610,8 +610,8 @@ export class PageControlService {
           for (let y of x.urls) {
             // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
             if ((s == y) && !x.isAuthorized && !skip) {
-              router.navigateByUrl(type.redirectTo);
-              skip = true;
+              // router.navigateByUrl(type.redirectTo);
+              // skip = true;
             }
           }
         }
