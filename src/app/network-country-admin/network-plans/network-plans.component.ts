@@ -259,7 +259,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
                 this.agenciesNeedToApprove.push(model)
                 //if(this.agencyId.includes(model.id)) {
                 this.planApprovalAgencyMap.set(plan.$key, this.agenciesNeedToApprove);
-                console.log(this.planApprovalAgencyMap)
+               // console.log(this.agenciesNeedToApprove.find(this.participatingAgenciesId[this.participatingAgenciesId.length]))
                 // }
               });
             //prepare agency region map
