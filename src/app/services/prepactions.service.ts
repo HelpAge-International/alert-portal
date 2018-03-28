@@ -328,8 +328,10 @@ export class PrepActionService {
     af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        console.log(snap.val())
-        this.agencyId = snap.val().agencyId;
+        console.log(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid);
+        console.log(Object.keys(snap.val().agencyAdmin)[0]);
+
+        this.agencyId = Object.keys(snap.val().agencyAdmin)[0];
         this.systemAdminId = "";
         for (let x in snap.val().systemAdmin) {
           this.systemAdminId = x;
@@ -366,6 +368,7 @@ export class PrepActionService {
    */
   private getDefaultClockSettings(af: AngularFire, agencyId: string, countryId: string, defaultClockSettingsAquired: () => void) {
     if (countryId == null) {
+
       af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
