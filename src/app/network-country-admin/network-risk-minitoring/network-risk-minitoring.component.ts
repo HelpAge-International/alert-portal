@@ -492,9 +492,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       indicators.forEach((indicator, key) => {
         console.log(indicator)
         indicator.fromAgency = false;
-        this.getLogs(indicator.$key).subscribe((logs: any) => {
+        this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
           logs.forEach((log, key) => {
-            this.getUsers(log.addedBy).subscribe((user: any) => {
+            this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
               log.addedByFullName = user.firstName + ' ' + user.lastName;
             })
           });
@@ -925,21 +925,27 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
           dataToSave["timeTracking"]["timeSpentInGreen"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 1){
         if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
           dataToSave["timeTracking"]["timeSpentInAmber"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
 
       }
       if(indicator.triggerSelected == 2){
         if(!dataToSave["timeTracking"]["timeSpentInRed"]){
           dataToSave["timeTracking"]["timeSpentInRed"] = [];
         }
+        if (dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1) {
           dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
       }
 
 

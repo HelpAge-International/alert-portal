@@ -149,7 +149,7 @@
                           (click)="showSubNationalAreas(indicatorC.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
                     <span *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <ng-container *ngIf="!isViewingFromExternal">
-                      <a *ngIf="indicatorC.fromAgency"
+                      <a *ngIf="indicatorC.fromAgency && indicatorC.countryOfficeCode === agencyId"
                          [routerLink]="networkViewValues ? ['/network/local-network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode, networkViewValues] : ['/network/local-network-risk-monitoring/add-indicator/countryContext/' + indicatorC.$key + '/' + indicatorC.countryOfficeCode]">{{"EDIT"
                         | translate}}
                       </a>
@@ -490,7 +490,7 @@
                       <span href="javascript:void(0)" class="text-primary" *ngIf="indicator.geoLocation"
                         (click)="showSubNationalAreas(indicator.affectedLocation)"> {{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
                       <span *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                      <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === countryID && !isViewingFromExternal"
+                      <a *ngIf="indicator.fromAgency && indicator.countryOfficeCode === agencyId && !isViewingFromExternal"
                          [routerLink]="networkViewValues ? ['/network/local-network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode, networkViewValues] : ['/network/local-network-risk-monitoring/add-indicator/' + indicator.hazardScenario.key + '/' + indicator.$key + '/' + indicator.countryOfficeCode]">{{"EDIT" | translate}}
                       </a>
                       <a *ngIf="!indicator.fromAgency && !isViewingFromExternal"

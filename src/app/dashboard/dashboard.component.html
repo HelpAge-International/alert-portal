@@ -11,7 +11,7 @@
 
 
     <!--alert screen-->
-    <div *ngIf="DashboardTypeUsed == DashboardType.default && moduleSettings.riskMonitoring" class="canvas">
+    <div *ngIf="DashboardTypeUsed == DashboardType.default" class="canvas">
       <div *ngIf="alerts | async as alertList">
         <div class="Widget Alert-Widget" *ngFor="let alert of alertList">
           <div class="row">
@@ -727,8 +727,8 @@
       <!--director-->
       <div *ngIf="DashboardTypeUsed == DashboardType.director">
 
-        <div *ngIf="responsePlansForApproval | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
+        <div *ngIf="approvalPlans">
+          <div *ngFor="let plan of approvalPlans" class="row Spaced">
             <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
                 {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
@@ -747,8 +747,8 @@
           </div>
         </div>
 
-        <div *ngIf="responsePlansForApprovalNetwork | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
+        <div *ngIf="approvalPlansNetwork">
+          <div *ngFor="let plan of approvalPlansNetwork" class="row Spaced">
             <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
                 {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
@@ -767,8 +767,8 @@
           </div>
         </div>
 
-        <div *ngIf="responsePlansForApprovalNetworkLocal | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
+        <div *ngIf="approvalPlansNetworkLocal">
+          <div *ngFor="let plan of approvalPlansNetworkLocal" class="row Spaced">
             <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
                 {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
@@ -790,8 +790,8 @@
       </div>
       <!--partner users-->
       <div *ngIf="userType == UserType.PartnerUser">
-        <div *ngIf="responsePlansForApproval | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
+        <div *ngIf="approvalPlans">
+          <div *ngFor="let plan of approvalPlans" class="row Spaced">
             <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
                 {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
@@ -809,8 +809,8 @@
             </div>
           </div>
         </div>
-        <div *ngIf="responsePlansForApprovalNetwork | async as plans">
-          <div *ngFor="let plan of plans" class="row Spaced">
+        <div *ngIf="approvalPlansNetwork">
+          <div *ngFor="let plan of approvalPlansNetwork" class="row Spaced">
             <div class="col-sm-9" col-md-1>
               <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
                 {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>

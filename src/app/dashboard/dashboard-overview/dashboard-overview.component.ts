@@ -312,8 +312,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
 }

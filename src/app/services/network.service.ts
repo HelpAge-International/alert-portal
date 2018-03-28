@@ -738,8 +738,9 @@ export class NetworkService {
             let obj = {};
             obj["agencyId"] = key;
             obj["countryId"] = agencyCountries[key].countryCode;
+            obj["approved"] = agencyCountries[key].isApproved
             return obj;
-          });
+          }).filter(item => item["approved"] == true)
           let agencyCountryMap = new Map<string, string>();
           agencyCountryList.forEach(item => {
             agencyCountryMap.set(item["agencyId"], item["countryId"]);

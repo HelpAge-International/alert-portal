@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {UserType} from "../../utils/Enums";
+import {AlertMessageType, UserType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs";
@@ -9,6 +9,8 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {Http, Response} from '@angular/http';
 import {ExportDataService} from "../../services/export-data.service";
+import {AgencyService} from "../../services/agency-service.service";
+import {AlertMessageModel} from "../../model/alert-message.model";
 
 declare var jQuery: any;
 
@@ -39,12 +41,16 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private showLoader: boolean
 
+  private alertMessage: AlertMessageModel = null;
+  private alertMessageType = AlertMessageType;
+
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
               private route: ActivatedRoute,
               private af: AngularFire,
               private router: Router,
               private http: Http,
+              private agencyService:AgencyService,
               private exportService: ExportDataService,
               private translate: TranslateService) {
 
@@ -160,10 +166,19 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
 
   exportData() {
     console.log("start exporting agency data")
-    this.showLoader = true
-    this.exportService.exportAgencyData(this.agencyId)
+    this.agencyService.getAllCountryIdsForAgency(this.agencyId)
       .first()
-      .subscribe(value => this.showLoader = !value)
+      .subscribe(countryIds => {
+        if (countryIds.length > 0) {
+          this.showLoader = true
+          this.exportService.exportAgencyData(this.agencyId)
+            .first()
+            .subscribe(value => this.showLoader = !value)
+        } else {
+          this.alertMessage = new AlertMessageModel("Cannot export data for an empty agency, please create country office first")
+        }
+      })
+
   }
 
 }

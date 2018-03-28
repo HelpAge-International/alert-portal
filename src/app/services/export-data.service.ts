@@ -193,6 +193,7 @@ export class ExportDataService {
         this.agencyService.getAllCountryIdsForAgency(agencyId)
           .first()
           .subscribe(countryIds => {
+            console.log(countryIds)
             this.totalCountries = countryIds.length
             this.total = this.totalCountries * this.COUNTRY_SHEETS
             let tempCounter = 0
@@ -1195,8 +1196,8 @@ export class ExportDataService {
   }
 
   private exportFile(counter, total, wb) {
-    // console.log("counter: " + counter)
-    // console.log("total: " + total)
+    console.log("counter: " + counter)
+    console.log("total: " + total)
     // if (counter == total-2) {
     switch (this.exportFrom) {
       case EXPORT_FROM.FromAgency : {

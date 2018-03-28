@@ -70,6 +70,7 @@ export class ActionsService {
       }
     })
       .map(indicators => {
+        console.log(indicators)
         let filteredIndicators = [];
         indicators.forEach(indicator => {
           if (indicator.assignee === uid) {
@@ -1182,6 +1183,7 @@ export class ActionsService {
     }))
       .map(plans => {
         plans.forEach(plan => {
+          console.log(plan)
           let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
             .takeUntil(this.ngUnsubscribe)
@@ -1202,6 +1204,7 @@ export class ActionsService {
     }))
       .map(plans => {
         plans.forEach(plan => {
+          console.log(plan)
           let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
             .takeUntil(this.ngUnsubscribe)

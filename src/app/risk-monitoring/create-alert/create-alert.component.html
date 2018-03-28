@@ -170,7 +170,7 @@
       <div *ngIf="alertData.alertLevel == AlertLevels.Red" class="btn btn-primary" (click)="saveAlert()">
         Confirm Red Alert Request
       </div>
-      <div class="btn btn-outline-secondary" routerLink="/risk-monitoring">{{"GLOBAL.CANCEL" | translate}}</div>
+      <div class="btn btn-outline-secondary" (click)="goBack()">{{"GLOBAL.CANCEL" | translate}}</div>
     </div>
 
   </div>

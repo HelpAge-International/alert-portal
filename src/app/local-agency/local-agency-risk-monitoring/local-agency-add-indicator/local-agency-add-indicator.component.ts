@@ -364,7 +364,7 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
 
-        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : undefined;
+        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : null;
         let currentTime = new Date().getTime()
         let newTimeObject = {start: currentTime, finish: -1,level: this.indicatorData.triggerSelected};
         let id = this.hazardID == 'countryContext' ? this.agencyId : this.hazardID;
@@ -423,7 +423,7 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
             .then(indicator => {
 
               this.af.database.object(Constants.APP_STATUS + '/indicator/' + id  + '/' + indicator.key + '/timeTracking')
-                    .update([{timeSpentInGreen: newTimeObject}])
+                    .update({timeSpentInGreen: [newTimeObject]})
 
               if (dataToSave.assignee) {
                 // Send notification to the assignee
@@ -431,7 +431,7 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
                 notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).first().subscribe(() => {
                 });
               }
 
@@ -461,7 +461,7 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
                 notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).first().subscribe(() => {
                 });
               }
               this.backToRiskHome();
