@@ -61,6 +61,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private networkId: string;
   private networkCountryId: string;
   private withinNetwork: boolean;
+  private isLocalAgency: boolean;
 
   constructor(private route: ActivatedRoute,
               private userService: UserService,
@@ -97,53 +98,57 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.userAgencyId = agencyId;
-      this.userCountryId = countryId
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["countryId"]) {
-            this.countryId = params["countryId"];
-          }
-          if (params["agencyId"]) {
-            this.agencyId = params["agencyId"];
-            this.getAgencyInfo(this.agencyId);
-          }
-          if (params["systemId"]) {
-            this.systemId = params["systemId"];
-          }
-          if (params["isViewing"]) {
-            this.isViewing = params["isViewing"];
-          }
-          if (params["from"]) {
-            this.from = params["from"];
-            this.menuSelection(this.from);
-          }
-          if (params["officeTarget"]) {
-            this.officeTarget = params["officeTarget"];
-            this.handleOfficeSubMenu();
-          }
-          if (params["canCopy"]) {
-            this.canCopy = params["canCopy"];
-          }
-          if (params["agencyOverview"]) {
-            this.agencyOverview = params["agencyOverview"];
-            console.log(this.agencyOverview);
-          }
-          if (params["userType"]) {
-            this.userType = params["userType"];
-          }
-          if (params["isViewingFromExternal"]) {
-            this.isViewingFromExternal = params["isViewingFromExternal"];
-          }
-          if (params["networkId"]) {
-            this.networkId = params["networkId"];
-          }
-          if (params["networkCountryId"]) {
-            this.networkCountryId = params["networkCountryId"];
-          }
+    this.route.params
+      .first()
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+          this.getAgencyInfo(this.agencyId);
+        }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["from"]) {
+          this.from = params["from"];
+          this.menuSelection(this.from);
+        }
+        if (params["officeTarget"]) {
+          this.officeTarget = params["officeTarget"];
+          this.handleOfficeSubMenu();
+        }
+        if (params["canCopy"]) {
+          this.canCopy = params["canCopy"];
+        }
+        if (params["agencyOverview"]) {
+          this.agencyOverview = params["agencyOverview"];
+          console.log(this.agencyOverview);
+        }
+        if (params["userType"]) {
+          this.userType = params["userType"];
+        }
+        if (params["isViewingFromExternal"]) {
+          this.isViewingFromExternal = params["isViewingFromExternal"];
+        }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
+        }
+        if (params["isLocalAgency"]) {
+          this.isLocalAgency = params["isLocalAgency"];
+        }
+
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.userAgencyId = agencyId;
+          this.userCountryId = countryId
 
           //kick out to login if path not match
           if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
@@ -202,8 +207,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           this.getAlerts();
 
         });
-
-    });
+      });
   }
 
   private updateMainMenu(privacy: ModelAgencyPrivacy) {
