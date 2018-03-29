@@ -198,7 +198,6 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(country => {
         this.countryLocation = country.location;
-        console.log(this.countryLocation);
       });
   }
 

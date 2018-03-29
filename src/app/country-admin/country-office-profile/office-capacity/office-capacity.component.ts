@@ -12,6 +12,7 @@ import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import * as moment from "moment";
+
 declare var jQuery: any;
 
 @Component({
@@ -96,7 +97,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
               private surgeService: SurgeCapacityService,
               private route: ActivatedRoute,
               private _userService: UserService,
-              private _agencyService:AgencyService,
+              private _agencyService: AgencyService,
               private af: AngularFire) {
   }
 
@@ -106,26 +107,42 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log(this.isLocalAgency)
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
-  private initLocalAgency(){
+  private initLocalAgency() {
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyID = params["agencyId"];
+        }
+
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
-          this.agencyID = agencyId;
+          this.userAgencyId = agencyId;
+          if (this.agencyID) {
+          } else {
+            this.agencyID = agencyId;
+          }
+          this._getTotalStaffLocalAgency();
+          this.getStaffLocalAgency();
+          this.getSurgeCapacityLocalAgency();
+          this._getCountryOfficeCapacityLocalAgency().then(() => {
+            this._getSkills();
+          });
+        });
 
-            this._getTotalStaffLocalAgency();
-            this.getStaffLocalAgency();
-            this.getSurgeCapacityLocalAgency();
-            this._getCountryOfficeCapacityLocalAgency().then(() => {
-              this._getSkills();
-            });
+      })
 
-      });
   }
 
-  private initCountryOffice(){
+  private initCountryOffice() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -154,14 +171,10 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           } else {
             this.agencyID = agencyId;
             this.countryID = countryId;
-            // this._getAgencyID().then(() => {
-            //   this._getCountryID().then(() => {
             this._getTotalStaff();
             this.getStaff();
             this.getSurgeCapacity();
             this._getCountryOfficeCapacity();
-            // });
-            // });
           }
 
           this._getSkills();
@@ -215,13 +228,13 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         let tempNote = surge.notes[key];
         note.id = key;
         note.mapFromObject(tempNote);
-        if(this.agencyID && (note.agencyId && note.agencyId != this.agencyID) || !this.agencyID && (note.agencyId != this.userAgencyId)){
+        if (this.agencyID && (note.agencyId && note.agencyId != this.agencyID) || !this.agencyID && (note.agencyId != this.userAgencyId)) {
           this._agencyService.getAgency(note.agencyId)
             .takeUntil(this.ngUnsubscribe)
-            .subscribe( agency => {
+            .subscribe(agency => {
               note.agencyName = agency.name;
             })
-        }else{
+        } else {
           note.agencyName = null;
         }
         return note;
@@ -286,6 +299,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         });
         return responseStaffs;
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(responseStaffs => {
         this.totalResponseStaff = responseStaffs.length;
         this.responseStaffs = responseStaffs;
@@ -349,6 +363,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         });
         return responseStaffs;
       })
+      .takeUntil(this.ngUnsubscribe)
       .subscribe(responseStaffs => {
         this.totalResponseStaff = responseStaffs.length;
         this.responseStaffs = responseStaffs;
@@ -395,30 +410,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         });
         //handle filter
       });
-  }
-
-  _getCountryID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((countryID: any) => {
-          this.countryID = countryID.$value ? countryID.$value : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
-  _getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIDs: any) => {
-          this.agencyID = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-          res(true);
-        });
-    });
-    return promise;
   }
 
   _getTotalStaff() {
@@ -626,7 +617,6 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
 
-
   _convertObjectToArray(obj: any) {
     var arr = Object.keys(obj).map(function (key) {
       return obj[key];
@@ -654,13 +644,13 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     if (this.validateNote(note)) {
       let node = "";
 
-      if(this.isLocalAgency){
+      if (this.isLocalAgency) {
         if (type == 'staff') {
           node = Constants.STAFF_NODE.replace('{countryId}', this.agencyID).replace('{staffId}', id);
         } else {
           node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.agencyID).replace('{id}', id);
         }
-      }else{
+      } else {
         if (type == 'staff') {
           node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
         } else {
@@ -695,13 +685,13 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
     let node = '';
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       if (type == 'staff') {
         node = Constants.STAFF_NODE.replace('{countryId}', this.agencyID).replace('{staffId}', id);
       } else {
         node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.agencyID).replace('{id}', id);
       }
-    }else{
+    } else {
       if (type == 'staff') {
         node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
       } else {
@@ -751,13 +741,13 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditSurgeCapacity(id?: string) {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       if (id) {
         this.router.navigate(['/local-agency/profile/office-capacity/add-edit-surge-capacity', {id: id}], {skipLocationChange: true});
       } else {
         this.router.navigateByUrl('/local-agency/profile/office-capacity/add-edit-surge-capacity');
       }
-    }else{
+    } else {
       if (id) {
         this.router.navigate(['/country-admin/country-office-profile/office-capacity/add-edit-surge-capacity', {id: id}], {skipLocationChange: true});
       } else {
@@ -785,9 +775,9 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   editSurgeCapacity(id) {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigate(["/local-agency/profile/office-capacity/add-edit-surge-capacity", {"id": id}]);
-    }else{
+    } else {
       this.router.navigate(["/country-admin/country-office-profile/office-capacity/add-edit-surge-capacity", {"id": id}]);
     }
   }

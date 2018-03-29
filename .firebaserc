@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "alert-live"
+    "default": "alert-live",
+    "demo": "alert-demo-ed555"
   }
 }

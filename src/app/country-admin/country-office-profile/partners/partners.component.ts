@@ -17,6 +17,7 @@ import {CountryPermissionsMatrix, PageControlService} from "../../../services/pa
 import {Subject} from "rxjs/Subject";
 import {AngularFire} from "angularfire2";
 import {OperationAreaModel} from "../../../model/operation-area.model";
+
 declare var jQuery: any;
 
 @Component({
@@ -91,16 +92,66 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
-  private initLocalAgency(){
+  private initLocalAgency() {
 
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
 
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
           this.uid = user.uid;
           this.userType = userType;
-          this.agencyId = agencyId;
+          this.userAgencyId = agencyId;
+
+          if (this.agencyId && this.countryId && this.isViewing) {
+            this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(partnerOrganisations => {
+                this.partnerOrganisations = partnerOrganisations;
+
+                this.assignProjectsToDisplayPerPartnerOrg();
+
+                // Get the partner organisation notes
+                this.partnerOrganisations.forEach(partnerOrganisation => {
+                  const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
+                  this._noteService.getNotes(partnerOrganisationNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                    notes.forEach(note => {
+                      if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
+                        this.agencyService.getAgency(note.agencyId)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(agency => {
+                            note.agencyName = agency.name;
+                          })
+                      }
+                    })
+                    partnerOrganisation.notes = notes;
+                  });
+
+                  // Create the new note model for partner organisation
+                  this.newNote[partnerOrganisation.id] = new NoteModel();
+                  this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
+                });
+              });
+            // get the country levels values
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .subscribe(content => {
+                this.countryLevelsValues = content;
+              });
+
+          } else {
 
             this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(this.agencyId)
+              .takeUntil(this.ngUnsubscribe)
               .subscribe(partnerOrganisations => {
                 console.log(partnerOrganisations)
                 this.partnerOrganisations = partnerOrganisations;
@@ -110,7 +161,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 // Get the partner organisation notes
                 this.partnerOrganisations.forEach(partnerOrganisation => {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-                  this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
+                  this._noteService.getNotes(partnerOrganisationNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
                     partnerOrganisation.notes = notes;
                   });
 
@@ -122,16 +173,18 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
             // get the country levels values
             this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+              .takeUntil(this.ngUnsubscribe)
               .subscribe(content => {
                 this.countryLevelsValues = content;
-                err => console.log(err);
               });
 
-
+          }
         });
+      });
+
   }
 
-  private initCountryOffice(){
+  private initCountryOffice() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -153,6 +206,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
           if (this.agencyId && this.countryId && this.isViewing) {
             this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
+              .takeUntil(this.ngUnsubscribe)
               .subscribe(partnerOrganisations => {
                 this.partnerOrganisations = partnerOrganisations;
 
@@ -162,11 +216,11 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 this.partnerOrganisations.forEach(partnerOrganisation => {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
                   this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
-                    notes.forEach( note => {
-                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                    notes.forEach(note => {
+                      if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
                         this.agencyService.getAgency(note.agencyId)
                           .takeUntil(this.ngUnsubscribe)
-                          .subscribe( agency => {
+                          .subscribe(agency => {
                             note.agencyName = agency.name;
                           })
                       }
@@ -183,21 +237,11 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
             this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
               .subscribe(content => {
                 this.countryLevelsValues = content;
-                err => console.log(err);
               });
           } else {
 
             this.agencyId = agencyId;
             this.countryId = countryId;
-            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-            //   .takeUntil(this.ngUnsubscribe)
-            //   .subscribe(agencyId => {
-            //     this.agencyId = agencyId;
-
-            // this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-            //   .takeUntil(this.ngUnsubscribe)
-            //   .subscribe(countryId => {
-            //     this.countryId = countryId;
 
             this._partnerOrganisationService.getCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
               .subscribe(partnerOrganisations => {
@@ -210,10 +254,10 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                   const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
                   this._noteService.getNotes(partnerOrganisationNode).subscribe(notes => {
                     notes.forEach(note => {
-                      if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                      if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
                         this.agencyService.getAgency(note.agencyId)
                           .takeUntil(this.ngUnsubscribe)
-                          .subscribe( agency => {
+                          .subscribe(agency => {
                             note.agencyName = agency.name;
                           })
                       }
@@ -246,9 +290,9 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigateByUrl('/local-agency/agency-staff');
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-staff');
     }
 
@@ -325,19 +369,19 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
   }
 
   addPartnerOrganisation() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigateByUrl('/local-agency/response-plans/add-partner-organisation');
 
-    }else{
+    } else {
       this.router.navigateByUrl('/response-plans/add-partner-organisation');
     }
 
   }
 
   editPartnerOrganisation(partnerOrganisationId) {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigate(['/local-agency/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
-    }else{
+    } else {
       this.router.navigate(['/response-plans/add-partner-organisation', {id: partnerOrganisationId}], {skipLocationChange: true});
     }
   }

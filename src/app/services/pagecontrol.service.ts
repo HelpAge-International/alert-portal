@@ -297,7 +297,8 @@ export class PageControlService {
     "preparedness*",
     "agency-admin*",
     "director*",
-    "system-admin/agency"
+    "system-admin/agency",
+    "dashboard*"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
@@ -307,7 +308,8 @@ export class PageControlService {
     "export-start-fund*",
     "export-proposal*",
     "new-user-password",
-    "dashboard/review-response-plan*"
+    "dashboard/review-response-plan*",
+    "dashboard*"
   ]);
 
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [

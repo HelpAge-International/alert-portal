@@ -100,7 +100,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.route.params
-      .first()
+      .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -128,7 +128,6 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         }
         if (params["agencyOverview"]) {
           this.agencyOverview = params["agencyOverview"];
-          console.log(this.agencyOverview);
         }
         if (params["userType"]) {
           this.userType = params["userType"];
@@ -149,6 +148,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.userAgencyId = agencyId;
           this.userCountryId = countryId
+
+          console.log("auth user done")
 
           //kick out to login if path not match
           if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
@@ -286,6 +287,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     this.officeMap.forEach((v, k) => {
       this.officeMap.set(k, k == this.officeTarget);
     });
+    console.log(this.officeMap)
   }
 
   private getAgencyInfo(agencyId: string) {

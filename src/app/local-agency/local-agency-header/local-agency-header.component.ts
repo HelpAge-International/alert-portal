@@ -102,6 +102,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+
     jQuery('.float').hide();
       this.showLoader = true;
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
@@ -112,7 +113,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
         this.isAnonym = !(user && !user.anonymous);
         this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
-        this.loadJSON().subscribe(data => {
+        this.loadJSON().first().subscribe(data => {
 
           for (var key in data) {
 
@@ -176,6 +177,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
             this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(user => {
+                console.log(user)
                 this.firstName = user.firstName;
                 this.lastName = user.lastName;
                 this.showLoader = false;
