@@ -90,6 +90,13 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+
+    // get the country levels values
+    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(content => {
+        this.countryLevelsValues = content;
+      });
   }
 
   private initLocalAgency() {
@@ -142,11 +149,15 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                   this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
                 });
               });
-            // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .subscribe(content => {
-                this.countryLevelsValues = content;
-              });
+
+            PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+              this.countryPermissionsMatrix = isEnabled;
+            }));
+            // // get the country levels values
+            // this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+            //   .subscribe(content => {
+            //     this.countryLevelsValues = content;
+            //   });
 
           } else {
 
@@ -171,12 +182,12 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 });
               });
 
-            // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(content => {
-                this.countryLevelsValues = content;
-              });
+            // // get the country levels values
+            // this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(content => {
+            //     this.countryLevelsValues = content;
+            //   });
 
           }
         });
@@ -233,11 +244,11 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                   this.newNote[partnerOrganisation.id].uploadedBy = this.uid;
                 });
               });
-            // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .subscribe(content => {
-                this.countryLevelsValues = content;
-              });
+            // // get the country levels values
+            // this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+            //   .subscribe(content => {
+            //     this.countryLevelsValues = content;
+            //   });
           } else {
 
             this.agencyId = agencyId;
@@ -271,12 +282,12 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
                 });
               });
 
-            // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .subscribe(content => {
-                this.countryLevelsValues = content;
-                err => console.log(err);
-              });
+            // // get the country levels values
+            // this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+            //   .subscribe(content => {
+            //     this.countryLevelsValues = content;
+            //     err => console.log(err);
+            //   });
             // });
             // });
           }
