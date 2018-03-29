@@ -1713,6 +1713,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       .take(1)
       .subscribe((responsePlan: ResponsePlan) => {
         this.loadResponsePlan = responsePlan;
+        console.log(this.loadResponsePlan)
+
         this.loadSection1(responsePlan);
         this.loadSection2(responsePlan);
         this.loadSection3(responsePlan);

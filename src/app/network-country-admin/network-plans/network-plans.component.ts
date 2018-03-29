@@ -18,6 +18,7 @@ import {NotificationService} from "../../services/notification.service";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {ModelAgency} from "../../model/agency.model";
 import {LocalStorageService} from "angular-2-local-storage";
+import {ResponsePlan} from "../../model/responsePlan";
 
 declare const jQuery: any;
 
@@ -49,6 +50,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private planApprovalObjMap = new Map<string, object>();
   private agencyRegionMap = new Map<string, string>();
   private planApprovalAgencyMap = new Map<string, object>();
+  private planAgencyMap = new Map<string, ModelAgency>();
   private showLoader: boolean;
   private planToResend: any;
 
@@ -234,11 +236,55 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .subscribe(duration => {
         this.networkPlanExpireDuration = duration;
         this.getResponsePlans(this.networkCountryId);
-       // this.initAgencyData()
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(map => {
+            this.agencyCountryMap = map;
+
+            this.activePlans.forEach(plan => {
+
+              this.participatingAgenciesId = plan.participatingAgencies;
+              this.agenciesNeedToApprove = [];
+
+              if (this.planApprovalObjMap.get(plan.$key)) {
+                Object.keys(this.participatingAgenciesId).forEach(agencyId => {
+                  this.userService.getAgencyModel(agencyId)
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(model => {
+                      this.planAgencyMap.set(plan.$key, model)
+                      console.log(this.planAgencyMap)
+                      console.log(model);
+                      this.agenciesNeedToApprove.push(model);
+                      this.planApprovalAgencyMap.set(agencyId, this.agenciesNeedToApprove);
+
+                    });
+                  //prepare agency region map
+                  this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
+                    .takeUntil(this.ngUnsubscribe)
+                    .subscribe(regionId => {
+                      this.agencyRegionMap.set(agencyId, regionId);
+                    });
+                });
+              }
+            })
+
+
+            Object.keys(this.participatingAgenciesId).forEach(agencyId => {
+              this.userService.getAgencyModel(agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(model => {
+
+                  console.log(model);
+                  this.agenciesNeedToApprove.push(model);
+                  this.planApprovalAgencyMap.set(agencyId, this.agenciesNeedToApprove);
+
+                });
+            })
+          });
       });
   }
 
-  initAgencyData(){
+  initAgencyData() {
     this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(map => {
@@ -246,22 +292,18 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
         this.activePlans.forEach(plan => {
 
-          this.participatingAgenciesId = plan.participatingAgencies;
-
-          console.log(plan.$key)
           this.agenciesNeedToApprove = [];
           Object.keys(this.participatingAgenciesId).forEach(agencyId => {
-            this.userService.getAgencyModel(agencyId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(model => {
-
-                console.log(model);
-                this.agenciesNeedToApprove.push(model)
-                //if(this.agencyId.includes(model.id)) {
-                this.planApprovalAgencyMap.set(plan.$key, this.agenciesNeedToApprove);
-               // console.log(this.agenciesNeedToApprove.find(this.participatingAgenciesId[this.participatingAgenciesId.length]))
-                // }
-              });
+            // this.userService.getAgencyModel(agencyId)
+            //   .takeUntil(this.ngUnsubscribe)
+            //   .subscribe(model => {
+            console.log(agencyId);
+            // this.agenciesNeedToApprove.push(this.planAgencyMap.get(agencyId))
+            //if(this.agencyId.includes(model.id)) {
+            // this.planApprovalAgencyMap.set(plan.$key, this.agenciesNeedToApprove);
+            // console.log(this.planApprovalAgencyMap)
+            // }
+            // });
             //prepare agency region map
             this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
               .takeUntil(this.ngUnsubscribe)
@@ -317,13 +359,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .subscribe(plans => {
         this.activePlans = [];
         plans.forEach(plan => {
-console.log(plans)
           if (plan.isActive) {
             this.activePlans.push(plan);
-
-            if(plans.length == this.activePlans.length){
-              this.initAgencyData();
-            }
             console.log(plan.approval);
             this.planApprovalObjMap.set(plan.$key, plan.approval);
             console.log(this.planApprovalObjMap);
@@ -370,25 +407,25 @@ console.log(plans)
     return list[0];
   }
 
-  confirmResendNotification(model, plan){
+  confirmResendNotification(model, plan) {
     this.planToResend = plan;
-    jQuery("#"+model).modal("show");
+    jQuery("#" + model).modal("show");
   }
 
-  resendNotification(user, tag){
+  resendNotification(user, tag) {
     this.closeModal(tag);
-    jQuery("#"+this.planToResend.$key).collapse('hide')
+    jQuery("#" + this.planToResend.$key).collapse('hide')
 
     let notification = new MessageModel();
     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToResend.name});
     notification.time = new Date().getTime();
 
-    if(user == 'countryDirector') {
+    if (user == 'countryDirector') {
       this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId);
-    } else if(user == 'regionDirector'){
+    } else if (user == 'regionDirector') {
       this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId);
-    } else if(user == 'globalDirector'){
+    } else if (user == 'globalDirector') {
       this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.GlobalDirector, this.agencyId, this.countryId);
     }
   }
@@ -895,7 +932,7 @@ console.log(plans)
         "uid": this.uid,
         "userType": this.userType
       };
-      if(!this.isLocalNetworkAdmin && this.networkCountryId) {
+      if (!this.isLocalNetworkAdmin && this.networkCountryId) {
         headers["networkCountryId"] = this.networkCountryId
       }
       if (this.agencyOverview) {
@@ -918,7 +955,7 @@ console.log(plans)
     }
   }
 
-  checkAgency(agency, plan){
+  checkAgency(agency, plan) {
     this.participatingAgenciesId = plan.participatingAgencies;
     Object.keys(this.participatingAgenciesId).forEach(agencyId => {
       this.userService.getAgencyModel(agencyId)

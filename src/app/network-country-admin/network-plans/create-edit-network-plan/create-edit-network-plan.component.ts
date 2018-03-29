@@ -2281,7 +2281,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   private loadSection9(responsePlan: ResponsePlan) {
     if (responsePlan.doubleCounting) {
-      console.log(responsePlan)
       this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
       this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
       this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
@@ -2306,20 +2305,41 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.transportBudget = responsePlan.budget["item"][BudgetCategory.Transport]["budget"];
-    this.transportNarrative = responsePlan.budget["item"][BudgetCategory.Transport]["narrative"];
-    this.securityBudget = responsePlan.budget["item"][BudgetCategory.Security]["budget"];
-    this.securityNarrative = responsePlan.budget["item"][BudgetCategory.Security]["narrative"];
-    this.logisticsAndOverheadsBudget = responsePlan.budget["item"][BudgetCategory.Logistics]["budget"];
-    this.logisticsAndOverheadsNarrative = responsePlan.budget["item"][BudgetCategory.Logistics]["narrative"];
-    this.staffingAndSupportBudget = responsePlan.budget["item"][BudgetCategory.Staffing]["budget"];
-    this.staffingAndSupportNarrative = responsePlan.budget["item"][BudgetCategory.Staffing]["narrative"];
-    this.monitoringAndEvolutionBudget = responsePlan.budget["item"][BudgetCategory.Monitoring]["budget"];
-    this.monitoringAndEvolutionNarrative = responsePlan.budget["item"][BudgetCategory.Monitoring]["narrative"];
-    this.capitalItemsBudget = responsePlan.budget["item"][BudgetCategory.CapitalItems]["budget"];
-    this.capitalItemsNarrative = responsePlan.budget["item"][BudgetCategory.CapitalItems]["narrative"];
-    this.managementSupportPercentage = responsePlan.budget["item"][BudgetCategory.ManagementSupport]["budget"];
-    this.managementSupportNarrative = responsePlan.budget["item"][BudgetCategory.ManagementSupport]["narrative"];
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Transport] && responsePlan.budget["item"][BudgetCategory.Transport]["budget"]) {
+      this.transportBudget = responsePlan.budget["item"][BudgetCategory.Transport]["budget"];
+      this.transportNarrative = responsePlan.budget["item"][BudgetCategory.Transport]["narrative"];
+    }
+
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Security] && responsePlan.budget["item"][BudgetCategory.Security]["budget"]) {
+      this.securityBudget = responsePlan.budget["item"][BudgetCategory.Security]["budget"];
+      this.securityNarrative = responsePlan.budget["item"][BudgetCategory.Security]["narrative"];
+    }
+
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Logistics] && responsePlan.budget["item"][BudgetCategory.Logistics]["budget"]) {
+      this.logisticsAndOverheadsBudget = responsePlan.budget["item"][BudgetCategory.Logistics]["budget"];
+      this.logisticsAndOverheadsNarrative = responsePlan.budget["item"][BudgetCategory.Logistics]["narrative"];
+    }
+
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Staffing] && responsePlan.budget["item"][BudgetCategory.Staffing]["budget"]) {
+      this.staffingAndSupportBudget = responsePlan.budget["item"][BudgetCategory.Staffing]["budget"];
+      this.staffingAndSupportNarrative = responsePlan.budget["item"][BudgetCategory.Staffing]["narrative"];
+    }
+
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.Monitoring] && responsePlan.budget["item"][BudgetCategory.Monitoring]["budget"]) {
+      this.monitoringAndEvolutionBudget = responsePlan.budget["item"][BudgetCategory.Monitoring]["budget"];
+      this.monitoringAndEvolutionNarrative = responsePlan.budget["item"][BudgetCategory.Monitoring]["narrative"];
+    }
+
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.CapitalItems] && responsePlan.budget["item"][BudgetCategory.CapitalItems]["budget"]) {
+      this.capitalItemsBudget = responsePlan.budget["item"][BudgetCategory.CapitalItems]["budget"];
+      this.capitalItemsNarrative = responsePlan.budget["item"][BudgetCategory.CapitalItems]["narrative"];
+    }
+
+    if (responsePlan.budget && responsePlan.budget["item"] && responsePlan.budget["item"][BudgetCategory.CapitalItems] && responsePlan.budget["item"][BudgetCategory.CapitalItems]["budget"]) {
+      this.managementSupportPercentage = responsePlan.budget["item"][BudgetCategory.ManagementSupport]["budget"];
+      this.managementSupportNarrative = responsePlan.budget["item"][BudgetCategory.ManagementSupport]["narrative"];
+    }
+
 
     let totalOfSectionsBToG = this.transportBudget + this.securityBudget + this.logisticsAndOverheadsBudget +
       this.staffingAndSupportBudget + this.monitoringAndEvolutionBudget + this.capitalItemsBudget;
