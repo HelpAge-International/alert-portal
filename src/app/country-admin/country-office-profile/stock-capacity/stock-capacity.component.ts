@@ -78,8 +78,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   private initLocalAgency(){
-
-
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.userType = userType;
@@ -373,6 +371,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
+
         if (stockCapacity.location && stockCapacity.location > -1) {
           obj.country = this.countries[stockCapacity.location];
         }
@@ -401,6 +400,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         }
         this.locationObjsStocksOut.push(obj);
       });
+
     });
   }
 }
