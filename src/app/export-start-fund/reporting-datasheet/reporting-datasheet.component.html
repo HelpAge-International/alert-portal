@@ -424,11 +424,11 @@
     <!--empty title-->
     <td colspan="12"><p style="text-align: center; width: 25em;"></p></td>
     <!--1. Do you have any photographic material...-->
-    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
-    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] != MediaFormat.photographic && responsePlan.monAccLearning['mediaFormat'] != MediaFormat.photographicAndVideo">X</p></td>
+    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning && (responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo)">X</p></td>
+    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning && (responsePlan.monAccLearning['mediaFormat'] != MediaFormat.photographic && responsePlan.monAccLearning['mediaFormat'] != MediaFormat.photographicAndVideo)">X</p></td>
     <!--2. Do you have any video material...-->
-    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
-    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] != MediaFormat.video && responsePlan.monAccLearning['mediaFormat'] != MediaFormat.video">X</p></td>
+    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning && (responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video)">X</p></td>
+    <td colspan="2"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning && (responsePlan.monAccLearning['mediaFormat'] != MediaFormat.video && responsePlan.monAccLearning['mediaFormat'] != MediaFormat.video)">X</p></td>
     <td colspan="10"><p style="text-align: center; width: 15em;"></p></td>
     <!--Section 3 Activity Report-->
     <!--Blank sub header-->

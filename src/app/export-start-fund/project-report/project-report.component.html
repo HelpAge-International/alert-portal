@@ -407,17 +407,17 @@
   <tr>
     <td colspan="5" style="background-color: lightgrey;"><p>1. Do you have any <span style="font-weight: bold;">photographic material</span> from the project to share?</p></td>
     <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>Yes</p></td>
-    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning">{{(responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo ? 'X' : '')}}</p></td>
     <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>No</p></td>
-    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographic && responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning">{{(responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographic && responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographicAndVideo ? 'X' : '')}}</p></td>
   </tr>
 
   <tr>
     <td colspan="5" style="background-color: lightgrey;"><p>2. Do you have any <span style="font-weight: bold;">video material</span> from the project to share?</p></td>
     <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>Yes</p></td>
-    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning">{{(responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video || responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo ? 'X' : '')}}</p></td>
     <td colspan="1" style="background-color: lightgrey; text-align: center;"><p>No</p></td>
-    <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.video && responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographicAndVideo ? 'X' : ''}}</p></td>
+    <td colspan="1" style="text-align: center;"><p *ngIf="responsePlan.monAccLearning">{{(responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.video && responsePlan.monAccLearning['mediaFormat'] !== MediaFormat.photographicAndVideo ? 'X' : '')}}</p></td>
   </tr>
 
   <tr>
