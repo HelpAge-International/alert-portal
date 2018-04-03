@@ -104,6 +104,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
   private AllSeasons = [];
+  private selectedHazardSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -314,6 +315,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   _getAllSeasons(hazard) {
+    this.selectedHazardSeasons = hazard.seasons
+
     this.af.database.list(Constants.APP_STATUS + "/season/" + hazard.parent)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((AllSeasons: any) => {
@@ -437,11 +440,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     this.loadCountryContextIsArchived();
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
-        console.log(this.countryID);
         this.activeHazards = [];
         this.archivedHazards = [];
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
+          hazard.parent = this.countryID;
           if (hazard.hazardScenario != -1) {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }
@@ -556,6 +559,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                 .subscribe(hazards => {
 
                   hazards.forEach(hazard => { //loop through hazards from local network
+                    hazard.parent = localNetwork.$key
 
                     // ***** Start custom hazard *****
                     if (hazard.hazardScenario == -1) { // hazard is custom
@@ -736,7 +740,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
                         if (hazard.isActive) {
                           this.activeHazards.forEach(activeHazard => {
-                            console.log(hazard)
 
                             if (hazard.isSeasonal == activeHazard.isSeasonal && hazard.hazardScenario == activeHazard.hazardScenario) {
                               console.log('test')
@@ -1012,7 +1015,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                 .subscribe(hazards => {
                   console.log("hazards")
                   hazards.forEach(hazard => { //loop through hazards from local network
-
+                    hazard.parent = network.networkCountryId
                     // ***** Start custom hazard *****
                     if (hazard.hazardScenario == -1) { // hazard is custom
                       var filteredActiveHazards = this.activeHazards.filter(activeHazard => activeHazard.hazardScenario == -1)

@@ -1088,7 +1088,7 @@
                 <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
                   <a href="javascript:void(0)" class="text-primary resend-notification"
                      id="open-seasonal-m{{hazard.$key}}" *ngIf="hazard.isSeasonal"
-                     (click)="openSeasonalModal('select-seasons')">
+                     (click)="openSeasonalModal('select-seasons', hazard)">
                     <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
                     translate}}
                   </a>

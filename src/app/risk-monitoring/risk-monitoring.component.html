@@ -369,7 +369,7 @@
               <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
                 <a href="javascript:void(0)" class="text-primary resend-notification"
                    id="open-seasonal-modal{{hazard.$key}}" *ngIf="hazard.isSeasonal"
-                   (click)="openSeasonalModal('select-seasons')">
+                   (click)="openSeasonalModal('select-seasons', hazard)">
                   <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
                   translate}}
                 </a>
@@ -1020,7 +1020,7 @@
                 <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
                   <a href="javascript:void(0)" class="text-primary resend-notification"
                      id="open-seasonal-m{{hazard.$key}}" *ngIf="hazard.isSeasonal"
-                     (click)="openSeasonalModal('select-seasons')">
+                     (click)="openSeasonalModal('select-seasons', hazard)">
                     <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
                     translate}}
                   </a>
@@ -1582,8 +1582,8 @@
         <div class="row col-sm-12">
           <div class="col-sm-12">
             <div class="row margin-left-three" *ngFor="let season of AllSeasons; index as i">
-              <div class="col-sm-1">
-                <div class="Color__swatch__check Right-aligned"
+                <div class="col-sm-1" *ngIf="selectedHazardSeasons[i]">
+                    <div class="Color__swatch__check Right-aligned"
                      [ngStyle]="{'background':season.colorCode}">
                 </div>
               </div>
