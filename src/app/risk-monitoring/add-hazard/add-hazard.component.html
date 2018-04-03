@@ -36,9 +36,9 @@
           <input type="radio" name="RT" (change)="stateIsCustom(true, $event,hazard.hazardScenario)"
                  id="{{HazardScenario[hazard.hazardScenario] | translate}}" [value]="HazardScenario[hazard.hazardScenario] | translate"
                  required>
-          <div class="Icon">
+          <div class="Icon padding-left-two">
             <div
-              class="Icon--md Icon__circle Icon--b-dark-blue {{hazard.hazardScenario != -1 ? _getHazardImage(hazard.hazardScenario) : 'Icon--alert'}}"></div>
+              class="space-left2 Icon--md Icon__circle Icon--b-dark-blue {{hazard.hazardScenario != -1 ? _getHazardImage(hazard.hazardScenario) : 'Icon--alert'}}"></div>
           </div>
           <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>{{"ALERT.RISK" | translate}} {{hazard.value}}</p>
         </label>
