@@ -2178,7 +2178,7 @@
         "LEVEL1":"Country Context is not a hazard per se, but a collection of macro-level indicators that when viewed together provides a holistic picture of the country's socioeconomic and political status"
       },
       "TT8":{
-        "LEVEL1":"This list will only display the hazards that don’t appear in your risk monitoring list (you cannot add the same hazard twice)"
+        "LEVEL1":"You cannot add the same hazard twice"
       },
       "TT9":{
         "LEVEL1":"Index for Risk Management (INFORM) is a global, open-source risk assessment for humanitarian crises and disasters.",
