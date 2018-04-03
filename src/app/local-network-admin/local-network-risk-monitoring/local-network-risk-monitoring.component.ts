@@ -119,6 +119,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
   private AllSeasons = [];
+  private selectedHazardSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -358,22 +359,22 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
-  openSeasonalModal(key) {
-    this._getAllSeasons();
+  openSeasonalModal(key, hazard) {
+    this._getAllSeasons(hazard);
     jQuery("#" + key).modal("show");
   }
 
-  _getAllSeasons() {
-    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+  _getAllSeasons(selectedHazard) {
+    this.selectedHazardSeasons = selectedHazard.seasons
+    // let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + selectedHazard.parent)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((AllSeasons: any) => {
           this.AllSeasons = AllSeasons;
-          res(true);
+          // res(true);
         });
-    });
-    return promise;
+    // });
+    // return promise;
   }
 
   showSubNationalAreas(areas) {
@@ -576,11 +577,15 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     this.loadCountryContextIsArchived();
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
+       
         this.activeHazards = [];
         this.archivedHazards = [];
-        console.log(hazards)
+
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
+
+          hazard.parent = this.networkId;
+
           if (hazard.hazardScenario != -1) {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }
@@ -632,6 +637,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                     this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
                       hazards.forEach((hazard: any, key) => {
                         hazard.id = hazard.$key;
+                        hazard.parent = value;
                         if (hazard.hazardScenario != -1) {
                           hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
                         }

@@ -308,22 +308,17 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
-  openSeasonalModal(key) {
-    this._getAllSeasons();
+  openSeasonalModal(key, hazard) {
+    this._getAllSeasons(hazard);
     jQuery("#" + key).modal("show");
   }
 
-  _getAllSeasons() {
-    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((AllSeasons: any) => {
-          this.AllSeasons = AllSeasons;
-          res(true);
-        });
-    });
-    return promise;
+  _getAllSeasons(hazard) {
+    this.af.database.list(Constants.APP_STATUS + "/season/" + hazard.parent)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((AllSeasons: any) => {
+        this.AllSeasons = AllSeasons;
+      });
   }
 
   private getCountryLocation() {
