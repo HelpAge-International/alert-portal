@@ -224,7 +224,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
 
   private handleActiveClass(name: string) {
     this.menuMap.forEach((v, k) => {
-      this.menuMap.set(k, k == name);
+      this.menuMap.set(k, k === name);
     });
   }
 

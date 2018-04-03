@@ -121,21 +121,31 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
         if (params["agencyId"]) {
           this.agencyID = params["agencyId"];
         }
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
 
         this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
           this.userAgencyId = agencyId;
-          if (this.agencyID) {
+          if (this.agencyID && this.countryID) {
+            this._getTotalStaff();
+            this.getStaff();
+            this.getSurgeCapacity();
+            this._getCountryOfficeCapacity();
+            PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+              this.countryPermissionsMatrix = isEnabled;
+            }));
           } else {
             this.agencyID = agencyId;
+            this._getTotalStaffLocalAgency();
+            this.getStaffLocalAgency();
+            this.getSurgeCapacityLocalAgency();
+            this._getCountryOfficeCapacityLocalAgency()
           }
-          this._getTotalStaffLocalAgency();
-          this.getStaffLocalAgency();
-          this.getSurgeCapacityLocalAgency();
-          this._getCountryOfficeCapacityLocalAgency().then(() => {
-            this._getSkills();
-          });
+          this._getSkills();
+
         });
 
       })
@@ -165,9 +175,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             this._getTotalStaff();
             this.getStaff();
             this.getSurgeCapacity();
-            this._getCountryOfficeCapacity().then(() => {
-
-            });
+            this._getCountryOfficeCapacity();
           } else {
             this.agencyID = agencyId;
             this.countryID = countryId;

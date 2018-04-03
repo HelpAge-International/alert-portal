@@ -65,49 +65,6 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
-  }
-
-  private initLocalAgency(){
-
-
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-
-      this.uid = user.uid;
-      this.userType = userType;
-      this.agencyId = agencyId;
-
-        this._agencyService.getAgency(this.agencyId)
-          .map(agency => {
-            return agency as ModelAgency;
-          })
-          .subscribe(agency => {
-            this.agency = agency;
-
-                let countryOfficeAddress = new CountryOfficeAddressModel();
-                countryOfficeAddress.mapFromObject(agency);
-
-                this.countryOfficeAddress = countryOfficeAddress;
-              });
-            this._contactService.getPointsOfContactLocalAgency(this.agencyId)
-              .subscribe(pointsOfContact => {
-                this.pointsOfContact = pointsOfContact;
-                this.pointsOfContact.forEach(pointOfContact => {
-                  this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
-                    this.userPublicDetails[pointOfContact.staffMember] = user;
-                  });
-                  this._userService.getStaff(this.agencyId, pointOfContact.staffMember).subscribe(staff => {
-                    this.staffList[pointOfContact.staffMember] = staff;
-                  });
-                });
-              });
-          });
-
-  }
-
-  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -120,93 +77,134 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
         if (params["agencyId"]) {
           this.agencyId = params["agencyId"];
         }
+
+        if (this.countryId && this.agencyId && this.isViewing) {
+          this.loadViewData();
+        } else {
+          this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+        }
       });
+
+  }
+
+  private loadViewData() {
+    this._agencyService.getAgency(this.agencyId)
+      .map(agency => {
+        return agency as ModelAgency;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agency => {
+        this.agency = agency;
+
+        this._agencyService.getCountryOffice(this.countryId, this.agencyId)
+          .map(countryOffice => {
+            let countryOfficeAddress = new CountryOfficeAddressModel();
+            countryOfficeAddress.mapFromObject(countryOffice);
+
+            return countryOfficeAddress;
+          })
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(countryOfficeAddress => {
+            this.countryOfficeAddress = countryOfficeAddress;
+          });
+        this._contactService.getPointsOfContact(this.countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(pointsOfContact => {
+            this.pointsOfContact = pointsOfContact;
+            this.pointsOfContact.forEach(pointOfContact => {
+              this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+                this.userPublicDetails[pointOfContact.staffMember] = user;
+              });
+              this._userService.getStaff(this.countryId, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+                this.staffList[pointOfContact.staffMember] = staff;
+              });
+            });
+          });
+      });
+  }
+
+  private initLocalAgency() {
+
+
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+
+      this.uid = user.uid;
+      this.userType = userType;
+      this.agencyId = agencyId;
+
+      this._agencyService.getAgency(this.agencyId)
+        .map(agency => {
+          return agency as ModelAgency;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agency => {
+          this.agency = agency;
+
+          let countryOfficeAddress = new CountryOfficeAddressModel();
+          countryOfficeAddress.mapFromObject(agency);
+
+          this.countryOfficeAddress = countryOfficeAddress;
+        });
+      this._contactService.getPointsOfContactLocalAgency(this.agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(pointsOfContact => {
+          this.pointsOfContact = pointsOfContact;
+          this.pointsOfContact.forEach(pointOfContact => {
+            this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+              this.userPublicDetails[pointOfContact.staffMember] = user;
+            });
+            this._userService.getStaff(this.agencyId, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+              this.staffList[pointOfContact.staffMember] = staff;
+            });
+          });
+        });
+    });
+
+  }
+
+  private initCountryOffice() {
 
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
       this.uid = user.uid;
       this.userType = userType;
 
-      if (this.countryId && this.agencyId && this.isViewing) {
-        this._agencyService.getAgency(this.agencyId)
-          .map(agency => {
-            return agency as ModelAgency;
-          })
-          .subscribe(agency => {
-            this.agency = agency;
 
-            this._agencyService.getCountryOffice(this.countryId, this.agencyId)
-              .map(countryOffice => {
-                let countryOfficeAddress = new CountryOfficeAddressModel();
-                countryOfficeAddress.mapFromObject(countryOffice);
+      this.agencyId = agencyId;
+      this.countryId = countryId;
 
-                return countryOfficeAddress;
-              })
-              .subscribe(countryOfficeAddress => {
-                this.countryOfficeAddress = countryOfficeAddress;
-              });
-            this._contactService.getPointsOfContact(this.countryId)
-              .subscribe(pointsOfContact => {
-                this.pointsOfContact = pointsOfContact;
-                this.pointsOfContact.forEach(pointOfContact => {
-                  this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
-                    this.userPublicDetails[pointOfContact.staffMember] = user;
-                  });
-                  this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
-                    this.staffList[pointOfContact.staffMember] = staff;
-                  });
+      this._agencyService.getAgency(this.agencyId)
+        .map(agency => {
+          return agency as ModelAgency;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agency => {
+          this.agency = agency;
+
+          this._agencyService.getCountryOffice(this.countryId, this.agencyId)
+            .map(countryOffice => {
+              let countryOfficeAddress = new CountryOfficeAddressModel();
+              countryOfficeAddress.mapFromObject(countryOffice);
+              return countryOfficeAddress;
+            })
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(countryOfficeAddress => {
+              this.countryOfficeAddress = countryOfficeAddress;
+            });
+          this._contactService.getPointsOfContact(this.countryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(pointsOfContact => {
+              this.pointsOfContact = pointsOfContact;
+              this.pointsOfContact.forEach(pointOfContact => {
+                this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
+                  this.userPublicDetails[pointOfContact.staffMember] = user;
+                });
+                this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
+                  this.staffList[pointOfContact.staffMember] = staff;
                 });
               });
-          });
-      } else {
-
-        // this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-        //   .takeUntil(this.ngUnsubscribe)
-        //   .subscribe(countryId => {
-        //     this.countryId = countryId;
-
-        // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-        //   .takeUntil(this.ngUnsubscribe)
-        //   .subscribe(agencyId => {
-        //     this.agencyId = agencyId;
-        //   });
-        this.agencyId = agencyId;
-        this.countryId = countryId;
-
-        this._agencyService.getAgency(this.agencyId)
-          .map(agency => {
-            return agency as ModelAgency;
-          })
-          .takeUntil(this.ngUnsubscribe)
-          .subscribe(agency => {
-            this.agency = agency;
-
-            this._agencyService.getCountryOffice(this.countryId, this.agencyId)
-              .map(countryOffice => {
-                let countryOfficeAddress = new CountryOfficeAddressModel();
-                countryOfficeAddress.mapFromObject(countryOffice);
-                return countryOfficeAddress;
-              })
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(countryOfficeAddress => {
-                this.countryOfficeAddress = countryOfficeAddress;
-              });
-            this._contactService.getPointsOfContact(this.countryId)
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(pointsOfContact => {
-                this.pointsOfContact = pointsOfContact;
-                this.pointsOfContact.forEach(pointOfContact => {
-                  this._userService.getUser(pointOfContact.staffMember).subscribe(user => {
-                    this.userPublicDetails[pointOfContact.staffMember] = user;
-                  });
-                  this._userService.getStaff(this.countryId, pointOfContact.staffMember).subscribe(staff => {
-                    this.staffList[pointOfContact.staffMember] = staff;
-                  });
-                });
-              });
-          });
-        // });
-      }
+            });
+        });
       PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
         this.countryPermissionsMatrix = isEnabled;
       }));
@@ -261,22 +259,22 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   }
 
   editOfficeDetails() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigateByUrl('/local-agency/profile/contacts/edit-office-details');
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/contacts/edit-office-details');
     }
   }
 
   addEditPointOfContact(pointOfContactId?: string) {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       if (pointOfContactId) {
         this.router.navigate(['/local-agency/profile/contacts/add-edit-point-of-contact',
           {id: pointOfContactId}], {skipLocationChange: true});
       } else {
         this.router.navigateByUrl('/local-agency/profile/contacts/add-edit-point-of-contact');
       }
-    }else{
+    } else {
       if (pointOfContactId) {
         this.router.navigate(['/country-admin/country-office-profile/contacts/add-edit-point-of-contact',
           {id: pointOfContactId}], {skipLocationChange: true});

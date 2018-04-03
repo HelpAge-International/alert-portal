@@ -10,6 +10,7 @@ import {CoordinationArrangementService} from "../../../services/coordination-arr
 import {CoordinationArrangementModel} from "../../../model/coordination-arrangement.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
+
 declare var jQuery: any;
 
 @Component({
@@ -60,34 +61,6 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-
-  }
-
-  private initLocalAgency(){
-
-
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.userType = userType;
-          this.agencyId = agencyId;
-
-            this._agencyService.getAgency(this.agencyId)
-              .map(agency => {
-                return agency as ModelAgency;
-              })
-              .subscribe(agency => {
-                this.agency = agency;
-
-                this._coordinationArrangementService.getCoordinationArrangementsLocalAgency(this.agencyId)
-                  .subscribe(coordinationArrangements => {
-                    this.coordinationArrangements = coordinationArrangements;
-                  });
-              });
-        });
-  }
-
-  private initCountryOffice(){
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -101,61 +74,88 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
         }
 
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-          this.uid = user.uid;
-          this.userType = userType;
-          this.userAgencyId = agencyId;
+        if (this.countryId && this.agencyId && this.isViewing) {
+          this.loadViewData();
+        } else {
+          this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+        }
 
-          if (this.countryId && this.agencyId && this.isViewing) {
-            this._agencyService.getAgency(this.agencyId)
-              .map(agency => {
-                return agency as ModelAgency;
-              })
-              .subscribe(agency => {
-                this.agency = agency;
+      })
 
-                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-                  .subscribe(coordinationArrangements => {
-                    this.coordinationArrangements = coordinationArrangements;
-                  });
-              });
-          } else {
-            // this._userService.getAgencyId(Constants.USER_PATHS[this.userType], this.uid)
-            //   .takeUntil(this.ngUnsubscribe)
-            //   .subscribe(agencyId => {
-            //     this.agencyId = agencyId;
-            //
-            //     this._userService.getCountryId(Constants.USER_PATHS[this.userType], this.uid)
-            //       .takeUntil(this.ngUnsubscribe)
-            //       .subscribe(countryId => {
-            //         this.countryId = countryId;
-            this.countryId = countryId;
-            this.agencyId = agencyId;
-            this._agencyService.getAgency(this.agencyId)
-              .map(agency => {
-                return agency as ModelAgency;
-              })
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe(agency => {
-                this.agency = agency;
 
-                this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(coordinationArrangements => {
-                    this.coordinationArrangements = coordinationArrangements;
-                  });
-              });
-            //     });
-            // });
-          }
-        });
+  }
+
+  private loadViewData() {
+    this._agencyService.getAgency(this.agencyId)
+      .map(agency => {
+        return agency as ModelAgency;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(agency => {
+        this.agency = agency;
+
+        this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(coordinationArrangements => {
+            this.coordinationArrangements = coordinationArrangements;
+          });
       });
   }
 
+  private initLocalAgency() {
+
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.userType = userType;
+      this.agencyId = agencyId;
+
+      this._agencyService.getAgency(this.agencyId)
+        .map(agency => {
+          return agency as ModelAgency;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agency => {
+          this.agency = agency;
+
+          this._coordinationArrangementService.getCoordinationArrangementsLocalAgency(this.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(coordinationArrangements => {
+              this.coordinationArrangements = coordinationArrangements;
+            });
+        });
+    });
+  }
+
+  private initCountryOffice() {
+
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.userType = userType;
+      this.userAgencyId = agencyId;
+
+      this.countryId = countryId;
+      this.agencyId = agencyId;
+      this._agencyService.getAgency(this.agencyId)
+        .map(agency => {
+          return agency as ModelAgency;
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(agency => {
+          this.agency = agency;
+
+          this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(coordinationArrangements => {
+              this.coordinationArrangements = coordinationArrangements;
+            });
+        });
+    });
+  }
+
   goBack() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigateByUrl('/local-agency/agency-staff');
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-staff');
     }
   }
@@ -185,14 +185,14 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
   }
 
   addEditCoordinationArrangement(coordinationArrangementId?: string) {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       if (coordinationArrangementId) {
         this.router.navigate(['/local-agency/profile/coordination/add-edit-coordination',
           {id: coordinationArrangementId}], {skipLocationChange: true});
       } else {
         this.router.navigateByUrl('/local-agency/profile/coordination/add-edit-coordination');
       }
-    }else{
+    } else {
       if (coordinationArrangementId) {
         this.router.navigate(['/country-admin/country-office-profile/coordination/add-edit-coordination',
           {id: coordinationArrangementId}], {skipLocationChange: true});

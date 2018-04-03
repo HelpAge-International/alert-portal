@@ -135,6 +135,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private countryName: string;
   private level1: string;
   private level2: string;
+  private isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -195,6 +196,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["hazardID"]) {
           this.hazard = params["hazardID"];
+        }
+        if (params["isLocalAgency"]) {
+          this.isLocalAgency = params["isLocalAgency"];
         }
         if (params['updateIndicatorID']) {
           this.updateIndicatorId = params['updateIndicatorID'];

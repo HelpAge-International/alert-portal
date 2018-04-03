@@ -787,7 +787,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
   overviewNetworkCountry(networkCountryId, networkId) {
 
     let data = {
-      "countryId": this.userCountryId,
       "isViewing": true,
       "agencyId": this.userAgencyId,
       "systemId": this._systemId,
@@ -797,18 +796,21 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "networkId": networkId,
       "networkCountryId": networkCountryId
     };
-    // this.router.navigate(["/dashboard/dashboard-overview", data]);
+    if (this.userCountryId) {
+      data["countryId"] = this.userCountryId
+    }
     if (this.isDirector) {
       if (this.agencyAdminIs) {
         data["agencyAdminIs"] = true
       }
       this.router.navigate(["/director/director-overview", data]);
-    } else if (this.isLocalAgencyAdmin) {
-
     } else {
       data["canCopy"] = true;
       if (this.agencyOverview) {
         data["agencyOverview"] = this.agencyOverview;
+      }
+      if (this.isLocalAgencyAdmin) {
+        data["isLocalAgency"] = true
       }
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     }
@@ -816,7 +818,6 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   overviewLocalNetwork(networkId) {
     let data = {
-      "countryId": this.userCountryId,
       "isViewing": true,
       "agencyId": this.userAgencyId,
       "systemId": this._systemId,
@@ -825,6 +826,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "isViewingFromExternal": true,
       "networkId": networkId
     };
+    if (this.userCountryId) {
+      data["countryId"] = this.userCountryId
+    }
     if (this.isDirector) {
       if (this.agencyAdminIs) {
         data["agencyAdminIs"] = true
@@ -834,6 +838,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       data["canCopy"] = true;
       if (this.agencyOverview) {
         data["agencyOverview"] = this.agencyOverview;
+      }
+      if (this.isLocalAgencyAdmin) {
+        data["isLocalAgency"] = true
       }
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     }

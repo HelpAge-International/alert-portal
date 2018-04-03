@@ -148,6 +148,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private previousIndicatorTrigger:number = -1
   private modules: ModuleSettingsModel[];
   private ModuleNameNetwork = ModuleNameNetwork
+  private isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -214,8 +215,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         if (params["isViewingFromExternal"]) {
           this.isViewingFromExternal = params["isViewingFromExternal"];
         }
-
-
+        if (params["isLocalAgency"]) {
+          this.isLocalAgency = params["isLocalAgency"];
+        }
 
         if(this.isViewing){
 

@@ -236,6 +236,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
         }
+        if (params["systemId"]) {
+          this.systemAdminId = params["systemId"];
+        }
         if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];
 

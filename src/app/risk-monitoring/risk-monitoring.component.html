@@ -214,7 +214,7 @@
                            (click)="assignIndicatorTo('countryContext', indicatorC)">
                           Assign to</a>
                       </div>
-                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="isViewing && canCopy && !isLocalAgency" class="col-sm-12 btn btn-tertiary"
                            (click)="copyIndicator(indicatorC, true)">
                         Copy
                       </div>
@@ -539,7 +539,7 @@
                            (click)="assignIndicatorTo(hazard.$key, indicator)">
                           Assign to</a>
                       </div>
-                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="isViewing && canCopy && !isLocalAgency" class="col-sm-12 btn btn-tertiary"
                            (click)="copyIndicator(indicator, false, hazard)">
                         <!--TODO TRANSLATE-->
                         Copy
@@ -867,7 +867,7 @@
                              aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
                             Assign to</a>
                         </div>
-                        <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                        <div *ngIf="isViewing && canCopy && !isLocalAgency" class="col-sm-12 btn btn-tertiary"
                              (click)="copyIndicator(indicatorC, true)">
                           Copy
                         </div>
