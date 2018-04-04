@@ -7707,7 +7707,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 
 @media (max-width: 1024px) {
   .Tooltip__bubble.contact-agency:after {
-    right: 59%;
+    right: 39%;
   }
 }
 
@@ -7863,6 +7863,18 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 
 .padding-bottom-none {
   padding-bottom: 0;
+}
+
+.padding-bottom-two {
+  padding-bottom: 1em;
+}
+
+.padding-bottom-three {
+  padding-bottom: 1.5em;
+}
+
+.padding-bottom-four {
+  padding-bottom: 2em;
 }
 
 .margin-bottom-none {

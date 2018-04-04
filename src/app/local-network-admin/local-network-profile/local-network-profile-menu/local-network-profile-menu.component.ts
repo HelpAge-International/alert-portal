@@ -41,7 +41,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit,OnDestroy {
         if (event.url.includes("programme")) {
           this.handleMenuActive("programme");
         }
-        else if (event.url.includes("officeCapacity")) {
+        else if (event.url.includes("officeCapacity") || event.url.includes("office-capacity")) {
           this.handleMenuActive("officeCapacity");
         }
         else if (event.url.includes("partners")) {
@@ -53,7 +53,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit,OnDestroy {
         else if (event.url.includes("coordination")) {
           this.handleMenuActive("coordination");
         }
-        else if (event.url.includes("stockCapacity")) {
+        else if (event.url.includes("stockCapacity") || event.url.includes("stock-capacity")) {
           this.handleMenuActive("stockCapacity");
         }
         else if (event.url.includes("documents")) {
