@@ -297,6 +297,10 @@ export class PageControlService {
     "preparedness*",
     "agency-admin*",
     "director*",
+    "country-admin*",
+    "map*",
+    "dashboard*",
+    "risk-monitoring*",
     "system-admin/agency"
   ]);
 
@@ -306,7 +310,12 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-details",
     "export-start-fund*",
     "export-proposal*",
+    "dashboard*",
     "new-user-password",
+    "risk-monitoring*",
+    "map*",
+    "country-admin*",
+    "preparedness*",
     "dashboard/review-response-plan*"
   ]);
 
