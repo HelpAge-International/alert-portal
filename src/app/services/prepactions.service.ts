@@ -329,9 +329,10 @@ export class PrepActionService {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         console.log(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid);
-        console.log(Object.keys(snap.val().agencyAdmin)[0]);
+        console.log(snap.val());
+        console.log(snap.val().agencyId);
 
-        this.agencyId = Object.keys(snap.val().agencyAdmin)[0];
+        this.agencyId = snap.val().agencyId;
         this.systemAdminId = "";
         for (let x in snap.val().systemAdmin) {
           this.systemAdminId = x;

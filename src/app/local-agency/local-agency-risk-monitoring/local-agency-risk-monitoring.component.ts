@@ -216,12 +216,13 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   }
 
   setLocationName(location) {
-    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country) {
+    console.log(location);
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country >= 0) {
       this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
       this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
       this.subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
-    } else if ((location.level1 && location.level1 != -1) && location.country) {
+    } else if ((location.level1 && location.level1 >= 0) && location.country >= 0) {
       this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
       this.subnationalName = this.countryName + ", " + this.level1;
