@@ -8517,6 +8517,7 @@ h3, h4 {
 .Header_bar__alert .Notification__dropdown__view-all a {
   color: #006EA0;
   font-weight: 600;
+  cursor: pointer;
 }
 
 @media (max-width: 480px) {
@@ -10911,7 +10912,6 @@ h3, h4 {
 }
 
 .dropdown-menu {
-  left: inherit;
   position: absolute;
   top: 100%;
   z-index: 1000;
@@ -10940,6 +10940,15 @@ h3, h4 {
 
 .dropdown-menu li:hover {
   background-color: #F9F9F9;
+}
+
+li.Header_bar__username {
+  text-transform: capitalize;
+  position: relative;
+}
+
+li.Header_bar__country {
+  position: relative;
 }
 
 .caret.dropdown-right {
