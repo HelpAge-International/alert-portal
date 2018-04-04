@@ -212,7 +212,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.updateActionId = params['updateActionID'];
 
         console.log("UPD ActionID: " + this.updateActionId)
-        Observable.interval(5000)
+        Observable.interval(2000)
           .takeWhile(() => !this.stopCondition)
           .subscribe(i => {
             this.triggerScrollTo()
@@ -403,7 +403,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     jQuery('html, body').animate({
       scrollTop: jQuery("#popover_content_" + this.updateActionId).offset().top - 200
-    }, 2000);
+    }, 1000);
   }
 
   ngOnDestroy() {

@@ -24,6 +24,7 @@ import {UserService} from "../../services/user.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
+import {isEmpty} from "rxjs/operator/isEmpty";
 // import {jQuery} from "../../network-country-admin/network-plans/network-plans.component";
 
 declare var jQuery: any;
@@ -2101,7 +2102,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection9(responsePlan: ResponsePlan) {
-    if (responsePlan.doubleCounting) {
+    if (!this.isEmpty(responsePlan.doubleCounting)) {
+      console.log(responsePlan.doubleCounting)
       this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
       this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
       this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
@@ -2659,5 +2661,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       console.log("create new mode");
     }
+  }
+
+  isEmpty(obj) {
+    return Object.keys(obj).length === 0;
   }
 }

@@ -414,159 +414,159 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   reloadData(res) {
-    if(res.name) {
+    if (res.name) {
       this.newResponsePlan.name = res.name;
     }
 
-    if(res.location){
+    if (res.location) {
       this.newResponsePlan.location = res.location;
     }
 
-    if(res.planLead){
+    if (res.planLead) {
       this.newResponsePlan.planLead = res.planLead;
     }
 
-    if(res.hazardScenario){
+    if (res.hazardScenario) {
       this.newResponsePlan.hazardScenario = res.hazardScenario;
     }
 
-    if(res.scenarioCrisisList){
+    if (res.scenarioCrisisList) {
       this.newResponsePlan.scenarioCrisisList = res.scenarioCrisisList;
     }
 
-    if(res.impactOfCrisisList){
+    if (res.impactOfCrisisList) {
       this.newResponsePlan.impactOfCrisisList = res.impactOfCrisisList;
     }
 
-    if(res.availabilityOfFundsList){
+    if (res.availabilityOfFundsList) {
       this.newResponsePlan.availabilityOfFundsList = res.availabilityOfFundsList;
     }
 
-    if(res.sectorsRelatedTo){
+    if (res.sectorsRelatedTo) {
       this.newResponsePlan.sectorsRelatedTo = res.sectorsRelatedTo;
     }
 
-    if(res.otherRelatedSector){
+    if (res.otherRelatedSector) {
       this.newResponsePlan.otherRelatedSector = res.otherRelatedSector;
     }
 
-    if(res.presenceInTheCountry){
+    if (res.presenceInTheCountry) {
       this.newResponsePlan.presenceInTheCountry = res.presenceInTheCountry;
     }
 
-    if(res.methodOfImplementation){
+    if (res.methodOfImplementation) {
       this.newResponsePlan.methodOfImplementation = res.methodOfImplementation;
     }
 
-    if(res.partnerOrganisations){
+    if (res.partnerOrganisations) {
       this.newResponsePlan.partnerOrganisations = res.partnerOrganisations;
     }
 
-    if(res.activitySummary){
+    if (res.activitySummary) {
       this.newResponsePlan.activitySummary = res.activitySummary;
     }
 
-    if(res.peoplePerHousehold){
+    if (res.peoplePerHousehold) {
       this.newResponsePlan.peoplePerHousehold = res.peoplePerHousehold;
     }
 
-    if(res.numOfHouseholds){
+    if (res.numOfHouseholds) {
       this.newResponsePlan.numOfHouseholds = res.numOfHouseholds;
     }
 
-    if(res.beneficiariesNote){
+    if (res.beneficiariesNote) {
       this.newResponsePlan.beneficiariesNote = res.beneficiariesNote;
     }
 
-    if(res.vulnerableGroups){
+    if (res.vulnerableGroups) {
       this.newResponsePlan.vulnerableGroups = res.vulnerableGroups;
     }
 
-    if(res.otherVulnerableGroup){
+    if (res.otherVulnerableGroup) {
       this.newResponsePlan.otherVulnerableGroup = res.otherVulnerableGroup;
     }
 
-    if(res.targetPopulationInvolvementList){
+    if (res.targetPopulationInvolvementList) {
       this.newResponsePlan.targetPopulationInvolvementList = res.targetPopulationInvolvementList;
     }
 
-    if(res.riskManagementPlan){
+    if (res.riskManagementPlan) {
       this.newResponsePlan.riskManagementPlan = res.riskManagementPlan;
     }
 
-    if(res.sectors){
+    if (res.sectors) {
       this.newResponsePlan.sectors = res.sectors;
     }
 
-    if(res.monAccLearning){
+    if (res.monAccLearning) {
       this.newResponsePlan.monAccLearning = res.monAccLearning;
     }
 
-    if(res.doubleCounting){
+    if (res.doubleCounting) {
       this.newResponsePlan.doubleCounting = res.doubleCounting;
     }
 
-    if(res.budget){
+    if (res.budget) {
       this.newResponsePlan.budget = res.budget;
     }
 
-    if(res.sectionsCompleted){
+    if (res.sectionsCompleted) {
       this.newResponsePlan.sectionsCompleted = res.sectionsCompleted;
     }
 
-    if(res.totalSections){
+    if (res.totalSections) {
       this.newResponsePlan.totalSections = res.totalSections;
     }
 
-    if(res.isActive){
+    if (res.isActive) {
       this.newResponsePlan.isActive = res.isActive;
     }
 
-    if(res.status){
+    if (res.status) {
       this.newResponsePlan.status = res.status;
     }
 
-    if(res.startDate){
+    if (res.startDate) {
       this.newResponsePlan.startDate = res.startDate;
     }
 
-    if(res.timeCreated){
+    if (res.timeCreated) {
       this.newResponsePlan.timeCreated = res.timeCreated;
     }
 
-    if(res.id){
+    if (res.id) {
       this.newResponsePlan.id = res.id;
     }
 
-    if(res.createdBy){
+    if (res.createdBy) {
       this.newResponsePlan.createdBy = res.createdBy;
     }
 
-    if(res.timeUpdated){
+    if (res.timeUpdated) {
       this.newResponsePlan.timeUpdated = res.timeUpdated;
     }
 
-    if(res.updatedBy){
+    if (res.updatedBy) {
       this.newResponsePlan.updatedBy = res.updatedBy;
     }
 
-    if(res.isEditing){
+    if (res.isEditing) {
       this.newResponsePlan.isEditing = res.isEditing;
     }
 
-    if(res.editingUserId){
+    if (res.editingUserId) {
       this.newResponsePlan.editingUserId = res.editingUserId;
     }
 
-    if(res.createdByAgencyId){
+    if (res.createdByAgencyId) {
       this.newResponsePlan.createdByAgencyId = res.createdByAgencyId;
     }
 
-    if(res.createdByCountryId){
+    if (res.createdByCountryId) {
       this.newResponsePlan.createdByCountryId = res.createdByCountryId;
     }
 
-    if(res.approval){
+    if (res.approval) {
       this.newResponsePlan.approval = res.approval;
     }
 
@@ -863,7 +863,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
   }
 
-  otherDataToSave(){
+  otherDataToSave() {
     this.newResponsePlan.totalSections = this.totalSections;
     this.newResponsePlan.isActive = true;
     this.newResponsePlan.isEditing = false;
@@ -875,7 +875,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       this.newResponsePlan.startDate = moment.utc().valueOf();
       this.newResponsePlan.timeCreated = moment.utc().valueOf();
       this.newResponsePlan.createdBy = this.uid;
-    }else {
+    } else {
       this.newResponsePlan.timeUpdated = moment.utc().valueOf();
       this.newResponsePlan.updatedBy = this.uid;
     }
@@ -1875,12 +1875,12 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
       this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
     } else {
-        this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
-        this.adjustedFemale18To50 = this.numberFemale18To50;
-        this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
-        this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
-        this.adjustedMale18To50 = this.numberMale18To50;
-        this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+      this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
+      this.adjustedFemale18To50 = this.numberFemale18To50;
+      this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
+      this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
+      this.adjustedMale18To50 = this.numberMale18To50;
+      this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
     }
   }
 
@@ -2280,7 +2280,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection9(responsePlan: ResponsePlan) {
-    if (responsePlan.doubleCounting) {
+    if (!this.isEmpty(responsePlan.doubleCounting)) {
+      console.log(responsePlan.doubleCounting)
       this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
       this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
       this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
@@ -2364,5 +2365,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }
+
+  isEmpty(obj) {
+    return Object.keys(obj).length === 0;
   }
 }
