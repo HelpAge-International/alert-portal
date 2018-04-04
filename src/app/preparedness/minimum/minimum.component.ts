@@ -146,6 +146,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private unassignedNetworkActionsLocal = []
   private fromNetwork: boolean = false
   private selectedNetworkId: string
+  private fromLocalAgency: boolean;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -236,8 +237,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
         }
-        if (params["systemId"]) {
-          this.systemAdminId = params["systemId"];
+        if (params["isLocalAgency"]) {
+          this.fromLocalAgency = params["isLocalAgency"];
         }
         if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];
