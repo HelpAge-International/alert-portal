@@ -967,7 +967,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSection6() {
-    if (this.riskManagementPlanText != '') {
+    if (this.riskManagementPlanText != null) {
       this.section6Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[5], true);
     } else {
@@ -1301,6 +1301,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (!this.isDoubleCountingDone) {
       this.section9Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[8], true);
+    }else {
+      this.section9Status = "GLOBAL.INCOMPLETE";
+      this.sectionsCompleted.set(this.sections[8], false);
     }
     this.isDoubleCountingDone = true;
   }
@@ -2102,17 +2105,19 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection9(responsePlan: ResponsePlan) {
-    if (!this.isEmpty(responsePlan.doubleCounting)) {
-      console.log(responsePlan.doubleCounting)
-      this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
-      this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
-      this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
-      this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
-      this.numberMale18To50 = responsePlan.doubleCounting[4].value;
-      this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
+    if (typeof responsePlan.doubleCounting !== "undefined") {
+      if(Object.keys(responsePlan.doubleCounting).length > 0) {
+        console.log(responsePlan.doubleCounting)
+        this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
+        this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
+        this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
+        this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
+        this.numberMale18To50 = responsePlan.doubleCounting[4].value;
+        this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
 
-      this.section9Status = "GLOBAL.COMPLETE";
-      this.sectionsCompleted.set(this.sections[8], true);
+        this.section9Status = "GLOBAL.COMPLETE";
+        this.sectionsCompleted.set(this.sections[8], true);
+      }
     }
   }
 
@@ -2664,6 +2669,11 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   isEmpty(obj) {
-    return Object.keys(obj).length === 0;
+    console.log(obj)
+    if (typeof obj === "undefined") {
+      return Object.keys(obj).length === 0;
+    } else {
+      return true
+    }
   }
 }
