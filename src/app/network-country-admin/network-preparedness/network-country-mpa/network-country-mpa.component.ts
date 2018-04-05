@@ -71,6 +71,9 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   //logic
   private networkId: string;
   private networkCountryId: string;
+  private networkModuleMap = new Map<string, NetworkModulesEnabledModel>()
+  private networkModelMap = new Map<string, ModelNetwork>();
+  private networkIdList: string [] = [];
   private agencyCountryMap: Map<string, string>;
   private showLoader: boolean;
   private uid: string;
@@ -163,6 +166,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   private networkUserType: any;
   private agencyModels: ModelAgency[] = [];
 
+  @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -323,6 +327,26 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           // Currency
           // this.calculateCurrency();
         });
+
+      this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(networkMap => {
+          this.networkIdList = []
+          networkMap.forEach((networkCountryId, networkId) => {
+            this.networkIdList.push(networkId)
+            this.networkService.getNetworkModuleMatrix(networkId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(matrix => {
+                this.networkModuleMap.set(networkId, matrix)
+              })
+
+            this.networkService.getNetworkDetail(networkId)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(network => {
+                this.networkModelMap.set(networkId, network)
+              })
+          })
+        })
     });
   }
 
@@ -347,6 +371,22 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
+        this.networkIdList = []
+        networkMap.forEach((networkCountryId, networkId) => {
+          this.networkIdList.push(networkId)
+          this.networkService.getNetworkModuleMatrix(networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(matrix => {
+              this.networkModuleMap.set(networkId, matrix)
+            })
+
+          this.networkService.getNetworkDetail(networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network => {
+              this.networkModelMap.set(networkId, network)
+            })
+        })
+
         if (networkMap) {
           // this.initNetworkAdmin(networkMap)
           this.initAgenciesDetails(networkMap)
@@ -937,6 +977,144 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.addNote(action);
         this.closePopover(action);
       }
+    }
+  }
+
+  protected completeActionNetwork(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
+    if (action.note == null || action.note.trim() == "") {
+      this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
+    } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+
+      if (action.timeTracking) {
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
+
+        if (!action['timeTracking']['timeSpentInGreen']) {
+          action['timeTracking']['timeSpentInGreen'] = []
+        }
+
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+          action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+          action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+          data['timeTracking'] = action['timeTracking']
+        }
+      }
+
+
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
+      if (action.requireDoc) {
+        if (action.attachments != undefined && action.attachments.length > 0) {
+          action.attachments.map(file => {
+            this.uploadFileNetwork(action, file);
+          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
+          this.addNoteNetwork(action);
+          this.closePopover(action);
+        }
+        else {
+          this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
+        }
+      }
+      else {
+        // Doesn't require doc
+        if (action.attachments != null) {
+          action.attachments.map(file => {
+            this.uploadFileNetwork(action, file);
+          });
+        }
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
+        this.addNoteNetwork(action);
+        this.closePopover(action);
+      }
+    }
+  }
+
+  protected uploadFileNetwork(action: PreparednessAction, file) {
+    if (!action.networkCountryId) {
+      console.log("no network country id")
+      return
+    }
+    let document = {
+      fileName: file.name,
+      filePath: "", //this needs to be updated once the file is uploaded
+      module: DocumentType.MPA,
+      size: file.size * 0.001,
+      sizeType: SizeType.KB,
+      title: file.name,
+      time: firebase.database.ServerValue.TIMESTAMP,
+      uploadedBy: this.uid
+    };
+
+    this.af.database.list(Constants.APP_STATUS + '/document/' + action.networkCountryId).push(document)
+      .then(_ => {
+        let docKey = _.key;
+        let doc = {};
+        doc[docKey] = true;
+
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id + '/documents').update(doc)
+          .then(_ => {
+            new Promise((res, rej) => {
+              let storageRef = this.firebase.storage().ref().child('documents/' + action.networkCountryId + '/' + docKey + '/' + file.name);
+              let uploadTask = storageRef.put(file);
+              uploadTask.on('state_changed', function (snapshot) {
+              }, function (error) {
+                rej(error);
+              }, function () {
+                var downloadURL = uploadTask.snapshot.downloadURL;
+                res(downloadURL);
+              });
+            })
+              .then(result => {
+                document.filePath = "" + result;
+
+                this.af.database.object(Constants.APP_STATUS + '/document/' + action.networkCountryId + '/' + docKey).set(document);
+              })
+              .catch(err => {
+                console.log(err, 'You do not have access!');
+                this.purgeDocumentReference(action, docKey);
+              });
+          })
+          .catch(err => {
+            console.log(err, 'You do not have access!');
+            this.purgeDocumentReference(action, docKey);
+          });
+      })
+      .catch(err => {
+        console.log(err, 'You do not have access!');
+      });
+  }
+
+  public addNoteNetwork(action: any) {
+    console.log(action)
+    if (action.note == undefined) {
+      return;
+    }
+
+    const note = {
+      content: action.note,
+      time: new Date().getTime(),
+      uploadBy: this.uid
+    };
+    const noteId = action.noteId;
+
+    action.note = '';
+    action.noteId = '';
+
+    if (noteId != null && noteId !== '') {
+      this.af.database.object(Constants.APP_STATUS + '/note/' + (action.networkCountryId ? action.networkCountryId : action.idToQuery)  + '/' + (action.id ? action.id : action.$key) + '/' + noteId).set(note);
+    }
+    else {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + (action.networkCountryId ? action.networkCountryId : action.idToQuery) + '/' + (action.id ? action.id : action.$key)).push(note);
     }
   }
 
