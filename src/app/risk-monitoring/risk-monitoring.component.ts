@@ -2004,17 +2004,20 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   private initStaffs() {
-    this.userService.getStaffList(this.countryID)
-      .flatMap(staffList => {
-        return Observable.from(staffList.map(staff => staff.id))
-      })
-      .flatMap(staffId => {
-        return this.userService.getUser(staffId)
-      })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-        this.staffMap.set(user.id, user)
-      })
+    let staff = this.userService.getStaffList(this.countryID);
+    if(staff){
+      staff
+        .flatMap(staffList => {
+          return Observable.from(staffList.map(staff => staff.id))
+        })
+        .flatMap(staffId => {
+          return this.userService.getUser(staffId)
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.staffMap.set(user.id, user)
+        });
+    }
 
     //get country admin
     this.agencyService.getCountryOffice(this.countryID, this.agencyId)

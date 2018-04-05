@@ -272,7 +272,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
             }
 
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
-            this.router.navigateByUrl('dashboard');
+            this.router.navigateByUrl('local-agency/dashboard');
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });

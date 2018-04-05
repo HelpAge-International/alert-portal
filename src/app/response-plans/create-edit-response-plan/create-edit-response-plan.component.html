@@ -1404,8 +1404,8 @@
             </div>
             <div *ngIf="sectorsRelatedTo&&sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
               <div *ngFor="let sector of sectorsRelatedTo; index as i" class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-{{i+1}}: {{loadResponsePlan&&loadResponsePlan.sectors?(SECTORS[sector] |
-                  translate):''}}
+                <div class="col-lg-3 col-4">A-{{i+1}}: {{loadResponsePlan && loadResponsePlan.sectors?(SECTORS[sector] |
+                  translate): (SECTORS[sector] | translate)}}
                 </div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"
