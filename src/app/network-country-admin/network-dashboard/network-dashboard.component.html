@@ -247,7 +247,8 @@
               </div>
               <div class="Centered row Spaced">
                 <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
-                        (click)="approveRedAlert(alert.id, alert.hazardScenario, alert)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
+                        (click)="approveRedAlert(alert.id, alert.hazardScenario, alert)">{{"APPROVED_RED_ALERT_LEVEL" |
+                  translate}}
                 </button>
               </div>
               <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert)">{{"OR_REJECT_THIS_REQUEST"
@@ -371,7 +372,8 @@
               </div>
               <div class="Centered row Spaced">
                 <button class="btn btn-danger col-sm-4 col-md-3 text-capitalize align-self-center"
-                        (click)="approveRedAlert(alert.id, alert.hazardScenario, alert)">{{"APPROVED_RED_ALERT_LEVEL" | translate}}
+                        (click)="approveRedAlert(alert.id, alert.hazardScenario, alert)">{{"APPROVED_RED_ALERT_LEVEL" |
+                  translate}}
                 </button>
               </div>
               <div class="Centered row"><a href="javascript:void(0)" (click)="rejectRedRequest(alert)">{{"OR_REJECT_THIS_REQUEST"
@@ -558,8 +560,25 @@
 
     <!--empty rubber for default dashboard not partner-->
     <div *ngIf="userType!=UserType.PartnerUser">
+      <ng-container *ngIf="userType != UserType.CountryDirector; else emptyDirector">
+        <div
+          *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && approvalPlans.length == 0"
+          class="Widget">
+          <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
+          <div class="My-Tasks container-fluid">
+            <div class="Empty--ribbon">
+              {{"DASHBOARD.EMPTY_DEFAULT" | translate}}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <ng-template #emptyDirector>
       <div
-        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && approvalPlans.length == 0"
+        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 &&
+        indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 &&
+        approvalPlans.length == 0 && approvalPlans.length == 0 && approvalPlansNetwork.length == 0 && approvalPlansNetworkLocal.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
         <div class="My-Tasks container-fluid">
@@ -568,7 +587,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </ng-template>
 
     <!--empty rubber for default dashboard only partner user-->
     <div *ngIf="userType==UserType.PartnerUser">
@@ -591,6 +610,7 @@
       <br>
       <ng-container *ngIf="networkModules && networkModules[NETWORK_MODULE.ResponsePlanning].status">
         <div *ngIf="userType == UserType.CountryDirector">
+
           <div *ngIf="approvalPlans">
             <div *ngFor="let plan of approvalPlans" class="row Spaced">
               <div class="col-sm-9" col-md-1>
@@ -602,55 +622,47 @@
                   (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
               </div>
               <div class="col-md-3">
-                <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
-                <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
-                <!--</button>-->
-                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan.$key)">
+                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="approvalPlansNetwork">
+            <div *ngFor="let plan of approvalPlansNetwork" class="row Spaced">
+              <div class="col-sm-9" col-md-1>
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+              </div>
+              <div class="col-md-3">
+                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan)">
+                  {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="approvalPlansNetworkLocal">
+            <div *ngFor="let plan of approvalPlansNetworkLocal" class="row Spaced">
+              <div class="col-sm-9" col-md-1>
+                <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
+                  {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
+                <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
+                <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
+                  {{plan.timeUpdated ?
+                  (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
+              </div>
+              <div class="col-md-3">
+                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan, true)">
                   {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
               </div>
             </div>
           </div>
         </div>
 
-        <div *ngIf="approvalPlansNetwork">
-          <div *ngFor="let plan of approvalPlansNetwork" class="row Spaced">
-            <div class="col-sm-9" col-md-1>
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
-              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
-              <!--</button>-->
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="approvalPlansNetworkLocal">
-          <div *ngFor="let plan of approvalPlansNetworkLocal" class="row Spaced">
-            <div class="col-sm-9" col-md-1>
-              <p class="col-sm-9 margin-bottom-none"><strong>{{plan?.displayName}}</strong>
-                {{"DASHBOARD.SUBMIT_TO_APPROVE" | translate}}</p>
-              <p class="col-sm-9 margin-bottom-none"><em>{{plan.name}}</em></p>
-              <p class="col-sm-9 text-gray-light margin-bottom-none">{{"DASHBOARD.SUBMITTED" | translate}}
-                {{plan.timeUpdated ?
-                (plan.timeUpdated|date:"dd/MM/yyyy") : (plan.timeCreated|date:"dd/MM/yyyy")}}</p>
-            </div>
-            <div class="col-md-3">
-              <!--<button class="btn btn-primary font-weight-normal" (click)="planReview(plan.$key)">-->
-              <!--{{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}-->
-              <!--</button>-->
-              <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="planReview(plan, true)">
-                {{"DASHBOARD.REVIEW_AND_APPROVE" | translate}}</a>
-            </div>
-          </div>
-        </div>
 
         <!--partner users-->
         <div *ngIf="userType == UserType.PartnerUser">
@@ -749,8 +761,9 @@
                 </p>
               </div>
               <div class="col-md-3">
-                <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkIndicator(indicator)">
-                   <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
+                <a href="javascript:void(0)" class="btn btn-danger btn-block"
+                   (click)="navigateToNetworkIndicator(indicator)">
+                  <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
                   {{"GLOBAL.UPDATE" | translate}}
                 </a>
               </div>
@@ -771,8 +784,8 @@
               </p>
             </div>
             <div class="col-md-3">
-              <a href="javascript:void(0)" class="btn btn-danger btn-block"  (click)="navigateToNetworkActions(action)">
-                 <!--[routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">-->
+              <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkActions(action)">
+                <!--[routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">-->
                 {{"GLOBAL.UPDATE" | translate}}
               </a>
             </div>
@@ -792,8 +805,9 @@
                 </p>
               </div>
               <div class="col-md-3">
-                <a href="javascript:void(0)" class="btn btn-danger btn-block" (click)="navigateToNetworkIndicator(indicator)">
-                   <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
+                <a href="javascript:void(0)" class="btn btn-danger btn-block"
+                   (click)="navigateToNetworkIndicator(indicator)">
+                  <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
                   {{"GLOBAL.UPDATE" | translate}}
                 </a>
               </div>
@@ -808,15 +822,15 @@
             </div>
             <div class="col-md-8">
               <p>{{getActionTitle(action)}}<strong> {{"DASHBOARD.THIS_WEEK" | translate}}</strong>.<br/>
-                  <span> {{getCHSActionTask(action)}} {{action.task}}</span>
-                  <span>{{action.type == actionType.mandated ? mandatedMap.get(action.$key)?.task : ''}}</span>
+                <span> {{getCHSActionTask(action)}} {{action.task}}</span>
+                <span>{{action.type == actionType.mandated ? mandatedMap.get(action.$key)?.task : ''}}</span>
 
               </p>
 
             </div>
             <div class="col-md-3">
               <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToNetworkActions(action)">
-                 <!--[routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">-->
+                <!--[routerLink]="isViewing ? ['/network-country/network-country-mpa', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-preparedness-mpa'] : ['/network-country/network-country-mpa']">-->
                 {{"GLOBAL.UPDATE" | translate}}</a>
             </div>
           </div>
@@ -835,8 +849,9 @@
                 </p>
               </div>
               <div class="col-md-3">
-                <a href="javascript:void(0)" class="btn btn-primary btn-block" (click)="navigateToNetworkIndicator(indicator)">
-                   <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
+                <a href="javascript:void(0)" class="btn btn-primary btn-block"
+                   (click)="navigateToNetworkIndicator(indicator)">
+                  <!--[routerLink]="isViewing ? ['/network-country/network-risk-monitoring', networkViewValues] : isLocalNetworkAdmin ? ['/network/local-network-risk-monitoring'] : ['/network-country/network-risk-monitoring']">-->
                   {{"GLOBAL.UPDATE" | translate}}</a>
               </div>
             </div>

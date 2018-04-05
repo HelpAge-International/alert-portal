@@ -171,7 +171,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
                   }else{
                     this.loadResponsePlan(this.responsePlanId);
                   }
-                  
+
                 }
               });
           });
@@ -204,7 +204,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         this.loadedResponseplan = responsePlan;
         console.log(this.loadedResponseplan);
         this.handlePlanApproval(this.loadedResponseplan);
-        
+
       });
   }
 
@@ -301,15 +301,15 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
 
     let currentTime = new Date().getTime()
     let newTimeObject = {start: currentTime, finish: -1};
-          
 
 
-    // Change from Amber to Green 
-    if(this.loadedResponseplan['timeTracking']['timeSpentInAmber'] && this.loadedResponseplan['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) != -1){
+
+    // Change from Amber to Green
+    if(this.loadedResponseplan['timeTracking'] && this.loadedResponseplan['timeTracking']['timeSpentInAmber'] && this.loadedResponseplan['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) != -1){
       let index = this.loadedResponseplan['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1);
       this.loadedResponseplan['timeTracking']['timeSpentInAmber'][index].finish = currentTime
       if(!this.loadedResponseplan['timeTracking']['timeSpentInGreen']){
-        this.loadedResponseplan['timeTracking']['timeSpentInGreen'] = [] 
+        this.loadedResponseplan['timeTracking']['timeSpentInGreen'] = []
       }
       this.loadedResponseplan['timeTracking']['timeSpentInGreen'].push(newTimeObject)
 
@@ -336,7 +336,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       }else{
         this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
       }
-      
+
     }
   }
 
@@ -402,7 +402,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
         this.af.database.object(Constants.APP_STATUS + '/responsePlan/' + this.countryId + '/' + this.responsePlanId + '/timeTracking')
         .update(this.loadedResponseplan['timeTracking'])
       }
-      
+
     }
 
     if (this.accessToken) {
@@ -411,7 +411,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       }else{
         this.responsePlanService.updateResponsePlanApproval(UserType.PartnerUser, this.uid, this.countryId, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, true);
       }
-      
+
     } else {
       let approvalUid = this.getRightUidForApproval();
       let id = this.isLocalAgency ? this.agencyId : this.networkCountryId ? this.networkCountryId : this.countryId;
