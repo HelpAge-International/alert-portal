@@ -145,9 +145,8 @@
                     <p>{{note.time | date:"dd/MM/yyyy"}}</p>
                     <!--                            <p>Status: <img src="assets/images/oval_green.svg"></p>-->
                   </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-6 padding-bottom-three">
                     <p>{{note.content}}</p>
-                    <br>
                     <div class="row">
                       <p class="col-sm-8"><strong>by {{note.uploadByFullName}}</strong></p>
                       <a *ngIf="note.uploadBy == uid" href="#editNote-{{agency.$key}}" data-toggle="modal"

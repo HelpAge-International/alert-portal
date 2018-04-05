@@ -18,6 +18,7 @@ import {NotificationService} from "../../services/notification.service";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {ModelAgency} from "../../model/agency.model";
 import {LocalStorageService} from "angular-2-local-storage";
+import {ResponsePlan} from "../../model/responsePlan";
 
 declare const jQuery: any;
 
@@ -49,6 +50,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private planApprovalObjMap = new Map<string, object>();
   private agencyRegionMap = new Map<string, string>();
   private planApprovalAgencyMap = new Map<string, object>();
+  private planAgencyMap = new Map<string, ModelAgency>();
   private showLoader: boolean;
   private planToResend: any;
 

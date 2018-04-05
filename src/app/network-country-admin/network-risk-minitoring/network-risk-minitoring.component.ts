@@ -830,7 +830,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + this.tmpHazardData['ID'])
       .update({editingHazard: true});
     console.log(hazardId, 'in risk monitoring');
-    this.router.navigateByUrl("network-country/network-risk-monitoring/add-hazard/" + this.tmpHazardData['ID']);
+    this.router.navigateByUrl("network-country/network-risk-monitoring/add-hazard/" + this.tmpHazardData['ID'], this.networkViewValues);
 
   }
 
