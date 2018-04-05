@@ -148,6 +148,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private previousIndicatorTrigger:number = -1
   private modules: ModuleSettingsModel[];
   private ModuleNameNetwork = ModuleNameNetwork
+  private isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -214,8 +215,9 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         if (params["isViewingFromExternal"]) {
           this.isViewingFromExternal = params["isViewingFromExternal"];
         }
-
-
+        if (params["isLocalAgency"]) {
+          this.isLocalAgency = params["isLocalAgency"];
+        }
 
         if(this.isViewing){
 
@@ -236,6 +238,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                     }
                   })
 
+                this.getLocalNetworkAdmin(this.networkId)
                 this._getHazards()
                 this.getCountryLocation()
                   .then(_ => {
@@ -263,23 +266,24 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                 console.log(selection)
                 this.networkId = selection["id"];
                 this.UserType = selection["userType"];
+                this.getLocalNetworkAdmin(this.networkId)
 
-                this.networkService.getNetworkDetail(this.networkId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(network => {
-                    if (network.agencies) {
-                      Object.keys(network.agencies).forEach(key => {
-                        this.agencyService.getAgency(key)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(agency => {
-                            console.log(agency)
-                            this.agencies.push(agency)
-                          })
-                        //get all staffs
-                        this.initStaffs(key)
-                      });
-                    }
-                  })
+                // this.networkService.getNetworkDetail(this.networkId)
+                //   .takeUntil(this.ngUnsubscribe)
+                //   .subscribe(network => {
+                //     if (network.agencies) {
+                //       Object.keys(network.agencies).forEach(key => {
+                //         this.agencyService.getAgency(key)
+                //           .takeUntil(this.ngUnsubscribe)
+                //           .subscribe(agency => {
+                //             console.log(agency)
+                //             this.agencies.push(agency)
+                //           })
+                //         //get all staffs
+                //         this.initStaffs(key)
+                //       });
+                //     }
+                //   })
 
                 this._getHazards()
                 this.getLocalNetworkLocation()
@@ -288,10 +292,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
                       .takeUntil(this.ngUnsubscribe)
                       .subscribe(content => {
-
                         this.countryLevelsValues = content[this.countryLocation];
-                        console.log(this.countryLevelsValues)
-                        err => console.log(err);
                       });
                   })
                 this._getCountryContextIndicators();
@@ -425,6 +426,17 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         .subscribe((localNetwork:ModelNetwork) => {
           this.countryLocation = localNetwork.countryCode
           res(true)
+          console.log(localNetwork)
+          if (localNetwork.agencies) {
+            Object.keys(localNetwork.agencies).forEach(agencyId => {
+              this.agencyService.getAgency(agencyId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(agency => {
+                  this.agencies.push(agency)
+                })
+              this.initStaffs(agencyId)
+            })
+          }
         })
     });
   }
@@ -1379,4 +1391,10 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
       })
   }
 
+  private getLocalNetworkAdmin(networkId: string) {
+    this.networkService.getNetworkDetail(networkId)
+      .flatMap(network => this.userService.getUser(network.networkAdminId))
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkAdmin => this.staffMap.set(networkAdmin.id, networkAdmin))
+  }
 }

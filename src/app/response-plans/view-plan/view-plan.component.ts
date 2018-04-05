@@ -85,6 +85,9 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
           if (params["uid"]) {
             this.uid = params["uid"];
           }
+          if (params["isLocalAgency"]) {
+            this.isLocalAgency = params["isLocalAgency"];
+          }
           if (this.networkId && this.networkCountryId) {
             this.initNetworkData(this.networkCountryId, this.networkId)
           } else if (this.networkId && !this.networkCountryId) {
@@ -157,7 +160,6 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   backToExternalViewingPlan() {
     console.log("back to external view")
     let headers = {
-      "countryId": this.countryId,
       "isViewing": this.isViewing,
       "isViewingFromExternal": this.isViewingFromExternal,
       "agencyId": this.agencyId,
@@ -166,6 +168,12 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
       "uid": this.uid,
       "from": "plan"
     };
+    if (this.countryId) {
+      headers["countryId"] = this.countryId
+    }
+    if (this.isLocalAgency) {
+      headers["isLocalAgency"] = this.isLocalAgency
+    }
     if (this.networkId) {
       headers["networkId"] = this.networkId
     }
@@ -177,9 +185,9 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
       if (this.agencyOverview) {
         headers["agencyOverview"] = this.agencyOverview;
       }
-      this.router.navigate(this.isLocalAgency ? ["/local-agency/dashboard/dashboard-overview", headers] : ["/dashboard/dashboard-overview", headers]);
+      this.router.navigate(this.isLocalAgency ? ["/dashboard/dashboard-overview", headers] : ["/dashboard/dashboard-overview", headers]);
     } else {
-      this.router.navigate(this.isLocalAgency ? ["/local-agency/director/director-overview", headers] : ["/director/director-overview", headers]);
+      this.router.navigate(this.isLocalAgency ? ["/director/director-overview", headers] : ["/director/director-overview", headers]);
     }
   }
 

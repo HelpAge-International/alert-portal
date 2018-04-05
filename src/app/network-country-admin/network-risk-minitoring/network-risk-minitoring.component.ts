@@ -144,6 +144,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   private previousIndicatorTrigger:number = -1
   private modules: ModuleSettingsModel[];
   private ModuleNameNetwork = ModuleNameNetwork
+  private isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -213,6 +214,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         if (params["isViewingFromExternal"]) {
           this.isViewingFromExternal = params["isViewingFromExternal"];
         }
+        if (params["isLocalAgency"]) {
+          this.isLocalAgency = params["isLocalAgency"];
+        }
 
         if (this.isViewing) {
           console.log(this.networkId)
@@ -232,6 +236,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               })
             })
 
+          this.getNetworkAdmin(this.networkId, this.networkCountryId)
 
           this._getHazards()
           this.getCountryLocation()
@@ -262,7 +267,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 this.networkId = selection["id"];
                 this.networkCountryId = selection["networkCountryId"];
                 this.UserType = selection["userType"];
-
+                this.getNetworkAdmin(this.networkId, this.networkCountryId)
 
                 this.networkService.getNetworkCountryAgencies(this.networkId, this.networkCountryId)
                   .takeUntil(this.ngUnsubscribe)
@@ -825,7 +830,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + this.tmpHazardData['ID'])
       .update({editingHazard: true});
     console.log(hazardId, 'in risk monitoring');
-    this.router.navigateByUrl("network-country/network-risk-monitoring/add-hazard/" + this.tmpHazardData['ID']);
+    this.router.navigateByUrl("network-country/network-risk-monitoring/add-hazard/" + this.tmpHazardData['ID'], this.networkViewValues);
 
   }
 
@@ -1397,6 +1402,13 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
         this.router.navigate(this.networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key, this.networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key])
       })
+  }
+
+  private getNetworkAdmin(networkId: string, networkCountryId:string) {
+    this.networkService.getNetworkCountry(networkId, networkCountryId)
+      .flatMap(networkCountry => this.userService.getUser(networkCountry.adminId))
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkAdmin => this.staffMap.set(networkAdmin.id, networkAdmin))
   }
 
 }

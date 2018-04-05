@@ -114,6 +114,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private planLocalNetworkId: string;
   private planNetworkCountryId: string;
   private networkId: string;
+  private isViewingFromExternal: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -235,6 +236,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
           };
 
           const networkUser = () => {
+            console.log("networkUser")
             this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
               this.uid = user.uid;
               this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -249,6 +251,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   initLocalAgency(){
+    console.log("initLocalAgency")
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -272,6 +275,15 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         }
         if (params["systemId"]) {
           this.systemAdminUid = params["systemId"];
+        }
+        if (params["isViewingFromExternal"]) {
+          this.isViewingFromExternal = params["isViewingFromExternal"];
+        }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
         }
 
         if (this.accessToken) {
@@ -315,7 +327,13 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             this.calculateCurrency(this.agencyId);
           }
 
-        } else {
+        }
+        else if (this.isViewing) {
+          console.log("view from local agency")
+          this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+          this.loadResponsePlanData()
+        }
+        else {
 
             this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
@@ -526,6 +544,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     console.log("response plan id: " + this.responsePlanId);
     let id = this.networkCountryId ? this.networkCountryId : this.networkId ? this.networkId : this.countryId;
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
+    console.log(responsePlansPath)
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
@@ -545,7 +564,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlanDataLocalAgency() {
     console.log("response plan id: " + this.responsePlanId);
-    let id = this.agencyId;
+    let id = this.isViewing ? this.networkCountryId ? this.networkCountryId : this.networkId : this.agencyId;
     console.log(Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId)
 
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;

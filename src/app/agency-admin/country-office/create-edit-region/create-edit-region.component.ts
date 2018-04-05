@@ -54,7 +54,6 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
-
       //check if edit mode
       this.route.params
         .takeUntil(this.ngUnsubscribe)

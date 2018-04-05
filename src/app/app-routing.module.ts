@@ -676,6 +676,8 @@ const routes: Routes = [
   {path: 'local-agency/profile', component: LocalAgencyProfileComponent},
   {path: 'local-agency/account-settings/local-agency-view-coc', component: LocalAgencyViewCocComponent},
   {path: 'local-agency/account-settings/local-agency-view-toc', component: LocalAgencyViewTocComponent},
+  {path: 'local-agency/agency-overview', component: AgencyOverviewComponent},
+  {path: 'local-agency/agency-overview/:countryId/:isViewing', component: AgencyOverviewComponent},
 
   {path: 'local-agency/profile/partners', component: LocalAgencyPartnersComponent},
   {path: 'local-agency/profile/equipment', component: LocalAgencyEquipmentComponent},
