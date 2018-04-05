@@ -127,6 +127,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log("edit apa");
+
     this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params['id']) {
         this.action.id = params['id'];
@@ -593,6 +595,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       updateObj.budget = this.action.budget;
       if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
         updateObj.asignee = this.action.asignee;
+      }else {
+        updateObj.asignee = null
       }
       if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
         updateObj.assignHazard = [];
@@ -632,7 +636,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         if (this.isLocalAgency) {
 
           this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id)
-            .takeUntil(this.ngUnsubscribe)
+            .take(1)
             .subscribe(action => {
 
               if (action.timeTracking) {
@@ -759,7 +763,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
               }
 
-
               this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
 
                 if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
@@ -772,6 +775,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   console.log(notification.content);
 
                   notification.time = new Date().getTime();
+
                   this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
                   });
                 }

@@ -84,7 +84,7 @@
     <div class="Line-row margin-left"></div>
     <div *ngFor="let m of mapping; let mappingIndex = index">
       <div class="row">
-        <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"dd/MM/yyyy") : '-'}}</p>
+        <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"dd/MM/yyyy") : (m.createdAt | date:"dd/MM/yyyy")}}</p>
         </div> <!--Updated-->
         <div class="col-sm-2">
           <p *ngIf="m.sector == ResponsePlansEnum.other && m.otherName != null">
@@ -138,9 +138,8 @@
               <p>{{note.time | date:"dd/MM/yyyy"}}</p>
               <!--                            <p>Status: <img src="assets/images/oval_green.svg"></p>-->
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6 padding-bottom-three">
               <p>{{note.content}}</p>
-              <br>
               <div class="row">
                 <p class="col-sm-8"><strong>by {{note.uploadByFullName}}<span *ngIf="note.agencyName">, {{note.agencyName}} </span></strong></p>
                 <a *ngIf="note.uploadBy == uid" href="#editNote" data-toggle="modal" data-target="#editNote"

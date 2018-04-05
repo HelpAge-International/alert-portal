@@ -112,7 +112,8 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
 
   @Input() isDirector: boolean;
   @Input() agencyOverview: boolean = false;
-  @Input() agencyAdminIs: boolean
+  @Input() agencyAdminIs: boolean;
+  @Input() isLocalAgencyAdmin: boolean = false;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -776,13 +777,16 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       if (this.agencyOverview) {
         data["agencyOverview"] = this.agencyOverview;
       }
+      if (this.isLocalAgencyAdmin) {
+        data["isLocalAgency"] = true
+      }
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     }
   }
 
   overviewNetworkCountry(networkCountryId, networkId) {
+
     let data = {
-      "countryId": this.userCountryId,
       "isViewing": true,
       "agencyId": this.userAgencyId,
       "systemId": this._systemId,
@@ -792,7 +796,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "networkId": networkId,
       "networkCountryId": networkCountryId
     };
-    // this.router.navigate(["/dashboard/dashboard-overview", data]);
+    if (this.userCountryId) {
+      data["countryId"] = this.userCountryId
+    }
     if (this.isDirector) {
       if (this.agencyAdminIs) {
         data["agencyAdminIs"] = true
@@ -803,13 +809,15 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       if (this.agencyOverview) {
         data["agencyOverview"] = this.agencyOverview;
       }
+      if (this.isLocalAgencyAdmin) {
+        data["isLocalAgency"] = true
+      }
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     }
   }
 
   overviewLocalNetwork(networkId) {
     let data = {
-      "countryId": this.userCountryId,
       "isViewing": true,
       "agencyId": this.userAgencyId,
       "systemId": this._systemId,
@@ -818,6 +826,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       "isViewingFromExternal": true,
       "networkId": networkId
     };
+    if (this.userCountryId) {
+      data["countryId"] = this.userCountryId
+    }
     if (this.isDirector) {
       if (this.agencyAdminIs) {
         data["agencyAdminIs"] = true
@@ -827,6 +838,9 @@ export class CountryOverviewComponent implements OnInit, OnDestroy {
       data["canCopy"] = true;
       if (this.agencyOverview) {
         data["agencyOverview"] = this.agencyOverview;
+      }
+      if (this.isLocalAgencyAdmin) {
+        data["isLocalAgency"] = true
       }
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     }

@@ -247,6 +247,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
       if (!this.programmeId) {
         if (this.countryID) {
+          dataToSave.updatedAt = new Date().getTime();
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
             .push(dataToSave)
             .update(postData)

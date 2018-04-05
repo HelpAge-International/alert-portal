@@ -291,7 +291,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private initCalendar() {
     // Element is removed and re-added upon a data change
-    // document.getElementById("target2").innerHTML = "";
+    document.getElementById("target2").innerHTML = "";
     this.chronoline = new Chronoline(document.getElementById("target2"), this.seasonEvents,
       {
         visibleSpan: DAY_IN_MILLISECONDS * 91,

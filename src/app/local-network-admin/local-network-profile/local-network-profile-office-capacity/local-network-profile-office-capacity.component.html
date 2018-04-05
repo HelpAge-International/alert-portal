@@ -58,7 +58,7 @@
       <div class="col-sm-4"></div>
     </div>
 
-    <div *ngFor="let agency of agencies; index as i">
+    <div *ngFor="let agency of agencies; let i = index">
 
       <ng-container *ngIf="agency.$key == agencyId || agencyCountryPrivacyMap.get(agency.$key)?.officeProfile != Privacy.Private">
         <div class="Ribbon__response grey margin-bottom-one">
@@ -107,7 +107,7 @@
             </div>
             <div class="row Line-row margin-top-two"></div>
 
-            <div *ngFor="let staff of responseStaffs.get(agency.$key); index as i">
+            <div *ngFor="let staff of responseStaffs.get(agency.$key);">
               <div class="row"
                    *ngIf="((staff?.skill.indexOf(sSkillsFilter) != -1 && tSkillsFilter == 0)  ||
                  (sSkillsFilter == 0 && tSkillsFilter == 0) ||
@@ -159,7 +159,7 @@
               </div>
 
               <!-- Technical Skills Drop Down -->
-              <div id="tech_{{i}}" class="Tooltip__bubble container-fluid notes log collapse">
+              <div id="tech_{{i}}" class="Tooltip__bubble container-fluid tech log collapse">
                 <div class="log_left p-3">
                   <div class="Spaced row">
                     <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
@@ -179,7 +179,7 @@
               </div>
 
               <!-- Support Skills Drop Down -->
-              <div id="support_{{i}}" class="Tooltip__bubble container-fluid notes log collapse">
+              <div id="support_{{i}}" class="Tooltip__bubble container-fluid support log collapse">
                 <div class="log_left p-3">
                   <div class="Spaced row">
                     <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}

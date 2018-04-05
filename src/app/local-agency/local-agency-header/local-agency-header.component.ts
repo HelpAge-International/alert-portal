@@ -102,16 +102,18 @@ export class LocalAgencyHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+
     jQuery('.float').hide();
       this.showLoader = true;
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.systemId = systemId;
         this.agencyId = agencyId;
         this.userType = userType;
+        console.log(UserType[userType])
         this.isAnonym = !(user && !user.anonymous);
         this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
-        this.loadJSON().subscribe(data => {
+        this.loadJSON().first().subscribe(data => {
 
           for (var key in data) {
 
@@ -175,6 +177,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
             this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(user => {
+                console.log(user)
                 this.firstName = user.firstName;
                 this.lastName = user.lastName;
                 this.showLoader = false;
@@ -321,6 +324,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
     }
 
     selectNetwork(network: ModelNetwork) {
+    console.log("selected network")
       this.selectedNetwork = network;
       this.isViewingNetwork = true;
       // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);
@@ -336,6 +340,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
 
     selectLocalNetwork(network: ModelNetwork) {
+    console.log("selected local network")
       this.selectedNetwork = network;
       this.isViewingNetwork = true;
       // this.userService.saveUserNetworkSelection(this.uid, this.userType, network.id);

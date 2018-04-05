@@ -71,7 +71,7 @@
                 </option>
                 <option *ngFor="let customHazard of customHazards">{{customHazard.$key}}</option>
                 <option *ngFor="let hazard of hazardScenariosList; let num = index" value="{{hazard}}">{{HazardScenario[hazard] | translate}}</option>
-                <option value="otherSelected">{{"SECTORS.OTHER" | translate}}</option>
+                <option value="otherSelected">{{"ADD_PARTNER.OTHER_SECTOR" | translate}}</option>
               </select>
             </div>
           </div>
@@ -96,11 +96,10 @@
       <div class="row" style="width:100%">
         <label class="Checkbox--ribbon__alert Left col-sm-5">
           <div class="risk-icon__components">
-            <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{otherHazard ? _getHazardImage(hazardData.hazardScenario) : _getHazardImage(editGetScenario)}}"></span>
+            <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{otherHazard ? 'Icon--alert' : _getHazardImage(hazardData.hazardScenario) }}"></span>
           </div>
           <p>
-            <b>{{HazardScenario[hazardData.hazardScenario] | translate}}</b>
-            <b> {{editHazard ? (HazardScenario[editGetScenario]  | translate) : hazardName}}</b>
+            <b> {{editHazard ? (HazardScenario[editGetScenario]  | translate) : (HazardScenario[hazardData.hazardScenario] | translate)}}</b>
           </p>
         </label>
       </div>

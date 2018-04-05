@@ -7,7 +7,7 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {Subject} from "rxjs/Subject";
-import { AddEditMappingProgrammeComponent } from "./add-edit-mapping/add-edit-mapping.component";
+import {AddEditMappingProgrammeComponent} from "./add-edit-mapping/add-edit-mapping.component";
 import {CommonService} from "../../../services/common.service";
 import {AgencyService} from "../../../services/agency-service.service";
 
@@ -88,16 +88,38 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
   }
 
-  initLocalAgency(){
-        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+  initLocalAgency() {
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+        }
+        if (params["countryId"]) {
+          this.countryID = params["countryId"];
+        }
+
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
           this.uid = user.uid;
           this.UserType = userType;
-          this.agencyId = agencyId;
-          this._getProgrammeLocalAgency();
+          if (!this.isViewing) {
+            this.agencyId = agencyId;
+            this._getProgrammeLocalAgency();
+          } else {
+            this._getProgramme()
+            PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
+              this.countryPermissionsMatrix = isEnabled;
+            }));
+          }
         });
+      });
+
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -120,10 +142,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
             this._getProgramme();
           } else {
             this.countryID = countryId;
-            // this._getCountryID().then(() => {
             this._getProgramme();
-            // });
-
           }
 
           PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
@@ -134,8 +153,6 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
 
   }
-
-
 
 
   saveNote(programmeID: any) {
@@ -210,10 +227,10 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe((user: any) => {
 
-                if(this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)){
+                if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
                   this.agencyService.getAgency(note.agencyId)
                     .takeUntil(this.ngUnsubscribe)
-                    .subscribe( agency => {
+                    .subscribe(agency => {
                       note.agencyName = agency.name;
                     })
                 }
@@ -342,7 +359,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     return arr;
   }
 
-  convertCountryNumber(){
+  convertCountryNumber() {
 
 
     /**
@@ -357,8 +374,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
 
         for (let key in Countries) {
 
-          if (key.includes(this.selectedCountry))
-          {
+          if (key.includes(this.selectedCountry)) {
             console.log('true');
             this.selectedCountry = Countries[key];
             console.log(this.selectedCountry);
@@ -474,8 +490,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     return selected;
   }
 
-  generateLocations(){
-    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((json) => {
+  generateLocations() {
+    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).takeUntil(this.ngUnsubscribe).subscribe((json) => {
       this.mapping.forEach(mapping => {
         let obj = {
           country: "",
