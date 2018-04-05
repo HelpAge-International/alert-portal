@@ -49,10 +49,9 @@
       <div align="center">
         <h1>{{"RESPONSE_PLANS.HOME.EXPORT_FOR_START_FUND" | translate}}</h1>
         <a id="downloadLink" style="display:none;"></a>
-
         <input type="button"
-               onclick="exportToExcelFile(['tableNarrativeNew', 'tableActivityNew', 'tableBudgetNew'], ['Proposal - Narrative', 'Proposal - Activities', 'Proposal - Budget'])"
-               value="Download All"/>
+              onclick="exportToExcelFile(['tableTechnicalGuidance', 'tableProjectNarrative', 'tableProjectActivities', 'tableProjectBudget', 'tableApplicationDatasheet', 'tableGuidanceReport', 'tableProjectReport', 'tableProjectActivity', 'tableBudgetReport', 'tableReportingDataSheet'], ['Technical Guidance', 'Project Narrative', 'Project Activities', 'Project Budget', 'Application Datasheet', 'Guidance Report', 'Project Report', 'Activity Report', 'Budget Report', 'Reporting Datasheet'])"
+              value="Download All"/>
       </div>
 
       <br>
@@ -80,7 +79,7 @@
         <br>
 
         <!--Project Activities-->
-        <div class="fundStyle">
+        <div class="scrollingDiv">
           <app-export-start-fund-project-activities></app-export-start-fund-project-activities>
         </div>
 
@@ -94,68 +93,67 @@
           <app-export-start-fund-project-budget></app-export-start-fund-project-budget>
         </div>
 
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
+        <br>
+        <br>
+        <br>
+        <br>
 
-        <!--&lt;!&ndash;Application Datasheet&ndash;&gt;-->
-        <!--<div class="scrollingDiv">-->
-          <!--<app-export-start-fund-application-datasheet></app-export-start-fund-application-datasheet>-->
-        <!--</div>-->
+        <!--Application Datasheet-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-application-datasheet></app-export-start-fund-application-datasheet>
+        </div>
 
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
+        <br>
+        <br>
+        <br>
+        <br>
 
-        <!--&lt;!&ndash;Guidance Report&ndash;&gt;-->
-        <!--<div class="scrollingDiv">-->
-          <!--<app-export-start-fund-guidance-report></app-export-start-fund-guidance-report>-->
-        <!--</div>-->
+        <!--Guidance Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-guidance-report></app-export-start-fund-guidance-report>
+        </div>
 
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
+        <br>
+        <br>
+        <br>
+        <br>
 
-        <!--&lt;!&ndash;Project Report&ndash;&gt;-->
-        <!--<div class="scrollingDiv">-->
-          <!--<app-export-start-fund-project-report></app-export-start-fund-project-report>-->
-        <!--</div>-->
+        <!--Project Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-report></app-export-start-fund-project-report>
+        </div>
 
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
+        <br>
+        <br>
+        <br>
+        <br>
 
-        <!--&lt;!&ndash;Activity Report&ndash;&gt;-->
-        <!--<div class="scrollingDiv">-->
-          <!--<app-export-start-fund-project-activity-report></app-export-start-fund-project-activity-report>-->
-        <!--</div>-->
+        <!--Activity Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-project-activity-report></app-export-start-fund-project-activity-report>
+        </div>
 
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
+        <br>
+        <br>
+        <br>
+        <br>
 
-        <!--&lt;!&ndash;Budget Report&ndash;&gt;-->
-        <!--<div class="scrollingDiv">-->
-          <!--<app-export-start-fund-budget-report></app-export-start-fund-budget-report>-->
-        <!--</div>-->
+        <!--Budget Report-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-budget-report></app-export-start-fund-budget-report>
+        </div>
 
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
-        <!--<br>-->
+        <br>
+        <br>
+        <br>
+        <br>
 
-        <!--&lt;!&ndash;Reporting Datasheet&ndash;&gt;-->
-        <!--<div class="scrollingDiv">-->
-          <!--<app-export-start-fund-reporting-datasheet></app-export-start-fund-reporting-datasheet>-->
-        <!--</div>-->
+        <!--Reporting Datasheet-->
+        <div class="scrollingDiv">
+          <app-export-start-fund-reporting-datasheet></app-export-start-fund-reporting-datasheet>
+        </div>
 
       </div>
-
 
     </div>
   </div>

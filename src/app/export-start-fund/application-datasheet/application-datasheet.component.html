@@ -433,9 +433,9 @@
     <td colspan="2"><p style="text-align: center; width: 10em;">{{responsePlan.monAccLearning && responsePlan.monAccLearning['isMedia'] ?
       ((responsePlan.monAccLearning['isMedia']) ? '' : 'X') : ''}}</p></td>
     <!--2. Do you have any video material...-->
-    <td colspan="1"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
-    <td colspan="1"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
-    <td colspan="1"><p style="text-align: center;" *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
+    <td colspan="1"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning && responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
+    <td colspan="1"><p style="text-align: center; width: 10em;" *ngIf="responsePlan.monAccLearning && responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
+    <td colspan="1"><p style="text-align: center;" *ngIf="responsePlan.monAccLearning && responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
     <!--Section 3 Activity Report-->
     <!--Blank sub header-->
     <td colspan="1"><p style="text-align: center; width: 5em;"></p></td>
