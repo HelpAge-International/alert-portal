@@ -162,7 +162,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params: Params) => {
+    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
       }

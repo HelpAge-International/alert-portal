@@ -236,6 +236,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
               })
             })
 
+          this.getNetworkAdmin(this.networkId, this.networkCountryId)
 
           this._getHazards()
           this.getCountryLocation()
@@ -266,7 +267,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 this.networkId = selection["id"];
                 this.networkCountryId = selection["networkCountryId"];
                 this.UserType = selection["userType"];
-
+                this.getNetworkAdmin(this.networkId, this.networkCountryId)
 
                 this.networkService.getNetworkCountryAgencies(this.networkId, this.networkCountryId)
                   .takeUntil(this.ngUnsubscribe)
@@ -1401,6 +1402,13 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
         this.router.navigate(this.networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key, this.networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.key])
       })
+  }
+
+  private getNetworkAdmin(networkId: string, networkCountryId:string) {
+    this.networkService.getNetworkCountry(networkId, networkCountryId)
+      .flatMap(networkCountry => this.userService.getUser(networkCountry.adminId))
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkAdmin => this.staffMap.set(networkAdmin.id, networkAdmin))
   }
 
 }
