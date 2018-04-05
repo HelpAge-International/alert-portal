@@ -76,7 +76,7 @@
       <div class="btn btn-outline-secondary" routerLink="/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}
       </div>
     </div>
-    <div *ngIf="isLocalAgency" class="Form-submit__wrapper">
+    <div *ngIf="!isViewing && isLocalAgency" class="Form-submit__wrapper">
       <div class="btn btn-primary" (click)="saveNarrativesLocalAgency()">{{"SAVE" | translate}}</div>
       <div class="btn btn-outline-secondary" routerLink="/local-agency/preparedness/minimum">{{"GLOBAL.CANCEL" | translate}}
       </div>

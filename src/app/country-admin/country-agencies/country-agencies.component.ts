@@ -36,7 +36,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   // //add network and network country offices
   private globalNetworks = [];
   private networkCountryData = [];
-  private localNetworkData = []
+  private localNetworkData = [];
 
   private isLocalAgency = false;
 
@@ -99,7 +99,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       .subscribe(agency => {
         console.log(agency)
         this.countryToShow = agency;
-        this.countryKey = agency.country;
+        this.countryKey = agency.countryCode;
         this.getCountryOfficesWithSameLocationsInOtherAgencies();
         this.getNetworkAndNetworkCountries()
         this.getLocalNetworks()
@@ -107,7 +107,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   private getNetworkAndNetworkCountries() {
-    let country = this.isLocalAgency ? this.countryToShow.country : this.countryToShow.location
+    let country = this.isLocalAgency ? this.countryToShow.countryCode : this.countryToShow.location
     this.networkService.mapNetworkOfficesWithSameLocationsInOtherNetworks(country)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
@@ -128,7 +128,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   private getLocalNetworks() {
-    let country = this.isLocalAgency ? this.countryToShow.country : this.countryToShow.location
+    let country = this.isLocalAgency ? this.countryToShow.countryCode : this.countryToShow.location
     this.networkService.getLocalNetworksWithSameLocationsInOtherNetworks(country)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(localNetworks => {
@@ -159,7 +159,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
             return temp;
           });
           if(this.isLocalAgency){
-            countries = countries.filter(countryItem => countryItem.location == this.countryToShow.country && countryItem.isActive);
+            countries = countries.filter(countryItem => countryItem.location == this.countryToShow.countryCode && countryItem.isActive);
           }else{
             countries = countries.filter(countryItem => countryItem.location == this.countryToShow.location && countryItem.isActive);
           }

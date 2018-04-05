@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -19,7 +19,6 @@ import {NetworkViewModel} from "./network-view.model";
 import {LocalNetworkViewModel} from "./local-network-view.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Location} from "@angular/common";
-import {NetworkCountryAgenciesComponent} from "../../network-country-admin/network-administration/network-country-agencies/network-country-agencies.component";
 import {NetworkWithCountryModel} from "./network-with-country.model";
 import {BugReportingService} from "../../services/bug-reporting.service";
 import {ReportProblemComponent} from "../../report-problem/report-problem.component";
@@ -103,8 +102,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               private locationService: Location,
               private http: Http,
               private translate: TranslateService,
-              private bugReport: BugReportingService
-        ) {
+              private bugReport: BugReportingService) {
 
     //this.translate.addLangs(["en", "fr", "es", "pt"]);
     translate.setDefaultLang("en");
@@ -278,7 +276,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   private checkAlerts() {
-    let id = this.isViewingNetwork ? (this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.storageService.get(Constants.NETWORK_VIEW_SELECTED_ID).toString() ) : this.countryId;
+    let id = this.isViewingNetwork ? (this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.storageService.get(Constants.NETWORK_VIEW_SELECTED_ID).toString()) : this.countryId;
     this.alertService.getAlerts(id)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {
@@ -401,7 +399,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
   loadJSON() {
 
     return this.http.get(this.languageSelectPath)
-      .map((res: Response) =>  res.json().GLOBAL.LANGUAGES);
+      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
 
   }
 
@@ -412,7 +410,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   };
 
-  reportProblem(){
+  reportProblem() {
     jQuery('.float').show();
   }
 

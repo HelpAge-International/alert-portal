@@ -141,7 +141,7 @@ export class LocalAgencyStatisticsRibbonComponent implements OnInit {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
-          this.agencyLocation = snap.val().country;
+          this.agencyLocation = snap.val().countryCode;
         }
       });
   }

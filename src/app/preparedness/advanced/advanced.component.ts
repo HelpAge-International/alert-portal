@@ -137,6 +137,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private stopCondition: boolean;
 
   @Input() isAgencyAdmin: boolean;
+  private fromLocalAgency: boolean;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -210,6 +211,9 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
+        }
+        if (params["isLocalAgency"]) {
+          this.fromLocalAgency = params["isLocalAgency"];
         }
         if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];

@@ -933,7 +933,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       }
     });
 
-    if (numOfSectionsCompleted > 0) {
+    if (numOfSectionsCompleted > 0 || this.forEditing) {
       if (this.forEditing) {
         newResponsePlan.isEditing = false;
         newResponsePlan.editingUserId = null;
