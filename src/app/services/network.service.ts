@@ -68,7 +68,6 @@ export class NetworkService {
   getSelectedIdObj(uid: string) {
     return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
       .flatMap(snap => {
-        console.log(snap.val());
         if (snap.val()) {
           let selection = snap.val();
           let selectData = {};
