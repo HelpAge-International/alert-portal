@@ -7,7 +7,7 @@ import {ModuleSettingsModel} from "../model/module-settings.model";
 import {ClockSettingsModel} from "../model/clock-settings.model";
 import {NotificationSettingsModel} from "../model/notification-settings.model";
 import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
-import {Privacy} from "../utils/Enums";
+import {Privacy, DurationType} from "../utils/Enums";
 import {ModelDepartmentCanDelete} from "../agency-admin/settings/department/department.component";
 import {ModelDepartment} from "../model/department.model";
 
@@ -165,6 +165,24 @@ export class SettingsService {
       });
 
     return clockSettingsSubscription;
+  }
+
+  getCountryResponsePlanClockSettingsDuration(agencyId, countryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/" + "clockSettings/responsePlans")
+      .map(settings => {
+        let duration = 0;
+        let oneDay = 24 * 60 * 60 * 1000;
+        let durationType = Number(settings.durationType);
+        let value = Number(settings.value);
+        if (durationType === DurationType.Week) {
+          duration = value * 7 * oneDay;
+        } else if (durationType === DurationType.Month) {
+          duration = value * 30 * oneDay;
+        } else if (durationType === DurationType.Year) {
+          duration = value * 365 * oneDay;
+        }
+        return duration;
+      });
   }
 
   saveCountryClockSettings(agencyId: string, countryId: string, clockSettings: ClockSettingsModel): firebase.Promise<any> {

@@ -1,6 +1,9 @@
 <div class="Header-title__wrap">
   <h1>{{"RESPONSE_PLANS.VIEW_RESPONSE_PLAN.TITLE_TEXT" | translate}}</h1>
 </div>
+<div *ngIf="responsePlanToShow.status == 2" class="Header-title__wrap">
+  <h5>{{"EXPIRES_ON" | translate}} {{ expiryDate | date }}</h5>
+</div>
 
 <div class="Ribbon__section__wrap Spaced">
 
