@@ -1627,7 +1627,8 @@
         "ADD_ACTIVITY":"Add activity",
         "NO_NAME":"Please enter the planned activity",
         "NO_OUTPUT":"Please enter the activity output",
-        "NO_INDICATOR":"Please enter the activity indicator"
+        "NO_INDICATOR":"Please enter the activity indicator",
+        "BENEFICIARIES": "Please complete beneficiaries"
       },
       "MON_ACC_LEA":{
         "DESCRIBE_MON_ACC_LEA":"Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability",

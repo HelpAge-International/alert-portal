@@ -744,6 +744,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection6();
     this.checkSection7();
     this.checkSection8();
+    this.checkSection9();
     // if (this.forEditing) {
     //   this.continueButtonPressedOnSection9();
     // }
@@ -1746,7 +1747,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSection8() {
-    if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument && this.mediaFormat != null ||
+    if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument ||
       this.mALSystemsDescriptionText != '' && !this.intentToVisuallyDocument) {
       this.section8Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[7], true);
@@ -2280,17 +2281,19 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection9(responsePlan: ResponsePlan) {
-    if (!this.isEmpty(responsePlan.doubleCounting)) {
-      console.log(responsePlan.doubleCounting)
-      this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
-      this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
-      this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
-      this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
-      this.numberMale18To50 = responsePlan.doubleCounting[4].value;
-      this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
+    if (typeof responsePlan.doubleCounting !== "undefined") {
+      if (Object.keys(responsePlan.doubleCounting).length > 0) {
+        console.log(responsePlan.doubleCounting)
+        this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
+        this.numberFemale18To50 = responsePlan.doubleCounting[1].value;
+        this.numberFemalegreaterThan50 = responsePlan.doubleCounting[2].value;
+        this.numberMaleLessThan18 = responsePlan.doubleCounting[3].value;
+        this.numberMale18To50 = responsePlan.doubleCounting[4].value;
+        this.numberMalegreaterThan50 = responsePlan.doubleCounting[5].value;
 
-      this.section9Status = "GLOBAL.COMPLETE";
-      this.sectionsCompleted.set(this.sections[8], true);
+        this.section9Status = "GLOBAL.COMPLETE";
+        this.sectionsCompleted.set(this.sections[8], true);
+      }
     }
   }
 
