@@ -39,7 +39,7 @@
     <div class="row Spaced padding-left-two">
       <label class="col-sm-0 Spaced-above">{{ 'GLOBAL.FILTER' | translate }}</label>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" name="filterSector"
+        <select class="form-control" name="filterSector" (change)="showAgencyHeadersIfHidden()"
                 [(ngModel)]="filterSector">
           <option value="null">{{ 'ADD_PARTNER.SECTOR' | translate }}</option>
           <option *ngFor="let sector of RESPONSE_PLAN_SECTORS | enumKeyValues"
@@ -48,7 +48,7 @@
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" name="areasOfOperation"
+        <select class="form-control" name="areasOfOperation" (change)="showAgencyHeadersIfHidden()"
                 [(ngModel)]="filterLocation">
           <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.AREAS_OF_OPERATION' | translate }}</option>
           <option *ngFor="let location of areasOfOperation"
@@ -57,7 +57,7 @@
         </select>
       </div>
       <div class="form-group-country-office-profile col-sm-3">
-        <select class="form-control" name="filterOrganisation"
+        <select class="form-control" name="filterOrganisation" (change)="showAgencyHeadersIfHidden()"
                 [(ngModel)]="filterOrganisation">
           <option value="null">{{ 'COUNTRY_ADMIN.PROFILE.PARTNERS.ORGANISATION' | translate }}</option>
           <option *ngFor="let partnerOrganisation of getOrganisationsNames()"
@@ -69,12 +69,12 @@
     </div>
 
     <!--actually agency data-->
-    <div *ngFor="let agency of agencies">
+    <div *ngFor="let agency of agencies; index as i">
 
-      <ng-container *ngIf="hasOrganisationProjectSectorFilter(partnerOrganisations.get(agency.$key), filterSector) &&
-                            hasAreaOfOperationFilter(partnerOrganisations.get(agency.$key), filterLocation) &&
-                            hasOrganisationNameFilter(partnerOrganisations.get(agency.$key), filterOrganisation) &&
-                            (agency.$key == agencyId || agencyCountryPrivacyMap.get(agency.$key)?.officeProfile != Privacy.Private)">
+      <!--hasOrganisationProjectSectorFilter(partnerOrganisations.get(agency.$key), filterSector) &&-->
+      <!--hasAreaOfOperationFilter(partnerOrganisations.get(agency.$key), filterLocation) &&-->
+      <!--hasOrganisationNameFilter(partnerOrganisations.get(agency.$key), filterOrganisation) &&-->
+      <ng-container *ngIf="agency.$key == agencyId || agencyCountryPrivacyMap.get(agency.$key)?.officeProfile != Privacy.Private">
 
         <div class="Ribbon__response grey margin-bottom-one">
           <div class="Ribbon__header__wrap lnetwork">
@@ -82,7 +82,7 @@
               <img src="{{agency?.logoPath ? agency.logoPath : 'assets/images/alert_logo--grey.svg'}}" class="circle-image" alt="">
               <h4>{{agency.name}}</h4>
             </div>
-            <div id="header_section_1" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
+            <div id="header_section_{{i}}" class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
           </div>
         </div>
 

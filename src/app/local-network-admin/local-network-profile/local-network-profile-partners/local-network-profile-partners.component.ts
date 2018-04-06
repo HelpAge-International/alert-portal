@@ -79,6 +79,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
 
   private agencyCountryPrivacyMap = new Map<string, ModelAgencyPrivacy>()
   private Privacy = Privacy
+  private isOpenAgencyMenus: boolean;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
@@ -617,6 +618,25 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
     }
 
     return exists;
+  }
+
+  showAgencyHeadersIfHidden() {
+    console.log("show agency header if hidden")
+    this.openAgencyMenus()
+  }
+
+  /** Opening agency menus when a filter selected*/
+  private openAgencyMenus() {
+    if (!this.agencies || this.isOpenAgencyMenus){
+      return;
+    }
+
+    this.isOpenAgencyMenus = true;
+
+    this.agencies.forEach((value, index) => {
+      console.log('#header_section_'+index);
+      jQuery('#header_section_'+index).trigger('click');
+    });
   }
 
   private getAreasOfOperation(projects): string[] {
