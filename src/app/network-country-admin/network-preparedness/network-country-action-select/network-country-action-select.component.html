@@ -12,7 +12,8 @@
 
 <ng-template #country>
   <app-country-admin-header></app-country-admin-header>
-  <app-network-country-menu [isViewing]="true"></app-network-country-menu>
+  <app-network-country-menu [isViewing]="true" *ngIf="networkCountryId"></app-network-country-menu>
+  <app-local-network-menu [isViewing]="true" *ngIf="!networkCountryId"></app-local-network-menu>
 </ng-template>
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>

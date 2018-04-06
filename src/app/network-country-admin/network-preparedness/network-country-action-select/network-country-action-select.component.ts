@@ -184,10 +184,10 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
   continueEvent() {
     this.storage.set('selectedAction', this.actionSelected);
     let viewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
-    if (this.isLocalNetworkAdmin) {
-      viewValues['isLocalNetworkAdmin'] = this.isLocalNetworkAdmin
-    }
-    console.log(viewValues)
+    // if (this.isLocalNetworkAdmin && viewValues) {
+    //   viewValues['isLocalNetworkAdmin'] = this.isLocalNetworkAdmin
+    // }
+    // console.log(viewValues)
     this.router.navigate(this.isViewing && viewValues ? ["/network-country/network-country-create-edit-action", viewValues] : (this.isLocalNetworkAdmin ? ["/network-country/network-country-create-edit-action", {"isLocalNetworkAdmin": true}] : ["/network-country/network-country-create-edit-action"]));
   }
 

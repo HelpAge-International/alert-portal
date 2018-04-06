@@ -299,7 +299,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   private initViewNetworkAccess() {
     this.getStaffDetails(this.uid, true);
 
-    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId
+    let id = this.networkCountryId && this.networkCountryId != "undefined" ? this.networkCountryId : this.networkId
 
     this.networkService.getNetworkModuleMatrix(id)
       .takeUntil(this.ngUnsubscribe)
