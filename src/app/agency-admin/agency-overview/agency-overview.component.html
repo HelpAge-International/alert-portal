@@ -19,7 +19,7 @@
             <h4 *ngIf="alert.alertLevel == AlertLevels.Amber">{{"GLOBAL.ALERTS.AMBER" | translate}}</h4>
           </div>
           <div class="col-md-3 Alert-Widget__item Alert-Widget__item--risk Centered">
-            <i div
+            <i
                class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
             <div>
               <span>{{"ALERT.RISK" | translate}}:</span>

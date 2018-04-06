@@ -2816,8 +2816,7 @@
                     (filterStatus == -1 || filterStatus == ActionStatus.Unassigned)">
               <!-- Asignee filter doesn't apply to UNASSIGNED actions: (filterAssigned == '0' || action.asignee == filterAssigned)-->
               <!-- BELONGING IN THE MODULE IF STATEMENT -->
-              <div
-                *ngIf="!action.isArchived && !(action.asignee != '' && action.asignee != null && action.asignee != undefined)">
+              <div *ngIf="!action.isArchived && !(action.asignee != '' && action.asignee != null && action.asignee != undefined)">
 
                 <div class="Accordion Preparedness-list">
                   <div class="Accordion Preparedness-list">
