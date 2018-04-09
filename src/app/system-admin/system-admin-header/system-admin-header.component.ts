@@ -43,7 +43,7 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     jQuery('.float').hide();
-    this.showLoader = true;
+    // this.showLoader = true;
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {

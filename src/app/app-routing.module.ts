@@ -272,6 +272,7 @@ import {NetworkAdminViewCocComponent} from "./network-admin/network-account-sett
 import {NetworkCountryAdminViewCocComponent} from "./network-country-admin/network-country-account-settings/network-country-admin-view-coc/network-country-admin-view-coc.component";
 import {AgencyAdminViewTocComponent} from "./agency-admin/agency-account-settings/agency-admin-view-toc/agency-admin-view-toc.component";
 import {LocalAgencyViewTocComponent} from "./local-agency/local-agency-account-details/local-agency-view-toc/local-agency-view-toc.component";
+import {SystemAdminModule} from "./system-admin/system-admin.module";
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -292,31 +293,28 @@ const routes: Routes = [
   /**
    * System admin
    */
-  {path: 'system-admin/min-prep/create', component: CreateActionComponent},
-  {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
-  {path: 'system-admin/min-prep', component: MinPrepComponent},
-  {path: 'system-admin/mpa/create', component: CreateMpaActionComponent},
-  {path: 'system-admin/mpa/create/:id', component: CreateMpaActionComponent},
-  {path: 'system-admin/mpa', component: MpaComponent},
-  {path: 'system-admin/add-agency', component: AddAgencyComponent},
-  {path: 'system-admin/add-agency/:id', component: AddAgencyComponent},
-  {path: 'system-admin/messages/create', component: MessagesCreateComponent},
-  {path: 'system-admin/messages', component: MessagesComponent},
-  {path: 'system-admin/agency', component: SystemAdminComponent},
-  {path: 'system-admin/account-settings', component: AccountSettingsComponent},
-  {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
-  {path: 'system-admin/network', component: GlobalNetworksComponent},
-  {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
-  {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
-  {path: 'system-admin/system-settings', component: SystemSettingsComponent},
-  {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
-  {path: 'system-admin/system-settings/system-settings-toc', component: SystemSettingsTocComponent},
-  {path: 'system-admin/system-settings/system-settings-coc', component: SystemSettingsCocComponent},
-  {path: 'system-admin/account-settings/view-coc/system-admin-view-coc', component: SystemAdminViewCocComponent},
-  {
-    path: 'system-admin/system-settings/system-settings-response-plans',
-    component: SystemSettingsResponsePlansComponent
-  },
+  // {path: 'system-admin/agency', loadChildren: "app/system-admin/system-admin.module#SystemAdminModule"},
+  // {path: 'system-admin/min-prep/create', component: CreateActionComponent},
+  // {path: 'system-admin/min-prep/create/:id', component: CreateActionComponent},
+  // {path: 'system-admin/min-prep', component: MinPrepComponent},
+  // {path: 'system-admin/mpa/create', component: CreateMpaActionComponent},
+  // {path: 'system-admin/mpa/create/:id', component: CreateMpaActionComponent},
+  // {path: 'system-admin/mpa', component: MpaComponent},
+  // {path: 'system-admin/add-agency', component: AddAgencyComponent},
+  // {path: 'system-admin/add-agency/:id', component: AddAgencyComponent},
+  // {path: 'system-admin/messages/create', component: MessagesCreateComponent},
+  // {path: 'system-admin/messages', component: MessagesComponent},
+  // {path: 'system-admin/account-settings', component: AccountSettingsComponent},
+  // {path: 'system-admin/account-settings/change-password', component: ChangePasswordComponent},
+  // {path: 'system-admin/network', component: GlobalNetworksComponent},
+  // {path: 'system-admin/network/create', component: CreateEditGlobalNetworkComponent},
+  // {path: 'system-admin/network/create:id', component: CreateEditGlobalNetworkComponent},
+  // {path: 'system-admin/system-settings', component: SystemSettingsComponent},
+  // {path: 'system-admin/system-settings/system-settings-documents', component: SystemSettingsDocumentsComponent},
+  // {path: 'system-admin/system-settings/system-settings-toc', component: SystemSettingsTocComponent},
+  // {path: 'system-admin/system-settings/system-settings-coc', component: SystemSettingsCocComponent},
+  // {path: 'system-admin/account-settings/view-coc/system-admin-view-coc', component: SystemAdminViewCocComponent},
+  // {path: 'system-admin/system-settings/system-settings-response-plans', component: SystemSettingsResponsePlansComponent},
 
   /**
    * Agency admin

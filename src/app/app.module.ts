@@ -28,7 +28,6 @@ import "hammerjs";
 import {SystemAdminHeaderComponent} from "./system-admin/system-admin-header/system-admin-header.component";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import { TranslateService } from "@ngx-translate/core";
 import {CountryOfficeComponent} from "./agency-admin/country-office/country-office.component";
 import {CreateEditCountryComponent} from "./agency-admin/country-office/create-edit-country/create-edit-country.component";
 import {CreateEditMpaComponent} from "./agency-admin/agency-mpa/create-edit-mpa/create-edit-mpa.component";
@@ -195,7 +194,7 @@ import {AccountSettingProfileComponent} from './commons/account-setting-profile/
 import {AccountSettingPasswordComponent} from './commons/account-setting-password/account-setting-password.component';
 import {DirectorAccountSettingsComponent} from './director/director-account-settings/director-account-settings.component';
 import {Angulartics2GoogleAnalytics, Angulartics2Module} from "angulartics2";
-import { UnderMaintenanceComponent } from './under-maintenance/under-maintenance.component';
+import {UnderMaintenanceComponent} from './under-maintenance/under-maintenance.component';
 import {NetworkCreatePasswordComponent} from "./network-admin/network-create-password/network-create-password.component";
 import {NewNetworkDetailsComponent} from "./network-admin/new-network-details/new-network-details.component";
 import {NetworkAccountSelectionComponent} from "./network-admin/network-account-selection/network-account-selection.component";
@@ -214,166 +213,168 @@ import {NetworkModuleSettingsComponent} from './network-admin/network-settings/n
 import {NetworkPlanSettingsComponent} from './network-admin/network-settings/network-plan-settings/network-plan-settings.component';
 import {NetworkClockSettingsComponent} from './network-admin/network-settings/network-clock-settings/network-clock-settings.component';
 import {NetworkDocumentSettingsComponent} from './network-admin/network-settings/network-document-settings/network-document-settings.component';
-import { NetworkSettingMenusComponent } from './network-admin/network-settings/network-setting-menus/network-setting-menus.component';
-import { InviteAgenciesComponent } from './network-admin/network-agencies/invite-agencies/invite-agencies.component';
-import { NetworkAgencyValidationComponent } from './commons/network-agency-validation/network-agency-validation.component';
+import {NetworkSettingMenusComponent} from './network-admin/network-settings/network-setting-menus/network-setting-menus.component';
+import {InviteAgenciesComponent} from './network-admin/network-agencies/invite-agencies/invite-agencies.component';
+import {NetworkAgencyValidationComponent} from './commons/network-agency-validation/network-agency-validation.component';
 import {NetworkCountryService} from "./services/network-country.service";
-import { NetworkCreateEditMpaComponent } from './network-admin/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component';
-import { NetworkAddGenericActionComponent } from './network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component';
-import { NetworkCreateEditMessageComponent } from './network-admin/network-message/network-create-edit-message/network-create-edit-message.component';
-import { NetworkNotificationsComponent } from './network-admin/network-notifications/network-notifications.component';
-import { NetworkDashboardComponent } from './network-country-admin/network-dashboard/network-dashboard.component';
-import { NetworkRiskMinitoringComponent } from './network-country-admin/network-risk-minitoring/network-risk-minitoring.component';
-import { NetworkPlansComponent } from './network-country-admin/network-plans/network-plans.component';
-import { NetworkGlobalMapComponent } from './network-country-admin/network-global-map/network-global-map.component';
-import { NetworkCountryHeaderComponent } from './network-country-admin/network-country-header/network-country-header.component';
-import { NetworkCountryMenuComponent } from './network-country-admin/network-country-menu/network-country-menu.component';
-import { NetworkCountryAgenciesComponent } from './network-country-admin/network-administration/network-country-agencies/network-country-agencies.component';
-import { NetworkCountryMessagesComponent } from './network-country-admin/network-administration/network-country-messages/network-country-messages.component';
-import { NetworkCountryMpaComponent } from './network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component';
-import { NetworkCountryApaComponent } from './network-country-admin/network-preparedness/network-country-apa/network-country-apa.component';
-import { NetworkCountrySelectAgenciesComponent } from './network-country-admin/network-administration/network-country-agencies/network-country-select-agencies/network-country-select-agencies.component';
-import { NetworkCountryValidationComponent } from './commons/network-country-validation/network-country-validation.component';
-import { NetworkCountryModuleSettingsComponent } from './network-country-admin/network-administration/network-country-settings/network-country-module-settings/network-country-module-settings.component';
-import { NetworkCountryClockSettingsComponent } from './network-country-admin/network-administration/network-country-settings/network-country-clock-settings/network-country-clock-settings.component';
-import { NetworkCountrySettingsMenuComponent } from './network-country-admin/network-administration/network-country-settings/network-country-settings-menu/network-country-settings-menu.component';
-import { CreateEditNetworkPlanComponent } from './network-country-admin/network-plans/create-edit-network-plan/create-edit-network-plan.component';
-import { LocalNetworkAdminDashboardComponent } from './local-network-admin/local-network-admin-dashboard/local-network-admin-dashboard.component';
-import { LocalNetworkHeaderComponent } from './local-network-admin/local-network-header/local-network-header.component';
-import { LocalNetworkMenuComponent } from './local-network-admin/local-network-menu/local-network-menu.component';
-import { LocalNetworkProfileProgrammeComponent } from './local-network-admin/local-network-profile/local-network-profile-programme/local-network-profile-programme.component';
-import { LocalNetworkProfileOfficeCapacityComponent } from './local-network-admin/local-network-profile/local-network-profile-office-capacity/local-network-profile-office-capacity.component';
-import { LocalNetworkProfilePartnersComponent } from './local-network-admin/local-network-profile/local-network-profile-partners/local-network-profile-partners.component';
-import { LocalNetworkProfileEquipmentComponent } from './local-network-admin/local-network-profile/local-network-profile-equipment/local-network-profile-equipment.component';
-import { LocalNetworkProfileCoordinationComponent } from './local-network-admin/local-network-profile/local-network-profile-coordination/local-network-profile-coordination.component';
-import { LocalNetworkProfileStockCapacityComponent } from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity.component';
-import { LocalNetworkProfileContactsComponent } from './local-network-admin/local-network-profile/local-network-profile-contacts/local-network-profile-contacts.component';
-import { LocalNetworkProfileDocumentsComponent } from './local-network-admin/local-network-profile/local-network-profile-documents/local-network-profile-documents.component';
-import { LocalNetworkProfileMenuComponent } from './local-network-admin/local-network-profile/local-network-profile-menu/local-network-profile-menu.component';
-import { LocalNetworkCoordinationAddEditComponent } from './local-network-admin/local-network-profile/local-network-profile-coordination/local-network-coordination-add-edit/local-network-coordination-add-edit.component';
-import { LocalNetworkAdministrationAgenciesComponent } from './local-network-admin/local-network-administration/local-network-administration-agencies/local-network-administration-agencies.component';
-import { LocalNetworkAdministrationSettingsComponent } from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-administration-settings.component';
-import { LocalNetworkAdministrationMessagesComponent } from './local-network-admin/local-network-administration/local-network-administration-messages/local-network-administration-messages.component';
-import { LocalInviteAgenciesComponent } from './local-network-admin/local-network-administration/local-network-administration-agencies/local-invite-agencies/local-invite-agencies.component';
-import { LocalNetworkProfileStockCapacityAddEditComponent } from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity-add-edit/local-network-profile-stock-capacity-add-edit.component';
-import { ViewNetworkPlanComponent } from './network-country-admin/network-plans/view-network-plan/view-network-plan.component';
-import { NetworkCountryCreateEditActionComponent } from './network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component';
-import { NetworkCountryActionSelectComponent } from './network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component';
-import { NetworkCountryStatisticsRibbonComponent } from './network-country-admin/network-country-statistics-ribbon/network-country-statistics-ribbon.component';
-import { AddIndicatorNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-indicator-network-country/add-indicator-network-country.component';
-import { AddHazardNetworkCountryComponent } from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
-import { NetworkCountryCreateEditMessageComponent } from './network-country-admin/network-administration/network-country-messages/network-country-create-edit-message/network-country-create-edit-message.component';
-import { NetworkCountryNotificationsComponent } from './network-country-admin/network-country-notifications/network-country-notifications.component';
-import { NetworkCountryAccountSettingsComponent } from './network-country-admin/network-country-account-settings/network-country-account-settings.component';
-import { AccountChangePasswordComponent } from './commons/account-change-password/account-change-password.component';
-import { NetworkCountryChangePasswordComponent } from './network-country-admin/network-country-account-settings/network-country-change-password/network-country-change-password.component';
-import { NetworkCountryProfileProgrammeComponent } from './network-country-admin/network-country-office-profile/network-country-profile-programme/network-country-profile-programme.component';
-import { NetworkCountryProfileOfficeCapacityComponent } from './network-country-admin/network-country-office-profile/network-country-profile-office-capacity/network-country-profile-office-capacity.component';
-import { NetworkCountryProfilePartnersComponent } from './network-country-admin/network-country-office-profile/network-country-profile-partners/network-country-profile-partners.component';
-import { NetworkCountryProfileEquipmentComponent } from './network-country-admin/network-country-office-profile/network-country-profile-equipment/network-country-profile-equipment.component';
-import { NetworkCountryProfileCoordinationComponent } from './network-country-admin/network-country-office-profile/network-country-profile-coordination/network-country-profile-coordination.component';
-import { NetworkCountryProfileStockCapacityComponent } from './network-country-admin/network-country-office-profile/network-country-profile-stock-capacity/network-country-profile-stock-capacity.component';
-import { NetworkCountryProfileDocumentsComponent } from './network-country-admin/network-country-office-profile/network-country-profile-documents/network-country-profile-documents.component';
-import { NetworkCountryProfileContactsComponent } from './network-country-admin/network-country-office-profile/network-country-profile-contacts/network-country-profile-contacts.component';
-import { LocalNetworkPlansComponent } from './local-network-admin/local-network-plans/local-network-plans.component';
-import { LocalNetworkPreparednessComponent } from './local-network-admin/local-network-preparedness/local-network-preparedness.component';
-import { LocalNetworkApaComponent } from './local-network-admin/local-network-preparedness/local-network-apa/local-network-apa.component';
-import { LocalNetworkClockComponent } from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-clock/local-network-clock.component';
-import { LocalNetworkPlanComponent } from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-plan/local-network-plan.component';
-import { NetworkCreateAlertComponent } from './network-country-admin/network-risk-minitoring/network-create-alert/network-create-alert.component';
-import { NetworkDashboardUpdateAlertLevelComponent } from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
-import { NetworkCalendarComponent } from './network-country-admin/network-dashboard/network-calendar/network-calendar.component';
-import { LocalNetworkCalendarComponent } from './local-network-admin/local-network-admin-dashboard/local-network-calendar/local-network-calendar.component';
-import { LocalNetworkRiskMonitoringComponent } from './local-network-admin/local-network-risk-monitoring/local-network-risk-monitoring.component';
-import { AddHazardLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-hazard-local-network/add-hazard-local-network.component';
-import { AddIndicatorLocalNetworkComponent } from './local-network-admin/local-network-risk-monitoring/add-indicator-local-network/add-indicator-local-network.component';
-import { LocalNetworkCreateAlertComponent } from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
-import { LocalNetworkDashboardUpdateAlertLevelComponent } from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
+import {NetworkCreateEditMpaComponent} from './network-admin/network-mpa/network-create-edit-mpa/network-create-edit-mpa.component';
+import {NetworkAddGenericActionComponent} from './network-admin/network-mpa/network-add-generic-action/network-add-generic-action.component';
+import {NetworkCreateEditMessageComponent} from './network-admin/network-message/network-create-edit-message/network-create-edit-message.component';
+import {NetworkNotificationsComponent} from './network-admin/network-notifications/network-notifications.component';
+import {NetworkDashboardComponent} from './network-country-admin/network-dashboard/network-dashboard.component';
+import {NetworkRiskMinitoringComponent} from './network-country-admin/network-risk-minitoring/network-risk-minitoring.component';
+import {NetworkPlansComponent} from './network-country-admin/network-plans/network-plans.component';
+import {NetworkGlobalMapComponent} from './network-country-admin/network-global-map/network-global-map.component';
+import {NetworkCountryHeaderComponent} from './network-country-admin/network-country-header/network-country-header.component';
+import {NetworkCountryMenuComponent} from './network-country-admin/network-country-menu/network-country-menu.component';
+import {NetworkCountryAgenciesComponent} from './network-country-admin/network-administration/network-country-agencies/network-country-agencies.component';
+import {NetworkCountryMessagesComponent} from './network-country-admin/network-administration/network-country-messages/network-country-messages.component';
+import {NetworkCountryMpaComponent} from './network-country-admin/network-preparedness/network-country-mpa/network-country-mpa.component';
+import {NetworkCountryApaComponent} from './network-country-admin/network-preparedness/network-country-apa/network-country-apa.component';
+import {NetworkCountrySelectAgenciesComponent} from './network-country-admin/network-administration/network-country-agencies/network-country-select-agencies/network-country-select-agencies.component';
+import {NetworkCountryValidationComponent} from './commons/network-country-validation/network-country-validation.component';
+import {NetworkCountryModuleSettingsComponent} from './network-country-admin/network-administration/network-country-settings/network-country-module-settings/network-country-module-settings.component';
+import {NetworkCountryClockSettingsComponent} from './network-country-admin/network-administration/network-country-settings/network-country-clock-settings/network-country-clock-settings.component';
+import {NetworkCountrySettingsMenuComponent} from './network-country-admin/network-administration/network-country-settings/network-country-settings-menu/network-country-settings-menu.component';
+import {CreateEditNetworkPlanComponent} from './network-country-admin/network-plans/create-edit-network-plan/create-edit-network-plan.component';
+import {LocalNetworkAdminDashboardComponent} from './local-network-admin/local-network-admin-dashboard/local-network-admin-dashboard.component';
+import {LocalNetworkHeaderComponent} from './local-network-admin/local-network-header/local-network-header.component';
+import {LocalNetworkMenuComponent} from './local-network-admin/local-network-menu/local-network-menu.component';
+import {LocalNetworkProfileProgrammeComponent} from './local-network-admin/local-network-profile/local-network-profile-programme/local-network-profile-programme.component';
+import {LocalNetworkProfileOfficeCapacityComponent} from './local-network-admin/local-network-profile/local-network-profile-office-capacity/local-network-profile-office-capacity.component';
+import {LocalNetworkProfilePartnersComponent} from './local-network-admin/local-network-profile/local-network-profile-partners/local-network-profile-partners.component';
+import {LocalNetworkProfileEquipmentComponent} from './local-network-admin/local-network-profile/local-network-profile-equipment/local-network-profile-equipment.component';
+import {LocalNetworkProfileCoordinationComponent} from './local-network-admin/local-network-profile/local-network-profile-coordination/local-network-profile-coordination.component';
+import {LocalNetworkProfileStockCapacityComponent} from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity.component';
+import {LocalNetworkProfileContactsComponent} from './local-network-admin/local-network-profile/local-network-profile-contacts/local-network-profile-contacts.component';
+import {LocalNetworkProfileDocumentsComponent} from './local-network-admin/local-network-profile/local-network-profile-documents/local-network-profile-documents.component';
+import {LocalNetworkProfileMenuComponent} from './local-network-admin/local-network-profile/local-network-profile-menu/local-network-profile-menu.component';
+import {LocalNetworkCoordinationAddEditComponent} from './local-network-admin/local-network-profile/local-network-profile-coordination/local-network-coordination-add-edit/local-network-coordination-add-edit.component';
+import {LocalNetworkAdministrationAgenciesComponent} from './local-network-admin/local-network-administration/local-network-administration-agencies/local-network-administration-agencies.component';
+import {LocalNetworkAdministrationSettingsComponent} from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-administration-settings.component';
+import {LocalNetworkAdministrationMessagesComponent} from './local-network-admin/local-network-administration/local-network-administration-messages/local-network-administration-messages.component';
+import {LocalInviteAgenciesComponent} from './local-network-admin/local-network-administration/local-network-administration-agencies/local-invite-agencies/local-invite-agencies.component';
+import {LocalNetworkProfileStockCapacityAddEditComponent} from './local-network-admin/local-network-profile/local-network-profile-stock-capacity/local-network-profile-stock-capacity-add-edit/local-network-profile-stock-capacity-add-edit.component';
+import {ViewNetworkPlanComponent} from './network-country-admin/network-plans/view-network-plan/view-network-plan.component';
+import {NetworkCountryCreateEditActionComponent} from './network-country-admin/network-preparedness/network-country-create-edit-action/network-country-create-edit-actionn.component';
+import {NetworkCountryActionSelectComponent} from './network-country-admin/network-preparedness/network-country-action-select/network-country-action-select.component';
+import {NetworkCountryStatisticsRibbonComponent} from './network-country-admin/network-country-statistics-ribbon/network-country-statistics-ribbon.component';
+import {AddIndicatorNetworkCountryComponent} from './network-country-admin/network-risk-minitoring/add-indicator-network-country/add-indicator-network-country.component';
+import {AddHazardNetworkCountryComponent} from './network-country-admin/network-risk-minitoring/add-hazard-network-country/add-hazard-network-country/add-hazard-network-country.component';
+import {NetworkCountryCreateEditMessageComponent} from './network-country-admin/network-administration/network-country-messages/network-country-create-edit-message/network-country-create-edit-message.component';
+import {NetworkCountryNotificationsComponent} from './network-country-admin/network-country-notifications/network-country-notifications.component';
+import {NetworkCountryAccountSettingsComponent} from './network-country-admin/network-country-account-settings/network-country-account-settings.component';
+import {AccountChangePasswordComponent} from './commons/account-change-password/account-change-password.component';
+import {NetworkCountryChangePasswordComponent} from './network-country-admin/network-country-account-settings/network-country-change-password/network-country-change-password.component';
+import {NetworkCountryProfileProgrammeComponent} from './network-country-admin/network-country-office-profile/network-country-profile-programme/network-country-profile-programme.component';
+import {NetworkCountryProfileOfficeCapacityComponent} from './network-country-admin/network-country-office-profile/network-country-profile-office-capacity/network-country-profile-office-capacity.component';
+import {NetworkCountryProfilePartnersComponent} from './network-country-admin/network-country-office-profile/network-country-profile-partners/network-country-profile-partners.component';
+import {NetworkCountryProfileEquipmentComponent} from './network-country-admin/network-country-office-profile/network-country-profile-equipment/network-country-profile-equipment.component';
+import {NetworkCountryProfileCoordinationComponent} from './network-country-admin/network-country-office-profile/network-country-profile-coordination/network-country-profile-coordination.component';
+import {NetworkCountryProfileStockCapacityComponent} from './network-country-admin/network-country-office-profile/network-country-profile-stock-capacity/network-country-profile-stock-capacity.component';
+import {NetworkCountryProfileDocumentsComponent} from './network-country-admin/network-country-office-profile/network-country-profile-documents/network-country-profile-documents.component';
+import {NetworkCountryProfileContactsComponent} from './network-country-admin/network-country-office-profile/network-country-profile-contacts/network-country-profile-contacts.component';
+import {LocalNetworkPlansComponent} from './local-network-admin/local-network-plans/local-network-plans.component';
+import {LocalNetworkPreparednessComponent} from './local-network-admin/local-network-preparedness/local-network-preparedness.component';
+import {LocalNetworkApaComponent} from './local-network-admin/local-network-preparedness/local-network-apa/local-network-apa.component';
+import {LocalNetworkClockComponent} from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-clock/local-network-clock.component';
+import {LocalNetworkPlanComponent} from './local-network-admin/local-network-administration/local-network-administration-settings/local-network-plan/local-network-plan.component';
+import {NetworkCreateAlertComponent} from './network-country-admin/network-risk-minitoring/network-create-alert/network-create-alert.component';
+import {NetworkDashboardUpdateAlertLevelComponent} from './network-country-admin/network-dashboard/network-dashboard-update-alert-level/network-dashboard-update-alert-level.component';
+import {NetworkCalendarComponent} from './network-country-admin/network-dashboard/network-calendar/network-calendar.component';
+import {LocalNetworkCalendarComponent} from './local-network-admin/local-network-admin-dashboard/local-network-calendar/local-network-calendar.component';
+import {LocalNetworkRiskMonitoringComponent} from './local-network-admin/local-network-risk-monitoring/local-network-risk-monitoring.component';
+import {AddHazardLocalNetworkComponent} from './local-network-admin/local-network-risk-monitoring/add-hazard-local-network/add-hazard-local-network.component';
+import {AddIndicatorLocalNetworkComponent} from './local-network-admin/local-network-risk-monitoring/add-indicator-local-network/add-indicator-local-network.component';
+import {LocalNetworkCreateAlertComponent} from './local-network-admin/local-network-risk-monitoring/local-network-create-alert/local-network-create-alert.component';
+import {LocalNetworkDashboardUpdateAlertLevelComponent} from './local-network-admin/local-network-admin-dashboard/local-network-dashboard-update-alert-level/local-network-dashboard-update-alert-level.component';
 import {NetworkGlobalMapListComponent} from "./network-country-admin/network-global-map-list/network-global-map-list.component";
 import {NetworkMapService} from "./services/networkmap.service";
-import { LocalAgencyComponent } from './local-agency/local-agency.component';
-import { LocalAgencyDashboardComponent } from './local-agency/local-agency-dashboard/local-agency-dashboard.component';
-import { LocalAgencyMenuComponent } from './local-agency/local-agency-menu/local-agency-menu.component';
-import { LocalAgencyHeaderComponent } from './local-agency/local-agency-header/local-agency-header.component';
-import { LocalAgencyProfileComponent } from './local-agency/local-agency-profile/local-agency-profile.component';
-import { LocalAgencyDashboardSeasonalCalendarComponent } from './local-agency/local-agency-dashboard/local-agency-dashboard-seasonal-calendar/local-agency-dashboard-seasonal-calendar.component';
-import { LocalAgencyStatisticsRibbonComponent } from './local-agency/local-agency-statistics-ribbon/local-agency-statistics-ribbon.component';
-import { LocalAgencyRiskMonitoringComponent } from './local-agency/local-agency-risk-monitoring/local-agency-risk-monitoring.component';
-import { LocalAgencyAddHazardComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-hazard/local-agency-add-hazard.component';
-import { LocalAgencyAddIndicatorComponent } from './local-agency/local-agency-risk-monitoring/local-agency-add-indicator/local-agency-add-indicator.component';
-import { LocalAgencyCreateAlertComponent } from './local-agency/local-agency-risk-monitoring/local-agency-create-alert/local-agency-create-alert.component';
-import { LocalAgencyAdministrationStaffComponent } from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
-import { LocalAgencyAddEditStaffComponent } from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
-import { LocalAgencyAddEditPartnerComponent } from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
-import { CountryDepartmentsComponent } from './country-admin/settings/country-departments/country-departments.component';
-import { LocalAgencyMinimumPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-minimum-preparedness/local-agency-minimum-preparedness.component';
-import { LocalAgencyAdevancedPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-adevanced-preparedness/local-agency-adevanced-preparedness.component';
-import { LocalAgencyBudgetComponent } from './local-agency/local-agency-preparedness/local-agency-budget/local-agency-budget.component';
-import { LocalAgencySelectPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-select-preparedness/local-agency-select-preparedness.component';
-import { LocalAgencyCreateEditPreparednessComponent } from './local-agency/local-agency-preparedness/local-agency-create-edit-preparedness/local-agency-create-edit-preparedness.component';
-import { LocalAgencyResponsePlansComponent } from './local-agency/local-agency-response-plans/local-agency-response-plans.component';
-import { LocalAgencyCreateEditResponsePlansComponent } from './local-agency/local-agency-response-plans/local-agency-create-edit-response-plans/local-agency-create-edit-response-plans.component';
-import { LocalAgencyAddPartnerOrganisationComponent } from './local-agency/local-agency-response-plans/local-agency-add-partner-organisation/local-agency-add-partner-organisation.component';
-import { LocalAgencyExternalPartnerResponsePlanComponent } from './local-agency/local-agency-response-plans/local-agency-external-partner-response-plan/local-agency-external-partner-response-plan.component';
-import { LocalAgencyViewPlanComponent } from './local-agency/local-agency-response-plans/local-agency-view-plan/local-agency-view-plan.component';
-import { LocalAgencyContactsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-contacts.component';
-import { LocalAgencyCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-coordination.component';
-import { LocalAgencyDocumentsComponent } from './local-agency/local-agency-profile/local-agency-documents/local-agency-documents.component';
-import { LocalAgencyEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-equipment.component';
-import { LocalAgencyOfficeCapacityComponent } from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-office-capacity.component';
-import { LocalAgencyProfileMenuComponent } from './local-agency/local-agency-profile/local-agency-profile-menu/local-agency-profile-menu.component';
-import { LocalAgencyPartnersComponent } from './local-agency/local-agency-profile/local-agency-partners/local-agency-partners.component';
-import { LocalAgencyProgrammeComponent } from './local-agency/local-agency-profile/local-agency-programme/local-agency-programme.component';
-import { LocalAgencyStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-stock-capacity.component';
-import { LocalAgencyAddEditMappingComponent } from './local-agency/local-agency-profile/local-agency-programme/local-agency-add-edit-mapping/local-agency-add-edit-mapping.component';
-import { LocalAgencyAddEditSurgeCapacityComponent } from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-add-edit-surge-capacity/local-agency-add-edit-surge-capacity.component';
-import { LocalAgencyAddEditEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-equipment/local-agency-add-edit-equipment.component';
-import { LocalAgencyAddEditSurgeEquipmentComponent } from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-surge-equipment/local-agency-add-edit-surge-equipment.component';
-import { LocalAgencyAddEditCoordinationComponent } from './local-agency/local-agency-profile/local-agency-coordination/local-agency-add-edit-coordination/local-agency-add-edit-coordination.component';
-import { LocalAgencyAddEditStockCapacityComponent } from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
-import { LocalAgencyAddEditPointOfContactComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-add-edit-point-of-contact/local-agency-add-edit-point-of-contact.component';
-import { LocalAgencyEditOfficeDetailsComponent } from './local-agency/local-agency-profile/local-agency-contacts/local-agency-edit-office-details/local-agency-edit-office-details.component';
-import { LocalAgencySettingsResponsePlanComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-response-plan/local-agency-settings-response-plan.component';
-import { LocalAgencyClockSettingsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-clock-settings/local-agency-clock-settings.component';
-import { LocalAgencyDepartmentComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-department/local-agency-department.component';
-import { LocalAgencyModulesComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-modules/local-agency-modules.component';
-import { LocalAgencyNotificationComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-notification/local-agency-notification.component';
-import { LocalAgencySettingsMenuComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-menu/local-agency-settings-menu.component';
-import { LocalAgencySkillsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-skills/local-agency-skills.component';
-import { LocalAgencySettingsDocumentsComponent } from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-documents/local-agency-settings-documents.component';
-import { LocalAgencyMessagesComponent } from './local-agency/local-agency-messages/local-agency-messages.component';
-import { LocalAgencyCreateEditMessageComponent } from './local-agency/local-agency-messages/local-agency-create-edit-message/local-agency-create-edit-message.component';
-import { LocalAgencyAccountSettingsComponent } from './local-agency/local-agency-account-settings/local-agency-account-settings.component';
-import { LocalAgencyChangePasswordComponent } from './local-agency/local-agency-account-settings/local-agency-change-password/local-agency-change-password.component';
-import { LocalAgencyAccountDetailsComponent } from './local-agency/local-agency-account-details/local-agency-account-details.component';
-import { CountryFieldOfficeSettingsComponent } from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
-import { FieldOfficeService } from "./services/field-office.service";
-import { CountryOfficeAddEditFieldOfficeComponent } from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
-import { LocalNetworkGlobalMapsComponent } from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
-import { LocalNetworkGlobalMapsListComponent } from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
-import { AgencyOverviewComponent } from "./agency-admin/agency-overview/agency-overview.component";
-import { CookieLawModule } from "angular2-cookie-law";
-import { PageFooterComponent } from './commons/page-footer/page-footer.component';
-import { PageFooterTocComponent } from './commons/page-footer-toc/page-footer-toc.component';
+import {LocalAgencyComponent} from './local-agency/local-agency.component';
+import {LocalAgencyDashboardComponent} from './local-agency/local-agency-dashboard/local-agency-dashboard.component';
+import {LocalAgencyMenuComponent} from './local-agency/local-agency-menu/local-agency-menu.component';
+import {LocalAgencyHeaderComponent} from './local-agency/local-agency-header/local-agency-header.component';
+import {LocalAgencyProfileComponent} from './local-agency/local-agency-profile/local-agency-profile.component';
+import {LocalAgencyDashboardSeasonalCalendarComponent} from './local-agency/local-agency-dashboard/local-agency-dashboard-seasonal-calendar/local-agency-dashboard-seasonal-calendar.component';
+import {LocalAgencyStatisticsRibbonComponent} from './local-agency/local-agency-statistics-ribbon/local-agency-statistics-ribbon.component';
+import {LocalAgencyRiskMonitoringComponent} from './local-agency/local-agency-risk-monitoring/local-agency-risk-monitoring.component';
+import {LocalAgencyAddHazardComponent} from './local-agency/local-agency-risk-monitoring/local-agency-add-hazard/local-agency-add-hazard.component';
+import {LocalAgencyAddIndicatorComponent} from './local-agency/local-agency-risk-monitoring/local-agency-add-indicator/local-agency-add-indicator.component';
+import {LocalAgencyCreateAlertComponent} from './local-agency/local-agency-risk-monitoring/local-agency-create-alert/local-agency-create-alert.component';
+import {LocalAgencyAdministrationStaffComponent} from './local-agency/local-agency-administration/local-agency-administration-staff/local-agency-administration-staff.component';
+import {LocalAgencyAddEditStaffComponent} from './local-agency/local-agency-administration/local-agency-add-edit-staff/local-agency-add-edit-staff.component';
+import {LocalAgencyAddEditPartnerComponent} from './local-agency/local-agency-administration/local-agency-add-edit-partner/local-agency-add-edit-partner.component';
+import {CountryDepartmentsComponent} from './country-admin/settings/country-departments/country-departments.component';
+import {LocalAgencyMinimumPreparednessComponent} from './local-agency/local-agency-preparedness/local-agency-minimum-preparedness/local-agency-minimum-preparedness.component';
+import {LocalAgencyAdevancedPreparednessComponent} from './local-agency/local-agency-preparedness/local-agency-adevanced-preparedness/local-agency-adevanced-preparedness.component';
+import {LocalAgencyBudgetComponent} from './local-agency/local-agency-preparedness/local-agency-budget/local-agency-budget.component';
+import {LocalAgencySelectPreparednessComponent} from './local-agency/local-agency-preparedness/local-agency-select-preparedness/local-agency-select-preparedness.component';
+import {LocalAgencyCreateEditPreparednessComponent} from './local-agency/local-agency-preparedness/local-agency-create-edit-preparedness/local-agency-create-edit-preparedness.component';
+import {LocalAgencyResponsePlansComponent} from './local-agency/local-agency-response-plans/local-agency-response-plans.component';
+import {LocalAgencyCreateEditResponsePlansComponent} from './local-agency/local-agency-response-plans/local-agency-create-edit-response-plans/local-agency-create-edit-response-plans.component';
+import {LocalAgencyAddPartnerOrganisationComponent} from './local-agency/local-agency-response-plans/local-agency-add-partner-organisation/local-agency-add-partner-organisation.component';
+import {LocalAgencyExternalPartnerResponsePlanComponent} from './local-agency/local-agency-response-plans/local-agency-external-partner-response-plan/local-agency-external-partner-response-plan.component';
+import {LocalAgencyViewPlanComponent} from './local-agency/local-agency-response-plans/local-agency-view-plan/local-agency-view-plan.component';
+import {LocalAgencyContactsComponent} from './local-agency/local-agency-profile/local-agency-contacts/local-agency-contacts.component';
+import {LocalAgencyCoordinationComponent} from './local-agency/local-agency-profile/local-agency-coordination/local-agency-coordination.component';
+import {LocalAgencyDocumentsComponent} from './local-agency/local-agency-profile/local-agency-documents/local-agency-documents.component';
+import {LocalAgencyEquipmentComponent} from './local-agency/local-agency-profile/local-agency-equipment/local-agency-equipment.component';
+import {LocalAgencyOfficeCapacityComponent} from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-office-capacity.component';
+import {LocalAgencyProfileMenuComponent} from './local-agency/local-agency-profile/local-agency-profile-menu/local-agency-profile-menu.component';
+import {LocalAgencyPartnersComponent} from './local-agency/local-agency-profile/local-agency-partners/local-agency-partners.component';
+import {LocalAgencyProgrammeComponent} from './local-agency/local-agency-profile/local-agency-programme/local-agency-programme.component';
+import {LocalAgencyStockCapacityComponent} from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-stock-capacity.component';
+import {LocalAgencyAddEditMappingComponent} from './local-agency/local-agency-profile/local-agency-programme/local-agency-add-edit-mapping/local-agency-add-edit-mapping.component';
+import {LocalAgencyAddEditSurgeCapacityComponent} from './local-agency/local-agency-profile/local-agency-office-capacity/local-agency-add-edit-surge-capacity/local-agency-add-edit-surge-capacity.component';
+import {LocalAgencyAddEditEquipmentComponent} from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-equipment/local-agency-add-edit-equipment.component';
+import {LocalAgencyAddEditSurgeEquipmentComponent} from './local-agency/local-agency-profile/local-agency-equipment/local-agency-add-edit-surge-equipment/local-agency-add-edit-surge-equipment.component';
+import {LocalAgencyAddEditCoordinationComponent} from './local-agency/local-agency-profile/local-agency-coordination/local-agency-add-edit-coordination/local-agency-add-edit-coordination.component';
+import {LocalAgencyAddEditStockCapacityComponent} from './local-agency/local-agency-profile/local-agency-stock-capacity/local-agency-add-edit-stock-capacity/local-agency-add-edit-stock-capacity.component';
+import {LocalAgencyAddEditPointOfContactComponent} from './local-agency/local-agency-profile/local-agency-contacts/local-agency-add-edit-point-of-contact/local-agency-add-edit-point-of-contact.component';
+import {LocalAgencyEditOfficeDetailsComponent} from './local-agency/local-agency-profile/local-agency-contacts/local-agency-edit-office-details/local-agency-edit-office-details.component';
+import {LocalAgencySettingsResponsePlanComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-response-plan/local-agency-settings-response-plan.component';
+import {LocalAgencyClockSettingsComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-clock-settings/local-agency-clock-settings.component';
+import {LocalAgencyDepartmentComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-department/local-agency-department.component';
+import {LocalAgencyModulesComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-modules/local-agency-modules.component';
+import {LocalAgencyNotificationComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-notification/local-agency-notification.component';
+import {LocalAgencySettingsMenuComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-menu/local-agency-settings-menu.component';
+import {LocalAgencySkillsComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-skills/local-agency-skills.component';
+import {LocalAgencySettingsDocumentsComponent} from './local-agency/local-agency-administration/local-agency-settings/local-agency-settings-documents/local-agency-settings-documents.component';
+import {LocalAgencyMessagesComponent} from './local-agency/local-agency-messages/local-agency-messages.component';
+import {LocalAgencyCreateEditMessageComponent} from './local-agency/local-agency-messages/local-agency-create-edit-message/local-agency-create-edit-message.component';
+import {LocalAgencyAccountSettingsComponent} from './local-agency/local-agency-account-settings/local-agency-account-settings.component';
+import {LocalAgencyChangePasswordComponent} from './local-agency/local-agency-account-settings/local-agency-change-password/local-agency-change-password.component';
+import {LocalAgencyAccountDetailsComponent} from './local-agency/local-agency-account-details/local-agency-account-details.component';
+import {CountryFieldOfficeSettingsComponent} from './country-admin/settings/country-field-office-settings/country-field-office-settings.component';
+import {FieldOfficeService} from "./services/field-office.service";
+import {CountryOfficeAddEditFieldOfficeComponent} from './country-admin/settings/country-field-office-settings/country-office-add-edit-field-office/country-office-add-edit-field-office.component';
+import {LocalNetworkGlobalMapsComponent} from "./local-network-admin/local-network-global-maps/local-network-global-maps.component";
+import {LocalNetworkGlobalMapsListComponent} from "./local-network-admin/local-network-global-maps-list/local-network-global-maps-list.component";
+import {AgencyOverviewComponent} from "./agency-admin/agency-overview/agency-overview.component";
+import {CookieLawModule} from "angular2-cookie-law";
+import {PageFooterComponent} from './commons/page-footer/page-footer.component';
+import {PageFooterTocComponent} from './commons/page-footer-toc/page-footer-toc.component';
 import {SystemSettingsTocComponent} from "./system-admin/system-settings/system-settings-toc/system-settings-toc.component";
 import {SystemSettingsCocComponent} from "./system-admin/system-settings/system-settings-coc/system-settings-coc.component";
-import { SystemAdminViewCocComponent } from './system-admin/account-settings/view-coc/system-admin-view-coc.component';
-import { ViewTocComponent } from './commons/view-toc/view-toc.component';
-import { AgencyAdminViewCocComponent } from './agency-admin/agency-account-settings/agency-admin-view-coc/agency-admin-view-coc.component';
-import { CountryAdminSettingsCocViewComponent } from './country-admin/country-account-settings/country-admin-settings-coc-view/country-admin-settings-coc-view.component';
+import {SystemAdminViewCocComponent} from './system-admin/account-settings/view-coc/system-admin-view-coc.component';
+import {ViewTocComponent} from './commons/view-toc/view-toc.component';
+import {AgencyAdminViewCocComponent} from './agency-admin/agency-account-settings/agency-admin-view-coc/agency-admin-view-coc.component';
+import {CountryAdminSettingsCocViewComponent} from './country-admin/country-account-settings/country-admin-settings-coc-view/country-admin-settings-coc-view.component';
 import {DirectorAccountSettingsViewCocComponent} from "./director/director-account-settings/director-account-settings-view-coc/director-account-settings-view-coc.component";
-import { LocalAgencyViewCocComponent } from './local-agency/local-agency-account-details/local-agency-view-coc/local-agency-view-coc.component';
-import { NetworkAdminViewCocComponent } from './network-admin/network-account-settings/network-admin-view-coc/network-admin-view-coc.component';
-import { NetworkCountryAdminViewCocComponent } from './network-country-admin/network-country-account-settings/network-country-admin-view-coc/network-country-admin-view-coc.component';
+import {LocalAgencyViewCocComponent} from './local-agency/local-agency-account-details/local-agency-view-coc/local-agency-view-coc.component';
+import {NetworkAdminViewCocComponent} from './network-admin/network-account-settings/network-admin-view-coc/network-admin-view-coc.component';
+import {NetworkCountryAdminViewCocComponent} from './network-country-admin/network-country-account-settings/network-country-admin-view-coc/network-country-admin-view-coc.component';
 import {ExportDataService} from "./services/export-data.service";
 import {PartnerOrganisationService} from "./services/partner-organisation.service";
 import {SurgeCapacityService} from "./services/surge-capacity.service";
-import { ViewCountriesComponent } from './agency-admin/view-countries/view-countries.component';
-import { BsDatepickerModule} from "ngx-bootstrap/datepicker";
-import { BugReportingService } from './services/bug-reporting.service';
-import { ReportProblemComponent } from './report-problem/report-problem.component';
-import { AgencyAdminViewTocComponent } from './agency-admin/agency-account-settings/agency-admin-view-toc/agency-admin-view-toc.component';
-import { LocalAgencyViewTocComponent } from './local-agency/local-agency-account-details/local-agency-view-toc/local-agency-view-toc.component';
+import {ViewCountriesComponent} from './agency-admin/view-countries/view-countries.component';
+import {BsDatepickerModule} from "ngx-bootstrap/datepicker";
+import {BugReportingService} from './services/bug-reporting.service';
+import {ReportProblemComponent} from './report-problem/report-problem.component';
+import {AgencyAdminViewTocComponent} from './agency-admin/agency-account-settings/agency-admin-view-toc/agency-admin-view-toc.component';
+import {LocalAgencyViewTocComponent} from './local-agency/local-agency-account-details/local-agency-view-toc/local-agency-view-toc.component';
+import {SharedModule} from "./commons/shared.module";
+import {SystemAdminModule} from "./system-admin/system-admin.module";
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -410,24 +411,31 @@ const firebaseAuthConfig = {
     AppComponent,
     LoginComponent,
     ResetPasswordComponent,
-    SystemAdminComponent,
+    // SystemAdminComponent,
+    // SystemAdminMenuComponent,
+    // SystemAdminHeaderComponent,
+    // SystemSettingsComponent,
+    // SystemSettingsResponsePlansComponent,
+    // SystemSettingsDocumentsComponent,
+    // SystemSettingsTocComponent,
+    // SystemSettingsCocComponent,
+    // SystemAdminViewCocComponent,
+    // PageFooterComponent,
+    // PageFooterTocComponent,
     DashboardComponent,
     ResponsePlansComponent,
     RiskMonitoringComponent,
     CountryOfficeProfileComponent,
     MapComponent,
     DonorModuleComponent,
+    // MessagesCreateComponent,
     ForgotPasswordComponent,
-    AddAgencyComponent,
-    MessagesComponent,
-    SystemAdminMenuComponent,
-    MessagesCreateComponent,
-    MinPrepComponent,
-    MpaComponent,
-    CreateActionComponent,
-    CreateMpaActionComponent,
-    SystemSettingsComponent,
-    SystemAdminHeaderComponent,
+    // AddAgencyComponent,
+    // MessagesComponent,
+    // MinPrepComponent,
+    // MpaComponent,
+    // CreateActionComponent,
+    // CreateMpaActionComponent,
     CountryOfficeComponent,
     CreateEditCountryComponent,
     CreateEditMpaComponent,
@@ -462,22 +470,21 @@ const firebaseAuthConfig = {
     AgencyMessagesComponent,
     CreateEditMessageComponent,
     AgencyAdminHeaderComponent,
-    AccountSettingsComponent,
-    ChangePasswordComponent,
-    GlobalNetworksComponent,
-    CreateEditGlobalNetworkComponent,
+    // AccountSettingsComponent,
+    // ChangePasswordComponent,
+    // GlobalNetworksComponent,
+    // CreateEditGlobalNetworkComponent,
     CreateEditRegionComponent,
     AddGenericActionComponent,
     AgencyAccountSettingsComponent,
     AgencyAccountDetailsComponent,
     AgencyChangePasswordComponent,
     AgencyAdminSettingsResponsePlanComponent,
-    SystemSettingsResponsePlansComponent,
-    SystemSettingsDocumentsComponent,
     NewAgencyPasswordComponent,
     NewAgencyDetailsComponent,
     SplitOnCapsPipe,
     KeysPipe,
+    CountryAddEditPartnerComponent,
     EnumKeysPipe,
     EnumKeyValuesPipe,
     KeyValuesPipe,
@@ -495,13 +502,12 @@ const firebaseAuthConfig = {
     CountryNotificationSettingsComponent,
     CountryAddExternalRecipientComponent,
     CountryStaffComponent,
-    CountryAddEditPartnerComponent,
     CountryAddEditStaffComponent,
     CreateEditResponsePlanComponent,
     AddPartnerOrganisationComponent,
     OrdinalPipe,
     OrderByPipe,
-    StatusAlertComponent,
+    // StatusAlertComponent,
     AgencyNotificationsComponent,
     MinimumPreparednessComponent,
     AdvancedPreparednessComponent,
@@ -529,11 +535,11 @@ const firebaseAuthConfig = {
     DirectorHeaderComponent,
     DirectorOverviewComponent,
     ViewCountryMenuComponent,
-    AlertLoaderComponent,
+    // AlertLoaderComponent,
     DonorCountryIndexComponent,
     DonorHeaderComponent,
     DonorMenuComponent,
-    AlertLoaderComponent,
+    // AlertLoaderComponent,
     ExternalPartnerResponsePlan,
     ReplacePipe,
     CountryOfficeProgrammeComponent,
@@ -550,7 +556,7 @@ const firebaseAuthConfig = {
     ProjectActivitiesComponent,
     TechnicalGuidanceComponent,
     GuidanceReportComponent,
-    TooltipComponent,
+    // TooltipComponent,
     GuidanceReportComponent,
     TimeAgoPipe,
     CountryNotificationsComponent,
@@ -560,6 +566,7 @@ const firebaseAuthConfig = {
     ExportProposalComponent,
     AddEditSurgeCapacityComponent,
     NotificationBadgeComponent,
+    AddEditNetworkOfficeComponent,
     NotificationsComponent,
     DonorNotificationsComponent,
     DirectorNotificationsComponent,
@@ -586,7 +593,6 @@ const firebaseAuthConfig = {
     NetworkAccountSettingsComponent,
     NetworkAccountDetailsComponent,
     NetworkChangePasswordComponent,
-    AddEditNetworkOfficeComponent,
     NetworkModuleSettingsComponent,
     NetworkPlanSettingsComponent,
     NetworkClockSettingsComponent,
@@ -633,6 +639,7 @@ const firebaseAuthConfig = {
     LocalNetworkAdministrationMessagesComponent,
     LocalNetworkGlobalMapsComponent,
     LocalNetworkGlobalMapsListComponent,
+    NetworkCountryProfileContactsComponent,
     LocalInviteAgenciesComponent,
     NetworkCreateEditMessageComponent,
     NetworkNotificationsComponent,
@@ -655,7 +662,6 @@ const firebaseAuthConfig = {
     NetworkCountryProfileCoordinationComponent,
     NetworkCountryProfileStockCapacityComponent,
     NetworkCountryProfileDocumentsComponent,
-    NetworkCountryProfileContactsComponent,
     LocalNetworkPlansComponent,
     LocalNetworkPreparednessComponent,
     LocalNetworkApaComponent,
@@ -732,12 +738,7 @@ const firebaseAuthConfig = {
     CountryOfficeAddEditFieldOfficeComponent,
     AgencyOverviewComponent,
     ViewCountriesComponent,
-    ReportProblemComponent,
-    SystemSettingsTocComponent,
-    SystemSettingsCocComponent,
-    PageFooterComponent,
-    PageFooterTocComponent,
-    SystemAdminViewCocComponent,
+    // ReportProblemComponent,
     ViewTocComponent,
     AgencyAdminViewCocComponent,
     CountryAdminSettingsCocViewComponent,
@@ -772,7 +773,9 @@ const firebaseAuthConfig = {
       prefix: 'my-app',
       storageType: 'localStorage'
     }),
-    Angulartics2Module.forRoot([Angulartics2GoogleAnalytics])
+    Angulartics2Module.forRoot([Angulartics2GoogleAnalytics]),
+    SharedModule,
+    SystemAdminModule
   ],
   providers: [
     RxHelper,
