@@ -799,23 +799,60 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSectorInfo() {
-    let isValid = true;
-    if (!this.activityInfoMap) {
-      isValid = false;
-    }
-    Object.keys(this.activityMap).forEach(key => {
-      if (!this.activityInfoMap.get(key)) {
-        isValid = false;
-      }
-    });
-    this.activityMap.forEach((v) => {
-      v.forEach(activity => {
-        if (!activity.output || !activity.name || !activity.indicator) {
-          isValid = false;
+    let checkValue = true;
+
+    this.activityMap.forEach((value, key) => {
+
+      value.forEach(obj => {
+
+        if ((!obj.hasFurtherBeneficiary && (!obj.indicator || !obj.name || !obj.output ||
+          !obj.beneficiary[0].value || !obj.beneficiary[1].value || !obj.beneficiary[2].value ||
+          !obj.beneficiary[3].value || !obj.beneficiary[4].value || !obj.beneficiary[5].value)) ||
+          (obj.hasFurtherBeneficiary && (!obj.furtherBeneficiary[0].value || !obj.furtherBeneficiary[1].value || !obj.furtherBeneficiary[2].value || !obj.furtherBeneficiary[3].value ||
+            !obj.furtherBeneficiary[4].value || !obj.furtherBeneficiary[5].value || !obj.furtherBeneficiary[6].value || !obj.furtherBeneficiary[7].value ||
+            !obj.furtherBeneficiary[8].value || !obj.furtherBeneficiary[9].value || !obj.furtherBeneficiary[10].value || !obj.furtherBeneficiary[11].value ||
+            !obj.furtherBeneficiary[12].value || !obj.furtherBeneficiary[13].value || !obj.furtherBeneficiary[14].value || !obj.furtherBeneficiary[15].value)) ||
+          (obj.hasDisability && !obj.hasFurtherBeneficiary && (!obj.disability[0].value || !obj.disability[1].value || !obj.disability[2].value ||
+            !obj.disability[3].value || !obj.disability[4].value || !obj.disability[5].value) ||
+            (obj.hasDisability && obj.hasFurtherBeneficiary && (!obj.furtherDisability[0].value || !obj.furtherDisability[1].value || !obj.furtherDisability[2].value || !obj.furtherDisability[3].value ||
+              !obj.furtherDisability[4].value || !obj.furtherDisability[5].value || !obj.furtherDisability[6].value || !obj.furtherDisability[7].value ||
+              !obj.furtherDisability[8].value || !obj.furtherDisability[9].value || !obj.furtherDisability[10].value || !obj.furtherDisability[11].value ||
+              !obj.furtherDisability[12].value || !obj.furtherDisability[13].value || !obj.furtherDisability[14].value || !obj.furtherDisability[15].value)))
+        ) {
+          checkValue = false;
         }
-      })
+
+        if (obj.hasDisability && obj.hasFurtherBeneficiary && (!obj.disability[0].value || !obj.disability[1].value || !obj.disability[2].value ||
+          !obj.disability[3].value || !obj.disability[4].value || !obj.disability[5].value) && (!obj.furtherDisability[0].value || !obj.furtherDisability[1].value || !obj.furtherDisability[2].value || !obj.furtherDisability[3].value ||
+          !obj.furtherDisability[4].value || !obj.furtherDisability[5].value || !obj.furtherDisability[6].value || !obj.furtherDisability[7].value ||
+          !obj.furtherDisability[8].value || !obj.furtherDisability[9].value || !obj.furtherDisability[10].value || !obj.furtherDisability[11].value ||
+          !obj.furtherDisability[12].value || !obj.furtherDisability[13].value || !obj.furtherDisability[14].value || !obj.furtherDisability[15].value)) {
+          checkValue = false;
+        }
+
+      });
+
+      // let isValid = true;
+    // if (!this.activityInfoMap) {
+    //   isValid = false;
+    // }
+    // Object.keys(this.activityMap).forEach(key => {
+    //   if (!this.activityInfoMap.get(key)) {
+    //     isValid = false;
+    //   }
+    // });
+    // this.activityMap.forEach((v) => {
+    //   v.forEach(activity => {
+    //     if (!activity.output || !activity.name || !activity.indicator) {
+    //       isValid = false;
+    //     }
+    //   })
+    // });
+    // return isValid;
     });
-    return isValid;
+
+
+    return checkValue;
   }
 
   private checkInputsBudget() {
@@ -902,7 +939,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     }
 
     this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit)
-      .takeUntil(this.ngUnsubscribe)
+      .take(1)
       .subscribe(plan => {
 
         console.log(plan)
@@ -934,10 +971,13 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       }
     });
 
-    if (numOfSectionsCompleted > 0 || this.forEditing) {
+    if (numOfSectionsCompleted > 0) {
       if (this.forEditing) {
+        console.log(newResponsePlan)
+
         newResponsePlan.isEditing = false;
         newResponsePlan.editingUserId = null;
+        console.log(id)
         this.networkService.updateNetworkFieldByObject('/responsePlan/' + id + '/' + this.idOfResponsePlanToEdit, newResponsePlan).then(() => {
           console.log("Response plan successfully updated");
           //if edit, delete approval data and any validation token
@@ -1481,6 +1521,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSection6() {
+    console.log(this.riskManagementPlanText)
+
     if (this.riskManagementPlanText != '') {
       this.section6Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[5], true);
@@ -1747,7 +1789,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSection8() {
-    if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument ||
+    if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument  && this.mediaFormat != null ||
       this.mALSystemsDescriptionText != '' && !this.intentToVisuallyDocument) {
       this.section8Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[7], true);
@@ -1798,6 +1840,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   continueButtonPressedOnSection9() {
+    this.doublerCounting();
+
     this.checkSection9();
 
     this.handleContinueSave();
@@ -1809,6 +1853,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     if (!this.isDoubleCountingDone) {
       this.section9Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[8], true);
+    }else {
+      this.section9Status = "GLOBAL.INCOMPLETE";
+      this.sectionsCompleted.set(this.sections[8], false);
     }
     this.isDoubleCountingDone = true;
   }
@@ -2048,7 +2095,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   private checkSection10() {
     if (this.transportBudget != null && this.securityBudget != null && this.logisticsAndOverheadsBudget != null &&
       this.staffingAndSupportBudget != null && this.monitoringAndEvolutionBudget != null &&
-      this.capitalItemsBudget != null && this.managementSupportPercentage != null && this.checkInputsBudget()) {
+      this.capitalItemsBudget != null && this.managementSupportPercentage != null && this.transportNarrative != "" &&
+      this.securityNarrative != "" && this.logisticsAndOverheadsNarrative != "" && this.staffingAndSupportNarrative != "" &&
+      this.monitoringAndEvolutionNarrative != "" && this.capitalItemsNarrative != "" && this.managementSupportNarrative != "") {
       this.section10Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[9], true);
     } else {

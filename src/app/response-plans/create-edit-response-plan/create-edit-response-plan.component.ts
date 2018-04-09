@@ -1584,7 +1584,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private checkSection10() {
     if (this.transportBudget != null && this.securityBudget != null && this.logisticsAndOverheadsBudget != null &&
       this.staffingAndSupportBudget != null && this.monitoringAndEvolutionBudget != null &&
-      this.capitalItemsBudget != null && this.managementSupportPercentage != null && this.checkInputsBudget()) {
+      this.capitalItemsBudget != null && this.managementSupportPercentage != null && this.transportNarrative != "" &&
+      this.securityNarrative != "" && this.logisticsAndOverheadsNarrative != "" && this.staffingAndSupportNarrative != "" &&
+      this.monitoringAndEvolutionNarrative != "" && this.capitalItemsNarrative != "" && this.managementSupportNarrative != "") {
       this.section10Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[9], true);
     } else {
@@ -2610,11 +2612,20 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private checkInputsBudget() {
-    if (!this.sectorBudget) {
+    console.log(this.sectorBudget)
+    if (!this.sectorBudget || !this.sectorNarrative) {
       return false;
     }
     Object.keys(this.sectorBudget).forEach(key => {
+      console.log(key)
       if (!this.sectorBudget.get(key)) {
+        return false;
+      }
+    });
+
+    Object.keys(this.sectorNarrative).forEach(key => {
+      console.log(key)
+      if (!this.sectorNarrative.get(key)) {
         return false;
       }
     });
