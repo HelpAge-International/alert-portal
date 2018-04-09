@@ -2558,20 +2558,28 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
       value.forEach(obj => {
 
-        if ((!obj.indicator || !obj.name || !obj.output ||
+        if ((!obj.hasFurtherBeneficiary && (!obj.indicator || !obj.name || !obj.output ||
           !obj.beneficiary[0].value || !obj.beneficiary[1].value || !obj.beneficiary[2].value ||
-          !obj.beneficiary[3].value || !obj.beneficiary[4].value || !obj.beneficiary[5].value) ||
+          !obj.beneficiary[3].value || !obj.beneficiary[4].value || !obj.beneficiary[5].value))||
           (obj.hasFurtherBeneficiary && (!obj.furtherBeneficiary[0].value || !obj.furtherBeneficiary[1].value || !obj.furtherBeneficiary[2].value || !obj.furtherBeneficiary[3].value ||
             !obj.furtherBeneficiary[4].value || !obj.furtherBeneficiary[5].value || !obj.furtherBeneficiary[6].value || !obj.furtherBeneficiary[7].value ||
             !obj.furtherBeneficiary[8].value || !obj.furtherBeneficiary[9].value || !obj.furtherBeneficiary[10].value || !obj.furtherBeneficiary[11].value ||
             !obj.furtherBeneficiary[12].value || !obj.furtherBeneficiary[13].value || !obj.furtherBeneficiary[14].value || !obj.furtherBeneficiary[15].value)) ||
-          (obj.hasDisability && (!obj.disability[0].value || !obj.disability[1].value || !obj.disability[2].value ||
-            !obj.disability[3].value || !obj.disability[4].value || !obj.disability[5].value ||
-            !obj.furtherDisability[0].value || !obj.furtherDisability[1].value || !obj.furtherDisability[2].value || !obj.furtherDisability[3].value ||
+          (obj.hasDisability && !obj.hasFurtherBeneficiary && (!obj.disability[0].value || !obj.disability[1].value || !obj.disability[2].value ||
+            !obj.disability[3].value || !obj.disability[4].value || !obj.disability[5].value) ||
+            (obj.hasDisability && obj.hasFurtherBeneficiary && (!obj.furtherDisability[0].value || !obj.furtherDisability[1].value || !obj.furtherDisability[2].value || !obj.furtherDisability[3].value ||
             !obj.furtherDisability[4].value || !obj.furtherDisability[5].value || !obj.furtherDisability[6].value || !obj.furtherDisability[7].value ||
             !obj.furtherDisability[8].value || !obj.furtherDisability[9].value || !obj.furtherDisability[10].value || !obj.furtherDisability[11].value ||
-            !obj.furtherDisability[12].value || !obj.furtherDisability[13].value || !obj.furtherDisability[14].value || !obj.furtherDisability[15].value))
+            !obj.furtherDisability[12].value || !obj.furtherDisability[13].value || !obj.furtherDisability[14].value || !obj.furtherDisability[15].value)))
         ) {
+          checkValue = false;
+        }
+
+        if(obj.hasDisability && obj.hasFurtherBeneficiary && (!obj.disability[0].value || !obj.disability[1].value || !obj.disability[2].value ||
+          !obj.disability[3].value || !obj.disability[4].value || !obj.disability[5].value) && (!obj.furtherDisability[0].value || !obj.furtherDisability[1].value || !obj.furtherDisability[2].value || !obj.furtherDisability[3].value ||
+            !obj.furtherDisability[4].value || !obj.furtherDisability[5].value || !obj.furtherDisability[6].value || !obj.furtherDisability[7].value ||
+            !obj.furtherDisability[8].value || !obj.furtherDisability[9].value || !obj.furtherDisability[10].value || !obj.furtherDisability[11].value ||
+            !obj.furtherDisability[12].value || !obj.furtherDisability[13].value || !obj.furtherDisability[14].value || !obj.furtherDisability[15].value)){
           checkValue = false;
         }
 
