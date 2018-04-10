@@ -349,7 +349,9 @@ export class LocalAgencyHeaderComponent implements OnInit {
       let model = new LocalNetworkViewModel(this.systemId, this.agencyId, this.countryId, this.userType, this.uid, this.selectedNetwork.id, true)
       // this.networkRequest.emit(model)
       this.storageService.set(Constants.NETWORK_VIEW_VALUES, model);
-      this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, this.networkCountryMap.get(network.id))
+      if (this.networkCountryMap.get(network.id)) {
+        this.storageService.set(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID, this.networkCountryMap.get(network.id))
+      }
       let values = this.buildNetworkViewValues();
       this.router.navigate(["/network/local-network-dashboard", values])
     }
@@ -359,11 +361,15 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
       values["systemId"] = this.systemId;
       values["agencyId"] = this.agencyId;
-      values["countryId"] = this.countryId;
+      if (this.countryId) {
+        values["countryId"] = this.countryId;
+      }
       values["userType"] = this.userType;
       values["uid"] = this.uid;
       values["networkId"] = this.selectedNetwork.id;
-      values["networkCountryId"] = this.networkCountryMap.get(this.selectedNetwork.id);
+      if (this.networkCountryMap.get(this.selectedNetwork.id)) {
+        values["networkCountryId"] = this.networkCountryMap.get(this.selectedNetwork.id);
+      }
       values["isViewing"] = true;
       return values;
     }
@@ -468,7 +474,8 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
     }
 
-    private getLocalNetworks(agencyId: string, countryId: any) {
+    private getLocalNetworks(agencyId: string, countryId: string) {
+      console.log(countryId)
       this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(list => {

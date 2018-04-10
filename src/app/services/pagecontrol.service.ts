@@ -301,7 +301,9 @@ export class PageControlService {
     "map*",
     "dashboard*",
     "risk-monitoring*",
-    "system-admin/agency"
+    "system-admin/agency",
+    "network-country*",
+    "network*"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
@@ -638,7 +640,7 @@ export class PageControlService {
       });
     }
     else {
-      console.log("check page control*****");
+      console.log("check page control***** NO VALUE RETURNED!");
       /**DONT UNCOMMENT BELOW AS THIS CAUSE ISSUES IN THE LOGIN*/
      // router.navigateByUrl(type.redirectTo);
     }

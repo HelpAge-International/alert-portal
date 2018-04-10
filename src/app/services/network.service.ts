@@ -670,7 +670,12 @@ export class NetworkService {
     data["/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId"] = leadAgencyId;
     selectedAgencyMap.forEach((v, k) => {
       if (v) {
-        data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + agencyCountryMap.get(k) + "/isApproved"] = false;
+        if (agencyCountryMap.get(k)) {
+          data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + agencyCountryMap.get(k) + "/isApproved"] = false;
+        } else {
+          data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + k + "/isApproved"] = false;
+          data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + k + "/isLocalAgency"] = true;
+        }
       }
     });
     return this.af.database.object(Constants.APP_STATUS).update(data);
@@ -691,7 +696,7 @@ export class NetworkService {
           agencies.forEach(agency => {
             let model = new NetworkAgencyModel();
             model.id = agency.$key;
-            model.isApproved = agency[agencyCountryMap.get(agency.$key)]["isApproved"]
+            model.isApproved = agencyCountryMap.get(agency.$key) ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : agency[agency.$key]["isApproved"]
             agencyModels.push(model);
           });
           return agencyModels;
@@ -702,8 +707,11 @@ export class NetworkService {
   resendEmailNetworkCountry(networkId, networkCountryId, agencyId, countryId) {
     let data = {};
     data["isApproved"] = false;
-    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + countryId).set(null).then(() => {
-      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + countryId).set(data);
+    if (!countryId) {
+      data["isLocalAgency"] = true;
+    }
+    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(null).then(() => {
+      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(data);
     });
   }
 
