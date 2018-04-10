@@ -365,8 +365,10 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   saveHazardBtn() {
     console.log('save hazard');
+    console.log(this.getKey);
     this.getEditSeasons.push(this.getKey);
     console.log(this.getEditSeasons);
+
     let updateKeys = {};
     updateKeys[this.getKey] = true;
 
