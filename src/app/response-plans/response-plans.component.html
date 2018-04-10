@@ -101,9 +101,8 @@
                 <div class="col-md-6">
                   <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
                   <!--not submit yet-->
-                  <div
+                  <!-- <div
                     *ngIf="plan?.approval && plan?.approval['partner'] && (!plan?.approval['countryDirector'] || !plan?.approval['regionDirector'] || !plan?.approval['globalDirector'])">
-                    <!--<div *ngIf="plan?.approval">-->
                     <div *ngIf="directorSubmissionRequireMap.get(1)" class="row no-gutters Small-spaced">
                       <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" | translate}}</div>
                       <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
@@ -125,7 +124,7 @@
                         <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
 
                   <!--after submit for approval-->
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
