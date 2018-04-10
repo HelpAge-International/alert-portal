@@ -38,12 +38,14 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        if (params["token"] && params["networkId"] && params["networkCountryId"] && params["agencyId"] && params["countryId"]) {
+        if (params["token"] && params["networkId"] && params["networkCountryId"] && params["agencyId"]) {
           this.accessToken = params["token"];
           this.networkId = params["networkId"];
           this.networkCountryId = params["networkCountryId"];
           this.agencyId = params["agencyId"];
-          this.countryId = params["countryId"];
+          if (params["countryId"]) {
+            this.countryId = params["countryId"];
+          }
 
           firebase.auth().signInAnonymously().catch(error => {
             console.log(error.message);
@@ -54,7 +56,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
             if (user) {
               if (user.isAnonymous) {
                 //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
-                this.networkService.validateNetworkCountryToken(this.countryId, this.accessToken)
+                this.networkService.validateNetworkCountryToken((this.countryId ? this.countryId : this.agencyId), this.accessToken)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(validate => {
                     console.log('net country validate')
@@ -97,9 +99,13 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
 
   acceptJoin() {
     let update = {};
-    update["/networkCountry/" + this.networkId + "/" + this.networkCountryId + "/agencyCountries/" + this.agencyId + "/" + this.countryId + "/isApproved"] = true;
-    update["/countryOffice/" + this.agencyId + "/" + this.countryId + "/networks/" + this.networkId + "/networkCountryId/"] = this.networkCountryId;
-    update["/networkCountryValidation/" + this.countryId + "/validationToken/expiry"] = moment.utc().valueOf();
+    update["/networkCountry/" + this.networkId + "/" + this.networkCountryId + "/agencyCountries/" + this.agencyId + "/" + (this.countryId ? this.countryId : this.agencyId) + "/isApproved"] = true;
+    if (this.countryId) {
+      update["/countryOffice/" + this.agencyId + "/" + this.countryId + "/networks/" + this.networkId + "/networkCountryId/"] = this.networkCountryId;
+    } else {
+      update["/agency/" + this.agencyId + "/networksCountry/" + this.networkId + "/networkCountryId/"] = this.networkCountryId;
+    }
+    update["/networkCountryValidation/" + (this.countryId ? this.countryId : this.agencyId) + "/validationToken/expiry"] = moment.utc().valueOf();
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();
     }).catch(error => {

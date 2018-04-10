@@ -198,7 +198,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
             }
 
             //get networks
-            this.getNetworks(agencyId, countryId);
+            // this.getNetworks(agencyId, countryId);
 
             this.getLocalNetworks(agencyId, countryId)
           }
@@ -448,7 +448,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
     }
 
     private getNetworks(agencyId: string, countryId: string) {
-      this.networkService.mapNetworkWithCountryForCountry(this.agencyId, countryId)
+      this.networkService.mapNetworkWithCountryForCountry(agencyId, countryId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(map => this.networkCountryMap = map);
       this.networkService.getNetworkWithCountryModelsForCountry(agencyId, countryId)

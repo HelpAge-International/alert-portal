@@ -785,15 +785,27 @@ export class NetworkService {
   }
 
   getNetworkWithCountryModelsForCountry(agencyId, countryId) {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
-      .map(networks => {
-        return networks.map(network => {
-          let model = new NetworkWithCountryModel();
-          model.networkId = network.$key;
-          model.networkCountryId = network.networkCountryId;
-          return model;
+    if (countryId) {
+      return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+        .map(networks => {
+          return networks.map(network => {
+            let model = new NetworkWithCountryModel();
+            model.networkId = network.$key;
+            model.networkCountryId = network.networkCountryId;
+            return model;
+          })
         })
-      })
+    } else {
+      // return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networks")
+      //   .map(networks => {
+      //     return networks.map(network => {
+      //       let model = new NetworkWithCountryModel();
+      //       model.networkId = network.$key;
+      //       model.networkCountryId = network.networkCountryId;
+      //       return model;
+      //     })
+      //   })
+    }
   }
 
   getLocalNetworkModelsForCountry(agencyId, countryId) {
