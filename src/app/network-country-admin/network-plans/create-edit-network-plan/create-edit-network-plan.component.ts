@@ -1992,6 +1992,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
     if (this.capitalsExist) {
       this.newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
+      console.log(this.newResponsePlan.budget["itemsOver1000Exists"])
       let itemsOver1000 = [];
       this.budgetOver1000.forEach((v, k) => {
         let tempItem = new ModelBudgetItem();
@@ -2001,7 +2002,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       });
       this.newResponsePlan.budget["itemsOver1000"] = itemsOver1000;
     } else {
-      this.newResponsePlan.budget["itemsOver1000Exists"] = this.capitalsExist;
+      this.newResponsePlan.budget["itemsOver1000Exists"] = false;
+      console.log(this.newResponsePlan.budget["itemsOver1000Exists"])
     }
 
     this.newResponsePlan.budget["totalInputs"] = this.totalInputs;

@@ -80,6 +80,7 @@
   "SELECT_FROM_GENERIC_ACTIONS":"Select from generic actions",
   "ACTION_STATUS":"Action Status",
   "ALL_DEPARTMENTS":"All departments",
+  "DEPARTMENTS":"Departments",
   "ALL_TYPES":"All types",
   "ALL_HAZARDS":"All Hazards",
   "UNASSIGNED":"Unassigned",
