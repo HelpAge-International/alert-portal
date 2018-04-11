@@ -161,7 +161,7 @@ export class CountryOfficePartnersComponent implements OnInit, OnDestroy {
 
           } else {
 
-            this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(this.agencyId)
+            this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(this.userAgencyId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(partnerOrganisations => {
                 console.log(partnerOrganisations)

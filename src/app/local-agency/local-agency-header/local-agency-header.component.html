@@ -50,7 +50,7 @@
              (click)="clearNetworkLocalStorage()">{{"GLOBAL.ACCOUNT_SETTINGS.TITLE"
             | translate}}</a>
           <a
-            class="dropdown-item" routerLink="/local-agency/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |
+            class="dropdown-item" (click)="switchOffNetworkView()" routerLink="/local-agency/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |
             translate}}</a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
           <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>

@@ -88,7 +88,9 @@ export class CommonUtils {
     let values = {};
     values["systemId"] = model.systemId;
     values["agencyId"] = model.agencyId;
-    values["countryId"] = model.countryId;
+    if (model.countryId) {
+      values["countryId"] = model.countryId;
+    }
     values["userType"] = model.userType;
     values["uid"] = model.uid;
     values["networkId"] = model.networkId;

@@ -75,11 +75,9 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
-      this.countryId = countryId;
 
       this.partnerOrganisation.userId = this.uid;
       this.partnerOrganisation.agencyId = this.agencyId;
-      this.partnerOrganisation.countryId = this.countryId;
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -100,7 +98,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
                   }
                   if (params['id']) {
                     this.isEdit = true;
-                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
+                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).takeUntil(this.ngUnsubscribe).subscribe(partnerOrganisation => {
                       this.partnerOrganisation = partnerOrganisation;
                     })
                   }
@@ -144,9 +142,11 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
                   }
                   if (params['id']) {
                     this.isEdit = true;
-                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
-                      this.partnerOrganisation = partnerOrganisation;
-                    })
+                    this._partnerOrganisationService.getPartnerOrganisation(params['id'])
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(partnerOrganisation => {
+                        this.partnerOrganisation = partnerOrganisation;
+                      })
                   }
                   if (!this.isEdit) {
                     this.activeProject.operationAreas.forEach(area => {
@@ -279,7 +279,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     jQuery("#confirm-active").modal("hide");
     this.isActive = true;
     this.partnerOrganisation.isActive = this.isActive;
-    console.log("Active State: "+ this.partnerOrganisation.isActive);
+    console.log("Active State: " + this.partnerOrganisation.isActive);
     this.submit();
   }
 
@@ -287,12 +287,12 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     jQuery("#confirm-inactive").modal("hide");
     this.isActive = false;
     this.partnerOrganisation.isActive = this.isActive;
-    console.log("InActive State: "+ this.partnerOrganisation.isActive);
+    console.log("InActive State: " + this.partnerOrganisation.isActive);
     this.submit();
   }
 
   openConfirmationModel() {
-    console.log("openConfirmationModel(): "+ this.partnerOrganisation.isActive);
+    console.log("openConfirmationModel(): " + this.partnerOrganisation.isActive);
     if (!this.partnerOrganisation.isActive) {
       jQuery("#confirm-active").modal("show");
     } else {
@@ -301,7 +301,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   closeConfirmationModel(key) {
-    jQuery("#"+key).modal("hide");
+    jQuery("#" + key).modal("hide");
   }
 
   goBack() {

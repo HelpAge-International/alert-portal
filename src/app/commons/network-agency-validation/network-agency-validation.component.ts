@@ -101,14 +101,15 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
     if (this.network.isGlobal) {
       update["/agency/" + this.agencyId + "/networks/" + this.networkId] = true;
     } else {
-      update["/agency/" + this.agencyId + "/localNetworks/" + this.networkId] = true;
+      let countryCode = this.network.agencies[this.agencyId].countryCode;
+      if (countryCode && countryCode !== this.agencyId) {
+        update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
+        update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
+      } else {
+        update["/agency/" + this.agencyId + "/localNetworks/" + this.networkId] = true;
+      }
     }
     update["/networkAgencyValidation/" + this.agencyId + "/validationToken/expiry"] = moment.utc().valueOf();
-    if (!this.network.isGlobal) {
-      let countryCode = this.network.agencies[this.agencyId].countryCode;
-      update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
-
-    }
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();
     }).catch(error => {

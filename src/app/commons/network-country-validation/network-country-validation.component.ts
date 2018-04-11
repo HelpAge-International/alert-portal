@@ -115,7 +115,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
 
   rejectJoin() {
     let update = {};
-    update["/networkCountryValidation/" + this.countryId + "/validationToken/expiry"] = moment.utc().valueOf();
+    update["/networkCountryValidation/" + (this.countryId ? this.countryId : this.agencyId) + "/validationToken/expiry"] = moment.utc().valueOf();
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();
     }).catch(error => {

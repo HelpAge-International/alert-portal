@@ -113,9 +113,7 @@ export class NetworkService {
     data["/network/" + networkId + "/leadAgencyId"] = leadAgencyId;
 
     let item = {};
-    if (countryCode) {
-      item["countryCode"] = countryCode
-    }
+    item["countryCode"] = countryCode ? countryCode : agencyId
     item["isApproved"] = false;
     data["/network/" + networkId + "/agencies/" + agencyId] = item;
 
@@ -303,11 +301,11 @@ export class NetworkService {
       });
   }
 
-  getUnassignedNetworkActionsForAgency(agencyId:string, networkId:string) : Observable<any> {
+  getUnassignedNetworkActionsForAgency(agencyId: string, networkId: string): Observable<any> {
     return this.af.database.list(Constants.APP_STATUS + "/action/" + networkId, {
-      query : {
-        orderByChild:"agencyAssign",
-        equalTo:agencyId
+      query: {
+        orderByChild: "agencyAssign",
+        equalTo: agencyId
       }
     })
       .map(actions => actions.filter(action => !action.asignee).map(action => {
@@ -785,27 +783,27 @@ export class NetworkService {
   }
 
   getNetworkWithCountryModelsForCountry(agencyId, countryId) {
-    if (countryId) {
-      return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
-        .map(networks => {
-          return networks.map(network => {
-            let model = new NetworkWithCountryModel();
-            model.networkId = network.$key;
-            model.networkCountryId = network.networkCountryId;
-            return model;
-          })
+    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+      .map(networks => {
+        return networks.map(network => {
+          let model = new NetworkWithCountryModel();
+          model.networkId = network.$key;
+          model.networkCountryId = network.networkCountryId;
+          return model;
         })
-    } else {
-      // return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networks")
-      //   .map(networks => {
-      //     return networks.map(network => {
-      //       let model = new NetworkWithCountryModel();
-      //       model.networkId = network.$key;
-      //       model.networkCountryId = network.networkCountryId;
-      //       return model;
-      //     })
-      //   })
-    }
+      })
+  }
+
+  getNetworkWithCountryModelsForLocalAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
+      .map(networks => {
+        return networks.map(network => {
+          let model = new NetworkWithCountryModel();
+          model.networkId = network.$key;
+          model.networkCountryId = network.networkCountryId;
+          return model;
+        })
+      })
   }
 
   getLocalNetworkModelsForCountry(agencyId, countryId) {
@@ -819,9 +817,30 @@ export class NetworkService {
       })
   }
 
+  getLocalNetworkModelsForLocalAgency(agencyId: string) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
+      .map(networks => {
+        return networks.map(network => {
+          let model = new ModelNetwork();
+          model.id = network.$key;
+          return model;
+        })
+      })
+  }
 
   mapNetworkWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+      .map(networks => {
+        let map = new Map<string, string>();
+        networks.forEach(network => {
+          map.set(network.$key, network.networkCountryId)
+        })
+        return map
+      })
+  }
+
+  mapNetworkCountryForLocalAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
       .map(networks => {
         let map = new Map<string, string>();
         networks.forEach(network => {
@@ -1053,7 +1072,7 @@ export class NetworkService {
       });
   }
 
-  saveIndicatorLogMoreParams(previousTrigger:number, triggerSelected:number, uid:string, indicatorId: string) {
+  saveIndicatorLogMoreParams(previousTrigger: number, triggerSelected: number, uid: string, indicatorId: string) {
     if (previousTrigger != -1 && previousTrigger != triggerSelected) {
       let content = ""
       switch (triggerSelected) {

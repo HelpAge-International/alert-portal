@@ -138,7 +138,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
       temp['countryId'] = network.agencies[key]['countryCode']
       return temp
     })
-      .filter(obj => obj["countryId"])
+      .filter(obj => obj["countryId"] !== obj["agencyId"])
       .forEach(obj => {
         this.userService.getCountryDetail(obj['countryId'], obj['agencyId'])
           .flatMap(country => {
@@ -159,7 +159,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
       temp['countryId'] = network.agencies[key]['countryCode']
       return temp
     })
-      .filter(obj => !obj["countryId"])
+      .filter(obj => obj["countryId"] === obj["agencyId"])
       .forEach(obj => {
         this.userService.getAgencyDetail(obj['agencyId'])
           .flatMap(agency => {
