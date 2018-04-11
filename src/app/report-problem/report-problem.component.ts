@@ -12,6 +12,8 @@ declare const jQuery: any;
 import {Subject} from "rxjs/Rx";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Countries, UserType} from "../utils/Enums";
+import {UserService} from "../services/user.service";
+import {NetworkService} from "../services/network.service";
 
 @Component({
   selector: 'app-report-problem',
@@ -35,9 +37,15 @@ export class ReportProblemComponent implements OnInit {
   private agencyId: string;
   private agencyDetail: any;
   private systemId: string;
+  private agencyAdminId: string;
+  private networkId: string;
+  private networkCountryId: string;
+  private networkAdminId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private userType: UserType;
   private isAnonym: boolean = false;
+  private isNetworkCountryAdmin: boolean = false;
+
   private selectedCountry: any;
   private countries = Constants.COUNTRIES;
   private countryLocation: any;
@@ -48,8 +56,10 @@ export class ReportProblemComponent implements OnInit {
   constructor(private bugReport: BugReportingService,
               private af: AngularFire,
               private db: AngularFireDatabase,
+              private networkService: NetworkService,
               private pageControl: PageControlService,
               private route: ActivatedRoute,
+              private userService: UserService,
               private router: Router,) {
   }
 
@@ -65,37 +75,86 @@ export class ReportProblemComponent implements OnInit {
       this.userType = userType;
       this.isAnonym = !(user && !user.anonymous);
 
-      this.getContentForEmail();
-      if (this.userType != UserType.LocalAgencyAdmin) {
-        this.getUserData();
-      } else {
-        console.log(agencyId)
-        this.getUserDataForLocalAgency()
-      }
+     })
+
+    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
+      this.networkService.getSelectedIdObj(user.uid)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(selection => {
+
+          this.isNetworkCountryAdmin = true;
+          this.networkId = selection["id"];
+          this.networkCountryId = selection["networkCountryId"];
+
+          this.userService.getNetworkCountryDetail(this.networkId, this.networkCountryId).takeUntil(this.ngUnsubscribe)
+            .subscribe(model => {
+              console.log(model)
+              this.networkAdminId = model.adminId;
+              console.log(this.networkAdminId)
+
+              this.sendEmailModel.country = model.location;
+              this.sendEmailModel.agencyName = "";
+
+              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.networkAdminId)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(getUserDetails => {
+                  this.sendEmailModel.fName = getUserDetails.firstName;
+                  this.sendEmailModel.lName = getUserDetails.lastName;
+                  this.sendEmailModel.email = getUserDetails.email;
+                });
+            });
+        })
     })
 
+    this.getContentForEmail();
+    this.getUserData();
   }
 
   getUserData() {
     // subscribing to get user ID
-    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.countryId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(getUserDetails => {
-        this.sendEmailModel.fName = getUserDetails.firstName;
-        this.sendEmailModel.lName = getUserDetails.lastName;
-        this.sendEmailModel.email = getUserDetails.email;
-      })
-  }
+    if (this.userType == UserType.LocalAgencyAdmin) {
+      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(getUserDetails => {
+          this.sendEmailModel.fName = getUserDetails.firstName;
+          this.sendEmailModel.lName = getUserDetails.lastName;
+          this.sendEmailModel.email = getUserDetails.email;
+        });
+    } else if (this.userType == UserType.AgencyAdmin) {
+      this.userService.getAgencyDetail(this.agencyId).takeUntil(this.ngUnsubscribe)
+        .subscribe(model => {
+          this.agencyAdminId = model.adminId;
+          this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.agencyAdminId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(getUserDetails => {
+              this.sendEmailModel.fName = getUserDetails.firstName;
+              this.sendEmailModel.lName = getUserDetails.lastName;
+              this.sendEmailModel.email = getUserDetails.email;
+              console.log(getUserDetails)
+            });
+        });
+    } else if (this.userType == UserType.SystemAdmin) {
+      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.systemId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(getUserDetails => {
+          this.sendEmailModel.fName = getUserDetails.firstName;
+          this.sendEmailModel.lName = getUserDetails.lastName;
+          this.sendEmailModel.email = getUserDetails.email;
+        });
+    }
+    else {
 
-  getUserDataForLocalAgency() {
-    // subscribing to get user ID
-    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(getUserDetails => {
-        this.sendEmailModel.fName = getUserDetails.firstName;
-        this.sendEmailModel.lName = getUserDetails.lastName;
-        this.sendEmailModel.email = getUserDetails.email;
-      })
+      console.log(this.networkId)
+
+      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(getUserDetails => {
+          console.log(getUserDetails)
+          this.sendEmailModel.fName = getUserDetails.firstName;
+          this.sendEmailModel.lName = getUserDetails.lastName;
+          this.sendEmailModel.email = getUserDetails.email;
+        });
+    }
   }
 
   getContentForEmail() {
@@ -124,9 +183,8 @@ export class ReportProblemComponent implements OnInit {
   screenshot() {
     jQuery('.float').hide();
 
-
     this.bugId = this.generateKeyForBugReport();
-    console.log(this.bugId);
+    // console.log(this.bugId);
     let storageRef = firebase.storage().ref('reportingBug');
     const name = (+new Date()) + '-' + 'screenshot';
     let uploadTask = storageRef.child(this.bugId + '/' + name);
@@ -157,8 +215,11 @@ export class ReportProblemComponent implements OnInit {
 
 
   reportBugData() {
-    if (this.userType != UserType.LocalAgencyAdmin) {
-      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.countryId + '/' + this.bugId)
+    debugger
+    console.log(this.sendEmailModel)
+    if (this.userType == UserType.AgencyAdmin || this.userType == UserType.LocalAgencyAdmin) {
+      console.log(this.agencyAdminId)
+      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.agencyId + '/' + this.bugId)
         .set({
           country: this.sendEmailModel.country,
           date: this.sendEmailModel.date.toLocaleString('en-GB', {timeZone: 'UTC'}),
@@ -175,8 +236,46 @@ export class ReportProblemComponent implements OnInit {
           this.error = error;
           console.log(error)
         }
+    } else if (this.userType == UserType.SystemAdmin) {
+      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.systemId + '/' + this.bugId)
+        .set({
+          country: "",
+          date: this.sendEmailModel.date.toLocaleString('en-GB', {timeZone: 'UTC'}),
+          email: this.sendEmailModel.email,
+          description: this.sendEmailModel.description,
+          firstName: this.sendEmailModel.fName,
+          lastName: this.sendEmailModel.lName,
+          agencyName: "",
+          systemInfo: this.sendEmailModel.computerDetails,
+          downloadLink: this.sendEmailModel.downloadUrl,
+          fileName: this.sendEmailModel.file,
+        }),
+        error => {
+          this.error = error;
+          console.log(error)
+        }
+    } else if (this.isNetworkCountryAdmin) {
+      console.log(this.isNetworkCountryAdmin)
+console.log(this.networkCountryId)
+      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.networkCountryId + '/' + this.bugId)
+        .set({
+          country: this.sendEmailModel.country,
+          date: this.sendEmailModel.date.toLocaleString('en-GB', {timeZone: 'UTC'}),
+          email: this.sendEmailModel.email,
+          description: this.sendEmailModel.description,
+          firstName: this.sendEmailModel.fName,
+          lastName: this.sendEmailModel.lName,
+          agencyName: "",
+          systemInfo: this.sendEmailModel.computerDetails,
+          downloadLink: this.sendEmailModel.downloadUrl,
+          fileName: this.sendEmailModel.file,
+        }),
+        error => {
+          this.error = error;
+          console.log(error)
+        }
     } else {
-      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.agencyId + '/' + this.bugId)
+      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.countryId + '/' + this.bugId)
         .set({
           country: this.sendEmailModel.country,
           date: this.sendEmailModel.date.toLocaleString('en-GB', {timeZone: 'UTC'}),

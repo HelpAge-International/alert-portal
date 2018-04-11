@@ -8,7 +8,7 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng" [ngSwitch]="count">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row" routerLink="/risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
+    <div class="Back--button row" (click)="goBack()">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
     <div class="Header-title__wrap--risk Spaced-above">
       <h1> {{ (!editHazard ? "RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" : "RISK_MONITORING.ADD_HAZARD.EDIT_HAZARD") | translate}}</h1>
 
@@ -80,11 +80,10 @@
       <div class="row" style="width:100%">
         <label class="Checkbox--ribbon__alert Left col-sm-5">
           <div class="risk-icon__components">
-            <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{otherHazard ? _getHazardImage(hazardData.hazardScenario) : _getHazardImage(editGetScenario)}}"></span>
+            <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{otherHazard ? 'Icon--alert' : _getHazardImage(hazardData.hazardScenario)}}"></span>
           </div>
           <p>
-            <b>{{HazardScenario[hazardData.hazardScenario] | translate}}</b>
-            <b> {{editHazard ? (HazardScenario[editGetScenario]  | translate) : hazardName}}</b>
+            <b> {{editHazard ? (HazardScenario[editGetScenario]  | translate) : (HazardScenario[hazardData.hazardScenario] | translate)}}</b>
           </p>
         </label>
       </div>

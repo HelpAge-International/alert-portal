@@ -8,34 +8,49 @@
 </div>
 <div
   *ngIf="!userType || (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)">
-  <app-country-admin-header></app-country-admin-header>
-  <app-country-admin-menu></app-country-admin-menu>
+  <ng-container *ngIf="!isLocalAgency">
+    <app-country-admin-header></app-country-admin-header>
+    <app-country-admin-menu></app-country-admin-menu>
+  </ng-container>
+  <ng-container *ngIf="isLocalAgency">
+    <app-local-agency-header></app-local-agency-header>
+    <app-local-agency-menu></app-local-agency-menu>
+  </ng-container>
 </div>
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <!--<div *ngIf="!agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
-    <div *ngIf="userType != UserType.Donor">
-      <div *ngIf="!agencyOverview"
-           class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
-        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
-        translate}}
+    <ng-container *ngIf="!isLocalAgency">
+      <!--<div *ngIf="!agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
+      <div *ngIf="userType != UserType.Donor">
+        <div *ngIf="!agencyOverview"
+             class="Back--button" routerLink="/country-admin/country-my-agency">{{agencyName}} :
+          {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+          translate}}
+        </div>
+        <!--<div *ngIf="agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
+        <div *ngIf="agencyOverview"
+             class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+          {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+          translate}}
+        </div>
       </div>
-      <!--<div *ngIf="agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
-      <div *ngIf="agencyOverview"
-           class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
-        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
-        translate}}
-      </div>
-    </div>
 
-    <div *ngIf="userType == UserType.Donor"
-         class="Back--button" (click)="backForDonor()">{{agencyName}} :
-      {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
-      translate}}
-    </div>
+      <div *ngIf="userType == UserType.Donor"
+           class="Back--button" (click)="backForDonor()">{{agencyName}} :
+        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+        translate}}
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="isLocalAgency">
+      <div class="Back--button" routerLink="//local-agency/country-agencies">{{agencyName}} :
+        {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
+        translate}}
+      </div>
+    </ng-container>
   </div>
 </div>
 
@@ -104,21 +119,21 @@
 </div>
 
 <ng-container *ngIf="!isViewingFromExternal">
-  <app-country-office-programme
+  <app-country-office-programme [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('programme')"></app-country-office-programme>
-  <app-country-office-capacity
+  <app-country-office-capacity [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('officeCapacity')"></app-country-office-capacity>
-  <app-country-office-partners
+  <app-country-office-partners [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('partners')"></app-country-office-partners>
-  <app-country-office-equipment
+  <app-country-office-equipment [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('equipment')"></app-country-office-equipment>
-  <app-country-office-coordination
+  <app-country-office-coordination [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('coordination')"></app-country-office-coordination>
-  <app-country-office-stock-capacity
+  <app-country-office-stock-capacity [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('stockCapacity')"></app-country-office-stock-capacity>
-  <app-country-office-documents
+  <app-country-office-documents [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('documents')"></app-country-office-documents>
-  <app-country-office-contacts
+  <app-country-office-contacts [isLocalAgency]="isLocalAgency"
     *ngIf="tabMap.get('officeProfile') && officeMap.get('contacts')"></app-country-office-contacts>
   <app-risk-monitoring *ngIf="tabMap.get('risk')"></app-risk-monitoring>
   <app-response-plans *ngIf="tabMap.get('plan')" [isViewing]="isViewing"
@@ -195,7 +210,7 @@
                            *ngIf="tabMap.get('preparedness-adv')"></app-network-country-apa>
 
   <div
-    *ngIf="!tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv') "
+    *ngIf="!tabMap.get('officeProfile') && !tabMap.get('risk') && !tabMap.get('plan') && !tabMap.get('preparedness-min') && !tabMap.get('preparedness-adv')"
     class="Page-top__wrap--w_sub_header--no-paddng">
     <div class="Full-page__wrap--inner">
       <div class="Empty--ribbon">

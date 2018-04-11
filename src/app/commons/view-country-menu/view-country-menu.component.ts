@@ -198,7 +198,6 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(country => {
         this.countryLocation = country.location;
-        console.log(this.countryLocation);
       });
   }
 
@@ -225,7 +224,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
 
   private handleActiveClass(name: string) {
     this.menuMap.forEach((v, k) => {
-      this.menuMap.set(k, k == name);
+      this.menuMap.set(k, k === name);
     });
   }
 

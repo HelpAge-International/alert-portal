@@ -127,7 +127,7 @@
                 <div class="col-md-6">
                   <strong>{{"SYSTEM_ADMIN.MENU.AGENCIES" | translate}}</strong>
                   <!--not submit yet-->
-                  <div class="Small-spaced" *ngFor="let agency of planApprovalAgencyMap.get(plan.$key,agenciesNeedToApprove)">
+                  <div class="Small-spaced" *ngFor="let agency of planApprovalAgencyMap.get(plan.$key)">
                     <div class="col-12 text-left">{{agency.name}}</div>
                     <div class="col-md-12 text-left"
                          [class.text-success]="shouldShowSuccess(plan, agency.id)"

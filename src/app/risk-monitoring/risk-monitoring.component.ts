@@ -136,6 +136,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private countryName: string;
   private level1: string;
   private level2: string;
+  private isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -196,6 +197,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["hazardID"]) {
           this.hazard = params["hazardID"];
+        }
+        if (params["isLocalAgency"]) {
+          this.isLocalAgency = params["isLocalAgency"];
         }
         if (params['updateIndicatorID']) {
           this.updateIndicatorId = params['updateIndicatorID'];
@@ -298,11 +302,13 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
       let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.activeHazards[hazardIndex].indicators[indicatorIndex]
       let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
 
       jQuery("#collapse" + this.hazard).collapse('show');
 
       this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
@@ -1476,6 +1482,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
 
   changeIndicatorState(state: boolean, hazardID: string, indicatorKey: number) {
+    console.log(indicatorKey)
     var key = hazardID + '_' + indicatorKey;
     if (state) {
       this.isIndicatorUpdate[key] = true;

@@ -114,6 +114,7 @@ export class NetworkMapService {
 
   private process(agencyHasCountriesMap: Map<string, Set<string>>, cVal: number, systemAdminId: string,
                   done: () => void, countryClicked: (country: string) => void) {
+    console.log(agencyHasCountriesMap);
     agencyHasCountriesMap.forEach((value, key) => {
       value.forEach(item => {
         // Fire off a request to get the countryOffice for every country
@@ -343,23 +344,30 @@ export class NetworkMapService {
   /**
    * Find all the countries and their agencies from the networkCountry node!
    * Same callback as getAgencyCountriesOfNetwork method, to keep the underlying structure consistent (see method below)
+   *
+   * If the network country ID is specified, the maps requirement as I understand it is
+   *   that it shows "all network countries under _my_ network", which would be the network ID
+   *   This method will query all nodes under `/networkCountry/<network_id/` and process all network countries
+   *   under there
    */
   private getAgencyCountriesOfNetworkCountry(networkId: string, networkCountryId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>, countryCodeLimiter?: number) => void) {
     console.log(">> NETWORK + NETWORK COUNTRY <<");
     this.af.database
-      .object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId, {preserveSnapshot: true})
+      .list(Constants.APP_STATUS + "/networkCountry/" + networkId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
+      .subscribe((snapshot) => {
         const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
-        if (snap.val().isActive) {
-          if (snap.val().hasOwnProperty("agencyCountries")) {
-            for (const agency in snap.val().agencyCountries) {
-              for (const country in snap.val().agencyCountries[agency]) {
-                if (snap.val().agencyCountries[agency][country].hasOwnProperty("isApproved") && snap.val().agencyCountries[agency][country].isApproved) {
-                  // agency / country is approved from the Network Country
-                  let set: Set<string> = new Set<string>();
-                  set.add(country);
-                  agencyHasCountriesMap.set(agency, set);
+        for (let snap of snapshot) {
+          if (snap.val().isActive) {
+            if (snap.val().hasOwnProperty("agencyCountries")) {
+              for (const agency in snap.val().agencyCountries) {
+                for (const country in snap.val().agencyCountries[agency]) {
+                  if (snap.val().agencyCountries[agency][country].hasOwnProperty("isApproved") && snap.val().agencyCountries[agency][country].isApproved) {
+                    // agency / country is approved from the Network Country
+                    let set: Set<string> = new Set<string>();
+                    set.add(country);
+                    agencyHasCountriesMap.set(agency, set);
+                  }
                 }
               }
             }
@@ -485,7 +493,9 @@ export class NetworkMapService {
     this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId,
         {preserveSnapshot: true})
       .flatMap((snap) => {
-        if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == snap.val().location) {
+        console.log(onlyPickCountryLocationEnum);
+        console.log(snap.val());
+        if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == undefined || onlyPickCountryLocationEnum == snap.val().location) {
           this.countryIdToLocation.set(snap.key, snap.val().location);
           // Ensure a country object for this country office is created
           const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
@@ -496,6 +506,7 @@ export class NetworkMapService {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap != null && snap.val() != null) {
+          console.log(snap.val());
           const mapCountry: NetworkMapCountry = this.findNetworkMapCountry(this.countryIdToLocation.get(countryId));
           if (mapCountry != null) {
             const agency: NetworkMapAgency = mapCountry.getAgency(snap.key);

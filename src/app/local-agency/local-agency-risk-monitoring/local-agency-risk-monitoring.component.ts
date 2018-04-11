@@ -174,10 +174,10 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   private getAgencyLocation() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/country")
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((location: any) => {
-          this.countryLocation = location.$value ? location.$value : 0;
+        .subscribe((agency: any) => {
+          this.countryLocation = agency.countryCode ? agency.countryCode: 0;
           res(true);
         });
     });

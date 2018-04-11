@@ -182,7 +182,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   resendEmail(agencyId) {
 
     this.networkService.getCountryCodeForAgency(agencyId, this.networkCountryCode)
-      .takeUntil(this.ngUnsubscribe)
+      .first()
       .subscribe(countryCode => {
         this.networkService.resendEmail(this.networkId, agencyId, countryCode);
 

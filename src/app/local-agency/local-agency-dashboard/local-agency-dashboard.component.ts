@@ -60,7 +60,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
 
   private Countries = Countries;
   private CountriesList = Constants.COUNTRIES;
-  private countryLocation: number;
+  private agencyLocation: number;
 
   private AlertLevels = AlertLevels;
   private AlertStatus = AlertStatus;
@@ -115,7 +115,6 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
@@ -454,7 +453,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((location: any) => {
-        this.countryLocation = location.country;
+        this.agencyLocation = location.countryCode;
       });
   }
 

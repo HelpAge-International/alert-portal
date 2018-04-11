@@ -162,7 +162,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params: Params) => {
+    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
       }
@@ -1131,11 +1131,18 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.isViewing ? this.actionService.rejectRedAlert(id, alert, this.countryId) : this.actionService.rejectRedAlert(id, alert)
   }
 
-  planReview(planId) {
-    this.router.navigate(["/dashboard/review-response-plan", this.networkCountryId ? {
-      "id": planId,
-      "networkCountryId": this.networkCountryId
-    } : {"id": planId}]);
+  planReview(plan, isLocal) {
+    console.log(plan)
+    this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
+    this.router.navigate(["/dashboard/review-response-plan", isLocal ? {
+      "id": plan.$key,
+      "networkCountryId": plan.networkCountryId,
+      "systemId": this.systemId
+    } : plan.networkCountryId ? {
+      "id": plan.$key,
+      "networkCountryId": plan.networkCountryId,
+      "systemId": this.systemId
+    } : {"id": plan.$key}]);
   }
 
   requestAgencyPartner(agency) {
