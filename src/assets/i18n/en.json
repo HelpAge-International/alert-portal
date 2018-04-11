@@ -439,8 +439,8 @@
       "COUNTRY_ADMINS":"Country Administrators",
       "COUNTRY_DIRECTORS":"Country Directors",
       "COUNTRY_DIRECTORS_SINGLE":"Country Director",
-      "ERT_LEAD":"ERT Leaders",
-      "ERT":"ERTs",
+      "ERT_LEAD":"ERT Leads",
+      "ERT":"ERT Users",
       "DONOR":"Donors",
       "PARTNER":"Partners",
       "NON_ALERT":"Non-Alert User",
@@ -1286,6 +1286,7 @@
       },
       "EQUIPMENT":{
         "TITLE_TEXT":"Equipment & surge equipment",
+        "EQUIPMENT":"Equipment",
         "EDIT":"Edit equipment",
         "VIEW":"View equipment",
         "QUANTITY":"Quantity",

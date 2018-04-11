@@ -92,6 +92,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   private agencyCountryMap: Map<string, string>;
   private participatedAgencies: ModelAgency[] = [];
   private agencySelectionMap = new Map<string, true>();
+  private section0Status: string = "GLOBAL.INCOMPLETE";
 
   // Section 1/10
   private planName: string = '';
@@ -736,6 +737,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   checkAllSections() {
+    this.checkSection0();
     this.checkSection1();
     this.checkSection2();
     this.checkSection3();
@@ -1037,10 +1039,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   continueButtonPressedOnSection0() {
     if (!this.checkSection0()) {
       this.alertMessage = new AlertMessageModel("Non participating agency was selected!");
-      return;
     } else {
       this.handleContinueSave();
-
       this.onSubmit(0);
     }
   }
@@ -2113,6 +2113,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.agencySelectionMap.forEach((v,) => {
       if (v) {
         temp = v;
+        this.section0Status = "GLOBAL.COMPLETE";
+      }else{
+        this.section0Status = "GLOBAL.INCOMPLETE";
       }
     });
     return temp;

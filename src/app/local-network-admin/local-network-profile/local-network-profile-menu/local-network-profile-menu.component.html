@@ -10,7 +10,7 @@
   </div>
   <ul class="subnav_country-office-profile">
 
-    <li *ngIf="!isViewing" routerLinkActive="active">
+    <li *ngIf="!isViewing" routerLinkActive="active" id="programmes">
       <a
         routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-programme' : '/network/local-network-office-profile/programme'}}">{{
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</a>

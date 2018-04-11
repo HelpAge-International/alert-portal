@@ -168,21 +168,28 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   validateForm(): boolean {
     this.alertMessage = this.partnerOrganisation.validate();
 
-    if (!this.alertMessage) {
-      // Validate organisation projects
-      this.partnerOrganisation.projects.forEach(project => {
-        let modelProject = new PartnerOrganisationProjectModel();
-        modelProject.mapFromObject(project);
-        this.alertMessage = this.validateProject(modelProject);
-      });
-    }
+    // if (!this.alertMessage) {
+    //   // Validate organisation projects
+    //   this.partnerOrganisation.projects.forEach(project => {
+    //     let modelProject = new PartnerOrganisationProjectModel();
+    //     modelProject.mapFromObject(project);
+    //     //this.alertMessage = this.validateProject(modelProject);
+    //   });
+    // }
 
     return !this.alertMessage;
   }
 
   submit() {
     // Transforms projects endDate to timestamp
-    this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime());
+    console.log(this.partnerOrganisation.projects)
+
+console.log("in partner org")
+      this.partnerOrganisation.projects.forEach(project => {
+        if(!isNaN(project.endDate)) {
+          project.endDate = new Date(project.endDate).getTime()
+        }
+      });
 
     if (this.isLocalAgency) {
       this._partnerOrganisationService.savePartnerOrganisationLocalAgency(this.agencyId, this.partnerOrganisation)
@@ -234,12 +241,15 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   saveSector(pin: number, i: number) {
-    let project = this.partnerOrganisation.projects[pin];
+    console.log(this.partnerOrganisation.projects[pin])
+    if (this.partnerOrganisation.projects[pin]) {
+      let project = this.partnerOrganisation.projects[pin];
 
-    if (project.sector[i]) {
-      this.isEdit ? project.sector[i] = !project.sector[i] : project.sector.splice(i, 1);
-    } else {
-      project.sector[i] = true;
+      if (project.sector[i]) {
+        this.isEdit ? project.sector[i] = !project.sector[i] : project.sector.splice(i, 1);
+      } else {
+        project.sector[i] = true;
+      }
     }
   }
 
@@ -337,22 +347,22 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   private validateProject(project: PartnerOrganisationProjectModel): AlertMessageModel {
-    this.alertMessage = project.validate();
+   // this.alertMessage = project.validate();
 
     if (!this.alertMessage) {
       project.operationAreas.forEach(operationArea => {
         let modelArea = new OperationAreaModel();
         modelArea.mapFromObject(operationArea);
-        this.alertMessage = this.validateOperationArea(modelArea);
+       // this.alertMessage = this.validateOperationArea(modelArea);
       });
     }
 
-    if (this.alertMessage) {
-      this.setActiveProject(project);
+   // if (this.alertMessage) {
+      //this.setActiveProject(project);
       return this.alertMessage;
-    }
+  //  }
 
-    return null;
+    ///return null;
   }
 
   private validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {
