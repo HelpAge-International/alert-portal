@@ -490,15 +490,17 @@ export class NetworkMapService {
    */
   private getCountryOffice(agencyId: string, countryId: string, onlyPickCountryLocationEnum: number, done: () => void) {
     this.mCountryOfficeCounter++;
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId,
+    const path = agencyId !== countryId ? Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId : Constants.APP_STATUS + '/agency/' + agencyId
+    this.af.database.object(path,
         {preserveSnapshot: true})
       .flatMap((snap) => {
         console.log(onlyPickCountryLocationEnum);
         console.log(snap.val());
+        const actualLocation = agencyId !== countryId ? snap.val().location : snap.val().countryCode
         if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == undefined || onlyPickCountryLocationEnum == snap.val().location) {
-          this.countryIdToLocation.set(snap.key, snap.val().location);
+          this.countryIdToLocation.set(snap.key, actualLocation);
           // Ensure a country object for this country office is created
-          const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
+          const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(actualLocation);
           mapCountry.setAgency(agencyId, new NetworkMapAgency(agencyId, countryId));
         }
         return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId, {preserveSnapshot: true});

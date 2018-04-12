@@ -66,7 +66,7 @@
       <tooltip
         [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'">
       </tooltip>
-      <div *ngIf="!isViewingFromExternal" class="btn-group">
+      <div *ngIf="(!userType || (isViewing && (permissionsAreEnabled.customAPA.New || userType == userTypes.CountryAdmin))) && !isViewingFromExternal" class="btn-group">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{"CREATE_ACTION" | translate}}
         </button>

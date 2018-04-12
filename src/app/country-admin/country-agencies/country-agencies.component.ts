@@ -48,7 +48,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.url.subscribe(url => {
+    this.route.url.takeUntil(this.ngUnsubscribe).subscribe(url => {
       if(url[0].path == 'local-agency'){
         this.isLocalAgency = true;
 
