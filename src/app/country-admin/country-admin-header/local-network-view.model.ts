@@ -1,4 +1,5 @@
 import {UserType} from "../../utils/Enums";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 export class LocalNetworkViewModel {
   systemId:string;
@@ -22,7 +23,9 @@ export class LocalNetworkViewModel {
   mapFromObject(obj) {
     this.systemId = obj.systemId
     this.agencyId = obj.agencyId
-    this.countryId = obj.countryId
+    if (obj.countryId) {
+      this.countryId = obj.countryId
+    }
     this.userType = obj.userType
     this.uid = obj.uid
     this.networkId = obj.networkId

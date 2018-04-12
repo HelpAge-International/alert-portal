@@ -275,8 +275,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
           this.hideWarning = false;
         }
       }, err => {
-          this.waringMessage = err.message;
-          this.hideWarning = false;
+        this.waringMessage = err.message;
+        this.hideWarning = false;
       })
 
 
@@ -492,50 +492,18 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     let notificationList = [];
 
     for (let i = 0; i < 6; i++) {
-      if (i == 0) {
-        let notifyList = [];
-        let item1 = {};
-        item1[UserType.RegionalDirector] = false;
-        notifyList.push(item1);
-        let item2 = {};
-        item1[UserType.CountryDirector] = false;
-        notifyList.push(item2);
-        let item3 = {};
-        item1[UserType.ErtLeader] = false;
-        notifyList.push(item3);
-        let item4 = {};
-        item1[UserType.Ert] = false;
-        notifyList.push(item4);
-        let item5 = {};
-        item1[UserType.Donor] = false;
-        notifyList.push(item5);
-        let item6 = {};
-        item1[UserType.CountryAdmin] = false;
-        notifyList.push(item6);
-        let tempData = {};
-        tempData["usersNotified"] = notifyList;
-        notificationList.push(tempData);
-      } else {
-        let notifyList = [];
-        let item1 = {};
-        item1[UserType.RegionalDirector] = false;
-        notifyList.push(item1);
-        let item2 = {};
-        item1[UserType.CountryDirector] = false;
-        notifyList.push(item2);
-        let item3 = {};
-        item1[UserType.ErtLeader] = false;
-        notifyList.push(item3);
-        let item4 = {};
-        item1[UserType.Ert] = false;
-        notifyList.push(item4);
-        let item5 = {};
-        item1[UserType.Donor] = false;
-        notifyList.push(item5);
-        let tempData = {};
-        tempData["usersNotified"] = notifyList;
-        notificationList.push(tempData);
+      const item = {};
+      item[UserType.RegionalDirector] = false;
+      item[UserType.CountryDirector] = false;
+      item[UserType.ErtLeader] = false;
+      item[UserType.Ert] = false;
+      item[UserType.Donor] = false;
+      if (i === 0) {
+        item[UserType.CountryAdmin] = false;
       }
+      const tempData = {};
+      tempData["usersNotified"] = item;
+      notificationList.push(tempData);
     }
     countryOffice.defaultNotificationSettings = notificationList;
 

@@ -13,7 +13,8 @@
 </ng-template>
 
 <ng-template #country>
-  <app-country-admin-header></app-country-admin-header>
+  <app-country-admin-header *ngIf="countryID"></app-country-admin-header>
+  <app-local-agency-header *ngIf="!countryID"></app-local-agency-header>
   <app-network-country-menu [isViewing]="true"></app-network-country-menu>
 </ng-template>
 

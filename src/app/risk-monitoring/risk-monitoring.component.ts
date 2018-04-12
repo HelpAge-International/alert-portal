@@ -774,9 +774,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                           this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
                                         }
                                         else {
-                                          console.log("replace existing one")
                                           let indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.map(item => item.$key).indexOf(indicator.$key)
-                                          console.log(indicatorIndex)
                                           if (indicatorIndex != -1) {
                                             this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators[indicatorIndex] = indicator
                                             // this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
