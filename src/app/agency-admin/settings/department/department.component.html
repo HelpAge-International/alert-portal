@@ -17,7 +17,7 @@
     <app-local-agency-settings-menu *ngIf="isLocalAgency"></app-local-agency-settings-menu>
 
     <div class="Sub-header-title__wrap">
-      <h2>{{"MAPS.DEPARTMENTS" | translate}}</h2>
+      <h2>{{"DEPARTMENTS" | translate}}</h2>
       <button type="button" class="btn btn-danger Inline-editable--enable" *ngIf="deleting"
               (click)="deleteSelectedDepartments($event)">{{"DELETE" | translate | uppercase}}
       </button>

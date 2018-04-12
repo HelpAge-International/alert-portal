@@ -250,30 +250,7 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
 
                 this.agencies.push(agency)
 
-                this._agencyService.getCountryOffice(value, key)
-                  .map(countryOffice => {
-                    let countryOfficeAddress = new CountryOfficeAddressModel();
-                    countryOfficeAddress.mapFromObject(countryOffice);
-
-                    return countryOfficeAddress;
-                  })
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(countryOfficeAddress => {
-                    this.countryOfficeAddress.set(key, countryOfficeAddress)
-                  });
-                this._contactService.getPointsOfContact(value)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(pointsOfContact => {
-                    this.pointsOfContact.set(key, pointsOfContact)
-                    this.pointsOfContact.get(key).forEach(pointOfContact => {
-                      this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
-                        this.userPublicDetails[pointOfContact.staffMember] = user;
-                      });
-                      this._userService.getStaff(value, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
-                        this.staffList[pointOfContact.staffMember] = staff;
-                      });
-                    });
-                  })
+                value !== key ? this.loadNormalCountry(value, key) : this.loadLocalAgency(key)
               });
 
             //get privacy for country
@@ -402,6 +379,62 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/contacts/add-edit-point-of-contact');
     }
+  }
+
+  private loadNormalCountry(value: string, key: string) {
+    this._agencyService.getCountryOffice(value, key)
+      .map(countryOffice => {
+        let countryOfficeAddress = new CountryOfficeAddressModel();
+        countryOfficeAddress.mapFromObject(countryOffice);
+
+        return countryOfficeAddress;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(countryOfficeAddress => {
+        this.countryOfficeAddress.set(key, countryOfficeAddress)
+      });
+
+    this._contactService.getPointsOfContact(value)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(pointsOfContact => {
+        this.pointsOfContact.set(key, pointsOfContact)
+        this.pointsOfContact.get(key).forEach(pointOfContact => {
+          this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+            this.userPublicDetails[pointOfContact.staffMember] = user;
+          });
+          this._userService.getStaff(value, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+            this.staffList[pointOfContact.staffMember] = staff;
+          });
+        });
+      })
+  }
+
+  private loadLocalAgency(agencyId: string) {
+    this._agencyService.getLocalAgency(agencyId)
+      .map(localAgency => {
+        let localAgencyAddress = new CountryOfficeAddressModel();
+        localAgencyAddress.mapFromObject(localAgency);
+
+        return localAgencyAddress;
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(localAgencyAddress => {
+        this.countryOfficeAddress.set(agencyId, localAgencyAddress)
+      });
+
+    this._contactService.getPointsOfContactLocalAgency(agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(pointsOfContact => {
+        this.pointsOfContact.set(agencyId, pointsOfContact)
+        this.pointsOfContact.get(agencyId).forEach(pointOfContact => {
+          this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+            this.userPublicDetails[pointOfContact.staffMember] = user;
+          });
+          this._userService.getStaff(agencyId, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+            this.staffList[pointOfContact.staffMember] = staff;
+          });
+        });
+      })
   }
 
 }

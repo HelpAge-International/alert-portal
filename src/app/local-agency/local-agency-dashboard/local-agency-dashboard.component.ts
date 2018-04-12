@@ -225,6 +225,10 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initCalendar() {
+    if(this.DashboardTypeUsed == DashboardType.director){
+      return;
+    }
+    console.log(this.seasonEvents);
     // Element is removed and re-added upon a data change
     document.getElementById("target2").innerHTML = "";
     this.chronoline = new Chronoline(document.getElementById("target2"), this.seasonEvents,

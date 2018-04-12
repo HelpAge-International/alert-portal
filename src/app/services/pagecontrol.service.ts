@@ -297,8 +297,13 @@ export class PageControlService {
     "preparedness*",
     "agency-admin*",
     "director*",
+    "country-admin*",
+    "map*",
+    "dashboard*",
+    "risk-monitoring*",
     "system-admin/agency",
-    "dashboard*"
+    "network-country*",
+    "network*"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
@@ -307,9 +312,13 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-details",
     "export-start-fund*",
     "export-proposal*",
+    "dashboard*",
     "new-user-password",
-    "dashboard/review-response-plan*",
-    "dashboard*"
+    "risk-monitoring*",
+    "map*",
+    "country-admin*",
+    "preparedness*",
+    "dashboard/review-response-plan*"
   ]);
 
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
@@ -615,8 +624,8 @@ export class PageControlService {
           for (let y of x.urls) {
             // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
             if ((s == y) && !x.isAuthorized && !skip) {
-              // router.navigateByUrl(type.redirectTo);
-              // skip = true;
+              router.navigateByUrl(type.redirectTo);
+              skip = true;
             }
           }
         }
@@ -631,7 +640,7 @@ export class PageControlService {
       });
     }
     else {
-      console.log("check page control*****");
+      console.log("check page control***** NO VALUE RETURNED!");
       /**DONT UNCOMMENT BELOW AS THIS CAUSE ISSUES IN THE LOGIN*/
      // router.navigateByUrl(type.redirectTo);
     }

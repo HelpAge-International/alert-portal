@@ -127,8 +127,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log("edit apa");
-
     this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params['id']) {
         this.action.id = params['id'];
@@ -703,7 +701,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/local-agency/preparedness/minimum")
+                }
+                else {
+                  this.router.navigateByUrl("/local-agency/preparedness/advanced")
+                }
               })
             })
         } else {
@@ -780,12 +784,17 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/preparedness/minimum");
+                }
+                else {
+                  this.router.navigateByUrl("/preparedness/advanced");
+                }
               })
             })
         }
-      }
-      else {
+      } else {
         // Saving
 
         updateObj['timeTracking'] = {}
@@ -841,7 +850,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/local-agency/preparedness/minimum")
+                }
+                else {
+                  this.router.navigateByUrl("/local-agency/preparedness/advanced")
+                }
+
               });
 
 
@@ -900,7 +916,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/preparedness/minimum");
+                }
+                else {
+                  this.router.navigateByUrl("/preparedness/advanced");
+                }
               });
 
             })
@@ -1078,7 +1100,21 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
 
   protected backButtonAction() {
-    this._location.back();
+    if(this.isLocalAgency){
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/local-agency/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/local-agency/preparedness/advanced");
+      }
+    }else{
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/preparedness/advanced");
+      }
+    }
   }
 }
 

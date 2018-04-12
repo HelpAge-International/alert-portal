@@ -324,7 +324,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
   _getProgramme(officeAgencyMap) {
     officeAgencyMap.forEach((value: string, key: string) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + value)
+      const path = key === value ? Constants.APP_STATUS + "/localAgencyProfile/programme/" + value : Constants.APP_STATUS + "/countryOfficeProfile/programme/" + value
+      this.af.database.object(path)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((programms: any) => {
           this.countriesMap = [];

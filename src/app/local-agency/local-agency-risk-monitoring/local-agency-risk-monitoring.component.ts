@@ -115,7 +115,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private assignedUser: string;
   private countryLevelsValues: any;
 
-  private subnationalName: string;
+  private subnationalNames: string[];
   private countryName: string;
   private level1: string;
   private level2: string;
@@ -203,6 +203,9 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   }
 
   showSubNationalAreas(areas) {
+    console.log("Areas: "+areas);
+    this.subnationalNames = [];
+
     for (let area in areas) {
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .subscribe(content => {
@@ -216,20 +219,23 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   }
 
   setLocationName(location) {
-    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country) {
+    console.log(location);
+    var subnationalName = "";
+
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country >= 0) {
       this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
       this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
-      this.subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
-    } else if ((location.level1 && location.level1 != -1) && location.country) {
+      subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
+    } else if ((location.level1 && location.level1 >= 0) && location.country >= 0) {
       this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
-      this.subnationalName = this.countryName + ", " + this.level1;
+      subnationalName = this.countryName + ", " + this.level1;
     } else {
       this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
-      this.subnationalName = this.countryName;
+      subnationalName = this.countryName;
     }
-    console.log(this.countryName + ", " + this.level2 + ", " + this.level1)
+    this.subnationalNames.push(subnationalName);
   }
 
   _getIndicatorFutureTimestamp(indicator) {

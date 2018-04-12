@@ -40,18 +40,18 @@ export class ModelSurgeCapacity extends BaseModel {
     if (!this.location && !this.isExcluded('location', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_LOCATION');
     }
-    if (!this.arrivalTimeValue && !this.isExcluded('arrivalTimeValue', excludedFields)) {
-      return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_TIME_VALUE');
-    }
-    if (this.arrivalTimeValue < 0 && !this.isExcluded('arrivalTimeValue', excludedFields)) {
-      return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.TIME_VALUE_INVALID');
-    }
-    if (!this.arrivalTimeType && !this.isExcluded('arrivalTimeType', excludedFields)) {
-      return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_TIME_TYPE');
-    }
-    if (!this.durationOfDeployment && !this.isExcluded('durationOfDeployment', excludedFields)) {
-      return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_DEPLOYMENT');
-    }
+    // if (!this.arrivalTimeValue && !this.isExcluded('arrivalTimeValue', excludedFields)) {
+    //   return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_TIME_VALUE');
+    // }
+    // if (this.arrivalTimeValue < 0 && !this.isExcluded('arrivalTimeValue', excludedFields)) {
+    //   return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.TIME_VALUE_INVALID');
+    // }
+    // if (!this.arrivalTimeType && !this.isExcluded('arrivalTimeType', excludedFields)) {
+    //   return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_TIME_TYPE');
+    // }
+    // if (!this.durationOfDeployment && !this.isExcluded('durationOfDeployment', excludedFields)) {
+    //   return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_DEPLOYMENT');
+    // }
     if (this.sectors.length <= 0 && !this.isExcluded('sectors', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.SURGE_CAPACITY.NO_SECTORS');
     }

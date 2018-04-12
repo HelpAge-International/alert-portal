@@ -154,6 +154,9 @@ export class PartnerOrganisationService {
   }
 
   savePartnerOrganisationLocalAgency(agencyId: string, partnerOrganisation: PartnerOrganisationModel): firebase.Promise<any>{
+    console.log("save partner for local agency")
+    console.log(agencyId)
+    console.log(partnerOrganisation)
     if(!agencyId)
     {
       throw new Error('Missing agencyId');

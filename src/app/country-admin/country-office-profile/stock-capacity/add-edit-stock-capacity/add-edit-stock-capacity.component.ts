@@ -128,6 +128,14 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
   submit() {
     if(this.isLocalAgency){
+      this.stockCapacity.location = this.selectedCountry;
+      this.stockCapacity.level1 = this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null;
+      this.stockCapacity.level2 = this.selectedValueL2 ? this.selectedValueL2 : null;
+
+      console.log("Country: " + this.stockCapacity.location);
+      console.log("Level 1: " +this.stockCapacity.level1);
+      console.log("Level 2: " +this.stockCapacity.level2);
+
       this._stockService.saveStockCapacityLocalAgency(this.agencyId, this.stockCapacity)
         .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);

@@ -82,6 +82,7 @@
   "SELECT_FROM_GENERIC_ACTIONS":"Select from generic actions",
   "ACTION_STATUS":"Action Status",
   "ALL_DEPARTMENTS":"All departments",
+  "DEPARTMENTS":"Departments",
   "ALL_TYPES":"All types",
   "ALL_HAZARDS":"All Hazards",
   "UNASSIGNED":"Unassigned",
@@ -440,8 +441,8 @@
       "COUNTRY_ADMINS":"Country Administrators",
       "COUNTRY_DIRECTORS":"Country Directors",
       "COUNTRY_DIRECTORS_SINGLE":"Country Director",
-      "ERT_LEAD":"ERT Leaders",
-      "ERT":"ERTs",
+      "ERT_LEAD":"ERT Leads",
+      "ERT":"ERT Users",
       "DONOR":"Donors",
       "PARTNER":"Partners",
       "NON_ALERT":"Non-Alert User",
@@ -1287,6 +1288,7 @@
       },
       "EQUIPMENT":{
         "TITLE_TEXT":"Equipment & surge equipment",
+        "EQUIPMENT":"Equipment",
         "EDIT":"Edit equipment",
         "VIEW":"View equipment",
         "QUANTITY":"Quantity",
@@ -1629,7 +1631,8 @@
         "ADD_ACTIVITY":"Add activity",
         "NO_NAME":"Please enter the planned activity",
         "NO_OUTPUT":"Please enter the activity output",
-        "NO_INDICATOR":"Please enter the activity indicator"
+        "NO_INDICATOR":"Please enter the activity indicator",
+        "BENEFICIARIES": "Please complete beneficiaries"
       },
       "MON_ACC_LEA":{
         "DESCRIBE_MON_ACC_LEA":"Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability",
@@ -1789,7 +1792,8 @@
       "VIEW_FULL_CALENDAR":"View full calendar",
       "ADD_TO_CALENDAR":"Add to the calendar",
       "VIEW_AS_WEEKS":"View as weeks",
-      "VIEW_AS_MONTHS":"View as months",
+      "VIEW_AS_THREE_MONTHS":"View as 3 months",
+      "VIEW_AS_SIX_MONTHS":"View as 6 months",
       "ADD_SEASON":"Add season to the calendar",
       "EDIT_SEASON":"Edit season",
       "SEASON_NAME":"Season Name",

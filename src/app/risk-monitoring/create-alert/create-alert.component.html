@@ -104,20 +104,20 @@
           </div>
         </div>
         <div class="col-sm-3" *ngIf="checkTypeof(location.country)">
-          <div class="form-group-risk-frequency ">
-            <select class="form-control" name="CountryAreaLevelOne"
-                    [(ngModel)]="location.level1">
-              <option value="undefined" disabled selected hidden>
-                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
-                countryLevels[location.country]?.levels[0].value | translate }}
-              </option>
-              <option
-                *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
-                [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
-              </option>
-            </select>
-          </div>
+        <div class="form-group-risk-frequency ">
+          <select class="form-control" name="CountryAreaLevelOne"
+                  [(ngModel)]="location.level1">
+            <option value="undefined" disabled selected hidden>
+              {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
+              countryLevels[location.country]?.levels[0].value | translate }}
+            </option>
+            <option
+              *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
+              [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
+            </option>
+          </select>
         </div>
+      </div>
         <div class="col-sm-3" *ngIf="checkTypeof(location.level1)">
           <div class="form-group-risk-frequency ">
             <select class="form-control" name="CountryAreaLevelTwo"

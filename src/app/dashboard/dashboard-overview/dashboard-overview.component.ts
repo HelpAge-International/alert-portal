@@ -46,6 +46,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private systemId: string;
   private from: string;
   private agencyName: string;
+  private networkName: string;
   private agencyOverview: boolean;
   private officeTarget: string;
   private alerts: Observable<any>;
@@ -137,6 +138,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
         }
         if (params["networkId"]) {
           this.networkId = params["networkId"];
+          this.getNetworkName(this.networkId)
         }
         if (params["networkCountryId"]) {
           this.networkCountryId = params["networkCountryId"];
@@ -323,4 +325,9 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     return HazardImages.init().getCSS(value);
   }
 
+  private getNetworkName(networkId: string) {
+    this.networkService.getNetworkDetail(networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(network => this.networkName = network.name)
+  }
 }

@@ -357,6 +357,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
 
     this.getStaffDetails(this.uid, true);
+    // this.getCountryAdmin(this.countryId, this.agencyId)
 
     this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, true,
       this.networkCountryId, this.networkId, this.systemAdminId);
@@ -542,6 +543,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           prepUser.firstName = snap.firstName;
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
+          console.log(this.CURRENT_USERS)
           this.updateUser(prepUser);
 
           if (isMe) {
@@ -942,7 +944,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         console.log(action['timeTracking'])
         console.log(action['timeTracking']['timeSpentInAmber'][index])
 
-        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
           action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
           action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
           data['timeTracking'] = action['timeTracking']
@@ -1420,4 +1422,28 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.initStaff(this.uid, agencyId, agencyCountryMap.get(agencyId))
     })
   }
+
+  // private getCountryAdmin(countryId: string, agencyId: string) {
+  //   console.log("fetch country admin")
+  //   this.userService.getCountryDetail(countryId, agencyId)
+  //     .flatMap(country => {
+  //       console.log(country)
+  //       return this.userService.getUser(country.adminId)
+  //     })
+  //     .takeUntil(this.ngUnsubscribe)
+  //     .subscribe(admin => {
+  //       console.log(admin)
+  //       const adminModel = new PreparednessUser(admin.id,false)
+  //       adminModel.id = admin.id
+  //       adminModel.firstName = admin.firstName
+  //       adminModel.lastName = admin.lastName
+  //       console.log(adminModel)
+  //       this.CURRENT_USERS.set(admin.id, adminModel)
+  //       console.log(this.CURRENT_USERS)
+  //       const staffAdmin = new ModelStaff()
+  //       staffAdmin.position = "Country Admin"
+  //       staffAdmin.id = admin.id
+  //       this.STAFF.set(staffAdmin.id, staffAdmin)
+  //     })
+  // }
 }

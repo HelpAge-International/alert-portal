@@ -774,9 +774,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                           this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.push(indicator)
                                         }
                                         else {
-                                          console.log("replace existing one")
                                           let indicatorIndex = this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.map(item => item.$key).indexOf(indicator.$key)
-                                          console.log(indicatorIndex)
                                           if (indicatorIndex != -1) {
                                             this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators[indicatorIndex] = indicator
                                             // this.activeHazards[this.activeHazards.indexOf(activeHazard)].indicators.splice(indicatorIndex, 1)
@@ -2004,17 +2002,20 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   private initStaffs() {
-    this.userService.getStaffList(this.countryID)
-      .flatMap(staffList => {
-        return Observable.from(staffList.map(staff => staff.id))
-      })
-      .flatMap(staffId => {
-        return this.userService.getUser(staffId)
-      })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe(user => {
-        this.staffMap.set(user.id, user)
-      })
+    let staff = this.userService.getStaffList(this.countryID);
+    if(staff){
+      staff
+        .flatMap(staffList => {
+          return Observable.from(staffList.map(staff => staff.id))
+        })
+        .flatMap(staffId => {
+          return this.userService.getUser(staffId)
+        })
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(user => {
+          this.staffMap.set(user.id, user)
+        });
+    }
 
     //get country admin
     this.agencyService.getCountryOffice(this.countryID, this.agencyId)

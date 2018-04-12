@@ -75,6 +75,10 @@ export class AgencyService {
     return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId);
   }
 
+  getLocalAgency(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
   getAllCountryOffices() {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/");
   }

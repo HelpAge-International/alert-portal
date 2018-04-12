@@ -1,4 +1,4 @@
-<table class="tg" style="width: 100%;" text-align="center" id="tableActivityNew">
+<table class="tg" style="width: 100%;" align="center" id="tableProjectActivities">
 
   <tr style="width: 100%; background-color: #CD0000; color: white; padding: 10px;">
     <td style="width: 50%;" colspan="10"><p style="margin-bottom: 0; text-align: center;">IMPLEMENTATION</p></td>
@@ -34,30 +34,30 @@
   </tr>
 
   <!-- ENTRIES -->
-  <ng-container *ngFor="let sector of sectors">
-    <tr *ngFor="let activity of activityMap.get(sector.id)" style="width: 100%; text-align: center; padding: 10px; ">
-      <td colspan="3"><p>{{SECTORS[sector.id] | translate}}</p></td>
-      <td colspan="3"><p></p></td>
-      <td colspan="2"><p>{{activity.output}}</p></td>
-      <td colspan="2"><p>Text</p></td>
-  <ng-container *ngIf="!activity.hasFurtherBeneficiary">
-      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
-      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
-      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
-      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
-      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
-      <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
-  </ng-container>
-  <ng-container>
-      <td colspan="1"><p></p></td>
-      <td colspan="1"><p></p></td>
-      <td colspan="1"><p></p></td>
-      <td colspan="1"><p></p></td>
-      <td colspan="1"><p></p></td>
-      <td colspan="1" style="background-color: #d8d8d8; text-align: center;" ><strong>{{getOverallTotalPopulation(activity)}}</strong></td>
- </ng-container>
-    </tr>
- </ng-container>
+    <ng-container *ngFor="let sector of sectors">
+      <tr *ngFor="let activity of activityMap.get(sector.id)" style="width: 100%; text-align: center; padding: 10px; ">
+        <td colspan="3"><p>{{SECTORS[sector.id] | translate}}</p></td>
+        <td colspan="3"><p></p></td>
+        <td colspan="2"><p>{{activity.output}}</p></td>
+        <td colspan="2"><p>Text</p></td>
+    <ng-container *ngIf="!activity.hasFurtherBeneficiary">
+        <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[0]?activity.beneficiary[0]["value"]:0}}</p></td>
+        <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[1]?activity.beneficiary[1]["value"]:0}}</p></td>
+        <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[2]?activity.beneficiary[2]["value"]:0}}</p></td>
+        <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[3]?activity.beneficiary[3]["value"]:0}}</p></td>
+        <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[4]?activity.beneficiary[4]["value"]:0}}</p></td>
+        <td colspan="1"><p>{{activity.beneficiary && activity.beneficiary[5]?activity.beneficiary[5]["value"]:0}}</p></td>
+    </ng-container>
+    <ng-container>
+        <td colspan="1"><p></p></td>
+        <td colspan="1"><p></p></td>
+        <td colspan="1"><p></p></td>
+        <td colspan="1"><p></p></td>
+        <td colspan="1"><p></p></td>
+        <td colspan="1" style="background-color: #d8d8d8; text-align: center;" ><strong>{{getOverallTotalPopulation(activity)}}</strong></td>
+   </ng-container>
+      </tr>
+   </ng-container>
 
 
 
@@ -84,12 +84,12 @@
   <tr style="width: 100%; text-align: center; padding: 10px; ">
     <td colspan="8" style="border-top: none; border-bottom: none; border-left: none"><p></p></td>
     <td colspan="2" style="text-align: left" ><strong>TOTAL ADJUSTED FOR DOUBLE COUNTING (unique count of individuals)</strong></td>
-    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[0]">{{responsePlan.doubleCounting[0].value}}</p></td>
-    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[1]">{{responsePlan.doubleCounting[1].value}}</p></td>
-    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[2]">{{responsePlan.doubleCounting[2].value}}</p></td>
-    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[3]">{{responsePlan.doubleCounting[3].value}}</p></td>
-    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[4]">{{responsePlan.doubleCounting[4].value}}</p></td>
-    <td colspan="1"><p *ngIf="responsePlan.doubleCounting[5]">{{responsePlan.doubleCounting[5].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting && responsePlan.doubleCounting[0]">{{responsePlan.doubleCounting[0].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting && responsePlan.doubleCounting[1]">{{responsePlan.doubleCounting[1].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting && responsePlan.doubleCounting[2]">{{responsePlan.doubleCounting[2].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting && responsePlan.doubleCounting[3]">{{responsePlan.doubleCounting[3].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting && responsePlan.doubleCounting[4]">{{responsePlan.doubleCounting[4].value}}</p></td>
+    <td colspan="1"><p *ngIf="responsePlan.doubleCounting && responsePlan.doubleCounting[5]">{{responsePlan.doubleCounting[5].value}}</p></td>
     <td colspan="1"><p></p></td>
     <td colspan="1"><p></p></td>
     <td colspan="1"><p></p></td>
@@ -102,10 +102,9 @@
 
 <br>
 <br>
-<hr>
+<br>
 
-
-<!-- Previous table, leaving in case need values  -->
+<!--
 <table class="tg" hidden align="center" id="tableProjectActivities">
 
   <tr>
@@ -281,3 +280,4 @@
   </tr>
 
 </table>
+!-->

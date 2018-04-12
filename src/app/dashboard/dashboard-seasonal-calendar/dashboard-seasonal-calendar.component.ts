@@ -297,7 +297,43 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
   public deleteSeason() {
     let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
-    this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).remove();
+
+    var foundIndex = false;
+    var index = 0;
+    this.af.database.list(Constants.APP_STATUS + "/season/" + id)
+      .take(1)
+      .subscribe(allSeasons => {
+        allSeasons.forEach(season => {
+          if(season.$key == this.editSeasonKey){
+            foundIndex = true;
+          }
+          if(foundIndex == false){
+            index = index + 1;
+          }
+        });
+
+        this.af.database.list(Constants.APP_STATUS + "/hazard/" + id)
+          .take(1)
+          .subscribe(hazards =>{
+            console.log(hazards);
+            hazards.forEach(hazard => {
+              if(hazard.seasons){
+                var indexSetToNull = false;
+                Object.keys(hazard.seasons).forEach(seasonId =>{
+                  if(parseInt(seasonId) == index){
+                    hazard.seasons[index] = null;
+                    indexSetToNull = true;
+                  }
+                });
+                if(hazard.seasons.length == 1 && indexSetToNull){
+                  hazard.isSeasonal = false;
+                }
+              }
+              this.af.database.object(Constants.APP_STATUS + "/hazard/" + id + "/" + hazard.$key).update(hazard);
+            });
+            this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).remove();
+          });
+      });
   }
 
   public setCurrentColour(colourCode: string) {

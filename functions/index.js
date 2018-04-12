@@ -361,6 +361,8 @@ function sendEmail(email, title, content) {
   };
   mailOptions.subject = title
   mailOptions.text = content
+  console.log(mailOptions.title)
+  console.log(mailOptions.text)
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('normal email sent to:', email);
   });
@@ -1571,6 +1573,8 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
     admin.database().ref('sand/userPublic/' + partnerOrganisation.userId).once("value", (data) => {
       let username = data.val().firstName + " " + data.val().lastName;
       let userEmail = data.val().email;
+      let orgName = data.val().organisationName;
+      console.log(data.val())
 
       admin.database().ref('sand/agency/' + partnerOrganisation.agencyId).once("value", (agency) => {
         let agencyName = agency.val().name;
@@ -1600,7 +1604,7 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
               // \n https://uat.portal.alertpreparedness.org
               mailOptions.subject = `Welcome to ${APP_NAME}!`;
               mailOptions.text = `Hello,
-                          \nYour Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                          \nYour Organisation ${orgName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/partner-validation;token=${validationToken.token};partnerId=${partnerId}
@@ -4952,47 +4956,91 @@ exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/
       let agencyId = event.params['agencyId'];
       let countryId = event.params['countryId'];
 
-      admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
-        let adminId = data.val();
-        console.log("admin id: " + adminId);
+      if (agencyId !== countryId) {
+        admin.database().ref('/sand/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
+          let adminId = data.val();
+          console.log("admin id: " + adminId);
 
-        admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
-          let email = user.val().email;
-          console.log("admin email: " + email);
+          admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
+            let email = user.val().email;
+            console.log("admin email: " + email);
 
-          admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
-            let network = networkSnap.val();
+            admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
+              let network = networkSnap.val();
 
 
-            let expiry = moment.utc().add(1, 'weeks').valueOf();
+              let expiry = moment.utc().add(1, 'weeks').valueOf();
 
-            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+              let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-            admin.database().ref('sand/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT Network" <noreply@firebase.com>',
-                to: email
-              };
+              admin.database().ref('sand/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT Network" <noreply@firebase.com>',
+                  to: email
+                };
 
-              mailOptions.subject = `You have been invited to join a network`;
-              mailOptions.text = `Hello,
+                mailOptions.subject = `You have been invited to join a network`;
+                mailOptions.text = `Hello,
                           \nYour Agency was added into ${network.name} network!.
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
                           \n Thanks
                           \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
               });
-            }, error => {
-              console.log(error.message);
+
             });
 
           });
-
         });
-      });
+      } else {
+        admin.database().ref('/sand/agency/' + agencyId + '/adminId').once("value", (data) => {
+          let adminId = data.val();
+          console.log("admin id: " + adminId);
+
+          admin.database().ref('/sand/userPublic/' + adminId).once("value", (user) => {
+            let email = user.val().email;
+            console.log("admin email: " + email);
+
+            admin.database().ref('/sand/network/' + networkId).once("value", networkSnap => {
+              let network = networkSnap.val();
+
+
+              let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+              let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+              admin.database().ref('sand/networkCountryValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT Network" <noreply@firebase.com>',
+                  to: email
+                };
+
+                mailOptions.subject = `You have been invited to join a network`;
+                mailOptions.text = `Hello,
+                          \nYour Agency was added into ${network.name} network!.
+                          \n To confirm, please click on the link below
+                          \n http://localhost:4200/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId}
+                          \n Thanks
+                          \n Your ALERT team `;
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
+              });
+
+            });
+
+          });
+        });
+      }
     }
   });
 
@@ -6003,57 +6051,59 @@ exports.sendEmailToExternalForAlertChangeRed_Training = functions.database.ref('
     }
   });
 
-// exports.sendEmailToExternalForIndicatorUpdate_SAND = functions.database.ref('/sand/indicator/{hazardId}/{indicatorId}/triggerSelected')
-//   .onWrite(event => {
-//
-//     const preData = event.data.previous.val();
-//     const currData = event.data.current.val();
-//
-//     if (preData && currData !== preData) {
-//       console.log("indicator updated");
-//
-//       let hazardId = event.params['hazardId'];
-//       let indicatorId = event.params['indicatorId'];
-//
-//       admin.database().ref('/sand/indicator/' + hazardId + '/' + indicatorId).once("value", (data) => {
-//         let indicator = data.val();
-//         if (indicator.hazardScenario['key'] === 'countryContext') {
-//           console.log("send email to state indicator for country context was updated")
-//           let title = `The indicator ${indicator.name} for Country Context has been updated`
-//           let content = `The following indicator: ${indicator.name} for Country Context has been updated`
-//           fetchUsersAndSendEmail('sand', hazardId, title, content, UPDATE_HAZARD)
-//         } else {
-//           console.log("fetch country id for hazard")
-//           admin.database().ref('/sand/hazard').once("value", (data) => {
-//             let filteredObjs = Object.keys(data.val()).map(key => {
-//               let obj = data.val()[key];
-//               obj['id'] = key
-//               return obj
-//             })
-//               .filter(item => {
-//                 return item.hasOwnProperty(hazardId)
-//               })
-//
-//             let countryId = filteredObjs[0]['id']
-//             console.log("fetched country id: " + countryId)
-//             if (indicator.hazardScenario.hazardScenario !== -1) {
-//               let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-//               let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-//               fetchUsersAndSendEmail('sand', countryId, title, content)
-//             } else {
-//               admin.database().ref('/sand/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
-//                 let otherHazardName = data.val()
-//                 let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
-//                 let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
-//                 fetchUsersAndSendEmail('sand', countryId, title, content, UPDATE_HAZARD)
-//               })
-//             }
-//           })
-//         }
-//       })
-//     }
-//   })
-//
+exports.sendEmailToExternalForIndicatorUpdate_SAND = functions.database.ref('/sand/indicator/{hazardId}/{indicatorId}/triggerSelected')
+  .onWrite(event => {
+    console.log("indicator update notification gets called!!!");
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    if (preData && currData !== preData) {
+      console.log("indicator updated");
+
+      let hazardId = event.params['hazardId'];
+      let indicatorId = event.params['indicatorId'];
+
+      admin.database().ref('/sand/indicator/' + hazardId + '/' + indicatorId).once("value", (data) => {
+        let indicator = data.val();
+        console.log(indicator)
+        if (indicator.hazardScenario['key'] === 'countryContext') {
+          console.log("send email to state indicator for country context was updated")
+          let title = `The indicator ${indicator.name} for Country Context has been updated`
+          let content = `The following indicator: ${indicator.name} for Country Context has been updated`
+          fetchUsersAndSendEmail('sand', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
+        } else {
+          console.log("fetch country id for hazard")
+          admin.database().ref('/sand/hazard').once("value", (data) => {
+            let filteredObjs = Object.keys(data.val()).map(key => {
+              let obj = data.val()[key];
+              obj['id'] = key
+              return obj
+            })
+              .filter(item => {
+                return item.hasOwnProperty(hazardId)
+              })
+
+            let countryId = filteredObjs[0]['id']
+            console.log("fetched country id: " + countryId)
+            if (indicator.hazardScenario.hazardScenario !== -1) {
+              let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+              fetchUsersAndSendEmail('sand', countryId, title, content, 0, indicator.assignee)
+            } else {
+              admin.database().ref('/sand/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
+                let otherHazardName = data.val()
+                let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
+                let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
+                fetchUsersAndSendEmail('sand', countryId, title, content, UPDATE_HAZARD, indicator.assignee)
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+
 exports.sendEmailToExternalForIndicatorUpdate_TEST = functions.database.ref('/test/indicator/{hazardId}/{indicatorId}/triggerSelected')
   .onWrite(event => {
 
@@ -6072,7 +6122,7 @@ exports.sendEmailToExternalForIndicatorUpdate_TEST = functions.database.ref('/te
           console.log("send email to state indicator for country context was updated")
           let title = `The indicator ${indicator.name} for Country Context has been updated`
           let content = `The following indicator: ${indicator.name} for Country Context has been updated`
-          fetchUsersAndSendEmail('test', hazardId, title, content, UPDATE_HAZARD)
+          fetchUsersAndSendEmail('test', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
         } else {
           console.log("fetch country id for hazard")
           admin.database().ref('/test/hazard').once("value", (data) => {
@@ -6090,13 +6140,13 @@ exports.sendEmailToExternalForIndicatorUpdate_TEST = functions.database.ref('/te
             if (indicator.hazardScenario.hazardScenario !== -1) {
               let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
               let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-              fetchUsersAndSendEmail('test', countryId, title, content)
+              fetchUsersAndSendEmail('test', countryId, title, content, 0, indicator.assignee)
             } else {
               admin.database().ref('/test/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
                 let otherHazardName = data.val()
                 let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
                 let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
-                fetchUsersAndSendEmail('test', countryId, title, content, UPDATE_HAZARD)
+                fetchUsersAndSendEmail('test', countryId, title, content, UPDATE_HAZARD, indicator.assignee)
               })
             }
           })
@@ -6123,7 +6173,7 @@ exports.sendEmailToExternalForIndicatorUpdate_UAT = functions.database.ref('/uat
           console.log("send email to state indicator for country context was updated")
           let title = `The indicator ${indicator.name} for Country Context has been updated`
           let content = `The following indicator: ${indicator.name} for Country Context has been updated`
-          fetchUsersAndSendEmail('uat', hazardId, title, content, UPDATE_HAZARD)
+          fetchUsersAndSendEmail('uat', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
         } else {
           console.log("fetch country id for hazard")
           admin.database().ref('/uat/hazard').once("value", (data) => {
@@ -6141,13 +6191,13 @@ exports.sendEmailToExternalForIndicatorUpdate_UAT = functions.database.ref('/uat
             if (indicator.hazardScenario.hazardScenario !== -1) {
               let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
               let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-              fetchUsersAndSendEmail('uat', countryId, title, content)
+              fetchUsersAndSendEmail('uat', countryId, title, content, 0, indicator.assignee)
             } else {
               admin.database().ref('/uat/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
                 let otherHazardName = data.val()
                 let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
                 let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
-                fetchUsersAndSendEmail('uat', countryId, title, content, UPDATE_HAZARD)
+                fetchUsersAndSendEmail('uat', countryId, title, content, UPDATE_HAZARD, indicator.assignee)
               })
             }
           })
@@ -6174,7 +6224,7 @@ exports.sendEmailToExternalForIndicatorUpdate_Demo = functions.database.ref('/de
           console.log("send email to state indicator for country context was updated")
           let title = `The indicator ${indicator.name} for Country Context has been updated`
           let content = `The following indicator: ${indicator.name} for Country Context has been updated`
-          fetchUsersAndSendEmail('demo', hazardId, title, content, UPDATE_HAZARD)
+          fetchUsersAndSendEmail('demo', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
         } else {
           console.log("fetch country id for hazard")
           admin.database().ref('/demo/hazard').once("value", (data) => {
@@ -6192,13 +6242,13 @@ exports.sendEmailToExternalForIndicatorUpdate_Demo = functions.database.ref('/de
             if (indicator.hazardScenario.hazardScenario !== -1) {
               let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
               let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-              fetchUsersAndSendEmail('demo', countryId, title, content)
+              fetchUsersAndSendEmail('demo', countryId, title, content, 0, indicator.assignee)
             } else {
               admin.database().ref('/demo/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
                 let otherHazardName = data.val()
                 let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
                 let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
-                fetchUsersAndSendEmail('demo', countryId, title, content, UPDATE_HAZARD)
+                fetchUsersAndSendEmail('demo', countryId, title, content, UPDATE_HAZARD, indicator.assignee)
               })
             }
           })
@@ -6225,7 +6275,7 @@ exports.sendEmailToExternalForIndicatorUpdate_Training = functions.database.ref(
           console.log("send email to state indicator for country context was updated")
           let title = `The indicator ${indicator.name} for Country Context has been updated`
           let content = `The following indicator: ${indicator.name} for Country Context has been updated`
-          fetchUsersAndSendEmail('training', hazardId, title, content, UPDATE_HAZARD)
+          fetchUsersAndSendEmail('training', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
         } else {
           console.log("fetch country id for hazard")
           admin.database().ref('/training/hazard').once("value", (data) => {
@@ -6243,13 +6293,13 @@ exports.sendEmailToExternalForIndicatorUpdate_Training = functions.database.ref(
             if (indicator.hazardScenario.hazardScenario !== -1) {
               let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
               let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-              fetchUsersAndSendEmail('training', countryId, title, content)
+              fetchUsersAndSendEmail('training', countryId, title, content, 0, indicator.assignee)
             } else {
               admin.database().ref('/training/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
                 let otherHazardName = data.val()
                 let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
                 let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
-                fetchUsersAndSendEmail('training', countryId, title, content, UPDATE_HAZARD)
+                fetchUsersAndSendEmail('training', countryId, title, content, UPDATE_HAZARD, indicator.assignee)
               })
             }
           })
@@ -7244,18 +7294,29 @@ exports.updateLatestToCAllUsers_D3S2 = functions.database.ref('/d3s2/system/{sys
  * Private functions
 */
 
-function fetchUsersAndSendEmail(node, countryId, title, content, setting) {
+function fetchUsersAndSendEmail(node, countryId, title, content, setting, assignee) {
+  console.log("fetchUsersAndSendEmail - gets called!!! "+node)
   admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
     let exObj = data.val();
+    console.log(exObj)
     if (exObj) {
       let recipients = Object.keys(exObj).map(key => {
         return exObj[key]
       })
       for (let i = 0, len = recipients.length; i < len; i++) {
+        console.log(recipients[i].email)
         if (recipients[i].notificationsSettings[setting]) {
           sendEmail(recipients[i].email, title, content)
         }
       }
+    }
+  });
+
+  admin.database().ref('/' + node + '/userPublic/' + assignee).once('value', (data) => {
+    let exObj = data.val();
+    console.log(exObj.email)
+    if (exObj) {
+      sendEmail(exObj.email, title, content)
     }
   })
 }
