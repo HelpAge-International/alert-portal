@@ -42,6 +42,10 @@ export class LocalNetworkMenuComponent implements OnInit, OnDestroy {
       this.isViewing = true;
       this.networkViewModel = new LocalNetworkViewModel(null, null, null, null, null, null, null);
       this.networkViewModel.mapFromObject(obj)
+      //extra check fot local agency
+      if (!this.networkViewModel.countryId) {
+        delete this.networkViewModel["countryId"]
+      }
 
       //init privacy
       this.networkService.getPrivacySettingForNetworkCountry(this.networkViewModel.networkId)

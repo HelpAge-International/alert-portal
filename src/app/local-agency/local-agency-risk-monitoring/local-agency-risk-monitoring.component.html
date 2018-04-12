@@ -1571,7 +1571,7 @@
       <br>
       <div class="modal-body">
         <div class="text-center">
-          <h6>{{subnationalName}}</h6>
+          <h6 *ngFor="let name of subnationalNames">{{name}}</h6>
         </div>
       </div>
     </div>

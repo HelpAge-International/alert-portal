@@ -28,8 +28,18 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
   // Constants and enums
   private alertMessageType = AlertMessageType;
   public responsePlansSectors = ResponsePlanSectors;
-  responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
-
+  private responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
+  private ResponsePlanSectorsList: number[] = [
+    ResponsePlanSectors.wash,
+    ResponsePlanSectors.health,
+    ResponsePlanSectors.shelter,
+    ResponsePlanSectors.nutrition,
+    ResponsePlanSectors.foodSecurityAndLivelihoods,
+    ResponsePlanSectors.protection,
+    ResponsePlanSectors.education,
+    ResponsePlanSectors.campmanagement,
+    ResponsePlanSectors.other
+  ];
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -179,6 +189,18 @@ export class CountryOfficeAddEditCoordinationComponent implements OnInit, OnDest
 
   deleteCoordinationArrangement() {
     jQuery('#delete-action').modal('show');
+  }
+
+  setSelectorClass(sectorID: any) {
+    var selected = '';
+    if (this.coordinationArrangement.sector == sectorID) {
+      selected = 'Selected';
+    }
+    return selected;
+  }
+
+  isActive(sectorID: any) {
+    this.coordinationArrangement.sector = sectorID;
   }
 
   deleteAction() {

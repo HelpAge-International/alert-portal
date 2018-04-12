@@ -13,12 +13,12 @@
 </ng-template>
 
 <ng-template #country>
+  <app-country-admin-header *ngIf="countryId"></app-country-admin-header>
+  <app-local-agency-header *ngIf="!countryId"></app-local-agency-header>
   <ng-container *ngIf="isNetworkCountry">
-    <app-country-admin-header></app-country-admin-header>
     <app-network-country-menu [isViewing]="true"></app-network-country-menu>
   </ng-container>
   <ng-container *ngIf="!isNetworkCountry">
-    <app-country-admin-header></app-country-admin-header>
     <app-local-network-menu [isViewing]="true"></app-local-network-menu>
   </ng-container>
 </ng-template>
@@ -68,8 +68,12 @@
           <div class="row">
             <img src="assets/images/icons/{{responsePlansSectorsSelection[coordinationArrangement.sector] | lowercase}}.svg"
                  class="margin-bottom-one" alt="Health">
-            <p class="margin-top-one-half margin-left-two">{{
+            <p *ngIf="coordinationArrangement.sector != responsePlansSectors.other || coordinationArrangement.otherName == null" class="margin-top-one-half margin-left-two">{{
               responsePlansSectorsSelection[coordinationArrangement.sector] | translate }}</p>
+            <p *ngIf="coordinationArrangement.sector == responsePlansSectors.other && coordinationArrangement.otherName != null" class="margin-top-one-half margin-left-two">{{
+              coordinationArrangement.otherName | translate }}</p>
+            <!--<p class="margin-top-one-half margin-left-two">{{-->
+              <!--responsePlansSectorsSelection[coordinationArrangement.sector] | translate }}</p>-->
           </div>
         </div>
         <div class="col-sm-5">

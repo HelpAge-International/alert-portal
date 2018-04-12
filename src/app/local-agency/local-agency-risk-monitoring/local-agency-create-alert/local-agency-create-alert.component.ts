@@ -10,12 +10,17 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../../services/user.service";
+import {AgencyService} from "../../../services/agency-service.service"
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {PrepActionService} from "../../../services/prepactions.service";
+<<<<<<< HEAD
 import { AgencyService } from "../../../services/agency-service.service";
+=======
+import {INT_TYPE} from "@angular/compiler/src/output/output_ast";
+>>>>>>> c11997af6a5891d392e263b110f9f2f2d87ac254
 declare var jQuery: any;
 
 @Component({
@@ -95,11 +100,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyId = agencyId;
-      this.countryID = countryId;
+
       this._getHazards();
       this._getDirectorLocalAgencyId();
-
-      console.log("agency id" + this.agencyId);
 
       this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
       
@@ -112,6 +115,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       //   this.initialLocation = detail.location;
       // });
 
+
+      console.log(this.prepActionService.actions)
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId);
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -286,7 +292,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
             }
 
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
-            this.router.navigateByUrl('dashboard');
+            this.router.navigateByUrl('local-agency/dashboard');
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });

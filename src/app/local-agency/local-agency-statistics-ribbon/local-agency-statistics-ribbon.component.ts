@@ -298,7 +298,7 @@ export class LocalAgencyStatisticsRibbonComponent implements OnInit {
 
   goToCHS(){
     if(this.userPermissions.minimumPreparedness){
-      this.router.navigate(["/preparedness/minimum", {"isCHS": true}]);
+      this.router.navigate(["/local-agency/preparedness/minimum", {"isCHS": true}]);
     }
   }
 

@@ -133,42 +133,7 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
               .subscribe(agency => {
                 this.agencies.push(agency);
 
-                this._equipmentService.getEquipments(value)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(equipments => {
-                    this.equipments.set(key, equipments);
-
-                    this.equipments.get(key).forEach(equipment => {
-                      const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
-
-                      this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                        equipment.notes = notes;
-                      });
-
-                      // Create the new note model
-                      this.newNote[equipment.id] = new NoteModel();
-                      this.newNote[equipment.id].uploadedBy = this.uid;
-                    });
-                  });
-
-                this._equipmentService.getSurgeEquipments(value)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(surgeEquipments => {
-                    this.surgeEquipments.set(key, surgeEquipments);
-
-                    this.surgeEquipments.get(key).forEach(surgeEquipment => {
-                      const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
-
-                      this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                        surgeEquipment.notes = notes;
-                      });
-
-                      // Create the new note model
-                      this.newNote[surgeEquipment.id] = new NoteModel();
-                      this.newNote[surgeEquipment.id].uploadedBy = this.uid;
-                    });
-
-                  });
+                value !== key ? this.getCountryEquipments(value, key) : this.getLocalAgencyEquipments(key)
               })
 
             //get privacy for country
@@ -258,8 +223,86 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
 
   }
 
+  private getCountryEquipments(value: string, key: string) {
+    this._equipmentService.getEquipments(value)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(equipments => {
+        this.equipments.set(key, equipments);
+
+        this.equipments.get(key).forEach(equipment => {
+          const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
+
+          this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+            equipment.notes = notes;
+          });
+
+          // Create the new note model
+          this.newNote[equipment.id] = new NoteModel();
+          this.newNote[equipment.id].uploadedBy = this.uid;
+        });
+      });
+
+    this._equipmentService.getSurgeEquipments(value)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(surgeEquipments => {
+        this.surgeEquipments.set(key, surgeEquipments);
+
+        this.surgeEquipments.get(key).forEach(surgeEquipment => {
+          const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
+
+          this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+            surgeEquipment.notes = notes;
+          });
+
+          // Create the new note model
+          this.newNote[surgeEquipment.id] = new NoteModel();
+          this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+        });
+
+      });
+  }
+
+  private getLocalAgencyEquipments(agencyId:string) {
+    this._equipmentService.getEquipmentsLocalAgency(agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(equipments => {
+        this.equipments.set(agencyId, equipments);
+
+        this.equipments.get(agencyId).forEach(equipment => {
+          const equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', agencyId).replace('{id}', equipment.id);
+
+          this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+            equipment.notes = notes;
+          });
+
+          // Create the new note model
+          this.newNote[equipment.id] = new NoteModel();
+          this.newNote[equipment.id].uploadedBy = this.uid;
+        });
+      });
+
+    this._equipmentService.getSurgeEquipmentsLocalAgency(agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(surgeEquipments => {
+        this.surgeEquipments.set(agencyId, surgeEquipments);
+
+        this.surgeEquipments.get(agencyId).forEach(surgeEquipment => {
+          const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', agencyId).replace('{id}', surgeEquipment.id);
+
+          this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+            surgeEquipment.notes = notes;
+          });
+
+          // Create the new note model
+          this.newNote[surgeEquipment.id] = new NoteModel();
+          this.newNote[surgeEquipment.id].uploadedBy = this.uid;
+        });
+
+      });
+  }
+
   private localNetworkAdminAccess() {
-    if (this.networkViewValues || this.isViewingFromExternal) {
+    if (this.isViewing || this.networkViewValues || this.isViewingFromExternal) {
       console.log("networkViewValues")
       this._networkService.getAgencyCountryOfficesByNetwork(this.networkID)
         .takeUntil(this.ngUnsubscribe)
@@ -272,8 +315,9 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agency => {
                 this.agencies.push(agency)
-
               })
+
+            value !== key ? this.getCountryEquipments(value, key) : this.getLocalAgencyEquipments(key)
 
             //get privacy for country
             this.settingService.getPrivacySettingForCountry(value)
@@ -281,41 +325,6 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
-
-            this._equipmentService.getEquipments(value)
-              .subscribe(equipments => {
-                this.equipments.set(key, equipments)
-
-                this.equipments.get(key).forEach(equipment => {
-                  const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
-
-                  this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                    equipment.notes = notes;
-                  });
-
-                  // Create the new note model
-                  this.newNote[equipment.id] = new NoteModel();
-                  this.newNote[equipment.id].uploadedBy = this.uid;
-                });
-              });
-
-            this._equipmentService.getSurgeEquipments(value)
-              .subscribe(surgeEquipments => {
-                this.surgeEquipments.set(key, surgeEquipments)
-
-                this.surgeEquipments.get(key).forEach(surgeEquipment => {
-                  const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
-
-                  this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-                    surgeEquipment.notes = notes;
-                  });
-
-                  // Create the new note model
-                  this.newNote[surgeEquipment.id] = new NoteModel();
-                  this.newNote[surgeEquipment.id].uploadedBy = this.uid;
-                });
-
-              });
           })
         })
 

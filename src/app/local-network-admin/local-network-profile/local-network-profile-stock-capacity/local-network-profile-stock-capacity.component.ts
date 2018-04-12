@@ -147,27 +147,30 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                 this.agencyCountryPrivacyMap.set(agencyId, privacy)
               })
 
-            this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + countryId)
+            const path = countryId !== agencyId ? Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + countryId : Constants.APP_STATUS + "/localAgencyProfile/capacity/stockCapacity/" + agencyId
+            this.af.database.list(path)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agencyStocks => {
+                console.log(agencyStocks)
                 this.agencyStocksIN[i] = []
+                this.agencyStocksOUT[i] = []
                 agencyStocks.forEach(stock => {
-                  if (stock.stockType == StockType.Country) {
 
+                  if (stock.stockType == StockType.Country || stock.stockType == StockType.Agency) {
                     this.agencyStocksIN[i].push(stock)
                     this.countryInMap.set(countryId, this.agencyStocksIN[i]);
                     console.log(this.countryInMap.get(countryId));
                     console.log(this.agencyStocksIN[i]);
-                  } else if (stock.stockType == StockType.External) {
-                    this.agencyStocksOUT[i] = []
+                  } else if (stock.stockType == StockType.External || stock.stockType == StockType.AgencyExternal) {
                     this.agencyStocksOUT[i].push(stock)
                     this.countryExtMap.set(countryId, this.agencyStocksOUT[i]);
                     console.log(this.countryExtMap);
+                    console.log(this.agencyStocksOUT[i])
                   }
 
-                  this._noteService.getNotes("/countryOfficeProfile/capacity/stockCapacity/" + countryId + "/" + stock.$key + "/notes").takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                  const notePath = countryId !== agencyId ? "/countryOfficeProfile/capacity/stockCapacity/" + countryId + "/" + stock.$key + "/notes" : "/localAgencyProfile/capacity/stockCapacity/" + agencyId + "/" + stock.$key + "/notes"
+                  this._noteService.getNotes(notePath).takeUntil(this.ngUnsubscribe).subscribe(notes => {
 
-                    console.log("/countryOfficeProfile/capacity/stockCapacity/" + countryId + "/" + stock.$key + "/notes")
                     stock.notes = notes;
 
                     // Create the new note model for partner organisation
@@ -341,27 +344,27 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                 this.agencyCountryPrivacyMap.set(agency.$key, privacy)
               })
 
-            this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode)
+            const path = agency.$key !== agency.countryCode ? Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode : Constants.APP_STATUS + "/localAgencyProfile/capacity/stockCapacity/" + agency.$key
+            this.af.database.list(path)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(agencyStocks => {
                 this.agencyStocksIN[i] = []
+                this.agencyStocksOUT[i] = []
                 agencyStocks.forEach(stock => {
-                  if (stock.stockType == StockType.Country) {
-
+                  if (stock.stockType == StockType.Country || stock.stockType == StockType.Agency) {
                     this.agencyStocksIN[i].push(stock)
                     this.countryInMap.set(agency.countryCode, this.agencyStocksIN[i]);
                     console.log(this.countryInMap.get(agency.countryCode));
                     console.log(this.agencyStocksIN[i]);
-                  } else if (stock.stockType == StockType.External) {
-                    this.agencyStocksOUT[i] = []
+                  } else if (stock.stockType == StockType.External || stock.stockType == StockType.AgencyExternal) {
                     this.agencyStocksOUT[i].push(stock)
                     this.countryExtMap.set(agency.countryCode, this.agencyStocksOUT[i]);
                     console.log(this.countryExtMap);
                   }
 
-                  this._noteService.getNotes("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes").subscribe(notes => {
+                  const notePath = agency.$key !== agency.countryCode ? "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes" : "/localAgencyProfile/capacity/stockCapacity/" + agency.$key + "/" + stock.$key + "/notes"
+                  this._noteService.getNotes(notePath).takeUntil(this.ngUnsubscribe).subscribe(notes => {
 
-                    console.log("/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes")
                     stock.notes = notes;
 
                     // Create the new note model for partner organisation

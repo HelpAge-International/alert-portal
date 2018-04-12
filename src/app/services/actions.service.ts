@@ -226,10 +226,12 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if (isLocalAgency) {
-            modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
-            modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else {
+          if(isLocalAgency){
+            if (alert.approval && alert.approval['localAgencyDirector']) {
+              modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+              modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+            }
+          } else{
             if (alert.approval && alert.approval['countryDirector']) {
               modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
               modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
@@ -439,7 +441,6 @@ export class ActionsService {
         modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
         modelAlert.createdBy = alert.createdBy;
         modelAlert.timeTracking = alert.timeTracking;
-        ;
 
         let affectedAreas: ModelAffectedArea[] = [];
         let ids: string[] = Object.keys(alert.affectedAreas);

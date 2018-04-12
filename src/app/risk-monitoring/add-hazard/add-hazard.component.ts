@@ -343,6 +343,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   stateIsCustom(isCustom: boolean, event: any, hazard) {
     this.hazardName = event.target.value;
+
     this.hazardData.hazardScenario = '';
     this._checkHazard(hazard);
     this.isCustomDisabled = isCustom;
@@ -365,8 +366,10 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   saveHazardBtn() {
     console.log('save hazard');
+    console.log(this.getKey);
     this.getEditSeasons.push(this.getKey);
     console.log(this.getEditSeasons);
+
     let updateKeys = {};
     updateKeys[this.getKey] = true;
 

@@ -32,7 +32,7 @@
         </div>
         <!--<div *ngIf="agencyOverview && (userType != UserType.Donor && userType != UserType.RegionalDirector && userType != UserType.GlobalDirector)"-->
         <div *ngIf="agencyOverview"
-             class="Back--button" routerLink="/country-admin/country-agencies">{{agencyName}} :
+             class="Back--button" routerLink="/country-admin/country-agencies">{{networkName ? networkName : agencyName}} :
           {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
           translate}}
         </div>
@@ -46,7 +46,7 @@
     </ng-container>
 
     <ng-container *ngIf="isLocalAgency">
-      <div class="Back--button" routerLink="//local-agency/country-agencies">{{agencyName}} :
+      <div class="Back--button" routerLink="//local-agency/country-agencies">{{networkName ? networkName : agencyName}} :
         {{"COUNTRY_ADMIN.VIEW_MY_AGENCY.OVERVIEW" |
         translate}}
       </div>

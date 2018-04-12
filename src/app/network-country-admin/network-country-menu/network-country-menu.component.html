@@ -31,8 +31,10 @@
         {{"HEADERS.PLANS" | translate}}</a>
     </li>
     <li class="" [hidden]="networkModules && !networkModules[NETWORK_MODULE.CountryOfficeProfile]?.status" routerLinkActive="active">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE"
+      <div class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE"
         | translate}}</a>
+
       <div class="dropdown-menu">
         <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-programme', networkViewValues] : ['/network-country/network-country-office-profile-programme']">
           Programme
@@ -58,6 +60,7 @@
         <a class="dropdown-item" [routerLink]="networkViewValues ? ['/network-country/network-country-office-profile-contacts', networkViewValues] : ['/network-country/network-country-office-profile-contacts']">
           Contacts
         </a>
+      </div>
       </div>
       <!--<a routerLink="/network-country/network-country-office-profile-programme">{{"NETWORK_OFFICE" | translate}}</a>-->
     </li>

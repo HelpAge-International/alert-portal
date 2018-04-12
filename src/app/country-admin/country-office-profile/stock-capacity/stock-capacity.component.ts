@@ -75,6 +75,12 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
+  }
+
+
+  private initCountryOffice(){
+
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -157,67 +163,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         })
       });
     });
-  }
-
-  private initCountryOffice() {
-
-    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
-      this.userType = userType;
-      this.userAgencyId = agencyId;
-
-      this.countryId = countryId;
-      this.agencyId = agencyId;
-
-      this._stockService.getStockCapacities(this.countryId).takeUntil(this.ngUnsubscribe).subscribe(stockCapacities => {
-        this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
-        this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
-        this.generateLocations();
-
-        // Get notes
-        stockCapacities.forEach(stockCapacity => {
-          const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-            .replace('{countryId}', this.countryId)
-            .replace('{id}', stockCapacity.id);
-          this._noteService.getNotes(stockCapacityNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-            notes.forEach(note => {
-              if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
-                this.agencyService.getAgency(note.agencyId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    note.agencyName = agency.name;
-                  })
-              }
-            })
-            stockCapacity.notes = notes;
-
-            // Create the new note model for partner organisation
-            this.newNote[stockCapacity.id] = new NoteModel();
-            this.newNote[stockCapacity.id].uploadedBy = this.uid;
-          });
-        })
-      });
-
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/location")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(getCountry => {
-          this.selectedCountry = getCountry.$value;
-
-          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(pre => {
-              console.log(pre[this.selectedCountry], 'in here');
-
-
-            })
-
-        });
-
-      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
-        this.countryPermissionsMatrix = isEnabled;
-      }));
-    });
-
   }
 
   goBack() {
@@ -376,6 +321,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
+
         if (stockCapacity.location && stockCapacity.location > -1) {
           obj.country = this.countries[stockCapacity.location];
         }
@@ -404,6 +350,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         }
         this.locationObjsStocksOut.push(obj);
       });
+
     });
   }
 }

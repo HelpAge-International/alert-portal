@@ -374,14 +374,17 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private buildNetworkViewValues() {
     let values = {};
-
     values["systemId"] = this.systemId;
     values["agencyId"] = this.agencyId;
-    values["countryId"] = this.countryId;
+    if (this.countryId) {
+      values["countryId"] = this.countryId;
+    }
     values["userType"] = this.userType;
     values["uid"] = this.uid;
     values["networkId"] = this.selectedNetwork.id;
-    values["networkCountryId"] = this.networkCountryMap.get(this.selectedNetwork.id);
+    if (this.networkCountryMap.get(this.selectedNetwork.id)) {
+      values["networkCountryId"] = this.networkCountryMap.get(this.selectedNetwork.id);
+    }
     values["isViewing"] = true;
     return values;
   }

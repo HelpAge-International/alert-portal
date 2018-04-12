@@ -299,7 +299,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   private initViewNetworkAccess() {
     this.getStaffDetails(this.uid, true);
 
-    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId
+    let id = this.networkCountryId && this.networkCountryId != "undefined" ? this.networkCountryId : this.networkId
 
     this.networkService.getNetworkModuleMatrix(id)
       .takeUntil(this.ngUnsubscribe)
@@ -790,7 +790,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               // Saving
               updateObj.createdAt = new Date().getTime();
               updateObj.networkId = this.networkId;
-              updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign !='null' ? this.action.agencyAssign : null
+              updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign != 'null' ? this.action.agencyAssign : null
               console.log(updateObj);
               this.af.database.list(Constants.APP_STATUS + "/action/" + id)
                 .push(updateObj)
@@ -862,7 +862,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               }
 
               // Updating
-              updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign !='null' ? this.action.agencyAssign : null
+              updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign != 'null' ? this.action.agencyAssign : null
               console.log(updateObj);
               this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
                 this._location.back();
@@ -1055,9 +1055,13 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     };
     // this.closeActionCancel('archive-action');
     jQuery("#archive-action").modal('hide');
-    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    let id = this.networkCountryId ? this.networkCountryId : this.networkId;
     this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-      this.isViewing ? this.router.navigate(this.action.level == ActionLevel.MPA ? ["/network-country/network-country-mpa", this.networkViewValues] : ["/network-country/network-country-apa", this.networkViewValues])
+      this.isViewing ?
+        this.networkCountryId ?
+          this.router.navigate(this.action.level == ActionLevel.MPA ? ["/network-country/network-country-mpa", this.networkViewValues] : ["/network-country/network-country-apa", this.networkViewValues])
+          :
+          this.router.navigate(this.action.level == ActionLevel.MPA ? ["/network/local-network-preparedness-mpa", this.networkViewValues] : ["/network/local-network-preparedness-apa", this.networkViewValues])
         :
         this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
     });
@@ -1071,7 +1075,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
     jQuery("#delete-action").modal('hide');
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).set(null).then(() => {
-      this.isViewing ? this.router.navigate(this.action.level == ActionLevel.MPA ? ["/network-country/network-country-mpa", this.networkViewValues] : ["/network-country/network-country-apa", this.networkViewValues])
+      this.isViewing ?
+        this.router.navigate(this.action.level == ActionLevel.MPA ? ["/network-country/network-country-mpa", this.networkViewValues] : ["/network-country/network-country-apa", this.networkViewValues])
         :
         this.isLocalNetworkAdmin ? this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network/local-network-preparedness-mpa" : "/network/local-network-preparedness-apa") : this.router.navigateByUrl(this.action.level == ActionLevel.MPA ? "/network-country/network-country-mpa" : "/network-country/network-country-apa");
     });

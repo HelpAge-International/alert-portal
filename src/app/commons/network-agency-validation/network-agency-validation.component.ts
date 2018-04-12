@@ -37,7 +37,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        if (params["token"] && params["networkId"] && params["agencyId"]) { 
+        if (params["token"] && params["networkId"] && params["agencyId"]) {
           this.accessToken = params["token"];
           this.networkId = params["networkId"];
           this.agencyId = params["agencyId"];
@@ -98,13 +98,18 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
     console.log(this.network)
     console.log(this.agencyId)
     update["/network/" + this.networkId + "/agencies/" + this.agencyId + "/isApproved"] = true;
-    update["/agency/" + this.agencyId + "/networks/" + this.networkId] = true;
-    update["/networkAgencyValidation/" + this.agencyId + "/validationToken/expiry"] = moment.utc().valueOf();
-    if (!this.network.isGlobal) {
+    if (this.network.isGlobal) {
+      update["/agency/" + this.agencyId + "/networks/" + this.networkId] = true;
+    } else {
       let countryCode = this.network.agencies[this.agencyId].countryCode;
-      update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
-
+      if (countryCode && countryCode !== this.agencyId) {
+        update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
+        update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
+      } else {
+        update["/agency/" + this.agencyId + "/localNetworks/" + this.networkId] = true;
+      }
     }
+    update["/networkAgencyValidation/" + this.agencyId + "/validationToken/expiry"] = moment.utc().valueOf();
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();
     }).catch(error => {
