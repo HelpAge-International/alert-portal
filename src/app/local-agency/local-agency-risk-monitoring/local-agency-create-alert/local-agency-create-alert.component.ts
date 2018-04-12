@@ -10,11 +10,13 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../../services/user.service";
+import {AgencyService} from "../../../services/agency-service.service"
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {PrepActionService} from "../../../services/prepactions.service";
+import {INT_TYPE} from "@angular/compiler/src/output/output_ast";
 declare var jQuery: any;
 
 @Component({
@@ -67,9 +69,8 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               private translate: TranslateService,
               private userService: UserService,
               private prepActionService: PrepActionService,
-              private notificationService: NotificationService) {
-    this.initAlertData();
-  }
+              private AgencyService: AgencyService,
+              private notificationService: NotificationService) {}
 
   initAlertData() {
     this.alertData = new ModelAlert();
@@ -77,7 +78,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    const area = new OperationAreaModel()
+    area.country = parseInt(this.countryID);
+    this.alertData.affectedAreas.push(area);
   }
 
   removeAnotherArea(key: number,) {
@@ -90,14 +93,25 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyId = agencyId;
-      this.countryID = countryId;
+
       this._getHazards();
       this._getDirectorLocalAgencyId();
 
+      this.AgencyService.getAgencyModel(this.agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(
+          agency => {
+            this.countryID = agency.countryCode.toString();
+            this.initAlertData();
+            console.log(agency, this.countryID);
+          },
+          error => {
+            console.log(error);
+          }
+        );
+
       console.log(this.prepActionService.actions)
-      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
-
-
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId);
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)

@@ -78,7 +78,7 @@
                 <div class="form-group-risk-frequency ">
                   <select class="form-control" name="CountryArea"
                           [(ngModel)]="location.country">
-                    <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
+                    <option value="undefined" disabled z hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                     <option *ngFor="let countryKey of countriesList" [ngValue]="countryKey">{{countries[countryKey] |
                       translate}}
                     </option>
