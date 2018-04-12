@@ -295,10 +295,14 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
 
-  highlightRadio(){
+  highlightRadio(isRed : boolean){
 
-
-    console.log(this.alertData.alertLevel);
+    if(isRed) {
+      this.alertData.alertLevel = 2
+    }
+    else {
+      this.alertData.alertLevel = 1
+    }
 
   }
 

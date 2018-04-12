@@ -62,14 +62,14 @@
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
         <input type="radio" name="alert1" id="RT_yes" [(ngModel)]="alertData.alertLevel" [value]="1">
       </label>
-      <button class="btn btn-warning Left" id="amberAlert" (click)="highlightRadio()">{{alertLevels[1] | translate}}</button>
+      <button class="btn btn-warning Left" id="amberAlert" (click)="highlightRadio(false)">{{alertLevels[1] | translate}}</button>
 
       <!--red alert -->
       <label for="RT_yes"
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
         <input type="radio" name="alert1" id="radioRed" [(ngModel)]="alertData.alertLevel" [value]="2">
       </label>
-      <button  id="redAlert" (click)="highlightRadio()" class="btn btn-danger Left">{{alertLevels[2] | translate}}</button>
+      <button  id="redAlert" (click)="highlightRadio(true)" class="btn btn-danger Left">{{alertLevels[2] | translate}}</button>
     </div>
 
     <br>
