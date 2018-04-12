@@ -1648,7 +1648,7 @@
                      [ngStyle]="{'background':season.colorCode}">
                 </div>
               </div>
-              <div class="cold-sm-7 margin-left-one"><p class="font-size-two"><strong>
+              <div class="cold-sm-7 margin-left-one"><p class="font-size-two" *ngIf="selectedHazardSeasons[i]"><strong>
                 {{season.name}} | {{season.startTime | date:"dd/MM/yy"}} - {{season.endTime |
                 date:"dd/MM/yy"}}</strong></p></div>
             </div>
