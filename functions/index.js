@@ -1573,8 +1573,6 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
     admin.database().ref('sand/userPublic/' + partnerOrganisation.userId).once("value", (data) => {
       let username = data.val().firstName + " " + data.val().lastName;
       let userEmail = data.val().email;
-      let orgName = data.val().organisationName;
-      console.log(data.val())
 
       admin.database().ref('sand/agency/' + partnerOrganisation.agencyId).once("value", (agency) => {
         let agencyName = agency.val().name;
@@ -1593,6 +1591,7 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
             let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
             // console.log("email: " + email);
+            admin.database().ref('sand/partnerOrganisation/' + partnerId).once("value", (org) => {
 
             admin.database().ref('sand/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
               console.log('success validationToken');
@@ -1604,7 +1603,7 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
               // \n https://uat.portal.alertpreparedness.org
               mailOptions.subject = `Welcome to ${APP_NAME}!`;
               mailOptions.text = `Hello,
-                          \nYour Organisation ${orgName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
+                          \nYour Organisation ${org.val().organisationName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/partner-validation;token=${validationToken.token};partnerId=${partnerId}
@@ -1616,6 +1615,7 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
             }, error => {
               console.log(error.message);
             });
+          });
           }
         });
       });
@@ -1653,6 +1653,8 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
 
             console.log("email: " + email);
 
+            admin.database().ref('test/partnerOrganisation/' + partnerId).once("value", (org) => {
+
             admin.database().ref('test/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
               console.log('success validationToken');
               const mailOptions = {
@@ -1663,7 +1665,7 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
               // \n https://uat.portal.alertpreparedness.org
               mailOptions.subject = `Welcome to ${APP_NAME}!`;
               mailOptions.text = `Hello,
-                          \n Your Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                          \n Your Organisation ${org.val().organisationName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://test.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
@@ -1674,6 +1676,7 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
               });
             }, error => {
               console.log(error.message);
+            });
             });
           }
         });
@@ -1713,28 +1716,30 @@ exports.sendPartnerOrganisationValidationEmailUat = functions.database.ref('/uat
             let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
             console.log("email: " + email);
+            admin.database().ref('uat/partnerOrganisation/' + partnerId).once("value", (org) => {
 
-            admin.database().ref('uat/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT partner organisation" <noreply@firebase.com>',
-                to: email
-              };
+              admin.database().ref('uat/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT partner organisation" <noreply@firebase.com>',
+                  to: email
+                };
 
-              // \n https://uat.portal.alertpreparedness.org
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
-              mailOptions.text = `Hello,
-                          \n Your Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                // \n https://uat.portal.alertpreparedness.org
+                mailOptions.subject = `Welcome to ${APP_NAME}!`;
+                mailOptions.text = `Hello,
+                          \n Your Organisation ${org.val().organisationName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://uat.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
               });
-            }, error => {
-              console.log(error.message);
             });
           }
         });
@@ -1773,28 +1778,30 @@ exports.sendPartnerOrganisationValidationEmailDemo = functions.database.ref('/de
             let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
             console.log("email: " + email);
+            admin.database().ref('demo/partnerOrganisation/' + partnerId).once("value", (org) => {
 
-            admin.database().ref('demo/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT partner organisation" <noreply@firebase.com>',
-                to: email
-              };
+              admin.database().ref('demo/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT partner organisation" <noreply@firebase.com>',
+                  to: email
+                };
 
-              // \n https://uat.portal.alertpreparedness.org
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
-              mailOptions.text = `Hello,
-                          \n Your Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                // \n https://uat.portal.alertpreparedness.org
+                mailOptions.subject = `Welcome to ${APP_NAME}!`;
+                mailOptions.text = `Hello,
+                          \n Your Organisation ${org.val().organisationName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://demo.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
               });
-            }, error => {
-              console.log(error.message);
             });
           }
         });
@@ -1831,28 +1838,30 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
             let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
             console.log("email: " + email);
+            admin.database().ref('training/partnerOrganisation/' + partnerId).once("value", (org) => {
 
-            admin.database().ref('training/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT partner organisation" <noreply@firebase.com>',
-                to: email
-              };
+              admin.database().ref('training/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT partner organisation" <noreply@firebase.com>',
+                  to: email
+                };
 
-              // \n https://uat.portal.alertpreparedness.org
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
-              mailOptions.text = `Hello,
-                          \n Your Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                // \n https://uat.portal.alertpreparedness.org
+                mailOptions.subject = `Welcome to ${APP_NAME}!`;
+                mailOptions.text = `Hello,
+                          \n Your Organisation ${org.val().organisationName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://training.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
                           \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
               });
-            }, error => {
-              console.log(error.message);
             });
           }
         });

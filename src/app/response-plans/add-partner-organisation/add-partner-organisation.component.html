@@ -20,7 +20,8 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
-      <button *ngIf="partnerOrganisation.isActive && isEdit" type="button" class="btn btn-outline-primary text-uppercase"
+      <button *ngIf="partnerOrganisation.isActive && isEdit" type="button"
+              class="btn btn-outline-primary text-uppercase"
               (click)="openConfirmationModel()">
         {{ 'DEACTIVATE' | translate }}
       </button>
@@ -296,7 +297,8 @@
       <br>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="setInactiveState()">{{"SAVE"| translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-inactive')">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-inactive')">
+          {{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>
@@ -317,7 +319,8 @@
       <br>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="setActiveState()">{{"SAVE"| translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-active')">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-active')">
+          {{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>

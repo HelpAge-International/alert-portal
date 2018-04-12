@@ -620,12 +620,17 @@ export class PageControlService {
         // We have [AgencyPermissionObj], need to iterate through those.
         //  For every one of those, check if our current URL is contained in one of thise
         //   If so and we're not authorised to view it, kick us out
+
         for (let x of list) {
           for (let y of x.urls) {
             // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
             if ((s == y) && !x.isAuthorized && !skip) {
-              router.navigateByUrl(type.redirectTo);
-              skip = true;
+              if(x.permission == PermissionsAgency.RiskMonitoring){
+                skip = false;
+              }else {
+                router.navigateByUrl(type.redirectTo);
+                skip = true;
+              }
             }
           }
         }

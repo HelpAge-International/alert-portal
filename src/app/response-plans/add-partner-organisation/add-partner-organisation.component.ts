@@ -49,6 +49,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   // Other
   private activeProject: PartnerOrganisationProjectModel;
+  private isNewProject: boolean = false;
   private fromResponsePlans: boolean = false;
   private projectEndDate: any[] = [];
   private todayDayMonth = new Date(new Date().getFullYear(), new Date().getMonth());
@@ -84,7 +85,6 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(content => {
           this.countryLevelsValues = content;
-
           this._userService.getAgencyDetail(this.agencyId)
             .first()
             .subscribe(agency => {
@@ -215,6 +215,10 @@ console.log("in partner org")
           }
         });
     } else {
+      if(this.activeProject.title == null && this.activeProject.endDate == null){
+        this.activeProject.operationAreas = null
+      }
+
       this._partnerOrganisationService.savePartnerOrganisation(this.agencyId, this.countryId, this.partnerOrganisation)
         .then(result => {
           this.partnerOrganisation.id = this.partnerOrganisation.id || result.key;
