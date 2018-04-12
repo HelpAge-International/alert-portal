@@ -11,7 +11,7 @@
       <a routerLink="/local-agency/risk-monitoring">{{"RISK_MONITORING_TEXT" | translate}}</a>
     </li>
 
-    <li class="" routerLinkActive="active">
+    <li class="" routerLinkActive="active" [hidden]="permMinimumPreparedness && permAdvancedPreparedness">
       <div class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
            aria-expanded="false">{{"PREPAREDNESS_TEXT" | translate}}</a>
