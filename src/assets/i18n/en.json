@@ -80,6 +80,7 @@
   "SELECT_FROM_GENERIC_ACTIONS":"Select from generic actions",
   "ACTION_STATUS":"Action Status",
   "ALL_DEPARTMENTS":"All departments",
+  "DEPARTMENTS":"Departments",
   "ALL_TYPES":"All types",
   "ALL_HAZARDS":"All Hazards",
   "UNASSIGNED":"Unassigned",
@@ -438,8 +439,8 @@
       "COUNTRY_ADMINS":"Country Administrators",
       "COUNTRY_DIRECTORS":"Country Directors",
       "COUNTRY_DIRECTORS_SINGLE":"Country Director",
-      "ERT_LEAD":"ERT Leaders",
-      "ERT":"ERTs",
+      "ERT_LEAD":"ERT Leads",
+      "ERT":"ERT Users",
       "DONOR":"Donors",
       "PARTNER":"Partners",
       "NON_ALERT":"Non-Alert User",
@@ -1285,6 +1286,7 @@
       },
       "EQUIPMENT":{
         "TITLE_TEXT":"Equipment & surge equipment",
+        "EQUIPMENT":"Equipment",
         "EDIT":"Edit equipment",
         "VIEW":"View equipment",
         "QUANTITY":"Quantity",
@@ -1627,7 +1629,8 @@
         "ADD_ACTIVITY":"Add activity",
         "NO_NAME":"Please enter the planned activity",
         "NO_OUTPUT":"Please enter the activity output",
-        "NO_INDICATOR":"Please enter the activity indicator"
+        "NO_INDICATOR":"Please enter the activity indicator",
+        "BENEFICIARIES": "Please complete beneficiaries"
       },
       "MON_ACC_LEA":{
         "DESCRIBE_MON_ACC_LEA":"Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability",

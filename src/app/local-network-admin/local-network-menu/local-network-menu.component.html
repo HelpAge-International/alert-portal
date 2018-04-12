@@ -33,8 +33,9 @@
     </li>
 
     <li [hidden]="networkModules && !networkModules[NETWORK_MODULE.CountryOfficeProfile]?.status" routerLinkActive="active">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Network
-        Office Profile</a>
+      <div class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true" aria-expanded="false">{{"NETWORK_OFFICE" | translate}}</a>
+
       <div class="dropdown-menu">
         <a class="dropdown-item"
            [routerLink]="networkViewModel ? ['/network/local-network-office-profile/programme', networkViewModel] : '/network/local-network-office-profile/programme'">
@@ -68,6 +69,7 @@
            [routerLink]="networkViewModel ? ['/network/local-network-office-profile/contacts', networkViewModel] : '/network/local-network-office-profile/contacts'">
           Contacts
         </a>
+      </div>
       </div>
     </li>
     <li class="" routerLinkActive="active">

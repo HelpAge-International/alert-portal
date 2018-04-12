@@ -38,18 +38,34 @@
     <form (ngSubmit)="submit()">
       <div class="row">
         <p class="col-sm-12"><strong>{{ 'ADD_PARTNER.SECTOR' | translate }}</strong></p>
-        <div class="col-sm-4">
-          <select class="form-control" id="sector" name="sector"
-                  [(ngModel)]="coordinationArrangement.sector">
-            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let responsePlanSector of responsePlansSectors | enumKeyValues"
-                    [value]="responsePlanSector.key">{{ responsePlansSectorsSelection[responsePlanSector.key] |
-              translate}}
-            </option>
-          </select>
+        <div class="Item__selectable Icon__selectable" *ngFor="let sector of ResponsePlanSectorsList">
+          <div (click)="isActive(sector)" [ngClass]="setSelectorClass(sector)"
+               class="{{responsePlansSectorsSelection[sector] | translate | lowercase}}"></div>
+          <label>{{responsePlansSectorsSelection[sector] | translate}}</label>
         </div>
+
+        <!--Selector older version -->
+        <!--<div class="col-sm-4">-->
+          <!--<select class="form-control" id="sector" name="sector"-->
+                  <!--[(ngModel)]="coordinationArrangement.sector">-->
+            <!--<option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>-->
+            <!--<option *ngFor="let responsePlanSector of responsePlansSectors | enumKeyValues"-->
+                    <!--[value]="responsePlanSector.key">{{ responsePlansSectorsSelection[responsePlanSector.key] |-->
+              <!--translate}}-->
+            <!--</option>-->
+          <!--</select>-->
+        <!--</div>-->
       </div>
       <br>
+
+      <ng-container *ngIf="coordinationArrangement.sector == responsePlansSectors.other">
+        <div class="row form-group">
+          <div class="col-sm-12">
+            <input class="col-sm-4 form-control" type="text" name="otherSectorName"
+                   placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" [(ngModel)]="coordinationArrangement.otherName">
+          </div>
+        </div>
+      </ng-container>
 
       <div class="row form-group margin-bottom-none">
         <div class="col-sm-4"><p><strong>{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.SECTOR_LEAD' | translate }}</strong></p>

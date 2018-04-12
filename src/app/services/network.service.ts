@@ -183,6 +183,7 @@ export class NetworkService {
   }
 
   updateNetworkFieldByObject(path, model) {
+    console.log(model)
     return this.af.database.object(Constants.APP_STATUS + path).update(model);
   }
 

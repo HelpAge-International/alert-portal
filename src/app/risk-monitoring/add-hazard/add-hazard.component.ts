@@ -343,6 +343,7 @@ export class AddHazardRiskMonitoringComponent implements OnInit, OnDestroy {
 
   stateIsCustom(isCustom: boolean, event: any, hazard) {
     this.hazardName = event.target.value;
+
     this.hazardData.hazardScenario = '';
     this._checkHazard(hazard);
     this.isCustomDisabled = isCustom;
