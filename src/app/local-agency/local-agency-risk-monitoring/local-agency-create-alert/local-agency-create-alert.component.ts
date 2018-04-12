@@ -16,11 +16,7 @@ import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {PrepActionService} from "../../../services/prepactions.service";
-<<<<<<< HEAD
-import { AgencyService } from "../../../services/agency-service.service";
-=======
 import {INT_TYPE} from "@angular/compiler/src/output/output_ast";
->>>>>>> c11997af6a5891d392e263b110f9f2f2d87ac254
 declare var jQuery: any;
 
 @Component({
