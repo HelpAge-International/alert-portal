@@ -668,7 +668,8 @@
       "END_DATE": "Data de conclusão",
       "SEASONAL_CALENDAR": "Calendário sazonal",
       "SEASON_NAME": "Nome da estação",
-      "VIEW_AS_MONTHS": "Ver em meses",
+      "VIEW_AS_THREE_MONTHS": "Ver em 3 meses",
+      "VIEW_AS_SIX_MONTHS": "Ver em 6 meses",
       "VIEW_AS_WEEKS": "Ver em semanas",
       "VIEW_FULL_CALENDAR": "Ver calendário completo"
     },
