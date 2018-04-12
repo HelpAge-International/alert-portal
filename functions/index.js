@@ -1573,6 +1573,8 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
     admin.database().ref('sand/userPublic/' + partnerOrganisation.userId).once("value", (data) => {
       let username = data.val().firstName + " " + data.val().lastName;
       let userEmail = data.val().email;
+      let orgName = data.val().organisationName;
+      console.log(data.val())
 
       admin.database().ref('sand/agency/' + partnerOrganisation.agencyId).once("value", (agency) => {
         let agencyName = agency.val().name;
@@ -1602,7 +1604,7 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
               // \n https://uat.portal.alertpreparedness.org
               mailOptions.subject = `Welcome to ${APP_NAME}!`;
               mailOptions.text = `Hello,
-                          \nYour Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                          \nYour Organisation ${orgName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/partner-validation;token=${validationToken.token};partnerId=${partnerId}
