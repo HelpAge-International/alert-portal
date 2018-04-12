@@ -723,7 +723,8 @@ export class NetworkService {
             let obj = {};
             obj["agencyId"] = key;
             obj["countryId"] = Object.keys(agencyCountries[key])[0];
-            obj["approved"] = Object.keys(agencyCountries[key]).map(id => agencyCountries[key][id])[0]
+            obj["approved"] = agencyCountries[key][obj["countryId"]]
+            // obj["approved"] = Object.keys(agencyCountries[key]).map(id => agencyCountries[key][id])[0]
             return obj;
           }).filter(item => item["approved"]["isApproved"] == true)
           let agencyCountryMap = new Map<string, string>();
