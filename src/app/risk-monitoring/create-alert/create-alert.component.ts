@@ -136,6 +136,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(country => {
           this.preSelectedCountry = country.location
+          
           this.alertData.affectedAreas.forEach(area => {
             area.country = country.location
           })

@@ -15,6 +15,7 @@ import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {PrepActionService} from "../../../services/prepactions.service";
+import { AgencyService } from "../../../services/agency-service.service";
 declare var jQuery: any;
 
 @Component({
@@ -48,7 +49,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   private countries = Constants.COUNTRIES;
   private countriesList = Constants.COUNTRY_SELECTION;
   private frequency = new Array(100);
-
+  private initialLocation : number;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
 
@@ -67,7 +68,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               private translate: TranslateService,
               private userService: UserService,
               private prepActionService: PrepActionService,
-              private notificationService: NotificationService) {
+              private notificationService: NotificationService,
+              private agencyService : AgencyService) {
+
     this.initAlertData();
   }
 
@@ -77,7 +80,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    var area = new OperationAreaModel()
+    area.country = this.initialLocation
+    this.alertData.affectedAreas.push(area);
   }
 
   removeAnotherArea(key: number,) {
@@ -94,9 +99,18 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this._getHazards();
       this._getDirectorLocalAgencyId();
 
-      console.log(this.prepActionService.actions)
-      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
+      console.log("agency id" + this.agencyId);
 
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
+      
+      this.agencyService.getAgency(this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(agency => {
+        this.initialLocation = agency.countryCode;
+        this.alertData.affectedAreas[0].country = this.initialLocation;
+      })
+      // this.userService.getCountryDetail(this.countryID, this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(detail => {
+      //   console.log(detail)
+      //   this.initialLocation = detail.location;
+      // });
 
 
       // get the country levels values
@@ -144,7 +158,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
           .then(alert => {
-
+            
             let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
             let hazardTrackingNode;
 
