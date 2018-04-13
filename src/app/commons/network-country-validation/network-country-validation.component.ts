@@ -27,6 +27,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
   private network: any;
   private networkCountryId: string;
   private countryId: string;
+  private showLoader:boolean
 
 
   constructor(private route: ActivatedRoute,
@@ -35,6 +36,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.showLoader = true
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -65,6 +67,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
                     if (validate) {
                       this.getNetworkInfo(this.networkId);
                     }
+                    this.showLoader = false
                   })
               } else {
                 console.log("user not logged in");

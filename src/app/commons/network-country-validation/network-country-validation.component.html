@@ -16,9 +16,9 @@
         <h1>Agency Invitation</h1>
       </div>
 
-      <!--<div *ngIf="!isValidated" class="Text-center margin-top-five">-->
-        <!--<p>This link was expired, please request validation email again!</p>-->
-      <!--</div>-->
+      <div *ngIf="!isValidated && !showLoader" class="Text-center margin-top-five">
+        <p>This link was expired, please request validation email again!</p>
+      </div>
 
       <div *ngIf="isValidated" class="margin-top-eight">
 
