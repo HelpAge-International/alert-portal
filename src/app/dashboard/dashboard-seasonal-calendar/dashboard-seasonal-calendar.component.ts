@@ -157,14 +157,16 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
         this.seasonEvents = [
-          ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar(), <DashboardSeasonalCalendarComponent> this)
+        //  ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar(), <DashboardSeasonalCalendarComponent> this)
         ];
         let i = 2;
         snapshot.forEach((seasonInfo) => {
-          let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val(), <DashboardSeasonalCalendarComponent> this, seasonInfo.key);
-          this.seasonEvents.push(x);
+          //let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val(), <DashboardSeasonalCalendarComponent> this, seasonInfo.key);
+          //this.seasonEvents.push(x);
           i++;
         });
+        console.log("came here 1");
+
         !agencyCountry ? this.initCalendar()
           :
           Object.keys(agencyCountry).forEach(agencyId => {
@@ -177,13 +179,19 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
               .subscribe(snapshot => {
                 let i = 100;
                 snapshot.forEach((seasonInfo) => {
-                  let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
-                  this.seasonEvents.push(x);
-                  i++;
+                 // let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
+                 // this.seasonEvents.push(x);
+                 // i++;
                 });
+                console.log("came here op 1");
+
                 this.initCalendar();
+                console.log("came here op");
+
               })
-          })
+          });
+        console.log("came here 2");
+
       });
   }
 
@@ -201,8 +209,12 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    * Initialise the calendar
    */
   private initCalendar() {
+    console.log("came here 3");
+
     // To show weekly calendar ----> Change visibleSpan to 'DAY_IN_MILLISECONDS * 30'
     document.getElementById("target2").innerHTML = "";
+    console.log("came here 4");
+
     this.currentChronolineInstance = new Chronoline(document.getElementById("target2"), this.seasonEvents,
       {
         visibleSpan: DAY_IN_MILLISECONDS * (this.currentSpanMultiplierIsMonth ?
@@ -218,7 +230,11 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
         // markToday: 'labelBox',
         draggable: true
       });
+    console.log("came here 5");
+
     this.currentChronolineInstance.goToDate(new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 7)), 1);
+    console.log("came here 6");
+
     this.init = true;
   }
 
