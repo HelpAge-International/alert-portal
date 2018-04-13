@@ -688,14 +688,18 @@ export class NetworkService {
   }
 
   getAgenciesForNetworkCountry(networkId, networkCountryId, agencyCountryMap) {
+    console.log(networkId)
+    console.log(networkCountryId)
+    console.log(agencyCountryMap)
     return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries")
       .map(agencies => {
         if (agencies) {
           let agencyModels = [];
           agencies.forEach(agency => {
+            console.log(agency)
             let model = new NetworkAgencyModel();
             model.id = agency.$key;
-            model.isApproved = agencyCountryMap.get(agency.$key) ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : agency[agency.$key]["isApproved"]
+            model.isApproved = agencyCountryMap.get(agency.$key) ? (agency.$key !== agencyCountryMap.get(agency.$key) ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : agency[agency.$key]["isApproved"]) : false
             agencyModels.push(model);
           });
           return agencyModels;
@@ -736,6 +740,28 @@ export class NetworkService {
       });
   }
 
+  mapAgencyCountryForNetworkCountryWithNotApproved(networkId, networkCountryId) {
+    return this.getNetworkCountry(networkId, networkCountryId)
+      .map(networkCountry => {
+        if (networkCountry.agencyCountries) {
+          let agencyCountries = networkCountry.agencyCountries;
+          let agencyCountryList = Object.keys(agencyCountries).map(key => {
+            let obj = {};
+            obj["agencyId"] = key;
+            obj["countryId"] = Object.keys(agencyCountries[key])[0];
+            obj["approved"] = agencyCountries[key][obj["countryId"]]
+            // obj["approved"] = Object.keys(agencyCountries[key]).map(id => agencyCountries[key][id])[0]
+            return obj;
+          })
+          let agencyCountryMap = new Map<string, string>();
+          agencyCountryList.forEach(item => {
+            agencyCountryMap.set(item["agencyId"], item["countryId"]);
+          });
+          return agencyCountryMap;
+        }
+      });
+  }
+
   mapAgencyCountryForLocalNetworkCountry(networkId) {
     return this.getLocalNetwork(networkId)
       .map(localNetwork => {
@@ -748,6 +774,27 @@ export class NetworkService {
             obj["approved"] = agencyCountries[key].isApproved
             return obj;
           }).filter(item => item["approved"] == true)
+          let agencyCountryMap = new Map<string, string>();
+          agencyCountryList.forEach(item => {
+            agencyCountryMap.set(item["agencyId"], item["countryId"]);
+          });
+          return agencyCountryMap;
+        }
+      });
+  }
+
+  mapAgencyCountryForLocalNetworkCountryWithNotApproved(networkId) {
+    return this.getLocalNetwork(networkId)
+      .map(localNetwork => {
+        if (localNetwork.agencies) {
+          let agencyCountries = localNetwork.agencies;
+          let agencyCountryList = Object.keys(agencyCountries).map(key => {
+            let obj = {};
+            obj["agencyId"] = key;
+            obj["countryId"] = agencyCountries[key].countryCode;
+            obj["approved"] = agencyCountries[key].isApproved
+            return obj;
+          })
           let agencyCountryMap = new Map<string, string>();
           agencyCountryList.forEach(item => {
             agencyCountryMap.set(item["agencyId"], item["countryId"]);

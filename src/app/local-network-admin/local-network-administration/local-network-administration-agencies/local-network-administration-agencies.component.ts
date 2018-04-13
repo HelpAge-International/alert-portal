@@ -72,7 +72,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
               }
             })
 
-          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+          this.networkService.mapAgencyCountryForLocalNetworkCountryWithNotApproved(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyCountryMap => this.agencyCountryMap = agencyCountryMap)
 
