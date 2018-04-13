@@ -33,6 +33,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyId: string;
   private countryId: string;
+  private viewProject: string = "View project";
 
   // Constants and enums
   alertMessageType = AlertMessageType;

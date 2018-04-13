@@ -60,14 +60,14 @@
 
       <div class="Outline__bubble__wrap Grey" *ngFor="let project of partnerOrganisation?.projects; let pin = index;">
         <div class="row" *ngIf="activeProject != project">
-          <div class="col-sm-6 text-bold">{{ project.title || 'ADD_PARTNER.PROJECT_UNTITLED' | translate }}</div>
+          <div class="col-sm-6 text-bold">{{ project.title || 'ADD_PARTNER.NO_PROJECT' | translate }}</div>
           <div class="col-sm-6 Right-aligned">
-            <a href="javascript:void(0);" (click)="setActiveProject(project)">{{ 'ADD_PARTNER.VIEW_PROJECT' | translate
-              }}</a>
+            <a href="javascript:void(0);" (click)="setActiveProject(project)">{{ project.title? viewProject : 'ADD_PARTNER.ADD_PROJECT' | translate }}</a>
           </div>
         </div>
-        <div *ngIf="activeProject == project">
-          <div class="row">
+
+        <div *ngIf="isEdit && (activeProject == project) || activeProject == project">
+          <div class="row" *ngIf="isEdit && activeProject == project">
             <div class="col-sm-6"><h6>{{ "ADD_PARTNER.SECTOR" | translate }}</h6></div>
             <div class="col-sm-6 Right-aligned">
               <a href="javascript:void(0)" class="text-danger"

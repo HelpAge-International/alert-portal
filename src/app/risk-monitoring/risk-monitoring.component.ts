@@ -135,6 +135,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private countryName: string;
   private level1: string;
   private level2: string;
+  private activeMessage: string;
+  private archiveMessage: string;
   private isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
@@ -210,6 +212,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               this.stopCondition = true
             })
         }
+
+        this.activeMessage = "Are you sure you want to activate the hazard?  All indicators will become active and any assigned users will start receiving notifications about indicators";
 
         if (this.agencyId && this.countryID) {
 

@@ -36,6 +36,15 @@
 
       <div class="row">
         <div class="col-lg-4 col-md-6">
+          <div class="form-group">
+            <label for="A-line-1">{{"SYSTEM_ADMIN.AGENCIES.AGENCY_NAME" | translate}}*</label>
+            <input type="text" class="form-control" id="A-line-0" placeholder="Please enter" required [(ngModel)]="agencyName">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
           <div class="form-group" [ngClass]="{'has-danger': alerts[agencyAddressLine1]}">
             <label for="A-line-1">{{"GLOBAL.USER_INFO.ADDRESS_LINE_1" | translate}}*</label>
             <input type="text" class="form-control" id="A-line-1" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}" required [(ngModel)]="agencyAddressLine1">

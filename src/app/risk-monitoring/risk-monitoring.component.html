@@ -1350,11 +1350,7 @@
       </div>
       <div class="modal-body text-center">
         <p class="text-center col-sm-12">
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_ONE" | translate}}
-          {{tmpHazardData['activeStatus'] ? 'activate' : 'archive'}}
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_TWO" | translate}}
-          {{tmpHazardData['activeStatus'] ? 'active' : 'inactive'}}
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_THREE" | translate}}
+          {{tmpHazardData['activeStatus'] ? activeMessage : "RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE" | translate }}
         </p>
         <div class="row col-sm-12">
 
