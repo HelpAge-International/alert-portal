@@ -50,7 +50,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   private countries = Constants.COUNTRIES;
   private countriesList = Constants.COUNTRY_SELECTION;
   private frequency = new Array(100);
-
+  private initialLocation : number;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
 
@@ -69,8 +69,11 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               private translate: TranslateService,
               private userService: UserService,
               private prepActionService: PrepActionService,
-              private AgencyService: AgencyService,
-              private notificationService: NotificationService) {}
+              private notificationService: NotificationService,
+              private agencyService : AgencyService) {
+
+    this.initAlertData();
+  }
 
   initAlertData() {
     this.alertData = new ModelAlert();
@@ -78,8 +81,8 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
   addAnotherAreas() {
-    const area = new OperationAreaModel()
-    area.country = parseInt(this.countryID);
+    var area = new OperationAreaModel()
+    area.country = this.initialLocation
     this.alertData.affectedAreas.push(area);
   }
 
@@ -97,18 +100,17 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this._getHazards();
       this._getDirectorLocalAgencyId();
 
-      this.AgencyService.getAgencyModel(this.agencyId)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(
-          agency => {
-            this.countryID = agency.countryCode.toString();
-            this.initAlertData();
-            console.log(agency, this.countryID);
-          },
-          error => {
-            console.log(error);
-          }
-        );
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
+      
+      this.agencyService.getAgency(this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(agency => {
+        this.initialLocation = agency.countryCode;
+        this.alertData.affectedAreas[0].country = this.initialLocation;
+      })
+      // this.userService.getCountryDetail(this.countryID, this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(detail => {
+      //   console.log(detail)
+      //   this.initialLocation = detail.location;
+      // });
+
 
       console.log(this.prepActionService.actions)
       this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId);
@@ -158,7 +160,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
           .then(alert => {
-
+            
             let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
             let hazardTrackingNode;
 
@@ -295,10 +297,14 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
 
-  highlightRadio(){
+  highlightRadio(isRed : boolean){
 
-
-    console.log(this.alertData.alertLevel);
+    if(isRed) {
+      this.alertData.alertLevel = 2
+    }
+    else {
+      this.alertData.alertLevel = 1
+    }
 
   }
 

@@ -52,6 +52,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   public activeHazards: any[] = [];
   public archivedHazards: any[] = [];
+  private selectedHazardSeasons = [];
 
   public indicators: any = {};
   public indicatorsCC: any[] = [];
@@ -183,23 +184,19 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
     return promise;
   }
 
-  openSeasonalModal(key) {
-    this._getAllSeasons();
+  openSeasonalModal(key, hazard) {
+    this._getAllSeasons(hazard);
     jQuery("#" + key).modal("show");
   }
 
-  _getAllSeasons() {
-    console.log(this.activeHazards)
-    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((AllSeasons: any) => {
-          this.AllSeasons = AllSeasons;
-          res(true);
-        });
-    });
-    return promise;
+  _getAllSeasons(hazard) {
+    this.selectedHazardSeasons = hazard.seasons
+
+    this.af.database.list(Constants.APP_STATUS + "/season/" + hazard.parent)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((AllSeasons: any) => {
+        this.AllSeasons = AllSeasons;
+      });
   }
 
   showSubNationalAreas(areas) {
@@ -286,13 +283,12 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   _getHazards() {
     this.loadCountryContextIsArchived();
     let promise = new Promise((res, rej) => {
-      console.log(Constants.APP_STATUS + "/hazard/" + this.agencyId)
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
-        console.log(hazards)
         this.activeHazards = [];
         this.archivedHazards = [];
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
+          hazard.parent = this.agencyId
           if (hazard.hazardScenario != -1) {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }

@@ -115,6 +115,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // console.log("localagencydashboard")
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
@@ -159,7 +160,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+    return HazardImages.init().getCSS(Number(hazard));
   }
 
   isNumber(n) {

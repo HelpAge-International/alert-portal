@@ -136,6 +136,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(country => {
           this.preSelectedCountry = country.location
+          
           this.alertData.affectedAreas.forEach(area => {
             area.country = country.location
           })
@@ -323,10 +324,14 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  highlightRadio() {
+  highlightRadio(isRed: boolean) {
 
-
-    console.log(this.alertData.alertLevel);
+    if(isRed) {
+      this.alertData.alertLevel = 2
+    }
+    else {
+      this.alertData.alertLevel = 1
+    }
 
   }
 
