@@ -12,6 +12,8 @@ import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import * as moment from "moment";
+import {Observable} from "rxjs/Observable";
+import {ModelUserPublic} from "../../../model/user-public.model";
 
 declare var jQuery: any;
 
@@ -90,6 +92,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   @Input() isLocalAgency: boolean;
 
   @Input() isAgencyAdmin: boolean;
+  private countryAdmin: Observable<ModelUserPublic>;
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -144,6 +147,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             this.getSurgeCapacityLocalAgency();
             this._getCountryOfficeCapacityLocalAgency()
           }
+          this.countryAdmin = this.getLocalAgencyAdmin(this.agencyID)
           this._getSkills();
 
         });
@@ -184,6 +188,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             this.getSurgeCapacity();
             this._getCountryOfficeCapacity();
           }
+
+          this.countryAdmin = this.getCountryAdmin(this.countryID, this.agencyID)
 
           this._getSkills();
 
@@ -790,4 +796,11 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     }
   }
 
+  private getCountryAdmin(countryID: string, agencyID: string) {
+    return this._userService.getCountryAdmin(agencyID, countryID)
+  }
+
+  private getLocalAgencyAdmin(agencyID: string) {
+    return this._userService.getLocalAgencyAdmin(agencyID)
+  }
 }

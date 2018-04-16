@@ -251,6 +251,44 @@
         <!--Notes Drop Down End-->
 
       </div>
+
+      <!--country admin-->
+      <ng-container *ngIf="(countryAdmin | async) as adminCountry">
+        <div class="row">
+          <div class="col-sm-1">N/A</div> <!--Updated-->
+          <div class="col-sm-2">{{adminCountry.firstName +" "+adminCountry.lastName}}</div> <!--Name-->
+          <div class="col-sm-1">{{isLocalAgency ? 'Agency Admin' : 'Country Admin'}}</div> <!--Position-->
+          <div class="col-sm-2">{{officeType[2] | translate}}</div> <!--Office Type-->
+
+          <!--Skills-->
+          <div class="col-sm-2">
+            <div class="row">
+              <div class="col-sm-1">
+                <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                     alt="Skills">
+                <p class="notes-number__components--country-office-profile skills">0</p>
+                <a href="#tech_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
+                  {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
+                </a>
+              </div>
+
+              <div class="col-sm-1 margin-left-six">
+                <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                     alt="Skills">
+                <p class="notes-number__components--country-office-profile skills">0</p>
+                <a href="#support_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
+                  {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-3"></div> <!--Training Needs-->
+          <div class="col-sm-1">N/A</div>
+        </div>
+        <div class="row Line-row"></div>
+      </ng-container>
+
     </div>
 
     <!--Surge Capacity Section-->
