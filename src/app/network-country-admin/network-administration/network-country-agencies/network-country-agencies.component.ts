@@ -43,6 +43,7 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
   private forDeletion: Array<any> = [];
   private finalData: Array<any> = [];
   private Loading: boolean = true;
+  // private agencyCountryMapWithNotApproved = new Map<string, string>()
 
 
   constructor(private pageControl: PageControlService,
@@ -66,7 +67,12 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
 
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          // //extra step to get agencyCountryMap with un-approved members
+          // this.networkService.mapAgencyCountryForNetworkCountryWithNotApproved(this.networkId, this.networkCountryId)
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe(map => this.agencyCountryMapWithNotApproved = map)
+
+          this.networkService.mapAgencyCountryForNetworkCountryWithNotApproved(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyMap => {
               this.agencyCountryMap = agencyMap;
@@ -76,7 +82,7 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
               this.networkService.getAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.agencyCountryMap)
               //extra fetching works
                 .do((agencies: NetworkAgencyModel[]) => {
-                  if (agencies) {
+                  if (agencies.length) {
                     agencies.forEach(model => {
                       //get agency detail
                       this.agencyService.getAgency(model.id)
@@ -155,16 +161,6 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
       //delete reference in countryOffice node
       let node = "/countryOffice/" + agencyId + "/" + countryId + "/networks/" + this.networkId
       this.networkService.deleteNetworkField(node)
-
-      // Dan's bug fix
-      // this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(countryOffice => {
-      //     let nodeRemove = countryOffice[1].$key;
-      //     let countryOfficePath = "/countryOffice/" + agencyId + "/" + nodeRemove + "/networks/";
-      //     console.log(countryOfficePath, 'delete path');
-      //     this.networkService.deleteNetworks(countryOfficePath);
-      //   });
     }
   }
 

@@ -166,6 +166,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         .subscribe(duration => {
           this.networkPlanExpireDuration = duration;
           this.getResponsePlans(this.networkId).then(() => {
+            this.showLoader = false;
             this.initAgencyForLocalNetwork();
           })
         });
@@ -174,6 +175,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
 
   private networkCountryAccess() {
+    console.log("networkCountryAccess")
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -189,6 +191,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         .subscribe(duration => {
           this.networkPlanExpireDuration = duration;
           this.getResponsePlans(this.networkCountryId).then(() => {
+            this.showLoader = false;
             this.initAgencyData()
           })
         });
@@ -211,7 +214,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(map => {
-        this.showLoader = false;
         this.agencyCountryMap = map;
 
         this.activePlans.forEach(plan => {
@@ -872,7 +874,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(map => {
-        this.showLoader = false;
         this.agencyCountryMap = map;
 
         this.activePlans.forEach(plan => {

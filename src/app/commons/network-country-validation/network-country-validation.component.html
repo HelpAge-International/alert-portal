@@ -1,3 +1,5 @@
+<app-alert-loader *ngIf="!isValidated"></app-alert-loader>
+
 <div id="wrap"><!-- start #wrap -->
   <div class="Header_bar">
 
@@ -14,7 +16,7 @@
         <h1>Agency Invitation</h1>
       </div>
 
-      <div *ngIf="!isValidated" class="Text-center margin-top-five">
+      <div *ngIf="!isValidated && !showLoader" class="Text-center margin-top-five">
         <p>This link was expired, please request validation email again!</p>
       </div>
 

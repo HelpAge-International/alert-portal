@@ -381,6 +381,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   showSubNationalAreas(areas) {
     for (let area in areas) {
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(content => {
           this.countryLevelsValues = content;
           // console.log(this.getLocationName(areas[area]));

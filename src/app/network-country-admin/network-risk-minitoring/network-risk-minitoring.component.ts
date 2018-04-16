@@ -424,6 +424,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   showSubNationalAreas(areas) {
     for (let area in areas) {
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(content => {
           this.countryLevelsValues = content;
           // console.log(this.getLocationName(areas[area]));
@@ -529,9 +530,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                           indicator.agency = agency;
 
                         })
-                      this.getLogs(indicator.$key).subscribe((logs: any) => {
+                      this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                         logs.forEach((log, key) => {
-                          this.getUsers(log.addedBy).subscribe((user: any) => {
+                          this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                             log.addedByFullName = user.firstName + ' ' + user.lastName;
                           })
                         });
@@ -611,7 +612,6 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
   _getHazards() {
     this.loadCountryContextIsArchived();
-    let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkCountryId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
         this.activeHazards = [];
         this.archivedHazards = [];
@@ -623,13 +623,13 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }
 
-          this.getIndicators(hazard.id).subscribe((indicators: any) => {
+          this.getIndicators(hazard.id).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
             indicators.forEach((indicator, key) => {
               console.log(indicator)
               indicator.fromAgency = false;
-              this.getLogs(indicator.$key).subscribe((logs: any) => {
+              this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                 logs.forEach((log, key) => {
-                  this.getUsers(log.addedBy).subscribe((user: any) => {
+                  this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                     log.addedByFullName = user.firstName + ' ' + user.lastName;
                   })
                 });
@@ -687,9 +687,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                                 .subscribe(agency => {
                                   indicator.agency = agency;
                                 })
-                              this.getLogs(indicator.$key).subscribe((logs: any) => {
+                              this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                                 logs.forEach((log, key) => {
-                                  this.getUsers(log.addedBy).subscribe((user: any) => {
+                                  this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
                                     log.addedByFullName = user.firstName + ' ' + user.lastName;
                                   })
                                 });
@@ -702,9 +702,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
                             if (hazard.isActive) {
 
-                              var containsHazard = false;
-                              var hasIndicators = false;
-                              var activeHazardIndex = null;
+                              let containsHazard = false;
+                              let hasIndicators = false;
+                              let activeHazardIndex = null;
                               this.activeHazards.forEach((activeHazard, index) => {
                                 if (activeHazard.hazardScenario == hazard.hazardScenario) {
                                   if (hazard.hasOwnProperty('indicators') && activeHazard.hasOwnProperty('indicators')) {
@@ -727,8 +727,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                                     if (this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key) == -1) {
                                       this.activeHazards[activeHazardIndex].indicators.push(indicator)
                                     } else {
-                                      this.activeHazards[activeHazardIndex].indicators.splice(this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key), 1)
-                                      this.activeHazards[activeHazardIndex].indicators.push(indicator)
+                                      this.activeHazards[activeHazardIndex].indicators[this.activeHazards[activeHazardIndex].indicators.map(item => item.$key).indexOf(indicator.$key)] = indicator
+                                      // this.activeHazards[activeHazardIndex].indicators.push(indicator)
                                     }
 
 
@@ -759,9 +759,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                               }
                             } else {
 
-                              var containsHazard = false;
-                              var hasIndicators = false;
-                              var archivedHazardIndex = null;
+                              let containsHazard = false;
+                              let hasIndicators = false;
+                              let archivedHazardIndex = null;
                               this.archivedHazards.forEach((archivedHazard, index) => {
                                 if (archivedHazard.hazardScenario == hazard.hazardScenario) {
                                   if (hazard.hasOwnProperty('indicators') && archivedHazard.hasOwnProperty('indicators')) {
@@ -809,7 +809,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                                 }
                                 containsHazard = false;
                                 hasIndicators = false;
-                                activeHazardIndex = null;
+                                archivedHazardIndex = null;
                               }
                             }
                           });
@@ -820,10 +820,7 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 })
             })
           })
-        res(true);
       });
-    });
-    return promise;
   }
 
   changeHazard(hazardId){

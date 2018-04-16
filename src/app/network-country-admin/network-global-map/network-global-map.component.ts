@@ -33,6 +33,8 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   public systemAdminId: string;
 
   private HazardScenario = Constants.HAZARD_SCENARIOS;
+  private agencyId: string;
+  private countryId: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -65,6 +67,12 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           }
           if (params["systemId"]) {
             this.systemAdminId = params["systemId"];
+          }
+          if (params["agencyId"]) {
+            this.agencyId = params["agencyId"];
+          }
+          if (params["countryId"]) {
+            this.countryId = params["countryId"];
           }
           if (params["isViewing"]) {
             this.isViewing = params["isViewing"];

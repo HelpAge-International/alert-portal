@@ -10,6 +10,7 @@ import {Pair} from "../utils/bundles";
 import {SettingsService} from "./settings.service";
 import {PermissionSettingsModel} from "../model/permission-settings.model";
 import {Observable} from "rxjs/Observable";
+
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -647,7 +648,7 @@ export class PageControlService {
     else {
       console.log("check page control***** NO VALUE RETURNED!");
       /**DONT UNCOMMENT BELOW AS THIS CAUSE ISSUES IN THE LOGIN*/
-     // router.navigateByUrl(type.redirectTo);
+      // router.navigateByUrl(type.redirectTo);
     }
   }
 
@@ -662,39 +663,37 @@ export class PageControlService {
 
           if (snap.val() != null) {
 
-              // It's this user type!
-              if(modelTypes[index].userType == UserType.AgencyAdmin){ //checks to see if user type is agency admin
+            // It's this user type!
+            if (modelTypes[index].userType == UserType.AgencyAdmin) { //checks to see if user type is agency admin
 
-                this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
-                  .takeUntil(ngUnsubscribe)
-                  .subscribe((innerSnapDirector) => {
+              this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
+                .takeUntil(ngUnsubscribe)
+                .subscribe((innerSnapDirector) => {
 
-                    // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
-                  if(innerSnapDirector.val()){
+                  // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
+                  if (innerSnapDirector.val()) {
                     fun(UserType.LocalAgencyDirector, innerSnapDirector.val());
-                  }else{
+                  } else {
                     //checks to make sure it ins't actually a local agency admin as they exist in both nodes
                     this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
-                    .takeUntil(ngUnsubscribe)
-                    .subscribe((innerSnap) => {
-                      if (innerSnap.val() != null) {
+                      .takeUntil(ngUnsubscribe)
+                      .subscribe((innerSnap) => {
+                        if (innerSnap.val() != null) {
 
-                        fun(UserType.LocalAgencyAdmin, innerSnap.val());
-                      }else{
+                          fun(UserType.LocalAgencyAdmin, innerSnap.val());
+                        } else {
 
-                        fun(modelTypes[index].userType, snap.val());
-                      }
+                          fun(modelTypes[index].userType, snap.val());
+                        }
 
 
-
-                    })
+                      })
                   }
 
                 })
-              }else{
-                fun(modelTypes[index].userType, snap.val());
-              }
-
+            } else {
+              fun(modelTypes[index].userType, snap.val());
+            }
 
 
           }
@@ -710,8 +709,8 @@ export class PageControlService {
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
-    // console.log(current)
-    // console.log(type)
+    console.log(current)
+    console.log(type)
 
     for (let x of type.urls) {
       if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {
@@ -794,7 +793,7 @@ export class PageControlService {
   static localAgencyBuildPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (list: AgencyPermissionObject[]) => void) {
     af.database.object(Constants.APP_STATUS + "/module/" + countryId)
       .takeUntil(ngUnsubscribe)
-      .subscribe((val) =>{
+      .subscribe((val) => {
         let list = PageControlService.initModuleControlArray();
         for (let x of list) {
           if (val[x.permission] != null) {
@@ -966,10 +965,14 @@ export class PageControlService {
           for (let x in snap.val().agencyAdmin) {
             agencyAdmin = x;
           }
-          return Pair.create(snap.val().countryId, agencyAdmin);
+          return Pair.create((snap.val().countryId ? snap.val().countryId : agencyAdmin), agencyAdmin);
         })
         .flatMap((pair: Pair) => {
-          return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+          return pair.f !== pair.s
+            ?
+            af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true})
+            :
+            af.database.object(Constants.APP_STATUS + "/agency/" + pair.s, {preserveSnapshot: true})
         })
         .takeUntil(ngUnsubscribe)
         .subscribe((snap) => {
@@ -1002,6 +1005,8 @@ export class PageControlService {
               x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
             }
             fun(x);
+          } else {
+            console.log("no permission node!!!")
           }
         });
     }

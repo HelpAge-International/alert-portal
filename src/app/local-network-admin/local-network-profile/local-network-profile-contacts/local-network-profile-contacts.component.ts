@@ -132,31 +132,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
 
                 this.agencies.push(agency)
 
-                this._agencyService.getCountryOffice(value, key)
-                  .map(countryOffice => {
-                    let countryOfficeAddress = new CountryOfficeAddressModel();
-                    countryOfficeAddress.mapFromObject(countryOffice);
+                value !== key ? this.loadNormalCountry(value, key) : this.loadLocalAgency(key)
 
-                    return countryOfficeAddress;
-                  })
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(countryOfficeAddress => {
-                    this.countryOfficeAddress.set(key, countryOfficeAddress)
-                  });
-
-                this._contactService.getPointsOfContact(value)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(pointsOfContact => {
-                    this.pointsOfContact.set(key, pointsOfContact)
-                    this.pointsOfContact.get(key).forEach(pointOfContact => {
-                      this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
-                        this.userPublicDetails[pointOfContact.staffMember] = user;
-                      });
-                      this._userService.getStaff(value, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
-                        this.staffList[pointOfContact.staffMember] = staff;
-                      });
-                    });
-                  })
               });
 
             //get privacy for country
