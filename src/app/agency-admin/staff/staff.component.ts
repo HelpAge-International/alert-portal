@@ -202,6 +202,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private addStaff(item, id) {
     this.staff = new ModelStaff();
     this.staff.id = item.$key;
+    this.staff.region = item.region;
     this.staff.position = item.position;
     this.staff.department = item.department;
     this.staff.officeType = item.officeType;
