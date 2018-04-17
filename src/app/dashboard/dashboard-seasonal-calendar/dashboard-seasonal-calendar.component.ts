@@ -153,11 +153,10 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    */
   public getAllSeasonsForCountryId(countryId: string) {
     let agencyCountry = this.storageService.get(Constants.NETWORK_CALENDAR);
+    console.log(agencyCountry);
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
-        console.log("init cal -11");
-
         this.seasonEvents = [
           ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar(), <DashboardSeasonalCalendarComponent> this)
         ];
@@ -167,17 +166,16 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
           this.seasonEvents.push(x);
           i++;
         });
-        if(!agencyCountry){
-          console.log("init cal -1");
 
+        if(!agencyCountry){
           this.initCalendar();
         }else{
           Object.keys(agencyCountry).forEach(agencyId => {
-            console.log("init cal 0");
 
-            console.log(agencyId)
-            console.log(agencyCountry[agencyId])
-            console.log(agencyCountry[agencyId][1])
+            console.log(agencyId);
+            console.log(agencyCountry[agencyId]);
+            console.log(agencyCountry[agencyId][1]);
+
             //data pulled from storage is strange, need to check
             this.af.database.object(Constants.APP_STATUS + "/season/" + agencyCountry[agencyId][1], {preserveSnapshot: true})
               .takeUntil(this.ngUnsubscribe)
@@ -209,8 +207,6 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    * Initialise the calendar
    */
   private initCalendar() {
-    console.log("init cal");
-
     // To show weekly calendar ----> Change visibleSpan to 'DAY_IN_MILLISECONDS * 30'
     document.getElementById("target2").innerHTML = "";
     this.currentChronolineInstance = new Chronoline(document.getElementById("target2"), this.seasonEvents,
@@ -399,8 +395,6 @@ export class ChronolineEvent {
   }
 
   public static create(index: number, season: ModelSeason, component?: DashboardSeasonalCalendarComponent, seasonKey?: string): ChronolineEvent {
-    console.log("in cal -12");
-
     let event: ChronolineEvent = new ChronolineEvent();
     event.dates = [new Date(season.startTime), new Date(season.endTime)];
     if (season.endTime < season.startTime) {
@@ -408,8 +402,6 @@ export class ChronolineEvent {
         "This will cause the item to still be rendered correctly)");
       event.dates = [new Date(season.endTime), new Date(season.startTime)];
     }
-    console.log("in cal -13");
-
     let self = this;
     event.title = season.name;
     event.eventHeight = index * 10;
@@ -427,8 +419,6 @@ export class ChronolineEvent {
         jQuery("#add_calendar").modal("show");
       }
     };
-    console.log("in cal -14");
-
     return event;
   }
 }

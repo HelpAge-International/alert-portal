@@ -1157,8 +1157,21 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   toCalendar() {
     if (this.agencyCountryMap.size > 0) {
-      this.storageService.set(Constants.NETWORK_CALENDAR, this.agencyCountryMap)
+      console.log(this.agencyCountryMap);
+      this.storageService.set(Constants.NETWORK_CALENDAR, this.map_to_object(this.agencyCountryMap));
     }
   }
 
+  private map_to_object(map) {
+    const out = Object.create(null)
+    map.forEach((value, key) => {
+      if (value instanceof Map) {
+        out[key] = this.map_to_object(value)
+      }
+      else {
+        out[key] = value
+      }
+    });
+    return out
+  }
 }
