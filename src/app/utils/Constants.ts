@@ -1000,6 +1000,7 @@ export class Constants {
   static STAFF_NODE = '/staff/{countryId}/{staffId}/notes';
   static SURGE_CAPACITY_NODE = '/countryOfficeProfile/capacity/surgeCapacity/{countryId}/{id}/notes';
   static SURGE_CAPACITY_NODE_LOCAL_AGENCY = '/localAgencyProfile/capacity/surgeCapacity/{agencyId}/{id}/notes';
+  static ADMIN_NODE = '/adminNotes/{adminId}';
 
   static MONTH = [
     null,
