@@ -341,32 +341,38 @@ export class StaffComponent implements OnInit, OnDestroy {
 
         //resolve frozen bug
         users.forEach(user => {
-          this.getStaffObj(user.$key)
+          this.getStaffObj(user.$key);
           this.getSupportSkills(null, user.$key)
           this.getTechSkills(null, user.$key)
           //this.getRegionData(null, user.$key)
 
           if (user.userType == UserType.RegionalDirector) {
+            console.log(user)
             this.af.database.list(Constants.APP_STATUS + "/regionDirector/" + user.$key)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(regionDir => {
-                regionDir.forEach(reg => {
-                  if (reg.$key == "regionId") {
-                    this.regionId = reg.$value;
+                regionDir.forEach(regDir => {
+                  if (regDir.$key == "regionId") {
+                    this.regionId = regDir.$value;
+                    console.log(this.regionId)
+
+                    this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId + "/" + this.regionId)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(region => {
+
+                        region.forEach(reg => {
+                          console.log(reg.$value)
+                          this.regionObjMap.set(this.regionId, reg.$value);
+                          console.log(this.regionObjMap)
+
+                        })
+                      });
                   }
                 });
-
-                this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId + "/" + this.regionId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(region => {
-                    console.log(region)
-                    region.forEach(reg => {
-                      this.regionObjMap.set(this.regionId, reg.$value);
-                    })
-                  });
               });
           }
         });
+
 
         if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
           this.globalUsers = users;

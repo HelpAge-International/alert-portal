@@ -24,6 +24,33 @@ export class ReportProblemComponent implements OnInit {
 
   @Input() showIcon: boolean;
 
+  @Input()
+  set networkId(networkId: string) {
+    this._networkId = networkId;
+    //this.getNetworkAdminData()
+  }
+
+  @Input()
+  set networkCountryId(networkCountryId: string) {
+    this._networkCountryId = networkCountryId;
+    //this.getNetworkAdminData()
+
+  }
+
+  @Input()
+  set networkAdminId(networkAdminId: string) {
+    this._networkAdminId = networkAdminId;
+    this.getNetworkAdminData()
+
+  }
+
+  @Input()
+  set networkLocation(networkLocation: number) {
+    this._networkLocation = networkLocation;
+    //this.getNetworkAdminData()
+
+  }
+
   private tooltipDisplay = "Click to take screenshot";
   private error: string;
   private bugId: string;
@@ -32,15 +59,17 @@ export class ReportProblemComponent implements OnInit {
   private downloadLink: string;
   private imgFileName: string;
 
+  private _networkId: string;
+  private _networkCountryId: string;
+  private _networkAdminId: string;
+  private _networkLocation: number;
+
   private uid: string;
   private countryId: string;
   private agencyId: string;
   private agencyDetail: any;
   private systemId: string;
   private agencyAdminId: string;
-  private networkId: string;
-  private networkCountryId: string;
-  private networkAdminId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private userType: UserType;
   private isAnonym: boolean = false;
@@ -66,56 +95,66 @@ export class ReportProblemComponent implements OnInit {
   ngOnInit() {
 
     this.sendEmailModel.computerDetails = window.navigator.appVersion;
-    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      // gives access to the Id's
+    // this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+    //   // gives access to the Id's
+    //
+    //   this.systemId = systemId;
+    //   this.agencyId = agencyId;
+    //   this.countryId = countryId;
+    //   this.userType = userType;
+    //   this.isAnonym = !(user && !user.anonymous);
+    //   console.log(this.userType)
+    //
+    //   this.getUserData()
+    //   this.getContentForEmail()
+    // })
+  }
 
-      this.systemId = systemId;
-      this.agencyId = agencyId;
-      this.countryId = countryId;
-      this.userType = userType;
-      this.isAnonym = !(user && !user.anonymous);
+  getNetworkAdminData(){
+      console.log("-----in----")
+      // this.sendEmailModel.country = this._networkLocation;
+      // this.sendEmailModel.agencyName = "";
+      // console.log(this.sendEmailModel.country)
 
-     })
+    this.userService.getNetworkCountryDetail(this._networkId, this._networkCountryId).takeUntil(this.ngUnsubscribe)
+      .subscribe(model => {
+        console.log(model)
+        this._networkAdminId = model.adminId;
+        console.log(this._networkAdminId)
 
-    this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
-      this.networkService.getSelectedIdObj(user.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(selection => {
+        this.sendEmailModel.country = model.location;
+        this.sendEmailModel.agencyName = "";
 
-          this.isNetworkCountryAdmin = true;
-          this.networkId = selection["id"];
-          this.networkCountryId = selection["networkCountryId"];
+        this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this._networkAdminId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(getUserDetails => {
+            console.log(getUserDetails.firstName +" "+getUserDetails.lastName)
+            this.sendEmailModel.fName = getUserDetails.firstName;
+            this.sendEmailModel.lName = getUserDetails.lastName;
+            this.sendEmailModel.email = getUserDetails.email;
+          });
+      });
 
-          this.userService.getNetworkCountryDetail(this.networkId, this.networkCountryId).takeUntil(this.ngUnsubscribe)
-            .subscribe(model => {
-              console.log(model)
-              this.networkAdminId = model.adminId;
-              console.log(this.networkAdminId)
-
-              this.sendEmailModel.country = model.location;
-              this.sendEmailModel.agencyName = "";
-
-              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.networkAdminId)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(getUserDetails => {
-                  this.sendEmailModel.fName = getUserDetails.firstName;
-                  this.sendEmailModel.lName = getUserDetails.lastName;
-                  this.sendEmailModel.email = getUserDetails.email;
-                });
-            });
-        })
-    })
-
-    this.getContentForEmail();
-    this.getUserData();
+      //
+      // this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this._networkAdminId)
+      //   .takeUntil(this.ngUnsubscribe)
+      //   .subscribe(getUserDetails => {
+      //     console.log(getUserDetails.firstName +" "+getUserDetails.lastName)
+      //     this.sendEmailModel.fName = getUserDetails.firstName;
+      //     this.sendEmailModel.lName = getUserDetails.lastName;
+      //     this.sendEmailModel.email = getUserDetails.email;
+      //     console.log(this.sendEmailModel)
+      //   });
   }
 
   getUserData() {
     // subscribing to get user ID
+    console.log(this.userType)
     if (this.userType == UserType.LocalAgencyAdmin) {
       this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.agencyId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(getUserDetails => {
+          console.log(getUserDetails)
           this.sendEmailModel.fName = getUserDetails.firstName;
           this.sendEmailModel.lName = getUserDetails.lastName;
           this.sendEmailModel.email = getUserDetails.email;
@@ -141,10 +180,9 @@ export class ReportProblemComponent implements OnInit {
           this.sendEmailModel.lName = getUserDetails.lastName;
           this.sendEmailModel.email = getUserDetails.email;
         });
-    }
-    else {
+    } else{
 
-      console.log(this.networkId)
+    //  console.log(this._networkId)
 
       this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.countryId)
         .takeUntil(this.ngUnsubscribe)
@@ -165,7 +203,7 @@ export class ReportProblemComponent implements OnInit {
         // console.log(getName.name);
         this.sendEmailModel.agencyName = getName.name;
         this.sendEmailModel.country = getName.country;
-      })
+      });
 
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + '/' + this.countryId + "/location")
       .takeUntil(this.ngUnsubscribe)
@@ -254,10 +292,10 @@ export class ReportProblemComponent implements OnInit {
           this.error = error;
           console.log(error)
         }
-    } else if (this.isNetworkCountryAdmin) {
+    } else if (this._networkId!=null) {
       console.log(this.isNetworkCountryAdmin)
-console.log(this.networkCountryId)
-      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this.networkCountryId + '/' + this.bugId)
+      console.log(this._networkCountryId)
+      this.af.database.object(Constants.APP_STATUS + '/bugReporting/' + this._networkId + '/' + this.bugId)
         .set({
           country: this.sendEmailModel.country,
           date: this.sendEmailModel.date.toLocaleString('en-GB', {timeZone: 'UTC'}),
