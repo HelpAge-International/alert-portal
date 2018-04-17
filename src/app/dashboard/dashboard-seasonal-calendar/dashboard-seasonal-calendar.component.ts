@@ -157,30 +157,27 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
+        let i = 0;
         this.seasonEvents = [
           ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar(), <DashboardSeasonalCalendarComponent> this)
         ];
-        let i = 2;
+        i++;
         snapshot.forEach((seasonInfo) => {
           let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val(), <DashboardSeasonalCalendarComponent> this, seasonInfo.key);
           this.seasonEvents.push(x);
           i++;
         });
 
-        if(!agencyCountry){
+        if(agencyCountry && Object.keys(agencyCountry).length == 0){
           this.initCalendar();
         }else{
+          console.log(agencyCountry);
           Object.keys(agencyCountry).forEach(agencyId => {
-
-            console.log(agencyId);
             console.log(agencyCountry[agencyId]);
-            console.log(agencyCountry[agencyId][1]);
 
-            //data pulled from storage is strange, need to check
-            this.af.database.object(Constants.APP_STATUS + "/season/" + agencyCountry[agencyId][1], {preserveSnapshot: true})
+            this.af.database.object(Constants.APP_STATUS + "/season/" + agencyCountry[agencyId], {preserveSnapshot: true})
               .takeUntil(this.ngUnsubscribe)
               .subscribe(snapshot => {
-                let i = 100;
                 snapshot.forEach((seasonInfo) => {
                   let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
                   this.seasonEvents.push(x);

@@ -481,22 +481,24 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
+        let i = 0;
         this.seasonEvents = [
           ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar())
         ];
-        let i = 2;
+        i++;
         snapshot.forEach((seasonInfo) => {
           let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
           this.seasonEvents.push(x);
           i++;
         });
+        console.log("Agency Country Map:");
+        console.log(this.agencyCountryMap);
         this.agencyCountryMap && this.agencyCountryMap.size == 0 ? this.initCalendar()
           :
           CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(id => {
             this.af.database.object(Constants.APP_STATUS + "/season/" + id, {preserveSnapshot: true})
               .takeUntil(this.ngUnsubscribe)
               .subscribe(snapshot => {
-                let i = 100;
                 snapshot.forEach((seasonInfo) => {
                   let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
                   this.seasonEvents.push(x);
@@ -1163,7 +1165,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private map_to_object(map) {
-    const out = Object.create(null)
+    const out = Object.create(null);
     map.forEach((value, key) => {
       if (value instanceof Map) {
         out[key] = this.map_to_object(value)
