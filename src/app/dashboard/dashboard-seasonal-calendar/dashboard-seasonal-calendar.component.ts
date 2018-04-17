@@ -168,7 +168,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
           i++;
         });
 
-        if(agencyCountry && Object.keys(agencyCountry).length == 0){
+        if(!this.isNetworkCountry && !this.isLocalNetworkAdmin){
           this.initCalendar();
         }else{
           console.log(agencyCountry);
@@ -417,5 +417,18 @@ export class ChronolineEvent {
       }
     };
     return event;
+  }
+
+  private map_to_object(map) {
+    const out = Object.create(null);
+    map.forEach((value, key) => {
+      if (value instanceof Map) {
+        out[key] = this.map_to_object(value)
+      }
+      else {
+        out[key] = value
+      }
+    });
+    return out
   }
 }
