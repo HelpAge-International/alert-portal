@@ -43,6 +43,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<any> = new Subject<any>();
 
   //constants and enums
+  private Sector_Enum = ResponsePlanSectors;
   private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private ResponsePlanSectionSettings = NetworkResponsePlanSectionSettings;
   private HazardScenario = Constants.HAZARD_SCENARIOS;

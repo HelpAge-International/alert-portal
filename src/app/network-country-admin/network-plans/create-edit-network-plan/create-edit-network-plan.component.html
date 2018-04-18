@@ -693,7 +693,7 @@
                       <div [class]="imgNames[sector]"></div>
                     </div>
                   </div>
-                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{SECTORS[sector] | translate}}
+                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{(sector == Sector_Enum.other ? otherRelatedSector : SECTORS[sector]) | translate}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
