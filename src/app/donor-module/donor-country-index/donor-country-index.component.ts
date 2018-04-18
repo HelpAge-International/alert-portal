@@ -43,7 +43,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
   private networkCountries = [];
   private networkToShow: any;
   private globalNetworks = [];
-
+  private localNetworkData = [];
 
 
   constructor(private pageControl: PageControlService,
@@ -93,7 +93,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
    Private Functions
    */
   private loadData() {
-    if(this.countryIdReceived){
+    if (this.countryIdReceived) {
       this.getCountry().then(() => {
         this.getCountryOfficesWithSameLocationsInOtherAgencies(true, true).then(_ => {
           this.loaderInactive = true;
@@ -101,8 +101,9 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
         this.getNetworksWithSameLocationsInOtherGlobalNetworks(true, true).then(_ => {
           this.loaderInactive = true;
         });
+        this.getLocalNetworks(this.countryIdReceived, this.agencyIdReceived)
       });
-    } else{
+    } else {
       this.getNetwork().then(() => {
         this.getNetworksWithSameLocationsInOtherGlobalNetworks(true, true).then(_ => {
           this.loaderInactive = true;
@@ -115,7 +116,7 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
 
   }
 
-  private getNetwork(){
+  private getNetwork() {
     let promise = new Promise((res, rej) => {
       this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + this.globalNetworkIdReceived + "/" + this.networkCountryIdReceived)
         .takeUntil(this.ngUnsubscribe)
@@ -140,30 +141,6 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
             this.networkToShow = country;
             res(true);
           }
-        });
-    });
-    return promise;
-  }
-
-  private getAgencyID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/donor/" + this.uid + '/agencyAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIDs: any) => {
-          this.agencyId = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-          res(true);
-        });
-    });
-    return promise;
-  }
-
-  private getSystemAdminID() {
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/donor/" + this.uid + '/systemAdmin')
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((agencyIDs: any) => {
-          this.systemAdminId = agencyIDs[0].$key ? agencyIDs[0].$key : "";
-          res(true);
         });
     });
     return promise;
@@ -255,11 +232,20 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  private navigateToLogin() {
-    this.router.navigateByUrl(Constants.LOGIN_PATH);
-  }
-
   goBack() {
     this.location.back();
+  }
+
+  private getLocalNetworks(countryId: string, agencyId: string) {
+    this.agencyService.getCountryOffice(countryId, agencyId)
+      .flatMap(office => this.networkService.getLocalNetworksWithSameLocationsInOtherNetworks(office.location))
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(localNetworks => {
+        console.log(localNetworks)
+        this.localNetworkData = localNetworks
+        localNetworks.forEach(localNetwork => {
+          this.globalNetworks[localNetwork.networkId] = localNetwork
+        })
+      })
   }
 }

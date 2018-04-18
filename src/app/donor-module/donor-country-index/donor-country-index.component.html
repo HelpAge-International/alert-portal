@@ -39,7 +39,7 @@
         <div class="text-center padding-one col-sm-4">
           <div class="Icon__circle Icon--blue Icon--lg">
             <!--<h1 class="margin-top-one">{{countryOffices.length}}</h1>-->
-            <h1  class="margin-top-one">{{numOfNetworkCountries}}</h1>
+            <h1  class="margin-top-one">{{numOfNetworkCountries + localNetworkData.length}}</h1>
           </div>
           <div class="margin-top-three">
             <b>
@@ -50,6 +50,6 @@
       </div>
     </div>
 
-    <app-country-overview [systemId]="systemAdminId" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices" [networkCountryData]="networkCountries" [globalNetworks]="globalNetworks"></app-country-overview>
+    <app-country-overview [systemId]="systemAdminId" [userId]="uid" [agencies]="agencies" [userType]="UserType" [countryOfficeData]="countryOffices" [networkCountryData]="networkCountries" [globalNetworks]="globalNetworks" [localNetworks]="localNetworkData"></app-country-overview>
   </div>
 </div>
