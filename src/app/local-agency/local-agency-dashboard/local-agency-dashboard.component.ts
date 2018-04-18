@@ -129,7 +129,13 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
+
+      PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
+        this.moduleSettings = isEnabled;
+      }));
+
       this.loadData();
+
     });
   }
 
@@ -505,9 +511,11 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
     if (level == ActionLevel.MPA && !this.moduleSettings.minimumPreparedness) {
       return false;
     }
+
     if (level == ActionLevel.APA && (!this.moduleSettings.advancedPreparedness || !this.isRedAlert)) {
       return false;
     }
+
     if (action == ActionType.chs && !this.moduleSettings.chsPreparedness) {
       return false;
     }
