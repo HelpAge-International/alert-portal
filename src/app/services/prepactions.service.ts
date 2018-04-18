@@ -333,6 +333,9 @@ export class PrepActionService {
         console.log(snap.val().agencyId);
 
         this.agencyId = snap.val().agencyId;
+        if(!this.agencyId){
+          this.agencyId = Object.keys(snap.val().agencyAdmin)[0];
+        }
         this.systemAdminId = "";
         for (let x in snap.val().systemAdmin) {
           this.systemAdminId = x;
