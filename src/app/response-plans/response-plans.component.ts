@@ -99,7 +99,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private notificationService: NotificationService,
               private agencyService: AgencyService,
-              private partnerService:PartnerOrganisationService,
+              private partnerService: PartnerOrganisationService,
               private translate: TranslateService) {
   }
 
@@ -1084,9 +1084,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
             approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval
 
-            this.partnerService.getPartnerOrganisation(k)
-              .flatMap(partner => this.userService.getUserByEmail(partner.email))
-              .takeUntil(this.ngUnsubscribe)
+            console.log("start create message for partner users***")
+            console.log(k)
+            this.userService.getUser(k)
+              .first()
               .subscribe(user => {
                 console.log(user)
                 if (user) {
