@@ -61,7 +61,8 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
             .do((offices: NetworkOfficeModel[]) => {
               offices.forEach(office => {
                 office.adminName = this.userService.getUserName(office.adminId);
-                this.networkLocation = office.location;
+                this.networkCountryId = office.adminId;
+                console.log(this.networkCountryId)
               });
               this.showLoader = false;
             });
