@@ -99,4 +99,8 @@ export class CommonUtils {
     return values;
   }
 
+  static castToIntCelling(value) : number {
+    return Math.ceil(value)
+  }
+
 }

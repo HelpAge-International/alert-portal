@@ -11,6 +11,7 @@ import {NetworkService} from "../../../services/network.service";
 import {NetworkUserAccountType} from "../../../utils/Enums";
 import {NetworkOfficeModel} from "../../../network-admin/network-offices/add-edit-network-office/network-office.model";
 import {Observable} from "rxjs/Observable";
+import {CommonUtils} from "../../../utils/CommonUtils";
 
 declare var jQuery: any;
 
@@ -22,6 +23,7 @@ declare var jQuery: any;
 
 export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
   private userType: UserType;
+  private SIZE_TYPE = SizeType;
   DOCUMENT_TYPE = Constants.DOCUMENT_TYPE;
   COUNTRIES = Constants.COUNTRIES;
   private CountriesEnum = Object.keys(Countries).map(k => Countries[k]).filter(v => typeof v === "string") as string[];
@@ -511,6 +513,10 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
         return false;
       });
     });
+  }
+
+  castToIntCeil(value) : number {
+    return CommonUtils.castToIntCelling(value)
   }
 
 }

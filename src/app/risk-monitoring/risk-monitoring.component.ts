@@ -762,7 +762,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                 .takeUntil(this.ngUnsubscribe)
                                 .subscribe(indicators => {
                                   indicators.forEach(indicator => {
-                                    console.log(indicator)
                                     if (indicator.countryOfficeId == this.countryID) {
                                       this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                                         logs.forEach((log, key) => {
@@ -824,7 +823,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                       }
                                     }
                                   })
-                                  console.log(this.activeHazards.some(activeHazard => activeHazard.$key == hazard.$key))
                                   if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
                                     hazard.fromNetwork = true;
                                     hazard.networkId = localNetwork.$key
