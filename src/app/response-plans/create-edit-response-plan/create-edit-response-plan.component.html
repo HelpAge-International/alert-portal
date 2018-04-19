@@ -637,7 +637,7 @@
                       <div [class]="imgNames[sector]"></div>
                     </div>
                   </div>
-                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{ otherRelatedSector | translate}}
+                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{ (sector == Sector_Enum.other ? otherRelatedSector : SECTORS[sector]) | translate}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
@@ -658,7 +658,7 @@
                       <div class="row Outlined Spaced align-items-center"
                            *ngIf="activeActivity && activeActivity[sector] != activity">
                         <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
-                        <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
+                        <div class="col-sm-8 Small-spaced">{{activity.name}}</div>
                         <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)"
                                                                          (click)="viewActivity(sector, activity)"
                                                                          class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"

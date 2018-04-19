@@ -12,6 +12,8 @@ import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import * as moment from "moment";
+import {Observable} from "rxjs/Observable";
+import {ModelUserPublic} from "../../../model/user-public.model";
 
 declare var jQuery: any;
 
@@ -90,6 +92,9 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   @Input() isLocalAgency: boolean;
 
   @Input() isAgencyAdmin: boolean;
+  private countryAdmin: Observable<ModelUserPublic>;
+  private adminNote = new NoteModel();
+  private adminNotes: Observable<NoteModel[]>;
 
   constructor(private pageControl: PageControlService,
               private router: Router,
@@ -144,6 +149,9 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             this.getSurgeCapacityLocalAgency();
             this._getCountryOfficeCapacityLocalAgency()
           }
+          this.adminNote.uploadedBy = this.uid
+          this.countryAdmin = this.getLocalAgencyAdmin(this.agencyID)
+          this.adminNotes = this.countryAdmin.flatMap(admin => this._noteService.getNotes('/adminNotes/' + admin.id))
           this._getSkills();
 
         });
@@ -184,6 +192,11 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
             this.getSurgeCapacity();
             this._getCountryOfficeCapacity();
           }
+
+          this.adminNote.uploadedBy = this.uid
+          this.countryAdmin = this.getCountryAdmin(this.countryID, this.agencyID)
+          this.adminNotes = this.countryAdmin.flatMap(admin => this._noteService.getNotes('/adminNotes/' + admin.id))
+
 
           this._getSkills();
 
@@ -641,7 +654,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
     if (!userId) return userName;
 
-    this._userService.getUser(userId).takeUntil(this.ngUnsubscribe).subscribe(user => {
+    this._userService.getUser(userId).first().subscribe(user => {
       userName = user.firstName + ' ' + user.lastName;
     });
 
@@ -652,24 +665,23 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     if (this.validateNote(note)) {
       let node = "";
 
-      if (this.isLocalAgency) {
-        if (type == 'staff') {
-          node = Constants.STAFF_NODE.replace('{countryId}', this.agencyID).replace('{staffId}', id);
-        } else {
-          node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.agencyID).replace('{id}', id);
-        }
+      const countryId = this.isLocalAgency ? this.agencyID : this.countryID
+      if (type == 'staff') {
+        node = Constants.STAFF_NODE.replace('{countryId}', countryId).replace('{staffId}', id);
+      } else if (type == 'admin') {
+        node = Constants.ADMIN_NODE.replace('{adminId}', id);
       } else {
-        if (type == 'staff') {
-          node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
-        } else {
-          node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.countryID).replace('{id}', id);
-        }
+        node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', countryId).replace('{id}', id);
       }
 
       note.agencyId = this.userAgencyId
 
       this._noteService.saveNote(node, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+        if (type == 'admin') {
+          jQuery('#notes_admin').collapse('hide')
+          this.adminNote.content = ''
+        }
       })
         .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
@@ -693,18 +705,13 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
     let node = '';
 
-    if (this.isLocalAgency) {
-      if (type == 'staff') {
-        node = Constants.STAFF_NODE.replace('{countryId}', this.agencyID).replace('{staffId}', id);
-      } else {
-        node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.agencyID).replace('{id}', id);
-      }
+    const countryId = this.isLocalAgency ? this.agencyID : this.countryID
+    if (type == 'staff') {
+      node = Constants.STAFF_NODE.replace('{countryId}', countryId).replace('{staffId}', id);
+    } else if (type == 'admin') {
+      node = Constants.ADMIN_NODE.replace('{adminId}', id);
     } else {
-      if (type == 'staff') {
-        node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
-      } else {
-        node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.countryID).replace('{id}', id);
-      }
+      node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', countryId).replace('{id}', id);
     }
 
     this._noteService.deleteNote(node, note)
@@ -727,16 +734,22 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     if (this.validateNote(note)) {
       let node = "";
 
+      const countryId = this.isLocalAgency ? this.agencyID : this.countryID
       if (type == 'staff') {
-        node = Constants.STAFF_NODE.replace('{countryId}', this.countryID).replace('{staffId}', id);
+        node = Constants.STAFF_NODE.replace('{countryId}', countryId).replace('{staffId}', id);
+      } else if (type == 'admin') {
+        node = Constants.ADMIN_NODE.replace('{adminId}', id);
       } else {
-        node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', this.countryID).replace('{id}', id);
+        node = Constants.SURGE_CAPACITY_NODE.replace('{countryId}', countryId).replace('{id}', id);
       }
 
       this._noteService.saveNote(node, note).then(() => {
         this.alertMessage = new AlertMessageModel('NOTES.SUCCESS_SAVED', AlertMessageType.Success);
+        if (type == 'admin') {
+          jQuery('#notes_admin').collapse('hide')
+        }
       })
-        .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
+        .catch(() => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'))
     }
   }
 
@@ -790,4 +803,11 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
     }
   }
 
+  private getCountryAdmin(countryID: string, agencyID: string) {
+    return this._userService.getCountryAdmin(agencyID, countryID)
+  }
+
+  private getLocalAgencyAdmin(agencyID: string) {
+    return this._userService.getLocalAgencyAdmin(agencyID)
+  }
 }

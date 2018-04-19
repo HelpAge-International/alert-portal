@@ -697,7 +697,7 @@
         <!-- START: Country Context - Inactive / archived state -->
         <!-- THIS HAS BEEN COPIED FROM THE ACTIVE SECTION - Find in document 'countryContextIsActive' to find it -->
         <div class="card" *ngIf="!countryContextIsActive">
-          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseArchiveOne" aria-expanded="true"
                aria-controls="collapseOne">
             <div class="row">
               <div class="col-lg-4 col-sm-4">
@@ -720,7 +720,7 @@
           </div>
 
           <!-- collapsible content Country Context Start -->
-          <div class="Accordion__Content collapse" id="collapseOne" role="tab">
+          <div class="Accordion__Content collapse" id="collapseArchiveOne" role="tab">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -1005,8 +1005,8 @@
          (hazard.hazardScenario == Hazard_Conflict && overviewCountryPrivacy && (overviewCountryPrivacy.conflictIndicators == Privacy.Public || (overviewCountryPrivacy.conflictIndicators == Privacy.Network && withinNetwork)))">
 
             <div class="Accordion--risk Map-list" data-toggle="collapse"
-                 attr.href="#{{'collapse' + hazard.hazardScenario}}" aria-expanded="true"
-                 attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
+                 attr.href="#{{'collapse_archive' + hazard.hazardScenario}}" aria-expanded="true"
+                 attr.aria-controls="{{'collapse_archive' + hazard.hazardScenario}}">
               <div class="row">
                 <div class="col-sm-4">
                   <div class="Icon">
@@ -1035,7 +1035,7 @@
               </div>
             </div>
 
-            <div class="Accordion__Content collapse" id="collapse{{hazard.hazardScenario}}" role="tab">
+            <div class="Accordion__Content collapse" id="collapse_archive{{hazard.hazardScenario}}" role="tab">
               <div class="card-block">
                 <div class="Sub-header-title__wrap--risk">
                   <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">

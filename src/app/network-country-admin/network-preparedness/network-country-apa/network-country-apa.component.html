@@ -283,7 +283,7 @@
                           </div>
 
                           <a
-                            *ngIf="(action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !isViewing) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom  && !isViewing) || (action.level == actionLevelEnum.MPA && action.type == ActionType.custom && isViewing && permissionsAreEnabled.customMPA.Edit && action.asignee == uid) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom  && isViewing && permissionsAreEnabled.customAPA.Edit && action.asignee == uid)"
+                            *ngIf="(action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !isViewing) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom  && !isViewing) || (action.level == actionLevelEnum.MPA && action.type == ActionType.custom && isViewing && permissionsAreEnabled.customMPA.Edit && (action.asignee == uid || (action.createdByAgencyId && action.createdByAgencyId === agencyId))) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom  && isViewing && permissionsAreEnabled.customAPA.Edit && (action.asignee == uid || (action.createdByAgencyId && action.createdByAgencyId === agencyId)))"
                             [routerLink]="isViewing ? ['/network-country/network-country-create-edit-action', action.id, networkViewValues] : isLocalNetworkAdmin ? ['/network-country/network-country-create-edit-action', action.id, {'isLocalNetworkAdmin':true}] : ['/network-country/network-country-create-edit-action', action.id]"
                             class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
 

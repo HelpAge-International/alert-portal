@@ -38,6 +38,7 @@ declare var jQuery: any;
 export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   SECTORS = Constants.RESPONSE_PLANS_SECTORS;
+  Sector_Enum = ResponsePlanSectors;
 
   private uid: string;
   private countryId: string;

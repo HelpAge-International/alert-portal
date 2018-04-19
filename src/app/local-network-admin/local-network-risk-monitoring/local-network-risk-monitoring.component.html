@@ -756,7 +756,7 @@
         <!-- START: Country Context - Inactive / archived state -->
         <!-- THIS HAS BEEN COPIED FROM THE ACTIVE SECTION - Find in document 'countryContextIsActive' to find it -->
         <div class="card" *ngIf="!countryContextIsActive">
-          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseArchiveOne" aria-expanded="true"
                *ngIf="eventFilter == -1 || eventFilter == 'countryContext'"
                aria-controls="collapseOne">
             <div class="row">
@@ -780,7 +780,7 @@
           </div>
 
           <!-- collapsible content Country Context Start -->
-          <div class="Accordion__Content collapse" id="collapseOne" role="tab"
+          <div class="Accordion__Content collapse" id="collapseArchiveOne" role="tab"
                *ngIf="eventFilter == -1 || eventFilter == 'countryContext'">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">

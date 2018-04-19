@@ -38,6 +38,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private PresenceInTheCountry = PresenceInTheCountry;
   private MethodOfImplementation = MethodOfImplementation;
+  private PresenceInCountry = Constants.RESPONSE_PLAN_COUNTRY_PRESENCE;
+  private PlanMethod = Constants.RESPONSE_PLAN_METHOD;
   private Gender = Gender;
   private AgeRange = AgeRange;
   private SourcePlan = SourcePlan;
@@ -246,7 +248,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             console.log("networkUser")
             this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
               this.uid = user.uid;
-          
+
               this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
               this.handleLoadResponsePlan();
             });
@@ -554,7 +556,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     console.log(responsePlansPath)
 
-    
+
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)

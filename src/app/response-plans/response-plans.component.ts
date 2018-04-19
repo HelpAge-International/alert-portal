@@ -16,6 +16,7 @@ import * as moment from "moment";
 import {ModelUserPublic} from "../model/user-public.model";
 import {CommonUtils} from "../utils/CommonUtils";
 import {$} from "protractor";
+import {PartnerOrganisationService} from "../services/partner-organisation.service";
 
 declare const jQuery: any;
 
@@ -98,6 +99,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private notificationService: NotificationService,
               private agencyService: AgencyService,
+              private partnerService: PartnerOrganisationService,
               private translate: TranslateService) {
   }
 
@@ -978,25 +980,25 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.partnerApprovalIdMap.set(id, hasChecked)
   }
 
-  confirmResendNotification(model, plan){
+  confirmResendNotification(model, plan) {
     this.planToResend = plan;
-    jQuery("#"+model).modal("show");
+    jQuery("#" + model).modal("show");
   }
 
-  resendNotification(user, tag){
+  resendNotification(user, tag) {
     this.closeModal(tag);
-    jQuery("#"+this.planToResend.$key).collapse('hide')
+    jQuery("#" + this.planToResend.$key).collapse('hide')
 
     let notification = new MessageModel();
     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
     notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToResend.name});
     notification.time = new Date().getTime();
 
-    if(user == 'countryDirector') {
+    if (user == 'countryDirector') {
       this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId);
-    } else if(user == 'regionDirector'){
+    } else if (user == 'regionDirector') {
       this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId);
-    } else if(user == 'globalDirector'){
+    } else if (user == 'globalDirector') {
       this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.GlobalDirector, this.agencyId, this.countryId);
     }
   }
@@ -1035,7 +1037,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     if (this.regionDirectorSelected) {
       if ((this.getApprovalStatus("regionDirector") != ApprovalStatus.Approved && this.getApprovalStatus("regionDirector") != ApprovalStatus.NeedsReviewing)) {
         approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/regionDirector/" + this.countryRegionAgencyIdMap.get("regionDirector")] = ApprovalStatus.WaitingApproval
-        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId)+ "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
 
         // Send notification to country director
         let notification = new MessageModel();
@@ -1078,9 +1080,25 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         if (v) {
           atLeastOnePartnerSelected = true
           if (!(this.planToApproval.approval && this.planToApproval.approval["partner"] &&
-              this.planToApproval.approval["partner"][k] &&
-              (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
+            this.planToApproval.approval["partner"][k] &&
+            (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
             approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval
+
+            console.log("start create message for partner users***")
+            console.log(k)
+            this.userService.getUser(k)
+              .first()
+              .subscribe(user => {
+                console.log(user)
+                if (user) {
+                  // Send notification to country director
+                  let notification = new MessageModel();
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotification(user.id, notification, UserType.PartnerUser, this.agencyId, this.countryId)
+                }
+              })
           }
         } else {
           approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.InProgress

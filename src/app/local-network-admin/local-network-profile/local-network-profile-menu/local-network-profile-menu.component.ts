@@ -36,38 +36,38 @@ export class LocalNetworkProfileMenuComponent implements OnInit,OnDestroy {
   constructor(private route: ActivatedRoute, private storageService: LocalStorageService, private router: Router) {
     this.initMenuActive();
 
-    this.router.events.takeUntil(this.ngUnSubscribe).subscribe((event) => {
-      //Update highlight on sub menu when navigating from dropdown menu
-      if(event instanceof NavigationEnd) {
-        if (event.url.includes("programme")) {
-          this.handleMenuActive("programme");
-        }
-        else if (event.url.includes("officeCapacity") || event.url.includes("office-capacity")) {
-          this.handleMenuActive("officeCapacity");
-        }
-        else if (event.url.includes("partners")) {
-          this.handleMenuActive("partners");
-        }
-        else if (event.url.includes("equipment")) {
-          this.handleMenuActive("equipment");
-        }
-        else if (event.url.includes("coordination")) {
-          this.handleMenuActive("coordination");
-        }
-        else if (event.url.includes("stockCapacity") || event.url.includes("stock-capacity")) {
-          this.handleMenuActive("stockCapacity");
-        }
-        else if (event.url.includes("documents")) {
-          this.handleMenuActive("documents");
-        }
-        else if (event.url.includes("contacts")) {
-          this.handleMenuActive("contacts");
-        }
-        else {
-          throw new Error("Local-Network-Profile-Menu: Invalid Url Arg");
-        }
-      }
-    });
+    // this.router.events.takeUntil(this.ngUnSubscribe).subscribe((event) => {
+    //   //Update highlight on sub menu when navigating from dropdown menu
+    //   if(event instanceof NavigationEnd) {
+    //     if (event.url.includes("programme")) {
+    //       this.handleMenuActive("programme");
+    //     }
+    //     else if (event.url.includes("officeCapacity") || event.url.includes("office-capacity")) {
+    //       this.handleMenuActive("officeCapacity");
+    //     }
+    //     else if (event.url.includes("partners")) {
+    //       this.handleMenuActive("partners");
+    //     }
+    //     else if (event.url.includes("equipment")) {
+    //       this.handleMenuActive("equipment");
+    //     }
+    //     else if (event.url.includes("coordination")) {
+    //       this.handleMenuActive("coordination");
+    //     }
+    //     else if (event.url.includes("stockCapacity") || event.url.includes("stock-capacity")) {
+    //       this.handleMenuActive("stockCapacity");
+    //     }
+    //     else if (event.url.includes("documents")) {
+    //       this.handleMenuActive("documents");
+    //     }
+    //     else if (event.url.includes("contacts")) {
+    //       this.handleMenuActive("contacts");
+    //     }
+    //     else {
+    //       throw new Error("Local-Network-Profile-Menu: Invalid Url Arg");
+    //     }
+    //   }
+    // });
   }
 
   ngOnInit() {
@@ -126,42 +126,50 @@ export class LocalNetworkProfileMenuComponent implements OnInit,OnDestroy {
   }
 
   goToProgrammes() {
+    this.handleMenuActive("programme")
     this.networkViewValues["officeTarget"] = "programme"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-programme', this.networkViewValues] : ['/network/local-network-office-profile/programme', this.networkViewValues])
   }
 
   goToOfficeCapacity() {
     console.log(this.networkViewValues)
+    this.handleMenuActive("officeCapacity")
     this.networkViewValues["officeTarget"] = "officeCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-office-capacity', this.networkViewValues] : ['/network/local-network-office-profile/office-capacity', this.networkViewValues])
   }
 
   goToPartners() {
+    this.handleMenuActive("partners")
     this.networkViewValues["officeTarget"] = "partners"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-partners', this.networkViewValues] : ['/network/local-network-office-profile/partners', this.networkViewValues])
   }
 
   goToEquipment() {
+    this.handleMenuActive("equipment")
     this.networkViewValues["officeTarget"] = "equipment"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-equipment', this.networkViewValues] : ['/network/local-network-office-profile/equipment', this.networkViewValues])
   }
 
   goToCoordination() {
+    this.handleMenuActive("coordination")
     this.networkViewValues["officeTarget"] = "coordination"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-coordination', this.networkViewValues] : ['/network/local-network-office-profile/coordination', this.networkViewValues])
   }
 
   goToStockCapacity() {
+    this.handleMenuActive("stockCapacity")
     this.networkViewValues["officeTarget"] = "stockCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-stock-capacity', this.networkViewValues] : ['/network/local-network-office-profile/stock-capacity', this.networkViewValues])
   }
 
   goToDocuments() {
+    this.handleMenuActive("documents")
     this.networkViewValues["officeTarget"] = "documents"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-documents', this.networkViewValues] : ['/network/local-network-office-profile/documents', this.networkViewValues])
   }
 
   goToContacts() {
+    this.handleMenuActive("contacts")
     this.networkViewValues["officeTarget"] = "contacts"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-contacts', this.networkViewValues] : ['/network/local-network-office-profile/contacts', this.networkViewValues])
   }

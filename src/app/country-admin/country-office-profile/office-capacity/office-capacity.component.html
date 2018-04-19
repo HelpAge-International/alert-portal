@@ -251,6 +251,132 @@
         <!--Notes Drop Down End-->
 
       </div>
+
+      <!--country admin-->
+      <ng-container *ngIf="(countryAdmin | async) as adminCountry">
+        <div class="row">
+          <div class="col-sm-1">N/A</div> <!--Updated-->
+          <div class="col-sm-2">{{adminCountry.firstName +" "+adminCountry.lastName}}</div> <!--Name-->
+          <div class="col-sm-1">{{isLocalAgency ? 'Agency Admin' : 'Country Admin'}}</div> <!--Position-->
+          <div class="col-sm-2">{{officeType[2] | translate}}</div> <!--Office Type-->
+
+          <!--Skills-->
+          <div class="col-sm-2">
+            <div class="row">
+              <div class="col-sm-1">
+                <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                     alt="Skills">
+                <p class="notes-number__components--country-office-profile skills">0</p>
+                <a href="#tech_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
+                  {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
+                </a>
+              </div>
+
+              <div class="col-sm-1 margin-left-six">
+                <img class="margin-left-two" style="width: 1.85em;" src="assets/images/icons/skills_bubble.svg"
+                     alt="Skills">
+                <p class="notes-number__components--country-office-profile skills">0</p>
+                <a href="#support_{{i}}" data-toggle="collapse" class="row margin-left-one-half">
+                  {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-3"></div> <!--Training Needs-->
+          <div class="col-sm-1">
+            <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
+            <p class="notes-number__components--country-office-profile">{{(adminNotes | async)?.length}}</p>
+            <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
+            <a href="#notes_admin" data-toggle="collapse" class="row margin-left-one-half">
+              {{ 'GLOBAL.NOTES' | translate }}
+            </a>
+          </div>
+        </div>
+        <!-- Notes Drop Down -->
+        <div id="notes_admin" class="Tooltip__bubble container-fluid notes log collapse">
+          <div class="log_left p-3">
+            <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
+            <hr class="d-inline-flex">
+
+            <form (ngSubmit)="addNote('admin', adminCountry.id, adminNote)">
+              <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin && UserType != USER_TYPE.LocalAgencyAdmin" type="text"
+                     name="new_note" placeholder="{{ 'NOTES.ADD_A_NOTE' | translate }}"
+                     [(ngModel)]="adminNote && adminNote.content">
+
+              <!--Note post-->
+              <ng-container *ngIf="(adminNotes | async) as notes">
+                <div class="row Spaced log-post__wrap--risk"
+                     *ngFor="let note of notes">
+                  <div class="log-date__wrap--risk col-lg-1">
+                    <p>{{ note.time | date: 'dd MMM y' }}</p>
+                  </div>
+                  <div class="col-lg-6">
+                    <p>{{ note.content }}</p>
+                    <br>
+                    <div class="row">
+                      <p class="col-sm-8"><strong>{{ "BY" | translate }} {{ getUserName(note.uploadedBy) }}<span *ngIf="note.agencyName">, {{note.agencyName}} </span></strong>
+                      </p>
+                      <ng-container *ngIf="!isLocalAgency">
+                        <a
+                          *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
+                          href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                          (click)="editNote('admin', adminCountry.id, note)">{{ 'EDIT' | translate }}</a>
+                        <p
+                          *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
+                          href="javascript:void(0)" class="padding-left-one">|</p>
+                        <a
+                          *ngIf="uid==note.uploadedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
+                          href="javascript:void(0)"
+                          class="padding-left-one col-sm-0 text-danger"
+                          (click)="deleteNote('admin', adminCountry.id, note)">{{ 'DELETE' | translate }}</a>
+                      </ng-container>
+
+                      <ng-container *ngIf="isLocalAgency">
+                        <a
+                          *ngIf="uid==note.uploadedBy  || UserType == USER_TYPE.LocalAgencyAdmin"
+                          href="javascript:void(0)" class="col-sm-0 margin-right-none"
+                          (click)="editNote('staff', adminCountry.id, note)">{{ 'EDIT' | translate }}</a>
+                        <p
+                          *ngIf="uid==note.uploadedBy  || UserType == USER_TYPE.LocalAgencyAdmin"
+                          href="javascript:void(0)" class="padding-left-one">|</p>
+                        <a
+                          *ngIf="uid==note.uploadedBy  || UserType == USER_TYPE.LocalAgencyAdmin"
+                          href="javascript:void(0)"
+                          class="padding-left-one col-sm-0 text-danger"
+                          (click)="deleteNote('admin', adminCountry.id, note)">{{ 'DELETE' | translate }}</a>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <hr>
+
+              <!--add Note button-->
+              <div class="add_log mt-auto p-2 text-right float-right">
+                <ng-container *ngIf="!isLocalAgency">
+                  <button *ngIf="countryPermissionsMatrix.notes.New || UserType == USER_TYPE.CountryAdmin" type="submit"
+                          class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="isLocalAgency">
+                  <button type="submit"
+                          class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
+                  </button>
+                </ng-container>
+                <br>
+                <br><a href="#notes_admin" class="margin-left-two" data-toggle="collapse">{{ 'GLOBAL.CANCEL' |
+                translate
+                }}</a>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!--Notes Drop Down End-->
+        <div class="row Line-row"></div>
+      </ng-container>
+
     </div>
 
     <!--Surge Capacity Section-->

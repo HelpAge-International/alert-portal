@@ -293,13 +293,15 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
       case UserType.Ert:
         node = "/messageRef/country/" + countryId + "/erts/" + userId + "/{messageId}";
         break;
-      case UserType.NonAlert:
+      case UserType.PartnerUser:
         node = "/messageRef/country/" + countryId + "/partner/" + userId + "/{messageId}";
+        break;
+      case UserType.NonAlert:
+        node = "/messageRef/country/" + countryId + "/nonalert/" + userId + "/{messageId}";
         break;
       case UserType.CountryUser:
         node = "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId + "/{messageId}";
         break;
-
     }
 
     return this.saveNotification(node, message);
