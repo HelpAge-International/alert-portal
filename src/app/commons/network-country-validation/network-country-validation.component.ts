@@ -5,6 +5,7 @@ import {NetworkService} from "../../services/network.service";
 import {Constants} from "../../utils/Constants";
 import * as moment from "moment";
 import * as firebase from "firebase";
+import {AngularFire} from "angularfire2";
 
 @Component({
   selector: 'app-network-country-validation',
@@ -32,6 +33,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private networkService: NetworkService,
+              private af:AngularFire,
               private router: Router) {
   }
 

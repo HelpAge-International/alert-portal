@@ -5,6 +5,7 @@ import {Constants} from "../../utils/Constants";
 import {NetworkService} from "../../services/network.service";
 import * as firebase from "firebase";
 import * as moment from "moment";
+import {AngularFire} from "angularfire2";
 
 @Component({
   selector: 'app-network-agency-validation',
@@ -31,6 +32,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private networkService: NetworkService,
+              private af:AngularFire,
               private router: Router) {
   }
 
@@ -45,9 +47,7 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
           this.countryId = params["countryId"];
 
-          firebase.auth().signInAnonymously().catch(error => {
-            console.log(error.message);
-          });
+          this.anonymousLogin();
 
           firebase.auth().onAuthStateChanged(user => {
             console.log("onAuthStateChanged");
@@ -77,6 +77,12 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
           this.navigateToLogin();
         }
       });
+  }
+
+  private anonymousLogin() {
+    firebase.auth().signInAnonymously().catch(error => {
+      console.log(error.message);
+    });
   }
 
   private getNetworkInfo(networkId: string) {
