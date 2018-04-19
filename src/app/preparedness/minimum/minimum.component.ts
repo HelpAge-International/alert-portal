@@ -67,6 +67,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private updateActionId: string;
   public myFirstName: string;
   public myLastName: string;
+  private extension: string;
 
   // Filters
   private filterStatus: number = -1;
@@ -406,11 +407,20 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/system/" + this.systemAdminId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
+        console.log(snap.val().fileSettings)
         let index = 0;
+        let ext = "";
         for (let x of snap.val().fileSettings) {
           this.fileExtensions[index].allowed = snap.val().fileSettings[index];
+          console.log(this.fileExtensions[index].allowed)
+
+          if (this.fileExtensions[index].allowed){
+            ext = ext.concat(this.fileExtensions[index].extensions[1] ? this.fileExtensions[index].extensions[0] +" "+ this.fileExtensions[index].extensions[1] +" " : this.fileExtensions[index].extensions[0]+ " ");
+          }
           index++;
+
         }
+        this.extension = ext;
         this.fileSize = snap.val().fileType == 1 ? 1000 * snap.val().fileSize : snap.val().fileSize;
         this.fileSize = this.fileSize * 1000 * 1000;
       });
@@ -771,7 +781,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     action.note = '';
   }
 
-
   /**
    * File uploading
    */
@@ -924,7 +933,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
       }
 
-
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -1014,11 +1022,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   //Close documents popover
   protected closePopover(action: PreparednessAction) {
-
     let toggleDialog = jQuery("#popover_content_" + action.id);
     toggleDialog.toggle();
-
-
   }
 
   // Uploading a file to Firebase

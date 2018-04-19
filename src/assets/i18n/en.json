@@ -2128,7 +2128,7 @@
         "LEVEL1":"You can only complete an action that is assigned to you"
       },
       "TT4":{
-        "LEVEL1":"You can upload multiple files. Your agency accepts the following file types as an attachment: <bring up list of approved file types from agency admin settings>/"
+        "LEVEL1":"You can upload multiple files. Your agency accepts the following file types as an attachment: "
       },
       "TT5":{
         "LEVEL1":"You can only edit or delete notes you posted. To delete notes others have posted, please get in touch with the user that posted the note or contact your administrator"
