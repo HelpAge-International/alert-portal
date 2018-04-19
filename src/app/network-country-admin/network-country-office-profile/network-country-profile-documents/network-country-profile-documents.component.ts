@@ -12,6 +12,7 @@ import * as firebase from "firebase/app";
 import App = firebase.app.App;
 declare var jQuery: any;
 import {LocalStorageService} from "angular-2-local-storage";
+import {CommonUtils} from "../../../utils/CommonUtils";
 
 
 @Component({
@@ -23,7 +24,7 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
   UserType: any;
   networkCountryId: any;
   networkId: any;
-
+  private SIZE_TYPE = SizeType;
   private userType: UserType;
   DOCUMENT_TYPE = Constants.DOCUMENT_TYPE;
   COUNTRIES = Constants.COUNTRIES;
@@ -410,6 +411,10 @@ export class NetworkCountryProfileDocumentsComponent implements OnInit, OnDestro
     a.href = URL.createObjectURL(file);
     a.download = name;
     a.click();
+  }
+
+  castToIntCeil(value) : number {
+    return CommonUtils.castToIntCelling(value)
   }
 
 }

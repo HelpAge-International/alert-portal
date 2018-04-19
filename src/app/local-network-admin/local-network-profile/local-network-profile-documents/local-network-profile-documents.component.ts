@@ -12,6 +12,7 @@ import * as firebase from "firebase/app";
 import App = firebase.app.App;
 declare var jQuery: any;
 import {LocalStorageService} from "angular-2-local-storage";
+import {CommonUtils} from "../../../utils/CommonUtils";
 
 @Component({
   selector: 'app-local-network-profile-documents',
@@ -23,7 +24,7 @@ export class LocalNetworkProfileDocumentsComponent implements OnInit, OnDestroy 
   UserType: any;
   networkCountryId: any;
   networkId: any;
-
+  private SIZE_TYPE = SizeType;
   private userType: UserType;
   DOCUMENT_TYPE = Constants.DOCUMENT_TYPE;
   COUNTRIES = Constants.COUNTRIES;
@@ -294,6 +295,10 @@ export class LocalNetworkProfileDocumentsComponent implements OnInit, OnDestroy 
     } catch (e) {
       console.log('Unable to releaseAll');
     }
+  }
+
+  castToIntCeil(value) : number {
+    return CommonUtils.castToIntCelling(value)
   }
 
   private navigateToLogin() {
