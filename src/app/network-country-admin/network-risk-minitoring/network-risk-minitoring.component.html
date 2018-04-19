@@ -744,7 +744,7 @@
         <!-- START: Country Context - Inactive / archived state -->
         <!-- THIS HAS BEEN COPIED FROM THE ACTIVE SECTION - Find in document 'countryContextIsActive' to find it -->
         <div class="card" *ngIf="!countryContextIsActive">
-          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseArchiveOne" aria-expanded="true"
                *ngIf="eventFilter == -1 || eventFilter == 'countryContext'"
                aria-controls="collapseOne">
             <div class="row">
@@ -768,7 +768,7 @@
           </div>
 
           <!-- collapsible content Country Context Start -->
-          <div class="Accordion__Content collapse" id="collapseOne" role="tab"
+          <div class="Accordion__Content collapse" id="collapseArchiveOne" role="tab"
                *ngIf="eventFilter == -1 || eventFilter == 'countryContext'">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
@@ -1109,7 +1109,6 @@
                      data-toggle="modal"
                      data-target="#deleteHazardModal"
                      (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
-                  <a href="javascript:void(0)">{{"GLOBAL.CHANGE" | translate}}</a>
                   <a *ngIf="hazard.existsOnNetwork" [routerLink]="networkViewValues ? ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id, networkViewValues] : ['/network-country/network-risk-monitoring/add-indicator/' + hazard.id]" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
                   <a *ngIf="!hazard.existsOnNetwork" href="javascript:void(0)" (click)="createNewHazardFromCountry(hazard)" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
@@ -1413,11 +1412,7 @@
       </div>
       <div class="modal-body text-center">
         <p class="text-center col-sm-12">
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_ONE" | translate}}
-          {{tmpHazardData['activeStatus'] ? 'activate' : 'archive'}}
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_TWO" | translate}}
-          {{tmpHazardData['activeStatus'] ? 'active' : 'inactive'}}
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_THREE" | translate}}
+          {{(tmpHazardData['activeStatus'] ? "RISK_MONITORING.MAIN_PAGE.MODAL.ACTIVE_HAZARD.MESSAGE" : "RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE") | translate}}
         </p>
         <div class="row col-sm-12">
 
