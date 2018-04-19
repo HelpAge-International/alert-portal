@@ -836,22 +836,22 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       });
 
       // let isValid = true;
-    // if (!this.activityInfoMap) {
-    //   isValid = false;
-    // }
-    // Object.keys(this.activityMap).forEach(key => {
-    //   if (!this.activityInfoMap.get(key)) {
-    //     isValid = false;
-    //   }
-    // });
-    // this.activityMap.forEach((v) => {
-    //   v.forEach(activity => {
-    //     if (!activity.output || !activity.name || !activity.indicator) {
-    //       isValid = false;
-    //     }
-    //   })
-    // });
-    // return isValid;
+      // if (!this.activityInfoMap) {
+      //   isValid = false;
+      // }
+      // Object.keys(this.activityMap).forEach(key => {
+      //   if (!this.activityInfoMap.get(key)) {
+      //     isValid = false;
+      //   }
+      // });
+      // this.activityMap.forEach((v) => {
+      //   v.forEach(activity => {
+      //     if (!activity.output || !activity.name || !activity.indicator) {
+      //       isValid = false;
+      //     }
+      //   })
+      // });
+      // return isValid;
     });
 
 
@@ -1304,25 +1304,15 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   methodOfImplementationSelectedWithPartners() {
-    if (this.moduleAccess.networkOffice) {
-      this.isWorkingWithPartners = true;
-      this.isDirectlyThroughFieldStaff = false;
-      this.isWorkingWithStaffAndPartners = false;
-    }
-    else {
-      this.methodOfImplementationSelectedDirect();
-    }
+    this.isWorkingWithPartners = true;
+    this.isDirectlyThroughFieldStaff = false;
+    this.isWorkingWithStaffAndPartners = false;
   }
 
   methodOfImplementationSelectedBoth() {
-    if (this.moduleAccess.networkOffice) {
       this.isWorkingWithStaffAndPartners = true;
       this.isDirectlyThroughFieldStaff = false;
       this.isWorkingWithPartners = false;
-    }
-    else {
-      this.methodOfImplementationSelectedDirect();
-    }
   }
 
   addPartnersDropDown() {
@@ -1790,7 +1780,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSection8() {
-    if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument  && this.mediaFormat != null ||
+    if (this.mALSystemsDescriptionText != '' && this.intentToVisuallyDocument && this.mediaFormat != null ||
       this.mALSystemsDescriptionText != '' && !this.intentToVisuallyDocument) {
       this.section8Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[7], true);
@@ -1854,7 +1844,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     if (!this.isDoubleCountingDone) {
       this.section9Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[8], true);
-    }else {
+    } else {
       this.section9Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[8], false);
     }
@@ -2115,7 +2105,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       if (v) {
         temp = v;
         this.section0Status = "GLOBAL.COMPLETE";
-      }else{
+      } else {
         this.section0Status = "GLOBAL.INCOMPLETE";
       }
     });
