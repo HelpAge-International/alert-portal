@@ -27,12 +27,12 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
   private countryId: string;
   private isValidated: boolean;
   private network: any;
-  private showLoader:boolean
+  private showLoader: boolean
 
 
   constructor(private route: ActivatedRoute,
               private networkService: NetworkService,
-              private af:AngularFire,
+              private af: AngularFire,
               private router: Router) {
   }
 
@@ -47,28 +47,24 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
           this.agencyId = params["agencyId"];
           this.countryId = params["countryId"];
 
-          this.anonymousLogin();
+          firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+            .then(() => {
+              this.anonymousLogin();
+            })
 
           firebase.auth().onAuthStateChanged(user => {
-            console.log("onAuthStateChanged");
             if (user) {
-              if (user.isAnonymous) {
-                //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
-                let validationId = this.countryId && this.countryId != 'undefined' ? this.countryId : this.agencyId
-                this.networkService.validateNetworkAgencyToken(validationId, this.accessToken)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(validate => {
-                    console.log(validate);
-                    this.isValidated = validate;
-                    if (validate) {
-                      this.getNetworkInfo(this.networkId);
-                    }
-                    this.showLoader = false
-                  })
-              } else {
-                console.log("user not logged in");
-                this.navigateToLogin();
-              }
+              //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
+              let validationId = this.countryId && this.countryId != 'undefined' ? this.countryId : this.agencyId
+              this.networkService.validateNetworkAgencyToken(validationId, this.accessToken)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(validate => {
+                  this.isValidated = validate;
+                  if (validate) {
+                    this.getNetworkInfo(this.networkId);
+                  }
+                  this.showLoader = false
+                })
             }
           });
 

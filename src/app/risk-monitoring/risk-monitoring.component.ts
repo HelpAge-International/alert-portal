@@ -1576,21 +1576,30 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         if (!dataToSave["timeTracking"]["timeSpentInGreen"]) {
           dataToSave["timeTracking"]["timeSpentInGreen"] = [];
         }
-        dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+        const index = dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)
+        if (index != -1) {
+          dataToSave["timeTracking"]["timeSpentInGreen"][index].finish = currentTime
+        }
 
       }
       if (indicator.triggerSelected == 1) {
         if (!dataToSave["timeTracking"]["timeSpentInAmber"]) {
           dataToSave["timeTracking"]["timeSpentInAmber"] = [];
         }
-        dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        const index = dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)
+        if (index != -1) {
+          dataToSave["timeTracking"]["timeSpentInAmber"][index].finish = currentTime
+        }
 
       }
       if (indicator.triggerSelected == 2) {
         if (!dataToSave["timeTracking"]["timeSpentInRed"]) {
           dataToSave["timeTracking"]["timeSpentInRed"] = [];
         }
-        dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        const index = dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)
+        if (index != -1) {
+          dataToSave["timeTracking"]["timeSpentInRed"][index].finish = currentTime
+        }
       }
 
 
