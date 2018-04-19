@@ -28,6 +28,7 @@
             Change Accounts
           </a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -60,3 +61,4 @@
     </div>
   </div>
 </div>
+<app-report-problem ></app-report-problem>

@@ -740,9 +740,14 @@ export class UserService {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
   }
 
+  getNetworkAdminDetail(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId);
+  }
+
   getNetworkCountryDetail(networkId, networkCountryId) {
     return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId);
   }
+
 
   getAgencyModel(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)

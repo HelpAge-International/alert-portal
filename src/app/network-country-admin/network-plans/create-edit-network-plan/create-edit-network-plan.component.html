@@ -155,14 +155,12 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
-              | translate}}
-              <!--tooltip-->
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
-              </tooltip>
-
-            </label>
+              | translate}}</label>
+            <!--tooltip-->
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
+            </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
@@ -213,12 +211,11 @@
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
 
           <div class="row Spaced form-group align-items-center">
-            <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
-              | translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
-              </tooltip>
-            </label>
+            <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
+              | translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
+            </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
@@ -267,11 +264,10 @@
         </div>
         <div class="Response__content Spaced">
           <div class="form-group Spaced">
-            <label>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
-              </tooltip>
-            </label>
+            <label>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
+            </tooltip>
 
           </div>
           <div class="Selection-row">
@@ -328,12 +324,11 @@
 
           <div class="form-group">
             <label>{{"PRESENCE_IN_COUNTRY" |
-              translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
-              </tooltip>
-            </label>
+              translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
+            </tooltip>
           </div>
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
@@ -382,11 +377,10 @@
 
           <div class="row Spaced subitem" *ngIf="isWorkingWithPartners || isWorkingWithStaffAndPartners">
             <div class="col-lg-8 col-md-8">
-              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}
-                <tooltip
-                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
-                </tooltip>
-              </label>
+              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
+              <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
+              </tooltip>
               <div class="row align-items-center Small-spaced"
                    *ngFor="let dropDown of partnersDropDowns; let i = index">
                 <div class="col-sm-6">
@@ -448,11 +442,10 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-response">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_PROPOSED_PLAN_TEXT"
-                  | translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
-                  </tooltip>
-                </label>
+                  | translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
+                </tooltip>
                 <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"
                           [(ngModel)]="proposedResponseText"></textarea>
               </div>
@@ -462,11 +455,10 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-act">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_ACTIVITIES_PLAN_TEXT"
-                  | translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
-                  </tooltip>
-                </label>
+                  | translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
+                </tooltip>
                 <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"
                           [(ngModel)]="progressOfActivitiesPlanText"></textarea>
               </div>
@@ -476,11 +468,10 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-coo">{{"HOW_ARE_YOU_CO_ORDINATING"
-                  | translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
-                  </tooltip>
-                </label>
+                  | translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
+                </tooltip>
                 <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"
                           [(ngModel)]="coordinationPlanText"></textarea>
               </div>
@@ -513,12 +504,11 @@
         <div class="Response__content Spaced">
           <div class="form-group">
             <label>{{"HOW_MANY_BENEFICIARIES" |
-              translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
-              </tooltip>
-            </label>
+              translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
+            </tooltip>
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-2 col-md-1 col-sm-2 col-4">
@@ -556,12 +546,11 @@
             <div class="col-lg-8 col-md-10 col-sm-12">
               <div class="form-group">
                 <label>{{"WHICH_VULNERABLE_GROUP_TARGETING" |
-                  translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
-                    [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
-                  </tooltip>
-                </label>
+                  translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
+                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
+                </tooltip>
                 <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns; let i = index">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"
@@ -593,12 +582,11 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
-              | translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL2'">
-              </tooltip>
-            </label>
+              | translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL2'">
+            </tooltip>
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
@@ -1285,18 +1273,20 @@
           </div>
         </div>
         <div class="Response__content Spaced">
-
-          <div class="row no-gutters text-bold">
-            {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.CONFIRM_BENEFICIARIES_TEXT" | translate}}
+          <div class="row">
+            <div class="row no-gutters text-bold">
+              {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.CONFIRM_BENEFICIARIES_TEXT" | translate}}
+            </div>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
+            </tooltip>
           </div>
 
           <div class="row">
             <div class="col-lg-12">
               <div class="row Demographic__text">
-                <tooltip
-                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
-                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
-                </tooltip>
+
                 <div class="col-lg-3">
                   <div class="row  align-items-center"></div>
                   <div class="row  align-items-center">

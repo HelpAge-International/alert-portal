@@ -63,6 +63,7 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    jQuery('.float').hide();
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (auth, oldUserType) => {
       this.uid = auth.uid;
@@ -144,11 +145,13 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
 
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
 
-
     this.translate.use(language.toLowerCase());
     jQuery("#language-selection").modal("hide");
 
+  }
 
+  reportProblem(){
+    jQuery('.float').show();
   }
 
   logout() {

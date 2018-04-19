@@ -31,6 +31,9 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
   //logic info
   private uid: string;
   private networkId: string;
+  private networkAdminId: string;
+  private networkCountryId: string;
+  private networkLocation: number;
   private networkOffices: Observable<NetworkOfficeModel[]>;
   private showLoader:boolean;
   private showCoCBanner: boolean;
@@ -46,6 +49,7 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user,) => {
       this.uid = user.uid;
+      this.networkAdminId = this.uid;
       this.checkCoCUpdated();
 
       //get network id
@@ -57,6 +61,8 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
             .do((offices: NetworkOfficeModel[]) => {
               offices.forEach(office => {
                 office.adminName = this.userService.getUserName(office.adminId);
+                this.networkCountryId = office.adminId;
+                console.log(this.networkCountryId)
               });
               this.showLoader = false;
             });
