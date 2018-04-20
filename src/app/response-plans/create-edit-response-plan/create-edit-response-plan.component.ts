@@ -25,6 +25,7 @@ import {AlertMessageModel} from "../../model/alert-message.model";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import {isEmpty} from "rxjs/operator/isEmpty";
+import {ModelUserPublic} from "../../model/user-public.model";
 // import {jQuery} from "../../network-country-admin/network-plans/network-plans.component";
 
 declare var jQuery: any;
@@ -47,7 +48,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private systemAdminUid: string;
   private idOfResponsePlanToEdit: string;
   private forEditing: boolean = false;
-  private isCountryAdmin: boolean = false;
+  // private isCountryAdmin: boolean = false;
   private alertMessageType = AlertMessageType;
   private alertMessage: AlertMessageModel = null;
   private didOpenInitialSection: boolean = false;
@@ -270,6 +271,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private isLocalAgencyAdmin: boolean = false;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
+  private adminModel: Observable<ModelUserPublic>;
 
   //local agency
   @Input() isLocalAgency: Boolean;
@@ -287,7 +289,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private initCountryOffice() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.auth.uid;
-      this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
+      // this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
+      this.adminModel = this.userService.getCountryAdminOrLocalAgencyAdmin(agencyId, countryId)
       let userpath = Constants.USER_PATHS[userType];
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, userpath, (isEnabled) => {
         this.moduleAccess = isEnabled;
@@ -309,7 +312,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private initLocalAgency() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.auth.uid;
-      this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
+      // this.isCountryAdmin = userType == UserType.CountryAdmin ? true : false;
+      this.adminModel = this.userService.getCountryAdminOrLocalAgencyAdmin(agencyId)
       this.isLocalAgencyAdmin = userType == UserType.LocalAgencyAdmin;
 
       let userpath = Constants.USER_PATHS[userType];
@@ -2223,9 +2227,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.staffMembers = [];
         let tempList = [];
         // If country admin add user to the list as country admin is not listed under staff
-        if (this.isCountryAdmin) {
-          tempList.push(this.uid);
-        }
+        // if (this.isCountryAdmin) {
+        //   tempList.push(this.uid);
+        // }
         list.forEach(x => {
           tempList.push(x.$key)
         });
@@ -2251,9 +2255,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         this.staffMembers = [];
         let tempList = [];
         // If country admin add user to the list as country admin is not listed under staff
-        if (this.isCountryAdmin) {
-          tempList.push(this.uid);
-        }
+        // if (this.isCountryAdmin) {
+        //   tempList.push(this.uid);
+        // }
         if (this.isLocalAgencyAdmin) {
           tempList.push(this.uid);
         }

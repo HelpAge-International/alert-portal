@@ -82,6 +82,7 @@
                 <option *ngFor="let staffMember of staffMembers" [ngValue]="staffMember.$key">
                   {{staffMember.firstName + ' ' + staffMember.lastName}}
                 </option>
+                <option *ngIf="(adminModel | async) as admin" [value]="admin.id">{{admin.firstName +' '+admin.lastName}}</option>
               </select>
             </div>
           </div>
