@@ -33,7 +33,7 @@
 }
 
 .low_risk_text__wrap--risk-left-amber {
-  padding: 1em 0;
+  padding: 2em 0;
 }
 
 .low_risk_text__wrap--risk-left-red {
@@ -80,4 +80,30 @@
 
 p.font-size-two {
   text-transform: capitalize;
+}
+
+.hover-over {
+  height: 2.2em;
+  line-height: 1.1;
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.hover-over .hovertext {
+  visibility: hidden;
+  width: 200px;
+  margin: auto;
+  background-color: #006EA0;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.hover-over:hover .hovertext {
+  visibility: visible;
 }
