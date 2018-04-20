@@ -496,6 +496,13 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       indicators.forEach((indicator, key) => {
         console.log(indicator)
         indicator.fromAgency = false;
+        if (indicator.agencyId) {
+          this.agencyService.getAgency(indicator.agencyId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(agency => {
+              indicator.agency = agency;
+            })
+        }
         this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
           logs.forEach((log, key) => {
             this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
@@ -627,6 +634,13 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
             indicators.forEach((indicator, key) => {
               console.log(indicator)
               indicator.fromAgency = false;
+              if (indicator.agencyId) {
+                this.agencyService.getAgency(indicator.agencyId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(agency => {
+                    indicator.agency = agency;
+                  })
+              }
               this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                 logs.forEach((log, key) => {
                   this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
