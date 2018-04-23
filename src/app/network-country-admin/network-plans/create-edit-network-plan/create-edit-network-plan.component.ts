@@ -1795,6 +1795,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
    */
   section9() {
     console.log("in section 9");
+
+    this.doublerCounting();
     let doubleCounting = {};
 
     for (let i = 0; i < 6; i++) {
@@ -1826,6 +1828,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
         data["age"] = AgeRange.More50;
       }
       doubleCounting[i] = data;
+      console.log(doubleCounting[i])
     }
     this.newResponsePlan.doubleCounting = doubleCounting;
   }
@@ -1834,14 +1837,12 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.doublerCounting();
 
     this.checkSection9();
-
     this.handleContinueSave();
-
     this.onSubmit(9);
   }
 
   private checkSection9() {
-    if (!this.isDoubleCountingDone) {
+    if (this.isDoubleCountingDone) {
       this.section9Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[8], true);
     } else {
@@ -1870,6 +1871,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
     modelPlanList.forEach(modelPlan => {
       if (!modelPlan.hasFurtherBeneficiary) {
+        console.log("in--")
         modelPlan.beneficiary.forEach(item => {
           if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
             this.numberFemaleLessThan18 += Number(item["value"]);
@@ -1888,6 +1890,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
       } else {
         modelPlan.furtherBeneficiary.forEach(item => {
+          console.log("out--")
           if (item["age"] < 3 && item["gender"] == Gender.feMale) {
             this.numberFemaleLessThan18 += Number(item["value"]);
           } else if (item["age"] == 3 && item["gender"] == Gender.feMale) {
@@ -1906,21 +1909,25 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       }
     });
 
-    if (this.forEditing && this.isDoubleCountingDone) {
+    if (this.forEditing && !this.isDoubleCountingDone) {
+      console.log("in true")
       this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
       this.adjustedFemale18To50 = this.loadResponsePlan.doubleCounting[1].value;
       this.adjustedFemalegreaterThan50 = this.loadResponsePlan.doubleCounting[2].value;
       this.adjustedMaleLessThan18 = this.loadResponsePlan.doubleCounting[3].value;
       this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
       this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
+      console.log("Female 18 "+this.adjustedFemaleLessThan18)
+
     } else {
+      console.log("in false")
       this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
       this.adjustedFemale18To50 = this.numberFemale18To50;
       this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
       this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
       this.adjustedMale18To50 = this.numberMale18To50;
       this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
-    }
+   }
   }
 
   /**
