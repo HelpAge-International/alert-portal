@@ -56,6 +56,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
   private systemId: string;
   private agencyId: string;
   private oldCountryAdmin: string;
+  private agencyNotificationSettings: Array<any>;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -74,6 +75,7 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.handleClockSettings(this.agencyId);
       this.handleModuleSettings(this.agencyId);
+      this.handleNotificationSettings(this.agencyId);
 
       this.route.params
         .takeUntil(this.ngUnsubscribe)
@@ -493,11 +495,11 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
     for (let i = 0; i < 6; i++) {
       const item = {};
-      item[UserType.RegionalDirector] = false;
-      item[UserType.CountryDirector] = false;
-      item[UserType.ErtLeader] = false;
-      item[UserType.Ert] = false;
-      item[UserType.Donor] = false;
+      item[UserType.RegionalDirector] = this.agencyNotificationSettings && this.agencyNotificationSettings[i] ? this.agencyNotificationSettings[i].usersNotified[UserType.RegionalDirector] : false;
+      item[UserType.CountryDirector] = this.agencyNotificationSettings && this.agencyNotificationSettings[i] ? this.agencyNotificationSettings[i].usersNotified[UserType.CountryDirector] : false;
+      item[UserType.ErtLeader] = this.agencyNotificationSettings && this.agencyNotificationSettings[i] ? this.agencyNotificationSettings[i].usersNotified[UserType.ErtLeader] : false;
+      item[UserType.Ert] = this.agencyNotificationSettings && this.agencyNotificationSettings[i] ? this.agencyNotificationSettings[i].usersNotified[UserType.Ert] : false;
+      item[UserType.Donor] = this.agencyNotificationSettings && this.agencyNotificationSettings[i] ? this.agencyNotificationSettings[i].usersNotified[UserType.Donor] : false;
       if (i === 0) {
         item[UserType.CountryAdmin] = false;
       }
@@ -664,5 +666,14 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe).subscribe(() => {
       this.hideWarning = true;
     });
+  }
+
+  private handleNotificationSettings(agencyId: string) {
+    this.agencyService.getAgencyNotificationSettings(agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(notification => {
+        this.agencyNotificationSettings = notification
+        console.log(this.agencyNotificationSettings)
+      })
   }
 }
