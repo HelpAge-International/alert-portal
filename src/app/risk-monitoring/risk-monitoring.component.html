@@ -97,22 +97,32 @@
 
                 <div
                   class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-
                   <div class="" *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div [ngClass]="setClassForIndicator(0, indicatorC.triggerSelected)">
-                      {{indicatorC.trigger[0].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicatorC.triggerSelected == 0">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
                       {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
+
                     <div [ngClass]="setClassForIndicator(1, indicatorC.triggerSelected)">
-                      {{indicatorC.trigger[1].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicatorC.triggerSelected == 1">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
                       {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
+
                     <div [ngClass]="setClassForIndicator(2, indicatorC.triggerSelected)">
-                      {{indicatorC.trigger[2].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicatorC.triggerSelected == 2">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -123,7 +133,10 @@
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
                     <div class="btn btn-primary" (click)="greenSelected(indicatorC.$key)">
-                      {{indicatorC.trigger[0].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
@@ -131,7 +144,10 @@
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
                     <div class="btn btn-amber" (click)="amberSelected(indicatorC.$key)">
-                      {{indicatorC.trigger[1].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
@@ -139,7 +155,10 @@
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
                     <div class="btn btn-red" (click)="redSelected(indicatorC.$key)">
-                      {{indicatorC.trigger[2].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -438,41 +457,56 @@
                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                     <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div [ngClass]="setClassForIndicator(0, indicator.triggerSelected)">
-                        {{indicator.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicator.triggerSelected == 0">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                         {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
 
                       <div [ngClass]="setClassForIndicator(1, indicator.triggerSelected)">
-                        <div class="hover-over">{{indicator.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
                           <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
                         </div>
                       </div>
-
                       <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicator.triggerSelected == 1">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                         {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
+
                       <div [ngClass]="setClassForIndicator(2, indicator.triggerSelected)">
-                        {{indicator.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicator.triggerSelected == 2">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                         {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                     </div>
+
                     <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
                       <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
-                        {{indicator.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
+
                       <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                         {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
                       <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
-                        {{indicator.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
@@ -480,7 +514,10 @@
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
                       <div class="btn btn-red" (click)="redSelected(indicator.$key)">
-                        {{indicator.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
@@ -763,22 +800,32 @@
 
                   <div
                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-
                     <div class="" *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                       <div [ngClass]="setClassForIndicator(0, indicatorC.triggerSelected)">
-                        {{indicatorC.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicatorC.triggerSelected == 0">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
                         {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
+
                       <div [ngClass]="setClassForIndicator(1, indicatorC.triggerSelected)">
-                        {{indicatorC.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicatorC.triggerSelected == 1">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
                         {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
+
                       <div [ngClass]="setClassForIndicator(2, indicatorC.triggerSelected)">
-                        {{indicatorC.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicatorC.triggerSelected == 2">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -789,7 +836,10 @@
                       <input type="radio" name="indicator_{{indicatorC.$key}}"
                              [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
                       <div class="btn btn-primary" (click)="greenSelected(indicatorC.$key)">
-                        {{indicatorC.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
@@ -797,7 +847,10 @@
                       <input type="radio" name="indicator_{{indicatorC.$key}}"
                              [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
                       <div class="btn btn-amber" (click)="amberSelected(indicatorC.$key)">
-                        {{indicatorC.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
@@ -805,7 +858,10 @@
                       <input type="radio" name="indicator_{{indicatorC.$key}}"
                              [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
                       <div class="btn btn-red" (click)="redSelected(indicatorC.$key)">
-                        {{indicatorC.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -1101,32 +1157,44 @@
                       class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                       <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                         <div [ngClass]="setClassForIndicator(0, indicator.triggerSelected)">
-                          {{indicator.trigger[0].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicator.triggerSelected == 0">
-                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
-                          {{indicator.trigger[0].frequencyValue}}
+                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                           {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
+
                         <div [ngClass]="setClassForIndicator(1, indicator.triggerSelected)">
-                          {{indicator.trigger[1].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicator.triggerSelected == 1">
-                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
-                          {{indicator.trigger[1].frequencyValue}}
+                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                           {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
+
                         <div [ngClass]="setClassForIndicator(2, indicator.triggerSelected)">
-                          {{indicator.trigger[2].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicator.triggerSelected == 2">
-                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
-                          {{indicator.trigger[2].frequencyValue}}
+                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                           {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                       </div>
+
                       <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                         <input type="radio" name="indicator_{{indicator.$key}}"
                                [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
                         <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
-                          {{indicator.trigger[0].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                           {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
@@ -1135,7 +1203,10 @@
                         <input type="radio" name="indicator_{{indicator.$key}}"
                                [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
                         <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
-                          {{indicator.trigger[1].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                           {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
@@ -1144,7 +1215,10 @@
                         <input type="radio" name="indicator_{{indicator.$key}}"
                                [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
                         <div class="btn btn-red" (click)="redSelected(indicator.$key)">
-                          {{indicator.trigger[2].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                           {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
