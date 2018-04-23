@@ -284,22 +284,26 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     if (this.hazard == "countryContext") {
       let indicatorIndexCC = this.indicatorsCC.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.indicatorsCC[indicatorIndexCC]
       let indicatorID = "#indicators-to-hazards_CC" + "_" + indicatorIndexCC;
 
       jQuery("#collapseOne").collapse('show');
 
       this.changeIndicatorState(true, "countryContext", indicatorIndexCC);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
     } else if (this.hazard == "-1") {
       let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
       let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.activeHazards[hazardIndex].indicators[indicatorIndex]
       let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
 
       jQuery("#collapse" + this.activeHazards[hazardIndex].otherName).collapse('show');
 
       this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
