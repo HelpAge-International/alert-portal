@@ -215,7 +215,6 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
   }
 
   private setCalendarSpan(spanName) {
-    console.log(this.seasonEvents);
     switch(spanName){
       case this.CalendarSpans.Days :
         return DAY_IN_MILLISECONDS * LocalAgencyDashboardSeasonalCalendarComponent.WEEK_SPAN_DAY_MULTIPLIER;

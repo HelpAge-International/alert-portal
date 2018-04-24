@@ -23,6 +23,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
   private static WEEK_SPAN_DAY_MULTIPLIER = 30;
   private static MONTH_SPAN_DAY_MULTIPLIER = 91;
+  private static HALFYEAR_SPAN_DAY_MULTIPLIER = 182;
   private static RANGE_SPAN_DAYS = 365;
 
   // TODO - Check when other users are implemented
@@ -48,6 +49,9 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   public addSeasonEndDate: number;
   public addSeasonStartDate: number;
 
+  private CalendarSpans = Object.freeze({"Days":0, "Months":1, "Year":2});
+  private currentSpan: number;
+
   //for network
   @Input() isNetworkCountry: boolean;
   @Input() isLocalNetworkAdmin: boolean;
@@ -64,6 +68,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.currentSpan = this.CalendarSpans.Months;
     this.route.params.subscribe((params: Params) => {
       if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
         this.isViewing = params["isViewing"];
@@ -120,10 +125,18 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
 
   /**
-   * Ran when "View as months" is clicked. Changes filter and re-initialised the Chronoline map
+   * Ran when "View as 6 months" is clicked. Changes filter and re-initialised the Chronoline map
+   */
+  public setHalfYearView() {
+    this.currentSpan = this.CalendarSpans.Year;
+    this.reinitCalendar();
+  }
+
+  /**
+   * Ran when "View as 3 months" is clicked. Changes filter and re-initialised the Chronoline map
    */
   public setMonthView() {
-    this.currentSpanMultiplierIsMonth = true;
+    this.currentSpan = this.CalendarSpans.Months;
     this.reinitCalendar();
   }
 
@@ -131,7 +144,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    * Ran when "View as weeks" is clicked. Changes filter and re-initialised the Chronoline map
    */
   public setWeekView() {
-    this.currentSpanMultiplierIsMonth = false;
+    this.currentSpan = this.CalendarSpans.Days;
     this.reinitCalendar();
   }
 
@@ -205,9 +218,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     document.getElementById("target2").innerHTML = "";
     this.currentChronolineInstance = new Chronoline(document.getElementById("target2"), this.seasonEvents,
       {
-        visibleSpan: DAY_IN_MILLISECONDS * (this.currentSpanMultiplierIsMonth ?
-          DashboardSeasonalCalendarComponent.MONTH_SPAN_DAY_MULTIPLIER :
-          DashboardSeasonalCalendarComponent.WEEK_SPAN_DAY_MULTIPLIER),
+        visibleSpan: this.setCalendarSpan(this.currentSpan),
         animated: true,
         tooltips: true,
         sectionLabelAttrs: {'fill': '#997e3d', 'font-weight': 'bold'},
@@ -215,11 +226,23 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
         hashInterval: isFifthDay,
         scrollLeft: prevMonth,
         scrollRight: nextMonth,
+        eventHeight: 15,
         // markToday: 'labelBox',
         draggable: true
       });
     this.currentChronolineInstance.goToDate(new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 7)), 1);
     this.init = true;
+  }
+
+  private setCalendarSpan(spanName) {
+    switch(spanName){
+      case this.CalendarSpans.Days :
+        return DAY_IN_MILLISECONDS * DashboardSeasonalCalendarComponent.WEEK_SPAN_DAY_MULTIPLIER;
+      case this.CalendarSpans.Months :
+        return DAY_IN_MILLISECONDS * DashboardSeasonalCalendarComponent.MONTH_SPAN_DAY_MULTIPLIER;
+      case this.CalendarSpans.Year :
+        return DAY_IN_MILLISECONDS * DashboardSeasonalCalendarComponent.HALFYEAR_SPAN_DAY_MULTIPLIER;
+    }
   }
 
   private navigateToLogin() {
