@@ -10,6 +10,7 @@ import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import * as moment from "moment";
 import {CommonService} from "../../../../services/common.service";
+import {AgencyService} from "../../../../services/agency-service.service"
 import {OperationAreaModel} from "../../../../model/operation-area.model";
 import {Location} from "@angular/common";
 import {CountryAdminHeaderComponent} from "../../../country-admin-header/country-admin-header.component";
@@ -100,6 +101,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
               private _location: Location,
               private _commonService: CommonService,
               private _translate: TranslateService,
+              private agencyService: AgencyService,
               private userService: UserService) {
     this.programme = new ProgrammeMappingModel();
   }
@@ -109,18 +111,26 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     if (this.isLocalAgency) {
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
-        this.countryID = countryId;
         this.agencyID = agencyId;
-        this.initLocalAgency();
-        this.initCountrySelection();
+        this.agencyService.getAgency(agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((agency) => {
+            this.selectedCountry = agency.countryCode;
+            this.initLocalAgency();
+            this.initCountrySelection();
+          });
       });
     } else {
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
-        this.countryID = countryId;
         this.agencyID = agencyId;
-        this.initCountryOffice();
-        this.initCountrySelection();
+        this.agencyService.getAgency(agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((agency) => {
+            this.selectedCountry = agency.countryCode;
+            this.initCountryOffice();
+            this.initCountrySelection();
+          });
       });
     }
 
