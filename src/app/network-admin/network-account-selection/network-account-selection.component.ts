@@ -104,7 +104,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((network) => {
         this.filterAndInsertToList(network);
-        console.log("NETWORK:" + network);
+        console.log(network);
       });
   }
 
