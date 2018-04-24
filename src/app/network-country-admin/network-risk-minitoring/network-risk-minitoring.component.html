@@ -588,7 +588,7 @@
                   </div>
                   <div class="end-col__wrap--risk col-md-3 col-sm-6"
                        *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
-                    <div *ngIf="indicator?.assignee && !indicator.fromAgency && !isViewingFromExternal" class="col-sm-12 btn btn-tertiary"
+                    <div *ngIf="indicator?.assignee && !indicator.fromAgency && !isViewingFromExternal && !indicator['agency']" class="col-sm-12 btn btn-tertiary"
                          (click)="changeIndicatorState(true,hazard.id, indicatorKey); setCheckedTrigger(indicator.$key, indicator.triggerSelected)">
                       {{"GLOBAL.UPDATE" | translate}}
                     </div>
