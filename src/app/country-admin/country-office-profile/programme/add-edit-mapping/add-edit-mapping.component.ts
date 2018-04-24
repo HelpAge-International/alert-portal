@@ -164,7 +164,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
        // this.selectedCountry = getCountry.$value;
         console.log(getCountry.$value, 'initCountrySelection');
-
+        this.selectedCountry = getCountry.$value;
         /**
          * Pass country to the level one values for selection
          */
