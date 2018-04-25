@@ -698,9 +698,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
-
-    console.log("adding note");
-
+    
     if (action.note == undefined) {
       return;
     }

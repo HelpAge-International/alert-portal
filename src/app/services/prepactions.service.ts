@@ -611,7 +611,7 @@ export class PrepActionService {
 
     // Clock settings
     if (applyCustom) {
-      this.actions[i].setComputedClockSetting(+this.actions[i].frequencyValue, +this.actions[i].frequencyBase);
+      this.actions[i].setComputedClockSetting(this.actions[i].frequencyValue, +this.actions[i].frequencyBase);
     }
     else {
       this.actions[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
