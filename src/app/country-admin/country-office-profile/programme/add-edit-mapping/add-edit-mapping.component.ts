@@ -123,6 +123,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     } else {
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
+        this.countryID = countryId;
         this.agencyID = agencyId;
         this.agencyService.getAgency(agencyId)
           .takeUntil(this.ngUnsubscribe)
@@ -163,16 +164,22 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   initCountrySelection() {
+    /**
+     * Preset the first drop down box to the country office
+     */
+    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID + "/location")
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(getCountry => {
+        this.selectedCountry = getCountry.$value;
         /**
          * Pass country to the level one values for selection
          */
         this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(pre => {
-            console.log("selected country:");
-            console.log(this.selectedCountry);
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
-          });
+          })
+      });
   }
 
   checkLevel2() {
@@ -195,7 +202,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.selectedCountry = programme.where;
         this.selectedValue = programme.level1;
         this.selectedValueL2 = programme.level2;
-        console.log(this.selectedCountry, this.selectedValue, this.programme);
       });
   }
 
@@ -211,7 +217,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.selectedCountry = programme.where;
         this.selectedValue = programme.level1;
         this.selectedValueL2 = programme.level2;
-        console.log(this.selectedValue, this.selectedValueL2, this.programme);
       });
   }
 

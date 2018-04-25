@@ -35,6 +35,7 @@ export class PrepActionService {
   private completeCHS: number;
   private totalCHS: number;
   private CHSCompletePercentage: number;
+  private networkCountryId : string;
 
 
   public infoForUpdate: { index: number; updateAction: PreparednessAction; id: string };
@@ -182,6 +183,7 @@ export class PrepActionService {
 
   public initActionsWithInfoNetwork(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
                                     countryId: string, agencyId: string, systemId: string) {
+
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
@@ -197,6 +199,7 @@ export class PrepActionService {
   public initActionsWithInfoAllAgenciesInNetwork(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
                                                  countryId: string, agencyId: string, systemId: string, agencyCountryMap: Map<string, string>) {
     this.uid = uid;
+
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
     this.countryId = countryId;
@@ -225,6 +228,7 @@ export class PrepActionService {
                                                       countryId: string, agencyId: string, systemId: string, agencyCountryMap: Map<string, string>) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
+
     this.isMPA = isMPA;
     this.countryId = countryId;
     this.agencyId = agencyId;
@@ -289,12 +293,13 @@ export class PrepActionService {
   }
 
   public initActionsWithInfoNetworkLocal(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, isMPA: boolean,
-                                         agencyId: string, systemId: string) {
+                                         agencyId: string, systemId: string, networkCountryId : string = null) {
     this.uid = uid;
     this.ngUnsubscribe = ngUnsubscribe;
     this.isMPA = isMPA;
     this.agencyId = agencyId;
     this.systemAdminId = systemId;
+    this.networkCountryId = networkCountryId;
     this.getDefaultClockSettingsNetworkLocal(af, this.agencyId, () => {
       this.init(af, "actionMandated", this.agencyId, isMPA, PrepSourceTypes.AGENCY);
       this.init(af, "action", this.agencyId, isMPA, PrepSourceTypes.COUNTRY);
@@ -609,7 +614,7 @@ export class PrepActionService {
 
     // Clock settings
     if (applyCustom) {
-      this.actions[i].setComputedClockSetting(+this.actions[i].frequencyValue, +this.actions[i].frequencyBase);
+      this.actions[i].setComputedClockSetting(this.actions[i].frequencyValue, +this.actions[i].frequencyBase);
     }
     else {
       this.actions[i].setComputedClockSetting(this.defaultClockValue, this.defaultClockType);
@@ -967,7 +972,23 @@ export class PrepActionService {
   // Listen for changes on the notes
   public initNotes(af: AngularFire, actionId: string, run: boolean) {
     if (run) {
+      console.log(this.agencyId + "yooyoy")
       af.database.list(Constants.APP_STATUS + "/note/" + this.countryId + '/' + actionId, {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          let action: PreparednessAction = this.findAction(actionId);
+          if (action != null) {
+            this.findAction(actionId).notes = [];
+            snap.forEach((noteSnap) => {
+              let prepNote: PreparednessNotes = new PreparednessNotes(noteSnap.key, actionId);
+              prepNote.content = noteSnap.val().content;
+              prepNote.time = noteSnap.val().time;
+              prepNote.uploadedBy = noteSnap.val().uploadBy;
+              this.addNoteToAction(prepNote, action);
+            });
+          }
+        });
+        af.database.list(Constants.APP_STATUS + "/note/" + this.agencyId + '/' + actionId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
           let action: PreparednessAction = this.findAction(actionId);

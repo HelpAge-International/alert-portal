@@ -165,15 +165,27 @@ export class MapService {
       });
   }
   private downloadDefaultClockSettings(fun: () => void) {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        if (snap.val() != null) {
-          this.defaultClockValue = snap.val().value;
-          this.defaultClockType = snap.val().durationType;
+    if(this.countryId == null) {
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          if (snap.val() != null) {
+            this.defaultClockValue = snap.val().value;
+            this.defaultClockType = snap.val().durationType;
+            fun();
+          }
+        });
+    }
+    else {
+      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/clockSettings", {preserveSnapshot: true})
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((snap) => {
+          this.defaultClockValue = (+(snap.val().preparedness.value));
+          this.defaultClockType = (+(snap.val().preparedness.durationType));
           fun();
-        }
-      });
+
+        });
+    }
   }
   private downloadDepartments(fun: () => void) {
     this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
@@ -1012,6 +1024,10 @@ export class MapPrepAction {
     }
     else if (this.level == ActionLevel.MPA) {
       if (this.calculatedIsComplete != null) {
+        console.log("this.isCompleteAt " + this.isCompleteAt);
+        console.log("this.calculatedClock " + this.calculatedClock);
+        console.log("date " + date);
+        
         return this.isCompleteAt + this.calculatedClock > date;
       }
     }

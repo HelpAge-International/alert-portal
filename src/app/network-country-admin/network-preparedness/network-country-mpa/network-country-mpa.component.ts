@@ -818,6 +818,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
    */
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
+
     if (action.note == undefined) {
       return;
     }
