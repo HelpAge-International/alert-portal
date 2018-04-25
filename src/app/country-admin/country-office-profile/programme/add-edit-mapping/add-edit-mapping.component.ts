@@ -158,12 +158,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID + "/location")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(getCountry => {
-        console.log("agencyId", this.agencyID);
-        console.log("countryID", this.countryID);
-        console.log("getCountry", getCountry);
-
-       // this.selectedCountry = getCountry.$value;
-        console.log(getCountry.$value, 'initCountrySelection');
         this.selectedCountry = getCountry.$value;
         /**
          * Pass country to the level one values for selection
@@ -171,8 +165,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(pre => {
-            console.log("selected country:");
-            console.log(this.selectedCountry);
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
           })
       });
@@ -193,7 +185,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme = new ProgrammeMappingModel();
         programme.id = programme.$key;
         this.programme.setData(programme);
-        console.log(this.programme)
         this.setWhenDate(programme.when);
         this.setToDate(programme.toDate)
         this.selectedCountry = programme.where;

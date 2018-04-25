@@ -198,6 +198,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.systemAdminId = systemId;
 
       this.agencyId = agencyId;
+
       this.countryId = countryId;
 
       this.getStaffDetails(this.uid, true);
@@ -697,6 +698,9 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
+
+    console.log("adding note");
+
     if (action.note == undefined) {
       return;
     }
