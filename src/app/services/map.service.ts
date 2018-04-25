@@ -165,7 +165,7 @@ export class MapService {
       });
   }
   private downloadDefaultClockSettings(fun: () => void) {
-    if(this.countryId != null) {
+    if(this.countryId == null) {
       this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
