@@ -418,12 +418,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         counter++;
         console.log(counter);
         console.log(result);
-        if (counter === 1 && result.$value && result.$value != null) {
+        if (counter === 1 && result.$value && result.$value != "null") {
           this.directorSubmissionRequireMap.set(1, true);
           this.directorIdMap.set("countryDirector", result.$value)
           this.countryRegionAgencyIdMap.set("countryDirector", this.countryId)
         }
-        if (counter === 2 && result.$value && result.$value != null) {
+        if (counter === 2 && result.$value && result.$value != "null") {
           this.directorSubmissionRequireMap.set(2, true);
           this.directorIdMap.set("regionDirector", result.$value)
           this.getRegionId(this.countryId)

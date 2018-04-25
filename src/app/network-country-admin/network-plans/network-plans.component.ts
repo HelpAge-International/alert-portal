@@ -759,10 +759,10 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
         counter++;
-        if (counter === 1 && result.$value && result.$value != null) {
+        if (counter === 1 && result.$value && result.$value != "null") {
           this.directorIdMap.set("countryDirector", result.$value)
         }
-        if (counter === 2 && result.$value && result.$value != null) {
+        if (counter === 2 && result.$value && result.$value != "null") {
           this.directorIdMap.set("regionDirector", result.$value)
         }
         if (counter === 3 && result.length > 0) {
