@@ -56,7 +56,6 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user, prevUserType, networkIds, networkCountryIds) => {
       this.uid = user.uid;
       console.log("Network admin uid: " + this.uid);
-
       this.downloadNetworkAdminAccount();
       this.downloadAllNetworkCountryAdminAccounts();
 
@@ -105,7 +104,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((network) => {
         this.filterAndInsertToList(network);
-        console.log("NETWORK:" + network);
+        console.log(network);
       });
   }
 

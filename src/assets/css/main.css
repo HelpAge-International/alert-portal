@@ -11553,19 +11553,16 @@ li.Header_bar__country {
 
 .Ribbon__response {
   height: 60px;
-  border-top: 1px solid #F9F9F9;
+  margin: .5rem 0;
   -webkit-transition: all 0.2s;
   -o-transition: all 0.2s;
   -moz-transition: all 0.2s;
   transition: all 0.2s;
+  background: #F9F9F9;
 }
 
 .Ribbon__response h4 {
   font-size: 1rem;
-}
-
-.Ribbon__response.Active {
-  background: #F9F9F9;
 }
 
 .Ribbon__response.Active .Ribbon__header__number span {

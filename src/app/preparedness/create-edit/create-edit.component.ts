@@ -1136,6 +1136,8 @@ export class CreateEditPrepActionHolder {
   public department: string;
   public requireDoc: boolean;
   public type: number = -1;
+  public createdAt: any;
+  public updatedAt: any;
 
   public isComplete;
   public isCompleteAt;
@@ -1152,6 +1154,8 @@ export class CreateEditPrepActionHolder {
 
   constructor() {
     this.type = ActionType.custom;
+    this.createdAt = new Date().getTime();
+    this.updatedAt = new Date().getTime();
   }
 
   public validate(amShowingDueDate: boolean) {

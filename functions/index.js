@@ -346,8 +346,8 @@ function sendWelcomeEmail(email, userPassword) {
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
                       \n Your temporary password is "` + userPassword + `", please login with your email address to update your credentials.
                       \n https://platform.alertpreparedness.org
-                      \n Thanks
-                      \n Your ALERT team `;
+                      \n Thanks,
+                      \n ALERT Team `;
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('New welcome email sent to:', email);
   });
@@ -822,8 +822,8 @@ exports.sendResponsePlanValidationEmail = functions.database.ref('/sand/response
                               \n Please validate a response plan.
                               \n To review the response plan, please visit the link below:
                               \n http://localhost:4200/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-                              \n Thanks
-                              \n Your ALERT team `;
+                              \n Thanks,
+                              \n ALERT Team `;
                     return mailTransport.sendMail(mailOptions).then(() => {
                       console.log('Email sent to:', email);
                     });
@@ -882,8 +882,8 @@ exports.sendResponsePlanValidationEmailTest = functions.database.ref('/test/resp
                               \n Please validate a response plan.
                               \n To review the response plan, please visit the link below:
                               \n http://test.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-                              \n Thanks
-                              \n Your ALERT team `;
+                              \n Thanks,
+                              \n ALERT Team `;
                     return mailTransport.sendMail(mailOptions).then(() => {
                       console.log('Email sent to:', email);
                     });
@@ -942,8 +942,8 @@ exports.sendResponsePlanValidationEmailUat = functions.database.ref('/uat/respon
                               \n Please validate a response plan.
                               \n To review the response plan, please visit the link below:
                               \n http://uat.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-                              \n Thanks
-                              \n Your ALERT team `;
+                              \n Thanks,
+                              \n ALERT Team `;
                     return mailTransport.sendMail(mailOptions).then(() => {
                       console.log('Email sent to:', email);
                     });
@@ -1001,8 +1001,8 @@ exports.sendResponsePlanValidationEmailDemo = functions.database.ref('/demo/resp
                               \n Please validate a response plan.
                               \n To review the response plan, please visit the link below:
                               \n http://demo.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-                              \n Thanks
-                              \n Your ALERT team `;
+                              \n Thanks,
+                              \n ALERT Team `;
                     return mailTransport.sendMail(mailOptions).then(() => {
                       console.log('Email sent to:', email);
                     });
@@ -1060,8 +1060,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
                               \n Please validate a response plan.
                               \n To review the response plan, please visit the link below:
                               \n http://training.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-                              \n Thanks
-                              \n Your ALERT team `;
+                              \n Thanks,
+                              \n ALERT Team `;
                     return mailTransport.sendMail(mailOptions).then(() => {
                       console.log('Email sent to:', email);
                     });
@@ -1120,8 +1120,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://uat-2.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1180,8 +1180,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://set-1.day-1.training.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1240,8 +1240,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://set-2.day-1.training.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1300,8 +1300,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://set-1.day-2.training.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1360,8 +1360,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://set-2.day-2.training.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1420,8 +1420,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://set-1.day-3.training.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1480,8 +1480,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://set-2.day-3.training.portal.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1542,8 +1542,8 @@ exports.sendResponsePlanValidationEmailTraining = functions.database.ref('/train
 //                               \n Please validate a response plan.
 //                               \n To review the response plan, please visit the link below:
 //                               \n http://platform.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-//                               \n Thanks
-//                               \n Your ALERT team `;
+//                               \n Thanks,
+//                               \n ALERT Team `;
 //                     return mailTransport.sendMail(mailOptions).then(() => {
 //                       console.log('Email sent to:', email);
 //                     });
@@ -1607,8 +1607,8 @@ exports.sendPartnerOrganisationValidationEmail = functions.database.ref('/sand/p
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New welcome email sent to:', email);
               });
@@ -1669,8 +1669,8 @@ exports.sendPartnerOrganisationValidationEmailTest = functions.database.ref('/te
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://test.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New welcome email sent to:', email);
               });
@@ -1732,8 +1732,8 @@ exports.sendPartnerOrganisationValidationEmailUat = functions.database.ref('/uat
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://uat.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
                 });
@@ -1794,8 +1794,8 @@ exports.sendPartnerOrganisationValidationEmailDemo = functions.database.ref('/de
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://demo.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
                 });
@@ -1854,8 +1854,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://training.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
                 });
@@ -1902,8 +1902,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://uat-2.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -1946,8 +1946,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://set-1.day-1.training.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -1990,8 +1990,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://set-2.day-1.training.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -2034,8 +2034,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://set-1.day-2.training.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -2078,8 +2078,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://set-2.day-2.training.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -2122,8 +2122,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://set-1.day-3.training.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -2166,8 +2166,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://set-2.day-3.training.portal.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -2212,8 +2212,8 @@ exports.sendPartnerOrganisationValidationEmailTraining = functions.database.ref(
 //                           \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
 //                           \n To confirm, please click on the link below
 //                           \n http://platform.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //         return mailTransport.sendMail(mailOptions).then(() => {
 //           console.log('New welcome email sent to:', email);
 //         });
@@ -3787,11 +3787,11 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 console.log('we are executing code here');
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
@@ -3827,11 +3827,11 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
         //
         //             mailOptions.subject = `You have been invited to join a network`;
         //             mailOptions.text = `Hello,
-        //                     \nYour Agency was added into ${network.name} network!.
+        //                     \nYour Agency was invited to join the network: ${network.name}
         //                     \n To confirm, please click on the link below
         //                     \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
-        //                     \n Thanks
-        //                     \n Your ALERT team `;
+        //                     \n Thanks,
+        //                     \n ALERT Team `;
         //             console.log('we are executing code here');
         //             return mailTransport.sendMail(mailOptions).then(() => {
         //               console.log('New welcome email sent to:', email);
@@ -3864,11 +3864,11 @@ exports.sendNetworkAgencyValidationEmail_SAND = functions.database.ref('/sand/ne
         //
         //             mailOptions.subject = `You have been invited to join a network`;
         //             mailOptions.text = `Hello,
-        //                     \nYour Agency was added into ${network.name} network!.
+        //                     \nYour Agency was invited to join the network: ${network.name}
         //                     \n To confirm, please click on the link below
         //                     \n http://localhost:4200/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
-        //                     \n Thanks
-        //                     \n Your ALERT team `;
+        //                     \n Thanks,
+        //                     \n ALERT Team `;
         //             console.log('we are executing code here');
         //             return mailTransport.sendMail(mailOptions).then(() => {
         //               console.log('New welcome email sent to:', email);
@@ -3925,11 +3925,11 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 console.log('we are executing code here');
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
@@ -3964,11 +3964,11 @@ exports.sendNetworkAgencyValidationEmail_TEST = functions.database.ref('/test/ne
 
                   mailOptions.subject = `You have been invited to join a network`;
                   mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://test.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                   console.log('we are executing code here');
                   return mailTransport.sendMail(mailOptions).then(() => {
                     console.log('New welcome email sent to:', email);
@@ -4023,11 +4023,11 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 console.log('we are executing code here');
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
@@ -4062,11 +4062,11 @@ exports.sendNetworkAgencyValidationEmail_UAT = functions.database.ref('/uat/netw
 
                   mailOptions.subject = `You have been invited to join a network`;
                   mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://uat.portal.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                   console.log('we are executing code here');
                   return mailTransport.sendMail(mailOptions).then(() => {
                     console.log('New welcome email sent to:', email);
@@ -4121,11 +4121,11 @@ exports.sendNetworkAgencyValidationEmail_Demo = functions.database.ref('/demo/ne
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://demo.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 console.log('we are executing code here');
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
@@ -4160,11 +4160,11 @@ exports.sendNetworkAgencyValidationEmail_Demo = functions.database.ref('/demo/ne
 
                   mailOptions.subject = `You have been invited to join a network`;
                   mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://demo.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                   console.log('we are executing code here');
                   return mailTransport.sendMail(mailOptions).then(() => {
                     console.log('New welcome email sent to:', email);
@@ -4219,11 +4219,11 @@ exports.sendNetworkAgencyValidationEmail_Training = functions.database.ref('/tra
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://training.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 console.log('we are executing code here');
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
@@ -4258,11 +4258,11 @@ exports.sendNetworkAgencyValidationEmail_Training = functions.database.ref('/tra
 
                   mailOptions.subject = `You have been invited to join a network`;
                   mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://training.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                   console.log('we are executing code here');
                   return mailTransport.sendMail(mailOptions).then(() => {
                     console.log('New welcome email sent to:', email);
@@ -4991,11 +4991,11 @@ exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
                 });
@@ -5033,11 +5033,11 @@ exports.sendNetworkCountryAgencyValidationEmail_SAND = functions.database.ref('/
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://localhost:4200/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
                 });
@@ -5090,11 +5090,11 @@ exports.sendNetworkCountryAgencyValidationEmail_TEST = functions.database.ref('/
 
               mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://test.portal.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New welcome email sent to:', email);
               });
@@ -5146,11 +5146,11 @@ exports.sendNetworkCountryAgencyValidationEmail_UAT_1 = functions.database.ref('
 
               mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://uat.portal.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New welcome email sent to:', email);
               });
@@ -5202,11 +5202,11 @@ exports.sendNetworkCountryAgencyValidationEmail_Demo = functions.database.ref('/
 
               mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://demo.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New welcome email sent to:', email);
               });
@@ -5258,11 +5258,11 @@ exports.sendNetworkCountryAgencyValidationEmail_Training = functions.database.re
 
               mailOptions.subject = `You have been invited to join a network`;
               mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://training.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
-                          \n Thanks
-                          \n Your ALERT team `;
+                          \n Thanks,
+                          \n ALERT Team `;
               return mailTransport.sendMail(mailOptions).then(() => {
                 console.log('New welcome email sent to:', email);
               });
@@ -5314,11 +5314,11 @@ exports.sendNetworkCountryAgencyValidationEmail_Training = functions.database.re
 //
 //               mailOptions.subject = `You have been invited to join a network`;
 //               mailOptions.text = `Hello,
-//                           \nYour Agency was added into ${network.name} network!.
+//                           \nYour Agency was invited to join the network: ${network.name}
 //                           \n To confirm, please click on the link below
 //                           \n http://uat-2.portal.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
-//                           \n Thanks
-//                           \n Your ALERT team `;
+//                           \n Thanks,
+//                           \n ALERT Team `;
 //               return mailTransport.sendMail(mailOptions).then(() => {
 //                 console.log('New welcome email sent to:', email);
 //               });
