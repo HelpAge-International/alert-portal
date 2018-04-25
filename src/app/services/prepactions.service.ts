@@ -512,6 +512,8 @@ export class PrepActionService {
     let applyCustom = false; // Fixes bug with frequencyValue and frequencyBase
     if (action.hasOwnProperty('asignee')) this.actions[i].asignee = action.asignee;
     else if (action.type == ActionType.custom) this.actions[i].asignee = null;
+    if (action.hasOwnProperty('createdAt')) this.actions[i].createdAt = action.createdAt;
+    else if (action.type == ActionType.custom) this.actions[i].createdAt = null;
     if (action.hasOwnProperty('dueDate')) this.actions[i].dueDate = action.dueDate;
     else if (action.type == ActionType.custom) this.actions[i].dueDate = null;
     if (action.hasOwnProperty('assignHazard')) {
@@ -547,6 +549,7 @@ export class PrepActionService {
     else if (action.type == ActionType.custom) action.createdByCountryId = null;
 
     if (action.hasOwnProperty('updatedAt')) this.actions[i].updatedAt = action.updatedAt;
+    else if (action.hasOwnProperty('createdAt')) this.actions[i].updatedAt = action.createdAt;
     else if (action.type == ActionType.custom) action.isArchived = null;
     if (action.hasOwnProperty('isArchived')) this.actions[i].isArchived = action.isArchived;
     else if (action.type == ActionType.custom) action.isArchived = null;
@@ -1095,6 +1098,7 @@ export class PreparednessAction {
   public networkId: string;
   public networkCountryId: string;
   public timeTracking: {};
+  public createdAt;
 
   public computedClockSetting: number;
 
