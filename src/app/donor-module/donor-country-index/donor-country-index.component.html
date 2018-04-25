@@ -5,7 +5,7 @@
 
 <div class="Page-top__wrap--w_sub_header--no-paddng">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row Spaced-above" (click)="goBack()">{{"HEADERS.GLOBAL_MAP" | translate}}</div>
+    <div class="Back--button row Spaced-above" routerLink="/donor-module">{{"HEADERS.GLOBAL_MAP" | translate}}</div>
     <div class="Header-title__wrap">
       <h1 *ngIf="networkToShow">{{"GLOBAL.COUNTRIES." + Countries[networkToShow.location] | translate}}</h1>
     </div>

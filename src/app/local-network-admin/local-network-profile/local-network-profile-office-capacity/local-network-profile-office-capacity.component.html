@@ -128,7 +128,7 @@
                       <p class="notes-number__components--country-office-profile skills">
                         {{skillTechMap.get(staff.id).length}}
                       </p>
-                      <a href="#tech_{{x}}" data-toggle="collapse" class="row margin-left-one-half">
+                      <a href="#tech_{{i}}_{{x}}" data-toggle="collapse" class="row margin-left-one-half">
                         {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
                       </a>
                     </div>
@@ -139,7 +139,7 @@
                       <p class="notes-number__components--country-office-profile skills">
                         {{skillSupoMap.get(staff.id).length}}
                       </p>
-                      <a href="#support_{{x}}" data-toggle="collapse" class="row margin-left-one-half">
+                      <a href="#support_{{i}}_{{x}}" data-toggle="collapse" class="row margin-left-one-half">
                         {{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}
                       </a>
                     </div>
@@ -151,7 +151,7 @@
                   <img src="assets/images/icons/log_bubble.svg" class="margin-left-one" style="width:2em;" alt="Notes">
                   <p class="notes-number__components--country-office-profile">{{getNotesNumber(staff)}}</p>
                   <!--<a href="#" class="row margin-left-one-half">Notes</a>-->
-                  <a href="#notes_{{agency.$key}}_{{ x }}" data-toggle="collapse" class="row margin-left-one-half">
+                  <a href="#notes_{{agency.$key}}_{{i}}_{{ x }}" data-toggle="collapse" class="row margin-left-one-half">
                     {{ 'GLOBAL.NOTES' | translate }}
                   </a>
                 </div>
@@ -159,12 +159,12 @@
               </div>
 
               <!-- Technical Skills Drop Down -->
-              <div id="tech_{{x}}" class="Tooltip__bubble container-fluid tech log collapse">
+              <div id="tech_{{i}}_{{x}}" class="Tooltip__bubble container-fluid tech log collapse">
                 <div class="log_left p-3">
                   <div class="Spaced row">
                     <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.TECHNICAL" | translate}}
                       {{"GLOBAL.SKILLS" | translate}}</h3>
-                    <a href="#tech_{{x}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' |
+                    <a href="#tech_{{i}}_{{x}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' |
                       translate}}</a>
                   </div>
                   <p *ngIf="skillTechMap.get(staff.id).length == 0">
@@ -179,13 +179,13 @@
               </div>
 
               <!-- Support Skills Drop Down -->
-              <div id="support_{{x}}" class="Tooltip__bubble container-fluid support log collapse">
+              <div id="support_{{i}}_{{x}}" class="Tooltip__bubble container-fluid support log collapse">
                 <div class="log_left p-3">
                   <div class="Spaced row">
                     <h3 class="col-sm-6">{{"COUNTRY_ADMIN.PROFILE.OFFICE_CAPACITY.SUPPORT" | translate}}
                       {{"GLOBAL.SKILLS"
                       | translate}}</h3>
-                    <a href="#support_{{x}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' |
+                    <a href="#support_{{i}}_{{x}}" class="margin-left-two" data-toggle="collapse">{{'GLOBAL.CANCEL' |
                       translate}}</a>
                   </div>
                   <p *ngIf="skillSupoMap.get(staff.id)?.length == 0">
@@ -200,7 +200,7 @@
               </div>
 
               <!-- Notes Drop Down -->
-              <div id="notes_{{agency.$key}}_{{ x }}" class="Tooltip__bubble container-fluid notes log collapse">
+              <div id="notes_{{agency.$key}}_{{i}}_{{ x }}" class="Tooltip__bubble container-fluid notes log collapse">
                 <div class="log_left p-3">
                   <h3>{{ 'GLOBAL.NOTES' | translate }}</h3>
                   <hr class="d-inline-flex">
@@ -245,7 +245,7 @@
                               class="btn btn-primary text-uppercase">{{ 'NOTES.ADD' | translate }}
                       </button>
                       <br>
-                      <br><a href="#notes_{{agency.$key}}_{{ x }}" class="margin-left-two" data-toggle="collapse">{{
+                      <br><a href="#notes_{{agency.$key}}_{{i}}_{{ x }}" class="margin-left-two" data-toggle="collapse">{{
                       'GLOBAL.CANCEL' |
                       translate
                       }}</a>

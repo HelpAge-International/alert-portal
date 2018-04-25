@@ -373,7 +373,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   submitForApproval(plan) {
     this.resetDirectorSelection();
     if (plan.partnerOrganisations) {
-      this.getPartnersToApprove(plan)
+      if(this.getPartnersToApprove(plan)){
+        console.log("has partner")
+      }else{
+        console.log("no partner")
+      }
     }
 
     if (plan.approval && plan.approval["partner"]) {
@@ -1246,11 +1250,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     // const needValidResponsePlanId = plan.$key;
 
     let partnerOrgIds = [];
-    plan.partnerOrganisations.forEach(partnerOrg => {
-      partnerOrgIds.push(partnerOrg);
-    });
 
+    if(plan.partnerOrganisations) {
+      plan.partnerOrganisations.forEach(partnerOrg => {
+        partnerOrgIds.push(partnerOrg);
+      });
+    }
     let noPartnerUserOrg;
+
 
     Observable.from(partnerOrgIds)
       .flatMap(partnerOrgId => {
@@ -1306,6 +1313,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           //   console.log(error.message);
           // });
         }
+        console.log(orgUserMap)
         this.getPartnerDetail(orgUserMap)
         this.partnerList = CommonUtils.convertMapToKeysInArray(orgUserMap)
         console.log(this.partnerList)

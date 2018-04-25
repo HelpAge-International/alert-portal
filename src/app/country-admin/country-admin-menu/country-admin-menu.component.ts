@@ -55,6 +55,8 @@ export class CountryAdminMenuComponent implements OnInit, OnDestroy {
 
       PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, agencyId, (list: AgencyPermissionObject[]) => {
         for (const value of list) {
+          console.log(list)
+
           if (value.permission === PermissionsAgency.MinimumPreparedness) {
             this.permMinimumPreparedness = !value.isAuthorized;
           }
