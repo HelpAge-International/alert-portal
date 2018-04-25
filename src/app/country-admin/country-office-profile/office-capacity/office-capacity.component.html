@@ -89,7 +89,7 @@
       </div>
       <div class="row Line-row margin-top-two"></div>
 
-      <div *ngFor="let staff of responseStaffs; index as i">
+      <div *ngFor="let staff of responseStaffs; let i = index">
         <div class="row">
           <div class="col-sm-1">{{staff.updatedAt | date:"MM/yy"}}</div> <!--Updated-->
           <div class="col-sm-2">{{userMap.get(staff.id)}}</div> <!--Name-->

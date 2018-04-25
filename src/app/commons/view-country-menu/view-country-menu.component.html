@@ -10,16 +10,16 @@
       <div>{{CountryNames[countryLocation] | translate}}</div>
       <ng-container *ngIf="!isViewingFromExternal">
         <ul>
-          <li *ngIf="userAgencyId==agencyId || privacy?.officeProfile == Privacy.Public"
+          <li *ngIf="userAgencyId==agencyId || !permCountryOffice"
               [class.Active]="menuMap.get('officeProfile')" (click)="menuSelection('officeProfile')">
             {{"COUNTRY_OFFICE_PROFILE" | translate}}
           </li>
-          <li *ngIf="userAgencyId==agencyId || privacy?.riskMonitoring == Privacy.Public"
+          <li *ngIf="userAgencyId==agencyId || !permRiskMonitoring"
               [class.Active]="menuMap.get('risk')" (click)="menuSelection('risk')">{{"RISK_MONITORING_TEXT" |
             translate}}
           </li>
           <!--<li [class.Active]="menuMap.get('preparedness')" (click)="menuSelection('preparedness')">Preparedness</li>-->
-          <li *ngIf="userAgencyId==agencyId || privacy?.mpa == Privacy.Public || privacy?.apa == Privacy.Public"
+          <li *ngIf="userAgencyId==agencyId || !permMinimumPreparedness || !permAdvancedPreparedness"
               [class.Active]="menuMap.get('preparedness')" routerLinkActive="active">
             <div class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" aria-haspopup="true"
@@ -34,7 +34,7 @@
               </div>
             </div>
           </li>
-          <li *ngIf="userAgencyId==agencyId || privacy?.responsePlan == Privacy.Public"
+          <li *ngIf="userAgencyId==agencyId || !permResponsePlanning"
               [class.Active]="menuMap.get('plan')" (click)="menuSelection('plan')">{{"HEADERS.PLANS" | translate}}
           </li>
         </ul>

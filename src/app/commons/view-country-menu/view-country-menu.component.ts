@@ -2,15 +2,16 @@ import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core'
 import {Subject} from "rxjs/Subject";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
-import {Countries, Privacy} from "../../utils/Enums";
+import {Countries, PermissionsAgency, Privacy} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {AgencyService} from "../../services/agency-service.service";
 import {ModelAgencyPrivacy} from "../../model/agency-privacy.model";
-import {PageControlService} from "../../services/pagecontrol.service";
+import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
 import {SettingsService} from "../../services/settings.service";
 import {NetworkService} from "../../services/network.service";
 import {NetworkPrivacyModel} from "../../model/network-privacy.model";
 import {CommonUtils} from "../../utils/CommonUtils";
+import {AngularFire} from "angularfire2";
 
 @Component({
   selector: 'app-view-country-menu',
@@ -40,8 +41,16 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
   private withinNetwork: boolean;
   private userCountryId: string;
 
+  public permMinimumPreparedness = false;
+  public permAdvancedPreparedness = false;
+  public permCHSPreparedness = false;
+  public permRiskMonitoring = false;
+  public permCountryOffice = false;
+  public permResponsePlanning = false;
+
   constructor(private route: ActivatedRoute,
               private router: Router,
+              private af: AngularFire,
               private userService: UserService,
               private pageControl: PageControlService,
               private countryService: SettingsService,
@@ -56,7 +65,7 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.userAgencyId = agencyId;
-      this.userCountryId = countryId
+      this.userCountryId = countryId;
 
       this.route.params
         .takeUntil(this.ngUnsubscribe)
@@ -81,6 +90,28 @@ export class ViewCountryMenuComponent implements OnInit, OnDestroy {
           if (params["isViewingFromExternal"]) {
             this.isViewingFromExternal = params["isViewingFromExternal"];
           }
+
+          PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, this.agencyId, (list: AgencyPermissionObject[]) => {
+            for (const value of list) {
+              console.log(list)
+              if (value.permission === PermissionsAgency.MinimumPreparedness) {
+                this.permMinimumPreparedness = !value.isAuthorized;
+              }
+              if (value.permission === PermissionsAgency.AdvancedPreparedness) {
+                this.permAdvancedPreparedness = !value.isAuthorized;
+              }
+              if (value.permission === PermissionsAgency.RiskMonitoring) {
+                this.permRiskMonitoring = !value.isAuthorized;
+              }
+              if (value.permission === PermissionsAgency.CountryOffice) {
+                this.permCountryOffice = !value.isAuthorized;
+              }
+              if (value.permission === PermissionsAgency.ResponsePlanning) {
+                this.permResponsePlanning = !value.isAuthorized;
+              }
+              PageControlService.agencySelfCheck(userType, this.route, this.router, value);
+            }
+          });
 
           this.networkService.mapNetworkWithCountryForCountry(this.userAgencyId, this.userCountryId)
             .takeUntil(this.ngUnsubscribe)

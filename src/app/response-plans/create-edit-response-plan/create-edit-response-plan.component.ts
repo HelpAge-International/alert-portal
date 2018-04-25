@@ -743,6 +743,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   methodOfImplementationSelectedWithPartners() {
+    console.log(this.moduleAccess.countryOffice)
+
     if (this.moduleAccess.countryOffice) {
       this.isWorkingWithPartners = true;
       this.isDirectlyThroughFieldStaff = false;

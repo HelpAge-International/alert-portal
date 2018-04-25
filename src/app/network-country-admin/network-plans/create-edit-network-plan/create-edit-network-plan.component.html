@@ -183,13 +183,12 @@
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
 
           <div class="row Spaced form-group">
-            <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
-              | translate}}
+            <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
+              | translate}}</label>
               <tooltip
                 [level1]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'"
                 [level2]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'">
               </tooltip>
-            </label>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
@@ -359,17 +358,13 @@
                      [checked]="isDirectlyThroughFieldStaff"
                      (click)="methodOfImplementationSelectedDirect()">
               {{"DIRECTLY_THROUGH_STAFF" | translate}}</label>
-            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"
-                   [hidden]="!moduleAccess.networkOffice">
+            <label for="imp-part" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-part"
-                     [hidden]="!moduleAccess.networkOffice"
                      [checked]="isWorkingWithPartners"
                      (click)="methodOfImplementationSelectedWithPartners()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_PARTNERS" | translate}}</label>
-            <label for="imp-both" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6"
-                   [hidden]="!moduleAccess.networkOffice">
+            <label for="imp-both" class="Checkbox--ribbon Left col-lg-2 col-md-4 col-sm-6">
               <input type="radio" onClick="multi_select_radioSelected(this)" name="imp" id="imp-both"
-                     [hidden]="!moduleAccess.networkOffice"
                      [checked]="isWorkingWithStaffAndPartners"
                      (click)="methodOfImplementationSelectedBoth()">
               {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_BOTH" | translate}}</label>
@@ -388,7 +383,7 @@
                           (change)="setPartnerOrganisation($event.target.value, dropDown)">
 
                     <option value="null" hidden disabled selected>
-                      {{"ADD_PARTNER.SELECT_A_PARTNER" | translate}}
+                      {{partnerOrganisations.length<1? "No Partner(s)" : "ADD_PARTNER.SELECT_A_PARTNER" | translate}}
                     </option>
 
                     <option *ngFor="let partnerOrganisation of partnerOrganisations"
@@ -581,7 +576,7 @@
           </div>
 
           <div class="row Spaced form-group">
-            <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
+            <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
               | translate}}</label>
             <tooltip
               [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
