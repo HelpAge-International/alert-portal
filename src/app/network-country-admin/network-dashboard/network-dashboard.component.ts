@@ -297,16 +297,24 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToNetworkIndicator(indicator) {
-    indicator.hazardScenario["key"] == "countryContext" ?
-      this.router.navigate(["/risk-monitoring", {
-        "updateIndicatorID": indicator.$key,
-        "hazardID": indicator.hazardScenario["key"]
-      }])
-      :
-      this.router.navigate(["/risk-monitoring", {
-        "updateIndicatorID": indicator.$key,
-        "hazardID": indicator.hazardScenario["hazardScenario"]
-      }])
+    console.log(indicator)
+    // if (indicator.hazardScenario["key"] !== "countryContext") {
+    //   this.networkViewValues["updateIndicatorID"] = indicator.$key
+    //   this.networkViewValues["hazardID"] = indicator.hazardScenario["key"]
+    //   // this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
+    // } else {
+    this.networkViewValues["updateIndicatorID"] = indicator.$key
+    this.networkViewValues["hazardID"] = indicator.hazardScenario["key"]
+    // }
+    const path = this.networkCountryId ? "/network-country/network-risk-monitoring" : "network/local-network-risk-monitoring"
+    this.router.navigate([path, this.networkViewValues])
+    // indicator.hazardScenario["key"] == "countryContext" ?
+    //   this.router.navigate(["/network-country/network-risk-monitoring", this.networkViewValues])
+    //   :
+    //   this.router.navigate(["/risk-monitoring", {
+    //     "updateIndicatorID": indicator.$key,
+    //     "hazardID": indicator.hazardScenario["hazardScenario"]
+    //   }])
   }
 
   private initLocalNetworkAccess() {

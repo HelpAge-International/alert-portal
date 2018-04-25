@@ -252,7 +252,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               this.overviewCountryPrivacy = privacy
               this._getHazards();
               this.getCountryLocation();
-              this._getCountryContextIndicators();
+              this._getCountryContextIndicators(this.countryID);
             })
 
         } else {
@@ -264,7 +264,7 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             this.systemId = systemId;
             this._getHazards();
             this.getCountryLocation();
-            this._getCountryContextIndicators();
+            this._getCountryContextIndicators(countryId);
             this.getUsersForAssign();
             PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
               this.countryPermissionsMatrix = isEnabled;
@@ -284,22 +284,26 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     if (this.hazard == "countryContext") {
       let indicatorIndexCC = this.indicatorsCC.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.indicatorsCC[indicatorIndexCC]
       let indicatorID = "#indicators-to-hazards_CC" + "_" + indicatorIndexCC;
 
       jQuery("#collapseOne").collapse('show');
 
       this.changeIndicatorState(true, "countryContext", indicatorIndexCC);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
     } else if (this.hazard == "-1") {
       let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
       let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.activeHazards[hazardIndex].indicators[indicatorIndex]
       let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
 
       jQuery("#collapse" + this.activeHazards[hazardIndex].otherName).collapse('show');
 
       this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
       jQuery('html, body').animate({
         scrollTop: jQuery(indicatorID).offset().top - 20
       }, 2000);
@@ -430,19 +434,29 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
-  _getCountryContextIndicators() {
-    this.af.database.list(Constants.APP_STATUS + "/indicator/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
-      indicators.forEach((indicator, key) => {
-        this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
-          logs.forEach((log, key) => {
-            this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
-              log.addedByFullName = user.firstName + ' ' + user.lastName;
-            })
-          });
+  _getCountryContextIndicators(countryID:string, networkName?:string) {
+    this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryID)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((indicators: any) => {
+        indicators.forEach((indicator, key) => {
+          //if from network, mark it from network
+          if (networkName) {
+            indicator['fromNetwork'] = true
+            indicator['networkName'] = networkName
+            indicator['networkId'] = countryID
+          }
+
+          this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
+            logs.forEach((log, key) => {
+              this.getUsers(log.addedBy).takeUntil(this.ngUnsubscribe).subscribe((user: any) => {
+                log.addedByFullName = user.firstName + ' ' + user.lastName;
+              })
+            });
           indicator.logs = this._sortLogsByDate(logs);
+          });
+          this.indicatorsCC = CommonUtils.addOrUpdateListItem(indicator, this.indicatorsCC)
         });
-      });
-      this.indicatorsCC = indicators;
+
     });
   }
 
@@ -563,6 +577,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
           this.af.database.object(Constants.APP_STATUS + '/network/' + localNetwork.$key)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(localNetworkDetails => {
+
+              //get country context for local network first
+              this._getCountryContextIndicators(localNetwork.$key, localNetworkDetails.name)
 
               this.af.database.list(Constants.APP_STATUS + '/hazard/' + localNetwork.$key)
                 .takeUntil(this.ngUnsubscribe)
@@ -756,13 +773,11 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
                             // if (hazard.isSeasonal == activeHazard.isSeasonal && hazard.hazardScenario == activeHazard.hazardScenario) {
                             if (hazard.hazardScenario == activeHazard.hazardScenario) {
-                              console.log('test')
                               //add indicators from hazard to this active hazard
                               this.getIndicators(hazard.$key)
                                 .takeUntil(this.ngUnsubscribe)
                                 .subscribe(indicators => {
                                   indicators.forEach(indicator => {
-                                    console.log(indicator)
                                     if (indicator.countryOfficeId == this.countryID) {
                                       this.getLogs(indicator.$key).takeUntil(this.ngUnsubscribe).subscribe((logs: any) => {
                                         logs.forEach((log, key) => {
@@ -824,7 +839,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                                       }
                                     }
                                   })
-                                  console.log(this.activeHazards.some(activeHazard => activeHazard.$key == hazard.$key))
                                   if (hazard.indicators && hazard.indicators.length > 0 && !(this.activeHazards.some(activeHazard => activeHazard.hazardScenario == hazard.hazardScenario))) {
                                     hazard.fromNetwork = true;
                                     hazard.networkId = localNetwork.$key
@@ -1023,6 +1037,9 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(networkDetails => {
               console.log("networkDetails")
+              //get network country context first
+              this._getCountryContextIndicators(network.networkCountryId, networkDetails.name)
+
               this.af.database.list(Constants.APP_STATUS + '/hazard/' + network.networkCountryId)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(hazards => {
@@ -1391,7 +1408,6 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
                           this.getIndicators(hazard.$key)
                             .takeUntil(this.ngUnsubscribe)
                             .subscribe(indicators => {
-                              console.log("get indicators triggered")
                               hazard.indicators = []
                               indicators.forEach(indicator => {
                                 if (indicator.countryOfficeId == this.countryID) {
@@ -1576,21 +1592,30 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         if (!dataToSave["timeTracking"]["timeSpentInGreen"]) {
           dataToSave["timeTracking"]["timeSpentInGreen"] = [];
         }
-        dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+        const index = dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)
+        if (index != -1) {
+          dataToSave["timeTracking"]["timeSpentInGreen"][index].finish = currentTime
+        }
 
       }
       if (indicator.triggerSelected == 1) {
         if (!dataToSave["timeTracking"]["timeSpentInAmber"]) {
           dataToSave["timeTracking"]["timeSpentInAmber"] = [];
         }
-        dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        const index = dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)
+        if (index != -1) {
+          dataToSave["timeTracking"]["timeSpentInAmber"][index].finish = currentTime
+        }
 
       }
       if (indicator.triggerSelected == 2) {
         if (!dataToSave["timeTracking"]["timeSpentInRed"]) {
           dataToSave["timeTracking"]["timeSpentInRed"] = [];
         }
-        dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        const index = dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)
+        if (index != -1) {
+          dataToSave["timeTracking"]["timeSpentInRed"][index].finish = currentTime
+        }
       }
 
 
@@ -1635,13 +1660,13 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
     }
 
-
     if (hazardID == 'countryContext') {
-      urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.countryID + '/' + indicatorID;
+      urlToUpdate = Constants.APP_STATUS + '/indicator/' + (indicator.networkId ? indicator.networkId : this.countryID) + '/' + indicatorID;
     } else {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + hazardID + '/' + indicatorID;
     }
     this.changeIndicatorState(state, hazardID, indicatorKey);
+
 
     this.af.database.object(urlToUpdate)
       .update(dataToSave)

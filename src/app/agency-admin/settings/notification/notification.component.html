@@ -25,10 +25,10 @@
 
     <div class="row Line-row no-gutters" *ngFor="let nSetting of notificationSettingsList">
       <div class="col-lg-4 col-4">{{notificationSettings[nSetting] | translate}}</div>
-      <div class="col-lg-5 col-4" *ngIf="userNotified[nSetting] && userNotified[nSetting].length > 0">
-        <p *ngFor="let val of userNotified[nSetting]">{{val}}</p>
+      <div class="col-lg-5 col-4" *ngIf="agencyNotificationSettings[nSetting] && hasSelection(agencyNotificationSettings[nSetting].usersNotified)">
+        <p *ngFor="let val of agencyNotificationSettings[nSetting].usersNotified; index as i" [hidden]="!val">{{userTypes[i] | translate}}</p>
       </div>
-      <div class="col-lg-5 col-4" *ngIf="!userNotified[nSetting] || !userNotified[nSetting].length">
+      <div class="col-lg-5 col-4" *ngIf="!agencyNotificationSettings[nSetting] || !hasSelection(agencyNotificationSettings[nSetting].usersNotified)">
         {{"AGENCY_ADMIN.SETTINGS.NOTIFICATIONS.NO_SELECTED_USER_TYPE" | translate}}
       </div>
       <div class="col-lg-3 col-4 row no-gutters">
@@ -62,9 +62,9 @@
           <div class="col-md-8">
             <div class="row">
               <div class="col-md-8" *ngFor="let uType of userTypesList">
-                <label class="form-check-label" *ngIf="uType && uType > 0">
+                <label class="form-check-label">
                   <input type="checkbox" class="form-check-input"
-                         [checked]="(agencyNotificationSettings[notificationID] && agencyNotificationSettings[notificationID].usersNotified[uType]) || false"
+                         [checked]="(agencyNotificationSettings[notificationID] && agencyNotificationSettings[notificationID].usersNotified[uType])"
                          (change)="checkType(uType, $event.target.checked)">
                   <strong>{{userTypes[uType] | translate}}</strong>
                 </label>

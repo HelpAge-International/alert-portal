@@ -99,4 +99,15 @@ export class CommonUtils {
     return values;
   }
 
+  static castToIntCelling(value) : number {
+    return Math.ceil(value)
+  }
+
+  static addOrUpdateListItem(item:any, list:any[]) : Array<any> {
+    const resultList = list.slice()
+    const index = resultList.findIndex(obj => obj.$key === item.$key)
+    index != -1 ? resultList[index] = item : resultList.push(item)
+    return resultList
+  }
+
 }

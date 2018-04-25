@@ -247,6 +247,11 @@ export class AgencyService {
       })
   }
 
+  getAgencyNotificationSettings(agencyId:string) {
+    return this.getAgency(agencyId)
+      .map(agency => agency.notificationSetting)
+  }
+
   unSubscribeNow() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

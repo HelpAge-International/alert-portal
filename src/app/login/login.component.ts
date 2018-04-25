@@ -7,7 +7,7 @@ import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkService} from "../services/network.service";
-import {current} from "codelyzer/util/syntaxKind";
+import * as firebase from "firebase";
 declare var jQuery: any;
 
 @Component({
@@ -83,64 +83,70 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loaderInactive = false;
     this.successInactive = true;
     if (this.validate()) {
-      this.af.auth.login({
-          email: this.localUser.userEmail,
-          password: this.localUser.password
-        },
-        {
-          provider: AuthProviders.Password,
-          method: AuthMethods.Password,
-        })
-        .then((success) => {
-          this.uid = success.uid;
-          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
-            .take(1)
-            .subscribe((snap) => {
-                if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
-                  this.showCoC();
-                }else{
-                  let isAgencyAdmin: boolean = false;
-                  this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
-                    .take(1)
-                    .subscribe(snapshots =>{
-                      console.log(snapshots);
-                      snapshots.forEach(snap => {
-                        if(!isAgencyAdmin){
-                          isAgencyAdmin = snap != null && snap.$key == this.uid;
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+        .then(() => {
+
+          this.af.auth.login({
+              email: this.localUser.userEmail,
+              password: this.localUser.password
+            },
+            {
+              provider: AuthProviders.Password,
+              method: AuthMethods.Password,
+            })
+            .then((success) => {
+              this.uid = success.uid;
+              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                .take(1)
+                .subscribe((snap) => {
+                  if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
+                    this.showCoC();
+                  }else{
+                    let isAgencyAdmin: boolean = false;
+                    this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
+                      .take(1)
+                      .subscribe(snapshots =>{
+                        console.log(snapshots);
+                        snapshots.forEach(snap => {
+                          if(!isAgencyAdmin){
+                            isAgencyAdmin = snap != null && snap.$key == this.uid;
+                          }
+                        });
+                        if(isAgencyAdmin){
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                            .take(1)
+                            .subscribe((snap) => {
+                              if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
+                                this.showToC();
+                              }else{
+                                this.checkLogins();
+                              }
+                            });
+
+                        }else{
+                          this.checkLogins();
                         }
                       });
-                      if(isAgencyAdmin){
-                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
-                          .take(1)
-                          .subscribe((snap) => {
-                            if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
-                              this.showToC();
-                            }else{
-                              this.checkLogins();
-                            }
-                          });
-
-                      }else{
-                        this.checkLogins();
-                      }
-                    });
+                  }
+                });
+            })
+            .catch((error) => {
+              // An error occured with logging in the user
+              console.log(error.message);
+              let ran: boolean = false;
+              this.mErrorCodes.forEach((val, key) => {
+                if (error.message.indexOf(key) != -1) {
+                  this.showAlert(true, this.mErrorCodes.get(key));
+                  ran = true;
                 }
+              });
+              if (!ran) {
+                this.showAlert(true, "GLOBAL.GENERAL_LOGIN_ERROR");
+              }
             });
-          })
-        .catch((error) => {
-          // An error occured with logging in the user
-          console.log(error.message);
-          let ran: boolean = false;
-          this.mErrorCodes.forEach((val, key) => {
-            if (error.message.indexOf(key) != -1) {
-              this.showAlert(true, this.mErrorCodes.get(key));
-              ran = true;
-            }
-          });
-          if (!ran) {
-            this.showAlert(true, "GLOBAL.GENERAL_LOGIN_ERROR");
-          }
-        });
+
+        })
+
       this.inactive = true;
     }
     else {

@@ -749,7 +749,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                   notification.time = new Date().getTime();
                   this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe();
                 }
-                this._location.back()
+                // this._location.back()
+                this.backToRightPage(this.action)
               })
             });
         } else {
@@ -806,7 +807,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                     notification.time = new Date().getTime();
                     this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe();
                   }
-                  this._location.back();
+                  // this._location.back();
+                  this.backToRightPage(this.action)
                 });
             })
         }
@@ -865,7 +867,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               updateObj.agencyAssign = this.action.agencyAssign && this.action.agencyAssign != 'null' ? this.action.agencyAssign : null
               console.log(updateObj);
               this.af.database.object(Constants.APP_STATUS + "/action/" + id + "/" + this.action.id).update(updateObj).then(() => {
-                this._location.back();
+                // this._location.back();
+                this.backToRightPage(this.action)
               });
             })
         } else {
@@ -909,7 +912,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
               console.log(updateObj);
               this.af.database.list(Constants.APP_STATUS + "/action/" + id).push(updateObj)
                 .then(() => {
-                  this._location.back();
+                  // this._location.back();
+                  this.backToRightPage(this.action)
                 });
             })
         }
@@ -1084,7 +1088,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
 
 
   protected backButtonAction() {
-    this._location.back();
+    // this._location.back();
+    this.backToRightPage(this.action)
   }
 
   protected showActionConfirm(modal: string) {
@@ -1105,4 +1110,10 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       .subscribe(agency => this.agenciesInNetwork.push(agency))
   }
 
+  private backToRightPage(action: CreateEditPrepActionHolder) {
+    this.isLocalNetworkAdmin ?
+      action.level === ActionLevel.APA ? this.router.navigateByUrl('/network/local-network-preparedness-apa') : this.router.navigateByUrl('/network/local-network-preparedness-mpa')
+      :
+      action.level === ActionLevel.APA ? this.router.navigateByUrl('/network-country/network-country-apa') : this.router.navigateByUrl('/network-country/network-country-mpa')
+  }
 }

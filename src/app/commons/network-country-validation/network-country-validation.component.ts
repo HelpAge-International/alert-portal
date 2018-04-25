@@ -28,12 +28,12 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
   private network: any;
   private networkCountryId: string;
   private countryId: string;
-  private showLoader:boolean
+  private showLoader: boolean
 
 
   constructor(private route: ActivatedRoute,
               private networkService: NetworkService,
-              private af:AngularFire,
+              private af: AngularFire,
               private router: Router) {
   }
 
@@ -51,30 +51,18 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
             this.countryId = params["countryId"];
           }
 
-          firebase.auth().signInAnonymously().catch(error => {
-            console.log(error.message);
-          });
+          firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+            .then(() => {
+              firebase.auth().signInAnonymously().catch(error => {
+                console.log(error.message);
+              });
+            })
+
 
           firebase.auth().onAuthStateChanged(user => {
             console.log("onAuthStateChanged");
             if (user) {
-              if (user.isAnonymous) {
-                //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
-                this.networkService.validateNetworkCountryToken((this.countryId ? this.countryId : this.agencyId), this.accessToken)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(validate => {
-                    console.log('net country validate')
-                    console.log(validate);
-                    this.isValidated = validate;
-                    if (validate) {
-                      this.getNetworkInfo(this.networkId);
-                    }
-                    this.showLoader = false
-                  })
-              } else {
-                console.log("user not logged in");
-                this.navigateToLogin();
-              }
+              this.validateToken();
             }
           });
 
@@ -83,6 +71,18 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
           this.navigateToLogin();
         }
       });
+  }
+
+  private validateToken() {
+    this.networkService.validateNetworkCountryToken((this.countryId ? this.countryId : this.agencyId), this.accessToken)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(validate => {
+        this.isValidated = validate;
+        if (validate) {
+          this.getNetworkInfo(this.networkId);
+        }
+        this.showLoader = false
+      })
   }
 
   private getNetworkInfo(networkId: string) {

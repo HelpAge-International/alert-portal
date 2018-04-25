@@ -199,7 +199,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
     }
 
-    this.userService.getUserType(staffId).subscribe(userType => {
+    this.userService.getUserType(staffId).takeUntil(this.ngUnsubscribe).subscribe(userType => {
       this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + '/' + staffId + '/firstLogin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe(value => {
@@ -573,6 +573,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       } else if (this.editInitialUserType === UserType.RegionalDirector) {
         staffData["/directorRegion/" + this.region.$key] = null;
         staffData["/regionDirector/" + uid] = null;
+        if (this.region.countries) {
+          Object.keys(this.region.countries).forEach(countryId => staffData["/directorRegion/" + countryId] = null)
+        }
+        staffData["/region/" + this.agencyId + "/" + this.region.$key + "/directorId"] = null;
         // staffData["/globalUser/" + this.agencyId + "/" + uid] = null;
       } else if (this.editInitialUserType == UserType.ErtLeader) {
         staffData["/ertLeader/" + uid] = null;

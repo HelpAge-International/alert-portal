@@ -12,6 +12,7 @@ import {MessageService} from "../../../services/message.service";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
+import {AgencyService} from "../../../services/agency-service.service";
 
 declare var jQuery: any;
 
@@ -53,6 +54,7 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
               private _messageService: MessageService,
               private networkService: NetworkService,
               private router: Router,
+              private agencyService:AgencyService,
               private route: ActivatedRoute) {
   }
 
@@ -133,6 +135,7 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
 
     //this.notificationSettings.pop();
     this.closeModal();
+    this.submit();
   }
 
   closeModal() {
@@ -158,21 +161,24 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(notificationSettings => {
         if (notificationSettings[0].usersNotified[0]) {
-          this.updateToCorrectInitialSetting()
+          this.agencyService.getAgencyNotificationSettings(this.agencyId)
+            .first()
+            .subscribe(agencyNotificationSettings => this.updateToCorrectInitialSetting(agencyNotificationSettings))
+
         }
       });
   }
 
-  private updateToCorrectInitialSetting() {
+  private updateToCorrectInitialSetting(agencyNotificationSettings:any[]) {
     let notificationList = [];
 
     for (let i = 0; i < 6; i++) {
       const item = {};
-      item[UserType.RegionalDirector] = false;
-      item[UserType.CountryDirector] = false;
-      item[UserType.ErtLeader] = false;
-      item[UserType.Ert] = false;
-      item[UserType.Donor] = false;
+      item[UserType.RegionalDirector] = agencyNotificationSettings && agencyNotificationSettings[i] ? agencyNotificationSettings[i].usersNotified[UserType.RegionalDirector] : false;
+      item[UserType.CountryDirector] = agencyNotificationSettings && agencyNotificationSettings[i] ? agencyNotificationSettings[i].usersNotified[UserType.CountryDirector] : false;
+      item[UserType.ErtLeader] = agencyNotificationSettings && agencyNotificationSettings[i] ? agencyNotificationSettings[i].usersNotified[UserType.ErtLeader] : false;
+      item[UserType.Ert] = agencyNotificationSettings && agencyNotificationSettings[i] ? agencyNotificationSettings[i].usersNotified[UserType.Ert] : false;
+      item[UserType.Donor] = agencyNotificationSettings && agencyNotificationSettings[i] ? agencyNotificationSettings[i].usersNotified[UserType.Donor] : false;
       if (i === 0) {
         item[UserType.CountryAdmin] = false;
       }
