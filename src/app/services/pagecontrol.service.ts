@@ -209,7 +209,8 @@ export class PageControlService {
     "new-user-password",
     "export-proposal*",
     "network-country*",
-    "network*"
+    "network*",
+    "local-agency*"
   ]);
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
@@ -223,7 +224,8 @@ export class PageControlService {
     "new-user-password",
     "export-proposal*",
     "network-country*",
-    "network*"
+    "network*",
+    "local-agency*"
   ]);
   public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
     "dashboard*",
@@ -236,7 +238,8 @@ export class PageControlService {
     "country-admin*",
     "new-user-password",
     "network-country*",
-    "network*"
+    "network*",
+    "local-agency*"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*",

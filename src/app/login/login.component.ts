@@ -460,7 +460,9 @@ export class LoginComponent implements OnInit, OnDestroy {
               }
             }
             else {
-              this.showAlert(true, "LOGIN.COUNTRY_OFFICE_DOESNT_EXIST");
+              // this.showAlert(true, "LOGIN.COUNTRY_OFFICE_DOESNT_EXIST");
+              console.log("COUNTRY_OFFICE_DOESNT_EXIST")
+              this.router.navigateByUrl(Constants.LOCAL_AGENCY_ADMIN_HOME);
             }
           });
       },
