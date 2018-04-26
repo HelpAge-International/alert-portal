@@ -1366,24 +1366,25 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
           }
         })
 
-      } else {
-        modelPlan.furtherBeneficiary.forEach(item => {
-          if (item["age"] < 3 && item["gender"] == Gender.feMale) {
-            this.numberFemaleLessThan18 += Number(item["value"]);
-          } else if (item["age"] == 3 && item["gender"] == Gender.feMale) {
-            this.numberFemale18To50 += Number(item["value"]);
-          } else if (item["age"] > 3 && item["gender"] == Gender.feMale) {
-            this.numberFemalegreaterThan50 += Number(item["value"]);
-          } else if (item["age"] < 3 && item["gender"] == Gender.male) {
-            this.numberMaleLessThan18 += Number(item["value"]);
-          } else if (item["age"] == 3 && item["gender"] == Gender.male) {
-            this.numberMale18To50 += Number(item["value"]);
-          } else if (item["age"] > 3 && item["gender"] == Gender.male) {
-            this.numberMalegreaterThan50 += Number(item["value"]);
-          }
-        })
-
       }
+      // else {
+      //   modelPlan.furtherBeneficiary.forEach(item => {
+      //     if (item["age"] < 3 && item["gender"] == Gender.feMale) {
+      //       this.numberFemaleLessThan18 += Number(item["value"]);
+      //     } else if (item["age"] == 3 && item["gender"] == Gender.feMale) {
+      //       this.numberFemale18To50 += Number(item["value"]);
+      //     } else if (item["age"] > 3 && item["gender"] == Gender.feMale) {
+      //       this.numberFemalegreaterThan50 += Number(item["value"]);
+      //     } else if (item["age"] < 3 && item["gender"] == Gender.male) {
+      //       this.numberMaleLessThan18 += Number(item["value"]);
+      //     } else if (item["age"] == 3 && item["gender"] == Gender.male) {
+      //       this.numberMale18To50 += Number(item["value"]);
+      //     } else if (item["age"] > 3 && item["gender"] == Gender.male) {
+      //       this.numberMalegreaterThan50 += Number(item["value"]);
+      //     }
+      //   })
+      //
+      // }
     });
     // beneficiaryList.forEach(item => {
     //   if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {

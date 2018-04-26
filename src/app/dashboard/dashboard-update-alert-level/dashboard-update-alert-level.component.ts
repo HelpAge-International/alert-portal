@@ -208,8 +208,6 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
 
   submit() {
-
-
     let hazard = this.hazards.find(x => x.hazardScenario == this.loadedAlert.hazardScenario)
     let hazardTrackingNode;
 
@@ -220,8 +218,6 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     let currentTime = new Date().getTime()
     let newTimeObject = {start: currentTime, finish: -1,level: this.loadedAlert.alertLevel};
     let id = this.isLocalAgency ? this.agencyId : this.countryId;
-
-
 
     let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
 
@@ -349,10 +345,10 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             hazardTrackingNode["timeSpentInRed"][hazardTrackingNode["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
           }
 
-          if(this.loadedAlertLevel == AlertLevels.Amber){
+          if(this.loadedAlertLevel == AlertLevels.Amber && hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)]){
             hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
-
           }
+
         }
 
         if(this.loadedAlert.alertLevel == AlertLevels.Red){
@@ -368,9 +364,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
               this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
               .update({timeSpentInRed: [newTimeObject]})
             }
-
           }
-
         }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
           if(hazardTrackingNode){
             if(!hazardTrackingNode["timeSpentInAmber"]){
@@ -387,7 +381,6 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
             .update({timeSpentInAmber: [newTimeObject]})
           }
-
         }
       }
     }
