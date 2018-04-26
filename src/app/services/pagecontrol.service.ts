@@ -774,12 +774,17 @@ export class PageControlService {
     af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
       .map((admin) => {
         let adminId: string = "";
-        for (let x in admin.agencyAdmin) {
-          adminId = x;
+        if (admin.agencyAdmin) {
+          for (let x in admin.agencyAdmin) {
+            adminId = x;
+          }
+        } else {
+          adminId = admin.agencyId
         }
         return adminId;
       })
       .flatMap((countryId) => {
+        console.log(countryId)
         return af.database.object(Constants.APP_STATUS + "/module/" + countryId);
       })
       .takeUntil(ngUnsubscribe)
@@ -1011,6 +1016,10 @@ export class PageControlService {
             fun(x);
           } else {
             console.log("no permission node!!!")
+            //if no default all to true
+            let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+            x.all(true)
+            fun(x)
           }
         });
     }

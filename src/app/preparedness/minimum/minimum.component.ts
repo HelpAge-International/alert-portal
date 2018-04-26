@@ -216,6 +216,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.modulesAreEnabled = isEnabled;
       });
 
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+        this.permissionsAreEnabled = isEnabled;
+      });
+
 
       // Currency
       this.calculateCurrency();
@@ -698,7 +702,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
-    
+
     if (action.note == undefined) {
       return;
     }

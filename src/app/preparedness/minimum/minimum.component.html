@@ -1257,7 +1257,7 @@
           <!-- FILTERING IF STATEMENT -->
 
           <div *ngIf="!isViewing">
-            <div *ngIf="(action.type != ActionType.chs) &&
+            <div *ngIf="(!(!modulesAreEnabled.chsPreparedness && action.type == ActionType.chs)) &&
             (filterType == -1 || action.type == filterType) &&
             (filterDepartment == -1 || action.department == filterDepartment) &&
             (filterAssigned == '0' || action.asignee == filterAssigned || ((action.asignee == '' || action.asignee == null) && filterAssigned == '-1')) &&
@@ -1377,7 +1377,7 @@
                               </div>
 
                               <a
-                                *ngIf="(action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom)"
+                                *ngIf="!((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                                 [routerLink]="isLocalAgency ? ['/local-agency/preparedness/create-edit-preparedness', action.id] : ['/preparedness/create-edit-preparedness', action.id]"
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
 
