@@ -59,6 +59,7 @@ export class StaffComponent implements OnInit, OnDestroy {
   private regions: FirebaseListObservable<any[]>;
   private regionId: string;
   private regionsStaffId: string;
+  private numberOfGlobalDs: number;
 
   //resolve live frozen bug
   private staffObjMap = new Map()
@@ -225,7 +226,9 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   addNewStaff() {
-    this.router.navigateByUrl(Constants.AGENCY_ADMIN_ADD_STARFF);
+    this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {
+      "numOfGlobalDs": this.numberOfGlobalDs
+    }]);
   }
 
   hideCountryStaff(office) {
@@ -241,7 +244,8 @@ export class StaffComponent implements OnInit, OnDestroy {
   editStaff(officeId, staffId) {
     this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {
       id: staffId,
-      officeId: officeId
+      officeId: officeId,
+      "numOfGlobalDs": this.numberOfGlobalDs
     }], {skipLocationChange: true});
   }
 
@@ -477,6 +481,8 @@ export class StaffComponent implements OnInit, OnDestroy {
             }
           });
         }
+
+        this.getGlobalDs(this.globalUsers);
         console.log(this.globalUsers);
         this.hideLoader = true;
       });
@@ -492,5 +498,15 @@ export class StaffComponent implements OnInit, OnDestroy {
       .subscribe(offices => {
         offices.forEach(office => this.fieldOfficeMap.set(office.id, office.name))
       })
+  }
+
+  private getGlobalDs(gUsers){
+    let count = 0;
+    for(let u of gUsers){
+      if(u.userType == UserType.GlobalDirector) {
+        count++;
+      }
+    }
+    this.numberOfGlobalDs = count;
   }
 }

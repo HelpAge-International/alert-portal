@@ -67,8 +67,7 @@
           <div class="col-sm-2">{{staffObjMap.get(staff.id)?.firstName +' '+staffObjMap.get(staff.id)?.lastName}}</div>
           <div class="col-sm-2">{{departmentMap.get(staff.department)}}</div>
           <div class="col-sm-2">{{USER_TYPE[staff.userType] | translate}}</div>
-          <div class="col-sm-3">{{OFFICE_TYPE[staff.officeType] | translate}} {{staff.fieldOffice ? '
-            ('+fieldOfficeMap.get(staff.fieldOffice)+')' : ''}}
+          <div class="col-sm-3">{{OFFICE_TYPE[staff.officeType] | translate}} {{staff.fieldOffice ? '('+fieldOfficeMap.get(staff.fieldOffice)+')' : ''}}
           </div>
           <div class="col-sm-2 col-md-2 additional-info">
             <i class="fa fa-2x fa-info-circle" aria-hidden="true"></i>
