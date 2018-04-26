@@ -131,6 +131,10 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         this.DashboardTypeUsed = DashboardType.default;
       }
       this.loadData();
+
+      PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
+        this.moduleSettings = isEnabled;
+      }));
     });
   }
 
@@ -264,6 +268,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         this.actionsOverdue = actions.filter(action => action.dueDate < startOfToday);
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
+        console.log(this.actionsThisWeek)
 
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
