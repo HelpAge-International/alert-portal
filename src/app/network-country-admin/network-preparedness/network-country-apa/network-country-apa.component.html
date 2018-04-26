@@ -66,7 +66,7 @@
       <tooltip
         [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'">
       </tooltip>
-      <div *ngIf="(!userType || (isViewing && (permissionsAreEnabled.customAPA.New || userType == userTypes.CountryAdmin))) && !isViewingFromExternal" class="btn-group">
+      <div *ngIf="(!userType || (agencyId && !countryId) || (isViewing && (permissionsAreEnabled.customAPA.New || userType == userTypes.CountryAdmin))) && !isViewingFromExternal" class="btn-group">
         <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{"CREATE_ACTION" | translate}}
         </button>
@@ -306,14 +306,34 @@
                         <div class="subrow-line">{{"GLOBAL.TYPE" | translate}}: <strong>{{ACTION_TYPE[action.type] |
                           translate}}</strong></div>
 
-                        <div class="subrow-line">{{"ASSIGNED_TO" | translate}}: <strong>{{CURRENT_USERS.get(action.asignee)
-                          != null ? action.createdByAgencyId ? CURRENT_USERS.get(action.asignee).firstName + ' ' +
-                          CURRENT_USERS.get(action.asignee).lastName + ', ' +
-                          agencyNamesMap.get(action.createdByAgencyId)?.name
-                          :
-                          CURRENT_USERS.get(action.asignee).firstName + ' ' +
-                          CURRENT_USERS.get(action.asignee).lastName
-                          : ("UNASSIGNED" | translate)}}</strong></div>
+                        <div class="subrow-line">{{"ASSIGNED_TO" | translate}}:
+                          <!--<strong>-->
+                            <!--{{CURRENT_USERS.get(action.asignee)-->
+                          <!--!= null ? action.createdByAgencyId ? CURRENT_USERS.get(action.asignee).firstName + ' ' +-->
+                          <!--CURRENT_USERS.get(action.asignee).lastName + ', ' +-->
+                          <!--agencyNamesMap.get(action.createdByAgencyId)?.name-->
+                          <!--:-->
+                          <!--CURRENT_USERS.get(action.asignee).firstName + ' ' +-->
+                          <!--CURRENT_USERS.get(action.asignee).lastName-->
+                          <!--: ("UNASSIGNED" | translate)}}-->
+                          <!--</strong>-->
+                          <strong>{{
+                            action.createdByAgencyId && agencyId != action.createdByAgencyId
+                            ? agencyNamesMap.get(action.createdByAgencyId)?.name
+                            :
+                            CURRENT_USERS.get(action.asignee) != null ?
+                            action.createdByAgencyId ? agencyId != action.createdByAgencyId ?
+                            STAFF.get(action.asignee)?.position+','+agencyNamesMap.get(action.createdByAgencyId)?.name
+                            :
+                            CURRENT_USERS.get(action.asignee).firstName + ' ' +
+                            CURRENT_USERS.get(action.asignee).lastName +', ' +
+                            agencyNamesMap.get(action.createdByAgencyId)?.name
+                            :
+                            CURRENT_USERS.get(action.asignee).firstName + ' ' +
+                            CURRENT_USERS.get(action.asignee).lastName
+                            : ("UNASSIGNED" | translate)}}
+                          </strong>
+                        </div>
 
                       </div>
                     </div>

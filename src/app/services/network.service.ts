@@ -910,6 +910,17 @@ export class NetworkService {
       })
   }
 
+  getLocalNetworksWithCountryForLocalAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
+      .map(networks => {
+        let networkKeys = []
+        networks.forEach(network => {
+          networkKeys.push(network.$key)
+        })
+        return networkKeys
+      })
+  }
+
   getNetworksForAgency(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/networks", {preserveSnapshot: true})
       .map(snap => {

@@ -141,10 +141,10 @@
 
           <ng-container *ngIf="isViewing">
             <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee"  *ngIf="userType == userTypes.CountryDirector || userType == userTypes.CountryAdmin || userType == userTypes.ErtLeader || userType == userTypes.LocalAgencyAdmin || userType == userTypes.LocalAgencyDirector">
-              <option selected value=null>{{"UNASSIGNED" | translate}}</option>
+              <option selected value="">{{"UNASSIGNED" | translate}}</option>
               <option *ngFor="let userAssign of ASSIGNED_TOO" value="{{userAssign.id}}">{{userAssign.firstName}} {{userAssign.lastName}}</option>
             </select>
-            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert || userType == userTypes.PartnerUser || userType == userTypes.LocalAgencyDirector || userType == userTypes.LocalAgencyAdmin">
+            <select id="n-AssignTo" class="form-control form-control-sm col-sm-5" [(ngModel)]="action.asignee" *ngIf="userType == userTypes.Ert || userType == userTypes.PartnerUser">
               <option selected value="">{{"UNASSIGNED" | translate}}</option>
               <option value="{{uid}}">{{myFirstName + ' ' + myLastName}}</option>
             </select>

@@ -267,7 +267,9 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.privacy = matrix);
 
-    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+    const service = this.countryId ? this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId) :  this.networkService.mapNetworkCountryForLocalAgency(this.agencyId)
+
+    service
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
         this.initNetworkAdmin(networkMap)
@@ -297,7 +299,8 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.privacy = matrix);
 
-    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+    const service = this.countryId ? this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId) : this.networkService.mapNetworkCountryForLocalAgency(this.agencyId)
+    service
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
         this.initNetworkAdmin(networkMap)
@@ -390,7 +393,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
   private initStaff(agencyId, countryId) {
     this.initCountryAdmin(agencyId, countryId);
-    this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + (countryId ? countryId : agencyId), {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {

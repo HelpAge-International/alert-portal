@@ -78,6 +78,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
   private showLoader: boolean;
   private localNetworkList: string[];
   private localNetworks: ModelNetwork[] = [];
+  private networkViewValues: any;
 
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
@@ -104,6 +105,7 @@ export class LocalAgencyHeaderComponent implements OnInit {
   ngOnInit() {
 
     jQuery('.float').hide();
+    this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
     this.showLoader = true;
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.systemId = systemId;
@@ -257,11 +259,13 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
   private checkAlerts() {
     let id = this.isViewingNetwork && this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID) ? this.storageService.get(Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID).toString() : this.agencyId;
+    console.log(id)
     this.alertService.getAlerts(id, true)
       .takeUntil(this.ngUnsubscribe)
       .subscribe((alerts: ModelAlert[]) => {
         this.isRed = false;
         this.isAmber = false;
+        console.log(alerts)
         alerts.forEach(alert => {
           if (alert.alertLevel == AlertLevels.Red && alert.approvalStatus == AlertStatus.Approved) {
             this.isRed = true;
