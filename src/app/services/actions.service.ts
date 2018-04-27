@@ -685,11 +685,13 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
-    updateData["timeTracking"] = alert.timeTracking;
+    if (alert.timeTracking) {
+      updateData["timeTracking"] = alert.timeTracking;
+    }
 
     updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
 
-
+    console.log(updateData)
     this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;

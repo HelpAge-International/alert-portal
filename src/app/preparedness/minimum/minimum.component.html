@@ -71,7 +71,7 @@
         <!--
               <div class="btn-group">
               <div *ngIf="!isViewing" class="btn-group">-->
-        <div *ngIf="userType == userTypes.LocalAgencyAdmin"
+        <div *ngIf="!isViewing && (permissionsAreEnabled.customMPA.New || userType == userTypes.LocalAgencyAdmin)"
              class="btn-group">
           <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true"
                   aria-expanded="false">

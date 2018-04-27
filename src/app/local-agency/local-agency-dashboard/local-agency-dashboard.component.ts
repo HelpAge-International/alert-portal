@@ -626,7 +626,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         if(!action.redAlerts){
           action.redAlerts = [];
         }
-        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+        if((action.assignedHazards && action.assignedHazards.length == 0) || (action.assignedHazards && action.assignedHazards.includes(alert.hazardScenario))){
           action.redAlerts.push(alertId)
 
           if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
@@ -729,7 +729,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
           if(!action.redAlerts){
             action.redAlerts = [];
           }
-          if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+          if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))){
               action.redAlerts.push(alert.id)
 
               if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
