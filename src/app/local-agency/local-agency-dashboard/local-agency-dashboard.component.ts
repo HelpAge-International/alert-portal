@@ -120,7 +120,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.userType = userType;
       this.agencyId = agencyId;
-      console.log(agencyId)
+      this.systemId = systemId;
 
       this.checkCoCUpdated();
       this.checkToCUpdated();
