@@ -110,7 +110,6 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe).subscribe(content => {
         this.countryLevelsValues = content;
-        err => console.log(err);
       });
     });
   }

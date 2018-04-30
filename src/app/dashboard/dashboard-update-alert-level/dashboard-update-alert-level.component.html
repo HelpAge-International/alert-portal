@@ -152,7 +152,7 @@
 
         <div class="Form-submit__wrapper">
           <div class="btn btn-primary" (click)="submit()">{{"ALERT.CONFIRM_ALERT_LEVEL" | translate}}</div>
-          <div class="btn btn-outline-secondary" routerLink="/dashboard">{{"GLOBAL.CANCEL" | translate}}</div>
+          <div class="btn btn-outline-secondary" [routerLink]="isLocalAgency ? '/local-agency/dashboard' : '/dashboard'">{{"GLOBAL.CANCEL" | translate}}</div>
         </div>
 
       </div>

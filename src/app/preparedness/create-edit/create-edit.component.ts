@@ -21,6 +21,7 @@ import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {MessageModel} from "../../model/message.model";
 import {takeUntil} from "rxjs/operator/takeUntil";
+import * as moment from "moment";
 
 declare var jQuery: any;
 
@@ -231,6 +232,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   public initFromExistingActionIdLocalAgency(canEditMPA: boolean, canEditAPA: boolean) {
     this.prepActionService.initOneActionLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+      console.log(action)
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
           this.router.navigateByUrl("/local-agency/preparedness/minimum")
@@ -1169,7 +1171,7 @@ export class CreateEditPrepActionHolder {
       console.log("Failed level check");
       return false;
     }
-    if ((this.dueDate == undefined || this.dueDate == 0) && amShowingDueDate) {
+    if ((this.dueDate == undefined || this.dueDate == 0 || this.dueDate < moment().utc().valueOf()) && amShowingDueDate) {
       console.log("Failed dueDate check");
       return false;
     }
