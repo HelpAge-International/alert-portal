@@ -245,8 +245,8 @@
                           [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">{{"EDIT_ACTION"
                           | translate}}</a>
                         <a
-                          *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                          [routerLink]="['/local-agency/local-agency/preparedness/create-edit-preparedness', action.id]"
+                          *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                          [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
                           class="btn btn-block">{{"EDIT_ACTION"
                           | translate}}</a>
                       </div>

@@ -183,7 +183,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
   saveUserNotificationBasedOnNotificationSetting(message: MessageModel, notificationSetting: number, agencyId: string, countryId: string)
   {
     // Regular staff
-    this._userService.getStaffList(countryId).subscribe(staffs => {
+    this._userService.getStaffList(countryId ? countryId : agencyId).first().subscribe(staffs => {
       staffs.forEach(staff => {
         if(staff.notification && staff.notification.indexOf(notificationSetting) !== -1)
         {

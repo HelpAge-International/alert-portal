@@ -377,9 +377,10 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    const id = this.countryId ? this.countryId : this.agencyId
     if (this.forEditing) {
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(false);
-      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(null);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/isEditing").set(false);
+      this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + id + "/" + this.idOfResponsePlanToEdit + "/editingUserId").set(null);
     }
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

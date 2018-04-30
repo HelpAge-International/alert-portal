@@ -220,6 +220,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
           const normalUser = () => {
             this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+              this.agencyId = agencyId
+              this.countryId = countryId
             this.userType = userType
               //get response plan settings from agency
               this.userService.getAgencyDetail(agencyId)
@@ -543,6 +545,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
+          console.log(countryId)
           this.countryId = countryId.$value;
           res(true);
         });
@@ -552,7 +555,12 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
-    let id = this.networkCountryId ? this.networkCountryId : this.networkId ? this.networkId : this.countryId;
+    console.log(this.networkCountryId)
+    console.log(this.networkId)
+    console.log(this.countryId)
+    console.log(this.agencyId)
+    let id = this.networkCountryId ? this.networkCountryId : this.networkId ? this.networkId : this.countryId ? this.countryId : this.agencyId;
+    console.log(id)
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     console.log(responsePlansPath)
 
