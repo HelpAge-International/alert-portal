@@ -1207,8 +1207,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
-      this.section9();
       this.doublerCounting();
+      this.section9();
 
       //this.continueButtonPressedOnSection9();
     } else {
@@ -1275,26 +1275,26 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   section9() {
     console.log("in section 9");
     const doubleCounting = {};
-    const data = {};
-    for (let i = 0; i < 6; i++) {
 
+    for (let i = 0; i < 6; i++) {
+      const data = {};
       if (i < 3) {
         data["gender"] = Gender.feMale;
         if (i == 0) {
-          data["value"] = this.adjustedFemaleLessThan18;
+          data["value"] = Number(this.adjustedFemaleLessThan18);
         } else if (i == 1) {
-          data["value"] = this.adjustedFemale18To50;
+          data["value"] = Number(this.adjustedFemale18To50);
         } else {
-          data["value"] = this.adjustedFemalegreaterThan50;
+          data["value"] = Number(this.adjustedFemalegreaterThan50);
         }
       } else {
         data["gender"] = Gender.male;
         if (i == 3) {
-          data["value"] = this.adjustedMaleLessThan18;
+          data["value"] = Number(this.adjustedMaleLessThan18);
         } else if (i == 4) {
-          data["value"] = this.adjustedMale18To50;
+          data["value"] = Number(this.adjustedMale18To50);
         } else {
-          data["value"] = this.adjustedMalegreaterThan50;
+          data["value"] = Number(this.adjustedMalegreaterThan50);
         }
       }
       if (i == 0 || i == 3) {
@@ -1312,9 +1312,9 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
   continueButtonPressedOnSection9() {
 
-    this.doublerCounting();
-
     this.checkSection9();
+
+    this.doublerCounting();
 
     // this.handleContinueSave();
 
@@ -1405,20 +1405,15 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     console.log("numberFemaleLessThan18:");
     console.log(this.numberFemaleLessThan18);
 
-    if (this.forEditing && this.isDoubleCountingDone) {
-      this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
-      this.adjustedFemale18To50 = this.loadResponsePlan.doubleCounting[1].value;
-      this.adjustedFemalegreaterThan50 = this.loadResponsePlan.doubleCounting[2].value;
-      this.adjustedMaleLessThan18 = this.loadResponsePlan.doubleCounting[3].value;
-      this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
-      this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
-    } else {
-      this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
-      this.adjustedFemale18To50 = this.numberFemale18To50;
-      this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
-      this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
-      this.adjustedMale18To50 = this.numberMale18To50;
-      this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+    console.log(this.forEditing)
+    console.log(this.isDoubleCountingDone)
+    if (!(this.forEditing && this.isDoubleCountingDone)) {
+      this.adjustedFemaleLessThan18 = Number(this.numberFemaleLessThan18);
+      this.adjustedFemale18To50 = Number(this.numberFemale18To50);
+      this.adjustedFemalegreaterThan50 = Number(this.numberFemalegreaterThan50);
+      this.adjustedMaleLessThan18 = Number(this.numberMaleLessThan18);
+      this.adjustedMale18To50 = Number(this.numberMale18To50);
+      this.adjustedMalegreaterThan50 = Number(this.numberMalegreaterThan50);
     }
   }
 
@@ -2131,7 +2126,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   private loadSection9(responsePlan: ResponsePlan) {
-    if (typeof responsePlan.doubleCounting !== "undefined") {
+    if (responsePlan.doubleCounting && (typeof responsePlan.doubleCounting !== "undefined")) {
       if (Object.keys(responsePlan.doubleCounting).length > 0) {
         console.log(responsePlan.doubleCounting)
         this.numberFemaleLessThan18 = responsePlan.doubleCounting[0].value;
