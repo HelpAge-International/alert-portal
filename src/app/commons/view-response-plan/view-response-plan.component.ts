@@ -816,4 +816,12 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
   }
+
+  handleSectors(responsePlan) {
+    let list = []
+    if (responsePlan.sectors) {
+      list = Object.keys(responsePlan.sectors)
+    }
+    return list
+  }
 }

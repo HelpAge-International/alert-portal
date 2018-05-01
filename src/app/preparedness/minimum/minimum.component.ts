@@ -444,6 +444,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       });
   }
 
+  private initAgencyAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
+
   private initCountryAdminLocalAgency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -455,6 +465,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   private initStaff() {
+    this.initAgencyAdmin();
     this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)

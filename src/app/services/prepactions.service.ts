@@ -972,23 +972,8 @@ export class PrepActionService {
   // Listen for changes on the notes
   public initNotes(af: AngularFire, actionId: string, run: boolean) {
     if (run) {
-      console.log(this.agencyId + "yooyoy")
-      af.database.list(Constants.APP_STATUS + "/note/" + this.countryId + '/' + actionId, {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
-          let action: PreparednessAction = this.findAction(actionId);
-          if (action != null) {
-            this.findAction(actionId).notes = [];
-            snap.forEach((noteSnap) => {
-              let prepNote: PreparednessNotes = new PreparednessNotes(noteSnap.key, actionId);
-              prepNote.content = noteSnap.val().content;
-              prepNote.time = noteSnap.val().time;
-              prepNote.uploadedBy = noteSnap.val().uploadBy;
-              this.addNoteToAction(prepNote, action);
-            });
-          }
-        });
-        af.database.list(Constants.APP_STATUS + "/note/" + this.agencyId + '/' + actionId, {preserveSnapshot: true})
+      const id  = this.countryId ? this.countryId : this.agencyId
+      af.database.list(Constants.APP_STATUS + "/note/" + id + '/' + actionId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
           let action: PreparednessAction = this.findAction(actionId);

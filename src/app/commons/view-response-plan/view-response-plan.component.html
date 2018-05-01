@@ -540,15 +540,15 @@
         <p class="col-sm-4"><b>A: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.INPUTS" | translate}}</b></p>
         <p class="col-sm-4">{{CURRENCIES[currency]}}{{totalInputs}}</p>
       </div>
-      <div class="row" *ngFor="let sector of responsePlanToShow.sectorsRelatedTo; index as i">
-        <p class="col-sm-4">A-{{i+1}}: {{responsePlanToShow && responsePlanToShow.sectors ? (SectorsList[sector] |
+      <div class="row" *ngFor="let sector of handleSectors(responsePlanToShow); index as i">
+        <p class="col-sm-4">A-{{i+1}}: {{responsePlanToShow && responsePlanToShow?.sectors ? (SectorsList[sector] |
           translate) : ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
-        <p class="col-sm-4">{{CURRENCIES[currency]}}{{responsePlanToShow && responsePlanToShow.budget &&
-          responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget'] ?
-          (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
-        <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow.budget &&
-          responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative'] ?
-          (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative']) :
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{responsePlanToShow && responsePlanToShow?.budget &&
+          responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['budget'] ?
+          (responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
+        <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow?.budget &&
+          responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['narrative'] ?
+          (responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['narrative']) :
           ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
       </div>
       <div class="row">
