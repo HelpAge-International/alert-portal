@@ -234,7 +234,6 @@ export class ReportProblemComponent implements OnInit {
   }
 
   reportBugData() {
-    debugger
     console.log(this.sendEmailModel)
     if (this.userType == UserType.AgencyAdmin || this.userType == UserType.LocalAgencyAdmin) {
       console.log(this.agencyAdminId)

@@ -1276,7 +1276,6 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     const doubleCounting = {};
     const data = {};
     for (let i = 0; i < 6; i++) {
-
       if (i < 3) {
         data["gender"] = Gender.feMale;
         if (i == 0) {
@@ -1305,7 +1304,13 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       }
       doubleCounting[i] = data;
     }
-    console.log(doubleCounting)
+    console.log(this.adjustedFemaleLessThan18)
+    console.log(this.adjustedFemale18To50)
+    console.log(this.adjustedFemalegreaterThan50)
+    console.log(this.adjustedMaleLessThan18)
+    console.log(this.adjustedMale18To50)
+    console.log(this.adjustedMalegreaterThan50)
+
     this.newResponsePlan.doubleCounting = doubleCounting;
   }
 
@@ -1349,24 +1354,24 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
     modelPlanList.forEach(modelPlan => {
       // beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
       // furtherBeneficiaryList = furtherBeneficiaryList.concat(modelPlan.furtherBeneficiary);
-      if (!modelPlan.hasFurtherBeneficiary) {
-        modelPlan.beneficiary.forEach(item => {
-          if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
-            this.numberFemaleLessThan18 += Number(item["value"]);
-          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
-            this.numberFemale18To50 += Number(item["value"]);
-          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
-            this.numberFemalegreaterThan50 += Number(item["value"]);
-          } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
-            this.numberMaleLessThan18 += Number(item["value"]);
-          } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
-            this.numberMale18To50 += Number(item["value"]);
-          } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
-            this.numberMalegreaterThan50 += Number(item["value"]);
-          }
-        })
-
-      }
+      // if (!modelPlan.hasFurtherBeneficiary) {
+      //   modelPlan.beneficiary.forEach(item => {
+      //     if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+      //       this.numberFemaleLessThan18 += Number(item["value"]);
+      //     } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+      //       this.numberFemale18To50 += Number(item["value"]);
+      //     } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+      //       this.numberFemalegreaterThan50 += Number(item["value"]);
+      //     } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+      //       this.numberMaleLessThan18 += Number(item["value"]);
+      //     } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+      //       this.numberMale18To50 += Number(item["value"]);
+      //     } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+      //       this.numberMalegreaterThan50 += Number(item["value"]);
+      //     }
+      //   })
+      //
+      // }
       // else {
       //   modelPlan.furtherBeneficiary.forEach(item => {
       //     if (item["age"] < 3 && item["gender"] == Gender.feMale) {
@@ -1385,41 +1390,43 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
       //   })
       //
       // }
+      modelPlan.beneficiary.forEach(item => {
+        if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
+          this.numberFemaleLessThan18 += Number(item["value"]);
+        } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
+          this.numberFemale18To50 += Number(item["value"]);
+        } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
+          this.numberFemalegreaterThan50 += Number(item["value"]);
+        } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
+          this.numberMaleLessThan18 += Number(item["value"]);
+        } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
+          this.numberMale18To50 += Number(item["value"]);
+        } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
+          this.numberMalegreaterThan50 += Number(item["value"]);
+        }
+      });
     });
-    // beneficiaryList.forEach(item => {
-    //   if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
-    //     this.numberFemaleLessThan18 += Number(item["value"]);
-    //   } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.feMale) {
-    //     this.numberFemale18To50 += Number(item["value"]);
-    //   } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.feMale) {
-    //     this.numberFemalegreaterThan50 += Number(item["value"]);
-    //   } else if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.male) {
-    //     this.numberMaleLessThan18 += Number(item["value"]);
-    //   } else if (item["age"] == AgeRange.Between18To50 && item["gender"] == Gender.male) {
-    //     this.numberMale18To50 += Number(item["value"]);
-    //   } else if (item["age"] == AgeRange.More50 && item["gender"] == Gender.male) {
-    //     this.numberMalegreaterThan50 += Number(item["value"]);
-    //   }
-    // });
+
 
     console.log("numberFemaleLessThan18:");
     console.log(this.numberFemaleLessThan18);
 
-    // if (this.forEditing && this.isDoubleCountingDone) {
-    //   this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
-    //   this.adjustedFemale18To50 = this.loadResponsePlan.doubleCounting[1].value;
-    //   this.adjustedFemalegreaterThan50 = this.loadResponsePlan.doubleCounting[2].value;
-    //   this.adjustedMaleLessThan18 = this.loadResponsePlan.doubleCounting[3].value;
-    //   this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
-    //   this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
-    // } else {
-    //   this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
-    //   this.adjustedFemale18To50 = this.numberFemale18To50;
-    //   this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
-    //   this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
-    //   this.adjustedMale18To50 = this.numberMale18To50;
-    //   this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
-    // }
+    if (this.forEditing && this.isDoubleCountingDone) {
+      console.log("in adjusted")
+      this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
+      this.adjustedFemale18To50 = this.loadResponsePlan.doubleCounting[1].value;
+      this.adjustedFemalegreaterThan50 = this.loadResponsePlan.doubleCounting[2].value;
+      this.adjustedMaleLessThan18 = this.loadResponsePlan.doubleCounting[3].value;
+      this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
+      this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
+    } else {
+      this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
+      this.adjustedFemale18To50 = this.numberFemale18To50;
+      this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
+      this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
+      this.adjustedMale18To50 = this.numberMale18To50;
+      this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
+    }
   }
 
   /**

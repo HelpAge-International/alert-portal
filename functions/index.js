@@ -4460,7 +4460,7 @@ exports.sendBugReportingEmailUAT = functions.database.ref('/uat/bugReporting/{co
 
   const mailOptions = {
     from: '"ALERT Network" <noreply@firebase.com>',
-    to: 'luis.vidal@helpage.org'
+    to: 'mehmood.ahmed@helpage.org'
   };
   mailOptions.subject = `ALERT Platform: A problem has been reported`;
   mailOptions.html = `Hello,
