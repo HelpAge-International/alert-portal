@@ -171,7 +171,7 @@ export class ResponsePlanService {
               }
 
               if (rejectNoteContent) {
-                this.addResponsePlanRejectNote(uid, responsePlanId, rejectNoteContent, isDirector, hasToken);
+                this.addResponsePlanRejectNote(uid, userType, responsePlanId, rejectNoteContent, isDirector, hasToken);
               } else {
                 if (hasToken) {
                   this.router.navigate(["/after-validation", {"plan": true}], {skipLocationChange: true}).then();
@@ -196,7 +196,7 @@ export class ResponsePlanService {
     }
   }
 
-  private addResponsePlanRejectNote(uid, responsePlanId, content, isDirector, hasToken) {
+  private addResponsePlanRejectNote(uid, userType, responsePlanId, content, isDirector, hasToken) {
     let note = {};
     note["content"] = content;
     note["time"] = Date.now();
@@ -205,7 +205,11 @@ export class ResponsePlanService {
       if (hasToken) {
         this.router.navigateByUrl(Constants.LOGIN_PATH).then();
       } else {
-        isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+        if (userType == UserType.LocalAgencyDirector) {
+          this.router.navigateByUrl("/local-agency/dashboard")
+        } else {
+          isDirector ? this.router.navigateByUrl("/director") : this.router.navigateByUrl("/dashboard");
+        }
       }
     }, error => {
       console.log(error.message)
@@ -213,7 +217,7 @@ export class ResponsePlanService {
   }
 
   private getUserTypeName(userType: number): string {
-    if (userType == UserType.CountryDirector) {
+    if (userType == UserType.CountryDirector || userType == UserType.LocalAgencyDirector) {
       return "countryDirector";
     } else if (userType == UserType.RegionalDirector) {
       return "regionDirector";

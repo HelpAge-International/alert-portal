@@ -216,6 +216,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.modulesAreEnabled = isEnabled;
       });
 
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+        this.permissionsAreEnabled = isEnabled;
+      });
+
 
       // Currency
       this.calculateCurrency();
@@ -440,6 +444,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       });
   }
 
+  private initAgencyAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
+
   private initCountryAdminLocalAgency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -451,6 +465,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   private initStaff() {
+    this.initAgencyAdmin();
     this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -698,7 +713,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
-    
+
     if (action.note == undefined) {
       return;
     }

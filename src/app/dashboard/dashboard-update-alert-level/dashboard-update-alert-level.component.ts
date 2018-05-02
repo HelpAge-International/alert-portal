@@ -110,7 +110,6 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe).subscribe(content => {
         this.countryLevelsValues = content;
-        err => console.log(err);
       });
     });
   }
@@ -235,7 +234,7 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
           // Update action tracking inactive -> some active state
           if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
-            if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+            if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1) != -1){
                 action["redAlerts"].push(this.loadedAlert.id);
 
                 action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
@@ -270,21 +269,21 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
                 this.alerts.forEach( alert => {
                   if(alert.hazardScenario == this.loadedAlert.hazardScenario && alert.$key != this.loadedAlert.id && alert.alertLevel == AlertLevels.Red){
-                    isOtherRedAlert == true;
+                    isOtherRedAlert = true;
                   }
                 })
 
                 if(!isOtherRedAlert){
                   if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
-                    if(action["timeTracking"]["timeSpentInRed"] && action["timeTracking"]["timeSpentInRed"].find(x => x.finish == -1)){
+                    if(action["timeTracking"]["timeSpentInRed"] && action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1){
                       action["timeTracking"]["timeSpentInRed"][action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime;
                     }
 
-                    if(action["timeTracking"]["timeSpentInAmber"] && action["timeTracking"]["timeSpentInAmber"].find(x => x.finish == -1)){
+                    if(action["timeTracking"]["timeSpentInAmber"] && action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1){
                       action["timeTracking"]["timeSpentInAmber"][action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime;
                     }
 
-                    if(action["timeTracking"]["timeSpentInGreen"] && action["timeTracking"]["timeSpentInGreen"].find(x => x.finish == -1)){
+                    if(action["timeTracking"]["timeSpentInGreen"] && action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1){
                       action["timeTracking"]["timeSpentInGreen"][action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime;
                     }
 
@@ -302,21 +301,21 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             }else{
                 this.alerts.forEach( alert => {
                   if(alert.hazardScenario == this.loadedAlert.hazardScenario && alert.$key != this.loadedAlert.id && alert.alertLevel == AlertLevels.Red){
-                    isOtherRedAlert == true;
+                    isOtherRedAlert = true;
                   }
                 })
 
                 if(!isOtherRedAlert){
                     if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
-                      if(action["timeTracking"]["timeSpentInRed"] && action["timeTracking"]["timeSpentInRed"].find(x => x.finish == -1)){
+                      if(action["timeTracking"]["timeSpentInRed"] && action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1){
                         action["timeTracking"]["timeSpentInRed"][action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime;
                       }
 
-                      if(action["timeTracking"]["timeSpentInAmber"] && action["timeTracking"]["timeSpentInAmber"].find(x => x.finish == -1)){
+                      if(action["timeTracking"]["timeSpentInAmber"] && action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1){
                         action["timeTracking"]["timeSpentInAmber"][action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime;
                       }
 
-                      if(action["timeTracking"]["timeSpentInGreen"] && action["timeTracking"]["timeSpentInGreen"].find(x => x.finish == -1)){
+                      if(action["timeTracking"]["timeSpentInGreen"] && action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1){
                         action["timeTracking"]["timeSpentInGreen"][action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime;
                       }
 
@@ -342,13 +341,19 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
         if(hazardTrackingNode){
           if(this.loadedAlertLevel == AlertLevels.Red){
-            hazardTrackingNode["timeSpentInRed"][hazardTrackingNode["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+            const index = hazardTrackingNode["timeSpentInRed"].findIndex(x => x.finish == -1)
+            if (index != -1) {
+              hazardTrackingNode["timeSpentInRed"][index].finish = currentTime
+            }
           }
 
-          if(this.loadedAlertLevel == AlertLevels.Amber && hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)]){
-            hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
-          }
+          if(this.loadedAlertLevel == AlertLevels.Amber){
+            const index = hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)
+            if (index != -1) {
+              hazardTrackingNode["timeSpentInAmber"][index].finish = currentTime
+            }
 
+          }
         }
 
         if(this.loadedAlert.alertLevel == AlertLevels.Red){
@@ -528,8 +533,9 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.alertService.unSubscribeNow();
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   isNumber(n) {

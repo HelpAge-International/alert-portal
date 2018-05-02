@@ -608,7 +608,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     // if (this.needShowDialog) {
     //   jQuery("#dialog-action").modal("hide");
     // }
-    if (this.userType == UserType.LocalAgencyAdmin || this.userType == UserType.LocalAgencyDirector) {
+    if (this.userType == UserType.LocalAgencyAdmin || this.userType == UserType.LocalAgencyDirector || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       jQuery("#directorSelection").modal("show");
 
       if (this.planToApproval.approval && this.planToApproval.approval["countryDirector"]) {

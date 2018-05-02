@@ -179,7 +179,7 @@ export class ActionsService {
   }
 
   getAlerts(countryId, isLocalAgency?) {
-
+    console.log(countryId)
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
         orderByChild: "alertLevel",
@@ -187,6 +187,7 @@ export class ActionsService {
       }
     })
       .map(alerts => {
+        console.log(alerts)
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();
@@ -200,6 +201,7 @@ export class ActionsService {
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.timeUpdated = alert.timeUpdated;
           modelAlert.createdBy = alert.createdBy;
+          modelAlert.approvalStatus = alert.approval.countryDirector ? Object.keys(alert.approval.countryDirector).map(key => alert.approval.countryDirector[key])[0] : alert.approval.localAgencyDirector ? Object.keys(alert.approval.localAgencyDirector).map(key => alert.approval.localAgencyDirector[key])[0] : AlertStatus.WaitingResponse
           if (alert.updatedBy) {
             modelAlert.updatedBy = alert.updatedBy;
           }
@@ -278,7 +280,7 @@ export class ActionsService {
         alertList.forEach(alert => {
           let affectedAreasToDisplay: any[] = [];
           alert.affectedAreas.forEach(affectedArea => {
-            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).takeUntil(this.ngUnsubscribe).subscribe((value) => {
               let obj = {
                 country: "",
                 areas: ""
@@ -683,11 +685,13 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
-    updateData["timeTracking"] = alert.timeTracking;
+    if (alert.timeTracking) {
+      updateData["timeTracking"] = alert.timeTracking;
+    }
 
     updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
 
-
+    console.log(updateData)
     this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;

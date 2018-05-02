@@ -193,6 +193,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.initAlertsLocalAgency();
       this.calculateCurrency();
 
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+        this.permissionsAreEnabled = isEnabled;
+      });
+
     });
   }
 

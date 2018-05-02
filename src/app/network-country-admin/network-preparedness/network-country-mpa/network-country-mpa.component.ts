@@ -369,6 +369,18 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
 
+    console.log(this.countryId)
+    this.countryId ? this.initForCountry() : this.initForLocalAgency();
+    this.initStaff(this.uid, this.agencyId, this.countryId);
+    PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
+      this.permissionsAreEnabled = isEnabled;
+    });
+
+    // Currency
+    this.calculateCurrency();
+  }
+
+  private initForCountry() {
     this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
@@ -393,16 +405,37 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.initAgenciesDetails(networkMap)
         }
       })
-    this.initStaff(this.uid, this.agencyId, this.countryId);
-    PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
-      this.permissionsAreEnabled = isEnabled;
-    });
+  }
 
-    // Currency
-    this.calculateCurrency();
+  private initForLocalAgency() {
+    this.networkService.mapNetworkCountryForLocalAgency(this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkMap => {
+        this.networkIdList = []
+        networkMap.forEach((networkCountryId, networkId) => {
+          this.networkIdList.push(networkId)
+          this.networkService.getNetworkModuleMatrix(networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(matrix => {
+              this.networkModuleMap.set(networkId, matrix)
+            })
+
+          this.networkService.getNetworkDetail(networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network => {
+              this.networkModelMap.set(networkId, network)
+            })
+        })
+
+        if (networkMap) {
+          // this.initNetworkAdmin(networkMap)
+          this.initAgenciesDetails(networkMap)
+        }
+      })
   }
 
   private initLocalNetworkViewAccess() {
+    console.log("initLocalNetworkViewAccess")
     this.assignActionAsignee = this.uid;
     this.filterAssigned = "0";
     this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
@@ -422,7 +455,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
     }
 
-    this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
+    const service = this.countryId ? this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId) : this.networkService.getLocalNetworksWithCountryForLocalAgency(this.agencyId)
+    service
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkIds => {
         if (networkIds && networkIds.length > 0) {
@@ -641,7 +675,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private initStaff(uid, agencyId, countryId) {
     this.initCountryAdmin(agencyId, countryId);
-    this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + (countryId ? countryId : agencyId), {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
@@ -1396,14 +1430,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkService.mapAgencyCountryForLocalNetworkCountry(networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
-          // agencyCountryMap.forEach((countryId, agencyId) => {
-          //   this.initStaff(this.uid, agencyId, countryId);
-          // })
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe((agency: ModelAgency) => {
                 this.agencyNamesMap.set(agencyId, agency)
+                console.log(this.agencyNamesMap)
               })
           })
         })

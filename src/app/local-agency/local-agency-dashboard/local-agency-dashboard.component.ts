@@ -120,7 +120,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.userType = userType;
       this.agencyId = agencyId;
-      console.log(agencyId)
+      this.systemId = systemId;
 
       this.checkCoCUpdated();
       this.checkToCUpdated();
@@ -131,6 +131,10 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         this.DashboardTypeUsed = DashboardType.default;
       }
       this.loadData();
+
+      PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
+        this.moduleSettings = isEnabled;
+      }));
     });
   }
 
@@ -264,6 +268,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         this.actionsOverdue = actions.filter(action => action.dueDate < startOfToday);
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
+        console.log(this.actionsThisWeek)
 
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
@@ -621,7 +626,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         if(!action.redAlerts){
           action.redAlerts = [];
         }
-        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+        if((action.assignedHazards && action.assignedHazards.length == 0) || (action.assignedHazards && action.assignedHazards.includes(alert.hazardScenario))){
           action.redAlerts.push(alertId)
 
           if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
@@ -724,7 +729,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
           if(!action.redAlerts){
             action.redAlerts = [];
           }
-          if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+          if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))){
               action.redAlerts.push(alert.id)
 
               if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){

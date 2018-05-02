@@ -447,7 +447,8 @@
       "DONOR":"Donors",
       "PARTNER":"Partners",
       "NON_ALERT":"Non-Alert User",
-      "LOCAL_AGENCY_DIRECTORS":"Local Agency Directors"
+      "LOCAL_AGENCY_DIRECTORS":"Local Agency Directors",
+      "LOCAL_AGENCY_ADMIN":"Local Agency Admin"
     },
     "ACCOUNT_SETTINGS":{
       "TITLE":"Account Settings",

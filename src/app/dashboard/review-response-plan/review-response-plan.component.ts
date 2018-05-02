@@ -198,6 +198,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   private loadResponsePlanLocalAgency(responsePlanId: string) {
 
     let id = this.agencyId;
+    console.log(id)
     this.responsePlanService.getResponsePlan(id, responsePlanId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(responsePlan => {
@@ -332,7 +333,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       let approvalUid = this.getRightUidForApproval();
       let id = this.isLocalAgency ? this.agencyId : this.networkCountryId ? this.networkCountryId : this.countryId;
       if(this.isLocalAgency){
-        this.responsePlanService.updateResponsePlanApproval(UserType.CountryDirector, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+        this.responsePlanService.updateResponsePlanApproval(UserType.LocalAgencyDirector, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
       }else{
         this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, true, "", this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
       }
@@ -346,7 +347,7 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
       approvalUid = this.agencyId;
     } else if (this.userType === UserType.RegionalDirector) {
       approvalUid = this.regionId;
-    } else if (this.userType === UserType.CountryDirector) {
+    } else if (this.userType === UserType.CountryDirector || this.userType === UserType.LocalAgencyDirector) {
       if(this.isLocalAgency){
         approvalUid = this.agencyId;
       }else{
@@ -415,7 +416,11 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
     } else {
       let approvalUid = this.getRightUidForApproval();
       let id = this.isLocalAgency ? this.agencyId : this.networkCountryId ? this.networkCountryId : this.countryId;
-      this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      if (this.isLocalAgency) {
+        this.responsePlanService.updateResponsePlanApproval(UserType.LocalAgencyDirector, approvalUid, id, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false)
+      } else {
+        this.responsePlanService.updateResponsePlanApproval(this.userType, approvalUid, id, this.responsePlanId, false, this.rejectComment, this.isDirector, this.loadedResponseplan.name, this.agencyId, false);
+      }
     }
   }
 

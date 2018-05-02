@@ -677,7 +677,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
       if (updateObj.asignee) {
         if (this.userType != NetworkUserAccountType.NetworkAdmin || this.userType != NetworkUserAccountType.NetworkCountryAdmin) {
           updateObj.createdByAgencyId = this.agencyId;
-          updateObj.createdByCountryId = this.countryId;
+          updateObj.createdByCountryId = this.countryId ? this.countryId : this.agencyId;
 
         } else {
           updateObj.createdByAgencyId = null
@@ -1111,9 +1111,11 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private backToRightPage(action: CreateEditPrepActionHolder) {
-    this.isLocalNetworkAdmin ?
-      action.level === ActionLevel.APA ? this.router.navigateByUrl('/network/local-network-preparedness-apa') : this.router.navigateByUrl('/network/local-network-preparedness-mpa')
+    this.isViewing ? this._location.back()
       :
-      action.level === ActionLevel.APA ? this.router.navigateByUrl('/network-country/network-country-apa') : this.router.navigateByUrl('/network-country/network-country-mpa')
+      this.isLocalNetworkAdmin ?
+        action.level === ActionLevel.APA ? this.router.navigateByUrl('/network/local-network-preparedness-apa') : this.router.navigateByUrl('/network/local-network-preparedness-mpa')
+        :
+        action.level === ActionLevel.APA ? this.router.navigateByUrl('/network-country/network-country-apa') : this.router.navigateByUrl('/network-country/network-country-mpa')
   }
 }

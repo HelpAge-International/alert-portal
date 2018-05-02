@@ -7,9 +7,6 @@
 
     <app-country-statistics-ribbon></app-country-statistics-ribbon>
 
-
-
-
     <!--alert screen-->
     <div *ngIf="DashboardTypeUsed == DashboardType.default" class="canvas">
       <div *ngIf="alerts | async as alertList">
@@ -541,6 +538,36 @@
                 <button class="btn btn-outline-primary" (click)="updateAlert(alert.id, true)">
                   {{"ALERT.UPDATE_ALERT_LEVEL" | translate}}
                 </button>
+              </div>
+
+            </div>
+
+            <div id="{{alert.id}}" class="Popover__ribbon prevent_parent_collapse collapse col-12 notes-popover">
+              <div class="row Spaced">
+                <div class="col-md-2"></div>
+                <div class="col-md-10">
+                  <div class="row align-items-center Small-spaced no-gutters">
+                    <div class="col-sm-6 col-8">
+                      <h4>{{"ALERT.INFO_AND_NOTES" | translate}}</h4>
+                    </div>
+                    <div class="col-sm-6 col-4 text-right">
+                      <a href="javascript:void(0);"
+                         onClick="$(this).parent().parent().parent().parent().parent().collapse('hide')">{{"GLOBAL.CLOSE"
+                        |
+                        translate}}</a>
+                    </div>
+                  </div>
+                  <div class="row no-gutters">
+                    <div class="col-sm-10 col-12 notes-popover__item">
+                      <p>
+                        {{alert.infoNotes}}
+                      </p>
+                      <p>
+                        <strong>{{"BY" | translate}} {{alert.createdByName}}</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
             </div>
