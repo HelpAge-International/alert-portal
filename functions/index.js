@@ -96,7 +96,7 @@ function sendWelcomeEmail(email, userPassword) {
                       \n Your temporary password is "` + userPassword + `", please login with your email address to update your credentials.
                       \n https://platform.alertpreparedness.org
                       \n Thanks
-                      \n Your ALERT team `;
+                      \n ALERT team `;
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('New welcome email sent to:', email);
   });
@@ -1062,7 +1062,7 @@ exports.sendResponsePlanValidationEmailLive = functions.database.ref('/live/resp
                               \n To review the response plan, please visit the link below:
                               \n http://platform.alertpreparedness.org/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
                               \n Thanks
-                              \n Your ALERT team `;
+                              \n ALERT team `;
                     return mailTransport.sendMail(mailOptions).then(() => {
                       console.log('Email sent to:', email);
                     });
@@ -1552,28 +1552,29 @@ exports.sendPartnerOrganisationValidationEmailLive = functions.database.ref('/li
             let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
             // console.log("email: " + email);
+            admin.database().ref('sand/partnerOrganisation/' + partnerId).once("value", (org) => {
+              admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT partner organisation" <noreply@firebase.com>',
+                  to: email
+                };
 
-            admin.database().ref('live/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT partner organisation" <noreply@firebase.com>',
-                to: email
-              };
-
-              // \n https://uat.portal.alertpreparedness.org
-              mailOptions.subject = `Welcome to ${APP_NAME}!`;
-              mailOptions.text = `Hello,
-                          \nYour Organisation was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ${APP_NAME}!.
+                // \n https://uat.portal.alertpreparedness.org
+                mailOptions.subject = `Welcome to ${APP_NAME}!`;
+                mailOptions.text = `Hello,
+                          \nYour Organisation ${org.val().organisationName} was added by ${username}, ${countryName}, ${agencyName}, as a Partner Organisation on the ALERT Platform.
                           \n Contact information: ${userEmail}
                           \n To confirm, please click on the link below
                           \n http://platform.alertpreparedness.org/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                           \n Thanks
-                          \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                          \n ALERT team `;
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
               });
-            }, error => {
-              console.log(error.message);
             });
           }
         });
@@ -3208,11 +3209,11 @@ exports.sendNetworkAgencyValidationEmail_LIVE = functions.database.ref('/live/ne
 
                 mailOptions.subject = `You have been invited to join a network`;
                 mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://platform.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
                           \n Thanks
-                          \n Your ALERT team `;
+                          \n ALERT team `;
                 console.log('we are executing code here');
                 return mailTransport.sendMail(mailOptions).then(() => {
                   console.log('New welcome email sent to:', email);
@@ -3247,11 +3248,11 @@ exports.sendNetworkAgencyValidationEmail_LIVE = functions.database.ref('/live/ne
 
                   mailOptions.subject = `You have been invited to join a network`;
                   mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://platform.alertpreparedness.org/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
                           \n Thanks
-                          \n Your ALERT team `;
+                          \n ALERT team `;
                   console.log('we are executing code here');
                   return mailTransport.sendMail(mailOptions).then(() => {
                     console.log('New welcome email sent to:', email);
@@ -3267,6 +3268,54 @@ exports.sendNetworkAgencyValidationEmail_LIVE = functions.database.ref('/live/ne
       })
     }
   });
+
+/***********************************************************************************************************************/
+
+/***********************************************************************************************************************/
+//Bug Reporting
+//for sand
+
+exports.sendBugReportingEmailSand = functions.database.ref('/live/bugReporting/{countryId}/{bugId}')
+  .onWrite(event => {
+
+    const preData = event.data.previous.val();
+    const currData = event.data.current.val();
+
+    console.log(currData)
+
+    let eParams = event.params;
+    // Set variables to parameters of the data returned, ready to construct for the email
+    let countryId = eParams['countryId'];
+    let bugId = eParams['bugId'];
+
+    console.log("countyId: " + countryId);
+
+    const mailOptions = {
+      from: '"ALERT Network" <noreply@firebase.com>',
+      to: 'mehmood.ahmed@helpage.org'
+    };
+    mailOptions.subject = `ALERT Platform: A problem has been reported`;
+    mailOptions.html = `Hello,
+                          <br>
+                          <br> A problem was reported at ${currData.date}
+                          <br>  
+                          <br> Description: <br>
+                          ${currData.description}
+                          <br> <br>        
+                          <a href="${currData.downloadLink}"> Click for image </a>                                          
+                          <br> <br>                         
+                          User details: <br>
+                          ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName}, ${currData.email}
+                          <br>
+                          <br>
+                          System Information: <br>
+                          ${currData.systemInfo}
+                          `;
+
+    return mailTransport.sendMail(mailOptions).then(() => {
+      console.log('New bug reporting email:');
+    });
+  })
 
 /***********************************************************************************************************************/
 
@@ -3740,46 +3789,90 @@ exports.sendNetworkCountryAgencyValidationEmail_LIVE = functions.database.ref('/
       let agencyId = event.params['agencyId'];
       let countryId = event.params['countryId'];
 
-      admin.database().ref('/live/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
-        let adminId = data.val();
-        console.log("admin id: " + adminId);
+      if (agencyId !== countryId) {
+        admin.database().ref('/live/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
+          let adminId = data.val();
+          console.log("admin id: " + adminId);
 
-        admin.database().ref('/live/userPublic/' + adminId).once("value", (user) => {
-          let email = user.val().email;
-          console.log("admin email: " + email);
+          admin.database().ref('/live/userPublic/' + adminId).once("value", (user) => {
+            let email = user.val().email;
+            console.log("admin email: " + email);
 
-          admin.database().ref('/live/network/' + networkId).once("value", networkSnap => {
-            let network = networkSnap.val();
+            admin.database().ref('/live/network/' + networkId).once("value", networkSnap => {
+              let network = networkSnap.val();
 
-            let expiry = moment.utc().add(1, 'weeks').valueOf();
+              let expiry = moment.utc().add(1, 'weeks').valueOf();
 
-            let validationToken = {'token': uuidv4(), 'expiry': expiry};
+              let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-            admin.database().ref('live/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
-              console.log('success validationToken');
-              const mailOptions = {
-                from: '"ALERT Network" <noreply@firebase.com>',
-                to: email
-              };
+              admin.database().ref('live/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT Network" <noreply@firebase.com>',
+                  to: email
+                };
 
-              mailOptions.subject = `You have been invited to join a network`;
-              mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
+                mailOptions.subject = `You have been invited to join a network`;
+                mailOptions.text = `Hello,
+                          \nYour Agency was invited to join the network: ${network.name}
                           \n To confirm, please click on the link below
                           \n http://platform.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
                           \n Thanks
-                          \n Your ALERT team `;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('New welcome email sent to:', email);
+                          \n ALERT team `;
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
               });
-            }, error => {
-              console.log(error.message);
+
             });
 
           });
-
         });
-      });
+      } else {
+        admin.database().ref('/live/agency/' + agencyId + '/adminId').once("value", (data) => {
+          let adminId = data.val();
+          console.log("admin id: " + adminId);
+
+          admin.database().ref('/live/userPublic/' + adminId).once("value", (user) => {
+            let email = user.val().email;
+            console.log("admin email: " + email);
+
+            admin.database().ref('/live/network/' + networkId).once("value", networkSnap => {
+              let network = networkSnap.val();
+
+
+              let expiry = moment.utc().add(1, 'weeks').valueOf();
+
+              let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+              admin.database().ref('live/networkCountryValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
+                console.log('success validationToken');
+                const mailOptions = {
+                  from: '"ALERT Network" <noreply@firebase.com>',
+                  to: email
+                };
+
+                mailOptions.subject = `You have been invited to join a network`;
+                mailOptions.text = `Hello,
+                          \nYour Agency was invited to join the network: ${network.name}
+                          \n To confirm, please click on the link below
+                          \n http://platform.alertpreparedness.org/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId}
+                          \n Thanks,
+                          \n ALERT Team `;
+                return mailTransport.sendMail(mailOptions).then(() => {
+                  console.log('New welcome email sent to:', email);
+                });
+              }, error => {
+                console.log(error.message);
+              });
+
+            });
+
+          });
+        });
+      }
     }
   });
 
@@ -4952,6 +5045,711 @@ exports.sendEmailPlanRejectedByGlobalDirector_LIVE = functions.database.ref('/li
       })
     }
   })
+
+exports.updateLatestCoCAllUsers_LIVE = functions.database.ref('/live/system/{systemId}/coc')
+  .onWrite(event => {
+    const currData = event.data.current.val();
+    if (currData) {
+      admin.database().ref('live/userPublic/').once('value', (data) => {
+        let usersJson = data.val();
+        if(usersJson) {
+          let userIds = Object.keys(usersJson);
+          //console.log(userIds);
+          userIds.forEach(userId => {
+            admin.database().ref('live/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
+              //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+            });
+          });
+        }
+      }, error => {
+        console.log(error.message);
+      })
+    }
+    return true;
+  });
+
+/*notifications for mobile*/
+
+exports.sendIndicatorAssignedMobileNotification_LIVE = functions.database.ref('/live/indicator/{hazardId}/{indicatorId}/')
+  .onWrite(event => {
+    return sendIndicatorAssignedMobileNotification(event, "live")
+  })
+
+function sendIndicatorAssignedMobileNotification(event, env){
+  const preIndicatorData = event.data.previous.val();
+  const currIndicatorData = event.data.current.val();
+
+  var preIndicatorAssignee = null
+  var currIndicatorAssignee = null
+
+  var preIndicatorDueDate = null
+  var currIndicatorDueDate = null
+
+  if(preIndicatorData){
+    preIndicatorAssignee = preIndicatorData.assignee
+    preIndicatorDueDate = preIndicatorData.dueDate
+  }
+
+  if(currIndicatorData){
+    currIndicatorAssignee = currIndicatorData.assignee
+    currIndicatorDueDate = currIndicatorData.dueDate
+  }
+
+  const hazardId = event.params.hazardId
+  const indicatorId = event.params.indicatorId
+
+  var rescheduleNotification = createIndicatorRescheduleNotification(currIndicatorData, hazardId, indicatorId)
+  var assignedNotification = createIndicatorAssignedNotification(currIndicatorData, hazardId, indicatorId)
+
+  var promises = []
+  console.log("SENDING: " + currIndicatorAssignee)
+
+  if(currIndicatorAssignee != preIndicatorAssignee){
+    console.log("SENDING: " + currIndicatorAssignee)
+    if(currIndicatorAssignee != null){
+      promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
+      promises.push(sendNotification(env, assignedNotification, currIndicatorAssignee))
+    }
+    if(preIndicatorAssignee != null){
+      promises.push(sendNotification(env, rescheduleNotification, preIndicatorAssignee))
+    }
+  }
+  else if(currIndicatorDueDate != preIndicatorDueDate){
+    promises.push(sendNotification(env, rescheduleNotification, currIndicatorAssignee))
+  }
+
+  return Promise.all(promises)
+}
+
+exports.sendResponsePlanApprovalNotification_LIVE = functions.database.ref('/live/responsePlan/{groupId}/{responsePlanId}/approval/{groupName}/{approverId}')
+  .onWrite(event => {
+    return sendResponsePlanApprovalNotification(event, "live")
+  })
+
+function sendResponsePlanApprovalNotification(event, env){
+  const preData = event.data.previous.val();
+  const currData = event.data.current.val();
+
+  const approverId = event.params.approverId
+  const groupId = event.params.groupId
+  const responsePlanId = event.params.responsePlanId
+
+  const groupName = event.params.groupName
+
+  console.log("Response Plan Updated: " + currData)
+
+  if(preData != currData && (currData == PLAN_WAITINGAPPROVAL || currData == PLAN_REJECTED)){
+    return admin.database().ref(`/${env}/responsePlan/${groupId}/${responsePlanId}`).once('value').then(responsePlanSnap => {
+      const responsePlan = responsePlanSnap.val()
+
+      if(currData == PLAN_WAITINGAPPROVAL) {
+        const notification = createResponsePlanApprovalSubmittedNotification(responsePlan);
+        if(groupName == "countryDirector"){
+          return admin.database().ref(`/${env}/directorCountry/${approverId}`).once('value').then(directorCountrySnap => {
+            return sendNotification(env, notification, directorCountrySnap.val())
+          })
+        }
+        else if(groupName == "globalDirector"){
+          return admin.database().ref(`/${env}/globalDirector`).orderByChild(`agencyAdmin/${approverId}`).equalTo(true).once('value').then(globalDirectorSnap => {
+
+            return globalDirectorSnap.forEach(function(childSnapshot) {
+              var key = childSnapshot.key;
+              return sendNotification(env, notification, key)
+            });
+          })
+        }
+        else if(groupName == "regionDirector"){
+          return admin.database().ref(`/${env}/directorRegion/${approverId}`).once('value').then(directorRegionSnap => {
+            return sendNotification(env, notification, directorRegionSnap.val())
+          })
+        }
+        else if(groupName == "partner"){
+          return sendNotification(env, notification, approverId)
+        }
+      }
+      else if(currData == PLAN_REJECTED){
+        console.log("Plan rejected. " + groupId)
+        const notification = createResponsePlanApprovalRejectedNotification(responsePlan)
+        return sendCountryNetworkNetworkCountryNotification(env, notification, groupId, NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED)
+      }
+    });
+  }
+
+}
+
+exports.countryOfficeClockSettingsChange_LIVE = functions.database.ref('/live/countryOffice/{agencyId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "live")
+  })
+
+function countryOfficeClockSettingsChange(event, env){
+
+  const preClockSettingsData = event.data.previous.val()
+  const currClockSettingsData = event.data.current.val()
+
+  const agencyId = event.params.agencyId
+  const countryId = event.params.countryId
+
+  const prePreparednessClockSettings = preClockSettingsData.preparedness
+  const currPreparednessClockSettings = currClockSettingsData.preparedness
+
+  const preResponsePlanClockSettings = preClockSettingsData.responsePlans
+  const currResponsePlanClockSettings = currClockSettingsData.responsePlans
+
+  if(prePreparednessClockSettings != currPreparednessClockSettings){
+    var notification = createActionCountryRescheduleNotification(agencyId, countryId)
+    return sendNotificationToCountryUsers(env, notification, countryId)
+  }
+  if(preResponsePlanClockSettings != currResponsePlanClockSettings){
+    var notification = createResponsePlanCountryRescheduleNotification(agencyId, countryId)
+    return sendNotificationToCountryUsers(env, notification, countryId)
+  }
+}
+
+exports.networkClockSettingsChange_LIVE = functions.database.ref('/live/network/{networkId}/clockSettings')
+  .onWrite(event => {
+    return countryOfficeClockSettingsChange(event, "live")
+  })
+
+function networkClockSettingsChange(event, env){
+
+  const preClockSettingsData = event.data.previous.val()
+  const currClockSettingsData = event.data.current.val()
+
+  const networkId = event.params.networkId
+
+  const prePreparednessClockSettings = preClockSettingsData.preparedness
+  const currPreparednessClockSettings = currClockSettingsData.preparedness
+
+  if(prePreparednessClockSettings != currPreparednessClockSettings){
+    var notification = createActionNetworkRescheduleNotification(networkId)
+    return sendNotificationToNetworkUsers(env, notification, networkId)
+  }
+}
+
+exports.networkCountryClockSettingsChange_LIVE = functions.database.ref('/live/networkCountry/{networkId}/{countryId}/clockSettings')
+  .onWrite(event => {
+    return networkCountryClockSettingsChange(event, "live")
+  })
+
+function networkCountryClockSettingsChange(event, env){
+
+  const preClockSettingsData = event.data.previous.val()
+  const currClockSettingsData = event.data.current.val()
+
+  const networkId = event.params.networkId
+  const countryId = event.params.countryId
+
+  const prePreparednessClockSettings = preClockSettingsData.preparedness
+  const currPreparednessClockSettings = currClockSettingsData.preparedness
+
+  if(prePreparednessClockSettings != currPreparednessClockSettings){
+    var notification = createActionNetworkCountryRescheduleNotification(networkId, countryId)
+    return sendNotificationToCountryUsers(env, notification, countryId)
+  }
+}
+
+exports.sendActionMobileNotification_LIVE = functions.database.ref('/live/action/{groupId}/{actionId}/')
+  .onWrite(event => {
+    return sendActionMobileNotification(event, "live")
+  })
+
+function sendActionMobileNotification(event, env){
+  const preActionData = event.data.previous.val();
+  const currActionData = event.data.current.val();
+
+  var preActionAssignee = null
+  var currActionAssignee = null
+  var preActionDueDate = null
+  var currActionDueDate = null
+  var preActionCompletedAt = null
+  var currActionCompletedAt = null
+  var preActionUpdatedAt = null
+  var currActionUpdatedAt = null
+  var preActionCreatedAt = null
+  var currActionCreatedAt = null
+  var preActionFrequencyBase = null
+  var currActionFrequencyBase = null
+  var preActionFrequencyValue = null
+  var currActionFrequencyValue = null
+
+  if(preActionData != null){
+    preActionAssignee = preActionData.asignee
+    preActionDueDate = preActionData.dueDate
+    preActionCompletedAt = preActionData.isCompleteAt
+    preActionUpdatedAt = preActionData.updatedAt
+    preActionCreatedAt = preActionData.createdAt
+    preActionFrequencyBase = preActionData.frequencyBase
+    preActionFrequencyValue = preActionData.frequencyValue
+  }
+
+  if(currActionData != null){
+    currActionAssignee = currActionData.asignee
+    currActionDueDate = currActionData.dueDate
+    currActionCompletedAt = currActionData.isCompleteAt
+    currActionUpdatedAt = currActionData.updatedAt
+    currActionCreatedAt = currActionData.createdAt
+    currActionFrequencyBase = currActionData.frequencyBase
+    currActionFrequencyValue = currActionData.frequencyValue
+  }
+
+  const groupId = event.params.groupId
+  const actionId = event.params.actionId
+
+  if(currActionData.type == 1 || currActionData.type == 2){
+    var rescheduleNotification = createActionRescheduleNotification(currActionData, groupId, actionId)
+    var assignedNotification = createActionAssignedNotification(currActionData, groupId, actionId)
+
+    var promises = []
+
+    if(currActionAssignee != preActionAssignee){
+      if(currActionAssignee != null){
+        promises.push(sendNotification(env, rescheduleNotification, currActionAssignee))
+        promises.push(sendNotification(env, assignedNotification, currActionAssignee))
+      }
+      if(preActionAssignee != null){
+        promises.push(sendNotification(env, rescheduleNotification, preActionAssignee))
+      }
+    }
+    else if(currActionDueDate != preActionDueDate ||
+      currActionCompletedAt != preActionCompletedAt ||
+      currActionUpdatedAt != preActionUpdatedAt ||
+      currActionCreatedAt != preActionCreatedAt ||
+      currActionFrequencyBase != preActionFrequencyBase ||
+      currActionFrequencyValue != preActionFrequencyValue
+    ){
+      promises.push(sendNotification(env, rescheduleNotification, currActionAssignee))
+    }
+
+    return Promise.all(promises)
+  }
+}
+
+exports.sendResponsePlanMobileNotification_LIVE = functions.database.ref('/live/action/{groupId}/{responsePlanId}/')
+  .onWrite(event => {
+    return sendResponsePlanMobileNotification(event, "live")
+  })
+
+function sendResponsePlanMobileNotification(event, env){
+  const preResponsePlanData = event.data.previous.val();
+  const currResponsePlanData = event.data.current.val();
+
+  var preResponsePlanTimeCreated = null
+  var currResponsePlanTimeCreated = null
+  var preResponsePlanTimeUpdated = null
+  var currResponsePlanTimeUpdated = null
+
+  if(preResponsePlanData != null){
+    preResponsePlanTimeCreated = preResponsePlanData.timeCreated
+    preResponsePlanTimeUpdated = preResponsePlanData.timeUpdated
+  }
+  if(currResponsePlanData != null){
+    currResponsePlanTimeCreated = currResponsePlanData.timeCreated
+    currResponsePlanTimeUpdated = currResponsePlanData.timeUpdated
+  }
+  //For Expiration
+
+  const groupId = event.params.groupId
+  const responsePlanId = event.params.responsePlanId
+
+  var rescheduleNotification = createResponsePlanRescheduleNotification(groupId, responsePlanId)
+
+  if(
+    (currResponsePlanTimeCreated != preResponsePlanTimeCreated ||
+      currResponsePlanTimeUpdated != preResponsePlanTimeUpdated) &&
+    currResponsePlanAssignee != null
+  ){
+    return sendNotification(env, rescheduleNotification, currResponsePlanAssignee)
+  }
+}
+
+exports.sendAlertMobileNotification_LIVE = functions.database.ref('/live/alert/{id}/{alertId}')
+  .onWrite(event => {
+    return sendAlertMobileNotification(event, "live")
+  })
+
+function sendAlertMobileNotification(event, env){
+  const preData = event.data.previous.val();
+  const currData = event.data.current.val();
+
+  if(preData != null){
+    const preAlertLevel = preData.alertLevel
+    const currAlertLevel = currData.alertLevel
+
+    var preApprovalLevel
+    if(preData.approval != null && preData.approval.countryDirector != null && Object.keys(preData.approval.countryDirector).length > 0){
+      preApprovalKey = Object.keys(preData.approval.countryDirector)[0]
+      preApprovalLevel = preData.approval.countryDirector[preApprovalKey]
+    }
+
+    var currApprovalLevel
+    if(currData.approval != null && currData.approval.countryDirector != null && Object.keys(currData.approval.countryDirector).length > 0){
+      currApprovalKey = Object.keys(currData.approval.countryDirector)[0]
+      currApprovalLevel = currData.approval.countryDirector[currApprovalKey]
+    }
+
+    console.log(`${preAlertLevel} => ${currAlertLevel} - ${preApprovalLevel} => ${currApprovalLevel}`)
+
+    let toGreenAmber = preAlertLevel != currAlertLevel && (currAlertLevel == ALERT_AMBER || currAlertLevel == ALERT_GREEN)
+    let toApprovedRed  = preApprovalLevel != currApprovalLevel && currAlertLevel == ALERT_RED && currApprovalLevel == APPROVED
+    let redAlertRequested = currAlertLevel == ALERT_RED && currApprovalLevel == WAITING_RESPONSE && (currAlertLevel != preAlertLevel || preApprovalLevel != currApprovalLevel)
+
+    console.log(`To Green/Amber: ${toGreenAmber} - To Approved Red: ${toApprovedRed} - Red Alert Requested: ${redAlertRequested}`)
+    if(toGreenAmber || toApprovedRed || redAlertRequested){
+      let id = event.params['id'];
+      let alertId = event.params['alertId'];
+      return admin.database().ref(`/${env}/alert/${id}/${alertId}`).once('value')
+        .then(alertSnap => {
+          alert = alertSnap.val()
+          if(toGreenAmber){
+            let notification = createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel)
+            return sendCountryNetworkNetworkCountryNotification(env, notification, id, NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED)
+          }
+          else if(toApprovedRed){
+            let notification = createRedAlertApprovedNotification(alert, alertId)
+            return sendCountryNetworkNetworkCountryNotification(env, notification, id, NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED)
+          }
+          else if(redAlertRequested){
+            let notification = createRedAlertRequestedNotification(alert, alertId, preAlertLevel, currAlertLevel)
+            return sendCountryNetworkNetworkCountryNotification(env, notification, id, NOTIFICATION_SETTING_RED_ALERT_REQUEST)
+          }
+        })
+    }
+  }
+}
+
+function sendNotificaitonToLocalNetworkUsers(env, notification, id, notificationSetting){
+  let networkPromise = admin.database().ref(`/${env}/network/${id}`).once('value');
+
+  return networkPromise.then(networkSnap => {
+    let network = networkSnap.val()
+
+    if(network){
+      let agencyPromises = []
+      for (var agencyName in network.agencies) {
+        if (network.agencies.hasOwnProperty(agencyName) && network.agencies[agencyName].hasOwnProperty('countryCode') && network.agencies[agencyName].isApproved) {
+          let countryId = network.agencies[agencyName].countryCode
+          agencyPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
+        }
+      }
+      return Promise.all(agencyPromises)
+    }
+    else{
+      return Promise.reject(new Error('Network doesnt exist'))
+    }
+  })
+}
+
+function sendNotificationToNetworkCountry(env, notification, id, notificationSetting){
+  //Sorry for the climb
+  return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
+    let networkCountryBase = networkCountryBaseSnap.val()
+    for (var networkId in networkCountryBase) {
+      //networkCountry/{networkId}
+      if (networkCountryBase.hasOwnProperty(networkId)) {
+        for(var networkCountryId in networkCountryBase[networkId]){
+          //networkCountry/{networkId}/{networkCountryId}
+          if(networkCountryBase[networkId].hasOwnProperty(networkCountryId)){
+            if(networkCountryId == id){
+              let networkCountry = networkCountryBase[networkId][networkCountryId]
+              let networkCountryPromises = []
+              if(networkCountry.agencyCountries){
+                for(var agencyId in networkCountry.agencyCountries){
+                  //networkCountry/{networkId}/{networkCountryId}/{agencyId*ignored*}
+                  if(networkCountry.agencyCountries.hasOwnProperty(agencyId)){
+                    for(var countryId in networkCountry.agencyCountries[agencyId]){
+                      //networkCountry/{networkId}/{networkCountryId}/{countryId*ignored*}/{countryId}/
+                      if(networkCountry.agencyCountries[agencyId].hasOwnProperty(countryId)){
+                        var country = networkCountry.agencyCountries[agencyId][countryId]
+                        if(country.isApproved){
+                          networkCountryPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              return Promise.all(networkCountryPromises)
+            }
+          }
+        }
+      }
+    }
+    return Promise.reject(new Error('Network Country doesnt exist'))
+  })
+}
+
+//I know.. Country, Network, or NetworkCountry
+function sendCountryNetworkNetworkCountryNotification(env, notification, id, notificationSetting){
+  return sendNotificationToCountryUsers(env, notification, id, notificationSetting)
+    .then(
+      //Success
+      function(){
+        return Promise.resolve()
+      },
+      //Fail
+      function(error){
+        return sendNotificationToLocalNetworkUsers(env, notification, id, notificationSetting);
+      }
+    )
+    .then(
+      function(){
+        return Promise.resolve()
+      },
+      function(error){
+        return sendNotificationToNetworkCountry(env, notification, id, notificationSetting)
+      }
+    )
+}
+
+function sendNotificationToCountryUsers(env, notification, countryId){
+  return sendNotificationToCountryUsers(env, notification, countryId, null)
+}
+
+function sendNotificationToCountryUsers(env, notification, countryId, notificationSetting){
+
+  console.log("Sending notification to country: " + countryId)
+  return admin.database().ref(`/${env}/group/country/${countryId}/`).once('value').then(countryGroupSnap => {
+    let countryGroup = countryGroupSnap.val()
+    console.log("Got country group : " + countryGroup)
+
+    if(countryGroup){
+      var sendAlertPromises = []
+      for (var userId in countryGroup.countryallusersgroup) {
+        if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {
+          console.log("Sending notificaiton to: " + userId)
+          if(notificationSetting == null){
+            console.log("Notification Setting Null")
+            sendAlertPromises.push(sendNotification(env, notification, userId))
+          }
+          else{
+            console.log("Notification Setting Not Null")
+            sendAlertPromises.push(sendNotificationWithSetting(env, notification, userId, countryId, notificationSetting))
+          }
+        }
+      }
+      return Promise.all(sendAlertPromises)
+    }
+    else{
+      return Promise.reject(new Error(`Country doesnt exist: ${countryId}`))
+    }
+
+  })
+}
+
+function createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel){
+  return {
+    'notification': {
+      'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
+      'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${LEVELS[preAlertLevel]} to ${LEVELS[currAlertLevel]}`
+    },
+    'data': {
+      'alertId': alertId,
+      'type': NOTIFICATION_ALERT.toString()
+    }
+  }
+}
+function createRedAlertApprovedNotification(alert, alertId){
+  return {
+    'notification': {
+      'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
+      'body': `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${alert.previousIsAmber ? "Amber" : "Green"} to ${LEVELS[alert.alertLevel]}`
+    },
+    'data': {
+      'alertId': alertId,
+      'type': NOTIFICATION_ALERT.toString()
+    }
+  }
+}
+
+function createRedAlertRequestedNotification(alert, alertId){
+  return {
+    'notification': {
+      'title': `A red alert level has been requested for ${HAZARDS[alert.hazardScenario]}`,
+      'body': `A red alert has been requested for the following alert: ${HAZARDS[alert.hazardScenario]}`
+    },
+    'data': {
+      'alertId': alertId,
+      'type': NOTIFICATION_ALERT.toString()
+    }
+  }
+}
+
+function createIndicatorAssignedNotification(indicator, hazardId, indicatorId){
+  return {
+    'notification': {
+      'title': "An indicator has been assigned to you",
+      'body': `The following indicator: ${indicator.name} has been assigned to you`
+    },
+    'data': {
+      'indicatorId': indicatorId,
+      'hazardId': hazardId,
+      'type': NOTIFICATION_INDICATOR_ASSIGNED.toString()
+    }
+  }
+}
+
+function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId){
+  return {
+    'data': {
+      'indicatorId': indicatorId,
+      'hazardId': hazardId,
+      'type': NOTIFICATION_INDICATOR_RESCHEDULE.toString()
+    }
+  }
+}
+
+//LEVEL is apa/mpa
+function createActionAssignedNotification(action, groupId, actionId){
+  return {
+    'notification': {
+      'title': `An ${action.level == 1 ? "minimum" : "advanced"} has been assigned to you`,
+      'body': `The following ${action.level == 1 ? "minimum" : "advanced"} preparedness action: ${action.task} has been assigned to you`
+    },
+    'data': {
+      'actionId': actionId,
+      'groupId': groupId,
+      'actionType': action.level.toString(),//TODO: DELETE THIS LINE if you're reading this in April+, just here for backwards compatibility
+      'actionLevel': action.level.toString(),
+      'type': NOTIFICATION_ACTION_ASSIGNED.toString()
+    }
+  }
+}
+
+function createActionRescheduleNotification(action, groupId, actionId){
+  return {
+    'data': {
+      'actionId': actionId,
+      'groupId': groupId,
+      'actionType': action.level.toString(),//TODO: DELETE THIS LINE if you're reading this in April+, just here for backwards compatibility
+      'actionLevel': action.level.toString(),
+      'type': NOTIFICATION_ACTION_RESCHEDULE.toString()
+    }
+  }
+}
+function createResponsePlanRescheduleNotification(groupId, responsePlanId){
+  return {
+    'data': {
+      'responsePlanId': responsePlanId,
+      'groupId': groupId,
+      'type': NOTIFICATION_RESPONSE_PLAN_RESCHEDULE.toString()
+    }
+  }
+}
+
+function createActionCountryRescheduleNotification(agencyId, countryId){
+  return {
+    'data': {
+      'agencyId': agencyId,
+      'countryId': countryId,
+      'type': NOTIFICATION_ACTION_COUNTRY_RESCHEDULE.toString()
+    }
+  }
+}
+
+function createResponsePlanCountryRescheduleNotification(agencyId, countryId){
+  return {
+    'data': {
+      'agencyId': agencyId,
+      'countryId': countryId,
+      'type': NOTIFICATION_RESPONSE_PLAN_COUNTRY_RESCHEDULE.toString()
+    }
+  }
+}
+
+function createActionLocalNetworkRescheduleNotification(networkId){
+  return {
+    'data': {
+      'networkId': networkId,
+      'type': NOTIFICATION_ACTION_LOCAL_NETWORK_RESCHEDULE.toString()
+    }
+  }
+}
+function createActionNetworkCountryRescheduleNotification(networkId, countryId){
+  return {
+    'data': {
+      'networkId': networkId,
+      'countryId': countryId,
+      'type': NOTIFICATION_ACTION_NETWORK_COUNTRY_RESCHEDULE.toString()
+    }
+  }
+}
+function createResponsePlanApprovalSubmittedNotification(responsePlan){
+  return {
+    'notification': {
+      'title': "A response plan has been submitted for approval",
+      'body': `The following response plan: ${responsePlan.name} has been submitted for approval`
+    }
+  }
+}
+function createResponsePlanApprovalRejectedNotification(responsePlan){
+  return {
+    'notification': {
+      'title': "A response plan has been rejected",
+      'body': `The following response plan: ${responsePlan.name} has been rejected`
+    }
+  }
+}
+
+
+/*const payload = {
+      'notification': {
+          'title': title,
+          'body': message
+      }
+      'data': {
+          'key': value
+      }
+    }
+    */
+
+function sendNotification(env, payload, userId){
+  console.log("Sending Notification")
+  return admin.database().ref(`/${env}/userPublic/${userId}/deviceNotificationIds`).once('value')
+    .then(deviceNotificationIdsSnap => {
+      let deviceNotificationIds = deviceNotificationIdsSnap.val()
+      if(deviceNotificationIds){
+        let promises = []
+        for (var i = deviceNotificationIds.length - 1; i >= 0; i--) {
+          let deviceNotificationId = deviceNotificationIds[i].val()
+          console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`)
+          promises.push(admin.messaging().sendToDevice(deviceNotificationId, payload))
+        }
+        return Promise.all(promises)
+      }
+      else{
+        return Promise.resolve()
+      }
+    })
+}
+function sendNotificationWithSetting(env, payload, userId, countryId, notificationGroup){
+  console.log("Send Notification With Setting " + userId + " - " + notificationGroup)
+  return admin.database().ref(`/${env}/staff/${countryId}/${userId}/notification/`).once('value')
+    .then(notificationSnap => {
+      if(notificationSnap.val() != null){
+        for (var i = notificationSnap.val().length - 1; i >= 0; i--) {
+          if(notificationSnap.val()[i] == notificationGroup){
+            return Promise.resolve()
+          }
+        }
+        return Promise.reject(new Error('fail'))
+      }
+      else{
+        console.log(`Notification Setting Error: user (${userId}) setting (${notificationGroup})`)
+        return Promise.reject(new Error('fail'))
+      }
+    })
+    .then(function(){
+        return sendNotification(env, payload, userId)
+
+      },
+      function(error){
+        return Promise.resolve()
+      })
+
+}
+
+/********************************/
 
 ////private functions
 function fetchUsersAndSendEmail(node, countryId, title, content, setting) {
