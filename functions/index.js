@@ -3275,7 +3275,7 @@ exports.sendNetworkAgencyValidationEmail_LIVE = functions.database.ref('/live/ne
 //Bug Reporting
 //for sand
 
-exports.sendBugReportingEmailSand = functions.database.ref('/live/bugReporting/{countryId}/{bugId}')
+exports.sendBugReportingEmailLive = functions.database.ref('/live/bugReporting/{countryId}/{bugId}')
   .onWrite(event => {
 
     const preData = event.data.previous.val();
