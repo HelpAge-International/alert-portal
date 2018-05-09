@@ -46,7 +46,6 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   saveSetting() {
-
     if (this.uid) {
       this.writeToFirebase();
     } else {
@@ -98,7 +97,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns false on fail and specific error messages-
+   * Returns false on fail and specific error messages-on
    * @returns {boolean}
    */
   private validate() {

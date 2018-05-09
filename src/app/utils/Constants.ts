@@ -62,9 +62,9 @@ export class Constants {
 
   static LOCAL_AGENCY_ADMIN_HOME = "/local-agency/dashboard";
   static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.LOCAL_AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
-    "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
+    "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT", "GLOBAL.USER_TYPE.LOCAL_AGENCY_ADMIN"];
   static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.LocalAgencyDirector, UserType.AgencyUser,
-    UserType.ErtLeader, UserType.Ert];
+    UserType.ErtLeader, UserType.Ert, UserType.LocalAgencyAdmin];
   static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.LocalAgencyDirector, UserType.LocalAgencyAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
   static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "localagencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
@@ -351,6 +351,11 @@ export class Constants {
     "SECTOR_CAMP_MANAGEMENT",
     "SECTOR_OTHER"
   ];
+
+  static RESPONSE_PLAN_STATUS = ["RESPONSE_PLANS.HOME.IN_PROGRESS", "RESPONSE_PLANS.HOME.WAITING_APPROVAL", "RESPONSE_PLANS.HOME.APPROVED", "RESPONSE_PLANS.HOME.NEEDS_REVIEWING"]
+
+  static RESPONSE_PLAN_COUNTRY_PRESENCE = ["CURRENT_PROGRAMMES", "PRE_EXISITING_PARTNER", "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.NO_PRE-EXISTING_PRESENCE"]
+  static RESPONSE_PLAN_METHOD = ["DIRECTLY_THROUGH_STAFF", "WORKING_WITH_PARTNERS", "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_BOTH"]
 
   static DOCUMENT_TYPE = [
     "MPA",
@@ -912,7 +917,12 @@ export class Constants {
     "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.MON_ACC_LEA.PHOTOGRAPHIC_AND_VIDEO"
   ];
 
-  static PARTNER_STATUS = ["COUNTRY_ADMIN.PARTNER.STATUS_AWAITING_VALIDATION", "COUNTRY_ADMIN.PARTNER.STATUS_VALIDATED"];
+  static PARTNER_STATUS = [
+    "COUNTRY_ADMIN.PARTNER.STATUS_AWAITING_VALIDATION",
+    "COUNTRY_ADMIN.PARTNER.STATUS_VALIDATED",
+    "Active",
+    "Inactive"
+  ];
   // All = 0,
   // GlobalDirector = 1,
   // RegionalDirector = 2,
@@ -993,6 +1003,7 @@ export class Constants {
   static STAFF_NODE = '/staff/{countryId}/{staffId}/notes';
   static SURGE_CAPACITY_NODE = '/countryOfficeProfile/capacity/surgeCapacity/{countryId}/{id}/notes';
   static SURGE_CAPACITY_NODE_LOCAL_AGENCY = '/localAgencyProfile/capacity/surgeCapacity/{agencyId}/{id}/notes';
+  static ADMIN_NODE = '/adminNotes/{adminId}';
 
   static MONTH = [
     null,

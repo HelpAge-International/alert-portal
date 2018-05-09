@@ -75,6 +75,10 @@ export class AgencyService {
     return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId);
   }
 
+  getLocalAgency(agencyId) {
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+  }
+
   getAllCountryOffices() {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/");
   }
@@ -130,31 +134,11 @@ export class AgencyService {
       }
     })
 
-    // return this.af.database.list(Constants.APP_STATUS + "/agency")
-    //   .map(agencies => {
-    //     let models: ModelAgency[] = [];
-    //     agencies.forEach(item => {
-    //       console.log(item)
-    //       this.af.database.list(Constants.APP_STATUS + "/countryOffice", {
-    //         query:{
-    //           orderByChild: "location",
-    //           equalTo:
-    //         }
-    //       })
-    //         .takeUntil(this.ngUnsubscribe)
-    //         .subscribe(office => {
-    //           office.forEach(office => {
-    //             console.log(office);
-    //           })
-    //
-    //           let modelAgency = new ModelAgency(item.name);
-    //           modelAgency.mapFromObject(item);
-    //           modelAgency.id = item.$key;
-    //           models.push(modelAgency);
-    //         });
-    //     });
-    //     return models;
-    //   })
+  }
+
+  getAllLocalAgencyByNetworkCountry(countryCode, agencyId) {
+
+    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
 
   }
 
@@ -261,6 +245,11 @@ export class AgencyService {
       .map(offices =>{
         return offices.map(office => office.$key)
       })
+  }
+
+  getAgencyNotificationSettings(agencyId:string) {
+    return this.getAgency(agencyId)
+      .map(agency => agency.notificationSetting)
   }
 
   unSubscribeNow() {

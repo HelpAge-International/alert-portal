@@ -3,7 +3,7 @@
     <div class="logo" (click)="goToHome()"></div>
     <span class="badge badge-pill" [class.badge-success]="alertLevel==0"
           [class.badge-warning]="alertLevel==1"
-          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
+          [class.badge-danger]="alertLevel==2" routerLink="/network/local-network-risk-monitoring/create-alert">{{alertTitle | translate}}
     </span>
     <ul>
       <li *ngIf="network">
@@ -13,7 +13,7 @@
         <!--(click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>-->
         <!--</div>-->
       </li>
-      <li *ngIf="user?.firstName" class="Header_bar__username">{{user?.firstName+" "+user?.lastName}}</li>
+      <li *ngIf="user?.firstName" class="Header_bar__username">{{user?.firstName+" "+user?.lastName+", Local Network Admin"}}</li>
       <!--<li class="Header_bar__username" (click)="test()">{{firstName+" "+lastName}}</li>-->
       <li class="Header_bar__country">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{Countries[network?.countryCode]}}</a>
@@ -28,6 +28,7 @@
             Change Accounts
           </a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -60,3 +61,4 @@
     </div>
   </div>
 </div>
+<app-report-problem ></app-report-problem>

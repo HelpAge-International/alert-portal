@@ -1,12 +1,16 @@
 
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
-
+<div id="container1">
 <div class="Header_bar">
   <div class="Header_bar__wrap--inner">
     <div class="logo" (click)="goToHome()"></div>
-    <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0"
+    <span *ngIf="!isAnonym && !isViewingNetwork" class="badge badge-pill" [class.badge-success]="alertLevel==0"
+                     [class.badge-warning]="alertLevel==1"
+                     [class.badge-danger]="alertLevel==2" [routerLink]="['/risk-monitoring/create-alert']">{{alertTitle | translate}}
+    </span>
+    <span *ngIf="!isAnonym && isViewingNetwork && networkViewValues" class="badge badge-pill" [class.badge-success]="alertLevel==0"
           [class.badge-warning]="alertLevel==1"
-          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
+          [class.badge-danger]="alertLevel==2" [routerLink]="networkViewValues['networkCountryId'] ? ['/network-country/network-risk-monitoring/create-alert', networkViewValues] : ['/network/local-network-risk-monitoring/create-alert', networkViewValues]">{{alertTitle | translate}}
     </span>
     <ul *ngIf="!isAnonym">
       <li>
@@ -36,7 +40,22 @@
       </li>
 
       <li class="Header_bar__username">
-        {{firstName+" "+lastName}}
+        {{firstName+" "+lastName+", "}}{{
+        userType == UserType.GlobalDirector ? "Global Director" :
+        userType == UserType.RegionalDirector ? "Regional Director" :
+        userType == UserType.CountryDirector ? "Country Director" :
+        userType == UserType.ErtLeader ? "ERT Lead" :
+        userType == UserType.Ert ? "ERT Member" :
+        userType == UserType.Donor ? "Donor" :
+        userType == UserType.GlobalUser ? "Global User" :
+        userType == UserType.CountryAdmin ? "Country Admin" :
+        userType == UserType.AgencyAdmin ? "Agency Admin" :
+        userType == UserType.SystemAdmin ? "System Admin" :
+        userType == UserType.PartnerUser ? "Partner User" :
+        userType == UserType.PartnerOrganisation ? "Partner Organisation" :
+        userType == UserType.LocalAgencyAdmin ? "Local Agency Admin" :
+        userType == UserType.LocalAgencyDirector ? "Local Agency Director" :
+        userType == UserType.AgencyUser ? "Agency User" : "" }}
       </li>
 
       <li class="Header_bar__country dropdown">
@@ -51,6 +70,7 @@
             class="dropdown-item" routerLink="/country-admin/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |
             translate}}</a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -88,4 +108,10 @@
       </div>
     </div>
   </div>
+</div>
+
+
+
+<app-report-problem ></app-report-problem>
+
 </div>

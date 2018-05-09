@@ -3,7 +3,7 @@ import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {MapService} from './map.service';
-import {ActionLevel, ActionType, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
+import {ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
 import {CommonService} from './common.service';
 import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
@@ -61,53 +61,82 @@ export class NetworkMapService {
   public map: google.maps.Map;
   private geocoder: google.maps.Geocoder;
 
+  private networkId: String;
+  private networkCountryId: String;
+
   constructor(private jsonService: CommonService) {
     this.AGENCY_ID_NAME_MAP = new Map<string, string>();
     this.geocoder = new google.maps.Geocoder;
   }
 
-  public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string,
+  /**
+   * Get system MPA values
+   * (minYellow, minGreen) =>
+   *      Gets the agencies => [countries] of the network
+   *          Gets the CO of every country
+   *               (ALL DONE)
+   *               Initialises the hazards of everywhere
+   *               Loads the coloured layer with the countries
+   *                   Get the MPA values for each (mpaComplete / mpaTotal)
+   */
+  public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
               done: () => void, countryClicked: (country: string) => void) {
-
+    console.log("NetworkId: " + networkId);
+    console.log("Network Country Id: " + networkCountryId);
+    this.networkId = networkId;
+    this.networkCountryId = networkCountryId;
     this.af = af;
     this.ngUnsubscribe = ngUnsubscribe;
     // Get the agencies of a network
+    //TODO: When Network
     if (elementId != null) {
       this.initMap(elementId);
     }
     this.systemMpaGreenYellow(systemAdminId, (green, yellow) => {
       this.minGreen = green;
       this.minYellow = yellow;
-      console.log(this.minGreen);
-      console.log(this.minYellow);
-      this.getAgencyCountriesOfNetwork(networkId,
-        ((agencyHasCountriesMap, cVal) => {
-          agencyHasCountriesMap.forEach((value, key) => {
-            value.forEach(item => {
-              console.log("pickOnlyCountryLocation: " + cVal);
-              // Fire off a request to get the countryOffice for every country
-              this.getCountryOffice(key, item, cVal, () => {
-                /* ALL COUNTRY OFFICES FINISHED PULLING
-                 *   Even though we're in a forEach, counter is maintained so this method fires when
-                 *   they are all done */
-                console.log("GETTING COUNTRY OFFICES");
-                this.initHazards();
-                this.loadColoredLayers(countryClicked);
-                for (const x of this.countries) {
-                  for (const agencyX of x.agencies) {
-                    this.getAllMPAValuesToCountries(agencyX.countryId, agencyX.id, systemAdminId, () => {
-                      /* ALL MPA VALUES FOUND FOR ALL COUNTRY OFFICES
-                       *   Even though we're in a two for loops, counter is maintained inside getAllMPAValuesToCountries
-                       *   so this method fires when they are all done */
-                      done();
-                    });
-                  }
-                }
+      console.log("Min Green: " + this.minGreen);
+      console.log("Min Yellow: " + this.minYellow);
+      if (networkCountryId == null || networkCountryId == undefined) {
+        this.getAgencyCountriesOfNetwork(networkId,
+          ((agencyHasCountriesMap, cVal) => {
+            this.process(agencyHasCountriesMap, cVal, systemAdminId, done, countryClicked)
+          }));
+      }
+      else {
+        this.getAgencyCountriesOfNetworkCountry(networkId, networkCountryId,
+          ((agencyHasCountriesMap, cVal) => {
+            this.process(agencyHasCountriesMap, cVal, systemAdminId, done, countryClicked)
+          }));
+      }
+    });
+  }
+
+  private process(agencyHasCountriesMap: Map<string, Set<string>>, cVal: number, systemAdminId: string,
+                  done: () => void, countryClicked: (country: string) => void) {
+    console.log(agencyHasCountriesMap);
+    agencyHasCountriesMap.forEach((value, key) => {
+      value.forEach(item => {
+        // Fire off a request to get the countryOffice for every country
+        this.getCountryOffice(key, item, cVal, () => {
+          /* ALL COUNTRY OFFICES FINISHED PULLING
+           *   Even though we're in a forEach, counter is maintained so this method fires when
+           *   they are all done */
+          this.initHazards();
+          this.loadColoredLayers(countryClicked);
+          for (const x of this.countries) {
+            for (const agencyX of x.agencies) {
+              this.getAllMPAValuesToCountries(agencyX.countryId, agencyX.id, systemAdminId, () => {
+                /* ALL MPA VALUES FOUND FOR ALL COUNTRY OFFICES
+                 *   Even though we're in a two for loops, counter is maintained inside getAllMPAValuesToCountries
+                 *   so this method fires when they are all done */
+                done();
               });
-            });
-          });
-        }));
+            }
+          }
+        });
       });
+    });
   }
 
   /**
@@ -206,18 +235,17 @@ export class NetworkMapService {
           .takeUntil(this.ngUnsubscribe)
           .subscribe((snap) => {
             for (const element of snap) {
-              let res: boolean = false;
+              let res: boolean = true;
               // let lock: boolean = false;
               for (const userTypes in element.val().approval) {
                 for (const thisUid in element.val().approval[userTypes]) {
-                  if (element.val().approval[userTypes][thisUid] != 0) {
-                    res = true;
-                  }
-                  else {
-                    // lock = true;
+                  if (element.val().approval[userTypes][thisUid] != 1) {
                     res = false;
                   }
                 }
+              }
+              if (element.val().alertLevel != AlertLevels.Red) {
+                res = false
               }
               //if (!lock && res) {
               if (res) {
@@ -302,6 +330,8 @@ export class NetworkMapService {
         });
         marker.setMap(this.map);
         count++;
+
+        // Attempts to pseudo-randomise the markers on the map so they don't appear in the same place and get hidden
         if (count % 2 == 0) {
           position *= -1;
         }
@@ -311,6 +341,42 @@ export class NetworkMapService {
       }
     });
   }
+  /**
+   * Find all the countries and their agencies from the networkCountry node!
+   * Same callback as getAgencyCountriesOfNetwork method, to keep the underlying structure consistent (see method below)
+   *
+   * If the network country ID is specified, the maps requirement as I understand it is
+   *   that it shows "all network countries under _my_ network", which would be the network ID
+   *   This method will query all nodes under `/networkCountry/<network_id/` and process all network countries
+   *   under there
+   */
+  private getAgencyCountriesOfNetworkCountry(networkId: string, networkCountryId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>, countryCodeLimiter?: number) => void) {
+    console.log(">> NETWORK + NETWORK COUNTRY <<");
+    this.af.database
+      .list(Constants.APP_STATUS + "/networkCountry/" + networkId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
+        for (let snap of snapshot) {
+          if (snap.val().isActive) {
+            if (snap.val().hasOwnProperty("agencyCountries")) {
+              for (const agency in snap.val().agencyCountries) {
+                for (const country in snap.val().agencyCountries[agency]) {
+                  if (snap.val().agencyCountries[agency][country].hasOwnProperty("isApproved") && snap.val().agencyCountries[agency][country].isApproved) {
+                    // agency / country is approved from the Network Country
+                    let set: Set<string> = new Set<string>();
+                    set.add(country);
+                    agencyHasCountriesMap.set(agency, set);
+                  }
+                }
+              }
+            }
+          }
+        }
+        done(agencyHasCountriesMap);
+      });
+  }
+
 
   /**
    * Will build a Map<string, Set<string>> mapping agencies have which countries
@@ -319,7 +385,7 @@ export class NetworkMapService {
    * @param done - Called when the agencies to countries call has been mapped
    */
   private getAgencyCountriesOfNetwork(networkId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>, countryCodeLimiter?: number) => void) {
-    console.log("NetworkId: " + networkId);
+    console.log(">> NETWORK <<");
     this.af.database
       .object(Constants.APP_STATUS + "/network/" + networkId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -346,7 +412,6 @@ export class NetworkMapService {
               this.countryIdFromAgencyIdCounter--;
               agencyHasCountriesMap.set(x, countries);
               if (this.countryIdFromAgencyIdCounter == 0) {
-                console.log(agencyHasCountriesMap);
                 done(agencyHasCountriesMap, cVal == -1 ? null : cVal);
               }
             });
@@ -425,13 +490,17 @@ export class NetworkMapService {
    */
   private getCountryOffice(agencyId: string, countryId: string, onlyPickCountryLocationEnum: number, done: () => void) {
     this.mCountryOfficeCounter++;
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId,
+    const path = agencyId !== countryId ? Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId : Constants.APP_STATUS + '/agency/' + agencyId
+    this.af.database.object(path,
         {preserveSnapshot: true})
       .flatMap((snap) => {
-        if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == snap.val().location) {
-          this.countryIdToLocation.set(snap.key, snap.val().location);
+        console.log(onlyPickCountryLocationEnum);
+        console.log(snap.val());
+        const actualLocation = agencyId !== countryId ? snap.val().location : snap.val().countryCode
+        if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == undefined || onlyPickCountryLocationEnum == snap.val().location) {
+          this.countryIdToLocation.set(snap.key, actualLocation);
           // Ensure a country object for this country office is created
-          const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
+          const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(actualLocation);
           mapCountry.setAgency(agencyId, new NetworkMapAgency(agencyId, countryId));
         }
         return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId, {preserveSnapshot: true});
@@ -439,6 +508,7 @@ export class NetworkMapService {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap != null && snap.val() != null) {
+          console.log(snap.val());
           const mapCountry: NetworkMapCountry = this.findNetworkMapCountry(this.countryIdToLocation.get(countryId));
           if (mapCountry != null) {
             const agency: NetworkMapAgency = mapCountry.getAgency(snap.key);

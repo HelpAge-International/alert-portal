@@ -1,3 +1,5 @@
+
+import { UserType } from './../../utils/Enums';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -13,6 +15,7 @@ import {CommonService} from "../../services/common.service";
 import {HazardImages} from "../../utils/HazardImages";
 import {NetworkService} from "../../services/network.service";
 import * as moment from "moment";
+import {PrepActionService} from "../../services/prepactions.service";
 
 
 @Component({
@@ -46,6 +49,12 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
   private countriesList = Constants.COUNTRY_SELECTION;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
+  private userType: number;
+  private hazards: any[] = [];
+  private nonMonitoredHazards = Constants.HAZARD_SCENARIO_ENUM_LIST
+  private loadedAlertLevel: AlertLevels;
+  private systemId
+  private alerts
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -54,7 +63,8 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private alertService: ActionsService,
               private networkService: NetworkService,
-              private userService: UserService) {
+              private userService: UserService,
+              private prepActionService: PrepActionService) {
     this.initAlertData();
   }
 
@@ -74,8 +84,10 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.systemId = systemId
       this.uid = user.uid;
       this.agencyId = agencyId;
+      this.userType = userType;
       this.route.params
         .takeUntil(this.ngUnsubscribe)
         .subscribe((param: Params) => {
@@ -90,80 +102,102 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             this.isLocalAgency ? this.loadAlertLocalAgency(this.alertId, this.agencyId) : this.loadAlert(this.alertId, this.countryId);
           }
 
+          this._getHazards()
+
         });
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe).subscribe(content => {
         this.countryLevelsValues = content;
-        err => console.log(err);
       });
     });
   }
 
   private loadAlert(alertId: string, countryId: string) {
 
-    this.alertService.getAlert(alertId, countryId)
+
+    this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false, this.countryId, this.agencyId, this.systemId)
+
+    this.alertService.getAlerts(this.countryId, false)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((alert: ModelAlert) => {
-        this.loadedAlert = alert;
-        this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
-        this.infoNotes = this.loadedAlert.infoNotes;
-        this.reasonForRedAlert = this.loadedAlert.reasonForRedAlert;
-        this.preAlertLevel = this.loadedAlert.alertLevel;
-        let x: any[] = [];
-        for (let y of this.loadedAlert.affectedAreas) {
-          let operationArea: OperationAreaModel = new OperationAreaModel();
-          operationArea.country = y.affectedCountry;
-          operationArea.level1 = y.affectedLevel1;
-          operationArea.level2 = y.affectedLevel2;
-          x.push(operationArea);
-        }
+      .subscribe(alerts => {
+        this.alerts = alerts;
 
-        this.loadedAlert.affectedAreas.forEach(area => {
-          this.alertService.getAllLevelInfo(area.affectedCountry)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(geoInfo => {
-              this.geoMap.set(area.affectedCountry, geoInfo);
-            });
+      this.alertService.getAlert(alertId, countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((alert: ModelAlert) => {
+          console.log(alert)
+          this.loadedAlertLevel = alert.alertLevel;
+          this.loadedAlert = alert;
+          this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
+          this.infoNotes = this.loadedAlert.infoNotes;
+          this.reasonForRedAlert = this.loadedAlert.reasonForRedAlert;
+          this.preAlertLevel = this.loadedAlert.alertLevel;
+          let x: any[] = [];
+          for (let y of this.loadedAlert.affectedAreas) {
+            let operationArea: OperationAreaModel = new OperationAreaModel();
+            operationArea.country = y.affectedCountry;
+            operationArea.level1 = y.affectedLevel1;
+            operationArea.level2 = y.affectedLevel2;
+            x.push(operationArea);
+          }
+
+          this.loadedAlert.affectedAreas.forEach(area => {
+            this.alertService.getAllLevelInfo(area.affectedCountry)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(geoInfo => {
+                this.geoMap.set(area.affectedCountry, geoInfo);
+              });
+          });
+
+          this.loadedAlert.affectedAreas = x;
+
+          console.log(this.loadedAlert);
         });
-
-        this.loadedAlert.affectedAreas = x;
-
-        console.log(this.loadedAlert);
-      });
+    })
   }
 
   private loadAlertLocalAgency(alertId: string, agencyId: string) {
 
-    this.alertService.getAlertLocalAgency(alertId, agencyId)
+
+    this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, false, this.countryId, this.agencyId, this.systemId)
+
+    this.alertService.getAlerts(this.countryId, false)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((alert: ModelAlert) => {
-        this.loadedAlert = alert;
-        this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
-        this.infoNotes = this.loadedAlert.infoNotes;
-        this.reasonForRedAlert = this.loadedAlert.reasonForRedAlert;
-        this.preAlertLevel = this.loadedAlert.alertLevel;
-        let x: any[] = [];
-        for (let y of this.loadedAlert.affectedAreas) {
-          let operationArea: OperationAreaModel = new OperationAreaModel();
-          operationArea.country = y.affectedCountry;
-          operationArea.level1 = y.affectedLevel1;
-          operationArea.level2 = y.affectedLevel2;
-          x.push(operationArea);
-        }
+      .subscribe(alerts => {
+        this.alerts = alerts;
 
-        this.loadedAlert.affectedAreas.forEach(area => {
-          this.alertService.getAllLevelInfo(area.affectedCountry)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(geoInfo => {
-              this.geoMap.set(area.affectedCountry, geoInfo);
+        this.alertService.getAlertLocalAgency(alertId, agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((alert: ModelAlert) => {
+            this.loadedAlertLevel = alert.alertLevel;
+            this.loadedAlert = alert;
+            this.estimatedPopulation = this.loadedAlert.estimatedPopulation;
+            this.infoNotes = this.loadedAlert.infoNotes;
+            this.reasonForRedAlert = this.loadedAlert.reasonForRedAlert;
+            this.preAlertLevel = this.loadedAlert.alertLevel;
+            let x: any[] = [];
+            for (let y of this.loadedAlert.affectedAreas) {
+              let operationArea: OperationAreaModel = new OperationAreaModel();
+              operationArea.country = y.affectedCountry;
+              operationArea.level1 = y.affectedLevel1;
+              operationArea.level2 = y.affectedLevel2;
+              x.push(operationArea);
+            }
+
+            this.loadedAlert.affectedAreas.forEach(area => {
+              this.alertService.getAllLevelInfo(area.affectedCountry)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(geoInfo => {
+                  this.geoMap.set(area.affectedCountry, geoInfo);
+                });
             });
-        });
 
-        this.loadedAlert.affectedAreas = x;
+            this.loadedAlert.affectedAreas = x;
 
-      });
+          });
+    })
   }
 
 
@@ -173,6 +207,239 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
 
 
   submit() {
+    let hazard = this.hazards.find(x => x.hazardScenario == this.loadedAlert.hazardScenario)
+    let hazardTrackingNode;
+
+    if(hazard && hazard.timeTracking && hazard.timeTracking[this.loadedAlert.id]){
+      hazardTrackingNode = hazard ? hazard.timeTracking[this.loadedAlert.id] : undefined;
+    }
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1,level: this.loadedAlert.alertLevel};
+    let id = this.isLocalAgency ? this.agencyId : this.countryId;
+
+    let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+    if(this.loadedAlertLevel != this.loadedAlert.alertLevel && (this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector)){
+
+        apaActions.forEach( action => {
+
+          if(!action["redAlerts"]){
+            action["redAlerts"] = [];
+          }
+
+          if(!action["timeTracking"]){
+            action["timeTracking"] = {};
+          }
+
+          // Update action tracking inactive -> some active state
+          if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
+            if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1) != -1){
+                action["redAlerts"].push(this.loadedAlert.id);
+
+                action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+                if(!action.asignee){
+                  if(!action["timeTracking"]["timeSpentInRed"]){
+                    action['timeTracking']['timeSpentInRed'] = [];
+                  }
+                  action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                }else if(action.isComplete){
+                  if(!action["timeTracking"]["timeSpentInGreen"]){
+                    action['timeTracking']['timeSpentInGreen'] = [];
+                  }
+                  action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                }else{
+                  if(!action["timeTracking"]["timeSpentInAmber"]){
+                    action['timeTracking']['timeSpentInAmber'] = [];
+                  }
+                  action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                }
+
+                if(this.loadedAlert.alertLevel == AlertLevels.Red){
+                  this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id)
+                  .update(action)
+                }
+              }
+          }
+
+          //update action tracking active -> inactive
+          if(this.loadedAlertLevel == AlertLevels.Red){
+            let isOtherRedAlert = false;
+            if(this.isLocalAgency){
+
+                this.alerts.forEach( alert => {
+                  if(alert.hazardScenario == this.loadedAlert.hazardScenario && alert.$key != this.loadedAlert.id && alert.alertLevel == AlertLevels.Red){
+                    isOtherRedAlert = true;
+                  }
+                })
+
+                if(!isOtherRedAlert){
+                  if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
+                    if(action["timeTracking"]["timeSpentInRed"] && action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1){
+                      action["timeTracking"]["timeSpentInRed"][action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime;
+                    }
+
+                    if(action["timeTracking"]["timeSpentInAmber"] && action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1){
+                      action["timeTracking"]["timeSpentInAmber"][action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime;
+                    }
+
+                    if(action["timeTracking"]["timeSpentInGreen"] && action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1){
+                      action["timeTracking"]["timeSpentInGreen"][action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime;
+                    }
+
+                    if(!action["timeTracking"]["timeSpentInGrey"]){
+                      action['timeTracking']['timeSpentInGrey'] = [];
+                    }
+                    action['timeTracking']['timeSpentInGrey'].push(newTimeObject)
+
+                  }
+
+                  this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id)
+                    .update(action)
+              }
+
+            }else{
+                this.alerts.forEach( alert => {
+                  if(alert.hazardScenario == this.loadedAlert.hazardScenario && alert.$key != this.loadedAlert.id && alert.alertLevel == AlertLevels.Red){
+                    isOtherRedAlert = true;
+                  }
+                })
+
+                if(!isOtherRedAlert){
+                    if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(this.loadedAlert.hazardScenario)){
+                      if(action["timeTracking"]["timeSpentInRed"] && action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1){
+                        action["timeTracking"]["timeSpentInRed"][action["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime;
+                      }
+
+                      if(action["timeTracking"]["timeSpentInAmber"] && action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1){
+                        action["timeTracking"]["timeSpentInAmber"][action["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime;
+                      }
+
+                      if(action["timeTracking"]["timeSpentInGreen"] && action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1){
+                        action["timeTracking"]["timeSpentInGreen"][action["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime;
+                      }
+
+                      if(!action["timeTracking"]["timeSpentInGrey"]){
+                        action['timeTracking']['timeSpentInGrey'] = [];
+                      }
+                      action['timeTracking']['timeSpentInGrey'].push(newTimeObject)
+
+                    }
+
+                    this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id)
+                      .update(action)
+                }
+            }
+          }
+        })
+    }
+
+
+    //Checks to see if hazards exists on the country office
+    if(hazard){
+      if(this.loadedAlertLevel != this.loadedAlert.alertLevel){
+
+        if(hazardTrackingNode){
+          if(this.loadedAlertLevel == AlertLevels.Red){
+            const index = hazardTrackingNode["timeSpentInRed"].findIndex(x => x.finish == -1)
+            if (index != -1) {
+              hazardTrackingNode["timeSpentInRed"][index].finish = currentTime
+            }
+          }
+
+          if(this.loadedAlertLevel == AlertLevels.Amber){
+            const index = hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)
+            if (index != -1) {
+              hazardTrackingNode["timeSpentInAmber"][index].finish = currentTime
+            }
+
+          }
+        }
+
+        if(this.loadedAlert.alertLevel == AlertLevels.Red){
+          if(this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector){
+            if(hazardTrackingNode){
+              if(!hazardTrackingNode["timeSpentInRed"]){
+                hazardTrackingNode["timeSpentInRed"] = [];
+              }
+              hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update(hazardTrackingNode)
+            }else{
+              this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update({timeSpentInRed: [newTimeObject]})
+            }
+          }
+        }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+          if(hazardTrackingNode){
+            if(!hazardTrackingNode["timeSpentInAmber"]){
+              hazardTrackingNode["timeSpentInAmber"] = [];
+            }
+
+            if(this.loadedAlert.alertLevel == AlertLevels.Amber){
+              hazardTrackingNode["timeSpentInAmber"].push(newTimeObject)
+            }
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+              .update(hazardTrackingNode)
+
+          }else{
+            this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.id + '/timeTracking/' + this.loadedAlert.id)
+            .update({timeSpentInAmber: [newTimeObject]})
+          }
+        }
+      }
+    }
+
+    // Alert tracking
+    if(this.loadedAlertLevel != this.loadedAlert.alertLevel){
+
+      if(this.loadedAlert["timeTracking"]){
+        if(this.loadedAlertLevel == AlertLevels.Red && this.loadedAlert["timeTracking"]["timeSpentInRed"] && this.loadedAlert["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1){
+          this.loadedAlert["timeTracking"]["timeSpentInRed"][this.loadedAlert["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+
+        if(this.loadedAlertLevel == AlertLevels.Amber && this.loadedAlert["timeTracking"]["timeSpentInAmber"] && this.loadedAlert["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1){
+          this.loadedAlert["timeTracking"]["timeSpentInAmber"][this.loadedAlert["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+      }
+
+
+
+      if(this.loadedAlert.alertLevel == AlertLevels.Red){
+        if(this.userType == UserType.CountryDirector || this.userType == UserType.LocalAgencyDirector){
+          if(this.loadedAlert["timeTracking"]){
+            if(!this.loadedAlert["timeTracking"]["timeSpentInRed"]){
+              this.loadedAlert["timeTracking"]["timeSpentInRed"] = [];
+            }
+            this.loadedAlert["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+          }else{
+            this.loadedAlert.timeTracking = {};
+            this.loadedAlert.timeTracking["timeSpentInRed"] = [];
+            this.loadedAlert.timeTracking["timeSpentInRed"].push(newTimeObject);
+          }
+
+        }
+
+      }else if(this.loadedAlert.alertLevel == AlertLevels.Amber || this.loadedAlert.alertLevel == AlertLevels.Green){
+        if(this.loadedAlert["timeTracking"]){
+          if(!this.loadedAlert["timeTracking"]["timeSpentInAmber"]){
+            this.loadedAlert["timeTracking"]["timeSpentInAmber"] = [];
+          }
+
+          if(this.loadedAlert.alertLevel == AlertLevels.Amber){
+            this.loadedAlert["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+          }
+
+        }else{
+          this.loadedAlert.timeTracking = {};
+            this.loadedAlert.timeTracking["timeSpentInRed"] = [];
+            this.loadedAlert.timeTracking["timeSpentInRed"].push(newTimeObject);
+        }
+
+      }
+    }
+
+
 
     this.loadedAlert.estimatedPopulation = this.estimatedPopulation;
     this.loadedAlert.infoNotes = this.infoNotes;
@@ -209,6 +476,8 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
             this.networkService.updateNetworkField(obj)
           })
         })
+
+      this.loadedAlert.redAlertApproved = null
     }
 
     //new property "previousIsAmber" will be pushed if updated from amber, otherwise, this property will be deleted
@@ -218,13 +487,45 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
       this.loadedAlert.previousIsAmber = null
     }
 
-    if (this.isLocalAgency) {
+    if(this.isLocalAgency){
       this.alertService.updateAlertLocalAgency(this.loadedAlert, this.preAlertLevel, this.agencyId);
-    } else {
+    }else{
       this.alertService.updateAlert(this.loadedAlert, this.preAlertLevel, this.countryId, this.agencyId);
     }
 
   }
+
+
+  _getHazards() {
+
+    let id = this.isLocalAgency ? this.agencyId : this.countryId;
+
+    this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snapshot) => {
+        for (let x of snapshot) {
+          let value = x.val();
+          if (value.hazardScenario == -1) {
+            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + value.otherName, {preserveSnapshot: true})
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe((snap) => {
+                value.hazardName = snap.val().name;
+              });
+          } else {
+            let index = this.nonMonitoredHazards.indexOf(value.hazardScenario)
+            if (index != -1) {
+              this.nonMonitoredHazards.splice(index, 1)
+            }
+          }
+          console.log(x)
+          value.id = x.key
+          this.hazards.push(value);
+        }
+        console.log(this.hazards);
+      });
+  }
+
+
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
@@ -232,8 +533,9 @@ export class DashboardUpdateAlertLevelComponent implements OnInit, OnDestroy {
     this.alertService.unSubscribeNow();
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   isNumber(n) {

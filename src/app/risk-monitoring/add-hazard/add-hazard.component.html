@@ -8,14 +8,19 @@
 <!--Create an alert section start-->
 <div class="Page-top__wrap--w_sub_header--no-paddng" [ngSwitch]="count">
   <div class="Full-page__wrap--inner">
-    <div class="Back--button row" routerLink="/risk-monitoring" (click)="setEdit()">{{"RISK_MONITORING_TEXT" | translate}}</div> <!-- Back button-->
+    <div class="Back--button row" routerLink="/risk-monitoring" (click)="setEdit()">{{"RISK_MONITORING_TEXT" |
+      translate}}
+    </div> <!-- Back button-->
     <div class="Header-title__wrap--risk Spaced-above">
-      <h1> {{ (!editHazard ? "RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" : "RISK_MONITORING.ADD_HAZARD.EDIT_HAZARD") | translate}}</h1>
+      <h1> {{ (!editHazard ? "RISK_MONITORING.ADD_HAZARD.ADD_NEW_HAZARD" : "RISK_MONITORING.ADD_HAZARD.EDIT_HAZARD") |
+        translate}}</h1>
       <tooltip
         [level1]="'TOOLTIPS.RISK_MONITORING.TT8.LEVEL1'"
       ></tooltip>
     </div>
-    <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="http://www.inform-index.org/" target="_blank">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX" | translate}}.</a>.
+    <p>{{"RISK_MONITORING.ADD_HAZARD.INFORMATION_PROVIDED" | translate}}<a href="http://www.inform-index.org/"
+                                                                           target="_blank">{{"RISK_MONITORING.ADD_HAZARD.INFORM_INDEX"
+      | translate}}.</a>.
       <tooltip
         [level1]="'TOOLTIPS.RISK_MONITORING.TT9.LEVEL1'"
         [level2]="'TOOLTIPS.RISK_MONITORING.TT9.LEVEL2'"
@@ -25,22 +30,25 @@
     <div class="Ribbon__section__wrap--risk Spaced"></div>
     <div class="row Spaced-above"> <!-- Alert selection section start -->
       <div>
-        <tooltip
-        [level1]="'TOOLTIPS.RISK_MONITORING.TT7.LEVEL1'"
-      ></tooltip>
+        <!--<tooltip-->
+          <!--[level1]="'TOOLTIPS.RISK_MONITORING.TT7.LEVEL1'"-->
+        <!--&gt;</tooltip>-->
       </div>
     </div>
     <form #newHazard="ngForm" novalidate *ngSwitchCase="1">
       <div class="row" style="width:100%" *ngFor="let hazard of hazardScenariosListTop; let num = index">
-        <label for="{{HazardScenario[hazard.hazardScenario] | translate}}" class="Checkbox--ribbon__alert Left col-sm-5">
+        <label for="{{HazardScenario[hazard.hazardScenario] | translate}}"
+               class="Checkbox--ribbon__alert Left col-sm-5">
           <input type="radio" name="RT" (change)="stateIsCustom(true, $event,hazard.hazardScenario)"
-                 id="{{HazardScenario[hazard.hazardScenario] | translate}}" [value]="HazardScenario[hazard.hazardScenario] | translate"
+                 id="{{HazardScenario[hazard.hazardScenario] | translate}}"
+                 [value]="HazardScenario[hazard.hazardScenario] | translate"
                  required>
-          <div class="Icon">
+          <div class="Icon padding-left-two">
             <div
-              class="Icon--md Icon__circle Icon--b-dark-blue {{hazard.hazardScenario != -1 ? _getHazardImage(hazard.hazardScenario) : 'Icon--alert'}}"></div>
+              class="space-left2 Icon--md Icon__circle Icon--b-dark-blue {{hazard.hazardScenario != -1 ? _getHazardImage(hazard.hazardScenario) : 'Icon--alert'}}"></div>
           </div>
-          <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>{{"ALERT.RISK" | translate}} {{hazard.value}}</p>
+          <p><b>{{HazardScenario[hazard.hazardScenario] | translate}}</b>{{"ALERT.RISK" | translate}} {{hazard.value}}
+          </p>
         </label>
       </div>
       <div class="row" style="width:100%">
@@ -50,10 +58,13 @@
             <div>
               <select class="form-control" id="select1" (change)="setHazardValue($event)"
                       [disabled]="isCustomDisabled ? true : false" name="RT">
-                <option disabled [selected]="true" value="" class="hideoption">{{"RISK_MONITORING.ADD_HAZARD.SELECT_ANOTHER_HAZARD" | translate}}
+                <option disabled [selected]="true" value="" class="hideoption">
+                  {{"RISK_MONITORING.ADD_HAZARD.SELECT_ANOTHER_HAZARD" | translate}}
                 </option>
                 <option *ngFor="let customHazard of customHazards">{{customHazard.$key}}</option>
-                <option *ngFor="let hazard of hazardScenariosList; let num = index" value="{{hazard}}">{{HazardScenario[hazard] | translate}}</option>
+                <option *ngFor="let hazard of hazardScenariosList; let num = index" value="{{hazard}}">
+                  {{HazardScenario[hazard] | translate}}
+                </option>
                 <option value="otherSelected">{{"ADD_PARTNER.OTHER_SECTOR" | translate}}</option>
               </select>
             </div>
@@ -79,27 +90,32 @@
       <div class="row" style="width:100%">
         <label class="Checkbox--ribbon__alert Left col-sm-5">
           <div class="risk-icon__components">
-            <span class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{otherHazard ? _getHazardImage(hazardData.hazardScenario) : _getHazardImage(editGetScenario)}}"></span>
+            <span
+              class="Icon Icon__circle Icon--b-dark-blue Icon--sm {{otherHazard ? 'Icon--alert' : _getHazardImage(hazardData.hazardScenario)}}"></span>
           </div>
           <p>
-            <b>{{HazardScenario[hazardData.hazardScenario] | translate}} </b>
-            <b> {{editHazard ? (HazardScenario[editGetScenario]  | translate) : hazardName}}</b>
+            <b> {{otherHazard ? editHazard ?  (HazardScenario[editGetScenario] | translate) : (hazardName | translate) :
+              (HazardScenario[hazardData.hazardScenario] | translate)}}</b>
+
           </p>
         </label>
       </div>
 
       <!--Select another hazard-->
       <div class="col-sm-4">
-        <div class="Spaced-above"><p><b>{{"RISK_MONITORING.ADD_HAZARD.IS_SEASONAL_HAZARD" | translate}}</b>
-          <tooltip
-            [level1]= "'TOOLTIPS.RISK_MONITORING.TT10.LEVEL1'"
-          ></tooltip>
-        </p></div>
+        <div class="Spaced-above">
+          <p><b>{{"RISK_MONITORING.ADD_HAZARD.IS_SEASONAL_HAZARD" | translate}}</b>
+            <tooltip
+              [level1]="'TOOLTIPS.RISK_MONITORING.TT10.LEVEL1'"
+            ></tooltip>
+          </p>
+        </div>
 
 
         <div class="row no-gutters">
           <label class="Checkbox--ribbon col-lg-4 col-md-4 col-sm-5">
-            <input type="radio" name="RT" id="RT_yes" value="false" [checked]="getEditSeasons.length > 0" (change)="seasonHazard($event)">
+            <input type="radio" name="RT" id="RT_yes" value="false" [checked]="getEditSeasons.length > 0"
+                   (change)="seasonHazard($event)">
             {{'YES' | translate}}
           </label>
         </div>
@@ -110,10 +126,11 @@
             {{'GLOBAL.NO' | translate}}
           </label>
         </div>
-        <div *ngIf="!editHazard">
-        <button class="btn btn-outline-primary Spaced-above text-right" *ngIf="selectHazard"
-                (click)="showActionConfirm('select-seasons')">{{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASON_FROM_CALENDAR" | translate}}
-        </button>
+        <div>
+          <button class="btn btn-outline-primary Spaced-above text-right" *ngIf="selectHazard"
+                  (click)="showActionConfirm('select-seasons')">
+            {{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASON_FROM_CALENDAR" | translate}}
+          </button>
         </div>
         <!--Edit Hazard built in-->
         <br>
@@ -123,33 +140,36 @@
         </div>
         <!--Edit seasons button-->
         <div *ngIf="!radioValue">
-        <div *ngIf="season">
-          <div *ngFor="let season of checkedSeasons" class="row">
-            <div class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-4">
-              <img src="assets/images/icons/circle_tick.svg">
-              <p>{{season.name}}</p>
+          <div *ngIf="season">
+            <div *ngFor="let season of checkedSeasons" class="row">
+              <div class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-4">
+                <img src="assets/images/icons/circle_tick.svg">
+                <p>{{season.name}}</p>
               </div>
             </div>
           </div>
 
-        <!--Edit hazard-->
-        <div *ngIf="editHazard">
+          <!--Edit hazard-->
+          <div *ngIf="editHazard">
           </div>
-            <div *ngFor="let s of AllSeasons; index as i" class="row" >
-              <div *ngIf="getEditSeasons.indexOf(i) != -1" class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-4">
-                <img src="assets/images/icons/circle_tick.svg">
-                <div>
-                  <p>{{s?.name}}</p>
-                </div>
+          <div *ngFor="let s of AllSeasons; index as i" class="row">
+            <div *ngIf="getEditSeasons.indexOf(i) != -1"
+                 class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-4">
+              <img src="assets/images/icons/circle_tick.svg">
+              <div>
+                <p>{{s?.name}}</p>
               </div>
             </div>
+          </div>
         </div>
 
       </div>
       <!--Confirm/cancel buttons-->
       <br>
       <div class="Form-submit__wrapper align-items-baseline">
-        <a href="javascript:void(0)" class="btn btn-primary" (click)="editHazard ? saveHazardBtn() : addHazardBtn()"> {{ (editHazard ? "RISK_MONITORING.ADD_HAZARD.SAVE_HAZARD" : "RISK_MONITORING.ADD_HAZARD.ADD_HAZARD") | translate}}</a>
+        <a href="javascript:void(0)" class="btn btn-primary" (click)="editHazard ? saveHazardBtn() : addHazardBtn()"> {{
+          (editHazard ? "RISK_MONITORING.ADD_HAZARD.SAVE_HAZARD" : "RISK_MONITORING.ADD_HAZARD.ADD_HAZARD") |
+          translate}}</a>
         <a href="javascript:void(0)" class="col-sm-1" (click)="cancel()">{{"GLOBAL.CANCEL" | translate}}</a>
       </div>
     </form>
@@ -160,7 +180,8 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h6 class="modal-title Spaced-above" id="addCalendarModalLabel">{{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASONS" | translate}}</h6>
+          <h6 class="modal-title Spaced-above" id="addCalendarModalLabel">{{"RISK_MONITORING.ADD_HAZARD.SELECT_SEASONS"
+            | translate}}</h6>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -185,7 +206,8 @@
               <div class="row margin-left-three">
                 <div class="cold-sm-7 margin-left-one"><a href="javascript:void(0)"
                                                           (click)="showActionConfirm('add_calendar')"><p
-                  class="font-size-two">{{"RISK_MONITORING.ADD_HAZARD.ADD_TO_SEASONAL_CALENDAR" | translate}}</p></a></div>
+                  class="font-size-two">{{"RISK_MONITORING.ADD_HAZARD.ADD_TO_SEASONAL_CALENDAR" | translate}}</p></a>
+                </div>
               </div>
             </div>
           </div>
@@ -208,7 +230,7 @@
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel"><b>{{"DASHBOARD.CALENDAR.ADD_SEASON" | translate}}</b>
               <tooltip
-                [level1]= "'TOOLTIPS.RISK_MONITORING.TT11.LEVEL1'"
+                [level1]="'TOOLTIPS.RISK_MONITORING.TT11.LEVEL1'"
               ></tooltip>
             </h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -230,17 +252,27 @@
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="S-date">{{"RISK_MONITORING.ADD_HAZARD.START_DATE" | translate}}:</label>
-                    <material-datepicker id="S-date" placeholder="{{addSeasonStart ? (addSeasonStart | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
-                                         dateFormat="DD-MM-YYYY" (onSelect)="selectStartDate(addSeasonStartDate)" [(date)]="addSeasonStartDate" required></material-datepicker>
-                    <div [hidden]="submitNewCalendar || addSeasonStart != null" class="alert alert-danger">{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_START_DATE" | translate}}</div>
+                    <material-datepicker id="S-date"
+                                         placeholder="{{addSeasonStart ? (addSeasonStart | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                                         class="form-control"
+                                         dateFormat="DD-MM-YYYY" (onSelect)="selectStartDate(addSeasonStartDate)"
+                                         [(date)]="addSeasonStartDate" required></material-datepicker>
+                    <div [hidden]="submitNewCalendar || addSeasonStart != null" class="alert alert-danger">
+                      {{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_START_DATE" | translate}}
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="E-date">{{"DASHBOARD.CALENDAR.END_DATE" | translate}}:</label>
-                    <material-datepicker id="E-date" placeholder="{{addSeasonEnd ? (addSeasonEnd | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}" class="form-control"
-                                         dateFormat="DD-MM-YYYY" (onSelect)="selectEndDate(addSeasonEndDate)" [(date)]="addSeasonEndDate" required></material-datepicker>
-                    <div [hidden]="submitNewCalendar || addSeasonEnd != null" class="alert alert-danger">{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_END_DATE" | translate}}</div>
+                    <material-datepicker id="E-date"
+                                         placeholder="{{addSeasonEnd ? (addSeasonEnd | date: 'dd/MM/yyyy') : ('DD/MM/YYYY')}}"
+                                         class="form-control"
+                                         dateFormat="DD-MM-YYYY" (onSelect)="selectEndDate(addSeasonEndDate)"
+                                         [(date)]="addSeasonEndDate" required></material-datepicker>
+                    <div [hidden]="submitNewCalendar || addSeasonEnd != null" class="alert alert-danger">
+                      {{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_END_DATE" | translate}}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -249,10 +281,13 @@
                   <label>Color:</label>
                 </div>
                 <div class="col-sm-12">
-                  <div *ngFor="let x of colours" class="{{x.cssName}} {{x.colorCode == addSeasonColour ? 'Active' : ''}}" (click)="setCurrentColour(x.colorCode)"></div>
+                  <div *ngFor="let x of colours"
+                       class="{{x.cssName}} {{x.colorCode == addSeasonColour ? 'Active' : ''}}"
+                       (click)="setCurrentColour(x.colorCode)"></div>
                 </div>
-                <div class="col-xs-1"> </div>
-                <div class="col-xs-10 alert alert-danger" [hidden]="submitNewCalendar || addSeasonColour != null">{{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_COLOUR" | translate}}
+                <div class="col-xs-1"></div>
+                <div class="col-xs-10 alert alert-danger" [hidden]="submitNewCalendar || addSeasonColour != null">
+                  {{"RISK_MONITORING.ADD_HAZARD.ADD_SEASONAL_TO_CALENDAR_NO_COLOUR" | translate}}
                 </div>
               </div>
             </form>
@@ -263,7 +298,9 @@
             <button type="button" class="btn btn-primary col-sm-3 text-uppercase font-size-two"
                     [disabled]="colorForm.invalid" (click)="createSeasonToCalendar(colorForm)">{{"SAVE" | translate}}
             </button>
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" | translate}}</button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{"GLOBAL.CANCEL" |
+              translate}}
+            </button>
           </div>
         </div>
       </div>

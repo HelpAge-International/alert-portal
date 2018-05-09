@@ -20,6 +20,8 @@
         | translate}}</a></li>
       <li class="section-nav__item"><a [routerLink]="isLocalNetworkAdmin ? ['/network/network-account-settings/network-change-password', {'isLocalNetworkAdmin':true}] : ['/network/network-account-settings/network-change-password']">{{"GLOBAL.ACCOUNT_SETTINGS.PASSWORD"
         | translate}}</a></li>
+      <li class="section-nav__item"><a [routerLink]="isLocalNetworkAdmin ? ['/network/local-network-network-account-settings-view-coc', {'isLocalNetworkAdmin':true}] : ['/network/network-account-settings-view-coc']">{{"SYSTEM_ADMIN.SETTING.COC"
+        | translate}}</a></li>
     </ul>
 
     <form (ngSubmit)="submit()">

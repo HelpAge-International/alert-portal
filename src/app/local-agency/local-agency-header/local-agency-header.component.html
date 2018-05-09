@@ -1,4 +1,3 @@
-
 <app-alert-loader *ngIf="showLoader"></app-alert-loader>
 
 <div class="Header_bar">
@@ -6,7 +5,7 @@
     <div class="logo" (click)="goToHome()"></div>
     <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0"
           [class.badge-warning]="alertLevel==1"
-          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
+          [class.badge-danger]="alertLevel==2" routerLink="/local-agency/risk-monitoring/create-alert">{{alertTitle | translate}}
     </span>
     <ul *ngIf="!isAnonym">
       <li>
@@ -14,7 +13,8 @@
            aria-expanded="false">{{agencyDetail?.name}}</a>
         <a *ngIf="isViewingNetwork" class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
            aria-expanded="false">{{selectedNetwork?.name}}</a>
-        <div *ngIf="isViewingNetwork || partnerAgencies.length>1 || networks.length>0 || localNetworks.length>0" class="dropdown-menu">
+        <div *ngIf="isViewingNetwork || partnerAgencies.length>1 || networks.length>0 || localNetworks.length>0"
+             class="dropdown-menu">
           <ng-container *ngIf="isViewingNetwork">
             <a class="dropdown-item"
                (click)="selectAgency()">{{agencyDetail?.name}}</a>
@@ -28,7 +28,7 @@
                (click)="selectNetwork(network)">{{network.name}}</a>
           </ng-container>
           <ng-container *ngIf="localNetworks.length>0">
-            <a class="testtt" *ngFor="let network of localNetworks" class="dropdown-item"
+            <a *ngFor="let network of localNetworks" class="dropdown-item"
                (click)="selectLocalNetwork(network)">{{network.name}}</a>
           </ng-container>
 
@@ -36,7 +36,7 @@
       </li>
 
       <li class="Header_bar__username">
-        {{firstName+" "+lastName}}
+        {{firstName+" "+lastName+", Local Agency"}}
       </li>
 
       <li class="Header_bar__country dropdown">
@@ -46,12 +46,14 @@
           <a class="dropdown-item" routerLink="/local-agency/agency-account-details">
             {{"SYSTEM_ADMIN.AGENCIES.AGENCY_DETAIL" | translate}}
           </a>
-          <a class="dropdown-item" routerLink="/local-agency/agency-account-settings" (click)="clearNetworkLocalStorage()">{{"GLOBAL.ACCOUNT_SETTINGS.TITLE"
+          <a class="dropdown-item" routerLink="/local-agency/agency-account-settings"
+             (click)="clearNetworkLocalStorage()">{{"GLOBAL.ACCOUNT_SETTINGS.TITLE"
             | translate}}</a>
           <a
-            class="dropdown-item" routerLink="/local-agency/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |
+            class="dropdown-item" (click)="switchOffNetworkView()" routerLink="/local-agency/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |
             translate}}</a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -62,7 +64,6 @@
     </ul>
 
   </div>
-
 
 
 </div>
@@ -77,11 +78,11 @@
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h2 class="modal-title">{{"GLOBAL.MODAL_HEADER" | translate}}</h2>
       </div>
-      <div class="modal-body" >
+      <div class="modal-body">
 
         <div *ngFor="let language of userLang">
           <hr/>
-          <div class="hover-selection"> <a (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></div>
+          <div class="hover-selection"><a (click)="changeLanguage(language)">{{languageMap.get(language)}}</a></div>
         </div>
 
       </div>
@@ -90,3 +91,5 @@
     </div>
   </div>
 </div>
+
+<app-report-problem></app-report-problem>

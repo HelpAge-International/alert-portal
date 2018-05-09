@@ -5,6 +5,7 @@ import {NetworkService} from "../../services/network.service";
 import {Constants} from "../../utils/Constants";
 import * as moment from "moment";
 import * as firebase from "firebase";
+import {AngularFire} from "angularfire2";
 
 @Component({
   selector: 'app-network-country-validation',
@@ -27,47 +28,41 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
   private network: any;
   private networkCountryId: string;
   private countryId: string;
+  private showLoader: boolean
 
 
   constructor(private route: ActivatedRoute,
               private networkService: NetworkService,
+              private af: AngularFire,
               private router: Router) {
   }
 
   ngOnInit() {
+    this.showLoader = true
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        if (params["token"] && params["networkId"] && params["networkCountryId"] && params["agencyId"] && params["countryId"]) {
+        if (params["token"] && params["networkId"] && params["networkCountryId"] && params["agencyId"]) {
           this.accessToken = params["token"];
           this.networkId = params["networkId"];
           this.networkCountryId = params["networkCountryId"];
           this.agencyId = params["agencyId"];
-          this.countryId = params["countryId"];
+          if (params["countryId"]) {
+            this.countryId = params["countryId"];
+          }
 
-          firebase.auth().signInAnonymously().catch(error => {
-            console.log(error.message);
-          });
+          firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+            .then(() => {
+              firebase.auth().signInAnonymously().catch(error => {
+                console.log(error.message);
+              });
+            })
+
 
           firebase.auth().onAuthStateChanged(user => {
             console.log("onAuthStateChanged");
             if (user) {
-              if (user.isAnonymous) {
-                //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
-                this.networkService.validateNetworkCountryToken(this.countryId, this.accessToken)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(validate => {
-                    console.log('net country validate')
-                    console.log(validate);
-                    this.isValidated = validate;
-                    if (validate) {
-                      this.getNetworkInfo(this.networkId);
-                    }
-                  })
-              } else {
-                console.log("user not logged in");
-                this.navigateToLogin();
-              }
+              this.validateToken();
             }
           });
 
@@ -76,6 +71,18 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
           this.navigateToLogin();
         }
       });
+  }
+
+  private validateToken() {
+    this.networkService.validateNetworkCountryToken((this.countryId ? this.countryId : this.agencyId), this.accessToken)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(validate => {
+        this.isValidated = validate;
+        if (validate) {
+          this.getNetworkInfo(this.networkId);
+        }
+        this.showLoader = false
+      })
   }
 
   private getNetworkInfo(networkId: string) {
@@ -97,9 +104,13 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
 
   acceptJoin() {
     let update = {};
-    update["/networkCountry/" + this.networkId + "/" + this.networkCountryId + "/agencyCountries/" + this.agencyId + "/" + this.countryId + "/isApproved"] = true;
-    update["/countryOffice/" + this.agencyId + "/" + this.countryId + "/networks/" + this.networkId + "/networkCountryId/"] = this.networkCountryId;
-    update["/networkCountryValidation/" + this.countryId + "/validationToken/expiry"] = moment.utc().valueOf();
+    update["/networkCountry/" + this.networkId + "/" + this.networkCountryId + "/agencyCountries/" + this.agencyId + "/" + (this.countryId ? this.countryId : this.agencyId) + "/isApproved"] = true;
+    if (this.countryId) {
+      update["/countryOffice/" + this.agencyId + "/" + this.countryId + "/networks/" + this.networkId + "/networkCountryId/"] = this.networkCountryId;
+    } else {
+      update["/agency/" + this.agencyId + "/networksCountry/" + this.networkId + "/networkCountryId/"] = this.networkCountryId;
+    }
+    update["/networkCountryValidation/" + (this.countryId ? this.countryId : this.agencyId) + "/validationToken/expiry"] = moment.utc().valueOf();
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();
     }).catch(error => {
@@ -109,7 +120,7 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
 
   rejectJoin() {
     let update = {};
-    update["/networkCountryValidation/" + this.countryId + "/validationToken/expiry"] = moment.utc().valueOf();
+    update["/networkCountryValidation/" + (this.countryId ? this.countryId : this.agencyId) + "/validationToken/expiry"] = moment.utc().valueOf();
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();
     }).catch(error => {

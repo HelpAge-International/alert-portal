@@ -1,4 +1,6 @@
 {
+  "EXPORT_SYSTEM_DATA":"Export Data",
+  "EXPORT_AGENCY_DATA":"Export Agency Data",
   "NO_DEPARTMENTS_COUNTRY":"No departments are added to your country",
   "LOCAL_NETWORK_NO_COUNTRY_ERROR": "Country can not be empty for local network!",
   "VIEW_SECTOR_LEAD_CONTACT_INFO": "View sector lead contact info",
@@ -80,6 +82,7 @@
   "SELECT_FROM_GENERIC_ACTIONS":"Select from generic actions",
   "ACTION_STATUS":"Action Status",
   "ALL_DEPARTMENTS":"All departments",
+  "DEPARTMENTS":"Departments",
   "ALL_TYPES":"All types",
   "ALL_HAZARDS":"All Hazards",
   "UNASSIGNED":"Unassigned",
@@ -103,6 +106,10 @@
   "CONFIRM_THIS_ACTION_IS_COMPLETED":"Confirm this action is completed.",
   "ADD_A_COMPLETION_NOTE_HERE":"Add a completion note here",
   "ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION":"Attach documents as proof of completion",
+  "ACCEPT_CODE_OF_CONDUCT": "The Code of Conduct has been updated. Please visit your account settings to agree to the latest Code of Conduct.",
+  "ACCEPT_TERMS_AND_CONDITIONS": "The Terms and Conditions has been updated, please visit your settings to accept",
+  "TERMS_AND_CONDITIONS": "Terms and Conditions ",
+  "CODE_OF_CONDUCT": "Code of Conduct",
   "UPLOAD_DOCUMENTS":"Upload documents",
   "ATTACHMENTS":"Attachments",
   "MARK_AS_COMPLETE":"Mark as complete",
@@ -264,6 +271,7 @@
   "NOTIFICATIONS_TEXT":"Notifications",
   "TRAINING_NEEDS":"Training Needs",
   "TECHNICAL_SKILLS":"Technical Skills",
+  "REGION_ASSIGNED":"Region Assigned",
   "SUPPORT_SKILLS":"Support Skills",
   "FIELD_OFFICE":"Field Office",
   "TELEPHONE_NUMBER":"Telephone Number",
@@ -283,17 +291,22 @@
   "OTHER":"Other",
   "SUCCESSFULLY_VALIDATE_PARTNERSHIP":"Successfully validate partnership!",
   "GLOBAL":{
+    "SUCCESS_COC_AGREE":"Thank you for agreeing to the Code of Conduct",
+    "SUCCESS_TOC_AGREE":"Thank you for agreeing to the Terms and Conditions",
+    "COC_TITLE": "Code of Conduct",
+    "TOC_TITLE": "Terms and Conditions",
     "LANGUAGES":{
       "EN": "English",
       "FR": "French",
       "ES": "Spanish",
-      "PT": "Portuguese",
-      "AR": "Arabic",
-      "UR": "Urdu",
-      "BN": "Bengali"
+      "PT": "Portuguese"
     },
-    "SWITCH": "Switch language",
+    "SWITCH": "Switch Language",
+    "COC": "Code of Conduct",
+    "IAGREE":"I Agree",
+    "REPORT":"Report a problem",
     "MODAL_HEADER":"Select a language",
+    "REPORT_PROBLEM":"Report a problem",
     "WELCOME":"Welcome",
     "HOME":"Home",
     "NAME":"Name",
@@ -333,6 +346,8 @@
     "FILTER":"Filter: ",
     "ACTIVE":"Active",
     "DEACTIVE":"Inactive",
+    "INACTIVE":"Inactive",
+    "INACTIVATE":"Inactivate",
     "ACTIVATE":"Activate",
     "RE_ACTIVATE":"Re-activate",
     "DEACTIVATE":"Deactivate",
@@ -427,12 +442,13 @@
       "COUNTRY_ADMINS":"Country Administrators",
       "COUNTRY_DIRECTORS":"Country Directors",
       "COUNTRY_DIRECTORS_SINGLE":"Country Director",
-      "ERT_LEAD":"ERT Leaders",
-      "ERT":"ERTs",
+      "ERT_LEAD":"ERT Leads",
+      "ERT":"ERT Users",
       "DONOR":"Donors",
       "PARTNER":"Partners",
       "NON_ALERT":"Non-Alert User",
-      "LOCAL_AGENCY_DIRECTORS":"Local Agency Directors"
+      "LOCAL_AGENCY_DIRECTORS":"Local Agency Directors",
+      "LOCAL_AGENCY_ADMIN":"Local Agency Admin"
     },
     "ACCOUNT_SETTINGS":{
       "TITLE":"Account Settings",
@@ -889,20 +905,29 @@
       "MIN":"Minimum preparedness threshold",
       "ADV":"Advanced preparedness threshold",
       "DOC_SETTING":"Document upload settings",
+      "TOC_SETTING":"Terms and Conditions settings",
+      "COC_SETTING":"Code of Conduct settings",
       "FILE_FORMAT":"File Format",
       "FILE_SIZE":"Maximum file size",
       "SAVE":"Save Settings",
-      "PREPAREDNESS":"Preparedness Settings",
+      "PREPAREDNESS":"Preparedness",
       "ERROR_MIN_THRESHOLD":"Green value for minimum preparedness threshold can not be lower than or same as the amber value. Please select a different value",
       "ERROR_ADV_THRESHOLD":"Green value for advanced preparedness threshold can not be lower than or same as the amber value. Please select a different value",
-      "DOC_SETTINGS":"Document Upload Settings",
-      "RESPONSE_PLANS":"Response Plans Settings",
+      "COC":"Code of Conduct",
+      "TOC":"Terms and Conditions",
+      "DOC_SETTINGS":"Document Upload",
+      "RESPONSE_PLANS":"Response Plans",
       "VULNERABLE_GROUPS":"Vulnerable groups",
       "ADD_NEW_GROUP":"Add a new group",
       "EDIT_GROUPS":"Edit groups",
       "SUCCESS_ADD_GROUP":"New group added",
       "ERROR_NO_GROUP_NAME":"Please enter the group name to add a new group",
-      "ERROR_NO_EDIT_GROUP_NAME":"Please enter the group name"
+      "ERROR_NO_EDIT_GROUP_NAME":"Please enter the group name",
+      "SUCCESS_TOC_UPDATE":"Terms and Conditions updated successfully",
+      "SUCCESS_COC_UPDATE":"Code of Conduct updated successfully",
+      "ERROR_TOC_UPDATE":"Terms and Conditions cannot be empty",
+      "ERROR_COC_UPDATE":"Code of Conduct cannot be empty"
+
     }
   },
   "AGENCY_ADMIN":{
@@ -1006,6 +1031,7 @@
       "AGENCY_LOGO":"Agency Logo",
       "AGENCY_LOGO_INVALID_FILETYPE":"The agency logo image type is invalid",
       "AGENCY_LOGO_SIZE_EXCEEDED":"The agency logo image size is too large",
+
       "SUPPORTED_FORMATS":"Supported formats",
       "REPLACE_IMAGE":"Replace image",
       "REMOVE_IMAGE":"Remove image",
@@ -1040,6 +1066,8 @@
         "COUNTRY_OFFICE_PROFILE":"Country office profile",
         "RESPONSE_PLANNING":"Response planning",
         "GLOBAL_MAPS":"Global maps",
+        "KEY": "Key",
+        "MAP_KEY_VALUE": "The colour of the country is determined by the percentage of minimum preparedness actions that are completed, this is checked against a system wide threshold.",
         "PREP_BUDGET":"Preparedness Budget",
         "SAVE_SUCCESS":"Module Settings successfully saved",
         "MODULE_NAME":"This module can not be enabled as Minimum preparedness actions module is disabled"
@@ -1138,6 +1166,10 @@
       "SUCCESS_DELETED":"The partner has been successfully deleted",
       "STATUS_AWAITING_VALIDATION":"Awaiting validation",
       "STATUS_VALIDATED":"Validated",
+      "STATUS_ACTIVE":"Active",
+      "STATUS_INACTIVE":"Inactive",
+      "CONFIRM_INACTIVE":"Would you like to deactivate this user?",
+      "CONFIRM_ACTIVE":"Would you like to activate this user?",
       "PERMISSIONS":{
         "TITLE":"Permissions",
         "CHS_ACTIONS":"CHS Actions",
@@ -1259,6 +1291,7 @@
       },
       "EQUIPMENT":{
         "TITLE_TEXT":"Equipment & surge equipment",
+        "EQUIPMENT":"Equipment",
         "EDIT":"Edit equipment",
         "VIEW":"View equipment",
         "QUANTITY":"Quantity",
@@ -1525,6 +1558,8 @@
       "VIEW":"VIEW",
       "VIEW_PLAN":"View plan",
       "EDIT_PLAN":"Edit plan",
+      "RESEND_NOTIFICATION": "Resend notification",
+      "CONFIRM_RESEND_NOTIFICATION": "Would you like to confirm resending notification?",
       "REQUIRE_SUBMISSION":"Requires submission",
       "REQUIRE_APPROVAL":"Requires approval",
       "SUBMIT_FOR_APPROVAL":"Submit for approval",
@@ -1599,7 +1634,8 @@
         "ADD_ACTIVITY":"Add activity",
         "NO_NAME":"Please enter the planned activity",
         "NO_OUTPUT":"Please enter the activity output",
-        "NO_INDICATOR":"Please enter the activity indicator"
+        "NO_INDICATOR":"Please enter the activity indicator",
+        "BENEFICIARIES": "Please complete beneficiaries"
       },
       "MON_ACC_LEA":{
         "DESCRIBE_MON_ACC_LEA":"Describe the monitoring, accountability and learning systems that you will employ to ensure quality and accountability",
@@ -1644,7 +1680,9 @@
     "REMOVE_PROJECT":"Remove this project",
     "PROJECT_TITLE":"Project title",
     "PROJECT_UNTITLED":"Untitled project",
+    "NO_PROJECT":"No projects with this partner",
     "VIEW_PROJECT":"View project",
+    "ADD_PROJECT":"Add a project",
     "NO_ORGANISATION_NAME":"Please enter the organisation name",
     "NO_RELATIONSHIP":"Please enter the organisation relationship",
     "NO_PROJECT_TITLE":"Please enter the project title",
@@ -1714,7 +1752,7 @@
     "NO_BUDGET":"Budget is required",
     "NO_REQUIRE_DOC":"Require Doc is required",
     "ALL_HAZARDS":"All Hazards",
-    "FREQUENCY_LABEL":"I need to update this MPA more frequently than other MPAs",
+    "FREQUENCY_LABEL":"I need this MPA to expire more frequently than others",
     "SELECT_GENERIC_ACTION":"Select a generic preparedness action",
     "BUDGET_NARRATIVE":"Budget Narrative"
   },
@@ -1759,7 +1797,8 @@
       "VIEW_FULL_CALENDAR":"View full calendar",
       "ADD_TO_CALENDAR":"Add to the calendar",
       "VIEW_AS_WEEKS":"View as weeks",
-      "VIEW_AS_MONTHS":"View as months",
+      "VIEW_AS_THREE_MONTHS":"View as 3 months",
+      "VIEW_AS_SIX_MONTHS":"View as 6 months",
       "ADD_SEASON":"Add season to the calendar",
       "EDIT_SEASON":"Edit season",
       "SEASON_NAME":"Season Name",
@@ -1844,6 +1883,7 @@
       "ADD_HAZARD":"add hazard",
       "SAVE_HAZARD":"save hazard",
       "SELECT_SEASONS":"Select seasons",
+      "SEASONS":"Seasons",
       "ADD_TO_SEASONAL_CALENDAR": "+ Add to the seasonal calendar",
       "ADD_SEASONAL_TO_CALENDAR_NO_START_DATE":"Please complete the start date",
       "ADD_SEASONAL_TO_CALENDAR_NO_END_DATE":"Please complete the end date",
@@ -1884,17 +1924,19 @@
       "EXPORT_LOG":"EXPORT LOG",
       "MY_SOURCES_INFORMATION":"My Sources of Information",
       "NO_INDICATORS":"You have not added any indicators yet.",
-      "SEASONAL_HAZARD":"Seasonal hazard",
+      "SEASONAL_HAZARD":"Seasonal Hazard",
       "PLACEHOLDER_ADD_LOG":"Add a log entry",
       "ARCHIVED_HAZARDS":"Archived Hazards",
       "VIEW_ALL":"View all",
       "NATIONAL":"National",
       "SUBNATIONAL":"Subnational",
+      "SUBNATIONAL_AREA":"Subnational area(s)",
       "MODAL":{
         "ARCHIVE_HAZARD":{
-          "MESSAGE_PART_ONE":"Are you sure you want to",
-          "MESSAGE_PART_TWO":"the hazard? All indicators will become",
-          "MESSAGE_PART_THREE":"and any assigned users will no longer recieve notifications about indicators"
+          "MESSAGE":"Are you sure you want to archive the hazard? All indicators will become inactive and any assigned users will no longer receive notifications about indicators"
+        },
+        "ACTIVE_HAZARD":{
+          "MESSAGE":"Are you sure you want to activate the hazard?  All indicators will become active and any assigned users will start receiving notifications about indicators"
         },
         "DELETE_LOG":{
           "MESSAGE":"Are you sure you want to delete this log?",
@@ -2087,7 +2129,7 @@
         "LEVEL1":"You can only complete an action that is assigned to you"
       },
       "TT4":{
-        "LEVEL1":"You can upload multiple files. Your agency accepts the following file types as an attachment: <bring up list of approved file types from agency admin settings>/"
+        "LEVEL1":"You can upload multiple files. Your agency accepts the following file types as an attachment: "
       },
       "TT5":{
         "LEVEL1":"You can only edit or delete notes you posted. To delete notes others have posted, please get in touch with the user that posted the note or contact your administrator"
@@ -2119,6 +2161,10 @@
       },
       "TT13":{
         "LEVEL1":"A collection of sample preparedness actions that can be adopted and customised for your agency's use"
+      },
+      "TT14":{
+        "LEVEL1":"Minimum preparedness actions (MPAs) are activities that need to be regularly carried out and updated in order that your agency is prepared to respond to an emergency.",
+        "LEVEL2":"MPAs can fall into two categories:         1) Continuity planning: Actions that ensure the continuity of existing services and organizational functions (i.e the continued delivery of services for existing programmes).          2) Response Plan Specific MPAs: Actions that support the implementation of the activities defined in your emergency response plan.         All activities will be underpinned by a range of supporting tasks (see fig 3.1 below) aligned to different departments across the agency:           •        Accountability         •        Office Administration           •        Communications & Media         •        Donor Funding & Reporting          •        Finance          •        Human Resources (including staff safety & security)          •        IT and Field Communications          •        Logistics          •        Programmes.     ----------     Preparedness actions may take the form of         - A clearly defined process, a document describing ways of doing things during a crisis.           – for example cash handling procedures for paying staff wages or for cash based programmes.         - Records of information such as contact details, suppliers, donors etc.          - Contracts or agreements such as those set up with other agencies to support response or those with supplier to provide goods or services such as Banks.         - Procurement, preparation, storage and associated records of maintenance for equipment such as phones, generators etc.         - Training- etc."
       }
     },
     "RISK_MONITORING":{
@@ -2146,7 +2192,7 @@
         "LEVEL1":"Country Context is not a hazard per se, but a collection of macro-level indicators that when viewed together provides a holistic picture of the country's socioeconomic and political status"
       },
       "TT8":{
-        "LEVEL1":"This list will only display the hazards that don’t appear in your risk monitoring list (you cannot add the same hazard twice)"
+        "LEVEL1":"You cannot add the same hazard twice"
       },
       "TT9":{
         "LEVEL1":"Index for Risk Management (INFORM) is a global, open-source risk assessment for humanitarian crises and disasters.",

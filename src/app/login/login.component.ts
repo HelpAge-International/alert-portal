@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../utils/Constants";
@@ -7,7 +7,8 @@ import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkService} from "../services/network.service";
-import {current} from "codelyzer/util/syntaxKind";
+import * as firebase from "firebase";
+declare var jQuery: any;
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,8 @@ import {current} from "codelyzer/util/syntaxKind";
   providers: [AgencyService]
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  @ViewChild('cookieLaw')
+  private cookieLawEl: any;
 
   private loaderInactive: boolean = true;
   private inactive: boolean = true;
@@ -31,6 +34,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   private userChecks: number = 0;
   private ngUnsubscribe: Subject<any> = new Subject<any>();
   private mErrorCodes: Map<string, string> = new Map<string, string>();
+  private uid: string;
+  private cocText: string;
+  private tocText: string;
 
   // Temporary values for the login user type.
   //  - Won't be used for anything else
@@ -62,7 +68,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
             this.emailEntered = params["emailEntered"];
             this.showAlert(false, "");
-            console.log("From Forgot Password");
           }
         });
     }
@@ -75,55 +80,158 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    console.log('logging in ....')
     this.loaderInactive = false;
     this.successInactive = true;
     if (this.validate()) {
-      this.af.auth.login({
-          email: this.localUser.userEmail,
-          password: this.localUser.password
-        },
-        {
-          provider: AuthProviders.Password,
-          method: AuthMethods.Password,
-        })
-        .then((success) => {
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+        .then(() => {
 
-          // Check if we are a network admin!
-          this.checkNetworkLogin(success.uid,
-            (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
-              //TODO:
-              console.log("network selection")
-              this.router.navigateByUrl("network/network-account-selection")
+          this.af.auth.login({
+              email: this.localUser.userEmail,
+              password: this.localUser.password
             },
-            () => {// REGULAR LOGIN
-              console.log("regular login")
-              this.regularLogin(success.uid);
+            {
+              provider: AuthProviders.Password,
+              method: AuthMethods.Password,
             })
+            .then((success) => {
+              this.uid = success.uid;
+              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                .take(1)
+                .subscribe((snap) => {
+                  if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
+                    this.showCoC();
+                  }else{
+                    let isAgencyAdmin: boolean = false;
+                    this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
+                      .take(1)
+                      .subscribe(snapshots =>{
+                        console.log(snapshots);
+                        snapshots.forEach(snap => {
+                          if(!isAgencyAdmin){
+                            isAgencyAdmin = snap != null && snap.$key == this.uid;
+                          }
+                        });
+                        if(isAgencyAdmin){
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                            .take(1)
+                            .subscribe((snap) => {
+                              if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
+                                this.showToC();
+                              }else{
+                                this.checkLogins();
+                              }
+                            });
+
+                        }else{
+                          this.checkLogins();
+                        }
+                      });
+                  }
+                });
+            })
+            .catch((error) => {
+              // An error occured with logging in the user
+              console.log(error.message);
+              let ran: boolean = false;
+              this.mErrorCodes.forEach((val, key) => {
+                if (error.message.indexOf(key) != -1) {
+                  this.showAlert(true, this.mErrorCodes.get(key));
+                  ran = true;
+                }
+              });
+              if (!ran) {
+                this.showAlert(true, "GLOBAL.GENERAL_LOGIN_ERROR");
+              }
+            });
 
         })
 
-        .catch((error) => {
-          // An error occured with logging in the user
-          console.log(error.message);
-          let ran: boolean = false;
-          this.mErrorCodes.forEach((val, key) => {
-            console.log(key);
-            console.log(error.message.indexOf(key));
-            if (error.message.indexOf(key) != -1) {
-              this.showAlert(true, this.mErrorCodes.get(key));
-              ran = true;
-            }
-          });
-          if (!ran) {
-            this.showAlert(true, "GLOBAL.GENERAL_LOGIN_ERROR");
-          }
-        });
       this.inactive = true;
     }
     else {
       this.showAlert(true, "LOGIN.VALIDATION_ERROR");
     }
+  }
+
+  private showCoC(){
+    this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
+      .take(1)
+      .subscribe((systemAdminId) => {
+          this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
+            .take(1)
+            .subscribe((snap) => {
+              if(snap){
+                this.cocText = snap.val().coc;
+                this.loaderInactive = true;
+                jQuery("#coc-window").modal("show");
+              }else{
+                this.checkLogins();
+              }
+          });
+    });
+  }
+
+  private showToC(){
+    this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
+      .take(1)
+      .subscribe((systemAdminId) => {
+        this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
+          .take(1)
+          .subscribe((snap) => {
+            if(snap){
+              this.tocText = snap.val().toc;
+              console.log(this.tocText);
+              this.loaderInactive = true;
+              jQuery("#toc-window").modal("show");
+            }else{
+              this.checkLogins();
+            }
+          });
+      });
+  }
+
+  onAgreeCoC(){
+    this.loaderInactive = false;
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestCoCAgreed").set(true);
+    let isAgencyAdmin: boolean = false;
+    this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
+      .take(1)
+      .subscribe(snapshots =>{
+        console.log(snapshots);
+        snapshots.forEach(snap => {
+          if(!isAgencyAdmin){
+            isAgencyAdmin = snap != null && snap.$key == this.uid;
+          }
+        });
+        if(isAgencyAdmin){
+          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+            .take(1)
+            .subscribe((snap) => {
+              if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
+                this.showToC();
+              }else{
+                this.checkLogins();
+              }
+            });
+        }else{
+          this.checkLogins();
+        }
+      });
+  }
+
+  onAgreeToC(){
+    this.loaderInactive = false;
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestToCAgreed").set(true);
+    this.checkLogins();
+  }
+
+  private checkLogins(){
+    this.checkNetworkLogin(this.uid,(isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
+      this.router.navigateByUrl("network/network-account-selection")
+    }, () => {// REGULAR LOGIN
+      this.regularLogin(this.uid);
+    })
   }
 
   /**
@@ -146,7 +254,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/" + userNode + "/" + successUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
-        console.log(snap.val())
         if (userNode == this.NETWORK_NODE_ADMIN) {
           if (snap.val() && snap.val().networkIds) {
             Object.keys(snap.val().networkIds).forEach(networkId => {
@@ -164,8 +271,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.networkCount++
             this.checkNetworkAll(isNetwork, isNotNetwork);
           }
-          // this.networkAdmin = (snap.val() != null);
-          console.log(this.networkAdmin)
         }
         else if (userNode == this.NETWORK_NODE_COUNTRY_ADMIN) {
           if (snap.val() && snap.val().networkCountryIds) {
@@ -211,8 +316,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.networkCount++
             this.checkNetworkAll(isNetwork, isNotNetwork);
           }
-          // this.networkCountryAdmin = (snap.val() != null);
-          console.log(this.networkCountryAdmin)
         }
         this.checkNetworkAll(isNetwork, isNotNetwork);
       })
@@ -220,7 +323,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private checkNetworkAll(isNetwork: (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => void, isNotNetwork: () => void) {
     this.networkCount--;
-    console.log(this.networkCount)
     if (this.networkCount == 0) {
       // Final method!
       if (!this.networkAdmin && !this.networkCountryAdmin) {
@@ -255,6 +357,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     // => go to if first login
     this.loginCheckingFirstLoginValue(successUid, "globalDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "regionDirector", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
+    this.loginCheckingFirstLoginValue(successUid, "localAgencyDirector", 'local-agency/dashboard', 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "globalUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "countryUser", Constants.G_OR_R_DIRECTOR_DASHBOARD, 'new-user-password');
     this.loginCheckingFirstLoginValue(successUid, "partnerUser", Constants.COUNTRY_ADMIN_HOME, 'new-user-password');
@@ -265,12 +368,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
     this.loginCheckingDeactivated(successUid, "countryDirector",
-      Constants.LOCAL_AGENCY_ADMIN_HOME, 'new-user-password',
+      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
     this.loginCheckingDeactivated(successUid, "localAgencyDirector",
-      Constants.COUNTRY_ADMIN_HOME, 'new-user-password',
+      Constants.LOCAL_AGENCY_ADMIN_HOME, 'new-user-password',
       () => {
         this.showAlert(true, "LOGIN.AGENCY_DEACTIVATED");
       });
@@ -307,7 +410,10 @@ export class LoginComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
         if (snapshot.val() != null) {
-          if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
+          if(snapshot.val().firstLogin == null && userNodeName == "partnerUser") {
+            this.router.navigateByUrl(directToIfFirst);
+          }
+          else if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
             // If there's no first directory or firstLogin is not defined or false, go to success (as if it's a regular login)
             this.router.navigateByUrl(directToIfSuccess);
           }
@@ -354,7 +460,9 @@ export class LoginComponent implements OnInit, OnDestroy {
               }
             }
             else {
-              this.showAlert(true, "LOGIN.COUNTRY_OFFICE_DOESNT_EXIST");
+              // this.showAlert(true, "LOGIN.COUNTRY_OFFICE_DOESNT_EXIST");
+              console.log("COUNTRY_OFFICE_DOESNT_EXIST")
+              this.router.navigateByUrl(Constants.LOCAL_AGENCY_ADMIN_HOME);
             }
           });
       },
@@ -369,6 +477,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/" + userNodeName + "/" + successUid, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snapshot) => {
+        console.log(snapshot.val())
         if (snapshot.val() != null) {
           if (snapshot.val().firstLogin != null && snapshot.val().firstLogin) {
             firstLogin(snapshot.val());
@@ -416,6 +525,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           });
       },
       (snap) => {
+      console.log(directToIfFirst)
         this.router.navigateByUrl(directToIfFirst);
       });
   }
@@ -480,5 +590,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
+  }
+
+  public seenCookiePolicy(seen: any) {
+   if (seen){
+     this.cookieLawEl.dismiss();
+   }
   }
 }

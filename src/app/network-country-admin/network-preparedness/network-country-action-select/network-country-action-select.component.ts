@@ -71,19 +71,42 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
+
       if (params["isLocalNetworkAdmin"]) {
         this.isLocalNetworkAdmin = params["isLocalNetworkAdmin"];
       }
-      if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
+
+      if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
+      }
+
+      if (params["systemId"]) {
         this.systemAdminUid = params["systemId"];
+      }
+
+      if (params["agencyId"]) {
         this.agencyId = params["agencyId"];
+      }
+
+      if (params["countryId"]) {
         this.countryId = params["countryId"];
+      }
+
+      if (params["userType"]) {
         this.userType = params["userType"];
+      }
+
+      if (params["networkId"]) {
         this.networkId = params["networkId"];
+      }
+
+      if (params["networkCountryId"]) {
         this.networkCountryId = params["networkCountryId"];
+      }
+      if (params["uid"]) {
         this.uid = params["uid"];
       }
+
       this.isViewing ? this.initGenericActions() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
   }
@@ -121,12 +144,14 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
       this.networkService.getSelectedIdObj(user.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(selection => {
+
           this.networkId = selection["id"];
           this.showLoader = false;
 
           this.networkService.getSystemIdForNetworkAdmin(this.uid)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(systemId => {
+
               this.systemAdminUid = systemId;
               this.initGenericActions();
             });
@@ -159,7 +184,11 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
   continueEvent() {
     this.storage.set('selectedAction', this.actionSelected);
     let viewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
-    this.router.navigate(this.isViewing && viewValues ? ["/network-country/network-country-create-edit-action", viewValues] : this.isLocalNetworkAdmin ? ["/network-country/network-country-create-edit-action", {"isLocalNetworkAdmin": true}] : ["/network-country/network-country-create-edit-action"]);
+    // if (this.isLocalNetworkAdmin && viewValues) {
+    //   viewValues['isLocalNetworkAdmin'] = this.isLocalNetworkAdmin
+    // }
+    // console.log(viewValues)
+    this.router.navigate(this.isViewing && viewValues ? ["/network-country/network-country-create-edit-action", viewValues] : (this.isLocalNetworkAdmin ? ["/network-country/network-country-create-edit-action", {"isLocalNetworkAdmin": true}] : ["/network-country/network-country-create-edit-action"]));
   }
 
   selectAction(action: GenericToCustomListModel) {

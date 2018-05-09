@@ -6,6 +6,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Http, Response} from '@angular/http';
+import {EXPORT_FROM, ExportDataService} from "../../services/export-data.service";
 
 declare var jQuery: any;
 
@@ -33,7 +34,13 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
 
   // End
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService, private http: Http) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private translate: TranslateService,
+              private exportService:ExportDataService,
+              private http: Http) {
 
     translate.setDefaultLang("en");
 
@@ -42,7 +49,8 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.showLoader = true;
+    jQuery('.float').hide();
+    // this.showLoader = true;
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
@@ -94,6 +102,11 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     this.af.auth.logout();
   }
 
+  reportProblem(){
+    jQuery('.float').show();
+  }
+
+
   goToHome() {
     this.router.navigateByUrl("/system-admin/agency");
   }
@@ -125,6 +138,14 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     jQuery("#language-selection").modal("hide");
 
 
+  }
+
+  exportData() {
+    console.log("start exporting agency data")
+    this.showLoader = true
+    this.exportService.exportSystemData(EXPORT_FROM.FromSystem)
+      .first()
+      .subscribe(value => this.showLoader = !value)
   }
 
 }

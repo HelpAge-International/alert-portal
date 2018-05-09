@@ -53,6 +53,7 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    jQuery('.float').hide();
     this.showLoader = true;
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (auth, oldUserType) => {
@@ -122,11 +123,13 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
 
   }
 
-  openLanguageModal() {
+  reportProblem(){
+    jQuery('.float').show();
+  }
 
+  openLanguageModal() {
     console.log('Open language modal');
     jQuery("#language-selection").modal("show");
-
   };
 
   changeLanguage(language: string) {

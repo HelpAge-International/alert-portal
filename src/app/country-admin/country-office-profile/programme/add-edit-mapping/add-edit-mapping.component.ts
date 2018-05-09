@@ -10,6 +10,7 @@ import {Subject} from "rxjs";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import * as moment from "moment";
 import {CommonService} from "../../../../services/common.service";
+import {AgencyService} from "../../../../services/agency-service.service"
 import {OperationAreaModel} from "../../../../model/operation-area.model";
 import {Location} from "@angular/common";
 import {CountryAdminHeaderComponent} from "../../../country-admin-header/country-admin-header.component";
@@ -100,6 +101,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
               private _location: Location,
               private _commonService: CommonService,
               private _translate: TranslateService,
+              private agencyService: AgencyService,
               private userService: UserService) {
     this.programme = new ProgrammeMappingModel();
   }
@@ -109,17 +111,27 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     if (this.isLocalAgency) {
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
-        this.countryID = countryId;
         this.agencyID = agencyId;
-        this.initLocalAgency();
+        this.agencyService.getAgency(agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((agency) => {
+            this.selectedCountry = agency.countryCode;
+            this.initLocalAgency();
+            this.initCountrySelection();
+          });
       });
     } else {
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
         this.countryID = countryId;
         this.agencyID = agencyId;
-        this.initCountryOffice();
-        this.initCountrySelection();
+        this.agencyService.getAgency(agencyId)
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((agency) => {
+            this.selectedCountry = agency.countryCode;
+            this.initCountryOffice();
+            this.initCountrySelection();
+          });
       });
     }
 
@@ -158,21 +170,13 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyID + "/" + this.countryID + "/location")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(getCountry => {
-        console.log("agencyId", this.agencyID);
-        console.log("countryID", this.countryID);
-        console.log("getCountry", getCountry);
-
-       // this.selectedCountry = getCountry.$value;
-        console.log(getCountry.$value, 'initCountrySelection');
-
+        this.selectedCountry = getCountry.$value;
         /**
          * Pass country to the level one values for selection
          */
         this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(pre => {
-            console.log("selected country:");
-            console.log(this.selectedCountry);
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
           })
       });
@@ -193,7 +197,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme = new ProgrammeMappingModel();
         programme.id = programme.$key;
         this.programme.setData(programme);
-        console.log(this.programme)
         this.setWhenDate(programme.when);
         this.setToDate(programme.toDate)
         this.selectedCountry = programme.where;
@@ -211,6 +214,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.programme.setData(programme);
         this.setWhenDate(programme.when);
         this.setToDate(programme.toDate);
+        this.selectedCountry = programme.where;
         this.selectedValue = programme.level1;
         this.selectedValueL2 = programme.level2;
       });
@@ -234,7 +238,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   saveMapping() {
     this.alertMessage = this.programme.validate();
-    console.log(this.programme);
+    console.log("PROGRAMME: "+this.programme);
 
     if (!this.alertMessage) {
       let dataToSave = this.programme;
@@ -247,6 +251,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
       if (!this.programmeId) {
         if (this.countryID) {
+          dataToSave.updatedAt = new Date().getTime();
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
             .push(dataToSave)
             .update(postData)
@@ -289,7 +294,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   saveMappingLocalAgency() {
     this.alertMessage = this.programme.validate();
-
     if (!this.alertMessage) {
       var dataToSave = this.programme;
       let postData = {

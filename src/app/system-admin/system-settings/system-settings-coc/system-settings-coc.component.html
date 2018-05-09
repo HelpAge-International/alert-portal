@@ -1,0 +1,49 @@
+<app-system-admin-header></app-system-admin-header>
+<app-system-admin-menu></app-system-admin-menu>
+
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
+<div *ngIf="isSaved" class="Alert-success">{{successMessage | translate}}</div>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Header-title__wrap">
+      <h1>{{"SYSTEM_ADMIN.SETTING.TITLE" | translate}}</h1>
+    </div>
+
+    <ul class="section-nav">
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings']">{{"SYSTEM_ADMIN.SETTING.PREPAREDNESS"
+        | translate}}</a></li>
+      <li class="section-nav__item "><a
+        [routerLink]="['/system-admin/system-settings/system-settings-documents']">{{"SYSTEM_ADMIN.SETTING.DOC_SETTINGS"
+        | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-response-plans']">{{"SYSTEM_ADMIN.SETTING.RESPONSE_PLANS"
+        | translate}}</a></li>
+      <li class="section-nav__item active"><a [routerLink]="['/system-admin/system-settings/system-settings-coc']">{{"CODE_OF_CONDUCT"
+        | translate}}</a></li>
+      <li class="section-nav__item "><a [routerLink]="['/system-admin/system-settings/system-settings-toc']">{{"TERMS_AND_CONDITIONS"
+        | translate}}</a></li>
+    </ul>
+
+    <div class="Sub-header-title__wrap">
+      <h2>{{"SYSTEM_ADMIN.SETTING.COC_SETTING" | translate}}</h2>
+      <button type="button" class="btn btn-outline-primary" *ngIf="!isEditing" (click)="edit()">
+        {{"UPDATE" | translate | uppercase}}
+      </button>
+      <button class="btn btn-primary" *ngIf="isEditing" (click)="saveEdited()">{{"SAVE" | translate |
+        uppercase}}
+      </button>
+      <button class="btn btn-ghost" *ngIf="isEditing" (click)="cancelEdit()">{{"GLOBAL.CANCEL" |
+        translate}}
+      </button>
+    </div>
+
+    <div class="wrapper" align="left">
+        <p class="coc-text" *ngIf="!isEditing">{{cocText}}</p>
+        <textarea *ngIf="isEditing" name="resize" class="resize" rows="10" cols="50" [(ngModel)]="cocText"></textarea>
+    </div>
+
+  </div>
+</div>
+

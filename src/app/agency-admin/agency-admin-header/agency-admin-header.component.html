@@ -1,8 +1,14 @@
+<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+<app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
+                  [show]="alertMessage"></app-status-alert>
 <div class="Header_bar">
     <div class="Header_bar__wrap--inner">
         <div class="logo" (click)="goToHome()"></div>
         <ul>
-            <li class="Header_bar__username">{{firstName+" "+lastName}}</li>
+          <li class="Header_bar__username">
+            {{firstName+" "+lastName+", Agency Admin"}}
+          </li>
+
             <!--<li class="Header_bar__username" (click)="test()">{{firstName+" "+lastName}}</li>-->
             <li class="Header_bar__country">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{agencyName}}</a>
@@ -15,10 +21,9 @@
                     </a>
                   <a class="dropdown-item" routerLink="/agency-admin/view-countries">{{"VIEW_MY_AGENCY" | translate}}</a>
                   <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
-
-                    <a class="dropdown-item" (click)="logout()">
-                        {{"GLOBAL.LOGOUT" | translate}}
-                    </a>
+                  <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
+                  <a class="dropdown-item" (click)="exportData()">{{"EXPORT_AGENCY_DATA" | translate}}</a>
+                  <a class="dropdown-item" (click)="logout()">{{"GLOBAL.LOGOUT" | translate}}</a>
                 </div>
             </li>
             <app-notification-badge [userId]="uid" [USER_TYPE]="USER_TYPE" [countryId]="countryId" [agencyId]="uid"></app-notification-badge>
@@ -48,3 +53,4 @@
     </div>
   </div>
 </div>
+<app-report-problem ></app-report-problem>

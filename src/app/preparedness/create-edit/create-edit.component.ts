@@ -1,3 +1,4 @@
+import {ActionsService} from './../../services/actions.service';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -19,6 +20,8 @@ import {ModelHazard} from "../../model/hazard.model";
 import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {MessageModel} from "../../model/message.model";
+import {takeUntil} from "rxjs/operator/takeUntil";
+import * as moment from "moment";
 
 declare var jQuery: any;
 
@@ -95,7 +98,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   constructor(private pageControl: PageControlService, private _location: Location, private route: ActivatedRoute,
               private af: AngularFire, private router: Router, private storage: LocalStorageService, private userService: UserService,
-              private notificationService: NotificationService, private translate: TranslateService) {
+              private notificationService: NotificationService, private translate: TranslateService, private actionsService: ActionsService) {
     /* if selected generic action */
     this.actionSelected = this.storage.get('selectedAction');
     if (this.actionSelected && typeof (this.actionSelected) != 'undefined') {
@@ -141,7 +144,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
           this.moduleAccess = isEnabled;
         });
 
-        if(this.isLocalAgency){
+        if (this.isLocalAgency) {
           if (this.action.id != null) {
             this.showDueDate = true;
             this.initFromExistingActionIdLocalAgency(true, true);
@@ -161,7 +164,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
             }
           });
         }
-
 
 
         this.getHazards();
@@ -212,11 +214,10 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.asignee = action.asignee;
       this.action.department = action.department;
       this.action.budget = action.budget;
-      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards && action.assignedHazards.length == 0 : true);
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
-        console.log("Frequency Values are here!");
         this.action.isFrequencyActive = true;
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
@@ -226,14 +227,12 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (!this.oldAction) {
         this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
       }
-
-      console.log(action);
-      console.log(this.action);
     });
   }
 
   public initFromExistingActionIdLocalAgency(canEditMPA: boolean, canEditAPA: boolean) {
     this.prepActionService.initOneActionLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+      console.log(action)
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
           this.router.navigateByUrl("/local-agency/preparedness/minimum")
@@ -264,11 +263,10 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       this.action.asignee = action.asignee;
       this.action.department = action.department;
       this.action.budget = action.budget;
-      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards.length == 0 : true);
+      this.action.isAllHazards = (action.assignedHazards != null ? action.assignedHazards && action.assignedHazards.length == 0 : true);
       this.action.isComplete = action.isComplete;
       this.action.isCompleteAt = action.isCompleteAt;
       if (action.frequencyValue != null && action.frequencyBase != null) {
-        console.log("Frequency Values are here!");
         this.action.isFrequencyActive = true;
         this.action.frequencyType = action.frequencyBase;
         this.action.frequencyQuantity = action.frequencyValue;
@@ -278,9 +276,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       if (!this.oldAction) {
         this.oldAction = Object.assign({}, this.action); // clones the object to see if the assignee changes in order to send notification
       }
-
-      console.log(action);
-      console.log(this.action);
     });
   }
 
@@ -289,6 +284,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   private currency: number = Currency.GBP;
   private CURRENCIES = Constants.CURRENCY_SYMBOL;
+
   public calculateCurrency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/currency", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -296,7 +292,6 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.currency = snap.val();
       });
   }
-
 
 
   /**
@@ -326,7 +321,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   private initialiseListOfHazardsHazards() {
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
 
       this.af.database.list(Constants.APP_STATUS + "/alert/" + this.agencyId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
@@ -439,7 +434,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    * Initialising hazards
    */
   private getHazards() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.agencyId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
@@ -515,7 +510,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   private initStaff() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.list(Constants.APP_STATUS + "/staff/" + this.agencyId, {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
@@ -588,19 +583,20 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
     this.removeFilterLockBudget();
     this.removeFilterLockDoc();
 
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     // Save/update the action
     if (this.action.validate(this.showDueDate)) {
       let updateObj: any = {};
-      console.log(this.showDueDate);
-      console.log(this.action.dueDate);
-     // if (this.showDueDate) {
-        updateObj.dueDate = this.action.dueDate;
-      //}
+      updateObj.dueDate = this.action.dueDate;
       updateObj.requireDoc = this.action.requireDoc;
       updateObj.type = this.action.type;
       updateObj.budget = this.action.budget;
       if (this.action.asignee != null && this.action.asignee != '' && this.action.asignee != undefined) {
         updateObj.asignee = this.action.asignee;
+      }else {
+        updateObj.asignee = null
       }
       if (this.action.level == ActionLevel.APA && this.action.hazards.size != 0) {
         updateObj.assignHazard = [];
@@ -625,100 +621,318 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         updateObj.task = this.action.task;
         updateObj.level = this.action.level;
       }
-      updateObj.updatedAt = new Date().getTime();
+      updateObj.updatedAt = currentTime;
 
       if (this.action.isComplete && (this.action.isCompleteAt + this.action.computedClockSetting < this.getNow())) {
-        console.log("Removing complete status!");
         updateObj.isComplete = null;
         updateObj.isCompleteAt = null;
         updateObj.calculatedIsComplete = null;
       }
 
       if (this.action.id != null) {
+
+
         // Updating
-        if(this.isLocalAgency){
-          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
+        if (this.isLocalAgency) {
 
-            if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
-              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
-              console.log("Updating:");
-              console.log(notification.content);
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id)
+            .take(1)
+            .subscribe(action => {
 
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
-              });
-            }
+              if (action.timeTracking) {
+                // Change from unassigned to in progress
 
-            this._location.back();
-          })
+                if (updateObj.level == 2) {
+                  if (action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
+
+                    if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
+                      action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                      action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                      updateObj['timeTracking'] = action['timeTracking']
+                    }
+
+                    // Change from complete to in progress
+                    if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
+                      action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                        if (timeObject.finish == -1) {
+                          action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                          action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                          updateObj['timeTracking'] = action['timeTracking']
+                          return;
+                        }
+                      })
+                    }
+
+                  }
+                } else {
+                  if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
+                  }
+
+                  // Change from complete to in progress
+                  if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if (timeObject.finish == -1) {
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+                }
+
+              }
+
+
+              this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
+
+                if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+                  console.log("Updating:");
+                  console.log(notification.content);
+
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  });
+                }
+
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/local-agency/preparedness/minimum")
+                }
+                else {
+                  this.router.navigateByUrl("/local-agency/preparedness/advanced")
+                }
+              })
+            })
         } else {
-          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
 
-            if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
-              notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
-              notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
-              console.log("Updating:");
-              console.log(notification.content);
+          this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id)
+            .first()
+            .subscribe(action => {
 
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
-              });
-            }
+              if (action.timeTracking) {
 
-            this._location.back();
-          })
+                if (updateObj.level) {
+                  if (action['timeTracking']['timeSpentInGrey'] && !action['timeTracking']['timeSpentInGrey'].includes(x => x.finish == -1)) {
+
+                    // Change from unassigned to in progress
+                    if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
+                      action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                      action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                      updateObj['timeTracking'] = action['timeTracking']
+                    }
+
+                    // Change from complete to in progress
+                    if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
+                      console.log('switch from complete to in progress')
+                      action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                        if (timeObject.finish == -1) {
+                          action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                          action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                          updateObj['timeTracking'] = action['timeTracking']
+                          return;
+                        }
+                      })
+                    }
+                  }
+                } else {
+
+                  // Change from unassigned to in progress
+                  if (action['timeTracking']['timeSpentInRed'] && !action['timeTracking']['timeSpentInAmber'] && updateObj.asignee) {
+                    action['timeTracking']['timeSpentInRed'][0].finish = currentTime;
+                    action['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                    updateObj['timeTracking'] = action['timeTracking']
+                  }
+
+                  // Change from complete to in progress
+                  if (action['timeTracking']['timeSpentInGreen'] && action['timeTracking']['timeSpentInGreen'].includes(x => x.finish == -1) && this.action.isComplete && !updateObj.isComplete) {
+                    console.log('switch from complete to in progress')
+                    action['timeTracking']['timeSpentInGreen'].forEach(timeObject => {
+                      if (timeObject.finish == -1) {
+                        action['timeTracking']['timeSpentInGreen'][timeObject].finish = currentTime
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                        updateObj['timeTracking'] = action['timeTracking']
+                        return;
+                      }
+                    })
+                  }
+
+                }
+
+              }
+
+              this.af.database.object(Constants.APP_STATUS + "/action/" + this.countryId + "/" + this.action.id).update(updateObj).then(_ => {
+
+                if (updateObj.asignee && updateObj.asignee != this.oldAction.asignee) {
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  const translateText = (this.action.level == ActionLevel.MPA) ? "ASSIGNED_MPA_ACTION" : "ASSIGNED_APA_ACTION";
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
+                  console.log("Updating:");
+                  console.log(notification.content);
+
+                  notification.time = new Date().getTime();
+
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  });
+                }
+
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/preparedness/minimum");
+                }
+                else {
+                  this.router.navigateByUrl("/preparedness/advanced");
+                }
+              })
+            })
         }
-      }
-      else {
+      } else {
         // Saving
-        updateObj.createdAt = new Date().getTime();
-        if(this.isLocalAgency){
-          this.af.database.list(Constants.APP_STATUS + "/action/" + this.agencyId).push(updateObj).then(_ => {
 
-            if (updateObj.asignee) {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-              notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+        updateObj['timeTracking'] = {}
 
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+        updateObj.createdAt = currentTime;
+        if (this.isLocalAgency) {
+
+          this.actionsService.getAlerts(this.agencyId, true)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(alerts => {
+              let isRedAlert = false;
+
+              if (updateObj.level == 2) {
+                alerts.forEach(alert => {
+                  if (!updateObj.assignHazard) {
+                    isRedAlert = true;
+                  } else if (updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2) {
+                    isRedAlert = true;
+                  }
+                })
+              }
+
+              if (updateObj.level == 2) {
+                if (isRedAlert) {
+                  if (updateObj.asignee) {
+                    updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                  } else {
+                    updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                  }
+                } else {
+                  updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
+                }
+              } else {
+                if (updateObj.asignee) {
+                  updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                } else {
+                  updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                }
+              }
+
+              this.af.database.list(Constants.APP_STATUS + "/action/" + this.agencyId).push(updateObj).then(_ => {
+
+                if (updateObj.asignee) {
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                    : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+                  notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                    : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  });
+                }
+
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/local-agency/preparedness/minimum")
+                }
+                else {
+                  this.router.navigateByUrl("/local-agency/preparedness/advanced")
+                }
+
               });
-            }
 
-            this._location.back();
-          });
+
+            })
+
+
         } else {
-          this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
 
-            if (updateObj.asignee) {
-              // Send notification to the assignee
-              let notification = new MessageModel();
-              notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
-                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
-              notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
-                : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+          this.actionsService.getAlerts(this.countryId, false)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(alerts => {
+              let isRedAlert = false;
 
-              notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).subscribe(() => {
+              console.log(updateObj)
+              if (updateObj.level == 2) {
+                alerts.forEach(alert => {
+                  if (!updateObj.assignHazard) {
+                    isRedAlert = true;
+                  } else if (updateObj.assignHazard.includes(alert.hazardScenario) && alert.alertLevel == 2) {
+                    isRedAlert = true;
+                  }
+                })
+              }
+
+              if (updateObj.level == 2) {
+                if (isRedAlert) {
+                  if (updateObj.asignee) {
+                    updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                  } else {
+                    updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                  }
+                } else {
+                  updateObj['timeTracking']['timeSpentInGrey'] = [newTimeObject]
+                }
+              } else {
+                if (updateObj.asignee) {
+                  updateObj['timeTracking']['timeSpentInAmber'] = [newTimeObject]
+                } else {
+                  updateObj['timeTracking']['timeSpentInRed'] = [newTimeObject]
+                }
+              }
+
+
+              this.af.database.list(Constants.APP_STATUS + "/action/" + this.countryId).push(updateObj).then(_ => {
+
+                if (updateObj.asignee) {
+                  // Send notification to the assignee
+                  let notification = new MessageModel();
+                  notification.title = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE")
+                    : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_TITLE");
+                  notification.content = (this.action.level == ActionLevel.MPA) ? this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: updateObj.task})
+                    : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
+
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  });
+                }
+
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/preparedness/minimum");
+                }
+                else {
+                  this.router.navigateByUrl("/preparedness/advanced");
+                }
               });
-            }
 
-            this._location.back();
-          });
+            })
+
+
         }
       }
     }
-    console.log('surely route form here?')
   }
 
   public getNow() {
@@ -831,7 +1045,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
       isArchived: true
     };
     this.closeActionCancel('archive-action');
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).update(updateObj).then(_ => {
         if (this.action.level == ActionLevel.MPA) {
           this.router.navigateByUrl("/local-agency/preparedness/minimum");
@@ -857,7 +1071,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
    */
   public deleteAction() {
     this.closeActionCancel('delete-action');
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.action.id).set(null).then(_ => {
         if (this.action.level == ActionLevel.MPA) {
           this.router.navigateByUrl("/local-agency/preparedness/minimum");
@@ -888,7 +1102,21 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
 
   protected backButtonAction() {
-    this._location.back();
+    if(this.isLocalAgency){
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/local-agency/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/local-agency/preparedness/advanced");
+      }
+    }else{
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/preparedness/advanced");
+      }
+    }
   }
 }
 
@@ -910,6 +1138,8 @@ export class CreateEditPrepActionHolder {
   public department: string;
   public requireDoc: boolean;
   public type: number = -1;
+  public createdAt: any;
+  public updatedAt: any;
 
   public isComplete;
   public isCompleteAt;
@@ -921,8 +1151,13 @@ export class CreateEditPrepActionHolder {
   public isFrequencyActive: boolean = false;
   public allHazardsEnabled: boolean;
 
+  public agencyAssign?:string
+  public timeTracking?:any
+
   constructor() {
     this.type = ActionType.custom;
+    this.createdAt = new Date().getTime();
+    this.updatedAt = new Date().getTime();
   }
 
   public validate(amShowingDueDate: boolean) {
@@ -936,7 +1171,7 @@ export class CreateEditPrepActionHolder {
       console.log("Failed level check");
       return false;
     }
-    if ((this.dueDate == undefined || this.dueDate == 0) && amShowingDueDate) {
+    if ((this.dueDate == undefined || this.dueDate == 0 || this.dueDate < moment().utc().valueOf()) && amShowingDueDate) {
       console.log("Failed dueDate check");
       return false;
     }

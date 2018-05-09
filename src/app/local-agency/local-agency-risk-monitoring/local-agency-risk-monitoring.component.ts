@@ -19,6 +19,8 @@ import * as firebase from "firebase/app";
 import App = firebase.app.App;
 import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
+import {CommonService} from "../../services/common.service";
+import {NetworkService} from "../../services/network.service";
 
 declare var jQuery: any;
 @Component({
@@ -41,6 +43,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private agencyId: string;
   private systemId: string;
   public hazards: any[] = [];
+  public hazard: string;
   private canCopy: boolean;
   private agencyOverview: boolean;
 
@@ -49,6 +52,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   public activeHazards: any[] = [];
   public archivedHazards: any[] = [];
+  private selectedHazardSeasons = [];
 
   public indicators: any = {};
   public indicatorsCC: any[] = [];
@@ -95,6 +99,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
+  private AllSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -109,6 +114,14 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   private assignedIndicator: any;
   private assignedHazard: any;
   private assignedUser: string;
+  private countryLevelsValues: any;
+
+  private subnationalNames: string[];
+  private countryName: string;
+  private level1: string;
+  private level2: string;
+
+  private previousIndicatorTrigger:number = -1
 
   // Variable for Country Context being active or not. Defaults to true as
   //   /<env>/hazardCountryContext/<country_id> may not exist. If it doesn't, then default to true
@@ -121,6 +134,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
               private storage: LocalStorageService,
               private translate: TranslateService,
               private userService: UserService,
+              private _commonService: CommonService,
+              private networkService:NetworkService,
               private windowService: WindowRefService) {
     this.tmpLogData['content'] = '';
     this.successAddNewHazardMessage();
@@ -159,17 +174,66 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   private getAgencyLocation() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/country")
+      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId)
         .takeUntil(this.ngUnsubscribe)
-        .subscribe((location: any) => {
-          this.countryLocation = location.$value ? location.$value : 0;
+        .subscribe((agency: any) => {
+          this.countryLocation = agency.countryCode ? agency.countryCode: 0;
           res(true);
         });
     });
     return promise;
   }
 
+  openSeasonalModal(key, hazard) {
+    this._getAllSeasons(hazard);
+    jQuery("#" + key).modal("show");
+  }
 
+  _getAllSeasons(hazard) {
+    this.selectedHazardSeasons = hazard.seasons
+
+    this.af.database.list(Constants.APP_STATUS + "/season/" + hazard.parent)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((AllSeasons: any) => {
+        this.AllSeasons = AllSeasons;
+      });
+  }
+
+  showSubNationalAreas(areas) {
+    console.log("Areas: "+areas);
+    this.subnationalNames = [];
+
+    for (let area in areas) {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .subscribe(content => {
+          this.countryLevelsValues = content;
+          // console.log(this.getLocationName(areas[area]));
+          this.setLocationName(areas[area]);
+          err => console.log(err);
+        });
+    }
+    jQuery("#show-subnational").modal("show");
+  }
+
+  setLocationName(location) {
+    console.log(location);
+    var subnationalName = "";
+
+    if ((location.level2 && location.level2 != -1) && (location.level1 && location.level1 != -1) && location.country >= 0) {
+      this.level2 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1]['levelTwoValues'][location.level2].value;
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      subnationalName = this.countryName + ", " + this.level1 + ", " + this.level2;
+    } else if ((location.level1 && location.level1 >= 0) && location.country >= 0) {
+      this.level1 = this.countryLevelsValues[location.country]['levelOneValues'][location.level1].value;
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      subnationalName = this.countryName + ", " + this.level1;
+    } else {
+      this.countryName = this.translate.instant(Constants.COUNTRIES[location.country]);
+      subnationalName = this.countryName;
+    }
+    this.subnationalNames.push(subnationalName);
+  }
 
   _getIndicatorFutureTimestamp(indicator) {
     let triggers: any[] = indicator.trigger;
@@ -219,13 +283,12 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
   _getHazards() {
     this.loadCountryContextIsArchived();
     let promise = new Promise((res, rej) => {
-      console.log(Constants.APP_STATUS + "/hazard/" + this.agencyId)
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.agencyId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
-        console.log(hazards)
         this.activeHazards = [];
         this.archivedHazards = [];
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
+          hazard.parent = this.agencyId
           if (hazard.hazardScenario != -1) {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }
@@ -749,7 +812,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
           done(snap.val().isActive);
         }
         else {
-          done(false)
+          done(true)
         }
       });
   }
@@ -1251,6 +1314,7 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
   setCheckedTrigger(indicatorID: string, triggerSelected: number) {
     this.indicatorTrigger[indicatorID] = triggerSelected;
+    this.previousIndicatorTrigger = triggerSelected
   }
 
   setClassForIndicator(trigger: number, triggerSelected: number) {
@@ -1283,6 +1347,83 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
     var urlToUpdate;
 
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1,level: triggerSelected};
+    let id = hazardID == 'countryContext' ? this.agencyId : hazardID;
+
+    if(indicator["timeTracking"]){
+      dataToSave["timeTracking"] = indicator["timeTracking"];
+
+      if(indicator.triggerSelected == 0){
+        if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+        if (dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1) != -1) {
+          dataToSave["timeTracking"]["timeSpentInGreen"][dataToSave["timeTracking"]["timeSpentInGreen"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+
+      }
+      if(indicator.triggerSelected == 1){
+        if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+        if (dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1) != -1) {
+          dataToSave["timeTracking"]["timeSpentInAmber"][dataToSave["timeTracking"]["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+
+      }
+      if(indicator.triggerSelected == 2){
+        if(!dataToSave["timeTracking"]["timeSpentInRed"]){
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+        if (dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1) != -1) {
+          dataToSave["timeTracking"]["timeSpentInRed"][dataToSave["timeTracking"]["timeSpentInRed"].findIndex(x => x.finish == -1)].finish = currentTime
+        }
+      }
+
+
+      if(triggerSelected == 0){
+        if(!dataToSave["timeTracking"]["timeSpentInGreen"]){
+          dataToSave["timeTracking"]["timeSpentInGreen"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+      if(triggerSelected == 1){
+        if(!dataToSave["timeTracking"]["timeSpentInAmber"]){
+          dataToSave["timeTracking"]["timeSpentInAmber"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+      if(triggerSelected == 2){
+        if(!dataToSave["timeTracking"]["timeSpentInRed"]){
+          dataToSave["timeTracking"]["timeSpentInRed"] = [];
+        }
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+
+    }else{
+
+      dataToSave["timeTracking"] = {}
+      if(triggerSelected == 0){
+        dataToSave["timeTracking"]["timeSpentInGreen"] = []
+        dataToSave["timeTracking"]["timeSpentInGreen"].push(newTimeObject)
+      }
+
+      if(triggerSelected == 1){
+        dataToSave["timeTracking"]["timeSpentInAmber"] = []
+        dataToSave["timeTracking"]["timeSpentInAmber"].push(newTimeObject)
+      }
+
+      if(triggerSelected == 2){
+        dataToSave["timeTracking"]["timeSpentInRed"] = []
+        dataToSave["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      }
+
+    }
+
+
     if (hazardID == 'countryContext') {
       urlToUpdate = Constants.APP_STATUS + '/indicator/' + this.agencyId + '/' + indicatorID;
     } else {
@@ -1293,6 +1434,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
       .update(dataToSave)
       .then(_ => {
         this.changeIndicatorState(false, hazardID, indicatorKey);
+        //create log model for pushing - phase 2
+        this.networkService.saveIndicatorLogMoreParams(this.previousIndicatorTrigger, triggerSelected, this.uid, indicator.$key).then(()=>this.previousIndicatorTrigger = -1)
       }).catch(error => {
       console.log("Message creation unsuccessful" + error);
     });
@@ -1526,8 +1669,9 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   setExportLog(logs: any[]) {

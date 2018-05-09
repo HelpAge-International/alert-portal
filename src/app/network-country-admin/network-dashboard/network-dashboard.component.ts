@@ -67,6 +67,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   //logic
   private networkId: string;
   private networkCountryId: string;
+  private localNetworks: any;
   private showLoader: boolean;
   private uid: string;
 
@@ -116,8 +117,10 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private approveMap = new Map();
   private responsePlansForApproval: Observable<any[]>;
   private responsePlansForApprovalNetwork: Observable<any[]>;
+  private responsePlansForApprovalNetworkLocal: Observable<any[]>;
   private approvalPlans = [];
   private approvalPlansNetwork = [];
+  private approvalPlansNetworkLocal = [];
   private amberAlerts: Observable<any[]>;
   private redAlerts: Observable<any[]>;
   private isRedAlert: boolean;
@@ -144,7 +147,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   private networkModules: ModuleSettingsModel[]
 
   private Hazard_Conflict = 1
-
+  private showCoCBanner: boolean;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -159,7 +162,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params: Params) => {
+    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
       }
@@ -180,12 +183,37 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       }
       if (params["uid"]) {
         this.uid = params["uid"];
+        this.checkCoCUpdated();
       }
       if (!this.isLocalNetworkAdmin) {
         this.networkCountryId = params["networkCountryId"];
       }
+
+      this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(localNetworks => {
+          this.localNetworks = localNetworks
+        });
+
+      this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(networkMap => {
+          this.networkMap = networkMap
+        });
+
       this.isViewing ? this.isLocalNetworkAdmin ? this.initLocalViewAccess() : this.initViewAccess() : this.isLocalNetworkAdmin ? this.initLocalNetworkAccess() : this.initNetworkAccess();
     })
+  }
+
+
+  private checkCoCUpdated() {
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() == null || snap.val() == false) {
+          this.showCoCBanner = true;
+        }
+      });
   }
 
   private initNetworkAccess() {
@@ -193,6 +221,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
+      this.checkCoCUpdated();
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -268,10 +297,24 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToNetworkIndicator(indicator) {
-    indicator.hazardScenario["key"] == "countryContext" ?
-      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["key"] }])
-      :
-      this.router.navigate(["/risk-monitoring", { "updateIndicatorID": indicator.$key, "hazardID": indicator.hazardScenario["hazardScenario"] }])
+    console.log(indicator)
+    // if (indicator.hazardScenario["key"] !== "countryContext") {
+    //   this.networkViewValues["updateIndicatorID"] = indicator.$key
+    //   this.networkViewValues["hazardID"] = indicator.hazardScenario["key"]
+    //   // this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
+    // } else {
+    this.networkViewValues["updateIndicatorID"] = indicator.$key
+    this.networkViewValues["hazardID"] = indicator.hazardScenario["key"]
+    // }
+    const path = this.networkCountryId ? "/network-country/network-risk-monitoring" : "network/local-network-risk-monitoring"
+    this.router.navigate([path, this.networkViewValues])
+    // indicator.hazardScenario["key"] == "countryContext" ?
+    //   this.router.navigate(["/network-country/network-risk-monitoring", this.networkViewValues])
+    //   :
+    //   this.router.navigate(["/risk-monitoring", {
+    //     "updateIndicatorID": indicator.$key,
+    //     "hazardID": indicator.hazardScenario["hazardScenario"]
+    //   }])
   }
 
   private initLocalNetworkAccess() {
@@ -280,6 +323,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
+      this.checkCoCUpdated();
 
       //get network id
       this.networkService.getSelectedIdObj(user.uid)
@@ -330,7 +374,6 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         } else {
           this.loadData();
         }
-
       })
 
     this.networkService.getNetworkModuleMatrix(this.networkId)
@@ -367,6 +410,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
         if (this.userType == UserType.PartnerUser) {
           this.loadDataForPartnerUser(this.agencyId, this.countryId);
         } else {
+          console.log("local view access")
           this.loadData();
         }
 
@@ -388,8 +432,9 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
   isNumber(n) {
@@ -491,6 +536,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initData(id) {
+    console.log(id)
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
     this.actionService.getActionsDueInWeek(id, this.uid)
@@ -532,7 +578,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             }
           });
         }
-        console.log(this.actionsThisWeek, 'YO')
+        //console.log(this.actionsThisWeek, 'YO')
         //this.loadMandated();
       });
 
@@ -540,6 +586,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.actionService.getIndicatorsDueInWeek(id, this.uid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(indicators => {
+        console.log(indicators)
         let overdueIndicators = indicators.filter(indicator => indicator.dueDate < startOfToday);
         let dayIndicators = indicators.filter(indicator => indicator.dueDate >= startOfToday && indicator.dueDate <= endOfToday);
         let weekIndicators = indicators.filter(indicator => indicator.dueDate > endOfToday);
@@ -585,20 +632,40 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
+      this.responsePlansForApprovalNetworkLocal = Observable.of([])
+
       if (this.networkCountryId) {
-        console.log(this.networkCountryId);
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
       }
+
+      if (this.localNetworks) {
+        this.networkMap.forEach((networkCountryId) => {
+          this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId);
+        });
+
+        this.localNetworks.forEach(networkId => {
+          this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId);
+        })
+      }
+
     } else if (this.userType == UserType.CountryDirector) {
-      console.log('getting response plans c d ')
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
 
       if (this.networkCountryId) {
-        console.log('now net country')
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, this.networkCountryId);
+      }
 
+      if (this.localNetworks) {
+        this.networkMap.forEach((networkCountryId) => {
+          this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId);
+        });
+
+        this.localNetworks.forEach(networkId => {
+          this.responsePlansForApprovalNetworkLocal = this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId);
+        })
       }
     }
+
     if (this.responsePlansForApproval) {
       this.responsePlansForApproval
         .takeUntil(this.ngUnsubscribe)
@@ -611,7 +678,17 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       this.responsePlansForApprovalNetwork
         .takeUntil(this.ngUnsubscribe)
         .subscribe(plans => {
+          console.log(plans)
           this.approvalPlansNetwork = plans
+        });
+    }
+
+    if (this.responsePlansForApprovalNetworkLocal) {
+      this.responsePlansForApprovalNetworkLocal
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(plans => {
+          this.approvalPlansNetworkLocal = plans
+          console.log(this.approvalPlansNetworkLocal)
         });
     }
     console.log(this.approvalPlansNetwork, 'approval plan')
@@ -922,16 +999,114 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             isDirector: true
           }]);
       } else {
+        console.log(this.approveMap)
         let selection = this.approveMap.get(alertId);
         this.approveMap.set(alertId, !selection);
+        console.log(this.approveMap)
       }
     }
 
   }
 
-  approveRedAlert(alertId) {
+  approveRedAlert(alertId, hazardScenario, alert) {
+
+
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    console.log(id)
+
+    let hazard = this.hazards.find(x => x.hazardScenario == hazardScenario)
+    let hazardTrackingNode;
+
+    if (hazard && hazard.timeTracking && hazard.timeTracking[alertId]) {
+      hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alertId] : undefined;
+    }
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1, level: AlertLevels.Red};
+
+
+    // saves alert key to apa to retrieve locations affected
+    this.af.database.list(Constants.APP_STATUS + '/action/' + id, {
+      query: {
+        orderByChild: 'level',
+        equalTo: 2
+      }
+    })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(actions => {
+        actions.forEach(action => {
+          if (!action.redAlerts) {
+            action.redAlerts = [];
+          }
+          if (action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))) {
+            action.redAlerts.push(alert.id)
+
+            if (action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)) {
+
+              action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+              if (!action.asignee) {
+                if (!action["timeTracking"]["timeSpentInRed"]) {
+                  action['timeTracking']['timeSpentInRed'] = [];
+                }
+                action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+              } else if (action.isComplete) {
+                if (!action["timeTracking"]["timeSpentInGreen"]) {
+                  action['timeTracking']['timeSpentInGreen'] = [];
+                }
+                action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+              } else {
+                if (!action["timeTracking"]["timeSpentInAmber"]) {
+                  action['timeTracking']['timeSpentInAmber'] = [];
+                }
+                action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+              }
+            }
+
+            this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/timeTracking')
+              .update(action.timeTracking)
+            this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.$key + '/redAlerts')
+              .update(action.redAlerts)
+          }
+        });
+      })
+
+
+    if (hazard) {
+
+      if (hazardTrackingNode["timeSpentInAmber"]) {
+        hazardTrackingNode["timeSpentInAmber"][hazardTrackingNode["timeSpentInAmber"].findIndex(x => x.finish == -1)].finish = currentTime
+      }
+
+      if (hazardTrackingNode) {
+        if (!hazardTrackingNode["timeSpentInRed"]) {
+          hazardTrackingNode["timeSpentInRed"] = [];
+        }
+
+        hazardTrackingNode["timeSpentInRed"].push(newTimeObject)
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
+          .update(hazardTrackingNode)
+      } else {
+        this.af.database.object(Constants.APP_STATUS + '/hazard/' + id + '/' + hazard.$key + '/timeTracking/' + alertId)
+          .update({timeSpentInRed: [newTimeObject]})
+      }
+
+    }
+
+
+    if (alert["timeTracking"]) {
+      console.log('first here')
+      if (!alert["timeTracking"]["timeSpentInRed"]) {
+        alert["timeTracking"]["timeSpentInRed"] = [];
+      }
+
+      alert["timeTracking"]["timeSpentInRed"].push(newTimeObject)
+      this.af.database.object(Constants.APP_STATUS + '/alert/' + id + '/' + alertId + '/timeTracking/')
+        .update(alert["timeTracking"])
+    } else {
+      console.log('here')
+      this.af.database.object(Constants.APP_STATUS + '/alert/' + id + '/' + alertId + '/timeTracking/')
+        .update({timeSpentInRed: [newTimeObject]})
+    }
+
     this.actionService.approveRedAlertNetwork(this.countryId, alertId, id).then(() => {
       if (this.isLocalNetworkAdmin) {
         this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
@@ -961,14 +1136,21 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   rejectRedRequest(alert) {
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-    this.actionService.rejectRedAlert(id, alert, this.uid);
+    this.isViewing ? this.actionService.rejectRedAlert(id, alert, this.countryId) : this.actionService.rejectRedAlert(id, alert)
   }
 
-  planReview(planId) {
-    this.router.navigate(["/dashboard/review-response-plan", this.networkCountryId ? {
-      "id": planId,
-      "networkCountryId": this.networkCountryId
-    } : {"id": planId}]);
+  planReview(plan, isLocal) {
+    console.log(plan)
+    this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
+    this.router.navigate(["/dashboard/review-response-plan", isLocal ? {
+      "id": plan.$key,
+      "networkCountryId": plan.networkCountryId,
+      "systemId": this.systemId
+    } : plan.networkCountryId ? {
+      "id": plan.$key,
+      "networkCountryId": plan.networkCountryId,
+      "systemId": this.systemId
+    } : {"id": plan.$key}]);
   }
 
   requestAgencyPartner(agency) {

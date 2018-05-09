@@ -1,7 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, NavigationEnd, NavigationStart} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {LocalStorageService} from "angular-2-local-storage";
+import {Subject} from "rxjs/Subject";
 
 
 @Component({
@@ -9,7 +10,14 @@ import {LocalStorageService} from "angular-2-local-storage";
   templateUrl: './local-network-profile-menu.component.html',
   styleUrls: ['./local-network-profile-menu.component.css']
 })
-export class LocalNetworkProfileMenuComponent implements OnInit {
+export class LocalNetworkProfileMenuComponent implements OnInit,OnDestroy {
+
+  private ngUnSubscribe:Subject<any> = new Subject
+
+  ngOnDestroy(): void {
+    this.ngUnSubscribe.next()
+    this.ngUnSubscribe.complete()
+  }
 
   private isViewing: boolean;
   private activeMap = new Map<string, boolean>();
@@ -23,42 +31,43 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
   private networkId: string;
   private networkCountryId: string;
   private agencyOverview: boolean;
+  private isLocalAgency: boolean;
 
   constructor(private route: ActivatedRoute, private storageService: LocalStorageService, private router: Router) {
     this.initMenuActive();
 
-    this.router.events.subscribe((event) => {
-      //Update highlight on sub menu when navigating from dropdown menu
-      if(event instanceof NavigationEnd) {
-        if (event.url.includes("programme")) {
-          this.handleMenuActive("programme");
-        }
-        else if (event.url.includes("office-capacity")) {
-          this.handleMenuActive("officeCapacity");
-        }
-        else if (event.url.includes("partners")) {
-          this.handleMenuActive("partners");
-        }
-        else if (event.url.includes("equipment")) {
-          this.handleMenuActive("equipment");
-        }
-        else if (event.url.includes("coordination")) {
-          this.handleMenuActive("coordination");
-        }
-        else if (event.url.includes("stock-capacity")) {
-          this.handleMenuActive("stockCapacity");
-        }
-        else if (event.url.includes("documents")) {
-          this.handleMenuActive("documents");
-        }
-        else if (event.url.includes("contacts")) {
-          this.handleMenuActive("contacts");
-        }
-        else {
-          throw new Error("Local-Network-Profile-Menu: Invalid Url Arg");
-        }
-      }
-    });
+    // this.router.events.takeUntil(this.ngUnSubscribe).subscribe((event) => {
+    //   //Update highlight on sub menu when navigating from dropdown menu
+    //   if(event instanceof NavigationEnd) {
+    //     if (event.url.includes("programme")) {
+    //       this.handleMenuActive("programme");
+    //     }
+    //     else if (event.url.includes("officeCapacity") || event.url.includes("office-capacity")) {
+    //       this.handleMenuActive("officeCapacity");
+    //     }
+    //     else if (event.url.includes("partners")) {
+    //       this.handleMenuActive("partners");
+    //     }
+    //     else if (event.url.includes("equipment")) {
+    //       this.handleMenuActive("equipment");
+    //     }
+    //     else if (event.url.includes("coordination")) {
+    //       this.handleMenuActive("coordination");
+    //     }
+    //     else if (event.url.includes("stockCapacity") || event.url.includes("stock-capacity")) {
+    //       this.handleMenuActive("stockCapacity");
+    //     }
+    //     else if (event.url.includes("documents")) {
+    //       this.handleMenuActive("documents");
+    //     }
+    //     else if (event.url.includes("contacts")) {
+    //       this.handleMenuActive("contacts");
+    //     }
+    //     else {
+    //       throw new Error("Local-Network-Profile-Menu: Invalid Url Arg");
+    //     }
+    //   }
+    // });
   }
 
   ngOnInit() {
@@ -93,6 +102,9 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
       if (params["agencyOverview"]) {
         this.agencyOverview = params["agencyOverview"];
       }
+      if (params["isLocalAgency"]) {
+        this.isLocalAgency = params["isLocalAgency"];
+      }
     });
   }
 
@@ -114,92 +126,68 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
   }
 
   goToProgrammes() {
+    this.handleMenuActive("programme")
     this.networkViewValues["officeTarget"] = "programme"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-programme', this.networkViewValues] : ['/network/local-network-office-profile/programme', this.networkViewValues])
   }
 
   goToOfficeCapacity() {
+    console.log(this.networkViewValues)
+    this.handleMenuActive("officeCapacity")
     this.networkViewValues["officeTarget"] = "officeCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-office-capacity', this.networkViewValues] : ['/network/local-network-office-profile/office-capacity', this.networkViewValues])
   }
 
   goToPartners() {
+    this.handleMenuActive("partners")
     this.networkViewValues["officeTarget"] = "partners"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-partners', this.networkViewValues] : ['/network/local-network-office-profile/partners', this.networkViewValues])
   }
 
   goToEquipment() {
+    this.handleMenuActive("equipment")
     this.networkViewValues["officeTarget"] = "equipment"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-equipment', this.networkViewValues] : ['/network/local-network-office-profile/equipment', this.networkViewValues])
   }
 
   goToCoordination() {
+    this.handleMenuActive("coordination")
     this.networkViewValues["officeTarget"] = "coordination"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-coordination', this.networkViewValues] : ['/network/local-network-office-profile/coordination', this.networkViewValues])
   }
 
   goToStockCapacity() {
+    this.handleMenuActive("stockCapacity")
     this.networkViewValues["officeTarget"] = "stockCapacity"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-stock-capacity', this.networkViewValues] : ['/network/local-network-office-profile/stock-capacity', this.networkViewValues])
   }
 
   goToDocuments() {
+    this.handleMenuActive("documents")
     this.networkViewValues["officeTarget"] = "documents"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-documents', this.networkViewValues] : ['/network/local-network-office-profile/documents', this.networkViewValues])
   }
 
   goToContacts() {
+    this.handleMenuActive("contacts")
     this.networkViewValues["officeTarget"] = "contacts"
     this.router.navigate(this.isNetworkCountry ? ['/network-country/network-country-office-profile-contacts', this.networkViewValues] : ['/network/local-network-office-profile/contacts', this.networkViewValues])
   }
 
   viewingToProgramme() {
     console.log("view programme");
-    let data = {}
-    data["countryId"] = this.countryID
-    data["isViewing"] = this.isViewing
-    data["agencyId"] = this.agencyId
-    data["from"] = "officeProfile"
-    data["officeTarget"] = "programme"
-    data["isViewingFromExternal"] = this.isViewingFromExternal
-    data["networkId"] = this.networkId
-    if (this.canCopy) {
-      data["canCopy"] = this.canCopy
-    }
-    if (this.agencyOverview) {
-      data["agencyOverview"] = this.agencyOverview
-    }
-    if (this.networkCountryId) {
-      data["networkCountryId"] = this.networkCountryId
-    }
+    let data = this.createViewObj("programme");
 
     if (this.canCopy) {
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
       this.router.navigate(["/director/director-overview", data]);
     }
-    // /director/director-overview;countryId=tPB9g8EwCLMceutAeAyWlYQUh8V2;isViewing=true;agencyId=qbyONHp4xqZy2eUw0kQHU7BAcov1;from=plan
   }
 
   viewingToOfficeCapacity() {
     console.log("view office capacity");
-    let data = {}
-    data["countryId"] = this.countryID
-    data["isViewing"] = this.isViewing
-    data["agencyId"] = this.agencyId
-    data["from"] = "officeProfile"
-    data["officeTarget"] = "officeCapacity"
-    data["isViewingFromExternal"] = this.isViewingFromExternal
-    data["networkId"] = this.networkId
-    if (this.canCopy) {
-      data["canCopy"] = this.canCopy
-    }
-    if (this.agencyOverview) {
-      data["agencyOverview"] = this.agencyOverview
-    }
-    if (this.networkCountryId) {
-      data["networkCountryId"] = this.networkCountryId
-    }
+    const data = this.createViewObj("officeCapacity")
     if (this.canCopy) {
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
@@ -209,23 +197,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
 
   viewingToPartners() {
     console.log("view partners");
-    let data = {}
-    data["countryId"] = this.countryID
-    data["isViewing"] = this.isViewing
-    data["agencyId"] = this.agencyId
-    data["from"] = "officeProfile"
-    data["officeTarget"] = "partners"
-    data["isViewingFromExternal"] = this.isViewingFromExternal
-    data["networkId"] = this.networkId
-    if (this.canCopy) {
-      data["canCopy"] = this.canCopy
-    }
-    if (this.agencyOverview) {
-      data["agencyOverview"] = this.agencyOverview
-    }
-    if (this.networkCountryId) {
-      data["networkCountryId"] = this.networkCountryId
-    }
+    const data =this.createViewObj("partners")
     if (this.canCopy) {
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
@@ -235,23 +207,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
 
   viewingToEquipment() {
     console.log("view equipment");
-    let data = {}
-    data["countryId"] = this.countryID
-    data["isViewing"] = this.isViewing
-    data["agencyId"] = this.agencyId
-    data["from"] = "officeProfile"
-    data["officeTarget"] = "equipment"
-    data["isViewingFromExternal"] = this.isViewingFromExternal
-    data["networkId"] = this.networkId
-    if (this.canCopy) {
-      data["canCopy"] = this.canCopy
-    }
-    if (this.agencyOverview) {
-      data["agencyOverview"] = this.agencyOverview
-    }
-    if (this.networkCountryId) {
-      data["networkCountryId"] = this.networkCountryId
-    }
+    const data = this.createViewObj("equipment")
     if (this.canCopy) {
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
@@ -261,23 +217,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
 
   viewingToCoordination() {
     console.log("view coordination");
-    let data = {}
-    data["countryId"] = this.countryID
-    data["isViewing"] = this.isViewing
-    data["agencyId"] = this.agencyId
-    data["from"] = "officeProfile"
-    data["officeTarget"] = "coordination"
-    data["isViewingFromExternal"] = this.isViewingFromExternal
-    data["networkId"] = this.networkId
-    if (this.canCopy) {
-      data["canCopy"] = this.canCopy
-    }
-    if (this.agencyOverview) {
-      data["agencyOverview"] = this.agencyOverview
-    }
-    if (this.networkCountryId) {
-      data["networkCountryId"] = this.networkCountryId
-    }
+    const data = this.createViewObj("coordination")
     if (this.canCopy) {
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
@@ -287,23 +227,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
 
   viewingToStockCapacity() {
     console.log("view stock capacity");
-    let data = {}
-    data["countryId"] = this.countryID
-    data["isViewing"] = this.isViewing
-    data["agencyId"] = this.agencyId
-    data["from"] = "officeProfile"
-    data["officeTarget"] = "stockCapacity"
-    data["isViewingFromExternal"] = this.isViewingFromExternal
-    data["networkId"] = this.networkId
-    if (this.canCopy) {
-      data["canCopy"] = this.canCopy
-    }
-    if (this.agencyOverview) {
-      data["agencyOverview"] = this.agencyOverview
-    }
-    if (this.networkCountryId) {
-      data["networkCountryId"] = this.networkCountryId
-    }
+    const data = this.createViewObj("stockCapacity")
     if (this.canCopy) {
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
@@ -313,23 +237,7 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
 
   viewingToDocuments() {
     console.log("view documents");
-    let data = {}
-    data["countryId"] = this.countryID
-    data["isViewing"] = this.isViewing
-    data["agencyId"] = this.agencyId
-    data["from"] = "officeProfile"
-    data["officeTarget"] = "documents"
-    data["isViewingFromExternal"] = this.isViewingFromExternal
-    data["networkId"] = this.networkId
-    if (this.canCopy) {
-      data["canCopy"] = this.canCopy
-    }
-    if (this.agencyOverview) {
-      data["agencyOverview"] = this.agencyOverview
-    }
-    if (this.networkCountryId) {
-      data["networkCountryId"] = this.networkCountryId
-    }
+    const data = this.createViewObj("documents")
     if (this.canCopy) {
       this.router.navigate(["/dashboard/dashboard-overview", data]);
     } else {
@@ -339,12 +247,23 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
 
   viewingToContacts() {
     console.log("view contacts");
+    const data = this.createViewObj("contacts")
+    if (this.canCopy) {
+      this.router.navigate(["/dashboard/dashboard-overview", data]);
+    } else {
+      this.router.navigate(["/director/director-overview", data]);
+    }
+  }
+
+  private createViewObj(officeTarget:string) {
     let data = {}
-    data["countryId"] = this.countryID
+    if (this.countryID) {
+      data["countryId"] = this.countryID
+    }
     data["isViewing"] = this.isViewing
     data["agencyId"] = this.agencyId
     data["from"] = "officeProfile"
-    data["officeTarget"] = "contacts"
+    data["officeTarget"] = officeTarget
     data["isViewingFromExternal"] = this.isViewingFromExternal
     data["networkId"] = this.networkId
     if (this.canCopy) {
@@ -356,10 +275,9 @@ export class LocalNetworkProfileMenuComponent implements OnInit {
     if (this.networkCountryId) {
       data["networkCountryId"] = this.networkCountryId
     }
-    if (this.canCopy) {
-      this.router.navigate(["/dashboard/dashboard-overview", data]);
-    } else {
-      this.router.navigate(["/director/director-overview", data]);
+    if (this.isLocalAgency) {
+      data["isLocalAgency"] = this.isLocalAgency
     }
+    return data;
   }
 }

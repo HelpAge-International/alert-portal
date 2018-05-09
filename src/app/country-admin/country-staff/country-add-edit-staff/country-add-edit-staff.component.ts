@@ -111,38 +111,30 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
       this.uid = user.uid;
+      // Get the country id and agency administrator id
+      this.countryId = countryId;
+      this.agencyAdminId = agencyId
+      this.systemId = systemId
+      this.initData();
+      this.route.params
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe((params: Params) => {
+          if (params['id']) {
+            this.selectedStaffId = params['id'];
+            this.selectedOfficeId = this.countryId;
+            this.isEdit = true;
+            this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
+          }
+          /*Filtering country director option in the user types if there exists a country director for this country already*/
+          this.updateUserTypeSelection();
+        });
 
       this.fieldOfficeService.getFieldOffices(countryId)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(fieldOffices => {
           console.log(fieldOffices)
           this.fieldOffices = fieldOffices;
         })
-
-      this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(countryAdmin => {
-            // Get the country id and agency administrator id
-            this.countryId = countryAdmin.countryId;
-            this.agencyAdminId = countryAdmin.agencyAdmin ? Object.keys(countryAdmin.agencyAdmin)[0] : '';
-            this.systemId = countryAdmin.systemAdmin ? Object.keys(countryAdmin.systemAdmin)[0] : '';
-            this.initData();
-            this.route.params
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((params: Params) => {
-                if (params['id']) {
-                  this.selectedStaffId = params['id'];
-                  this.selectedOfficeId = this.countryId;
-                  this.isEdit = true;
-                  this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
-                }
-                /*Filtering country director option in the user types if there exists a country director for this country already*/
-                this.updateUserTypeSelection();
-              });
-          },
-          error => {
-            this.warningMessage = 'GLOBAL.GENERAL_ERROR';
-            this.showAlert();
-          });
     });
   }
 
@@ -228,7 +220,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         });
       });
 
-    this.notificationList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/notificationSetting');
+    this.notificationList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/defaultNotificationSettings');
   }
 
   private updateUserTypeSelection() {
@@ -239,7 +231,14 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
           directorExists = true;
           if (this.isEdit && this.userType == UserType.CountryDirector) {
             console.log("no filter out");
-          } else {
+          }
+          else if (this.isEdit && this.userType == UserType.NonAlert) {
+            this.userTypeConstant = this.userTypeConstant.filter(function (el) {
+              return el == "GLOBAL.USER_TYPE.NON_ALERT";
+            });
+            this.userTypeSelection = [this.UserType.NonAlert]
+          }
+          else {
             this.userTypeSelection = this.userTypeSelection.filter(function (el) {
               return el !== UserType.CountryDirector;
             });
@@ -257,7 +256,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   validateForm() {
-
 
     if (!this.title) {
       this.warningMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_TITLE';
@@ -604,15 +602,13 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   selectedUserType(userType) {
     // userType-1 to ignore f all option
     console.log(UserType[userType]);
-
-    this.notificationSettings = [];
     this.notificationList
       .takeUntil(this.ngUnsubscribe)
-      .first()
       .subscribe(settingList => {
+        this.notificationSettings = [];
         settingList.forEach(setting => {
-          this.notificationSettings.push(setting.usersNotified[userType - 1]);
-          this.notificationsMap.set(Number(setting.$key), setting.usersNotified[userType - 1]);
+          this.notificationSettings.push(setting.usersNotified[userType]);
+          this.notificationsMap.set(Number(setting.$key), setting.usersNotified[userType]);
         });
       });
     this.checkUserType();

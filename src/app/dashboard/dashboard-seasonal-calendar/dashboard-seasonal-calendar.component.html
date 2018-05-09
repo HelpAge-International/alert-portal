@@ -26,11 +26,13 @@
       <h1>Seasonal calendar <a class="btn btn-outline-primary" (click)="addCalendar()">{{"DASHBOARD.CALENDAR.ADD_TO_CALENDAR"
         | translate}}</a></h1>
       <div class="Header-title__wrap__Inline-links">
-        <a href="javascript:void(0)" class="{{!currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setWeekView()">{{"DASHBOARD.CALENDAR.VIEW_AS_WEEKS"
+        <a href="javascript:void(0)" class="{{currentSpan == 0 ? 'active' : ''}}" (click)="setWeekView()">{{"DASHBOARD.CALENDAR.VIEW_AS_WEEKS"
           | translate}}</a> |
-        <a href="javascript:void(0)" class="{{currentSpanMultiplierIsMonth ? 'active' : ''}}" (click)="setMonthView()">{{"DASHBOARD.CALENDAR.VIEW_AS_MONTHS"
+        <a href="javascript:void(0)" class="{{currentSpan == 1 ? 'active' : ''}}" (click)="setMonthView()">{{"DASHBOARD.CALENDAR.VIEW_AS_THREE_MONTHS"
+          | translate}}</a> |
+        <a href="javascript:void(0)" class="{{currentSpan == 2 ? 'active' : ''}}" (click)="setHalfYearView()">{{"DASHBOARD.CALENDAR.VIEW_AS_SIX_MONTHS"
           | translate}}</a>
-      </div>
+    </div>
     </div>
 
     <div id="target2" #target class="timeline-tgt Spaced"></div>

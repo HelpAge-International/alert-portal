@@ -668,7 +668,8 @@
       "END_DATE": "Fecha de finalización",
       "SEASONAL_CALENDAR": "Calendario estacional",
       "SEASON_NAME": "Nombre de estación",
-      "VIEW_AS_MONTHS": "Ver como meses",
+      "VIEW_AS_THREE_MONTHS": "Ver como 3 meses",
+      "VIEW_AS_SIX_MONTHS": "Ver como 6 meses",
       "VIEW_AS_WEEKS": "Ver como semanas",
       "VIEW_FULL_CALENDAR": "Ver todo el calendario"
     },
@@ -2097,3 +2098,4 @@
   "YOUR_ORGANISATION": "Su organización",
   "YOU_ARE_ABOUT_TO_EXPORT": "Va a exportar"
 }
+

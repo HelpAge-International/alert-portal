@@ -12,6 +12,8 @@ import {ContactService} from "../../../../services/contact.service";
 import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../../../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
+import {Observable} from "rxjs/Observable";
+import {ModelUserPublic} from "../../../../model/user-public.model";
 
 declare var jQuery: any;
 
@@ -41,6 +43,8 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
 
   @Input() isLocalAgency: boolean;
 
+  private admin: Observable<ModelUserPublic>
+
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
               private _userService: UserService,
@@ -61,14 +65,16 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
       this.uid = user.uid;
       this.userType = userType;
       this.agencyId = agencyId;
 
-      this._userService.getStaffList(this.agencyId).subscribe(staffList => {
+      this.admin = this._userService.getLocalAgencyAdmin(agencyId)
+
+      this._userService.getStaffList(this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(staffList => {
         this.staffList = staffList;
         this.staffList.forEach(staff => {
 
@@ -90,14 +96,16 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
     });
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
       this.uid = user.uid;
       this.userType = userType;
       this.countryId = countryId;
 
-      this._userService.getStaffList(this.countryId).subscribe(staffList => {
+      this.admin = this._userService.getCountryAdmin(agencyId, countryId)
+
+      this._userService.getStaffList(this.countryId).takeUntil(this.ngUnsubscribe).subscribe(staffList => {
         this.staffList = staffList;
         this.staffList.forEach(staff => {
 
@@ -131,7 +139,7 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   }
 
   submit() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this._contactService.savePointOfContactLocalAgency(this.agencyId, this.pointOfContact)
         .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_CONTACT', AlertMessageType.Success);
@@ -144,7 +152,7 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
               this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
             }
           });
-    }else{
+    } else {
       this._contactService.savePointOfContact(this.countryId, this.pointOfContact)
         .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_SAVED_CONTACT', AlertMessageType.Success);
@@ -161,9 +169,9 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   }
 
   goBack() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.router.navigateByUrl('/local-agency/profile/contacts');
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/contacts');
     }
   }
@@ -176,14 +184,14 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
   deleteAction() {
     this.closeModal();
 
-    if(this.isLocalAgency){ 
+    if (this.isLocalAgency) {
       this._contactService.deletePointOfContactLocalAgency(this.agencyId, this.pointOfContact)
         .then(() => {
           this.goBack();
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.CONTACTS.SUCCESS_DELETED', AlertMessageType.Success);
         })
         .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-    }else{
+    } else {
       this._contactService.deletePointOfContact(this.countryId, this.pointOfContact)
         .then(() => {
           this.goBack();

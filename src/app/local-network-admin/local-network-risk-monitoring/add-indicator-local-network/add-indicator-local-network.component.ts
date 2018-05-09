@@ -127,6 +127,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
   private systemId: string;
   private isViewing: boolean;
   private networkViewValues: {};
+  private userAgencyCountryMap = new Map<string, {agencyId:string, countryOfficeId:string}>()
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -398,7 +399,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe( (user: ModelUserPublic) => {
           console.log(user)
-          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName + "(Local Network Admin)"};
           this.usersForAssign.push(userToPush);
         })
 
@@ -409,22 +410,24 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
             this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + '/' + network.agencies[agencyKey].countryCode)
               .takeUntil(this.ngUnsubscribe)
               .subscribe(countryOffice => {
-                this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
+                this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).takeUntil(this.ngUnsubscribe).subscribe((data: any) => {
                   console.log(data)
                   if (data.adminId) {
-                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
                       var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
                       this.usersForAssign.push(userToPush);
+                      this.userAgencyCountryMap.set(userToPush.userID, {agencyId:agencyKey, countryOfficeId:countryOffice.$key})
                     });
                   }
                 });
                 //Obtaining other staff data
-                this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
+                this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).takeUntil(this.ngUnsubscribe).subscribe((data: {}) => {
                   for (let userID in data) {
                     if (!userID.startsWith('$')) {
-                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
                         var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
                         this.usersForAssign.push(userToPush);
+                        this.userAgencyCountryMap.set(userToPush.userID, {agencyId:agencyKey, countryOfficeId:countryOffice.$key})
                       });
                     }
                   }
@@ -470,19 +473,19 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                   this.agencyId = agency.$key
 
                   // Obtaining the country admin data
-                  this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).subscribe((data: any) => {
+                  this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((data: any) => {
                     if (data.adminId) {
-                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
                         var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
                         this.usersForAssign.push(userToPush);
                       });
                     }
                   });
                   //Obtaining other staff data
-                  this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).subscribe((data: {}) => {
+                  this.af.database.object(Constants.APP_STATUS + "/staff/" + this.countryID).takeUntil(this.ngUnsubscribe).subscribe((data: {}) => {
                     for (let userID in data) {
                       if (!userID.startsWith('$')) {
-                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
                           var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
                           this.usersForAssign.push(userToPush);
                         });
@@ -505,7 +508,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
   getCountryID() {
     let promise = new Promise((res, rej) => {
-      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').subscribe((countryID: any) => {
+      this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.UserType] + "/" + this.uid + '/countryId').takeUntil(this.ngUnsubscribe).subscribe((countryID: any) => {
         this.countryID = countryID.$value ? countryID.$value : "";
         res(true);
       });
@@ -515,13 +518,21 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
   saveIndicator() {
 
-    if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+    if (typeof (this.indicatorData.hazardScenario) == 'undefined' || typeof (this.indicatorData.hazardScenario) == 'number') {
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
+
+
+        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : undefined;
+        let currentTime = new Date().getTime()
+        let newTimeObject = {start: currentTime, finish: -1,level: this.indicatorData.triggerSelected};
+        let id = this.hazardID == 'countryContext' ? this.networkId : this.hazardID;
+
         if (!this.isEdit) {
           this.indicatorData.triggerSelected = 0;
+          newTimeObject.level = 0
         }
         this.indicatorData.category = parseInt(this.indicatorData.category);
         console.log(this.indicatorData.trigger)
@@ -551,6 +562,12 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
           this.indicatorData['countryOfficeId'] = this.countryID
 
 
+        }
+
+        //if assign to country staff, need agencyid and countryofficeid info as well
+        if (this.indicatorData.assignee && this.userAgencyCountryMap.get(this.indicatorData.assignee)) {
+          this.indicatorData['agencyId'] = this.userAgencyCountryMap.get(this.indicatorData.assignee).agencyId
+          this.indicatorData['countryOfficeId'] = this.userAgencyCountryMap.get(this.indicatorData.assignee).countryOfficeId
         }
 
         var dataToSave = this.indicatorData;
@@ -584,14 +601,18 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
         if (!this.isEdit) {
           this.af.database.list(urlToPush)
             .push(dataToSave)
-            .then(() => {
+            .then(indicator => {
+
+              this.af.database.object(Constants.APP_STATUS + '/indicator/' + id  + '/' + indicator.key + '/timeTracking')
+                    .update({timeSpentInGreen: [newTimeObject]})
+
               if (dataToSave.assignee) {
                 // Send notification to the assignee
                 let notification = new MessageModel();
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
                 notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).first().subscribe(() => {
                 });
               }
 
@@ -622,7 +643,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
                 notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).subscribe(() => {
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).first().subscribe(() => {
                 });
               }
               this.backToRiskHome();
@@ -779,7 +800,7 @@ export class AddIndicatorLocalNetworkComponent implements OnInit, OnDestroy {
 
     console.log(this.url);
 
-    this.af.database.object(this.url).takeUntil(this.ngUnsubscribe).subscribe((indicator: any) => {
+    this.af.database.object(this.url).takeUntil(this.ngUnsubscribe).takeUntil(this.ngUnsubscribe).subscribe((indicator: any) => {
       if (indicator.$value === null) {
         console.log(indicator)
         this.router.navigate(this.networkViewValues ? ['/network/local-network-risk-monitoring', this.networkViewValues] : ['/network/local-network-risk-monitoring']);

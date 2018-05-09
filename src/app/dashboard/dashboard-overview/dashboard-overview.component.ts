@@ -46,6 +46,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private systemId: string;
   private from: string;
   private agencyName: string;
+  private networkName: string;
   private agencyOverview: boolean;
   private officeTarget: string;
   private alerts: Observable<any>;
@@ -61,6 +62,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   private networkId: string;
   private networkCountryId: string;
   private withinNetwork: boolean;
+  private isLocalAgency: boolean;
 
   constructor(private route: ActivatedRoute,
               private userService: UserService,
@@ -97,53 +99,59 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.userAgencyId = agencyId;
-      this.userCountryId = countryId
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["countryId"]) {
-            this.countryId = params["countryId"];
-          }
-          if (params["agencyId"]) {
-            this.agencyId = params["agencyId"];
-            this.getAgencyInfo(this.agencyId);
-          }
-          if (params["systemId"]) {
-            this.systemId = params["systemId"];
-          }
-          if (params["isViewing"]) {
-            this.isViewing = params["isViewing"];
-          }
-          if (params["from"]) {
-            this.from = params["from"];
-            this.menuSelection(this.from);
-          }
-          if (params["officeTarget"]) {
-            this.officeTarget = params["officeTarget"];
-            this.handleOfficeSubMenu();
-          }
-          if (params["canCopy"]) {
-            this.canCopy = params["canCopy"];
-          }
-          if (params["agencyOverview"]) {
-            this.agencyOverview = params["agencyOverview"];
-            console.log(this.agencyOverview);
-          }
-          if (params["userType"]) {
-            this.userType = params["userType"];
-          }
-          if (params["isViewingFromExternal"]) {
-            this.isViewingFromExternal = params["isViewingFromExternal"];
-          }
-          if (params["networkId"]) {
-            this.networkId = params["networkId"];
-          }
-          if (params["networkCountryId"]) {
-            this.networkCountryId = params["networkCountryId"];
-          }
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["countryId"]) {
+          this.countryId = params["countryId"];
+        }
+        if (params["agencyId"]) {
+          this.agencyId = params["agencyId"];
+          this.getAgencyInfo(this.agencyId);
+        }
+        if (params["systemId"]) {
+          this.systemId = params["systemId"];
+        }
+        if (params["isViewing"]) {
+          this.isViewing = params["isViewing"];
+        }
+        if (params["from"]) {
+          this.from = params["from"];
+          this.menuSelection(this.from);
+        }
+        if (params["officeTarget"]) {
+          this.officeTarget = params["officeTarget"];
+          this.handleOfficeSubMenu();
+        }
+        if (params["canCopy"]) {
+          this.canCopy = params["canCopy"];
+        }
+        if (params["agencyOverview"]) {
+          this.agencyOverview = params["agencyOverview"];
+        }
+        if (params["userType"]) {
+          this.userType = params["userType"];
+        }
+        if (params["isViewingFromExternal"]) {
+          this.isViewingFromExternal = params["isViewingFromExternal"];
+        }
+        if (params["networkId"]) {
+          this.networkId = params["networkId"];
+          this.getNetworkName(this.networkId)
+        }
+        if (params["networkCountryId"]) {
+          this.networkCountryId = params["networkCountryId"];
+        }
+        if (params["isLocalAgency"]) {
+          this.isLocalAgency = params["isLocalAgency"];
+        }
+
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.userAgencyId = agencyId;
+          this.userCountryId = countryId
+
+          console.log("auth user done")
 
           //kick out to login if path not match
           if (!this.countryId && !this.agencyId && !this.systemId && !this.isViewing) {
@@ -202,8 +210,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
           this.getAlerts();
 
         });
-
-    });
+      });
   }
 
   private updateMainMenu(privacy: ModelAgencyPrivacy) {
@@ -282,6 +289,7 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     this.officeMap.forEach((v, k) => {
       this.officeMap.set(k, k == this.officeTarget);
     });
+    console.log(this.officeMap)
   }
 
   private getAgencyInfo(agencyId: string) {
@@ -312,8 +320,14 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
+  private getNetworkName(networkId: string) {
+    this.networkService.getNetworkDetail(networkId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(network => this.networkName = network.name)
+  }
 }

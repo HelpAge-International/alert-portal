@@ -126,6 +126,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
   private privacy: NetworkModulesEnabledModel;
   private isViewingFromExternal: boolean;
+  @Input() isLocalAgency: boolean;
 
 
   constructor(private pageControl: PageControlService,
@@ -266,7 +267,9 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.privacy = matrix);
 
-    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+    const service = this.countryId ? this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId) :  this.networkService.mapNetworkCountryForLocalAgency(this.agencyId)
+
+    service
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
         this.initNetworkAdmin(networkMap)
@@ -296,7 +299,8 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.privacy = matrix);
 
-    this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
+    const service = this.countryId ? this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId) : this.networkService.mapNetworkCountryForLocalAgency(this.agencyId)
+    service
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
         this.initNetworkAdmin(networkMap)
@@ -319,7 +323,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   /**
    * Hazard filtering
    */
-  public isChosenHazard(hazard:number, action:any){
+  public isChosenHazard(hazard: number, action: any) {
     return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
   }
 
@@ -389,7 +393,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
 
   private initStaff(agencyId, countryId) {
     this.initCountryAdmin(agencyId, countryId);
-    this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + (countryId ? countryId : agencyId), {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
@@ -628,19 +632,40 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
+
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+
+      if (action.timeTracking) {
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
+
+        if (!action['timeTracking']['timeSpentInGreen']) {
+          action['timeTracking']['timeSpentInGreen'] = []
+        }
+
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+          action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+          action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+          data['timeTracking'] = action['timeTracking']
+        }
+      }
+
       if (action.requireDoc) {
         if (action.attachments != undefined && action.attachments.length > 0) {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
-            isComplete: true,
-            isCompleteAt: new Date().getTime()
-          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update(data);
           this.addNote(action);
           this.closePopover(action);
         }
@@ -655,15 +680,150 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
             this.uploadFile(action, file);
           });
         }
-        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update({
-          isComplete: true,
-          isCompleteAt: new Date().getTime()
-        });
+        this.af.database.object(Constants.APP_STATUS + '/action/' + id + '/' + action.id).update(data);
         this.addNote(action);
         console.log(Constants.APP_STATUS + '/action/' + id + '/' + action.id, 'in complete');
         this.closePopover(action);
       }
     }
+  }
+
+  protected completeActionNetwork(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
+    if (action.note == null || action.note.trim() == "") {
+      this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
+    } else {
+      let data = {
+        isComplete: true,
+        isCompleteAt: new Date().getTime()
+      }
+
+      if (action.timeTracking) {
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
+
+        if (!action['timeTracking']['timeSpentInGreen']) {
+          action['timeTracking']['timeSpentInGreen'] = []
+        }
+
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+          action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+          action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+          data['timeTracking'] = action['timeTracking']
+        }
+      }
+
+
+      if (action.actualCost || action.actualCost == 0) {
+        data["actualCost"] = action.actualCost
+      }
+      if (action.requireDoc) {
+        if (action.attachments != undefined && action.attachments.length > 0) {
+          action.attachments.map(file => {
+            this.uploadFileNetwork(action, file);
+          });
+          this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
+          this.addNoteNetwork(action);
+          this.closePopover(action);
+        }
+        else {
+          this.alertMessage = new AlertMessageModel("You have not attached any Documents. Documents are required");
+        }
+      }
+      else {
+        // Doesn't require doc
+        if (action.attachments != null) {
+          action.attachments.map(file => {
+            this.uploadFileNetwork(action, file);
+          });
+        }
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
+        this.addNoteNetwork(action);
+        this.closePopover(action);
+      }
+    }
+  }
+
+  public addNoteNetwork(action: any) {
+    console.log(action)
+    if (action.note == undefined) {
+      return;
+    }
+
+    const note = {
+      content: action.note,
+      time: new Date().getTime(),
+      uploadBy: this.uid
+    };
+    const noteId = action.noteId;
+
+    action.note = '';
+    action.noteId = '';
+
+    if (noteId != null && noteId !== '') {
+      this.af.database.object(Constants.APP_STATUS + '/note/' + (action.networkCountryId ? action.networkCountryId : action.idToQuery)  + '/' + (action.id ? action.id : action.$key) + '/' + noteId).set(note);
+    }
+    else {
+      this.af.database.list(Constants.APP_STATUS + '/note/' + (action.networkCountryId ? action.networkCountryId : action.idToQuery) + '/' + (action.id ? action.id : action.$key)).push(note);
+    }
+  }
+
+  protected uploadFileNetwork(action: PreparednessAction, file) {
+    if (!action.networkCountryId) {
+      console.log("no network country id")
+      return
+    }
+    let document = {
+      fileName: file.name,
+      filePath: "", //this needs to be updated once the file is uploaded
+      module: DocumentType.MPA,
+      size: file.size * 0.001,
+      sizeType: SizeType.KB,
+      title: file.name,
+      time: firebase.database.ServerValue.TIMESTAMP,
+      uploadedBy: this.uid
+    };
+
+    this.af.database.list(Constants.APP_STATUS + '/document/' + action.networkCountryId).push(document)
+      .then(_ => {
+        let docKey = _.key;
+        let doc = {};
+        doc[docKey] = true;
+
+        this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id + '/documents').update(doc)
+          .then(_ => {
+            new Promise((res, rej) => {
+              let storageRef = this.firebase.storage().ref().child('documents/' + action.networkCountryId + '/' + docKey + '/' + file.name);
+              let uploadTask = storageRef.put(file);
+              uploadTask.on('state_changed', function (snapshot) {
+              }, function (error) {
+                rej(error);
+              }, function () {
+                var downloadURL = uploadTask.snapshot.downloadURL;
+                res(downloadURL);
+              });
+            })
+              .then(result => {
+                document.filePath = "" + result;
+
+                this.af.database.object(Constants.APP_STATUS + '/document/' + action.networkCountryId + '/' + docKey).set(document);
+              })
+              .catch(err => {
+                console.log(err, 'You do not have access!');
+                this.purgeDocumentReference(action, docKey);
+              });
+          })
+          .catch(err => {
+            console.log(err, 'You do not have access!');
+            this.purgeDocumentReference(action, docKey);
+          });
+      })
+      .catch(err => {
+        console.log(err, 'You do not have access!');
+      });
   }
 
   /**
@@ -674,6 +834,30 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
   // (Dan) - this new function is for the undo completed APA
   protected undoCompleteAction(action: PreparednessAction) {
 
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let timeTrackingNode;
+
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+
+    if (action.timeTracking) {
+      // Change from in progress to complete
+      let index = action['timeTracking']['timeSpentInGreen'] ? action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1) : -1
+
+      if (!action['timeTracking']['timeSpentInAmber']) {
+        action['timeTracking']['timeSpentInGreen'] = []
+      }
+
+      if (index != -1 && action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
+        action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+        timeTrackingNode = action['timeTracking']
+      }
+    } else {
+      timeTrackingNode = null
+    }
+
+
     action.actualCost = null
 
     console.log(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id, 'in undo');
@@ -682,7 +866,8 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
       isComplete: false,
       isCompleteAt: null,
       updatedAt: new Date().getTime(),
-      actualCost : null
+      actualCost: null,
+      timeTracking: timeTrackingNode
     });
 
   }
@@ -799,6 +984,7 @@ export class NetworkCountryApaComponent implements OnInit, OnDestroy {
         this.exportDocument(action, "" + index);
         index++;
       }
+      this.closeExportModal()
     }
     else {
       this.alertMessage = new AlertMessageModel("Error exporting your documents");

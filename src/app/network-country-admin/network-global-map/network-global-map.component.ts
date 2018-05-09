@@ -33,6 +33,8 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
   public systemAdminId: string;
 
   private HazardScenario = Constants.HAZARD_SCENARIOS;
+  private agencyId: string;
+  private countryId: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -66,11 +68,18 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
           if (params["systemId"]) {
             this.systemAdminId = params["systemId"];
           }
+          if (params["agencyId"]) {
+            this.agencyId = params["agencyId"];
+          }
+          if (params["countryId"]) {
+            this.countryId = params["countryId"];
+          }
           if (params["isViewing"]) {
             this.isViewing = params["isViewing"];
           }
+          console.log("Network Country Id: " + this.networkCountryId);
           if (this.networkId != null && this.uid != null && this.systemAdminId) {
-            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, () => {
+            this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, this.systemAdminId, this.networkId, this.networkCountryId, () => {
               console.log("Network map initialised (viewing");
             }, (country) => {
               this.showDialog(country);
@@ -87,9 +96,12 @@ export class NetworkGlobalMapComponent implements OnInit, OnDestroy {
                 this.networkCountryId = selection['networkCountryId'];
 
                 // TODO: Delete this method when page control does auth properly
+
+                console.log("Network Country Id: " + this.networkCountryId);
+
                 this.getSystemAdmin(this.uid, (systemAdminId => {
 
-                  this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId,
+                  this.networkMapService.init('global-map', this.af, this.ngUnsubscribe, systemAdminId, this.networkId, this.networkCountryId,
                     () => {
                       // THIS METHOD CALLED WHEN EVERYTHING IS DONE!!
                       console.log("Network map initialised");

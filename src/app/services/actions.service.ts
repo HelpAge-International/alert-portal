@@ -70,6 +70,7 @@ export class ActionsService {
       }
     })
       .map(indicators => {
+        console.log(indicators)
         let filteredIndicators = [];
         indicators.forEach(indicator => {
           if (indicator.assignee === uid) {
@@ -178,7 +179,7 @@ export class ActionsService {
   }
 
   getAlerts(countryId, isLocalAgency?) {
-
+    console.log(countryId)
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
         orderByChild: "alertLevel",
@@ -186,6 +187,7 @@ export class ActionsService {
       }
     })
       .map(alerts => {
+        console.log(alerts)
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();
@@ -199,6 +201,7 @@ export class ActionsService {
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.timeUpdated = alert.timeUpdated;
           modelAlert.createdBy = alert.createdBy;
+          modelAlert.approvalStatus = alert.approval.countryDirector ? Object.keys(alert.approval.countryDirector).map(key => alert.approval.countryDirector[key])[0] : alert.approval.localAgencyDirector ? Object.keys(alert.approval.localAgencyDirector).map(key => alert.approval.localAgencyDirector[key])[0] : AlertStatus.WaitingResponse
           if (alert.updatedBy) {
             modelAlert.updatedBy = alert.updatedBy;
           }
@@ -225,10 +228,12 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if (isLocalAgency) {
-            modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
-            modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else {
+          if(isLocalAgency){
+            if (alert.approval && alert.approval['localAgencyDirector']) {
+              modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+              modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+            }
+          } else{
             if (alert.approval && alert.approval['countryDirector']) {
               modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
               modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
@@ -275,7 +280,7 @@ export class ActionsService {
         alertList.forEach(alert => {
           let affectedAreasToDisplay: any[] = [];
           alert.affectedAreas.forEach(affectedArea => {
-            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).takeUntil(this.ngUnsubscribe).subscribe((value) => {
               let obj = {
                 country: "",
                 areas: ""
@@ -437,6 +442,7 @@ export class ActionsService {
         modelAlert.timeCreated = alert.timeCreated;
         modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
         modelAlert.createdBy = alert.createdBy;
+        modelAlert.timeTracking = alert.timeTracking;
 
         let affectedAreas: ModelAffectedArea[] = [];
         let ids: string[] = Object.keys(alert.affectedAreas);
@@ -600,6 +606,7 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
+    updateData["timeTracking"] = alert.timeTracking;
 
     updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
 
@@ -678,10 +685,13 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
+    if (alert.timeTracking) {
+      updateData["timeTracking"] = alert.timeTracking;
+    }
 
     updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
 
-
+    console.log(updateData)
     this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;
@@ -1107,14 +1117,15 @@ export class ActionsService {
   }
 
   approveRedAlert(countryId, alertId, uid, isNetwork?) {
-    if (isNetwork) {
-      console.log(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId)
-      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
-
-      //TODO send alert to each country office in the network with a notification to their country directors
-    } else {
-      this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
-    }
+    // if (isNetwork) {
+    //   console.log(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId)
+    //   this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+    //
+    //   //TODO send alert to each country office in the network with a notification to their country directors
+    // } else {
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/approval/countryDirector/" + countryId).set(AlertStatus.Approved);
+    this.af.database.object(Constants.APP_STATUS + "/alert/" + countryId + "/" + alertId + "/redAlertApproved").set(true);
+    // }
 
   }
 
@@ -1147,9 +1158,9 @@ export class ActionsService {
 
   }
 
-  rejectRedAlert(countryId, alert, uid) {
+  rejectRedAlert(countryId, alert, approvalCountryId?) {
     let update = {};
-    update["/alert/" + countryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + countryId + "/" + alert.id + "/approval/countryDirector/" + (approvalCountryId ? approvalCountryId : countryId)] = AlertStatus.Rejected;
     update["/alert/" + countryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
@@ -1161,10 +1172,10 @@ export class ActionsService {
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
-  rejectRedAlertNetwork(countryId, alert, networkCountryId) {
+  rejectRedAlertNetwork(countryId, alert, networkCountryId?) {
     let update = {};
-    update["/alert/" + networkCountryId + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
-    update["/alert/" + networkCountryId + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
+    update["/alert/" + (alert.networkCountryId ? alert.networkCountryId : alert.networkId) + "/" + alert.id + "/approval/countryDirector/" + countryId] = AlertStatus.Rejected;
+    update["/alert/" + (alert.networkCountryId ? alert.networkCountryId : alert.networkId) + "/" + alert.id + "/alertLevel/"] = alert.previousIsAmber ? AlertLevels.Amber : AlertLevels.Green;
     this.af.database.object(Constants.APP_STATUS).update(update);
   }
 
@@ -1177,6 +1188,7 @@ export class ActionsService {
     }))
       .map(plans => {
         plans.forEach(plan => {
+          console.log(plan)
           let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
             .takeUntil(this.ngUnsubscribe)
@@ -1197,6 +1209,7 @@ export class ActionsService {
     }))
       .map(plans => {
         plans.forEach(plan => {
+          console.log(plan)
           let userId = plan.updatedBy ? plan.updatedBy : plan.createdBy;
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
             .takeUntil(this.ngUnsubscribe)

@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../../utils/Enums";
+import {AlertLevels, AlertMessageType, DurationType, PermissionsAgency, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -11,11 +11,13 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../../services/user.service";
-import {PageControlService} from "../../../services/pagecontrol.service";
+import {AgencyPermissionObject, PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
+import {PrepActionService} from "../../../services/prepactions.service";
+import {Location} from "@angular/common";
 
 
 @Component({
@@ -41,6 +43,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   private agencyId: string;
   private directorCountryID: string;
   private alertData: any;
+  public permRiskMonitoring = false;
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -76,7 +79,9 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               private translate: TranslateService,
               private userService: UserService,
               private storage: LocalStorageService,
+              private locationService : Location,
               private networkService: NetworkService,
+              private prepActionService: PrepActionService,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -101,6 +106,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+    console.log(this.networkViewValues)
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -127,8 +133,20 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
           this.uid = params["uid"];
         }
 
-        if(this.isViewing){
+        PageControlService.agencyModuleListMatrix(this.af, this.ngUnsubscribe, this.agencyId , (list: AgencyPermissionObject[]) => {
+          for (const value of list) {
 
+            if (value.permission === PermissionsAgency.RiskMonitoring) {
+              this.permRiskMonitoring = !value.isAuthorized;
+            }
+
+            //PageControlService.agencySelfCheck(this.UserType, this.route, this.router, value);
+          }
+        });
+
+
+        if(this.isViewing){
+          console.log('viewing')
           this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(network => {
@@ -140,6 +158,10 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               this._getDirectorCountryID();
 
               this.initPreSelection(network)
+
+              this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid,  false, this.networkCountryId, this.networkId, this.systemId)
+              console.log('-------if-------')
+              console.log(this.prepActionService.actions)
             })
 
             // get the country levels values
@@ -161,6 +183,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
                 this.networkCountryId = selection["networkCountryId"];
                 this.UserType = selection["userType"];
 
+
                 this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(network => {
@@ -174,6 +197,10 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
                     //get pre-select country and default to this location
                     this.initPreSelection(network);
+
+                    this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid,  false, this.networkCountryId, this.networkId, this.systemId)
+                    console.log('-------else-------')
+                    console.log(this.prepActionService.actions)
                   })
               })
 
@@ -228,9 +255,58 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
         }
         console.log(dataToSave);
 
+
+
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.networkCountryId)
           .push(dataToSave)
-          .then(() => {
+          .then(alert => {
+
+            let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+            let hazardTrackingNode;
+
+            if(hazard && hazard.timeTracking && hazard.timeTracking[alert.key]){
+              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : undefined;
+            }
+
+            let currentTime = new Date().getTime()
+            let newTimeObject = {start: currentTime, finish: -1,level: dataToSave.alertLevel};
+
+
+            if(hazard){
+              if(dataToSave.alertLevel == AlertLevels.Red){
+                if(this.UserType == UserType.CountryDirector){
+                  if(hazardTrackingNode){
+                    hazardTrackingNode.push(newTimeObject)
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update(hazardTrackingNode)
+                  }else{
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update({timeSpentInRed: [newTimeObject]})
+                  }
+
+                }
+              }else{
+                if(hazardTrackingNode){
+                  hazardTrackingNode.push(newTimeObject)
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update(hazardTrackingNode)
+                }else{
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkCountryId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update({timeSpentInAmber: [newTimeObject]})
+                }
+
+              }
+            }
+
+            if(dataToSave.alertLevel == AlertLevels.Red){
+              if(this.UserType == UserType.CountryDirector){
+                  this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkCountryId + '/' + alert.key + '/timeTracking/')
+                  .update({timeSpentInRed: [newTimeObject]})
+              }
+            }else{
+                this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkCountryId + '/' + alert.key + '/timeTracking/')
+                .update({timeSpentInAmber: [newTimeObject]})
+            }
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -242,6 +318,63 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               else {
                 riskNameTranslated = dataToSave.otherName;
               }
+
+              console.log(this.prepActionService.actions)
+
+              let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario) || action.assignedHazards && action.assignedHazards.length == 0)
+
+              let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+              if(this.UserType == UserType.CountryDirector){
+                apaActions.forEach( action => {
+                  if(!action["redAlerts"]){
+                    action["redAlerts"] = [];
+                  }
+                  if(!action["timeTracking"]){
+                    action["timeTracking"] = {};
+                  }
+
+                  if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
+                    if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+                      action["redAlerts"].push(alert.key);
+
+
+                      action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+
+                      if(!action.asignee){
+                        if(!action["timeTracking"]["timeSpentInRed"]){
+                          action['timeTracking']['timeSpentInRed'] = [];
+                        }
+                        action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                      }else if(action.isComplete){
+                        if(!action["timeTracking"]["timeSpentInGreen"]){
+                          action['timeTracking']['timeSpentInGreen'] = [];
+                        }
+                        action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                      }else{
+                        if(!action["timeTracking"]["timeSpentInAmber"]){
+                          action['timeTracking']['timeSpentInAmber'] = [];
+                        }
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                      }
+                      this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + action.id)
+                      .update(action)
+                    }
+                  }
+
+                })
+              }
+
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = new Date().getTime();
+                console.log(action)
+                console.log(Constants.APP_STATUS + '/action/' + this.networkCountryId + affectedAction.id)
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkCountryId + '/' + affectedAction.id)
+                  .update(action)
+
+              })
 
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
@@ -326,6 +459,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
               this.nonMonitoredHazards.splice(index, 1)
             }
           }
+          value.id = x.key
           this.hazards.push(value);
         }
         console.log(this.hazards);
@@ -378,6 +512,18 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
 
   getCSSHazard(hazard: number) {
     return HazardImages.init().getCSS(hazard);
+  }
+
+  goBack(){
+    if(this.permRiskMonitoring){
+      this.locationService.back();
+    }else{
+      if(this.networkViewValues){
+        this.router.navigate(['/network-country/network-risk-monitoring', this.networkViewValues])
+      }else{
+        this.router.navigateByUrl('/network-country/network-risk-monitoring')
+      }
+    }
   }
 
 }

@@ -1,0 +1,35 @@
+
+<a class="float" id="container">
+  <img class="img-position" [ngbTooltip]="tooltipDisplay" src="/assets/images/camera_icon.svg" (click)="screenshot()" >
+</a>
+
+<!-- Modal for report a bug -->
+<div class="modal fade" id="reporting" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title">{{"GLOBAL.REPORT_PROBLEM" | translate}}</h2>
+      </div>
+      <div class="modal-body">
+        <p>Description: </p>
+        <textarea [(ngModel)]="sendEmailModel.description" rows="10" cols="100" class="form-control" placeholder="Please provide information of the problem you are having ..."></textarea>
+      </div>
+
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-7">
+            <img src="assets/images/icons/circle_tick.svg">
+            <p>{{sendEmailModel.file}}.png attached</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a class="btn btn-primary" (click)="reportBugData()">SEND</a>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -3,3 +3,9 @@
   height:auto;
   overflow-y:hidden;
 }
+
+.fundStyle {
+  width: 1800px !important;
+  padding-right: 400px;
+  margin-left: -195px
+}

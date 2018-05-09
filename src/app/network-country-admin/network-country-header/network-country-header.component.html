@@ -3,7 +3,7 @@
     <div class="logo" routerLink="/network-country/network-dashboard"></div>
     <span *ngIf="!isAnonym" class="badge badge-pill" [class.badge-success]="alertLevel==0"
           [class.badge-warning]="alertLevel==1"
-          [class.badge-danger]="alertLevel==2">{{alertTitle | translate}}
+          [class.badge-danger]="alertLevel==2" routerLink="/network-country/network-risk-monitoring/create-alert">{{alertTitle | translate}}
     </span>
     <ul *ngIf="!isAnonym">
       <li *ngIf="network | async as networkObj">
@@ -15,7 +15,7 @@
       </li>
 
       <li class="Header_bar__username" *ngIf="user | async as userObj">
-        {{userObj.firstName + " " + userObj.lastName}}
+        {{userObj.firstName + " " + userObj.lastName+", Network Country"}}
       </li>
 
       <li class="Header_bar__country dropdown" *ngIf="networkCountry | async as networkCountryObj">
@@ -27,7 +27,9 @@
           <!--<a-->
           <!--*ngIf="userType == UserType.CountryAdmin || userType == UserType.CountryDirector || userType==UserType.ErtLeader"-->
           <!--class="dropdown-item" routerLink="/country-admin/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" | translate}}</a>-->
+
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -61,4 +63,5 @@
       </div>
     </div>
   </div>
+  <app-report-problem ></app-report-problem>
 </div>

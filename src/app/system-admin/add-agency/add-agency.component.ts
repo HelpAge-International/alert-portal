@@ -9,7 +9,7 @@ import {ModelAgency} from "../../model/agency.model";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
-import {DurationType, Privacy} from "../../utils/Enums";
+import {DurationType, Privacy, UserType} from "../../utils/Enums";
 import {Observable, Subject} from "rxjs";
 import {UUID} from "../../utils/UUID";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
@@ -73,18 +73,22 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.systemAdminUid = systemId;
-      this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
-      this.inactive = true;
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((params: Params) => {
-          if (params["id"]) {
-            this.agencyId = params["id"];
-            this.isEdit = true;
-            this.loadAgencyInfo(params["id"]);
-          }
-        });
+      if (userType === UserType.SystemAdmin) {
+        this.systemAdminUid = systemId;
+        this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
+        this.inactive = true;
+        this.route.params
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe((params: Params) => {
+            if (params["id"]) {
+              this.agencyId = params["id"];
+              this.isEdit = true;
+              this.loadAgencyInfo(params["id"]);
+            }
+          });
+      } else {
+        this.router.navigateByUrl("/login")
+      }
     });
   }
 

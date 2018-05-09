@@ -59,9 +59,12 @@
             <div class="col-sm-3">
               <div class="form-group-risk-frequency row">
                 <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
-                  <option value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
+
+                  <option *ngIf="!isLocalAgency" value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
+                  <option *ngIf="isLocalAgency" value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                   <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
                     translate}}
+
                   </option>
                 </select>
               </div>
@@ -70,7 +73,7 @@
 
             <!--LEVEL 1 START-->
 
-            <div class="col-sm-3">
+            <div *ngIf="levelOneDisplay.length > 1" class="col-sm-3" >
               <div class="form-group-risk-frequency">
                 <select  class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
                   <option value="undefined" disabled selected hidden >
@@ -105,8 +108,8 @@
 
           <!--END-->
 <br>
-            <p *ngIf="stockCapacity.stockType == 0"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p>
-            <p *ngIf="stockCapacity.stockType == 1"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_OUT' | translate }}</strong></p>
+            <p *ngIf="stockCapacity.stockType == 0 || stockCapacity.stockType == 3"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_IN' | translate }}</strong></p>
+            <p *ngIf="stockCapacity.stockType == 1 || stockCapacity.stockType == 4"><strong>{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.ETA_OUT' | translate }}</strong></p>
             <div>
                 <input type="text" class="form-control col-sm-4" placeholder="{{ 'GLOBAL.PLEASE_ENTER' | translate }}" name="leadTime"
                     [(ngModel)]="stockCapacity && stockCapacity.leadTime">

@@ -14,6 +14,7 @@ import {CommonService} from "../../../../services/common.service";
 import {Location} from "@angular/common";
 import {AngularFire} from "angularfire2";
 import {post} from "selenium-webdriver/http";
+
 declare var jQuery: any;
 
 @Component({
@@ -26,6 +27,7 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   private uid: string;
   private countryId: string;
   private agencyId: string;
+  private equipmentId: string;
 
   // Constants and enums
   private alertMessageType = AlertMessageType;
@@ -84,26 +86,29 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice();
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
 
       this.agencyId = agencyId;
-
 
       this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
         if (params['id']) {
           this._equipmentService.getEquipmentLocalAgency(this.agencyId, params['id'])
             .takeUntil(this.ngUnsubscribe)
             .subscribe(equipment => {
+              this.equipmentId = params['id'];
               this.equipment = equipment;
+              this.selectedCountry = equipment.location;
+              this.selectedValue = equipment.level1;
+              this.selectedValueL2 = equipment.level2;
             });
         }
       });
     })
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
 
@@ -118,9 +123,12 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
           this._equipmentService.getEquipment(this.countryId, params['id'])
             .takeUntil(this.ngUnsubscribe)
             .subscribe(equipment => {
+              this.equipmentId = params['id'];
               this.equipment = equipment;
+              this.selectedCountry = equipment.location;
+              this.selectedValue = equipment.level1;
+              this.selectedValueL2 = equipment.level2;
             });
-
         }
       });
       this.initCountrySelection();
@@ -136,9 +144,9 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/location")
       .takeUntil(this.ngUnsubscribe)
       .subscribe(getCountry => {
-        this.selectedCountry = getCountry.$value;
+        //this.selectedCountry = getCountry.$value;
 
-        console.log(getCountry.$value, 'initCountrySelection');
+        //console.log(getCountry.$value, 'initCountrySelection');
 
         /**
          * Pass country to the level one values for selection
@@ -159,33 +167,30 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
 
   // This function below is to determine the country selected
   // Return the array of level1 areas in the country selected.
-  setCountryLevel(){
+  setCountryLevel(selectedC) {
+    this.equipment.location = selectedC;
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
         // Below needs to return the level1 array of the id selected
-        this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
-
-
+        this.levelOneDisplay = content[selectedC].levelOneValues;
       });
-
   }
 
-  resetValue(){
-
+  resetValue() {
     console.log('reset selection');
     // Reset Values to remove level 2 drop down
     this.levelTwoDisplay.length = 0;
-
   }
 
-  setLevel1Value(){
+  setLevel1Value(selected) {
+    this.equipment.level1 = selected;
+    this.levelTwoDisplay = this.levelOneDisplay[selected].levelTwoValues;
+  }
 
-
-    this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
-    console.log(this.selectedValue, 'preset value');
-
+  setLevel2Value(selected) {
+    this.equipment.level2 = selected;
   }
 
   checkTypeof(param: any) {
@@ -196,7 +201,6 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
     }
   }
 
-
   validateForm(): boolean {
     this.alertMessage = this.equipment.validate();
 
@@ -204,7 +208,7 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   }
 
   submit() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this._equipmentService.saveEquipmentLocalAgency(this.agencyId, this.equipment)
         .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_SAVED', AlertMessageType.Success);
@@ -217,34 +221,60 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
               this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
             }
           });
-    }else{
-      var postData = {
-        location: this.selectedCountry,
-        level1: this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null,
-        level2: this.selectedValueL2 ? this.selectedValueL2: null,
+    } else {
+      let dataToSave = this.equipment;
+      let postData = {
+        location: this.equipment.location,
+        level1: this.equipment.level1 ? this.equipment.level1 : null,
+        level2: this.equipment.level2 ? this.equipment.level2 : null,
         agencyId: this.agencyId
       };
 
-      this._equipmentService.saveEquipment(this.countryId, this.equipment);
-      this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + this.countryId)
-        .push(this.equipment)
-        .update(postData)
-        .then(() => {
+      if (!this.equipmentId) {
+        this._equipmentService.saveEquipment(this.countryId, this.equipment);
+        this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + this.countryId)
+          .push(dataToSave)
+          .update(postData)
+          .then(() => {
+              this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_SAVED', AlertMessageType.Success);
+              setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+            },
+            err => {
+              if (err instanceof DisplayError) {
+                this.alertMessage = new AlertMessageModel(err.message);
+              } else {
+                this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+              }
+            });
+      } else {
+        dataToSave.updatedAt = new Date().getTime();
+        delete dataToSave.id;
+
+        const newData = {};
+        Object.keys(dataToSave).forEach((key) => {
+          if (dataToSave[key]) {
+            newData[key] = dataToSave[key]
+          }
+        });
+
+        this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + this.countryId + '/' + this.equipmentId)
+          .update(newData)
+          .then((newData) => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_SAVED', AlertMessageType.Success);
             setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-          },
-          err => {
-            if (err instanceof DisplayError) {
-              this.alertMessage = new AlertMessageModel(err.message);
-            } else {
-              this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
-            }
-          });
+          }).catch((err: any) => {
+          if (err instanceof DisplayError) {
+            this.alertMessage = new AlertMessageModel(err.message);
+          } else {
+            this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
+          }
+        });
+      }
     }
   }
 
   goBack() {
-    this.isLocalAgency ?  this.router.navigateByUrl('/local-agency/profile/equipment') : this.router.navigateByUrl('/country-admin/country-office-profile/equipment')
+    this.isLocalAgency ? this.router.navigateByUrl('/local-agency/profile/equipment') : this.router.navigateByUrl('/country-admin/country-office-profile/equipment')
   }
 
   deleteEquipment() {
@@ -254,14 +284,14 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   deleteAction() {
     this.closeModal();
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this._equipmentService.deleteEquipmentLocalAgency(this.agencyId, this.equipment)
         .then(() => {
           this.goBack();
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.EQUIPMENT.SUCCESS_DELETED', AlertMessageType.Success);
         })
         .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-    }else{
+    } else {
       this._equipmentService.deleteEquipment(this.countryId, this.equipment)
         .then(() => {
           this.goBack();

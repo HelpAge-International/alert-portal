@@ -63,6 +63,7 @@ export class DirectorComponent implements OnInit, OnDestroy {
   private countryIds: string[] = [];
   private countryOffices = [];
   private regionalCountryOffices = [];
+  private showCoCBanner: boolean;
 
   //phase 2 sprint 4 task
   @Input() agencyAdminIs:boolean
@@ -101,8 +102,9 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.userType = userType;
       this.agencyId = agencyId;
       this.systemAdminId = systemId;
-      console.log(agencyId)
-      console.log(UserType[userType])
+
+      this.checkCoCUpdated();
+
       if (this.userType == UserType.RegionalDirector) {
         this.userService.getRegionId(Constants.USER_PATHS[userType], this.uid)
           .takeUntil(this.ngUnsubscribe)
@@ -114,6 +116,16 @@ export class DirectorComponent implements OnInit, OnDestroy {
         this.loadData();
       }
     });
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == null || snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
   }
 
   ngOnDestroy() {
@@ -335,8 +347,6 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.otherRegion.regionId = "Unassigned";
       this.otherRegion.regionName = this.translate.instant("AGENCY_ADMIN.COUNTRY_OFFICES.OTHER_COUNTRIES");
       this.mapHelper.getRegionsForAgency(this.uid, this.userPaths[this.userType], (key, obj) => {
-        console.log(key)
-        console.log(obj)
         let hRegion = new RegionHolder();
         hRegion.regionName = obj.name;
         hRegion.directorId = obj.directorId;
@@ -366,10 +376,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
   }
 
   private evaluateOthers() {
-    console.log("evaluateOthers called")
     if (this.allCountries.size > 0) {
       this.allCountries.forEach(country => {
-        console.log(country)
         if (!this.countryIdsForOther.has(country)) {
           this.otherRegion.countries.add(country);
         } else {

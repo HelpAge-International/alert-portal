@@ -6,6 +6,7 @@ import {Modal} from "angular2-modal/plugins/bootstrap";
 import {Overlay} from "angular2-modal";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
+import {UserType} from "../../utils/Enums";
 declare var jQuery: any;
 
 @Component({
@@ -20,7 +21,7 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
   uid: string;
   private agencyToUpdate;
   private doActivate;
-
+  private showCoCBanner;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, overlay: Overlay, vcRef: ViewContainerRef, public modal: Modal) {
@@ -29,13 +30,28 @@ export class SystemAdminComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.uid = user.uid;
-      this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency", {
-        query: {
-          orderByChild: 'name'
+      if (userType == UserType.SystemAdmin) {
+        this.uid = user.uid;
+        this.agencies = this.af.database.list(Constants.APP_STATUS + "/agency", {
+          query: {
+            orderByChild: 'name'
+          }
+        });
+        this.checkCoCUpdated();
+      } else {
+        this.router.navigateByUrl("/login")
+      }
+    });
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == null || snap.val() == false){
+          this.showCoCBanner = true;
         }
       });
-    });
   }
 
   ngOnDestroy() {

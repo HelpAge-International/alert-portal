@@ -4,7 +4,8 @@
   <div class="Header_bar__wrap--inner">
     <div class="logo" (click)="goToHome()"></div>
     <ul>
-      <li *ngIf="user?.firstName" class="Header_bar__username">{{user?.firstName+" "+user?.lastName}}</li>
+      <li *ngIf="user?.firstName" class="Header_bar__username">{{user?.firstName+" "+user?.lastName+", Network Admin"}}
+      </li>
       <!--<li class="Header_bar__username" (click)="test()">{{firstName+" "+lastName}}</li>-->
       <li class="Header_bar__country">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">{{network?.name}}</a>
@@ -19,6 +20,7 @@
             {{"NETWORK.SWITCH_ACCOUNTS" | translate}}
           </a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
+          <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -28,3 +30,4 @@
     </ul>
   </div>
 </div>
+<app-report-problem ></app-report-problem>

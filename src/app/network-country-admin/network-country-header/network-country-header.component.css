@@ -5,3 +5,12 @@
   opacity: 0.5;
 
 }
+
+li.Header_bar__username {
+  text-transform: capitalize;
+  position: relative;
+}
+
+li.Header_bar__country {
+  position: relative;
+}

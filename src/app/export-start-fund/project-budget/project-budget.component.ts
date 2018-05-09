@@ -250,6 +250,11 @@ export class ProjectBudgetComponent implements OnInit, OnDestroy {
         this.managementSupportNarrative = responsePlan.budget['item'][BudgetCategory.ManagementSupport] ? responsePlan.budget['item'][BudgetCategory.ManagementSupport]['narrative'] : '';
       }
     }
+
+    let t = this.transportBudget + this.securityBudget + this.logisticsAndOverheadsBudget
+      + this.staffingAndSupportBudget + this.monitoringAndEvolutionBudget + this.capitalItemsBudget;
+
+
   }
 
   /**

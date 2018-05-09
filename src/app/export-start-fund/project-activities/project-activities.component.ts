@@ -189,9 +189,11 @@ export class ProjectActivitiesComponent implements OnInit, OnDestroy {
       .subscribe((responsePlan: ResponsePlan) => {
         this.responsePlan = responsePlan;
         console.log(responsePlan);
-        this.dcTotalFemale = Number(responsePlan.doubleCounting[0].value) + Number(responsePlan.doubleCounting[1].value) + Number(responsePlan.doubleCounting[2].value);
-        this.dcTotalMale = Number(responsePlan.doubleCounting[3].value) + Number(responsePlan.doubleCounting[4].value) + Number(responsePlan.doubleCounting[5].value);
-        this.dcTotal = this.dcTotalFemale + this.dcTotalMale;
+        if(responsePlan.doubleCounting){
+          this.dcTotalFemale = Number(responsePlan.doubleCounting[0].value) + Number(responsePlan.doubleCounting[1].value) + Number(responsePlan.doubleCounting[2].value);
+          this.dcTotalMale = Number(responsePlan.doubleCounting[3].value) + Number(responsePlan.doubleCounting[4].value) + Number(responsePlan.doubleCounting[5].value);
+          this.dcTotal = this.dcTotalFemale + this.dcTotalMale;
+        }
 
         this.bindProjectActivitiesData(responsePlan);
       });

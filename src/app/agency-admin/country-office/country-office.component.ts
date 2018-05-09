@@ -42,6 +42,8 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private directorName: string;
   private systemId: string;
   private userType: UserType;
+  private showCoCBanner: boolean;
+  private showToCBanner: boolean;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
@@ -50,7 +52,6 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      // console.log(user.auth.uid);
       this.uid = user.uid;
       this.agencyId = agencyId;
       this.systemId = systemId;
@@ -63,6 +64,9 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
           this.showRegionMap.set(region.$key, false);
         });
       });
+
+      this.checkCoCUpdated();
+      this.checkToCUpdated();
       this.checkAnyCountryNoRegion();
     });
   }
@@ -70,6 +74,26 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == null || snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
+  }
+
+  private checkToCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestToCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == null || snap.val() == false){
+          this.showToCBanner = true;
+        }
+      });
   }
 
   private checkAnyCountryNoRegion() {

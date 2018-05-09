@@ -13,17 +13,17 @@
 </ng-template>
 
 <ng-template #country>
+  <app-country-admin-header *ngIf="countryId"></app-country-admin-header>
+  <app-local-agency-header *ngIf="!countryId"></app-local-agency-header>
   <ng-container *ngIf="!isLocalNetworkAdmin">
-    <app-country-admin-header></app-country-admin-header>
     <app-network-country-menu [isViewing]="isViewing"></app-network-country-menu>
   </ng-container>
   <ng-container *ngIf="isLocalNetworkAdmin">
-    <app-country-admin-header></app-country-admin-header>
     <app-local-network-menu [isViewing]="isViewing"></app-local-network-menu>
   </ng-container>
 </ng-template>
 
-<app-alert-loader *ngIf="showLoader"></app-alert-loader>
+<!--<app-alert-loader *ngIf="showLoader"></app-alert-loader>-->
 
 <app-status-alert [message]="alertMessage?.message" [success]="alertMessage?.type === alertMessageType.Success"
                   [show]="alertMessage"></app-status-alert>
@@ -126,9 +126,8 @@
                 <!--directors tags-->
                 <div class="col-md-6">
                   <strong>{{"SYSTEM_ADMIN.MENU.AGENCIES" | translate}}</strong>
-
                   <!--not submit yet-->
-                  <div class="Small-spaced" *ngFor="let agency of agenciesNeedToApprove">
+                  <div class="Small-spaced" *ngFor="let agency of planApprovalAgencyMap.get(plan.$key)">
                     <div class="col-12 text-left">{{agency.name}}</div>
                     <div class="col-md-12 text-left"
                          [class.text-success]="shouldShowSuccess(plan, agency.id)"
@@ -136,12 +135,13 @@
                          [class.text-warning]="plan?.approval && plan?.approval['partner'] && !plan?.approval['countryDirector']">
                       {{approvalText(plan, agency.id) | translate}}
                       <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
+                      <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[0])==ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-country', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
+                      <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[2])==ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-regional', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
+                      <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
                     </div>
-                  </div>
-
+                    </div>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -156,6 +156,38 @@
                 </span>
               {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
             </a>
+            <div id="{{plan.$key}}"
+            class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">
+              <div class="row  Spaced">
+                <div class="col-sm-10 col-8  text-left"><h4>{{"RESPONSE_PLANS.HOME.APPROVAL" | translate}}</h4></div>
+                <div class="col-sm-2 col-4 text-right">
+                <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">
+                <!--{{"GLOBAL.CLOSE" | translate}}-->
+                </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
+                <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
+                  <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                  translate}}
+                  </div>
+                  <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
+                  translate}}
+                  </div>
+                  <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                  translate}}
+                  </div>
+                  <div class="col-md-6 text-right text-success">
+                    {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                  </div>
+                </div>
+                </div>
+              </div>
+
+            </div>
           </div>
 
           <!--needs review status-->
@@ -376,3 +408,64 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="confirm-resend-country" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"RESPONSE_PLANS.HOME.CONFIRM_RESEND_NOTIFICATION" | translate | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="resendNotification('countryDirector', '#confirm-resend-country')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-country')">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="confirm-resend-regional" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"RESPONSE_PLANS.HOME.CONFIRM_RESEND_NOTIFICATION" | translate | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="resendNotification('regionDirector', '#confirm-resend-regional')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-regional')">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="confirm-resend-global" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"RESPONSE_PLANS.HOME.CONFIRM_RESEND_NOTIFICATION" | translate | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="resendNotification('globalDirector', '#confirm-resend-global')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-global')">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

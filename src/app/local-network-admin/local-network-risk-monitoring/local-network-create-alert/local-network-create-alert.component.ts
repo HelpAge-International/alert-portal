@@ -16,6 +16,7 @@ import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {LocalStorageService} from "angular-2-local-storage";
+import {PrepActionService} from "../../../services/prepactions.service";
 
 
 @Component({
@@ -79,6 +80,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
               private storage: LocalStorageService,
               private userService: UserService,
               private networkService: NetworkService,
+              private prepActionService: PrepActionService,
               private notificationService: NotificationService) {
     this.initAlertData();
   }
@@ -144,6 +146,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                       })
 
                     this.initPreSelection(network)
+
+                    this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid,  false, this.networkId, this.systemId)
                   })
 
 
@@ -184,6 +188,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                       })
                     //get network location
                     this.initPreSelection(network);
+
+                    this.prepActionService.initActionsWithInfoNetworkLocal(this.af, this.ngUnsubscribe, this.uid,  false, this.networkId, this.systemId)
                   })
               })
 
@@ -235,11 +241,57 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
           dataToSave.otherName = this.alertData.hazardScenario;
           dataToSave.hazardScenario = -1;
         }
-        console.log(dataToSave);
 
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.networkId)
           .push(dataToSave)
-          .then(() => {
+          .then(alert => {
+
+            let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+            let hazardTrackingNode;
+
+            if(hazard && hazard.timeTracking && hazard.timeTracking[alert.key]){
+              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : undefined;
+            }
+
+            let currentTime = new Date().getTime()
+            let newTimeObject = {start: currentTime, finish: -1,level: dataToSave.alertLevel};
+
+
+            if(hazard){
+              if(dataToSave.alertLevel == AlertLevels.Red){
+                if(this.UserType == UserType.CountryDirector){
+                  if(hazardTrackingNode){
+                    hazardTrackingNode.push(newTimeObject)
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update(hazardTrackingNode)
+                  }else{
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update({timeSpentInRed: [newTimeObject]})
+                  }
+
+                }
+              }else{
+                if(hazardTrackingNode){
+                  hazardTrackingNode.push(newTimeObject)
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update(hazardTrackingNode)
+                }else{
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update({timeSpentInAmber: [newTimeObject]})
+                }
+
+              }
+            }
+
+            if(dataToSave.alertLevel == AlertLevels.Red){
+              if(this.UserType == UserType.CountryDirector){
+                  this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkId + '/' + alert.key + '/timeTracking/')
+                  .update({timeSpentInRed: [newTimeObject]})
+              }
+            }else{
+                this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkId + '/' + alert.key + '/timeTracking/')
+                .update({timeSpentInAmber: [newTimeObject]})
+            }
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -251,6 +303,63 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
               else {
                 riskNameTranslated = dataToSave.otherName;
               }
+
+              let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario) || action.assignedHazards.length == 0)
+
+              let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+              if(this.UserType == UserType.CountryDirector){
+                apaActions.forEach( action => {
+                  if(!action["redAlerts"]){
+                    action["redAlerts"] = [];
+                  }
+                  if(!action["timeTracking"]){
+                    action["timeTracking"] = {};
+                  }
+
+                  if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
+                    if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
+                      action["redAlerts"].push(alert.key);
+
+
+                      action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+
+                      if(!action.asignee){
+                        if(!action["timeTracking"]["timeSpentInRed"]){
+                          action['timeTracking']['timeSpentInRed'] = [];
+                        }
+                        action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                      }else if(action.isComplete){
+                        if(!action["timeTracking"]["timeSpentInGreen"]){
+                          action['timeTracking']['timeSpentInGreen'] = [];
+                        }
+                        action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                      }else{
+                        if(!action["timeTracking"]["timeSpentInAmber"]){
+                          action['timeTracking']['timeSpentInAmber'] = [];
+                        }
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                      }
+                      this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkId + '/' + action.id)
+                      .update(action)
+                    }
+                  }
+
+                })
+              }
+
+              let raisedAt = new Date().getTime();
+
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = raisedAt;
+                console.log(action)
+                console.log(Constants.APP_STATUS + '/action/' + this.networkCountryId + affectedAction.id)
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.networkId + '/' + affectedAction.id)
+                  .update(action)
+
+              })
 
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
@@ -335,6 +444,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
               this.nonMonitoredHazards.splice(index, 1)
             }
           }
+          value.id = x.key
           this.hazards.push(value);
         }
         console.log(this.hazards);

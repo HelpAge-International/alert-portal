@@ -503,11 +503,11 @@
             </tr>
             <tr>
               <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>{{"YES" | translate}}</p></td>
-              <td colspan="2" style="text-align: center;"><p>{{responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
+              <td colspan="2" style="text-align: center;"><p>{{responsePlan.monAccLearning && responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
               </td>
               <td colspan="3" style="text-align: center; background-color: lightgrey;"><p>{{"GLOBAL.NO" |
                 translate}}</p></td>
-              <td colspan="1" style="text-align: center;"><p>{{!responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
+              <td colspan="1" style="text-align: center;"><p>{{responsePlan.monAccLearning && !responsePlan.monAccLearning['isMedia'] ? 'X': ''}}</p>
               </td>
             </tr>
             <tr>
@@ -520,15 +520,15 @@
               <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"PHOTOGRAPHIC" |
                 translate}}</p></td>
               <td colspan="1" style="text-align: center;"><p
-                *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
+                *ngIf="responsePlan.monAccLearning && responsePlan.monAccLearning['mediaFormat'] && responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographic">X</p></td>
               <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"VIDEO" | translate}}</p>
               </td>
               <td colspan="1" style="text-align: center;"><p
-                *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
+                *ngIf="responsePlan.monAccLearning && responsePlan.monAccLearning['mediaFormat'] && responsePlan.monAccLearning['mediaFormat'] == MediaFormat.video">X</p></td>
               <td colspan="2" style="text-align: center; background-color: lightgrey;"><p>{{"BOTH" | translate}}</p>
               </td>
               <td colspan="1" style="text-align: center;"><p
-                *ngIf="responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
+                *ngIf="responsePlan.monAccLearning && responsePlan.monAccLearning['mediaFormat'] && responsePlan.monAccLearning['mediaFormat'] == MediaFormat.photographicAndVideo">X</p></td>
             </tr>
 
             <!--9 of 10 Adjust Beneficiaries for Double Counting-->

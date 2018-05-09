@@ -10,10 +10,13 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../../services/user.service";
+import {AgencyService} from "../../../services/agency-service.service"
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
+import {PrepActionService} from "../../../services/prepactions.service";
+import {INT_TYPE} from "@angular/compiler/src/output/output_ast";
 declare var jQuery: any;
 
 @Component({
@@ -47,7 +50,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   private countries = Constants.COUNTRIES;
   private countriesList = Constants.COUNTRY_SELECTION;
   private frequency = new Array(100);
-
+  private initialLocation : number;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
 
@@ -65,7 +68,10 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               private _commonService: CommonService,
               private translate: TranslateService,
               private userService: UserService,
-              private notificationService: NotificationService) {
+              private prepActionService: PrepActionService,
+              private notificationService: NotificationService,
+              private agencyService : AgencyService) {
+
     this.initAlertData();
   }
 
@@ -75,7 +81,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    var area = new OperationAreaModel()
+    area.country = this.initialLocation
+    this.alertData.affectedAreas.push(area);
   }
 
   removeAnotherArea(key: number,) {
@@ -88,11 +96,24 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyId = agencyId;
-      this.countryID = countryId;
+
       this._getHazards();
       this._getDirectorLocalAgencyId();
 
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
+      
+      this.agencyService.getAgency(this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(agency => {
+        this.initialLocation = agency.countryCode;
+        this.alertData.affectedAreas[0].country = this.initialLocation;
+      })
+      // this.userService.getCountryDetail(this.countryID, this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(detail => {
+      //   console.log(detail)
+      //   this.initialLocation = detail.location;
+      // });
 
+
+      console.log(this.prepActionService.actions)
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId);
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -134,9 +155,59 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         }
         console.log(dataToSave);
 
+
+
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
-          .then(() => {
+          .then(alert => {
+            
+            let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
+            let hazardTrackingNode;
+
+            if(hazard && hazard.timeTracking && hazard.timeTracking[alert.key]){
+              hazardTrackingNode = hazard.timeTracking ? hazard.timeTracking[alert.key] : null;
+            }
+
+            let currentTime = new Date().getTime()
+            let newTimeObject = {start: currentTime, finish: -1,level: dataToSave.alertLevel};
+
+
+            if(hazard){
+              if(dataToSave.alertLevel == AlertLevels.Red){
+                if(this.UserType == UserType.CountryDirector){
+                  if(hazardTrackingNode){
+                    hazardTrackingNode.push(newTimeObject)
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update(hazardTrackingNode)
+                  }else{
+                    this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                    .update({timeSpentInRed: [newTimeObject]})
+                  }
+
+                }
+              }else{
+                if(hazardTrackingNode){
+                  hazardTrackingNode.push(newTimeObject)
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update(hazardTrackingNode)
+                }else{
+                  this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.agencyId + '/' + hazard.id + '/timeTracking/' + alert.key)
+                  .update({timeSpentInAmber: [newTimeObject]})
+                }
+
+              }
+            }
+
+            if(dataToSave.alertLevel == AlertLevels.Red){
+              if(this.UserType == UserType.CountryDirector){
+                  this.af.database.object(Constants.APP_STATUS + '/alert/' + this.agencyId + '/' + alert.key + '/timeTracking/')
+                  .update({timeSpentInRed: [newTimeObject]})
+              }
+            }else{
+                this.af.database.object(Constants.APP_STATUS + '/alert/' + this.agencyId + '/' + alert.key + '/timeTracking/')
+                .update({timeSpentInAmber: [newTimeObject]})
+            }
+
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -149,6 +220,65 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
                 riskNameTranslated = dataToSave.otherName;
               }
 
+              console.log(this.prepActionService.actions)
+              console.log(dataToSave.hazardScenario)
+              let affectedActions = this.prepActionService.actions.filter(action => action.assignedHazards.includes(dataToSave.hazardScenario) || action.assignedHazards && action.assignedHazards.length == 0)
+
+              let apaActions = this.prepActionService.actions.filter(action => action.level == 2)
+
+
+              if(this.UserType == UserType.LocalAgencyDirector){
+                apaActions.forEach( action => {
+                  if(!action["redAlerts"]){
+                    action["redAlerts"] = [];
+                  }
+                  if(!action["timeTracking"]){
+                    action["timeTracking"] = {};
+                  }
+
+                  if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario))){
+                    if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1) != -1){
+                      action["redAlerts"].push(alert.key);
+
+
+                      action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
+
+                      if(!action.asignee){
+                        if(!action["timeTracking"]["timeSpentInRed"]){
+                          action['timeTracking']['timeSpentInRed'] = [];
+                        }
+                        action['timeTracking']['timeSpentInRed'].push(newTimeObject)
+                      }else if(action.isComplete){
+                        if(!action["timeTracking"]["timeSpentInGreen"]){
+                          action['timeTracking']['timeSpentInGreen'] = [];
+                        }
+                        action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+                      }else{
+                        if(!action["timeTracking"]["timeSpentInAmber"]){
+                          action['timeTracking']['timeSpentInAmber'] = [];
+                        }
+                        action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+                      }
+                      this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id)
+                      .update(action)
+                    }
+                  }
+                })
+              }
+
+              let raisedAt = new Date().getTime();
+
+              affectedActions.forEach( affectedAction => {
+                // push activated datetime to each apa
+                let action = this.prepActionService.findAction(affectedAction.id);
+                action["raisedAt"] = raisedAt;
+                console.log(action)
+                console.log(Constants.APP_STATUS + '/action/' + this.agencyId + affectedAction.id)
+                this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + affectedAction.id)
+                  .update(action)
+
+              })
+
               let notification = new MessageModel();
               notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_TITLE", {riskName: riskNameTranslated});
               notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RED_ALERT_REQUESTED_CONTENT", {riskName: riskNameTranslated});
@@ -158,7 +288,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
             }
 
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
-            this.router.navigateByUrl('dashboard');
+            this.router.navigateByUrl('local-agency/dashboard');
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });
@@ -167,10 +297,14 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
 
-  highlightRadio(){
+  highlightRadio(isRed : boolean){
 
-
-    console.log(this.alertData.alertLevel);
+    if(isRed) {
+      this.alertData.alertLevel = 2
+    }
+    else {
+      this.alertData.alertLevel = 1
+    }
 
   }
 
@@ -229,6 +363,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               this.nonMonitoredHazards.splice(index, 1)
             }
           }
+          value.id = x.key
           this.hazards.push(value);
         }
         console.log(this.hazards);
@@ -277,8 +412,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
     return /^-?[\d.]+(?:e-?\d+)?$/.test(n);
   }
 
-  getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+  getCSSHazard(hazard: any) {
+    let value = (typeof hazard == "string") ? parseInt(hazard) : hazard
+    return HazardImages.init().getCSS(value);
   }
 
 }

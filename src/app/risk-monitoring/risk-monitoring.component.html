@@ -53,7 +53,7 @@
               indicatorsCC.length : 0}}</strong> {{"RISK_MONITORING.MAIN_PAGE.INDICATORS_COUNT" | translate}}
             </div>
             <div class="col-sm-1 Icon--align-center">
-              <a data-toggle="collapse"><i class="fa fa-caret-up text-primary" aria-hidden="true"></i>
+              <a data-toggle="collapse"><div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
               </a>
             </div>
           </div>
@@ -73,40 +73,56 @@
               </div>
             </div>
 
-            <div *ngIf="indicatorsCC && indicatorsCC.length > 0"
-            >
+            <div *ngIf="indicatorsCC && indicatorsCC.length > 0">
               <div class="indicators-to-hazards" *ngFor="let indicatorC of indicatorsCC; let indicatorKey = index;"
                    id="indicators-to-hazards_CC_{{indicatorKey}}">
                 <div class="edit__wrap--risk row Small-spaced align-items-center Header">
-                  <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
-                    *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
-                    *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
+                  <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} |
+                    <span href="javascript:void(0)" class="text-primary" *ngIf="indicatorC.geoLocation"
+                          (click)="showSubNationalAreas(indicatorC.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
+                    <span *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                     <a *ngIf="!isViewing"
-                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" | translate}}
+                       [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" |
+                      translate}}
                     </a>
                   </div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee)">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['fromNetwork']">Network: {{indicatorC['networkName']}}</div>
+                  <div class="col-md-4 col-sm-5 margin-left-four"
+                       *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee)">Assignee:
+                    {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}
+                  </div>
+                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['fromNetwork']">Network:
+                    {{indicatorC['networkName']}}
+                  </div>
                 </div>
 
                 <div
                   class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-
                   <div class="" *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                     <div [ngClass]="setClassForIndicator(0, indicatorC.triggerSelected)">
-                      {{indicatorC.trigger[0].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicatorC.triggerSelected == 0">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
                       {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
+
                     <div [ngClass]="setClassForIndicator(1, indicatorC.triggerSelected)">
-                      {{indicatorC.trigger[1].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicatorC.triggerSelected == 1">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
                       {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
+
                     <div [ngClass]="setClassForIndicator(2, indicatorC.triggerSelected)">
-                      {{indicatorC.trigger[2].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicatorC.triggerSelected == 2">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -117,7 +133,10 @@
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
                     <div class="btn btn-primary" (click)="greenSelected(indicatorC.$key)">
-                      {{indicatorC.trigger[0].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
@@ -125,7 +144,10 @@
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
                     <div class="btn btn-amber" (click)="amberSelected(indicatorC.$key)">
-                      {{indicatorC.trigger[1].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
@@ -133,7 +155,10 @@
                     <input type="radio" name="indicator_{{indicatorC.$key}}"
                            [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
                     <div class="btn btn-red" (click)="redSelected(indicatorC.$key)">
-                      {{indicatorC.trigger[2].triggerValue}}
+                      <div class="hover-over">
+                        <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                        <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                      </div>
                     </div>
                     <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                       {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -204,17 +229,18 @@
                       </div>
                       <div *ngIf="!isViewing && !indicatorC?.assignee">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
-                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
+                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary"
+                           (click)="assignIndicatorTo('countryContext', indicatorC)">
                           Assign to</a>
                       </div>
-                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="isViewing && canCopy && !isLocalAgency" class="col-sm-12 btn btn-tertiary"
                            (click)="copyIndicator(indicatorC, true)">
                         Copy
                       </div>
                       <!--TODO-->
                       <p>Last update: <strong>{{indicatorC.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
-                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM
-                        yyyy'}}</strong></p></div>
+                      <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicatorC) | date: 'dd MMM yyyy'}}</strong></p>
+                    </div>
                   </div>
                   <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                        *ngIf="isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
@@ -251,7 +277,7 @@
                         <div *ngFor="let log of indicatorC.logs">
                           <div class="row Spaced log-post__wrap--risk">
                             <div class="log-date__wrap--risk col-lg-1">
-                              <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                              <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                               <p>{{"GLOBAL.UPDATE" | translate}} <img
                                 src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                               </p>
@@ -265,13 +291,15 @@
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" | translate}} </a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" |
+                                  translate}} </a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                 <a
                                   *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                   href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" | translate}}</a>
+                                  (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" |
+                                  translate}}</a>
                               </div>
                             </div>
                           </div>
@@ -326,12 +354,11 @@
 
               </div>
             </div>
-          </div>
-        </div>
-
-        <div *ngIf="!indicatorsCC || !indicatorsCC.length">
-          <div class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-            <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
+            <div *ngIf="!indicatorsCC || !indicatorsCC.length">
+              <div class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -343,8 +370,10 @@
         <ng-container *ngIf="!overviewCountryPrivacy || hazard.hazardScenario != Hazard_Conflict ||
          (hazard.hazardScenario == Hazard_Conflict && overviewCountryPrivacy && (overviewCountryPrivacy.conflictIndicators == Privacy.Public || (overviewCountryPrivacy.conflictIndicators == Privacy.Network && withinNetwork)))">
 
-          <div class="Accordion--risk Map-list" data-toggle="collapse" attr.href="#{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}"
-               aria-expanded="true" attr.aria-controls="{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}">
+          <div class="Accordion--risk Map-list" data-toggle="collapse"
+               attr.href="#{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}"
+               aria-expanded="true"
+               attr.aria-controls="{{'collapse' + (hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}">
             <div class="row">
               <div class="col-sm-4">
                 <div class="Icon">
@@ -357,9 +386,12 @@
                 <h4>{{hazard.hazardScenario != -1 ? (hazardScenario[hazard.hazardScenario] | translate) :
                   hazard.hazardName}}</h4></div>
               <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
-                <div *ngIf="hazard.isSeasonal">
-                  <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" | translate}}
-                </div>
+                <a href="javascript:void(0)" class="text-primary resend-notification"
+                   id="open-seasonal-modal{{hazard.$key}}" *ngIf="hazard.isSeasonal"
+                   (click)="openSeasonalModal('select-seasons', hazard)">
+                  <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
+                  translate}}
+                </a>
               </div>
               <div class="indicators__wrap--risk col-sm-3 Right-aligned">
                 <strong>{{hazard.indicators && hazard.indicators.length ? hazard.indicators.length : 0}}</strong>
@@ -370,82 +402,111 @@
             </div>
           </div>
 
-        <div class="Accordion__Content collapse" id="collapse{{(hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}" role="tab">
-          <div class="card-block">
-            <div class="Sub-header-title__wrap--risk">
-              <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
-                <a href="javascript:void(0)" data-toggle="modal"
-                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario); changeHazard(hazardId);">
-                   {{"GLOBAL.EDIT" | translate}}</a>
-                <a href="javascript:void(0)" data-toggle="modal"
-                   data-target="#archiveHazard"
-                   *ngIf="hazard.existsOnAgency"
-                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"ARCHIVE_ACTION_DIALOG.TITLE"
-                  | translate}}</a>
-                <a href="javascript:void(0)" data-toggle="modal"
-                   *ngIf="hazard.existsOnAgency"
-                   data-target="#deleteHazardModal"
-                   (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
-                <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" *ngIf="hazard.existsOnAgency" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
-                  | translate}}</a>
-
+          <div class="Accordion__Content collapse"
+               id="collapse{{(hazard.hazardScenario != -1 ? hazard.hazardScenario : hazard.otherName)}}" role="tab">
+            <div class="card-block">
+              <div class="Sub-header-title__wrap--risk">
+                <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
+                  <a href="javascript:void(0)" data-toggle="modal"
+                     (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario); changeHazard(hazardId);">
+                    {{"GLOBAL.EDIT" | translate}}</a>
+                  <a href="javascript:void(0)" data-toggle="modal"
+                     data-target="#archiveHazard"
+                     *ngIf="hazard.existsOnAgency"
+                     (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"ARCHIVE_ACTION_DIALOG.TITLE"
+                    | translate}}</a>
+                  <a href="javascript:void(0)" data-toggle="modal"
+                     *ngIf="hazard.existsOnAgency"
+                     data-target="#deleteHazardModal"
+                     (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
+                  <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" *ngIf="hazard.existsOnAgency"
+                     class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                    | translate}}</a>
+                </div>
               </div>
-            </div>
-            <div *ngIf="hazard.indicators && hazard.indicators.length > 0">
+              <div *ngIf="hazard.indicators && hazard.indicators.length > 0">
 
-                <div class="indicators-to-hazards" *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
+                <div class="indicators-to-hazards"
+                     *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
                      id="indicators-to-hazards_{{hazardIndex}}_{{indicatorKey}}">
 
-                <div class="edit__wrap--risk row Small-spaced align-items-center Header">
-                  <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
-                    *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
-                    *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
-                    <a *ngIf="!isViewing && !indicator.fromNetwork"
-                       [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
-                    </a>
-                    <a *ngIf="!isViewing && indicator.fromNetwork"
-                       [routerLink]="indicator.networkCountryId ? ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId, networkCountryId: indicator.networkCountryId}] : ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId}]">{{"EDIT" | translate}}
-                    </a>
+                  <div class="edit__wrap--risk row Small-spaced align-items-center Header">
+                    <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} |
+                      <span href="javascript:void(0)" class="text-primary" *ngIf="indicator.geoLocation"
+                            (click)="showSubNationalAreas(indicator.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
+                      <span *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
+                      <a *ngIf="!isViewing && !indicator.fromNetwork"
+                         [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" |
+                        translate}}
+                      </a>
+                      <a *ngIf="!isViewing && indicator.fromNetwork"
+                         [routerLink]="indicator.networkCountryId ? ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId, networkCountryId: indicator.networkCountryId}] : ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId}]">{{"EDIT"
+                        | translate}}
+                      </a>
+                    </div>
+                    <div class="col-md-4 col-sm-5 margin-left-four"
+                         *ngIf="indicator.assignee && staffMap.get(indicator.assignee)">Assignee:
+                      {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}
+                    </div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network:
+                      {{indicator['networkName']}}
+                    </div>
                   </div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
-                  <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network: {{indicator['networkName']}}</div>
-                </div>
 
                   <div
                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                     <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div [ngClass]="setClassForIndicator(0, indicator.triggerSelected)">
-                        {{indicator.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicator.triggerSelected == 0">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                         {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
+
                       <div [ngClass]="setClassForIndicator(1, indicator.triggerSelected)">
-                        {{indicator.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicator.triggerSelected == 1">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                         {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
+
                       <div [ngClass]="setClassForIndicator(2, indicator.triggerSelected)">
-                        {{indicator.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicator.triggerSelected == 2">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                         {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                     </div>
+
                     <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
                       <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
-                        {{indicator.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
+
                       <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                         {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
                       <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
-                        {{indicator.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
@@ -453,7 +514,10 @@
                       <input type="radio" name="indicator_{{indicator.$key}}"
                              [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
                       <div class="btn btn-red" (click)="redSelected(indicator.$key)">
-                        {{indicator.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
@@ -512,10 +576,11 @@
                       </div>
                       <div *ngIf="!isViewing && !indicator?.assignee">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
-                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo(hazard.$key, indicator)">
+                           aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary"
+                           (click)="assignIndicatorTo(hazard.$key, indicator)">
                           Assign to</a>
                       </div>
-                      <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                      <div *ngIf="isViewing && canCopy && !isLocalAgency" class="col-sm-12 btn btn-tertiary"
                            (click)="copyIndicator(indicator, false, hazard)">
                         <!--TODO TRANSLATE-->
                         Copy
@@ -529,7 +594,7 @@
                          *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save" id="hideSave"
                            *ngIf="indicator.fromNetwork"
-                           (click)="updateIndicatorStatus(indicator.hazardId, indicator, indicatorKey)">
+                           (click)="updateNetworkIntdicatorStatus(hazard.id, indicator.hazardId, indicator, indicatorKey)">
                         {{"GLOBAL.SAVE_CHANGES" | translate}}
                       </div>
                       <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
@@ -564,7 +629,7 @@
                           <div *ngFor="let log of indicator.logs">
                             <div class="row Spaced log-post__wrap--risk">
                               <div class="log-date__wrap--risk col-lg-1">
-                                <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                                <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                                 <p>{{"GLOBAL.UPDATE" | translate}} <img
                                   src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                 </p>
@@ -578,13 +643,15 @@
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}} </a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" |
+                                    translate}} </a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
+                                    (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
+                                    translate}}</a>
                                 </div>
                               </div>
                             </div>
@@ -621,7 +688,8 @@
                          id="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}">
                       <div class="log_left p-3 row col-sm-12">
                         <h3 class="">{{"RISK_MONITORING.MAIN_PAGE.MY_SOURCES_INFORMATION" | translate}}</h3>
-                        <a data-toggle="collapse" attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
+                        <a data-toggle="collapse"
+                           attr.href="#{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
                            aria-expanded="true"
                            attr.aria-controls="{{'infoTooltip' + hazard.hazardScenario+'_'+indicatorKey}}"
                            class="margin-left-five text-right col-sm-7 closealltooltips">{{"GLOBAL.CLOSE" |
@@ -641,7 +709,8 @@
               </div>
 
               <div *ngIf="!hazard.indicators || !hazard.indicators.length">
-                <div class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
+                <div
+                  class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                   <p style="text-align:center;">{{"RISK_MONITORING.MAIN_PAGE.NO_INDICATORS" | translate}}</p>
                 </div>
               </div>
@@ -669,7 +738,7 @@
         <!-- START: Country Context - Inactive / archived state -->
         <!-- THIS HAS BEEN COPIED FROM THE ACTIVE SECTION - Find in document 'countryContextIsActive' to find it -->
         <div class="card" *ngIf="!countryContextIsActive">
-          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseOne" aria-expanded="true"
+          <div class="Accordion--risk Map-list" data-toggle="collapse" href="#collapseArchiveOne" aria-expanded="true"
                aria-controls="collapseOne">
             <div class="row">
               <div class="col-lg-4 col-sm-4">
@@ -685,14 +754,14 @@
                 indicatorsCC.length : 0}}</strong> {{"RISK_MONITORING.MAIN_PAGE.INDICATORS_COUNT" | translate}}
               </div>
               <div class="col-sm-1 Icon--align-center">
-                <a data-toggle="collapse"><i class="fa fa-caret-up text-primary" aria-hidden="true"></i>
+                <a data-toggle="collapse"><div class="Ribbon__header__chevron" onClick="ribbonClick(this)"></div>
                 </a>
               </div>
             </div>
           </div>
 
           <!-- collapsible content Country Context Start -->
-          <div class="Accordion__Content collapse" id="collapseOne" role="tab">
+          <div class="Accordion__Content collapse" id="collapseArchiveOne" role="tab">
             <div class="card-block">
               <div class="Sub-header-title__wrap--risk">
                 <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -700,45 +769,63 @@
                      (click)="setTmpHazard('countryContext', true, -1)"
                      data-target="#archiveHazard">
                     {{"GLOBAL.ACTIVATE" | translate}}</a>
-                  <a [routerLink]="['/risk-monitoring/add-indicator/countryContext']" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                  <a [routerLink]="['/risk-monitoring/add-indicator/countryContext']"
+                     class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                     | translate}}</a>
                 </div>
               </div>
 
-              <div *ngIf="indicatorsCC && indicatorsCC.length > 0"
-              >
+              <div *ngIf="indicatorsCC && indicatorsCC.length > 0">
                 <div class="indicators-to-hazards" *ngFor="let indicatorC of indicatorsCC; let indicatorKey = index;"
                      id="indicators-to-hazards_CC_{{indicatorKey}}">
                   <div class="edit__wrap--risk row Small-spaced align-items-center Header">
                     <div class="col-md-4 col-sm-12 margin-left-four">{{indicatorC.name}} | <span
-                      *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
-                      *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
+                      *ngIf="indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
+                      <span
+                        *ngIf="!indicatorC.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                       <a *ngIf="!isViewing"
-                         [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" | translate}}
+                         [routerLink]="['/risk-monitoring/add-indicator/countryContext', indicatorC.$key]">{{"EDIT" |
+                        translate}}
                       </a>
                     </div>
-                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee)">Assignee: {{staffMap.get(indicatorC.assignee)?.firstName + ' ' + staffMap.get(indicatorC.assignee)?.lastName}}</div>
-                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['fromNetwork']">Network: {{indicatorC['networkName']}}</div>
+                    <div class="col-md-4 col-sm-5 margin-left-four"
+                         *ngIf="indicatorC.assignee && staffMap.get(indicatorC.assignee)">Assignee:
+                      {{staffMap.get(indicatorC.assignee)?.firstName + ' ' +
+                      staffMap.get(indicatorC.assignee)?.lastName}}
+                    </div>
+                    <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicatorC['fromNetwork']">Network:
+                      {{indicatorC['networkName']}}
+                    </div>
                   </div>
 
                   <div
                     class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
-
                     <div class="" *ngIf="!isIndicatorUpdate['countryContext' + '_' + indicatorKey]">
                       <div [ngClass]="setClassForIndicator(0, indicatorC.triggerSelected)">
-                        {{indicatorC.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicatorC.triggerSelected == 0">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
                         {{durationType[indicatorC.trigger[0].durationType] | translate | lowercase}}</p>
+
                       <div [ngClass]="setClassForIndicator(1, indicatorC.triggerSelected)">
-                        {{indicatorC.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicatorC.triggerSelected == 1">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
                         {{durationType[indicatorC.trigger[1].durationType] | translate | lowercase}}</p>
+
                       <div [ngClass]="setClassForIndicator(2, indicatorC.triggerSelected)">
-                        {{indicatorC.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicatorC.triggerSelected == 2">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -749,7 +836,10 @@
                       <input type="radio" name="indicator_{{indicatorC.$key}}"
                              [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="0">
                       <div class="btn btn-primary" (click)="greenSelected(indicatorC.$key)">
-                        {{indicatorC.trigger[0].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[0].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[0].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-left-green-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[0].frequencyValue}}
@@ -757,7 +847,10 @@
                       <input type="radio" name="indicator_{{indicatorC.$key}}"
                              [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="1">
                       <div class="btn btn-amber" (click)="amberSelected(indicatorC.$key)">
-                        {{indicatorC.trigger[1].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[1].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[1].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[1].frequencyValue}}
@@ -765,7 +858,10 @@
                       <input type="radio" name="indicator_{{indicatorC.$key}}"
                              [(ngModel)]="indicatorTrigger[indicatorC.$key]" [value]="2">
                       <div class="btn btn-red" (click)="redSelected(indicatorC.$key)">
-                        {{indicatorC.trigger[2].triggerValue}}
+                        <div class="hover-over">
+                          <div class="hover-over-text">{{indicatorC.trigger[2].triggerValue}}</div>
+                          <span class="hovertext">{{indicatorC.trigger[2].triggerValue}}</span>
+                        </div>
                       </div>
                       <p class="low_risk_text__wrap--risk-right-red-checkbox low">
                         {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicatorC.trigger[2].frequencyValue}}
@@ -836,10 +932,11 @@
                         </div>
                         <div *ngIf="!isViewing && !indicatorC?.assignee">
                           <a href="javascript:void(0)" data-toggle="modal" data-target="#assignIndicator"
-                             aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary" (click)="assignIndicatorTo('countryContext', indicatorC)">
+                             aria-expanded="false" aria-controls="popover_content" class="col-sm-12 btn btn-tertiary"
+                             (click)="assignIndicatorTo('countryContext', indicatorC)">
                             Assign to</a>
                         </div>
-                        <div *ngIf="isViewing && canCopy" class="col-sm-12 btn btn-tertiary"
+                        <div *ngIf="isViewing && canCopy && !isLocalAgency" class="col-sm-12 btn btn-tertiary"
                              (click)="copyIndicator(indicatorC, true)">
                           Copy
                         </div>
@@ -883,7 +980,7 @@
                           <div *ngFor="let log of indicatorC.logs">
                             <div class="row Spaced log-post__wrap--risk">
                               <div class="log-date__wrap--risk col-lg-1">
-                                <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                                <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                                 <p>{{"GLOBAL.UPDATE" | translate}} <img
                                   src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                 </p>
@@ -897,13 +994,15 @@
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                    (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" | translate}} </a>
+                                    (click)="setTmpLog(log.$key, log.content, indicatorC.$key)">{{"EDIT" |
+                                    translate}} </a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                   <a
                                     *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                     href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                    (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" | translate}}</a>
+                                    (click)="setTmpLog(log.$key, log.content, indicatorC.$key)"> {{"DELETE" |
+                                    translate}}</a>
                                 </div>
                               </div>
                             </div>
@@ -977,8 +1076,8 @@
          (hazard.hazardScenario == Hazard_Conflict && overviewCountryPrivacy && (overviewCountryPrivacy.conflictIndicators == Privacy.Public || (overviewCountryPrivacy.conflictIndicators == Privacy.Network && withinNetwork)))">
 
             <div class="Accordion--risk Map-list" data-toggle="collapse"
-                 attr.href="#{{'collapse' + hazard.hazardScenario}}" aria-expanded="true"
-                 attr.aria-controls="{{'collapse' + hazard.hazardScenario}}">
+                 attr.href="#{{'collapse_archive' + hazard.hazardScenario}}" aria-expanded="true"
+                 attr.aria-controls="{{'collapse_archive' + hazard.hazardScenario}}">
               <div class="row">
                 <div class="col-sm-4">
                   <div class="Icon">
@@ -990,10 +1089,12 @@
                     src="assets/images/risks/{{hazardScenario[hazard.hazardScenario] | translate | lowercase}}.svg"></div>-->
                   <h4>{{hazardScenario[hazard.hazardScenario] | translate}}</h4></div>
                 <div class="indicators__wrap--risk  col-sm-3 Right-aligned">
-                  <div *ngIf="hazard.isSeasonal">
+                  <a href="javascript:void(0)" class="text-primary resend-notification"
+                     id="open-seasonal-m{{hazard.$key}}" *ngIf="hazard.isSeasonal"
+                     (click)="openSeasonalModal('select-seasons', hazard)">
                     <img src="assets/images/icons/calendar.svg"> {{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
                     translate}}
-                  </div>
+                  </a>
                 </div>
                 <div class="indicators__wrap--risk col-sm-3 Right-aligned"><strong>{{hazard.indicators &&
                   hazard.indicators.length ? hazard.indicators.length : 0}}</strong>
@@ -1005,7 +1106,7 @@
               </div>
             </div>
 
-            <div class="Accordion__Content collapse" id="collapse{{hazard.hazardScenario}}" role="tab">
+            <div class="Accordion__Content collapse" id="collapse_archive{{hazard.hazardScenario}}" role="tab">
               <div class="card-block">
                 <div class="Sub-header-title__wrap--risk">
                   <div *ngIf="!isViewing" class="sub-sub-contents__wrap--risk col-sm-11">
@@ -1018,7 +1119,8 @@
                        data-target="#deleteHazardModal"
                        *ngIf="hazard.existsOnAgency"
                        (click)="setTmpHazard(hazard.id, false, hazard.hazardScenario)">{{"DELETE" | translate}}</a>
-                    <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" *ngIf="hazard.existsOnAgency" class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
+                    <a [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id]" *ngIf="hazard.existsOnAgency"
+                       class="btn btn-primary pull-right">{{"RISK_MONITORING.ADD_INDICATOR.TITLE_PAGE"
                       | translate}}</a>
                   </div>
                 </div>
@@ -1028,66 +1130,99 @@
                        *ngFor="let indicator of hazard.indicators; let indicatorKey = index;"
                        id="archived_indicators-to-hazards_{{archivedHazardIndex}}_{{indicatorKey}}">
                     <div class="edit__wrap--risk row Small-spaced align-items-center Header">
-                      <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} | <span
-                        *ngIf="indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span> <span
-                        *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
+                      <div class="col-md-4 col-sm-12 margin-left-four">{{indicator.name}} |
+                        <span href="javascript:void(0)" class="text-primary" *ngIf="indicator.geoLocation"
+                              (click)="showSubNationalAreas(indicator.affectedLocation)">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL" | translate}}</span>
+                        <span *ngIf="!indicator.geoLocation">{{"RISK_MONITORING.MAIN_PAGE.NATIONAL" | translate}}</span>
                         <a *ngIf="!isViewing && !indicator.fromNetwork"
-                           [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT" | translate}}
+                           [routerLink]="['/risk-monitoring/add-indicator/' + hazard.id + '/', indicator.$key]">{{"EDIT"
+                          | translate}}
                         </a>
                         <a *ngIf="!isViewing && indicator.fromNetwork"
-                           [routerLink]="indicator.networkCountryId ? ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId, networkCountryId: indicator.networkCountryId}] : ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId}]">{{"EDIT" | translate}}
+                           [routerLink]="indicator.networkCountryId ? ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId, networkCountryId: indicator.networkCountryId}] : ['/risk-monitoring/add-indicator/' + indicator.hazardId + '/', indicator.$key, {networkId: indicator.networkId}]">{{"EDIT"
+                          | translate}}
                         </a>
                       </div>
-                      <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator.assignee && staffMap.get(indicator.assignee)">Assignee: {{staffMap.get(indicator.assignee)?.firstName + ' ' + staffMap.get(indicator.assignee)?.lastName}}</div>
-                      <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network: {{indicator['networkName']}}</div>
+                      <div class="col-md-4 col-sm-5 margin-left-four"
+                           *ngIf="indicator.assignee && staffMap.get(indicator.assignee)">Assignee:
+                        {{staffMap.get(indicator.assignee)?.firstName + ' ' +
+                        staffMap.get(indicator.assignee)?.lastName}}
+                      </div>
+                      <div class="col-md-4 col-sm-5 margin-left-four" *ngIf="indicator['fromNetwork']">Network:
+                        {{indicator['networkName']}}
+                      </div>
                     </div>
 
                     <div
                       class="row_expanded__wrap--risk row Line-row--risk Small-spaced align-items-center margin-left-one">
                       <div class="" *ngIf="!isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                         <div [ngClass]="setClassForIndicator(0, indicator.triggerSelected)">
-                          {{indicator.trigger[0].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-left-green low" *ngIf="indicator.triggerSelected == 0">
                           {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
                           {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
+
                         <div [ngClass]="setClassForIndicator(1, indicator.triggerSelected)">
-                          {{indicator.trigger[1].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-middle-amber low" *ngIf="indicator.triggerSelected == 1">
                           {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
                           {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
+
                         <div [ngClass]="setClassForIndicator(2, indicator.triggerSelected)">
-                          {{indicator.trigger[2].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-right-red low" *ngIf="indicator.triggerSelected == 2">
                           {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
                           {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                       </div>
+
                       <div class="" *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                         <input type="radio" name="indicator_{{indicator.$key}}"
                                [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="0">
                         <div class="btn btn-primary" (click)="greenSelected(indicator.$key)">
-                          {{indicator.trigger[0].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[0].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[0].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-left-green-checkbox low">
-                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[0].frequencyValue}}
+                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
+                          {{indicator.trigger[0].frequencyValue}}
                           {{durationType[indicator.trigger[0].durationType] | translate | lowercase}}</p>
                         <input type="radio" name="indicator_{{indicator.$key}}"
                                [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="1">
                         <div class="btn btn-amber" (click)="amberSelected(indicator.$key)">
-                          {{indicator.trigger[1].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[1].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[1].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-middle-amber-checkbox low">
-                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[1].frequencyValue}}
+                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
+                          {{indicator.trigger[1].frequencyValue}}
                           {{durationType[indicator.trigger[1].durationType] | translate | lowercase}}</p>
                         <input type="radio" name="indicator_{{indicator.$key}}"
                                [(ngModel)]="indicatorTrigger[indicator.$key]" [value]="2">
                         <div class="btn btn-red" (click)="redSelected(indicator.$key)">
-                          {{indicator.trigger[2].triggerValue}}
+                          <div class="hover-over">
+                            <div class="hover-over-text">{{indicator.trigger[2].triggerValue}}</div>
+                            <span class="hovertext">{{indicator.trigger[2].triggerValue}}</span>
+                          </div>
                         </div>
                         <p class="low_risk_text__wrap--risk-right-red-checkbox low">
-                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}} {{indicator.trigger[2].frequencyValue}}
+                          {{"RISK_MONITORING.MAIN_PAGE.CHECK_EVERY" | translate}}
+                          {{indicator.trigger[2].frequencyValue}}
                           {{durationType[indicator.trigger[2].durationType] | translate | lowercase}}</p>
                       </div>
                       <!--
@@ -1160,13 +1295,14 @@
                           {{"GLOBAL.UPDATE" | translate}}
                         </div>
                         <p>Last update: <strong>{{indicator.updatedAt | date: 'dd MMM yyyy'}}</strong></p>
-                        <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM yyyy'}}</strong>
+                        <p>Next update: <strong>{{_getIndicatorFutureTimestamp(indicator) | date: 'dd MMM
+                          yyyy'}}</strong>
                       </div>
                       <div class="end-col__wrap--risk col-lg-3 col-md-3 col-sm-6"
                            *ngIf="isIndicatorUpdate[hazard.id + '_' + indicatorKey]">
                         <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
                              *ngIf="indicator.fromNetwork"
-                             (click)="updateIndicatorStatus(indicator.hazardId, indicator, indicatorKey)">
+                             (click)="updateNetworkIntdicatorStatus(hazard.id, indicator.hazardId, indicator, indicatorKey)">
                           {{"GLOBAL.SAVE_CHANGES" | translate}}
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 btn btn-primary-save"
@@ -1189,15 +1325,16 @@
                           <h3>{{"RISK_MONITORING.MAIN_PAGE.LOG" | translate}}</h3>
                           <hr class="d-inline-flex">
                           <form>
-                            <input [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
-                                   type="text" placeholder="Add log entry" name="log_{{indicator.$key}}"
-                                   [(ngModel)]="logContent[indicator.$key]">
+                            <input
+                              [disabled]="!countryPermissionsMatrix.notes.New && UserType != USER_TYPE.CountryAdmin"
+                              type="text" placeholder="Add log entry" name="log_{{indicator.$key}}"
+                              [(ngModel)]="logContent[indicator.$key]">
                           </form>
                           <div *ngIf="indicator.logs && indicator.logs.length > 0">
                             <div *ngFor="let log of indicator.logs">
                               <div class="row Spaced log-post__wrap--risk">
                                 <div class="log-date__wrap--risk col-lg-1">
-                                  <p>{{log.timeStamp | date:"d MMM ''yy"}}</p>
+                                  <p>{{log.timeStamp | date:"d MMM yyyy"}}</p>
                                   <p>{{"GLOBAL.STATUS" | translate}} <img
                                     src="assets/images/oval_{{alertImages[log.triggerAtCreation] | translate | lowercase}}.svg">
                                   </p>
@@ -1210,13 +1347,15 @@
                                     <a
                                       *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit || UserType == USER_TYPE.CountryAdmin"
                                       href="javascript:void(0)" data-toggle="modal" data-target="#editNote"
-                                      (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" | translate}}</a>
+                                      (click)="setTmpLog(log.$key, log.content, indicator.$key)">{{"EDIT" |
+                                      translate}}</a>
                                     <a
                                       *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Edit && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin">|</a>
                                     <a
                                       *ngIf="uid == log.addedBy && countryPermissionsMatrix.notes.Delete || UserType == USER_TYPE.CountryAdmin"
                                       href="javascript:void(0)" data-toggle="modal" data-target="#deleteIndicatorLog"
-                                      (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" | translate}}</a>
+                                      (click)="setTmpLog(log.$key, log.content, indicator.$key)"> {{"DELETE" |
+                                      translate}}</a>
                                   </div>
                                 </div>
                               </div>
@@ -1310,11 +1449,8 @@
       </div>
       <div class="modal-body text-center">
         <p class="text-center col-sm-12">
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_ONE" | translate}}
-          {{tmpHazardData['activeStatus'] ? 'activate' : 'archive'}}
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_TWO" | translate}}
-          {{tmpHazardData['activeStatus'] ? 'active' : 'inactive'}}
-          {{"RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE_PART_THREE" | translate}}
+          {{tmpHazardData['activeStatus'] ? activeMessage : "RISK_MONITORING.MAIN_PAGE.MODAL.ARCHIVE_HAZARD.MESSAGE" |
+          translate }}
         </p>
         <div class="row col-sm-12">
 
@@ -1524,3 +1660,61 @@
     </div>
   </div>
 </div>
+
+<!--Show seasonal hazards-->
+<div class="modal fade" id="select-seasons" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above" id="addCalendarModalLabel">{{"RISK_MONITORING.MAIN_PAGE.SEASONAL_HAZARD" |
+          translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-body text-center">
+        <div class="row col-sm-12">
+          <div class="col-sm-12">
+            <div class="row margin-left-three" *ngFor="let season of AllSeasons; index as i">
+              <div class="col-sm-1" *ngIf="selectedHazardSeasons[i]">
+                <div class="Color__swatch__check Right-aligned"
+                     [ngStyle]="{'background':season.colorCode}">
+                </div>
+              </div>
+              <div class="cold-sm-7 margin-left-one"><p class="font-size-two" *ngIf="selectedHazardSeasons[i]"><strong>
+                {{season.name}} | {{season.startTime | date:"dd/MM/yy"}} - {{season.endTime |
+                date:"dd/MM/yy"}}</strong></p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="show-subnational" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title Spaced-above">{{"RISK_MONITORING.MAIN_PAGE.SUBNATIONAL_AREA" | translate |
+          translate}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-body">
+        <div class="text-center">
+          <div *ngFor="let area of subnationalAreas">
+            {{setLocationName(area)}}
+            <p>{{subnationalName}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

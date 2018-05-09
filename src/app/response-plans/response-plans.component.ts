@@ -15,6 +15,8 @@ import {AgencyService} from "../services/agency-service.service";
 import * as moment from "moment";
 import {ModelUserPublic} from "../model/user-public.model";
 import {CommonUtils} from "../utils/CommonUtils";
+import {$} from "protractor";
+import {PartnerOrganisationService} from "../services/partner-organisation.service";
 
 declare const jQuery: any;
 
@@ -55,6 +57,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private countryId: string;
   private agencyId: string;
   private notesMap = new Map();
+  private planToResend: any;
   private needShowDialog: boolean;
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
 
@@ -96,6 +99,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private notificationService: NotificationService,
               private agencyService: AgencyService,
+              private partnerService: PartnerOrganisationService,
               private translate: TranslateService) {
   }
 
@@ -145,7 +149,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               }
 
             });
-
         }
       }
     });
@@ -370,7 +373,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   submitForApproval(plan) {
     this.resetDirectorSelection();
     if (plan.partnerOrganisations) {
-      this.getPartnersToApprove(plan)
+      if(this.getPartnersToApprove(plan)){
+        console.log("has partner")
+      }else{
+        console.log("no partner")
+      }
     }
 
     if (plan.approval && plan.approval["partner"]) {
@@ -415,12 +422,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         counter++;
         console.log(counter);
         console.log(result);
-        if (counter === 1 && result.$value && result.$value != null) {
+        if (counter === 1 && result.$value && result.$value != "null") {
           this.directorSubmissionRequireMap.set(1, true);
           this.directorIdMap.set("countryDirector", result.$value)
           this.countryRegionAgencyIdMap.set("countryDirector", this.countryId)
         }
-        if (counter === 2 && result.$value && result.$value != null) {
+        if (counter === 2 && result.$value && result.$value != "null") {
           this.directorSubmissionRequireMap.set(2, true);
           this.directorIdMap.set("regionDirector", result.$value)
           this.getRegionId(this.countryId)
@@ -601,7 +608,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     // if (this.needShowDialog) {
     //   jQuery("#dialog-action").modal("hide");
     // }
-    if (this.userType == UserType.LocalAgencyAdmin || this.userType == UserType.LocalAgencyDirector) {
+    if (this.userType == UserType.LocalAgencyAdmin || this.userType == UserType.LocalAgencyDirector || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       jQuery("#directorSelection").modal("show");
 
       if (this.planToApproval.approval && this.planToApproval.approval["countryDirector"]) {
@@ -977,6 +984,29 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.partnerApprovalIdMap.set(id, hasChecked)
   }
 
+  confirmResendNotification(model, plan) {
+    this.planToResend = plan;
+    jQuery("#" + model).modal("show");
+  }
+
+  resendNotification(user, tag) {
+    this.closeModal(tag);
+    jQuery("#" + this.planToResend.$key).collapse('hide')
+
+    let notification = new MessageModel();
+    notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToResend.name});
+    notification.time = new Date().getTime();
+
+    if (user == 'countryDirector') {
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.CountryDirector, this.agencyId, this.countryId);
+    } else if (user == 'regionDirector') {
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.RegionalDirector, this.agencyId, this.countryId);
+    } else if (user == 'globalDirector') {
+      this.notificationService.saveUserNotification(this.directorIdMap.get(user), notification, UserType.GlobalDirector, this.agencyId, this.countryId);
+    }
+  }
+
   submitPlanToApproval() {
     let approvalData = {};
     console.log(this.getApprovalStatus("countryDirector"))
@@ -1001,7 +1031,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.notificationService.saveUserNotificationLocalAgency(this.directorIdMap.get("countryDirector"), notification, UserType.LocalAgencyDirector, this.agencyId)
           :
           this.notificationService.saveUserNotification(this.directorIdMap.get("countryDirector"), notification, UserType.CountryDirector, this.agencyId, this.countryId)
-
       }
     }
     else {
@@ -1012,7 +1041,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     if (this.regionDirectorSelected) {
       if ((this.getApprovalStatus("regionDirector") != ApprovalStatus.Approved && this.getApprovalStatus("regionDirector") != ApprovalStatus.NeedsReviewing)) {
         approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/regionDirector/" + this.countryRegionAgencyIdMap.get("regionDirector")] = ApprovalStatus.WaitingApproval
-        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId)+ "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
+        approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
 
         // Send notification to country director
         let notification = new MessageModel();
@@ -1055,9 +1084,25 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         if (v) {
           atLeastOnePartnerSelected = true
           if (!(this.planToApproval.approval && this.planToApproval.approval["partner"] &&
-              this.planToApproval.approval["partner"][k] &&
-              (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
+            this.planToApproval.approval["partner"][k] &&
+            (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
             approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval
+
+            console.log("start create message for partner users***")
+            console.log(k)
+            this.userService.getUser(k)
+              .first()
+              .subscribe(user => {
+                console.log(user)
+                if (user) {
+                  // Send notification to country director
+                  let notification = new MessageModel();
+                  notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
+                  notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+                  notification.time = new Date().getTime();
+                  this.notificationService.saveUserNotification(user.id, notification, UserType.PartnerUser, this.agencyId, this.countryId)
+                }
+              })
           }
         } else {
           approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.InProgress
@@ -1205,11 +1250,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     // const needValidResponsePlanId = plan.$key;
 
     let partnerOrgIds = [];
-    plan.partnerOrganisations.forEach(partnerOrg => {
-      partnerOrgIds.push(partnerOrg);
-    });
 
+    if(plan.partnerOrganisations) {
+      plan.partnerOrganisations.forEach(partnerOrg => {
+        partnerOrgIds.push(partnerOrg);
+      });
+    }
     let noPartnerUserOrg;
+
 
     Observable.from(partnerOrgIds)
       .flatMap(partnerOrgId => {
@@ -1265,6 +1313,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           //   console.log(error.message);
           // });
         }
+        console.log(orgUserMap)
         this.getPartnerDetail(orgUserMap)
         this.partnerList = CommonUtils.convertMapToKeysInArray(orgUserMap)
         console.log(this.partnerList)

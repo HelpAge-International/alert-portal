@@ -11,6 +11,7 @@ import {InformHolder, InformService} from "../../../services/inform.service";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../../services/user.service";
 import {Http} from "@angular/http";
+import {Location} from "@angular/common";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {HazardImages} from "../../../utils/HazardImages";
 import {ColourSelector} from "../../../utils/ColourSelector";
@@ -106,7 +107,7 @@ export class LocalAgencyAddHazardComponent implements OnInit {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private http: Http, private router: Router, private storage: LocalStorageService, private userService: UserService) {
+  constructor(private locationService: Location, private pageControl: PageControlService, private af: AngularFire, private route: ActivatedRoute, private http: Http, private router: Router, private storage: LocalStorageService, private userService: UserService) {
     this.hazardData.seasons = [];
     this.initHazardData();
 
@@ -144,11 +145,6 @@ export class LocalAgencyAddHazardComponent implements OnInit {
 
   _getHazardImage(key) {
     return HazardImages.init().getCSS((+key));
-  }
-
-  _getHazardImageImg(key) {
-    console.log(key);
-    return HazardImages.init().get((+key));
   }
 
   _getAgencyLocation() {
@@ -531,6 +527,10 @@ export class LocalAgencyAddHazardComponent implements OnInit {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  goBack() {
+    this.locationService.back();
   }
 
 }

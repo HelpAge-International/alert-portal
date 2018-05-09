@@ -126,6 +126,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   private networkViewValues: {};
   private isViewing: boolean;
   private systemId: string;
+  private userAgencyCountryMap = new Map<string, {agencyId:string, countryOfficeId:string}>()
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -375,7 +376,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((user: ModelUserPublic) => {
           console.log(user)
-          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName + "(Network Country Admin)"};
           this.usersForAssign.push(userToPush);
         })
 
@@ -387,23 +388,25 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
               .takeUntil(this.ngUnsubscribe)
               .subscribe(countryOffices => {
                 countryOffices.forEach(countryOffice => {
-                  if (network.agencyCountries[agencyKey][countryOffice.$key]) {
+                  if (network.agencyCountries[agencyKey][countryOffice.$key] && network.agencyCountries[agencyKey][countryOffice.$key].isApproved === true) {
                     // Obtaining the country admin data
-                    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).subscribe((data: any) => {
+                    this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyKey + "/" + countryOffice.$key).takeUntil(this.ngUnsubscribe).subscribe((data: any) => {
                       if (data.adminId) {
-                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).subscribe((user: ModelUserPublic) => {
+                        this.af.database.object(Constants.APP_STATUS + "/userPublic/" + data.adminId).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
                           var userToPush = {userID: data.adminId, name: user.firstName + " " + user.lastName};
                           this.usersForAssign.push(userToPush);
+                          this.userAgencyCountryMap.set(userToPush.userID, {agencyId:agencyKey, countryOfficeId:countryOffice.$key})
                         });
                       }
                     });
                     //Obtaining other staff data
-                    this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).subscribe((data: {}) => {
+                    this.af.database.object(Constants.APP_STATUS + "/staff/" + countryOffice.$key).takeUntil(this.ngUnsubscribe).subscribe((data: {}) => {
                       for (let userID in data) {
                         if (!userID.startsWith('$')) {
-                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).subscribe((user: ModelUserPublic) => {
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userID).takeUntil(this.ngUnsubscribe).subscribe((user: ModelUserPublic) => {
                             var userToPush = {userID: userID, name: user.firstName + " " + user.lastName};
                             this.usersForAssign.push(userToPush);
+                            this.userAgencyCountryMap.set(userToPush.userID, {agencyId:agencyKey, countryOfficeId:countryOffice.$key})
                           });
                         }
                       }
@@ -528,13 +531,21 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
 
   saveIndicator() {
 
-    if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+    if (typeof (this.indicatorData.hazardScenario) == 'undefined' || typeof (this.indicatorData.hazardScenario) == 'number') {
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
+
+
+        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : null;
+        let currentTime = new Date().getTime()
+        let newTimeObject = {start: currentTime, finish: -1,level: this.indicatorData.triggerSelected};
+        let id = this.hazardID == 'countryContext' ? this.networkCountryId : this.hazardID;
+
         if (!this.isEdit) {
           this.indicatorData.triggerSelected = 0;
+          newTimeObject.level = 0
         }
         this.indicatorData.category = parseInt(this.indicatorData.category);
         console.log(this.indicatorData.trigger)
@@ -559,11 +570,13 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
 
         //if isViewing add the country office and agency ID to retrieve in country office view
         if (this.isViewing) {
-
           this.indicatorData['agencyId'] = this.agencyId
           this.indicatorData['countryOfficeId'] = this.countryID
-
-
+        }
+        //if assign to country staff, need agencyid and countryofficeid info as well
+        if (this.indicatorData.assignee && this.userAgencyCountryMap.get(this.indicatorData.assignee)) {
+          this.indicatorData['agencyId'] = this.userAgencyCountryMap.get(this.indicatorData.assignee).agencyId
+          this.indicatorData['countryOfficeId'] = this.userAgencyCountryMap.get(this.indicatorData.assignee).countryOfficeId
         }
 
         var dataToSave = this.indicatorData;
@@ -597,7 +610,12 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         if (!this.isEdit) {
           this.af.database.list(urlToPush)
             .push(dataToSave)
-            .then(() => {
+            .then(indicator => {
+
+
+              this.af.database.object(Constants.APP_STATUS + '/indicator/' + id  + '/' + indicator.key + '/timeTracking')
+                    .update({timeSpentInGreen: [newTimeObject]})
+
               if (dataToSave.assignee) {
                 // Send notification to the assignee
                 let notification = new MessageModel();

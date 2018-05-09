@@ -42,11 +42,21 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   private memberCheckMap = new Map<string, boolean>();
   private customAgency = false;
 
-
   // Constants and enums
   private alertMessageType = AlertMessageType;
   responsePlansSectors = ResponsePlanSectors;
   responsePlansSectorsSelection = Constants.RESPONSE_PLANS_SECTORS;
+  private ResponsePlanSectorsList: number[] = [
+    ResponsePlanSectors.wash,
+    ResponsePlanSectors.health,
+    ResponsePlanSectors.shelter,
+    ResponsePlanSectors.nutrition,
+    ResponsePlanSectors.foodSecurityAndLivelihoods,
+    ResponsePlanSectors.protection,
+    ResponsePlanSectors.education,
+    ResponsePlanSectors.campmanagement,
+    ResponsePlanSectors.other
+  ];
 
   // Models
   private alertMessage: AlertMessageModel = null;
@@ -378,6 +388,18 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
   closeModal() {
     jQuery('#delete-action').modal('hide');
+  }
+
+  setSelectorClass(sectorID: any) {
+    var selected = '';
+    if (this.coordinationArrangement.sector == sectorID) {
+      selected = 'Selected';
+    }
+    return selected;
+  }
+
+  isActive(sectorID: any) {
+    this.coordinationArrangement.sector = sectorID;
   }
 
 }

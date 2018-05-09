@@ -101,9 +101,8 @@
                 <div class="col-md-6">
                   <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
                   <!--not submit yet-->
-                  <div
+                  <!-- <div
                     *ngIf="plan?.approval && plan?.approval['partner'] && (!plan?.approval['countryDirector'] || !plan?.approval['regionDirector'] || !plan?.approval['globalDirector'])">
-                    <!--<div *ngIf="plan?.approval">-->
                     <div *ngIf="directorSubmissionRequireMap.get(1)" class="row no-gutters Small-spaced">
                       <div class="col-12 text-left">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" | translate}}</div>
                       <div class="col-md-12 text-left text-warning">{{"RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION" |
@@ -125,7 +124,7 @@
                         <i class="fa fa-exclamation-circle text-right" aria-hidden="true"></i>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
 
                   <!--after submit for approval-->
                   <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
@@ -144,6 +143,7 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[0]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-country', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" | translate}}</a>
                       </div>
                     </div>
 
@@ -166,6 +166,8 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[2]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-regional', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
+                          translate}}</a>
                       </div>
                       <div *ngIf="(isGlobalDirectorMap.get(plan.$key) && !isRegionalDirectorMap.get(plan.$key))
                            || (!isGlobalDirectorMap.get(plan.$key) && isRegionalDirectorMap.get(plan.$key))"
@@ -180,6 +182,8 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
+                          translate}}</a>
                       </div>
                     </div>
 
@@ -198,14 +202,13 @@
                         :
                         ('RESPONSE_PLANS.HOME.REQUIRE_SUBMISSION' | translate)}}
                         <i class="fa fa-check-circle" aria-hidden="true"></i>
+                        <a href="javascript:void(0)" class="col-md-6 text-right text-primary" *ngIf="getApproveStatus(getApproves(plan)[1]) == ApprovalStatus.WaitingApproval" (click)="confirmResendNotification('confirm-resend-global', plan)">{{"RESPONSE_PLANS.HOME.RESEND_NOTIFICATION" |
+                          translate}}</a>
                       </div>
                     </div>
-
                   </div>
-
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -219,39 +222,38 @@
                 </span>
               {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
             </a>
-            <!--TODO need to match requirements-->
-            <!--<div id="{{plan.$key}}"-->
-            <!--class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">-->
-            <!--&lt;!&ndash; Approved &ndash;&gt;-->
-            <!--<div class="row  Spaced">-->
-            <!--<div class="col-sm-10 col-8  text-left"><h4>{{"RESPONSE_PLANS.HOME.APPROVAL" | translate}}</h4></div>-->
-            <!--<div class="col-sm-2 col-4 text-right">-->
-            <!--<button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">-->
-            <!--{{"GLOBAL.CLOSE" | translate}}-->
-            <!--</button>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--<div class="row">-->
-            <!--<div class="col-md-12">-->
-            <!--<strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>-->
-            <!--<div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">-->
-            <!--<div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |-->
-            <!--translate}}-->
-            <!--</div>-->
-            <!--<div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |-->
-            <!--translate}}-->
-            <!--</div>-->
-            <!--<div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |-->
-            <!--translate}}-->
-            <!--</div>-->
-            <!--<div class="col-md-6 text-right text-success">-->
-            <!--{{"RESPONSE_PLANS.HOME.APPROVED" | translate}}-->
-            <!--<i class="fa fa-check-circle" aria-hidden="true"></i></div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
+            <div id="{{plan.$key}}"
+            class="Popover__ribbon prevent_parent_collapse collapse col-md-3 Popover__ribbon&#45;&#45;b-white Popover__ribbon&#45;&#45;float">
+              <div class="row  Spaced">
+                <div class="col-sm-10 col-8  text-left"><h4>{{"RESPONSE_PLANS.HOME.APPROVAL" | translate}}</h4></div>
+                <div class="col-sm-2 col-4 text-right">
+                <button class="btn-link" onclick="$(this).parent().parent().parent().collapse('hide')">
+                <!--{{"GLOBAL.CLOSE" | translate}}-->
+                </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                <strong>{{"RESPONSE_PLANS.HOME.DIRECTORS" | translate}}</strong>
+                <div *ngFor="let approve of getApproves(plan); let idx = index" class="row no-gutters Small-spaced">
+                  <div class="col-6 text-left" *ngIf="idx==0">{{"GLOBAL.USER_TYPE.COUNTRY_DIRECTORS_SINGLE" |
+                  translate}}
+                  </div>
+                  <div class="col-6 text-left" *ngIf="idx==1">{{"GLOBAL.USER_TYPE.REGIONAL_DIRECTOR_SINGLE" |
+                  translate}}
+                  </div>
+                  <div class="col-6 text-left" *ngIf="idx==2">{{"GLOBAL.USER_TYPE.GLOBAL_DIRECTOR_SINGLE" |
+                  translate}}
+                  </div>
+                  <div class="col-md-6 text-right text-success">
+                  {{"RESPONSE_PLANS.HOME.APPROVED" | translate}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                  </div>
+                </div>
+                </div>
+              </div>
 
-            <!--</div>-->
+            </div>
           </div>
 
           <div *ngIf="plan?.status==3" class="col-md-3 col-sm-2 Plans-list__item--status">
@@ -319,9 +321,9 @@
                 <a class="dropdown-item" *ngIf="checkStatus(plan)"
                    (click)="submitForApproval(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_APPROVAL" | translate}}</a>
                 <!--<a *ngIf="plan?.partnerOrganisations && !plan?.approval?.partner && partnersMap.get(plan.$key)"-->
-                   <!--class="dropdown-item"-->
-                   <!--(click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |-->
-                  <!--translate}}</a>-->
+                <!--class="dropdown-item"-->
+                <!--(click)="submitForPartnerValidation(plan)">{{"RESPONSE_PLANS.HOME.SUBMIT_FOR_PARTNER_VALIDATION" |-->
+                <!--translate}}</a>-->
                 <a class="dropdown-item" (click)="exportStartFund(plan)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_START_FUND" |
                   translate}}<br/>(.xls, 78Kb)</a>
                 <a class="dropdown-item" (click)="exportProposal(plan, true)">{{"RESPONSE_PLANS.HOME.EXPORT_FOR_PROPOSAL"
@@ -508,6 +510,8 @@
                   >
                   Region director - {{directorModelMap.get("regionDirector")?.firstName +" "+
                   directorModelMap.get("regionDirector")?.lastName}}
+                  <p>{{directorModelMap.get("regionDirector")?.firstName +" "+
+                    directorModelMap.get("regionDirector")?.lastName}}</p>
                 </div>
               </div>
               <div class="row"
@@ -526,7 +530,8 @@
           </div>
 
           <!--//no director div-->
-          <div *ngIf="!countryDirectorExist" class="text-center">There are no directors added to your ALERT account</div>
+          <div *ngIf="!countryDirectorExist" class="text-center">There are no directors added to your ALERT account
+          </div>
         </ng-container>
         <!--partners-->
         <ng-container *ngIf="planToApproval?.partnerOrganisations">
@@ -543,7 +548,8 @@
                          [checked]="partnerApprovalIdMap.get(partnerUserMap.get(partnerId) ? partnerUserMap.get(partnerId) : partnerId)"
                          [disabled]="selectedPartnerApprovalIdMap.get(partnerUserMap.get(partnerId) ? partnerUserMap.get(partnerId) : partnerId)"
                   >
-                  {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId)?.organisationName : intPartnerOrgMap.get(partnerId)?.organisationName}}
+                  {{extPartnerOrgMap.get(partnerId) ? extPartnerOrgMap.get(partnerId)?.organisationName :
+                  intPartnerOrgMap.get(partnerId)?.organisationName}}
                 </div>
               </div>
             </div>
@@ -553,8 +559,71 @@
       <div class="modal-footer">
         <button type="button" data-dismiss="modal" class="btn btn-outline-secondary">{{"GLOBAL.CANCEL"| translate}}
         </button>
-        <button type="button" data-dismiss="modal" class="btn btn-primary" (click)="submitPlanToApproval()" [disabled]="!countryDirectorExist">{{"SAVE"|
+        <button type="button" data-dismiss="modal" class="btn btn-primary" (click)="submitPlanToApproval()"
+                [disabled]="!countryDirectorExist">{{"SAVE"|
           translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="confirm-resend-country" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"RESPONSE_PLANS.HOME.CONFIRM_RESEND_NOTIFICATION" | translate | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="resendNotification('countryDirector', '#confirm-resend-country')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-country')">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="confirm-resend-regional" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"RESPONSE_PLANS.HOME.CONFIRM_RESEND_NOTIFICATION" | translate | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="resendNotification('regionDirector', '#confirm-resend-regional')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-regional')">{{"GLOBAL.CANCEL"| translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="confirm-resend-global" tabindex="-1" role="dialog"
+     aria-labelledby="addCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title Spaced-above">{{"RESPONSE_PLANS.HOME.CONFIRM_RESEND_NOTIFICATION" | translate | translate}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <br>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="resendNotification('globalDirector', '#confirm-resend-global')">{{"CONFIRM"| translate}}</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal('#confirm-resend-global')">{{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>

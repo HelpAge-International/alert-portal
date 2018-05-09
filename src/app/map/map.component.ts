@@ -83,6 +83,8 @@ export class MapComponent implements OnInit, OnDestroy {
             ((countries, green, yellow) => {
               console.log(countries);
               console.log("BOOM!");
+              console.log(green);
+              console.log(yellow);
               this.minThreshGreen = green;
               this.minThreshYellow = yellow;
               this.countries = countries;

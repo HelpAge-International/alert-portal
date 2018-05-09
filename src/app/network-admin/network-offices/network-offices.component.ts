@@ -9,6 +9,7 @@ import {Observable} from "rxjs/Observable";
 import {NetworkOfficeModel} from "./add-edit-network-office/network-office.model";
 import {Constants} from "../../utils/Constants";
 import {UserService} from "../../services/user.service";
+import {AngularFire} from "angularfire2";
 
 @Component({
   selector: 'app-network-offices',
@@ -30,12 +31,16 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
   //logic info
   private uid: string;
   private networkId: string;
+  private networkAdminId: string;
+  private networkCountryId: string;
+  private networkLocation: number;
   private networkOffices: Observable<NetworkOfficeModel[]>;
   private showLoader:boolean;
-
+  private showCoCBanner: boolean;
 
   constructor(private pageControl: PageControlService,
               private route: ActivatedRoute,
+              private af: AngularFire,
               private userService: UserService,
               private networkService: NetworkService,
               private router: Router) {
@@ -44,6 +49,8 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user,) => {
       this.uid = user.uid;
+      this.networkAdminId = this.uid;
+      this.checkCoCUpdated();
 
       //get network id
       this.networkOffices = this.networkService.getSelectedIdObj(this.uid)
@@ -54,6 +61,8 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
             .do((offices: NetworkOfficeModel[]) => {
               offices.forEach(office => {
                 office.adminName = this.userService.getUserName(office.adminId);
+                this.networkCountryId = office.adminId;
+                console.log(this.networkCountryId)
               });
               this.showLoader = false;
             });
@@ -64,6 +73,16 @@ export class NetworkOfficesComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  private checkCoCUpdated(){
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if(snap.val() == null || snap.val() == false){
+          this.showCoCBanner = true;
+        }
+      });
   }
 
   toggleOfficeActive(office: NetworkOfficeModel) {

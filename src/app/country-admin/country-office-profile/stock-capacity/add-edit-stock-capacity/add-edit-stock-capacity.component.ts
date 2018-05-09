@@ -107,7 +107,6 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   initCountryOffice(){
-
     this.route.params.subscribe((params: Params) => {
       if (params['id']) {
         this._stockService.getStockCapacity(this.countryId, params['id'])
@@ -124,12 +123,19 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
 
   validateForm(): boolean {
     this.alertMessage = this.stockCapacity.validate();
-
     return !this.alertMessage;
   }
 
   submit() {
     if(this.isLocalAgency){
+      this.stockCapacity.location = this.selectedCountry;
+      this.stockCapacity.level1 = this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null;
+      this.stockCapacity.level2 = this.selectedValueL2 ? this.selectedValueL2 : null;
+
+      console.log("Country: " + this.stockCapacity.location);
+      console.log("Level 1: " +this.stockCapacity.level1);
+      console.log("Level 2: " +this.stockCapacity.level2);
+
       this._stockService.saveStockCapacityLocalAgency(this.agencyId, this.stockCapacity)
         .then(() => {
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
@@ -207,6 +213,15 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   closeModal() {
     jQuery('#delete-action').modal('hide');
   }
+
+  checkTypeof(param: any) {
+    if (typeof (param) == 'undefined') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   initCountrySelection() {
 
     /**
@@ -225,13 +240,9 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
           .takeUntil(this.ngUnsubscribe)
           .subscribe(pre => {
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
-
-
           })
 
       });
-
-
   }
 
   // This function below is to determine the country selected
@@ -243,15 +254,10 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
         err => console.log(err);
         // Below needs to return the level1 array of the id selected
         this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
-
-
       });
-
   }
 
-
   resetValue(){
-
     console.log('reset selection');
     // Reset Values to remove level 2 drop down
     this.levelTwoDisplay.length = 0;
@@ -259,12 +265,8 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   setLevel1Value(){
-
     console.log(this.selectedValue, 'preset value');
     this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
 
   }
-
-
-
 }

@@ -58,8 +58,6 @@ export class NetworkCountryMenuComponent implements OnInit, OnDestroy {
       this.settingService.getCountryModulesSettings(this.networkViewModel.networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(modules => {
-          console.log("****************************")
-          console.log(modules)
           this.networkModules = modules
         })
 

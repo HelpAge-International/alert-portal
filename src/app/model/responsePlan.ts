@@ -30,14 +30,14 @@ export class ResponsePlan extends BaseModel {
   public otherRelatedSector: string;
   public presenceInTheCountry: PresenceInTheCountry;
   public methodOfImplementation: MethodOfImplementation;
-  public partnerOrganisations: string[];
+  public partnerOrganisations: string[] = [];
 
   // Section 4/10
   public activitySummary = {};
 
   // Section 5/10
   public peoplePerHousehold: number;
-  public numOfHouseholds: number;
+  public numOfHouseholds: number = 0;
   public beneficiariesNote: string;
   public vulnerableGroups = [];
   public otherVulnerableGroup: string;
@@ -76,7 +76,11 @@ export class ResponsePlan extends BaseModel {
   public createdByAgencyId: string;
   public createdByCountryId: string;
 
+  //Approval
+  public approval = {};
+
   validate(excludedFields: any): AlertMessageModel {
     throw new Error("Method not implemented.");
   }
 }
+

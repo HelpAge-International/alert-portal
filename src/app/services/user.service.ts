@@ -18,6 +18,8 @@ import {recognize} from "@angular/router/src/recognize";
 import {ModelStaff} from "../model/staff.model";
 import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {ModelAgency} from "../model/agency.model";
+import * as XLSX from "xlsx";
+import * as moment from "moment";
 
 @Injectable()
 export class UserService {
@@ -162,6 +164,22 @@ export class UserService {
     return countryAdminSubscription;
   }
 
+  getCountryAdmin(agencyId: string, countryId: string) : Observable<ModelUserPublic> {
+    return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + "/" + countryId)
+      .flatMap(country => {
+        return this.getUser(country.adminId)
+      });
+
+  }
+
+  getLocalAgencyAdmin(agencyId: string) : Observable<ModelUserPublic> {
+    return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId)
+      .flatMap(localAgency => {
+        return this.getUser(localAgency.adminId)
+      });
+
+  }
+
   getLocalAgencyAdminUser(uid: string) {
     if (!uid) {
       return null;
@@ -281,10 +299,8 @@ export class UserService {
           return this.savePartnerUser(systemId, agencyId, countryId, partner, userPublic);
         })
         .catch(err => {
-          // console.log((err as firebase.FirebaseError).code)
-          // console.log(err.message)
+
           if (err['code'] && err['code'].match(Constants.EMAIL_DUPLICATE_ERROR)) {
-            // console.log('email in use')
             return Promise.reject(err);
           } else {
             return Promise.reject('FIREBASE.' + (err as firebase.FirebaseError).code);
@@ -340,7 +356,6 @@ export class UserService {
         + '/validationPartnerUserId/'] = partner.id; // add the partner who as permission to organisation validationPartnerUserId node
       }
 
-      console.log(partnerData);
       return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
   }
@@ -411,7 +426,6 @@ export class UserService {
         + '/validationPartnerUserId/'] = partner.id; // add the partner who as permission to organisation validationPartnerUserId node
       }
 
-      console.log(partnerData);
       return this.af.database.object(Constants.APP_STATUS).update(partnerData);
     }
   }
@@ -534,27 +548,33 @@ export class UserService {
           return Observable.of(UserType.SystemAdmin);
         }
         else {
-          console.log(uid)
-          return af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+          return af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
             .flatMap((mySnap) => {
               if (mySnap.val() != null) {
 
-                      console.log('local agency return')
-
-                return Observable.of(UserType.LocalAgencyAdmin);
+                return Observable.of(UserType.LocalAgencyDirector);
 
               }
               else {
 
-                //TODO: for this to work we need to push the local agency admins to /administratorLocalAgency when creating the local agency within system admin.
-                return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
-                  .flatMap((snap) => {
-                    if (snap.val() != null) {
-                      console.log('agency return')
-                      return Observable.of(UserType.AgencyAdmin);
-                    } else {
-                      console.log('returning the other thing')
-                      return UserService.recursiveUserMap(af, paths, 0);
+                return af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+                .flatMap((mySnap) => {
+                  if (mySnap.val() != null) {
+
+                    return Observable.of(UserType.LocalAgencyAdmin);
+
+                  }else{
+
+
+                    //TODO: for this to work we need to push the local agency admins to /administratorLocalAgency when creating the local agency within system admin.
+                    return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+                      .flatMap((snap) => {
+                        if (snap.val() != null) {
+                          return Observable.of(UserType.AgencyAdmin);
+                        } else {
+                          return UserService.recursiveUserMap(af, paths, 0);
+                        }
+                      })
                     }
                   })
               }
@@ -656,7 +676,6 @@ export class UserService {
   }
 
   getSystemAdminId(userType: string, uid): Observable<string> {
-    console.log(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
     let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
       .map(systemIds => {
         if (systemIds.length > 0 && systemIds[0].$value) {
@@ -721,6 +740,15 @@ export class UserService {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
   }
 
+  getNetworkAdminDetail(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId);
+  }
+
+  getNetworkCountryDetail(networkId, networkCountryId) {
+    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId);
+  }
+
+
   getAgencyModel(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
       .map(agency => {
@@ -765,4 +793,13 @@ export class UserService {
         }
       })
   }
+
+  getSkill(skillId) {
+    return this.af.database.object(Constants.APP_STATUS + "/skill/" + skillId)
+  }
+
+  getCountryAdminOrLocalAgencyAdmin(agencyId:string, countryId?:string) : Observable<ModelUserPublic> {
+    return countryId ? this.getCountryAdmin(agencyId, countryId) : this.getLocalAgencyAdmin(agencyId)
+  }
+
 }

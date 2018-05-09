@@ -1,0 +1,15 @@
+<app-status-alert [message]="alertMessage" [success]="alertSuccess" [(show)]="alertShow" (onAlertHidden)="onAlertHidden($event)"></app-status-alert>
+
+<div class="Page-top__wrap--w_sub_header--no-paddng">
+  <div class="Full-page__wrap--inner">
+
+    <div class="Sub-header-title__wrap">
+      <h2>{{"GLOBAL.COC_TITLE" | translate}}</h2>
+      <button class="btn btn-primary" (click)="onAgree()">{{"GLOBAL.IAGREE" | translate | uppercase}}</button>
+    </div>
+
+    <div class="wrapper" align="left">
+      <p class="coc-text">{{cocText}}</p>
+    </div>
+  </div>
+</div>

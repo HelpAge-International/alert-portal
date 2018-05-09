@@ -64,7 +64,7 @@
         <tooltip
           [level1]="'TOOLTIPS.PREPAREDNESS.TT7.LEVEL1'">
         </tooltip>
-        <div *ngIf="userType == userTypes.LocalAgencyAdmin"
+        <div *ngIf="!isViewing && (permissionsAreEnabled.customMPA.New || userType == userTypes.LocalAgencyAdmin)"
              class="btn-group">
           <button type="button" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true"
                   aria-expanded="false">
@@ -245,13 +245,13 @@
                           [routerLink]="['/preparedness/create-edit-preparedness', action.id]" class="btn btn-block">{{"EDIT_ACTION"
                           | translate}}</a>
                         <a
-                          *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom))"
-                          [routerLink]="['/local-agency/local-agency/preparedness/create-edit-preparedness', action.id]"
+                          *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                          [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
                           class="btn btn-block">{{"EDIT_ACTION"
                           | translate}}</a>
                       </div>
                       <div class="col-md-3 col-sm-4 btn-block"
-                           *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin">
+                           *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin && !fromLocalAgency">
                         <a href="javascript:void(0)" (click)="copyAction(action)"
                            class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                       </div>
@@ -837,7 +837,7 @@
                                 [routerLink]="['/preparedness/create-edit-preparedness', action.id]"
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                               <a
-                                *ngIf="isLocalAgency && ((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
+                                *ngIf="isLocalAgency && !((action.level == actionLevelEnum.MPA && action.type == ActionType.custom && !permissionsAreEnabled.customMPA.Edit) || (action.level == actionLevelEnum.APA && action.type == ActionType.custom && !permissionsAreEnabled.customAPA.Edit))"
                                 [routerLink]="['/local-agency/preparedness/create-edit-preparedness', action.id]"
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                               <a
@@ -845,7 +845,7 @@
                                 class="btn btn-block link-color">Undo completion</a>
                             </div>
                             <div class="col-md-3 col-sm-4 btn-block"
-                                 *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                                 *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && !fromLocalAgency">
                               <a href="javascript:void(0)" (click)="copyAction(action)"
                                  class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                             </div>
@@ -1187,7 +1187,7 @@
                                 class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                             </div>
                             <div class="col-md-3 col-sm-4 btn-block"
-                                 *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin">
+                                 *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin && !fromLocalAgency">
                               <a href="javascript:void(0)" (click)="copyAction(action)"
                                  class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                             </div>
@@ -1837,7 +1837,7 @@
 
                           </ng-container>
                           <div class="col-md-3 col-sm-4 btn-block"
-                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency))">
+                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && !fromLocalAgency">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
                                class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                           </div>
@@ -2070,7 +2070,7 @@
 
                           </ng-container>
                           <div class="col-md-3 col-sm-4 btn-block"
-                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin">
+                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin && !fromLocalAgency">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
                                class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                           </div>
@@ -2301,7 +2301,7 @@
                               class="btn btn-block">{{"EDIT_ACTION" | translate}}</a>
                           </div>
                           <div class="col-md-3 col-sm-4 btn-block"
-                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin">
+                               *ngIf="!isAgencyAdmin && isViewing && (action.type == ActionType.custom || (action.type == ActionType.mandated && !isSameAgency)) && userType != UserType.AgencyAdmin && !fromLocalAgency">
                             <a href="javascript:void(0)" (click)="copyAction(action)"
                                class="btn btn-outline-primary btn-block ">{{"COPY_ACTION" | translate}}</a>
                           </div>

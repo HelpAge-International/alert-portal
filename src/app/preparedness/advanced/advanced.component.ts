@@ -45,6 +45,7 @@ import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {Observable} from "rxjs/Observable";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
 
@@ -136,6 +137,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   private stopCondition: boolean;
 
   @Input() isAgencyAdmin: boolean;
+  private fromLocalAgency: boolean;
 
   constructor(protected pageControl: PageControlService,
               @Inject(FirebaseApp) firebaseApp: any,
@@ -170,7 +172,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     console.log("Hazard: ")
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
 
       this.uid = user.uid;
@@ -191,10 +193,14 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.initAlertsLocalAgency();
       this.calculateCurrency();
 
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+        this.permissionsAreEnabled = isEnabled;
+      });
+
     });
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
@@ -209,6 +215,9 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
         if (params["systemId"]) {
           this.systemAdminId = params["systemId"];
+        }
+        if (params["isLocalAgency"]) {
+          this.fromLocalAgency = params["isLocalAgency"];
         }
         if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];
@@ -256,6 +265,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             // Initialise everything here but we need to get countryId, agencyId, systemId
             this.prepActionService.initActionsWithInfo(this.af, this.ngUnsubscribe, this.uid, this.userType, false,
               this.countryId, this.agencyId, this.systemAdminId);
+
+            console.log(this.prepActionService.actions)
             this.initStaff();
             this.initDepartments();
             this.initDocumentTypes();
@@ -319,7 +330,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  public isChosenHazard(hazard:number, action:any){
+  public isChosenHazard(hazard: number, action: any) {
     return action.assignedHazards.indexOf(toInteger(hazard)) != -1;
   }
 
@@ -356,7 +367,6 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           }
         });
       });
-
     // Populate actions
   }
 
@@ -450,6 +460,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   private initCountryAdminLocalAgency() {
     this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -471,6 +482,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         });
       });
   }
+
   private initStaffLocalAgency() {
     this.initCountryAdminLocalAgency();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.agencyId, {preserveSnapshot: true})
@@ -544,7 +556,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
       this.assignActionId == null || this.assignActionId === "0" || this.assignActionId === undefined) {
       return;
     }
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/asignee").set(this.assignActionAsignee)
         .then(() => {
           this.af.database.object(Constants.APP_STATUS + "/action/" + this.agencyId + "/" + this.assignActionId + "/task").takeUntil(this.ngUnsubscribe)
@@ -556,7 +568,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               console.log(notification.content);
 
               notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).take(1).subscribe(() => {
               });
             });
         });
@@ -572,7 +584,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               console.log(notification.content);
 
               notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).subscribe(() => {
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).take(1).subscribe(() => {
               });
             });
         });
@@ -762,6 +774,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
    * Completing an action
    */
   protected completeAction(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -769,6 +785,23 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         isComplete: true,
         isCompleteAt: new Date().getTime()
       }
+
+      if (action.timeTracking) {
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
+
+        if (!action['timeTracking']['timeSpentInGreen']) {
+          action['timeTracking']['timeSpentInGreen'] = []
+        }
+
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+          action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+          action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+          data['timeTracking'] = action['timeTracking']
+        }
+      }
+
+
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -777,7 +810,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           action.attachments.map(file => {
             this.uploadFile(action, file);
           });
-          if(this.isLocalAgency){
+          if (this.isLocalAgency) {
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.agencyId + '/' + action.id).update(data);
           } else {
             this.af.database.object(Constants.APP_STATUS + '/action/' + this.countryId + '/' + action.id).update(data);
@@ -808,6 +841,10 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   protected completeActionNetwork(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+
     if (action.note == null || action.note.trim() == "") {
       this.alertMessage = new AlertMessageModel("Completion note cannot be empty");
     } else {
@@ -815,6 +852,23 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         isComplete: true,
         isCompleteAt: new Date().getTime()
       }
+
+      if (action.timeTracking) {
+        // Change from in progress to complete
+        let index = action['timeTracking']['timeSpentInAmber'] ? action['timeTracking']['timeSpentInAmber'].findIndex(x => x.finish == -1) : -1
+
+        if (!action['timeTracking']['timeSpentInGreen']) {
+          action['timeTracking']['timeSpentInGreen'] = []
+        }
+
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+          action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
+          action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
+          data['timeTracking'] = action['timeTracking']
+        }
+      }
+
+
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -839,7 +893,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
           });
         }
         this.af.database.object(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id).update(data);
-        console.log(Constants.APP_STATUS + '/action/' + action.networkCountryId  + '/' + action.id, 'in complete');
+        console.log(Constants.APP_STATUS + '/action/' + action.networkCountryId + '/' + action.id, 'in complete');
         this.addNoteNetwork(action);
 
 
@@ -854,7 +908,30 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
 
 
   // (Dan) - this new function is for the undo completed APA
-  protected undoCompleteAction(action: PreparednessAction){
+  protected undoCompleteAction(action: PreparednessAction) {
+
+    let currentTime = new Date().getTime()
+    let newTimeObject = {start: currentTime, finish: -1};
+    let timeTrackingNode;
+
+
+        if (action.timeTracking) {
+          // Change from in progress to complete
+          let index = action['timeTracking']['timeSpentInGreen'] ? action['timeTracking']['timeSpentInGreen'].findIndex(x => x.finish == -1) : -1
+
+          if (!action['timeTracking']['timeSpentInAmber']) {
+            action['timeTracking']['timeSpentInGreen'] = []
+          }
+
+          if (index != -1 && action['timeTracking']['timeSpentInGreen'][index].finish == -1) {
+            action['timeTracking']['timeSpentInGreen'][index].finish = currentTime
+            action['timeTracking']['timeSpentInAmber'].push(newTimeObject)
+            timeTrackingNode = action['timeTracking']
+          }
+        } else {timeTrackingNode = null}
+
+
+
     action.actualCost = null
     // Call to firebase to update values to revert back to
     if (this.isLocalAgency) {
@@ -862,14 +939,16 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost : null
+        actualCost: null,
+        timeTracking: timeTrackingNode ? timeTrackingNode : null
       });
     } else {
       this.af.database.object(Constants.APP_STATUS + '/action/' + action.countryUid + '/' + action.id).update({
         isComplete: false,
         isCompleteAt: null,
         updatedAt: new Date().getTime(),
-        actualCost : null
+        actualCost: null,
+        timeTracking: timeTrackingNode ? timeTrackingNode : null
       });
     }
 
@@ -1067,6 +1146,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         this.exportDocument(action, "" + index);
         index++;
       }
+      this.closeExportModal()
     }
     else {
       this.alertMessage = new AlertMessageModel("Error exporting your documents");

@@ -2,11 +2,15 @@ import {Injectable} from "@angular/core";
 import {Http} from "@angular/http";
 import {Observable} from "rxjs";
 import {Constants} from "../utils/Constants";
+import {TranslateService} from "@ngx-translate/core";
+import {AngularFire} from "angularfire2";
 
 @Injectable()
 export class CommonService {
 
-  constructor(private _http: Http) {
+  constructor(private _http: Http,
+              private af: AngularFire,
+              private translate: TranslateService) {
   }
 
 
@@ -41,5 +45,93 @@ export class CommonService {
     }
 
     return names;
+  }
+
+  getAreaNameListFromObj(jsonContent: {}, areas: any): string {
+    let areaList = Object.keys(areas).map(key => Object.keys(areas[key]).map(id => areas[key][id]).reverse())
+    let names = "";
+    areaList.forEach(area => {
+      if (this.validateArea(area)) {
+        if (area.length == 1 || (area.length == 2 && area[0] == -1) || (area.length == 3 && area[0] == -1 && area[1] == -1)) {
+          let country = area[0];
+          if (area.length == 2) {
+            country = area[1]
+          } else if (area.length == 3) {
+            country = area[2]
+          }
+          let key = Constants.COUNTRIES[country]
+          names += this.translate.instant(key)
+          names += "\n"
+        }
+        else if (area.length == 2 || (area.length == 3 && area[0] == -1)) {
+          let level1 = area[0];
+          let country = area[1];
+          if (area.length == 3) {
+            level1 = area[1]
+            country = area[2]
+          }
+          let countryName = Constants.COUNTRIES[country];
+          let level1Name = jsonContent[country]["levelOneValues"][level1]["value"] ? jsonContent[country]["levelOneValues"][level1]["value"] + ", " : ""
+          console.log(level1Name)
+          names += level1Name + this.translate.instant(countryName)
+          names += "\n"
+        }
+        else if (area.length == 3) {
+          console.log(area)
+          let level2 = area[0];
+          let level1 = area[1];
+          let country = area[2];
+          let countryName = Constants.COUNTRIES[country];
+          let level1Name = jsonContent[country]["levelOneValues"][level1]["value"] ? jsonContent[country]["levelOneValues"][level1]["value"] + ", " : ""
+          let level2Name = jsonContent[country]["levelOneValues"][level1]["levelTwoValues"][level2]["value"] ? jsonContent[country]["levelOneValues"][level1]["levelTwoValues"][level2]["value"] + ", " : ""
+          names += level2Name + level1Name + this.translate.instant(countryName)
+          names += "\n"
+        }
+      }
+    })
+
+    return names;
+  }
+
+  getTotalAgencies() {
+    return this.af.database.list(Constants.APP_STATUS + "/agency")
+  }
+
+  getTotalLocalAgencies() {
+    return this.af.database.list(Constants.APP_STATUS + "/agency", {
+      query: {
+        orderByChild: "isGlobalAgency",
+        equalTo: false
+      }
+    })
+  }
+
+  getCountryTotalForSystem() {
+    return this.af.database.list(Constants.APP_STATUS + "/agency")
+      .flatMap(agencies => {
+        return Observable.from(agencies)
+      })
+      .flatMap((agency: any) => {
+        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agency.$key, {preserveSnapshot: true})
+      })
+      .map(snap => {
+        if (snap.val()) {
+          return Object.keys(snap.val()).filter(key => key != "undefined").map(key => {
+            return {agencyId: snap.key, countryId: key}
+          })
+        } else {
+          return []
+        }
+      })
+  }
+
+  private validateArea(area: any[]): boolean {
+    let flag = true
+    area.forEach(location => {
+      if (typeof location == "string" && Number.isNaN(parseInt(location))) {
+        flag = false
+      }
+    })
+    return flag
   }
 }

@@ -43,7 +43,7 @@
           <select class="form-control" id="User-Type" [(ngModel)]="userType" name="userType" [disabled]="isEdit && (userType==UserType.NonAlert || userType == UserType.PartnerUser)"
                   (change)="selectedUserType(userType)" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let type of userTypeSelection;" [value]="type">
+            <option *ngFor="let type of userTypeSelection;" [value]="type" [hidden]="type === UserType.NonAlert && isEdit">
               {{USER_TYPE[type] | translate}}
             </option>
           </select>

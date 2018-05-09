@@ -21,6 +21,7 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
 
   private static WEEK_SPAN_DAY_MULTIPLIER = 30;
   private static MONTH_SPAN_DAY_MULTIPLIER = 91;
+  private static HALFYEAR_SPAN_DAY_MULTIPLIER = 182;
   private static RANGE_SPAN_DAYS = 365;
 
   // TODO - Check when other users are implemented
@@ -28,6 +29,7 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
 
   private uid: string;
   private countryId: string;
+  private agencyId: string;
   private currentSpanMultiplierIsMonth: boolean = true;
   private init: boolean = false;
   private currentChronolineInstance;
@@ -53,6 +55,9 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
   private isViewing: boolean = false;
   private networkViewValues: {};
 
+  private CalendarSpans = Object.freeze({"Days":0, "Months":1, "Year":2});
+  private currentSpan: number;
+
   constructor(private pageControl: PageControlService,
               private networkService: NetworkService,
               private route: ActivatedRoute,
@@ -62,13 +67,21 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
   }
 
   ngOnInit() {
+    this.currentSpan = this.CalendarSpans.Months;
     this.route.params.subscribe((params: Params) => {
       if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
         this.isViewing = params["isViewing"];
         this.countryId = params["countryId"];
+        this.agencyId = params["agencyId"];
         this.networkCountryId = params["networkCountryId"];
         this.uid = params["uid"]
         this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      } else {
+        this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.agencyId = agencyId;
+          this.getAllSeasonsForCountryId(this.agencyId);
+        });
       }
       this.normalAccess();
     })
@@ -78,7 +91,7 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
   private normalAccess() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.getAllSeasonsForCountryId(this.countryId);
+      this.getAllSeasonsForCountryId(this.agencyId);
     });
   }
 
@@ -89,12 +102,19 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
     this.clearStorage()
   }
 
+  /**
+   * Ran when "View as 6 months" is clicked. Changes filter and re-initialised the Chronoline map
+   */
+  public setHalfYearView() {
+    this.currentSpan = this.CalendarSpans.Year;
+    this.reinitCalendar();
+  }
 
   /**
-   * Ran when "View as months" is clicked. Changes filter and re-initialised the Chronoline map
+   * Ran when "View as 3 months" is clicked. Changes filter and re-initialised the Chronoline map
    */
   public setMonthView() {
-    this.currentSpanMultiplierIsMonth = true;
+    this.currentSpan = this.CalendarSpans.Months;
     this.reinitCalendar();
   }
 
@@ -102,7 +122,7 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
    * Ran when "View as weeks" is clicked. Changes filter and re-initialised the Chronoline map
    */
   public setWeekView() {
-    this.currentSpanMultiplierIsMonth = false;
+    this.currentSpan = this.CalendarSpans.Days;
     this.reinitCalendar();
   }
 
@@ -156,6 +176,7 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
                 this.initCalendar();
               })
           })
+        console.log(this.seasonEvents, this.agencyId);
       });
   }
 
@@ -177,9 +198,7 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
     document.getElementById("target2").innerHTML = "";
     this.currentChronolineInstance = new Chronoline(document.getElementById("target2"), this.seasonEvents,
       {
-        visibleSpan: DAY_IN_MILLISECONDS * (this.currentSpanMultiplierIsMonth ?
-          LocalAgencyDashboardSeasonalCalendarComponent.MONTH_SPAN_DAY_MULTIPLIER :
-          LocalAgencyDashboardSeasonalCalendarComponent.WEEK_SPAN_DAY_MULTIPLIER),
+        visibleSpan: this.setCalendarSpan(this.currentSpan),
         animated: true,
         tooltips: true,
         sectionLabelAttrs: {'fill': '#997e3d', 'font-weight': 'bold'},
@@ -187,11 +206,23 @@ export class LocalAgencyDashboardSeasonalCalendarComponent implements OnInit, On
         hashInterval: isFifthDay,
         scrollLeft: prevMonth,
         scrollRight: nextMonth,
+        eventHeight: 15,
         // markToday: 'labelBox',
         draggable: true
       });
-    this.currentChronolineInstance.goToDate(new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 7)), 1);
+    this.currentChronolineInstance.goToDate(new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 7)), -1);
     this.init = true;
+  }
+
+  private setCalendarSpan(spanName) {
+    switch(spanName){
+      case this.CalendarSpans.Days :
+        return DAY_IN_MILLISECONDS * LocalAgencyDashboardSeasonalCalendarComponent.WEEK_SPAN_DAY_MULTIPLIER;
+      case this.CalendarSpans.Months :
+        return DAY_IN_MILLISECONDS * LocalAgencyDashboardSeasonalCalendarComponent.MONTH_SPAN_DAY_MULTIPLIER;
+      case this.CalendarSpans.Year :
+        return DAY_IN_MILLISECONDS * LocalAgencyDashboardSeasonalCalendarComponent.HALFYEAR_SPAN_DAY_MULTIPLIER;
+    }
   }
 
   private navigateToLogin() {

@@ -183,7 +183,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
   saveUserNotificationBasedOnNotificationSetting(message: MessageModel, notificationSetting: number, agencyId: string, countryId: string)
   {
     // Regular staff
-    this._userService.getStaffList(countryId).subscribe(staffs => {
+    this._userService.getStaffList(countryId ? countryId : agencyId).first().subscribe(staffs => {
       staffs.forEach(staff => {
         if(staff.notification && staff.notification.indexOf(notificationSetting) !== -1)
         {
@@ -242,12 +242,13 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
 
           const userTypePath = Constants.USER_PATHS[userType];
           console.log(userTypePath)
-          console.log(userTypePath);
           return this._userService.getAgencyId(userTypePath, userId)
+            .first()
             .subscribe(agency => {
               console.log('first subscribe')
               let agencyId = agency;
               return this._userService.getCountryId(userTypePath, userId)
+                .first()
                 .subscribe(country => {
                   let countryId = country;
                   console.log('final return')
@@ -292,13 +293,15 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
       case UserType.Ert:
         node = "/messageRef/country/" + countryId + "/erts/" + userId + "/{messageId}";
         break;
-      case UserType.NonAlert:
+      case UserType.PartnerUser:
         node = "/messageRef/country/" + countryId + "/partner/" + userId + "/{messageId}";
+        break;
+      case UserType.NonAlert:
+        node = "/messageRef/country/" + countryId + "/nonalert/" + userId + "/{messageId}";
         break;
       case UserType.CountryUser:
         node = "/messageRef/agency/" + agencyId + "/agencyallusersgroup/" + userId + "/{messageId}";
         break;
-
     }
 
     return this.saveNotification(node, message);

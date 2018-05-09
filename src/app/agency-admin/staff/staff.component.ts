@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
@@ -56,11 +56,16 @@ export class StaffComponent implements OnInit, OnDestroy {
   private departmentMap: Map<string, string> = new Map<string, string>();
   private agencyId: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private regions: FirebaseListObservable<any[]>;
+  private regionId: string;
+  private regionsStaffId: string;
+  private numberOfGlobalDs: number;
 
   //resolve live frozen bug
   private staffObjMap = new Map()
   private supportSkillMap = new Map()
   private techSkillMap = new Map()
+  private regionObjMap = new Map()
 
   private fieldOfficeMap = new Map<string, string>()
 
@@ -69,7 +74,7 @@ export class StaffComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private agencyService: AgencyService,
               private settingService: SettingsService,
-              private fieldService:FieldOfficeService,
+              private fieldService: FieldOfficeService,
               private router: Router) {
   }
 
@@ -78,6 +83,7 @@ export class StaffComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
+      this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
       this.initData();
     });
   }
@@ -158,9 +164,12 @@ export class StaffComponent implements OnInit, OnDestroy {
             .subscribe(x => {
               x.forEach(item => {
                 //resolve frozen bug
+                console.log(id)
+                console.log(item.$key)
                 this.getStaffObj(item.$key)
                 this.getSupportSkills(id, item.$key)
                 this.getTechSkills(id, item.$key)
+                //    this.getRegionData(id, item.$key)
 
                 if (!this.dealedStaff.includes(item.$key)) {
                   if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
@@ -217,7 +226,9 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   addNewStaff() {
-    this.router.navigateByUrl(Constants.AGENCY_ADMIN_ADD_STARFF);
+    this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {
+      "numOfGlobalDs": this.numberOfGlobalDs
+    }]);
   }
 
   hideCountryStaff(office) {
@@ -233,12 +244,18 @@ export class StaffComponent implements OnInit, OnDestroy {
   editStaff(officeId, staffId) {
     this.router.navigate([Constants.AGENCY_ADMIN_ADD_STARFF, {
       id: staffId,
-      officeId: officeId
+      officeId: officeId,
+      "numOfGlobalDs": this.numberOfGlobalDs
     }], {skipLocationChange: true});
   }
 
   closeAdditionalInfo(staffId) {
     jQuery("#" + staffId).collapse("hide");
+  }
+
+  getRegionData(agencyId, regionId) {
+
+    this.regionsStaffId = regionId
   }
 
   getStaffObj(staffId) {
@@ -328,10 +345,38 @@ export class StaffComponent implements OnInit, OnDestroy {
 
         //resolve frozen bug
         users.forEach(user => {
-          this.getStaffObj(user.$key)
+          this.getStaffObj(user.$key);
           this.getSupportSkills(null, user.$key)
           this.getTechSkills(null, user.$key)
-        })
+          //this.getRegionData(null, user.$key)
+
+          if (user.userType == UserType.RegionalDirector) {
+            console.log(user)
+            this.af.database.list(Constants.APP_STATUS + "/regionDirector/" + user.$key)
+              .takeUntil(this.ngUnsubscribe)
+              .subscribe(regionDir => {
+                regionDir.forEach(regDir => {
+                  if (regDir.$key == "regionId") {
+                    this.regionId = regDir.$value;
+                    console.log(this.regionId)
+
+                    this.af.database.list(Constants.APP_STATUS + "/region/" + this.agencyId + "/" + this.regionId)
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(region => {
+
+                        region.forEach(reg => {
+                          console.log(reg.$value)
+                          this.regionObjMap.set(this.regionId, reg.$value);
+                          console.log(this.regionObjMap)
+
+                        })
+                      });
+                  }
+                });
+              });
+          }
+        });
+
 
         if (this.filterPosition == this.All_Department && this.filterUser == UserType.All && this.filterOffice == OfficeType.All) {
           this.globalUsers = users;
@@ -436,6 +481,8 @@ export class StaffComponent implements OnInit, OnDestroy {
             }
           });
         }
+
+        this.getGlobalDs(this.globalUsers);
         console.log(this.globalUsers);
         this.hideLoader = true;
       });
@@ -448,8 +495,18 @@ export class StaffComponent implements OnInit, OnDestroy {
         return this.fieldService.getFieldOffices(countryId.toString())
       })
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(offices =>{
+      .subscribe(offices => {
         offices.forEach(office => this.fieldOfficeMap.set(office.id, office.name))
       })
+  }
+
+  private getGlobalDs(gUsers){
+    let count = 0;
+    for(let u of gUsers){
+      if(u.userType == UserType.GlobalDirector) {
+        count++;
+      }
+    }
+    this.numberOfGlobalDs = count;
   }
 }

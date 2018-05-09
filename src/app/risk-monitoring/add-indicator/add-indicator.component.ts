@@ -25,7 +25,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {MessageModel} from "../../model/message.model";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
+
 
 declare var jQuery: any;
 
@@ -393,13 +393,20 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   saveIndicator() {
 
-    if (typeof (this.indicatorData.hazardScenario) == 'undefined') {
+    if (typeof (this.indicatorData.hazardScenario) == 'undefined' || typeof (this.indicatorData.hazardScenario) == 'number') {
       this.indicatorData.hazardScenario = this.hazardsObject[this.hazardID];
     }
     this._validateData().then((isValid: boolean) => {
       if (isValid) {
+
+        let trackingNode = this.indicatorData["timeTracking"] ? this.indicatorData["timeTracking"] : undefined;
+        let currentTime = new Date().getTime()
+        let newTimeObject = {start: currentTime, finish: -1,level: this.indicatorData.triggerSelected};
+        let id = this.hazardID == 'countryContext' ? this.countryID : this.hazardID;
+
         if (!this.isEdit) {
           this.indicatorData.triggerSelected = 0;
+          newTimeObject.level = 0
         }
         // this.indicatorData.category = parseInt(this.indicatorData.category);
         this.indicatorData.dueDate = this._calculationDueDate(Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].durationType), Number(this.indicatorData.trigger[this.indicatorData.triggerSelected].frequencyValue));
@@ -448,7 +455,11 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
         if (!this.isEdit) {
           this.af.database.list(urlToPush)
             .push(dataToSave)
-            .then(() => {
+            .then(indicator => {
+
+              this.af.database.object(Constants.APP_STATUS + '/indicator/' + id  + '/' + indicator.key + '/timeTracking')
+                    .update({timeSpentInGreen: [newTimeObject]})
+
               if (dataToSave.assignee) {
                 // Send notification to the assignee
                 let notification = new MessageModel();

@@ -8,6 +8,7 @@ import {Component, OnInit} from '@angular/core';
 export class DirectorAccountSettingsComponent implements OnInit {
 
   private showProfile = true;
+  private showCoC = false;
 
   constructor() {
   }
@@ -17,9 +18,16 @@ export class DirectorAccountSettingsComponent implements OnInit {
 
   profileClicked() {
     this.showProfile = true;
+    this.showCoC = false;
   }
 
   passwordClicked() {
+    this.showProfile = false;
+    this.showCoC = false;
+  }
+
+  cocClicked(){
+    this.showCoC = true;
     this.showProfile = false;
   }
 

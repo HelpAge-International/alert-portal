@@ -141,7 +141,7 @@ export class LocalAgencyStatisticsRibbonComponent implements OnInit {
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
-          this.agencyLocation = snap.val().country;
+          this.agencyLocation = snap.val().countryCode;
         }
       });
   }
@@ -298,7 +298,7 @@ export class LocalAgencyStatisticsRibbonComponent implements OnInit {
 
   goToCHS(){
     if(this.userPermissions.minimumPreparedness){
-      this.router.navigate(["/preparedness/minimum", {"isCHS": true}]);
+      this.router.navigate(["/local-agency/preparedness/minimum", {"isCHS": true}]);
     }
   }
 

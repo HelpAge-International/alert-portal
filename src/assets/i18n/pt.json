@@ -14,7 +14,7 @@
     "ADD_ANOTHER_PROJECT": "Adicionar outro projeto",
     "ADD_A_PARTNER_ORGANISATION": "Adicionar organização parceira",
     "ADD_NEW_PARTNER_ORGANISATION": "Adicionar nova organização parceira",
-    "AREAS_OF_OPERATION_SELECT_A": "Selecionar",
+    "AREAS_OF_OPERATION_SELECT_A": "Áreas de operação selecione A",
     "DIALOG_CONTENT": "Os detalhes do parceiro introduzidos não correspondem a qualquer parceiro registado. Pretende criar uma conta agora?",
     "DIALOG_DELETE_CONTENT": "Tem a certeza de que pretende eliminar esta organização parceira? Todos os utilizadores parceiros perderão o acesso ao seu escritório nacional",
     "DIALOG_DELETE_TITLE": "Pretende eliminar esta organização parceira?",
@@ -259,7 +259,7 @@
   "AN_ADVANCED_PREP_ACTION": "Uma ação de preparação avançada",
   "AN_AMBER_LEVEL_INDICATOR": "Um indicador de nível âmbar",
   "APA": "APA",
-  "APPROVED_RED_ALERT_LEVEL": "aprovar nível de alerta vermelho",
+  "APPROVED_RED_ALERT_LEVEL": "nível de alerta vermelho aprovado",
   "APPROVE_ALREADY": "Já aprovado",
   "ARCHIVED_ACTIONS": "Ações arquivadas",
   "ARCHIVE_ACTION_DIALOG": {
@@ -360,7 +360,7 @@
         "NAME": "Nome do contacto",
         "NO_SKYPE": "Introduza o nome do Skype",
         "NO_STAFF_MEMBER": "Selecione um membro do pessoal",
-        "OFFICE_DETAILS": "detalhes do escritório",
+        "OFFICE_DETAILS": "Detalhes do escritório",
         "PHONE": "Telefone do escritório",
         "POINT_OF_CONTACT": "Ponto de contacto",
         "SKYPE_NAME": "Nome do Skype",
@@ -450,7 +450,7 @@
         "SURGE_CAP_DETAILS": "Detalhes da capacidade de sobrecarga",
         "TECHNICAL": "Técnica",
         "TITLE_TEXT": "Capacidade de sobrecarga e do escritório",
-        "TOTAL_RESPONSE_STAFF": "Pessoal da resposta total",
+        "TOTAL_RESPONSE_STAFF": "Pessoal de resposta total",
         "TOTAL_STAFF": "Pessoal total",
         "TYPE_OF_RELATIONSHIP": "Tipo de relacionamento",
         "VIEW_BUTTON_TEXT": "Ver capacidade de sobrecarga e do escritório"
@@ -668,7 +668,8 @@
       "END_DATE": "Data de conclusão",
       "SEASONAL_CALENDAR": "Calendário sazonal",
       "SEASON_NAME": "Nome da estação",
-      "VIEW_AS_MONTHS": "Ver em meses",
+      "VIEW_AS_THREE_MONTHS": "Ver em 3 meses",
+      "VIEW_AS_SIX_MONTHS": "Ver em 6 meses",
       "VIEW_AS_WEEKS": "Ver em semanas",
       "VIEW_FULL_CALENDAR": "Ver calendário completo"
     },
@@ -679,7 +680,7 @@
     "MY_TASKS": "As minhas tarefas",
     "REVIEW_AND_APPROVE": "Rever e aprovar",
     "SUBMITTED": "Enviado",
-    "SUBMIT_TO_APPROVE": "enviou um plano de resposta para sua aprovação",
+    "SUBMIT_TO_APPROVE": "envia um plano de resposta para a sua aprovação",
     "THIS_WEEK": "esta semana"
   },
   "DELETE": "Eliminar",
@@ -706,7 +707,7 @@
     "CONTENT": "Tem a certeza de que pretende prosseguir com esta ação?",
     "DEACTIVATE_AGENCY": "Tem a certeza de que pretende desativar esta agência? Os utilizadores da agência deixarão de poder iniciar sessão no ALERT"
   },
-  "DIRECTLY_THROUGH_STAFF": "Diretamente através do pessoal de campo",
+  "DIRECTLY_THROUGH_STAFF": "Diretamente através dos funcionários",
   "DIRECTORS": {
     "NO_COUNTRIES_TO_SHOW": "Nenhum país para apresentar"
   },
@@ -718,7 +719,7 @@
     "FACE_T_FACE_MEETING_REQUEST": "Pedido de reunião presencial",
     "INTER_AGENCIES_COLLABORATION": "Colaboração interagências",
     "MEETING_REQUEST": "Pedido de reunião",
-    "NO_OTHER_AGENCIES": "Mais nenhum agência tem um escritório nacional com a sua localização",
+    "NO_OTHER_AGENCIES": "Mais nenhuma agência tem um escritório nacional com a sua localização",
     "PLAN_APPROVAL": "Aprovação do plano",
     "REJECT_PLAN": "Rejeitar plano",
     "REJECT_PLAN_CONFIRMATION": "Confirme se pretende rejeitar este plano",
@@ -1433,7 +1434,7 @@
     "NO_DEPARTMENT": "O departamento é necessário",
     "NO_DUE_DATE": "A data de vencimento é necessária e não pode estar no passado",
     "NO_LEVEL": "O nível é necessário",
-    "NO_REQUIRE_DOC": "O Documento necessário é necessário",
+    "NO_REQUIRE_DOC": "O Documento é necessário",
     "NO_TASK": "A tarefa é necessária",
     "SAVE_NEW_ACTION": "Guardar nova ação",
     "SELECT_GENERIC_ACTION": "Selecionar uma ação de preparação genérica",
@@ -2097,3 +2098,4 @@
   "YOUR_ORGANISATION": "A sua organização",
   "YOU_ARE_ABOUT_TO_EXPORT": "Está prestes a exportar"
 }
+

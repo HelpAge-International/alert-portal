@@ -9,6 +9,7 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import {MessageModel} from "../../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Http, Response} from '@angular/http';
+import {EXPORT_FROM, ExportDataService} from "../../services/export-data.service";
 declare var jQuery: any;
 
 @Component({
@@ -34,6 +35,7 @@ export class DonorHeaderComponent implements OnInit {
   private unreadMessages: MessageModel[];
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private showLoader:boolean
 
   // Dan's switch language
   private languageSelectPath: string = '';
@@ -44,7 +46,14 @@ export class DonorHeaderComponent implements OnInit {
 
   // End
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService, private translate: TranslateService, private http: Http) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private userService: UserService,
+              private translate: TranslateService,
+              private exportService:ExportDataService,
+              private http: Http) {
 
     translate.setDefaultLang("en");
 
@@ -52,6 +61,8 @@ export class DonorHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    jQuery('.float').hide();
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
@@ -103,6 +114,9 @@ export class DonorHeaderComponent implements OnInit {
     this.ngUnsubscribe.complete();
   }
 
+  reportProblem(){
+    jQuery('.float').show();
+  }
   // Dan's Modal functions
 
   loadJSON(){
@@ -112,8 +126,7 @@ export class DonorHeaderComponent implements OnInit {
 
   }
 
-  openLanguageModal()
-  {
+  openLanguageModal() {
 
     console.log('Open language modal');
     jQuery("#language-selection").modal("show");
@@ -123,14 +136,9 @@ export class DonorHeaderComponent implements OnInit {
   changeLanguage(language: string) {
     this.language = language;
     console.log(this.uid);
-
     this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/language").set(language.toLowerCase());
-
-
     this.translate.use(language.toLowerCase());
     jQuery("#language-selection").modal("hide");
-
-
   }
 
   logout() {
@@ -143,6 +151,16 @@ export class DonorHeaderComponent implements OnInit {
 
   goToHome() {
     this.router.navigateByUrl("/donor-module");
+  }
+
+  exportData() {
+    this.showLoader = true
+    this.exportService.exportSystemData(EXPORT_FROM.FromDonor)
+      .first()
+      .subscribe(value => this.showLoader = !value)
+    // this.exportService.exportAgencyData(this.uid)
+    //   .first()
+    //   .subscribe(value => this.showLoader = !value)
   }
 
   /**
