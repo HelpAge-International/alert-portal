@@ -8,6 +8,7 @@ import {AgencyService} from "../services/agency-service.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkService} from "../services/network.service";
 import * as firebase from "firebase";
+
 declare var jQuery: any;
 
 @Component({
@@ -96,39 +97,47 @@ export class LoginComponent implements OnInit, OnDestroy {
             })
             .then((success) => {
               this.uid = success.uid;
-              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
-                .take(1)
-                .subscribe((snap) => {
-                  if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
-                    this.showCoC();
-                  }else{
-                    let isAgencyAdmin: boolean = false;
-                    this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
-                      .take(1)
-                      .subscribe(snapshots =>{
-                        console.log(snapshots);
-                        snapshots.forEach(snap => {
-                          if(!isAgencyAdmin){
-                            isAgencyAdmin = snap != null && snap.$key == this.uid;
+              // this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+              //   .take(1)
+              //   .subscribe((snap) => {
+              const data = {
+                "latestCoCAgreed": true,
+                "latestToCAgreed": true
+              }
+              // this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestCoCAgreed").set(true)
+              // this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestToCAgreed").set(true);
+              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).update(data).then(() => {
+                // if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
+                //   this.showCoC();
+                // }else{
+                let isAgencyAdmin: boolean = false;
+                this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
+                  .take(1)
+                  .subscribe(snapshots => {
+                    console.log(snapshots);
+                    snapshots.forEach(snap => {
+                      if (!isAgencyAdmin) {
+                        isAgencyAdmin = snap != null && snap.$key == this.uid;
+                      }
+                    });
+                    if (isAgencyAdmin) {
+                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                        .take(1)
+                        .subscribe((snap) => {
+                          if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
+                            this.showToC();
+                          } else {
+                            this.checkLogins();
                           }
                         });
-                        if(isAgencyAdmin){
-                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
-                            .take(1)
-                            .subscribe((snap) => {
-                              if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
-                                this.showToC();
-                              }else{
-                                this.checkLogins();
-                              }
-                            });
 
-                        }else{
-                          this.checkLogins();
-                        }
-                      });
-                  }
-                });
+                    } else {
+                      this.checkLogins();
+                    }
+                  });
+                // }
+              })
+              // });
             })
             .catch((error) => {
               // An error occured with logging in the user
@@ -154,80 +163,80 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  private showCoC(){
-    this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
+  private showCoC() {
+    this.af.database.object(Constants.APP_STATUS + "/system/systemAdminId", {preserveSnapshot: true})
       .take(1)
       .subscribe((systemAdminId) => {
-          this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
-            .take(1)
-            .subscribe((snap) => {
-              if(snap){
-                this.cocText = snap.val().coc;
-                this.loaderInactive = true;
-                jQuery("#coc-window").modal("show");
-              }else{
-                this.checkLogins();
-              }
-          });
-    });
-  }
-
-  private showToC(){
-    this.af.database.object(Constants.APP_STATUS +"/system/systemAdminId", {preserveSnapshot: true})
-      .take(1)
-      .subscribe((systemAdminId) => {
-        this.af.database.object(Constants.APP_STATUS +"/system/"+systemAdminId.val(), {preserveSnapshot: true})
+        this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdminId.val(), {preserveSnapshot: true})
           .take(1)
           .subscribe((snap) => {
-            if(snap){
-              this.tocText = snap.val().toc;
-              console.log(this.tocText);
+            if (snap) {
+              this.cocText = snap.val().coc;
               this.loaderInactive = true;
-              jQuery("#toc-window").modal("show");
-            }else{
+              jQuery("#coc-window").modal("show");
+            } else {
               this.checkLogins();
             }
           });
       });
   }
 
-  onAgreeCoC(){
+  private showToC() {
+    this.af.database.object(Constants.APP_STATUS + "/system/systemAdminId", {preserveSnapshot: true})
+      .take(1)
+      .subscribe((systemAdminId) => {
+        this.af.database.object(Constants.APP_STATUS + "/system/" + systemAdminId.val(), {preserveSnapshot: true})
+          .take(1)
+          .subscribe((snap) => {
+            if (snap) {
+              this.tocText = snap.val().toc;
+              console.log(this.tocText);
+              this.loaderInactive = true;
+              jQuery("#toc-window").modal("show");
+            } else {
+              this.checkLogins();
+            }
+          });
+      });
+  }
+
+  onAgreeCoC() {
     this.loaderInactive = false;
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestCoCAgreed").set(true);
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed").set(true);
     let isAgencyAdmin: boolean = false;
     this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
       .take(1)
-      .subscribe(snapshots =>{
+      .subscribe(snapshots => {
         console.log(snapshots);
         snapshots.forEach(snap => {
-          if(!isAgencyAdmin){
+          if (!isAgencyAdmin) {
             isAgencyAdmin = snap != null && snap.$key == this.uid;
           }
         });
-        if(isAgencyAdmin){
+        if (isAgencyAdmin) {
           this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
             .take(1)
             .subscribe((snap) => {
               if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
                 this.showToC();
-              }else{
+              } else {
                 this.checkLogins();
               }
             });
-        }else{
+        } else {
           this.checkLogins();
         }
       });
   }
 
-  onAgreeToC(){
+  onAgreeToC() {
     this.loaderInactive = false;
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestToCAgreed").set(true);
+    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestToCAgreed").set(true);
     this.checkLogins();
   }
 
-  private checkLogins(){
-    this.checkNetworkLogin(this.uid,(isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
+  private checkLogins() {
+    this.checkNetworkLogin(this.uid, (isNetworkAdmin: boolean, isNetworkCountryAdmin: boolean) => {    // NETWORK ADMIN LOGIN
       this.router.navigateByUrl("network/network-account-selection")
     }, () => {// REGULAR LOGIN
       this.regularLogin(this.uid);
@@ -410,7 +419,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
         if (snapshot.val() != null) {
-          if(snapshot.val().firstLogin == null && userNodeName == "partnerUser") {
+          if (snapshot.val().firstLogin == null && userNodeName == "partnerUser") {
             this.router.navigateByUrl(directToIfFirst);
           }
           else if (directToIfFirst == null || snapshot.val().firstLogin == null || !snapshot.val().firstLogin) {
@@ -525,7 +534,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           });
       },
       (snap) => {
-      console.log(directToIfFirst)
+        console.log(directToIfFirst)
         this.router.navigateByUrl(directToIfFirst);
       });
   }
@@ -593,8 +602,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   public seenCookiePolicy(seen: any) {
-   if (seen){
-     this.cookieLawEl.dismiss();
-   }
+    if (seen) {
+      this.cookieLawEl.dismiss();
+    }
   }
 }
