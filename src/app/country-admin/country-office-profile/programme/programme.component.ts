@@ -497,16 +497,16 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
-        if (mapping.where && mapping.where > -1) {
-          obj.country = this.countries[mapping.where];
-        }
-        if (mapping.level1 && mapping.level1 > -1) {
-          obj.areas = ", " + json[mapping.where].levelOneValues[mapping.level1].value
-        }
-        if (mapping.level2 && mapping.level2 > -1) {
-          obj.areas = obj.areas + ", " + json[mapping.where].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
-        }
-        this.locationObjs.push(obj);
+          if (mapping.where && mapping.where > -1) {
+            obj.country = this.countries[mapping.where];
+          }
+          if (mapping.where && mapping.level1 && mapping.level1 > -1) {
+            obj.areas = ", " + json[mapping.where].levelOneValues[mapping.level1].value
+          }
+          if (mapping.where && mapping.level2 && mapping.level2 > -1) {
+            obj.areas = obj.areas + ", " + json[mapping.where].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
+          }
+          this.locationObjs.push(obj);
       });
     });
   }
