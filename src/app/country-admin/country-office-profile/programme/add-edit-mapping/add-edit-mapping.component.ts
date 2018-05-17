@@ -178,6 +178,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
           .takeUntil(this.ngUnsubscribe)
           .subscribe(pre => {
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
+            this.setCountryLevel(this.selectedCountry);
           })
       });
   }
@@ -252,10 +253,15 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       if (!this.programmeId) {
         if (this.countryID) {
           dataToSave.updatedAt = new Date().getTime();
+          console.log("url:"+Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/');
+          console.log("this.programme:"+this.programme);
+          console.log("this.programme.where:"+this.programme.where);
+
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
             .push(dataToSave)
             .update(postData)
             .then(() => {
+
               this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_SAVE_MAPPING', AlertMessageType.Success);
               this.programme = new ProgrammeMappingModel();
               this.router.navigate(['/country-admin/country-office-profile/programme/']);
@@ -277,8 +283,9 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
           }
         });
 
-        console.log('data', dataToSave)
-        console.log('new', newData)
+        console.log('data', dataToSave);
+        console.log('new', newData);
+        console.log('url' + Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId);
         this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
           .update(newData)
           .then((newData) => {
