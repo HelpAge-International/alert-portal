@@ -8,7 +8,7 @@ import {CommonService} from "./common.service";
 import {AgencyService} from "./agency-service.service";
 import {PartnerOrganisationService} from "./partner-organisation.service";
 import {Constants} from "../utils/Constants";
-import {Countries, Department, PersonTitle} from "../utils/Enums";
+import {Countries, CountriesMapsSearchInterface, Department, PersonTitle} from "../utils/Enums";
 import {Angular2Csv} from "angular2-csv";
 
 
@@ -22,7 +22,8 @@ export class ExportPersonalService {
               private surgeCapacityService: SurgeCapacityService,
               private agencyService: AgencyService,
               private settingService: SettingsService,
-              private commonService: CommonService) {
+              private commonService: CommonService,
+              private translate: TranslateService) {
   }
 
   public exportPersonalData(userId: string, countryId: string) {
@@ -43,7 +44,12 @@ export class ExportPersonalService {
         personalData.Address_Line_1 = snap.addressLine1 == null || snap.addressLine1 == undefined ? '' : snap.addressLine1;
         personalData.Address_Line_2 = snap.addressLine2 == null || snap.addressLine2 == undefined ? '' : snap.addressLine2;
         personalData.City = snap.city == null || snap.city == undefined ? '' : snap.city;
-        personalData.Country = Countries[snap.country];
+        if (snap.country == undefined) {
+          personalData.Country = ""
+        }
+        else {
+          personalData.Country = CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(snap.country)
+        }
         personalData.Postcode = snap.postCode == null || snap.postCode == undefined ? '' : snap.postCode;
 
         // TOS
@@ -58,12 +64,8 @@ export class ExportPersonalService {
           this.af.database.object(Constants.APP_STATUS + "/staff/" + countryId + "/" + userId)
             .first()
             .subscribe(staffSnap => {
-              console.log("Looking at " + Constants.APP_STATUS + "/staff/" + countryId + "/" + userId);
-              console.log(staffSnap);
               personalData.Position = staffSnap.position == null || staffSnap.position == undefined ? '' : staffSnap.position;
               personalData.Department = Department[staffSnap.department];
-              console.log("Prepping data export");
-              console.log(personalData);
               this.exportCSV([personalData], "Personal Information");
             });
         }
