@@ -5,8 +5,21 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 >**Please install [Angular CLI](https://github.com/angular/angular-cli) before continuing.**
 
 ## Development server
-Run `ng serve` in root folder of the project for a dev server. Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files.
-> If `ng serve` fails, try running `npm install`first.
+Run `ng serve` in root folder of the project for a dev server. Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files. Note: Typescript 2.3.x and node version 9.9.x or below is required. See below for configuring this
+
+> If `ng serve` fails, try running `npm install` first. Make sure you are on a supported branch (master is not supported)
+
+> If you see an error which says `Error. 'make' is not supported` and a reference to a node package called gcpr, then you need to downgrade the version of node to 9.9.x or below. You can do this by running the following
+
+```
+sudo npm install -g n && sudo n 9.9.0
+```
+
+> If you get a lot of errors about `mapTo` or `flatMap` not being supported in the build, you are probably running a version of typescript that is too new. Run the following to downgrade to a supported version
+
+```
+npm install typescript@'>=2.1.0 <2.4.0'
+```
 
 ## Code scaffolding
 

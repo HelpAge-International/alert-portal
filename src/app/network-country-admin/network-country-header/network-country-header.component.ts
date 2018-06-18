@@ -19,6 +19,7 @@ import {Constants} from "../../utils/Constants";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
 import {LocalStorageService} from "angular-2-local-storage";
+import {ExportPersonalService} from "../../services/export-personal";
 
 declare var jQuery: any;
 
@@ -63,7 +64,8 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private translate: TranslateService,
               private alertService: ActionsService,
-              private http: Http) {
+              private http: Http,
+              private exportPersonalService: ExportPersonalService) {
     translate.setDefaultLang("en");
 
     this.browserLang = translate.getBrowserLang();
@@ -196,6 +198,10 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
           this.alertTitle = "ALERT.GREEN_ALERT_LEVEL";
         }
       });
+  }
+
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, null);
   }
 
 }

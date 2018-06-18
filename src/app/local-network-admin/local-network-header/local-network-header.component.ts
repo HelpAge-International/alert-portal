@@ -15,6 +15,7 @@ declare var jQuery: any;
 import {AlertLevels, AlertStatus, Countries} from "../../utils/Enums";
 import {ActionsService} from "../../services/actions.service";
 import {ModelAlert} from "../../model/alert.model";
+import {ExportPersonalService} from "../../services/export-personal";
 
 @Component({
   selector: 'app-local-network-header',
@@ -54,7 +55,8 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private translate: TranslateService,
               private af: AngularFire,
-              private http: Http) {
+              private http: Http,
+              private exportPersonalService: ExportPersonalService) {
 
     translate.setDefaultLang("en");
 
@@ -192,6 +194,10 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
           this.alertTitle = "ALERT.GREEN_ALERT_LEVEL";
         }
       });
+  }
+
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, null);
   }
 
 }

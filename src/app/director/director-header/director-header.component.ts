@@ -9,6 +9,7 @@ import {NotificationService} from "../../services/notification.service";
 import {MessageModel} from "../../model/message.model";
 import {Http, Response} from '@angular/http';
 import {TranslateService} from "@ngx-translate/core";
+import {ExportPersonalService} from "../../services/export-personal";
 declare var jQuery: any;
 
 
@@ -32,6 +33,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
   private uid: string;
   private agencyId: string;
+  private countryId: string;
   private agencyName: string = "";
 
   private firstName: string = "";
@@ -50,7 +52,8 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
               private af: AngularFire,
               private router: Router,
               private translate: TranslateService,
-              private http: Http) {
+              private http: Http,
+              private exportPersonalService: ExportPersonalService) {
 
     translate.setDefaultLang("en");
 
@@ -61,6 +64,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
     jQuery('.float').hide();
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.countryId = countryId;
       this.uid = user.uid;
       this.USER_TYPE = this.userPaths[userType];
       if (this.USER_TYPE) {
@@ -182,4 +186,7 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
     return promise;
   }
 
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, this.countryId);
+  }
 }
