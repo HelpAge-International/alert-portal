@@ -21,6 +21,22 @@ sudo npm install -g n && sudo n 9.9.0
 npm install typescript@'>=2.1.0 <2.4.0'
 ```
 
+## Running the project
+
+To run this project you need to 
+
+- Backup user auths
+- Backup database
+
+Then run the following 
+
+```
+firebase list
+firebase use <project>
+npm run build-prod 
+firebase deploy --only hosting
+```
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
