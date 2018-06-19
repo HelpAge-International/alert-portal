@@ -7,6 +7,7 @@ import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Http, Response} from '@angular/http';
 import {EXPORT_FROM, ExportDataService} from "../../services/export-data.service";
+import {ExportPersonalService} from "../../services/export-personal";
 
 declare var jQuery: any;
 
@@ -19,6 +20,7 @@ declare var jQuery: any;
 export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
 
   uid: string;
+  private countryId: string;
   firstName: string = "";
   lastName: string = "";
   counter: number = 0;
@@ -40,7 +42,8 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
               private router: Router,
               private translate: TranslateService,
               private exportService:ExportDataService,
-              private http: Http) {
+              private http: Http,
+              private exportPersonalService: ExportPersonalService) {
 
     translate.setDefaultLang("en");
 
@@ -53,8 +56,9 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     // this.showLoader = true;
     this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
+      this.countryId = countryId;
       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(user => {
@@ -146,6 +150,10 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
     this.exportService.exportSystemData(EXPORT_FROM.FromSystem)
       .first()
       .subscribe(value => this.showLoader = !value)
+  }
+
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, this.countryId);
   }
 
 }

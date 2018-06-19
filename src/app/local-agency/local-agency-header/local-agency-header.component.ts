@@ -19,6 +19,7 @@ import {NetworkViewModel} from "./network-view.model";
 import {LocalNetworkViewModel} from "./local-network-view.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Location} from "@angular/common";
+import {ExportPersonalService} from "../../services/export-personal";
 
 declare const jQuery: any;
 
@@ -91,7 +92,8 @@ export class LocalAgencyHeaderComponent implements OnInit {
               private userService: UserService,
               private locationService: Location,
               private http: Http,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private exportPersonalService: ExportPersonalService) {
 
     //this.translate.addLangs(["en", "fr", "es", "pt"]);
     translate.setDefaultLang("en");
@@ -509,5 +511,9 @@ export class LocalAgencyHeaderComponent implements OnInit {
             })
           })
       })
+  }
+
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, this.countryId);
   }
 }

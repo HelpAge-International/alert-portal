@@ -375,6 +375,7 @@ import {AgencyAdminViewTocComponent} from './agency-admin/agency-account-setting
 import {LocalAgencyViewTocComponent} from './local-agency/local-agency-account-details/local-agency-view-toc/local-agency-view-toc.component';
 import {SharedModule} from "./commons/shared.module";
 import {SystemAdminModule} from "./system-admin/system-admin.module";
+import {ExportPersonalService} from "./services/export-personal";
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -801,6 +802,7 @@ const firebaseAuthConfig = {
     ActionsService,
     FieldOfficeService,
     ExportDataService,
+    ExportPersonalService,
     PartnerOrganisationService,
     SurgeCapacityService,
     FieldOfficeService,

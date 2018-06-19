@@ -11,6 +11,7 @@ import {Http, Response} from '@angular/http';
 import {ExportDataService} from "../../services/export-data.service";
 import {AgencyService} from "../../services/agency-service.service";
 import {AlertMessageModel} from "../../model/alert-message.model";
+import {ExportPersonalService} from "../../services/export-personal";
 
 declare var jQuery: any;
 
@@ -23,6 +24,7 @@ declare var jQuery: any;
 export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
 
   private uid: string;
+  private countryId: string;
   private firstName: string = "";
   private lastName: string = "";
   private agencyName: string = "";
@@ -52,7 +54,8 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
               private http: Http,
               private agencyService:AgencyService,
               private exportService: ExportDataService,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private exportPersonalService: ExportPersonalService) {
 
 
     translate.setDefaultLang("en");
@@ -62,11 +65,11 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     jQuery('.float').hide();
-    this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
+    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemAdminId) => {
       this.uid = user.uid;
+      this.countryId = countryId;
       this.USER_TYPE = Constants.USER_PATHS[UserType.AgencyAdmin];
       this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
-
 
       this.loadJSON().subscribe(data => {
 
@@ -178,7 +181,10 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
           this.alertMessage = new AlertMessageModel("Cannot export data for an empty agency, please create country office first")
         }
       })
+  }
 
+  exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, this.countryId);
   }
 
 }
