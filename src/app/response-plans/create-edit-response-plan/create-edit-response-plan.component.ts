@@ -2358,17 +2358,22 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private updateSectorsList(sectorSelected, sectorEnum) {
 
     if (sectorSelected) {
+      // Add
       if (!(this.sectorsRelatedTo.includes(sectorEnum))) {
         this.sectorsRelatedTo.push(sectorEnum);
         this.addActivity(sectorEnum);
       }
     } else {
       if (this.sectorsRelatedTo.includes(sectorEnum)) {
+        // Remove
         let index: number = this.sectorsRelatedTo.indexOf(sectorEnum, 0);
         if (index > -1) {
+          let value = this.sectorBudget.get(sectorEnum);
+          this.totalInputs = this.totalInputs - value;
+          this.sectorBudget.delete(sectorEnum);
           this.sectorsRelatedTo.splice(index, 1)
         }
-        this.activityMap.delete(sectorEnum);
+        this.calculateBudget(null, null, false)
       }
     }
   }
