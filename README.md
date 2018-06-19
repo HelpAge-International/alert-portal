@@ -172,3 +172,295 @@ For detailed instructions on using routes and route parameters, please refer to 
 ├── tsconfig.json
 └── tslint.json
 ```
+
+
+## Firebase structure
+
+Below is a rough outline of the ids used in Firebase, helping clarify which ids mean what: (hopefully it's correct)
+
+```
+- action
+    - <country_id>
+        - <action_id>
+            - documents
+                - <document_id>
+            - department
+                - <department_id>
+- actionCHS
+    - <system_id>
+        - <action_id>
+- actionGeneric
+    - <system_id>
+        - <action_id>
+- actionMandated
+    - <agency_id>
+        - <action_id>
+            - department
+                - <department_id>
+- administratorAgency
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+- administratorCountry
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+        - countryId: <country_id>
+- administratorLocalAgency
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+- administratorNetwork
+    - <user_id> 
+        - systemAdmin: <system_id>
+        - networkIds: <network_ids>[]
+- administratorNetworkCountry
+    - <user_id> 
+        - systemAdmin: <system_id>
+        - networkCountryIds: <network_country_ids>[]
+- adminNotes
+    - <user_id> 
+        - <note_id>
+- agency
+    - <agency_id> 
+        - admin: <user_id>
+        - department
+            - <department_id>
+        - networks
+            - <network_id>
+- alert
+    - <country_id>
+        - <alert_id>
+            - approval
+                - countryDirector
+                    - <country_id> 
+            - otherName: <hazard_other_id>
+            - updatedBy: <user_id>
+- bugReporting
+    - <country_id> / <agency_id> / <system_id> / <network_id> / <network_country_id> / <local_network> / etc.
+        - <bug_id>
+- countryDirector
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+        - countryId: <country_id>
+- countryOffice
+    - <agency_id> 
+        - <country_id>
+            - adminId: <country_admin_id>
+- countryOfficeProfile
+    - capacity / contacts / ... / surgeEquipment
+        - <country_id>
+            - <item_id>
+                - staffMember: <user_id>
+- countryUser
+    - <user_id>
+        - agencyAdmin
+            - <agency_id>
+        - countryId: <country_id>
+        - systemAdmin
+            - <system_id>
+- directorCountry
+    - <country_id>: <user_id> (country director)
+- directorLocalAgency
+    - <country_id>: <user_id> (local agency director)
+- directorRegion
+    - <country_id>: <user_id> (region director)
+- document
+    - <country_id> 
+        - <document_id>
+            - uploadedBy: <user_id>
+- donor
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+- ert
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+        - countryId: <country_id>
+- ertLeader
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+        - countryId: <country_id>
+- fieldOffice
+	- <country_id>
+		- <field_office_id>
+- globalDirector
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+- globalUser
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+- group
+    - agency
+        - <agency_id>
+            - agencyallusersgroup
+                - <user_id>
+            - (all other fields)
+                - <user_id>
+    - country
+        - <country_id>
+            - countryallusersgroup
+                - <user_id>
+            - (all other fields)
+                - <user_id>
+    - network
+        - <network_id>
+            - networkallusersgroup
+                - <user_id>
+            - networkcountryadmins
+                - <user_id>
+    - systemadmin
+        - <system_id>
+            - allagencyadminsgroup
+            - allcountryadminsgroup
+            - allnetworkadminsgroup
+            - allusersgroup
+- hazard
+    - <country_id>
+        - <hazard_id>
+- hazardCountryContext
+    - <country_id>
+- hazardOther
+    - <hazard_other_id>
+- indicator
+    - <country_id>
+        - <indicator_id>
+            - asignee: <user_id>
+- localAgencyDirector
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+- localAgencyProfile
+    - capacity / contacts / ... / surgeEquipment
+        - <local_agency_id>
+            - <item_id>
+- localNetworkProfile
+    - capacity
+        - <local_network_id>
+            - <item_id>
+- log
+    - (where you can add a log from, so <action_id> or <hazard_id> or etc.)
+        - <log_id>
+            - addedBy: <user_id>
+- message
+    - <message_id>
+- messageRef
+    - agency
+        - <agency_id>
+	    	- countryadmins
+	    		- <country_admin_id> (user_id)
+	    			- <message_id>: timestamp
+			- countrydirectors
+				- <country_director_id> (user_id>)
+					- <message_id>: timestamp
+			- globaldirector
+				- <global_director> (user_id>)
+					- <message_id>: timestamp
+    - country
+    	- <country_id>
+	    	- ertLeads
+	    		- <ert_lead_id> (user_id)
+	    			- <message_id>: timestamp
+			- ert
+				- <ert> (user_id>)
+					- <message_id>: timestamp
+			- partner
+				- <partner> (user_id>)
+					- <message_id>: timestamp
+    - system
+    	- 
+- module
+    - <country_id>
+- network
+    - <network_id>
+        - agencies
+            - <agency_id>
+        - leadAgencyId: <agency_id>
+        - networkAdminId: <user_id>
+- networkAgencyValidation
+    - 
+- networkCountry
+	- <network_id>
+		- <network_country_id>
+			- adminId: <user_id>
+			- agencyCountries
+				- <agency_id>
+					- <country_id>
+- networkCountryOfficeProfile
+    - capacity / contacts / ... / surgeEquipment
+        - <network_country_id>
+            - <item_id>
+- networkCountryValidation   
+    - <country_id>
+- networkUserSelection
+	- <user_id>
+		- selectedNetwork: <network_id>
+		- selectedNetworkCountry: <network_country_id>
+- nonAlert
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+        - countryId: <country_id>
+- note
+    - <country_id>
+        - <action_id>
+        	- <note_id>
+- partner
+	- <partner_id>
+		- id: <partner_id>
+		- partnerOrganisationId: <partner_organisation_id>
+- partnerOrganisation
+	- <partner_organisation_id>
+		- agencyId: <agency_id>
+		- countryId: <country_id>
+		- id: <partner_organisation_id>
+		- partners
+			- <partner_id>
+		- userId: <user_id>
+		- validationPartnerUserIdL <user_id>
+- partnerOrganisationValidation
+	- <partner_organisation_id>
+- partnerUser
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+- region
+	- <agency_id>
+		- <region_id>
+			- countries
+				- <country_id>
+				- directorId: <user_id>
+- regionDirector
+    - <user_id>
+        - agencyId: <agency_id>
+        - systemAdmin: <system_id>
+        - countryId: <country_id>
+- responsePlan
+	- <country_id>
+		- <response_plan_id>
+			- createdBy: <user_id>
+			- editingUserId: <user_id>
+			- planLead: <country_id>
+- responsePlanValidation
+    - <reponse_plan_id>
+- season
+    - <country_id>
+        - <season_id>
+- skill
+    - <skill_id>
+- staff
+    - <country_id>
+        - <user_id>
+            - department: <department_id>
+- system
+    - <system_admin_id>
+        - groups
+            - <group_id>
+- userPublic
+    - <user_id>
+```
