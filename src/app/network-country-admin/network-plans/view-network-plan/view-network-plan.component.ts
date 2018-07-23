@@ -61,6 +61,9 @@ export class ViewNetworkPlanComponent implements OnInit {
       //   this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
       // }
       this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES)
+      if (this.isLocalNetworkAdmin) {
+        this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
+      }
     })
   }
 

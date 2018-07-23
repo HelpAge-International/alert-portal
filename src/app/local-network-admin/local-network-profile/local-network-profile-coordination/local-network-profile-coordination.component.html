@@ -31,7 +31,7 @@
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">Coordination Arrangements</h2>
-      <div *ngIf="!isViewingFromExternal" class="col-sm-6 Right-aligned">
+      <div *ngIf="!isViewingFromExternal && !isViewing" class="col-sm-6 Right-aligned">
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="canEdit && !isEdit"
                 (click)="editCoordinationArrangement()">{{ 'COUNTRY_ADMIN.PROFILE.COORDINATION.EDIT' | translate }}
@@ -135,7 +135,7 @@
     </div>
 
     <button class="btn btn-outline-primary text-uppercase"
-            *ngIf="canEdit && !isViewingFromExternal"
+            *ngIf="canEdit && !isViewingFromExternal && !isViewing"
             (click)="addEditCoordinationArrangement()">{{ 'GLOBAL.ADD' | translate }}
     </button>
 

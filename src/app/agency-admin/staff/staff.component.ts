@@ -8,9 +8,9 @@ import {ModelStaff} from "../../model/staff.model";
 import {OfficeType, SkillType, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
-import {AgencyService} from "../../services/agency-service.service";
-import {SettingsService} from "../../services/settings.service";
 import {FieldOfficeService} from "../../services/field-office.service";
+import {SettingsService} from "../../services/settings.service";
+import {AgencyService} from "../../services/agency-service.service";
 
 declare var jQuery: any;
 

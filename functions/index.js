@@ -70,7 +70,7 @@ const ENVIRONMENT = {
     url: "http://platform.alertpreparedness.org"
   }
 };
-const ENV = ENVIRONMENT.SAND;
+const ENV = ENVIRONMENT.TEST;
 
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
@@ -449,7 +449,7 @@ function sendWelcomeEmail() {
       .catch(function (error) {
         console.log("Error updating user password:", error);
       });
-  };
+  });
 }
 
 
@@ -2107,25 +2107,15 @@ function fetchUsersAndSendEmail(node, countryId, title, content, setting, assign
   console.log("fetchUsersAndSendEmail - gets called!!! " + node)
   admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
     let exObj = data.val();
-    console.log(exObj)
     if (exObj) {
       let recipients = Object.keys(exObj).map(key => {
         return exObj[key]
       })
       for (let i = 0, len = recipients.length; i < len; i++) {
-        console.log(recipients[i].email)
         if (recipients[i].notificationsSettings[setting]) {
           sendEmail(recipients[i].email, title, content)
         }
       }
-    }
-  });
-
-  admin.database().ref('/' + node + '/userPublic/' + assignee).once('value', (data) => {
-    let exObj = data.val();
-    console.log(exObj.email)
-    if (exObj) {
-      sendEmail(exObj.email, title, content)
     }
   })
 }

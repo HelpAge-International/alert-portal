@@ -33,7 +33,7 @@
 
     <div class="Header-title__wrap Spaced row">
       <h2 class="col-sm-6">{{ 'COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.TITLE_TEXT' | translate }}</h2>
-      <div *ngIf="!isViewingFromExternal" class="col-sm-6 Right-aligned">
+      <div *ngIf="!isViewingFromExternal && !isViewing" class="col-sm-6 Right-aligned">
         <button type="button" class="btn btn-outline-primary text-uppercase"
                 *ngIf="!isEdit"
                 (click)="editStockCapacity()">Edit Network Owned Stock
@@ -166,7 +166,7 @@
       </div>
 
       <button class="btn btn-outline-primary text-uppercase"
-              *ngIf="canEdit && !isViewingFromExternal"
+              *ngIf="canEdit && !isViewingFromExternal && !isViewing"
               (click)="addEditStockCapacity(STOCK_TYPE.Network)">{{ 'GLOBAL.ADD' | translate }}
       </button>
 
@@ -275,7 +275,7 @@
       </div>
 
       <button class="btn btn-outline-primary text-uppercase"
-              *ngIf="canEdit && !isViewingFromExternal"
+              *ngIf="canEdit && !isViewingFromExternal && !isViewing"
               (click)="addEditStockCapacity(STOCK_TYPE.External)">{{ 'GLOBAL.ADD' | translate }}
       </button>
     </div>
