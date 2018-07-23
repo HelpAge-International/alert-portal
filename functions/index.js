@@ -6951,10 +6951,10 @@ exports.updateLatestCoCAllUsers_TEST = functions.database.ref('/test/system/{sys
         let usersJson = data.val();
         if(usersJson) {
           let userIds = Object.keys(usersJson);
-          //console.log(userIds);
+          console.log(userIds);
           userIds.forEach(userId => {
             admin.database().ref('test/userPublic/'+userId+'/latestCoCAgreed').set(false).then(() =>{
-              //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
+              console.log("latestCoCAgreed is set to false for user with id: "+ userId);
             });
           });
         }

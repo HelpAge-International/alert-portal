@@ -63,7 +63,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>{{cocText}}</p>
+        <p [innerHTML]="cocText"></p>
       </div>
       <button type="button" data-dismiss="modal" aria-label="Close" (click)="onAgreeCoC()">{{"GLOBAL.IAGREE" | translate}}</button>
     </div>
@@ -81,7 +81,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>{{tocText}}</p>
+        <p [innerHTML]="tocText"></p>
       </div>
       <button type="button" data-dismiss="modal" aria-label="Close" (click)="onAgreeToC()">{{"GLOBAL.IAGREE" | translate}}</button>
     </div>

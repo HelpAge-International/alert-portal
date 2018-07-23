@@ -100,43 +100,49 @@ export class LoginComponent implements OnInit, OnDestroy {
               // this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
               //   .take(1)
               //   .subscribe((snap) => {
-              const data = {
-                "latestCoCAgreed": true,
-                "latestToCAgreed": true
-              }
+              // const data = {
+              //   "latestCoCAgreed": true,
+              //   "latestToCAgreed": true
+              // };
               // this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestCoCAgreed").set(true)
               // this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid+"/latestToCAgreed").set(true);
-              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).update(data).then(() => {
-                // if(snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)){
-                //   this.showCoC();
-                // }else{
-                let isAgencyAdmin: boolean = false;
-                this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
-                  .take(1)
-                  .subscribe(snapshots => {
-                    console.log(snapshots);
-                    snapshots.forEach(snap => {
-                      if (!isAgencyAdmin) {
-                        isAgencyAdmin = snap != null && snap.$key == this.uid;
-                      }
-                    });
-                    if (isAgencyAdmin) {
-                      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
-                        .take(1)
-                        .subscribe((snap) => {
-                          if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
-                            this.showToC();
-                          } else {
-                            this.checkLogins();
+              // this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid).update(data).then(() => {
+              this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                .subscribe((snap) => {
+                  console.log("PROCESSING!!");
+                  console.log(snap.val());
+                  if (snap.val() && (snap.val().latestCoCAgreed == null || snap.val().latestCoCAgreed == false)) {
+                    this.showCoC();
+                  } else {
+                    let isAgencyAdmin: boolean = false;
+                    this.af.database.list(Constants.APP_STATUS + "/administratorAgency/")
+                      .take(1)
+                      .subscribe(snapshots => {
+                        console.log(snapshots);
+                        snapshots.forEach(snap => {
+                          if (!isAgencyAdmin) {
+                            isAgencyAdmin = snap != null && snap.$key == this.uid;
                           }
                         });
+                        if (isAgencyAdmin) {
+                          this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid, {preserveSnapshot: true})
+                            .take(1)
+                            .subscribe((snap) => {
+                              if (snap.val() && (snap.val().latestToCAgreed == null || snap.val().latestToCAgreed == false)) {
+                                this.showToC();
+                              } else {
+                                this.checkLogins();
+                              }
+                            });
 
-                    } else {
-                      this.checkLogins();
-                    }
-                  });
-                // }
-              })
+                        } else {
+                          this.checkLogins();
+                        }
+                      });
+                  }
+                });
+              // }
+              // })
               // });
             })
             .catch((error) => {
@@ -153,8 +159,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.showAlert(true, "GLOBAL.GENERAL_LOGIN_ERROR");
               }
             });
-
-        })
+        });
 
       this.inactive = true;
     }
