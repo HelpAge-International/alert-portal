@@ -115,7 +115,6 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // console.log("localagencydashboard")
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
@@ -130,11 +129,12 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
-      this.loadData();
 
       PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
         this.moduleSettings = isEnabled;
       }));
+
+      this.loadData();
     });
   }
 
@@ -233,7 +233,6 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
     if(this.DashboardTypeUsed == DashboardType.director){
       return;
     }
-    console.log(this.seasonEvents);
     // Element is removed and re-added upon a data change
     document.getElementById("target2").innerHTML = "";
     this.chronoline = new Chronoline(document.getElementById("target2"), this.seasonEvents,
@@ -268,7 +267,6 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         this.actionsOverdue = actions.filter(action => action.dueDate < startOfToday);
         this.actionsToday = actions.filter(action => action.dueDate >= startOfToday && action.dueDate <= endOfToday);
         this.actionsThisWeek = actions.filter(action => action.dueDate > endOfToday);
-        console.log(this.actionsThisWeek)
 
         for (let x of this.actionsOverdue) {
           this.updateTaskDataForActions(x.$key, x, (action) => {
@@ -512,9 +510,11 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
     if (level == ActionLevel.MPA && !this.moduleSettings.minimumPreparedness) {
       return false;
     }
+
     if (level == ActionLevel.APA && (!this.moduleSettings.advancedPreparedness || !this.isRedAlert)) {
       return false;
     }
+
     if (action == ActionType.chs && !this.moduleSettings.chsPreparedness) {
       return false;
     }

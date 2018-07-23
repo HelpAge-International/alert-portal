@@ -133,6 +133,8 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
         this.action.id = params['id'];
         this.editDisableLoading = true;
       }
+      console.log("Action Id: "+this.action.id);
+
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
         this.userType = userType;
