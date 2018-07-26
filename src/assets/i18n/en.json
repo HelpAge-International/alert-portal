@@ -107,10 +107,10 @@
   "CONFIRM_THIS_ACTION_IS_COMPLETED":"Confirm this action is completed.",
   "ADD_A_COMPLETION_NOTE_HERE":"Add a completion note here",
   "ATTACH_DOCUMENTS_AS_PROOF_OF_COMPLETION":"Attach documents as proof of completion",
-  "ACCEPT_CODE_OF_CONDUCT": "The Code of Conduct has been updated. Please visit your account settings to agree to the latest Code of Conduct.",
+  "ACCEPT_CODE_OF_CONDUCT": "The Privacy Policy has been updated. Please visit your account settings to agree to the latest Privacy Policy.",
   "ACCEPT_TERMS_AND_CONDITIONS": "The Terms and Conditions has been updated, please visit your settings to accept",
   "TERMS_AND_CONDITIONS": "Terms and Conditions ",
-  "CODE_OF_CONDUCT": "Code of Conduct",
+  "CODE_OF_CONDUCT": "Privacy Policy",
   "UPLOAD_DOCUMENTS":"Upload documents",
   "ATTACHMENTS":"Attachments",
   "MARK_AS_COMPLETE":"Mark as complete",
@@ -292,9 +292,9 @@
   "OTHER":"Other",
   "SUCCESSFULLY_VALIDATE_PARTNERSHIP":"Successfully validate partnership!",
   "GLOBAL":{
-    "SUCCESS_COC_AGREE":"Thank you for agreeing to the Code of Conduct",
+    "SUCCESS_COC_AGREE":"Thank you for agreeing to the Privacy Policy",
     "SUCCESS_TOC_AGREE":"Thank you for agreeing to the Terms and Conditions",
-    "COC_TITLE": "Code of Conduct",
+    "COC_TITLE": "Privacy Policy",
     "TOC_TITLE": "Terms and Conditions",
     "LANGUAGES":{
       "EN": "English",
@@ -303,7 +303,7 @@
       "PT": "Portuguese"
     },
     "SWITCH": "Switch Language",
-    "COC": "Code of Conduct",
+    "COC": "Privacy Policy",
     "IAGREE":"I Agree",
     "REPORT":"Report a problem",
     "MODAL_HEADER":"Select a language",
@@ -907,14 +907,14 @@
       "ADV":"Advanced preparedness threshold",
       "DOC_SETTING":"Document upload settings",
       "TOC_SETTING":"Terms and Conditions settings",
-      "COC_SETTING":"Code of Conduct settings",
+      "COC_SETTING":"Privacy Policy settings",
       "FILE_FORMAT":"File Format",
       "FILE_SIZE":"Maximum file size",
       "SAVE":"Save Settings",
       "PREPAREDNESS":"Preparedness",
       "ERROR_MIN_THRESHOLD":"Green value for minimum preparedness threshold can not be lower than or same as the amber value. Please select a different value",
       "ERROR_ADV_THRESHOLD":"Green value for advanced preparedness threshold can not be lower than or same as the amber value. Please select a different value",
-      "COC":"Code of Conduct",
+      "COC":"Privacy Policy",
       "TOC":"Terms and Conditions",
       "DOC_SETTINGS":"Document Upload",
       "RESPONSE_PLANS":"Response Plans",
@@ -925,9 +925,9 @@
       "ERROR_NO_GROUP_NAME":"Please enter the group name to add a new group",
       "ERROR_NO_EDIT_GROUP_NAME":"Please enter the group name",
       "SUCCESS_TOC_UPDATE":"Terms and Conditions updated successfully",
-      "SUCCESS_COC_UPDATE":"Code of Conduct updated successfully",
+      "SUCCESS_COC_UPDATE":"Privacy Policy updated successfully",
       "ERROR_TOC_UPDATE":"Terms and Conditions cannot be empty",
-      "ERROR_COC_UPDATE":"Code of Conduct cannot be empty"
+      "ERROR_COC_UPDATE":"Privacy Policy cannot be empty"
 
     }
   },
