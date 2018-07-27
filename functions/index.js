@@ -70,7 +70,6 @@ const ENVIRONMENT = {
     url: "http://platform.alertpreparedness.org"
   }
 };
-const ENV = ENVIRONMENT.TEST;
 
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
@@ -80,6 +79,11 @@ const cors = require('cors')({origin: true});
 const uuidv4 = require('uuid/v4');
 admin.initializeApp(functions.config().firebase);
 
+
+/**
+ * THESE ARE STORED IN FIREBASE CONFIGURATION!
+ * run `firebase functions:config:get` to pull these configuration details
+ */
 const gmailEmail = encodeURIComponent(functions.config().gmail.email);
 const gmailPassword = encodeURIComponent(functions.config().gmail.password);
 const mailTransport = nodemailer.createTransport(
@@ -394,37 +398,143 @@ const COUNTRIES = [
 
 /**
  * EXPORT DECLARATIONS
+ * - Does not work through for-loop, so the declarations are duplicated for SAND, TEST, UAT and LIVE
+ * Also you can't use array declarations for some reason, not sure why, so they're standard exports
  */
 
- exports['handleUserAccounts_' + ENV.label] = handleUserAccounts();
- exports['sendWelcomeEmail'] = sendWelcomeEmail();
- exports['sendResponsePlanValidationEmail_' + ENV.label] = sendResponsePlanValidationEmail();
- exports['sendPartnerOrganisationValidationEmail_' + ENV.label] = sendPartnerOrganisationValidationEmail();
- exports['sendSystemAdminNotificationsEmail_' + ENV.label] = sendSystemAdminNotificationsEmail();
- exports['sendAgencyNotificationsEmail_' + ENV.label] = sendAgencyNotificationsEmail();
- exports['sendCountryNotificationsEmail_' + ENV.label] = sendCountryNotificationsEmail();
- exports['sendNetworkAgencyValidationEmail_' + ENV.label] = sendNetworkAgencyValidationEmail();
- exports['sendNetworkCountryAgencyValidationEmail_' + ENV.label] = sendNetworkCountryAgencyValidationEmail();
- exports['sendBugReportingEmail_' + ENV.label] = sendBugReportingEmail();
- exports['createUserNetworkCountry_' + ENV.label] = createUserNetworkCountry();
- exports['updateUserEmail_' + ENV.label] = updateUserEmail();
- exports['sendEmailToExternalForAlertChange_' + ENV.label] = sendEmailToExternalForAlertChange();
- exports['sendEmailToExternalForAlertChangeRed_' + ENV.label] = sendEmailToExternalForAlertChangeRed();
- exports['sendEmailToExternalForIndicatorUpdate_' + ENV.label] = sendEmailToExternalForIndicatorUpdate();
- exports['sendEmailToExternalForPlanExpired_' + ENV.label] = sendEmailToExternalForPlanExpired();
- exports['sendEmailPlanRejectedByCountryDirector_' + ENV.label] = sendEmailPlanRejectedByCountryDirector();
- exports['sendEmailPlanRejectedByRegionDirector_' + ENV.label] = sendEmailPlanRejectedByRegionDirector();
- exports['sendEmailPlanRejectedByGlobalDirector_' + ENV.label] = sendEmailPlanRejectedByGlobalDirector();
-exports['updateLatestToCAllUsers_' + ENV.label] = updateLatestToCAllUsers();
- exports['updateLatestCoCAllUsers_' + ENV.label] = updateLatestCoCAllUsers();
- exports['sendIndicatorAssignedMobileNotification_' + ENV.label] = sendIndicatorAssignedMobileNotification();
- exports['sendResponsePlanApprovalNotification_' + ENV.label] = sendResponsePlanApprovalNotification();
- exports['sendAlertMobileNotification_' + ENV.label] = sendAlertMobileNotification();
- exports['sendActionMobileNotification_' + ENV.label] = sendActionMobileNotification();
- exports['countryOfficeClockSettingsChange_' + ENV.label] = countryOfficeClockSettingsChange();
- exports['networkClockSettingsChange_' + ENV.label] = networkClockSettingsChange();
- exports['networkCountryClockSettingsChange_' + ENV.label] = networkCountryClockSettingsChange();
- exports['sendResponsePlanMobileNotification_' + ENV.label] = sendResponsePlanMobileNotification();
+exports.sendWelcomeEmail = sendWelcomeEmail();
+
+// region Delcarations :- SAND
+
+exports.handleUserAccounts_SAND = handleUserAccounts(ENVIRONMENT.SAND);
+exports.sendResponsePlanValidationEmail_SAND = sendResponsePlanValidationEmail(ENVIRONMENT.SAND);
+exports.sendPartnerOrganisationValidationEmail_SAND = sendPartnerOrganisationValidationEmail(ENVIRONMENT.SAND);
+exports.sendSystemAdminNotificationsEmail_SAND = sendSystemAdminNotificationsEmail(ENVIRONMENT.SAND);
+exports.sendAgencyNotificationsEmail_SAND = sendAgencyNotificationsEmail(ENVIRONMENT.SAND);
+exports.sendCountryNotificationsEmail_SAND = sendCountryNotificationsEmail(ENVIRONMENT.SAND);
+exports.sendNetworkAgencyValidationEmail_SAND = sendNetworkAgencyValidationEmail(ENVIRONMENT.SAND);
+exports.sendNetworkCountryAgencyValidationEmail_SAND = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.SAND);
+exports.sendBugReportingEmail_SAND = sendBugReportingEmail(ENVIRONMENT.SAND);
+exports.createUserNetworkCountry_SAND = createUserNetworkCountry(ENVIRONMENT.SAND);
+exports.updateUserEmail_SAND = updateUserEmail(ENVIRONMENT.SAND);
+exports.sendEmailToExternalForAlertChange_SAND = sendEmailToExternalForAlertChange(ENVIRONMENT.SAND);
+exports.sendEmailToExternalForAlertChangeRed_SAND = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.SAND);
+exports.sendEmailToExternalForIndicatorUpdate_SAND = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.SAND);
+exports.sendEmailToExternalForPlanExpired_SAND = sendEmailToExternalForPlanExpired(ENVIRONMENT.SAND);
+exports.sendEmailPlanRejectedByCountryDirector_SAND = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.SAND);
+exports.sendEmailPlanRejectedByRegionDirector_SAND = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.SAND);
+exports.sendEmailPlanRejectedByGlobalDirector_SAND = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.SAND);
+exports.updateLatestToCAllUsers_SAND = updateLatestToCAllUsers(ENVIRONMENT.SAND);
+exports.updateLatestCoCAllUsers_SAND = updateLatestCoCAllUsers(ENVIRONMENT.SAND);
+exports.sendIndicatorAssignedMobileNotification_SAND = sendIndicatorAssignedMobileNotification(ENVIRONMENT.SAND);
+exports.sendResponsePlanApprovalNotification_SAND = sendResponsePlanApprovalNotification(ENVIRONMENT.SAND);
+exports.sendAlertMobileNotification_SAND = sendAlertMobileNotification(ENVIRONMENT.SAND);
+exports.sendActionMobileNotification_SAND = sendActionMobileNotification(ENVIRONMENT.SAND);
+exports.countryOfficeClockSettingsChange_SAND = countryOfficeClockSettingsChange(ENVIRONMENT.SAND);
+exports.networkClockSettingsChange_SAND = networkClockSettingsChange(ENVIRONMENT.SAND);
+exports.networkCountryClockSettingsChange_SAND = networkCountryClockSettingsChange(ENVIRONMENT.SAND);
+exports.sendResponsePlanMobileNotification_SAND = sendResponsePlanMobileNotification(ENVIRONMENT.SAND);
+
+// endregion
+
+// region Delcarations :- TEST
+
+exports.handleUserAccounts_TEST = handleUserAccounts(ENVIRONMENT.TEST);
+exports.sendResponsePlanValidationEmail_TEST = sendResponsePlanValidationEmail(ENVIRONMENT.TEST);
+exports.sendPartnerOrganisationValidationEmail_TEST = sendPartnerOrganisationValidationEmail(ENVIRONMENT.TEST);
+exports.sendSystemAdminNotificationsEmail_TEST = sendSystemAdminNotificationsEmail(ENVIRONMENT.TEST);
+exports.sendAgencyNotificationsEmail_TEST = sendAgencyNotificationsEmail(ENVIRONMENT.TEST);
+exports.sendCountryNotificationsEmail_TEST = sendCountryNotificationsEmail(ENVIRONMENT.TEST);
+exports.sendNetworkAgencyValidationEmail_TEST = sendNetworkAgencyValidationEmail(ENVIRONMENT.TEST);
+exports.sendNetworkCountryAgencyValidationEmail_TEST = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.TEST);
+exports.sendBugReportingEmail_TEST = sendBugReportingEmail(ENVIRONMENT.TEST);
+exports.createUserNetworkCountry_TEST = createUserNetworkCountry(ENVIRONMENT.TEST);
+exports.updateUserEmail_TEST = updateUserEmail(ENVIRONMENT.TEST);
+exports.sendEmailToExternalForAlertChange_TEST = sendEmailToExternalForAlertChange(ENVIRONMENT.TEST);
+exports.sendEmailToExternalForAlertChangeRed_TEST = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.TEST);
+exports.sendEmailToExternalForIndicatorUpdate_TEST = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.TEST);
+exports.sendEmailToExternalForPlanExpired_TEST = sendEmailToExternalForPlanExpired(ENVIRONMENT.TEST);
+exports.sendEmailPlanRejectedByCountryDirector_TEST = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.TEST);
+exports.sendEmailPlanRejectedByRegionDirector_TEST = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.TEST);
+exports.sendEmailPlanRejectedByGlobalDirector_TEST = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.TEST);
+exports.updateLatestToCAllUsers_TEST = updateLatestToCAllUsers(ENVIRONMENT.TEST);
+exports.updateLatestCoCAllUsers_TEST = updateLatestCoCAllUsers(ENVIRONMENT.TEST);
+exports.sendIndicatorAssignedMobileNotification_TEST = sendIndicatorAssignedMobileNotification(ENVIRONMENT.TEST);
+exports.sendResponsePlanApprovalNotification_TEST = sendResponsePlanApprovalNotification(ENVIRONMENT.TEST);
+exports.sendAlertMobileNotification_TEST = sendAlertMobileNotification(ENVIRONMENT.TEST);
+exports.sendActionMobileNotification_TEST = sendActionMobileNotification(ENVIRONMENT.TEST);
+exports.countryOfficeClockSettingsChange_TEST = countryOfficeClockSettingsChange(ENVIRONMENT.TEST);
+exports.networkClockSettingsChange_TEST = networkClockSettingsChange(ENVIRONMENT.TEST);
+exports.networkCountryClockSettingsChange_TEST = networkCountryClockSettingsChange(ENVIRONMENT.TEST);
+exports.sendResponsePlanMobileNotification_TEST = sendResponsePlanMobileNotification(ENVIRONMENT.TEST);
+
+// endregion
+
+// region Delcarations :- UAT
+
+exports.handleUserAccounts_UAT = handleUserAccounts(ENVIRONMENT.UAT);
+exports.sendResponsePlanValidationEmail_UAT = sendResponsePlanValidationEmail(ENVIRONMENT.UAT);
+exports.sendPartnerOrganisationValidationEmail_UAT = sendPartnerOrganisationValidationEmail(ENVIRONMENT.UAT);
+exports.sendSystemAdminNotificationsEmail_UAT = sendSystemAdminNotificationsEmail(ENVIRONMENT.UAT);
+exports.sendAgencyNotificationsEmail_UAT = sendAgencyNotificationsEmail(ENVIRONMENT.UAT);
+exports.sendCountryNotificationsEmail_UAT = sendCountryNotificationsEmail(ENVIRONMENT.UAT);
+exports.sendNetworkAgencyValidationEmail_UAT = sendNetworkAgencyValidationEmail(ENVIRONMENT.UAT);
+exports.sendNetworkCountryAgencyValidationEmail_UAT = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.UAT);
+exports.sendBugReportingEmail_UAT = sendBugReportingEmail(ENVIRONMENT.UAT);
+exports.createUserNetworkCountry_UAT = createUserNetworkCountry(ENVIRONMENT.UAT);
+exports.updateUserEmail_UAT = updateUserEmail(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForAlertChange_UAT = sendEmailToExternalForAlertChange(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForAlertChangeRed_UAT = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForIndicatorUpdate_UAT = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForPlanExpired_UAT = sendEmailToExternalForPlanExpired(ENVIRONMENT.UAT);
+exports.sendEmailPlanRejectedByCountryDirector_UAT = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.UAT);
+exports.sendEmailPlanRejectedByRegionDirector_UAT = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.UAT);
+exports.sendEmailPlanRejectedByGlobalDirector_UAT = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.UAT);
+exports.updateLatestToCAllUsers_UAT = updateLatestToCAllUsers(ENVIRONMENT.UAT);
+exports.updateLatestCoCAllUsers_UAT = updateLatestCoCAllUsers(ENVIRONMENT.UAT);
+exports.sendIndicatorAssignedMobileNotification_UAT = sendIndicatorAssignedMobileNotification(ENVIRONMENT.UAT);
+exports.sendResponsePlanApprovalNotification_UAT = sendResponsePlanApprovalNotification(ENVIRONMENT.UAT);
+exports.sendAlertMobileNotification_UAT = sendAlertMobileNotification(ENVIRONMENT.UAT);
+exports.sendActionMobileNotification_UAT = sendActionMobileNotification(ENVIRONMENT.UAT);
+exports.countryOfficeClockSettingsChange_UAT = countryOfficeClockSettingsChange(ENVIRONMENT.UAT);
+exports.networkClockSettingsChange_UAT = networkClockSettingsChange(ENVIRONMENT.UAT);
+exports.networkCountryClockSettingsChange_UAT = networkCountryClockSettingsChange(ENVIRONMENT.UAT);
+exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotification(ENVIRONMENT.UAT);
+
+// endregion
+
+// region Delcarations :- LIVE
+
+// exports.handleUserAccounts_LIVE = handleUserAccounts(ENVIRONMENT.LIVE);
+// exports.sendResponsePlanValidationEmail_LIVE = sendResponsePlanValidationEmail(ENVIRONMENT.LIVE);
+// exports.sendPartnerOrganisationValidationEmail_LIVE = sendPartnerOrganisationValidationEmail(ENVIRONMENT.LIVE);
+// exports.sendSystemAdminNotificationsEmail_LIVE = sendSystemAdminNotificationsEmail(ENVIRONMENT.LIVE);
+// exports.sendAgencyNotificationsEmail_LIVE = sendAgencyNotificationsEmail(ENVIRONMENT.LIVE);
+// exports.sendCountryNotificationsEmail_LIVE = sendCountryNotificationsEmail(ENVIRONMENT.LIVE);
+// exports.sendNetworkAgencyValidationEmail_LIVE = sendNetworkAgencyValidationEmail(ENVIRONMENT.LIVE);
+// exports.sendNetworkCountryAgencyValidationEmail_LIVE = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.LIVE);
+// exports.sendBugReportingEmail_LIVE = sendBugReportingEmail(ENVIRONMENT.LIVE);
+// exports.createUserNetworkCountry_LIVE = createUserNetworkCountry(ENVIRONMENT.LIVE);
+// exports.updateUserEmail_LIVE = updateUserEmail(ENVIRONMENT.LIVE);
+// exports.sendEmailToExternalForAlertChange_LIVE = sendEmailToExternalForAlertChange(ENVIRONMENT.LIVE);
+// exports.sendEmailToExternalForAlertChangeRed_LIVE = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.LIVE);
+// exports.sendEmailToExternalForIndicatorUpdate_LIVE = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.LIVE);
+// exports.sendEmailToExternalForPlanExpired_LIVE = sendEmailToExternalForPlanExpired(ENVIRONMENT.LIVE);
+// exports.sendEmailPlanRejectedByCountryDirector_LIVE = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.LIVE);
+// exports.sendEmailPlanRejectedByRegionDirector_LIVE = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.LIVE);
+// exports.sendEmailPlanRejectedByGlobalDirector_LIVE = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.LIVE);
+// exports.updateLatestToCAllUsers_LIVE = updateLatestToCAllUsers(ENVIRONMENT.LIVE);
+// exports.updateLatestCoCAllUsers_LIVE = updateLatestCoCAllUsers(ENVIRONMENT.LIVE);
+// exports.sendIndicatorAssignedMobileNotification_LIVE = sendIndicatorAssignedMobileNotification(ENVIRONMENT.LIVE);
+// exports.sendResponsePlanApprovalNotification_LIVE = sendResponsePlanApprovalNotification(ENVIRONMENT.LIVE);
+// exports.sendAlertMobileNotification_LIVE = sendAlertMobileNotification(ENVIRONMENT.LIVE);
+// exports.sendActionMobileNotification_LIVE = sendActionMobileNotification(ENVIRONMENT.LIVE);
+// exports.countryOfficeClockSettingsChange_LIVE = countryOfficeClockSettingsChange(ENVIRONMENT.LIVE);
+// exports.networkClockSettingsChange_LIVE = networkClockSettingsChange(ENVIRONMENT.LIVE);
+// exports.networkCountryClockSettingsChange_LIVE = networkCountryClockSettingsChange(ENVIRONMENT.LIVE);
+// exports.sendResponsePlanMobileNotification_LIVE = sendResponsePlanMobileNotification(ENVIRONMENT.LIVE);
+
+// endregion
 
 
 /**
@@ -456,7 +566,7 @@ function sendWelcomeEmail() {
 /**
  * Handle creating or removing user accounts
  */
-function handleUserAccounts() {
+function handleUserAccounts(ENV) {
   return functions.database.ref('/' + ENV.env + '/userPublic/{userId}')
     .onWrite(event => {
       console.log("agency node triggered");
@@ -496,7 +606,7 @@ function handleUserAccounts() {
 /**
  * Send response plan validation email
  */
-function sendResponsePlanValidationEmail() {
+function sendResponsePlanValidationEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
     .onWrite(event => {
 
@@ -560,7 +670,7 @@ function sendResponsePlanValidationEmail() {
 /**
  * Send partner organisatino validation email
  */
-function sendPartnerOrganisationValidationEmail() {
+function sendPartnerOrganisationValidationEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/partnerOrganisation/{partnerId}')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -608,7 +718,7 @@ function sendPartnerOrganisationValidationEmail() {
 /**
  * Sending email when system admin notification is sent
  */
-function sendSystemAdminNotificationsEmail() {
+function sendSystemAdminNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
     .onWrite(event => {
 
@@ -651,7 +761,7 @@ function sendSystemAdminNotificationsEmail() {
 /**
  * Sending an agency notification email
  */
-function sendAgencyNotificationsEmail() {
+function sendAgencyNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
     .onWrite(event => {
 
@@ -694,7 +804,7 @@ function sendAgencyNotificationsEmail() {
 /**
  * Sending an email when a country notification is sent
  */
-function sendCountryNotificationsEmail() {
+function sendCountryNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/country/{countryId}/{groupId}/{userId}/{messageId}')
     .onWrite(event => {
 
@@ -737,7 +847,7 @@ function sendCountryNotificationsEmail() {
 /**
  * Send a network agency validation email
  */
-function sendNetworkAgencyValidationEmail() {
+function sendNetworkAgencyValidationEmail(ENV) {
   return functions.database.ref('/training/network/{networkId}/agencies/{agencyId}')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -839,7 +949,7 @@ function sendNetworkAgencyValidationEmail() {
 /**
  * Send an email when a bug is reported
  */
-function sendBugReportingEmail() {
+function sendBugReportingEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/bugReporting/{countryId}/{bugId}')
     .onWrite(event => {
 
@@ -886,7 +996,7 @@ function sendBugReportingEmail() {
 /**
  * Create a network country user
  */
-function createUserNetworkCountry() {
+function createUserNetworkCountry(ENV) {
   return functions.database.ref('/' + ENV.env + '/administratorNetworkCountry/{adminId}')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -922,7 +1032,7 @@ function createUserNetworkCountry() {
 /**
  * Update user email
  */
-function updateUserEmail() {
+function updateUserEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/userPublic/{uid}/email')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -949,7 +1059,7 @@ function updateUserEmail() {
 /**
  * Send network country agency validation email
  */
-function sendNetworkCountryAgencyValidationEmail() {
+function sendNetworkCountryAgencyValidationEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -1053,7 +1163,7 @@ function sendNetworkCountryAgencyValidationEmail() {
 /**
  * Send email to external for alert changes
  */
-function sendEmailToExternalForAlertChange() {
+function sendEmailToExternalForAlertChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/alert/{countryId}/{alertId}/alertLevel')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -1132,11 +1242,10 @@ function sendEmailToExternalForAlertChange() {
     })
 }
 
-
 /**
  * Send email to external (what?) for alert change red - Ask Fei
  */
-function sendEmailToExternalForAlertChangeRed() {
+function sendEmailToExternalForAlertChangeRed(ENV) {
   return functions.database.ref('/' + ENV.env + '/alert/{countryId}/{alertId}/approval/countryDirector/{directorId}')
     .onWrite(event => {
 
@@ -1209,7 +1318,7 @@ function sendEmailToExternalForAlertChangeRed() {
 /**
  * Send email to external (what?) for indicator update
  */
-function sendEmailToExternalForIndicatorUpdate() {
+function sendEmailToExternalForIndicatorUpdate(ENV) {
   return functions.database.ref('/' + ENV.env + '/indicator/{hazardId}/{indicatorId}/triggerSelected')
     .onWrite(event => {
 
@@ -1265,7 +1374,7 @@ function sendEmailToExternalForIndicatorUpdate() {
 /**
  * Send email to external (what?) for plan expired
  */
-function sendEmailToExternalForPlanExpired() {
+function sendEmailToExternalForPlanExpired(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/isActive')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -1291,7 +1400,7 @@ function sendEmailToExternalForPlanExpired() {
 /**
  * Send email plan rejected by country director
  */
-function sendEmailPlanRejectedByCountryDirector() {
+function sendEmailPlanRejectedByCountryDirector(ENV) {
   functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
     .onWrite(event => {
 
@@ -1317,7 +1426,7 @@ function sendEmailPlanRejectedByCountryDirector() {
 /**
  * Send email plan rejected by regional director
  */
-function sendEmailPlanRejectedByRegionDirector() {
+function sendEmailPlanRejectedByRegionDirector(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
     .onWrite(event => {
 
@@ -1342,7 +1451,7 @@ function sendEmailPlanRejectedByRegionDirector() {
 /**
  * Send email plan rejected by global director
  */
-function sendEmailPlanRejectedByGlobalDirector() {
+function sendEmailPlanRejectedByGlobalDirector(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
     .onWrite(event => {
 
@@ -1367,66 +1476,86 @@ function sendEmailPlanRejectedByGlobalDirector() {
 /**
  * Change to the Code of Conduct for all users
  */
-function updateLatestCoCAllUsers() {
+function updateLatestCoCAllUsers(ENV) {
   return functions.database.ref('/' + ENV.env + '/system/{systemId}/coc')
     .onWrite(event => {
       const currData = event.data.current.val();
       if (currData) {
-        admin.database().ref(ENV.env + '/userPublic/').once('value', (data) => {
+        let promise = admin.database().ref(ENV.env + '/userPublic/').once('value', (data) => {
+          console.log("Fetched data for userPublic");
           let usersJson = data.val();
           if (usersJson) {
             let userIds = Object.keys(usersJson);
-            //console.log(userIds);
+            let promiseList = [];
             userIds.forEach(userId => {
-              admin.database().ref(ENV.env + '/userPublic/' + userId + '/latestCoCAgreed').set(false).then(() => {
-                //console.log("latestCoCAgreed is set to false for user with id: "+ userId);
-              });
+              let x = admin.database().ref(ENV.env + '/userPublic/' + userId + '/latestCoCAgreed').set(false);
+              promiseList.push(x);
+            });
+            console.log("Resolving all UserPublic promise updates");
+            return Promise.all(promiseList).then(() => {
+              console.log("User Public promises resolved");
+              return true;
             });
           }
+          else {
+            console.err("Cannot process user JSON");
+            console.err(data.val());
+          }
         }, error => {
-          console.log(error.message);
-        })
+          console.err(error);
+        });
+        console.log("Resolving all");
+        return Promise.resolve(promise).then(_ => true);
       }
-      return true;
+      else {
+        return true;
+      }
     });
 }
 
 /**
  * Change to the Terms and Conditions of all users
  */
-function updateLatestToCAllUsers() {
-  return functions.database.ref('/' + ENV.env + '/system/{systemId}/coc')
+function updateLatestToCAllUsers(ENV) {
+  return functions.database.ref('/' + ENV.env + '/system/{systemId}/toc')
     .onWrite(event => {
       const currData = event.data.current.val();
       if (currData) {
-        admin.database().ref(ENV.env + '/userPublic/').once('value', (data) => {
+        let promise = admin.database().ref(ENV.env + '/userPublic/').once('value', (data) => {
+          console.log("Fetched data for userPublic");
           let usersJson = data.val();
           if (usersJson) {
             let userIds = Object.keys(usersJson);
+            let promiseList = [];
             userIds.forEach(userId => {
-              admin.database().ref(ENV.env + '/userPublic/' + userId + '/latestCoCAgreed').set(false).then(() => {
-
-              }).catch((err) => {
-                console.log("Cannot update " + userId);
-              });
+              let x = admin.database().ref(ENV.env + '/userPublic/' + userId + '/latestToCAgreed').set(false);
+              promiseList.push(x);
             });
-            if (ids.length > 0) {
-              console.log("Error notifying:");
-              console.log(ids);
-            }
+            console.log("Resolving all userPublic promise updates");
+            return Promise.all(promiseList).then(() => {
+              console.log("userPublic Promises resolved");
+              return true;
+            });
+          }
+          else {
+            console.err("Cannot process user JSON");
+            console.err(data.val());
           }
         }, error => {
-          console.log(error.message);
-        })
+          console.err(error);
+        });
+        return Promise.resolve(promise).then(_ => true);
       }
-      return true;
+      else {
+        return true;
+      }
     });
 }
 
 /**
  * Send indicator assigned mobile notification event
  */
-function sendIndicatorAssignedMobileNotification() {
+function sendIndicatorAssignedMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/indicator/{hazardId}/{indicatorId}/')
     .onWrite(event => {
       const preIndicatorData = event.data.previous.val();
@@ -1478,7 +1607,7 @@ function sendIndicatorAssignedMobileNotification() {
 /**
  * Send response plan approval notification
  */
-function sendResponsePlanApprovalNotification() {
+function sendResponsePlanApprovalNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{groupId}/{responsePlanId}/approval/{groupName}/{approverId}')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -1535,7 +1664,7 @@ function sendResponsePlanApprovalNotification() {
 /**
  * Change the clock settings in country office
  */
-function countryOfficeClockSettingsChange() {
+function countryOfficeClockSettingsChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/countryOffice/{agencyId}/{countryId}/clockSettings')
     .onWrite(event => {
       const preClockSettingsData = event.data.previous.val()
@@ -1564,7 +1693,7 @@ function countryOfficeClockSettingsChange() {
 /**
  * Change network clock settings
  */
-function networkClockSettingsChange() {
+function networkClockSettingsChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/network/{networkId}/clockSettings')
     .onWrite(event => {
       const preClockSettingsData = event.data.previous.val()
@@ -1585,7 +1714,7 @@ function networkClockSettingsChange() {
 /**
  * Send an action mobile notification
  */
-function sendActionMobileNotification() {
+function sendActionMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/action/{groupId}/{actionId}/')
     .onWrite(event => {
       const preActionData = event.data.previous.val();
@@ -1662,7 +1791,7 @@ function sendActionMobileNotification() {
 /**
  * Send response plan mobile notification
  */
-function sendResponsePlanMobileNotification() {
+function sendResponsePlanMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/action/{groupId}/{responsePlanId}/')
     .onWrite(event => {
       const preResponsePlanData = event.data.previous.val();
@@ -1700,7 +1829,7 @@ function sendResponsePlanMobileNotification() {
 /**
  * Send alert mobile notification
  */
-function sendAlertMobileNotification() {
+function sendAlertMobileNotification(ENV) {
   return functions.database.ref('/live/alert/{id}/{alertId}')
     .onWrite(event => {
       const preData = event.data.previous.val();
@@ -1756,7 +1885,7 @@ function sendAlertMobileNotification() {
 /**
  * Network Country Clock Settings
  */
-function networkCountryClockSettingsChange() {
+function networkCountryClockSettingsChange(ENV) {
   return functions.database.ref('/live/networkCountry/{networkId}/{countryId}/clockSettings')
     .onWrite(event => {
       const preClockSettingsData = event.data.previous.val()
@@ -1774,7 +1903,6 @@ function networkCountryClockSettingsChange() {
       }
     })
 }
-
 
 /**
  * Functions for Mobile
