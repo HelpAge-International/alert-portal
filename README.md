@@ -15,6 +15,8 @@ Run `ng serve` in root folder of the project for a dev server. Navigate to [http
 sudo npm install -g n && sudo n 9.9.0
 ```
 
+You can revert to the latest by `sudo n latest`
+
 > If you get a lot of errors about `mapTo` or `flatMap` not being supported in the build, you are probably running a version of typescript that is too new. Run the following to downgrade to a supported version
 
 ```
@@ -23,23 +25,41 @@ npm install typescript@'>=2.1.0 <2.4.0'
 
 ## Running the project
 
+Functions are deployed to the **alert-190fa** (sand) project for TEST and UAT as well
+
+- **alert-test** and **alert-uat** is used for hosting only! 
+
+### Running the project
+
 To run this project you need to 
 
-- Backup user auths
+- Backup user auths (see below)
 - Backup database
 
 Then run the following 
 
 ```
 firebase list
-firebase use <project>
+firebase use <project> 
 npm run build-prod 
 firebase deploy --only hosting
 ```
 
+### Backups
+
+Database backups can be done via. the console
+
+Authentication backups require using firebase-cli, using `firebase auth:export auth.json --format=json`. This will export the authentication to a 'auth.json' file. It can be imported via. `auth:import` command. Google it
+
+### Functions
+
+Functions **must** be resolved!  
+
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+Run `ng generate component component-name` to generate a new component. 
+
+You can also use `ng generate directive/pipe/service/class/module`.
 
 ## Build
 
