@@ -289,10 +289,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
-              if (affectedArea.affectedLevel2 > -1 && value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1]) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+              if (affectedArea.affectedLevel2 > -1) {
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -406,10 +411,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -808,10 +818,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -906,10 +921,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                    .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                    .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -917,6 +937,25 @@ export class ActionsService {
           alert.affectedAreasDisplay = affectedAreasToDisplay;
         });
       });
+  }
+
+  /**
+   * Get the item at a given id field { "Id":"1" }
+   *
+   * value[level] won't work, we want when the child value under "Id" is id, not the index of it!
+   * This method finds the index of the item in the list with a given "Id" field
+   *
+   * @param {number} id the id of the object
+   * @param {any[]} item
+   * @return the position of that object
+   */
+  getItemAtIdField(id: number, item: any[]): number {
+    for (let i = 0; i < item.length; i++) {
+      let x = item[i];
+      if (x.id === id) {
+        return i;
+      }
+    }
   }
 
   getAlertsForDirectorToApproveNetwork(countryId, networkCountryId, networkId) {
@@ -1005,10 +1044,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -1103,10 +1147,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
