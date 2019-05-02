@@ -541,23 +541,20 @@ exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotificat
  * Send a welcome email
  */
 function sendWelcomeEmail() {
-  return functions.auth.user().onCreate(event => {
-
+  return functions.auth.user().onCreate(async event => {
     const user = event.data; // The Firebase user.
     const email = user.email; // The email of the user.
-
     const userPassword = generateRandomPassword();
     const userUid = user.uid;
-
-    admin.auth().updateUser(userUid, {
-      password: userPassword
-    })
+    return admin.auth()
+      .updateUser(userUid, { password: userPassword })
       .then(function (userRecord) {
         console.log("Successfully updated user password", userRecord.toJSON());
         return sendWelcomeEmail(email, userPassword);
       })
       .catch(function (error) {
-        console.log("Error updating user password:", error);
+        console.log("Error updating user password:");
+        console.error(error);
       });
   });
 }
@@ -569,101 +566,106 @@ function sendWelcomeEmail() {
 function handleUserAccounts(ENV) {
   return functions.database.ref('/' + ENV.env + '/userPublic/{userId}')
     .onWrite(event => {
-      console.log("agency node triggered");
+
       const userId = event.params.userId;
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
-      if (!preData && currData) {
-        //add user account
-        console.log("user added: " + userId);
+
+      if (!preData && currData) { 
         const pass = ENV.label == 'LIVE' ? generateRandomPassword() : TEMP_PASS;
-        admin.auth().createUser({
-          uid: userId,
-          email: currData.email,
-          password: pass
-        })
+        return admin.auth().createUser({
+            uid: userId,
+            email: currData.email,
+            password: pass
+          })
           .then(user => {
-            console.log("(handleUserAccount)Successfully created new user: " + user.uid)
+            console.log("Successfully created new user: " + user.uid);
+            return true;
           })
           .catch(error => {
-            console.log("(handleUserAccount)Error creating new user:", error)
-          })
-      } else if (preData && currData) {
-        //user account change
-        console.log("user data changed: " + userId);
-      } else if (preData && !currData) {
-        //delete user account
-        console.log("delete user: " + userId);
-        admin.auth().deleteUser(userId).then(() => {
-          console.log("successfully deleted user: " + userId);
-        }, error => {
-          console.log(error.message);
-        });
+            console.log("Error creating user");
+            console.error(error);
+          });
       }
+
+      if (preData && currData) { 
+        console.log("Update");
+        return Promise.resolve(true);
+      }
+
+      if (preData && !currData) { 
+        return admin.auth()
+          .deleteUser(userId)
+          .then(() => {
+            console.log("Successfully deleted user " + userId);
+            return true;
+          }, error => {
+            console.log("Error deleting user");
+            console.error(error);
+          });
+      }
+      return Promise.resolve(true);
     });
 }
 
+
 /**
  * Send response plan validation email
+ * 
+ * - Look for new data for partner organisation / country id fixes
+ * - Make sure a partner user doesn't already exists. 
+ * - If it doesn't, we'll send an email to partner organisation
  */
 function sendResponsePlanValidationEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
-    .onWrite(event => {
-
+    .onWrite(async event => {
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
 
-      //check if newly created only
-      if (!preData && currData) {
-
+      if (!preData && currData) { 
+        // New data
         let countryId = event.params['countryId'];
         let partnerOrganisationId = event.params['partnerOrganisationId'];
         let responsePlanId = event.params['responsePlanId'];
-        console.log('partnerOrganisationId: ' + partnerOrganisationId);
+      
+        // Check that partner user doesn't already exist. If it doesn't we'll send an email to partnerOrganisation
+        let partnerUser = await refOnce(ENV.env + '/partnerUser/' + partnerOrganisationId);
+        if (partnerUser != null) { return resolveLog("Partner user found") }
 
-        //check if partner user already
-        admin.database().ref(ENV.env + '/partnerUser/' + partnerOrganisationId)
-          .on('value', snapshot => {
-            console.log(snapshot.val());
-            if (!snapshot.val()) {
-              console.log("not partner user found");
-              //if not a partner user, send email to organisation email
-              admin.database().ref(ENV.env + '/partnerOrganisation/' + partnerOrganisationId + '/email')
-                .on('value', snapshot => {
-                  if (snapshot.val()) {
-                    let email = snapshot.val();
+        // Partner organisation email exists check
+        let partnerOrganisation = await refOnce(ENV.env + '/partnerOrganisation/' + partnerOrganisationId + '/email');
+        if (partnerOrganisation == null) { return resolveLog("Partner organisation not found"); }
 
-                    let expiry = moment.utc().add(1, 'weeks').valueOf();
-                    let validationToken = {'token': uuidv4(), 'expiry': expiry};
+        let email = partnerOrganisationSnapshot.val();
+        let expiry = moment.utc().add(1, 'weeks').valueOf();
+        let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-                    console.log("email: " + email);
+        // Save validation token
+        await admin.database().ref(ENV.env + '/responsePlanValidation/' + responsePlanId + '/validationToken').set(validationToken);
 
-                    admin.database().ref(ENV.env + '/responsePlanValidation/' + responsePlanId + '/validationToken').set(validationToken).then(() => {
-                      console.log('send to email: ' + email);
-                      const mailOptions = {
-                        from: '"ALERT partner organisation" <noreply@firebase.com>',
-                        to: email
-                      };
-
-                      // \n https://uat.portal.alertpreparedness.org
-                      mailOptions.subject = `Please validate a response plan!`;
-                      mailOptions.text = `Hello,
-                              \n Please validate a response plan.
-                              \n To review the response plan, please visit the link below:
-                              \n ${ENV.url}/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
-                              \n Thanks,
-                              \n ALERT Team`;
-                      return mailTransport.sendMail(mailOptions).then(() => {
-                        console.log('Email sent to:', email);
-                      });
-                    });
-                  } else {
-                    console.log('Error occurred - Snapshot is null');
-                  }
-                });
-            }
+        // Send an email
+        const mailOptions = {
+          from: '"ALERT partner organisation" <noreply@firebase.com>',
+          to: email
+        };
+        mailOptions.subject = `Please validate a response plan!`;
+        mailOptions.text = `Hello,
+                \n Please validate a response plan.
+                \n To review the response plan, please visit the link below:
+                \n ${ENV.url}/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
+                \n Thanks,
+                \n ALERT Team`;
+        return mailTransport.sendMail(mailOptions)
+          .then(() => {
+            console.log('Email sent too: ', email);
+            return true;
+          })
+          .catch((err) => { 
+            console.log("Sending email to " + email + " error");
+            console.error(err);
           });
       }
+      return Promise.resolve(true);
     });
 }
 
@@ -675,86 +677,65 @@ function sendPartnerOrganisationValidationEmail(ENV) {
     .onWrite(event => {
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
-
       let partnerOrganisation = event.data.val();
       let isApproved = partnerOrganisation.isApproved;
 
+      // New data
       if (!preData && currData) {
-        console.log("Partner Organisation created");
-
         let partnerId = event.params['partnerId'];
         let email = partnerOrganisation.email;
         let expiry = moment.utc().add(1, 'weeks').valueOf();
-
         let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-        console.log("email: " + email);
+        return admin.database()
+          .ref(ENV.env + '/partnerOrganisationValidation/' + partnerId + '/validationToken')
+          .set(validationToken)
+          .then(() => {
+            const mailOptions = {
+              from: '"ALERT partner organisation" <noreply@firebase.com>',
+              to: email
+            };
 
-        admin.database().ref(ENV.env + '/partnerOrganisationValidation/' + partnerId + '/validationToken').set(validationToken).then(() => {
-          console.log('success validationToken');
-          const mailOptions = {
-            from: '"ALERT partner organisation" <noreply@firebase.com>',
-            to: email
-          };
-
-          // \n https://uat.portal.alertpreparedness.org
-          mailOptions.subject = `Welcome to ${APP_NAME}!`;
-          mailOptions.text = `Hello,
-                          \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
-                          \n To confirm, please click on the link below
-                          \n ${ENV.url}/partner-validation;token=${validationToken.token};partnerId=${partnerId}
-                          \n Thanks,
-                          \n ALERT Team `;
-          return mailTransport.sendMail(mailOptions).then(() => {
-            console.log('New welcome email sent to:', email);
-          });
-        }, error => {
-          console.log(error.message);
-        });
+            // \n https://uat.portal.alertpreparedness.org
+            mailOptions.subject = `Welcome to ${APP_NAME}!`;
+            mailOptions.text = `Hello,
+                            \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
+                            \n To confirm, please click on the link below
+                            \n ${ENV.url}/partner-validation;token=${validationToken.token};partnerId=${partnerId}
+                            \n Thanks,
+                            \n ALERT Team `;
+            return mailTransport.sendMail(mailOptions);
+          })
+          .then(() => { 
+            console.log("Successfully saved and sent email");
+            return true;
+          })
+          .catch((err) => { 
+            console.log("Error occured in saving / sending validation token");
+            console.error(err);
+          })
       }
+      return Promise.resolve(true);
     });
 }
+
+
 
 /**
  * Sending email when system admin notification is sent
  */
 function sendSystemAdminNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
-    .onWrite(event => {
-
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-
-      let userId = event.params['userId'];
-      let msgId = event.params['messageId'];
-
-      if (!preData && currData) {
-        admin.database().ref(ENV.env + '/userPublic/' + userId + "/email").on('value', snapshot => {
-
-          let email = snapshot.val();
-
-          if (email) {
-            admin.database().ref(ENV.env + '/message/' + msgId).on('value', snapshot => {
-              let title = snapshot.val().title;
-              let content = snapshot.val().content;
-
-              const mailOptions = {
-                from: '"ALERT Preparedness" <noreply@firebase.com>',
-                to: email
-              };
-              mailOptions.subject = title;
-              mailOptions.text = content;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('Notification email sent to :', email);
-              });
-            }, error => {
-              console.log(error.message);
-            });
-          }
-        }, error => {
-          console.log(error.message);
+    .onWrite(async event => {
+      return this.sendNotificationEmailForUserIdAndMsgId(ENV, event)
+        .then(() => {
+          console.log("Successfully send email");
+          return true;
+        })
+        .catch((err) => { 
+          console.log("Error sending notification email");
+          console.error(err);
         });
-      }
     });
 }
 
@@ -763,41 +744,16 @@ function sendSystemAdminNotificationsEmail(ENV) {
  */
 function sendAgencyNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
-    .onWrite(event => {
-
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-
-      let userId = event.params['userId'];
-      let msgId = event.params['messageId'];
-
-      if (!preData && currData) {
-        admin.database().ref(ENV.env + '/userPublic/' + userId + "/email").on('value', snapshot => {
-
-          let email = snapshot.val();
-
-          if (email) {
-            admin.database().ref(ENV.env + '/message/' + msgId).on('value', snapshot => {
-              let title = snapshot.val().title;
-              let content = snapshot.val().content;
-
-              const mailOptions = {
-                from: '"ALERT Preparedness" <noreply@firebase.com>',
-                to: email
-              };
-              mailOptions.subject = title;
-              mailOptions.text = content;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('Notification email sent to :', email);
-              });
-            }, error => {
-              console.log(error.message);
-            });
-          }
-        }, error => {
-          console.log(error.message);
+    .onWrite(async event => {
+      return this.sendNotificationEmailForUserIdAndMsgId(ENV, event)
+        .then(() => {
+          console.log("Successfully send email");
+          return true;
+        })
+        .catch((err) => { 
+          console.log("Error sending notification email");
+          console.error(err);
         });
-      }
     });
 }
 
@@ -807,142 +763,127 @@ function sendAgencyNotificationsEmail(ENV) {
 function sendCountryNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/country/{countryId}/{groupId}/{userId}/{messageId}')
     .onWrite(event => {
-
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-
-      let userId = event.params['userId'];
-      let msgId = event.params['messageId'];
-
-      if (!preData && currData) {
-        admin.database().ref(ENV.env + '/userPublic/' + userId + "/email").on('value', snapshot => {
-
-          let email = snapshot.val();
-
-          if (email) {
-            admin.database().ref(ENV.env + '/message/' + msgId).on('value', snapshot => {
-              let title = snapshot.val().title;
-              let content = snapshot.val().content;
-
-              const mailOptions = {
-                from: '"ALERT Preparedness" <noreply@firebase.com>',
-                to: email
-              };
-              mailOptions.subject = title;
-              mailOptions.text = content;
-              return mailTransport.sendMail(mailOptions).then(() => {
-                console.log('Notification email sent to :', email);
-              });
-            }, error => {
-              console.log(error.message);
-            });
-          }
-        }, error => {
-          console.log(error.message);
+      return this.sendNotificationEmailForUserIdAndMsgId(ENV, event)
+        .then(() => {
+          console.log("Successfully send email");
+          return true;
+        })
+        .catch((err) => { 
+          console.log("Error sending notification email");
+          console.error(err);
         });
-      }
     });
 }
 
 /**
+ * Method to send notifications
+ * 
+ * @param {*} ENV The environment for the deployment
+ * @param {*} event The event (Data Snapshot) from the `onWrite()` function
+ */
+async function sendNotificationEmailForUserIdAndMsgId(ENV, event) { 
+  const preData = event.data.previous.val();
+  const currData = event.data.current.val();
+  let userId = event.params['userId'];
+  let msgId = event.params['messageId'];
+
+  // Send an email 
+  if (!preData && currData) {
+
+    let email = await refOnce(ENV.env + '/userPublic/' + userId + "/email");
+    if (email == null) { return resolveLog("Email doesn't exist under " + ENV.env + '/userPublic/' + userId); }
+
+    let messageObj = await refOnce(ENV.env + '/message/' + msgId);
+    if (messageObj == null) { return resolveLog("Message doesn't exist to send to user " + userId); }
+
+    let title = messageSnapshot.val().title;
+    let content = messageSnapshot.val().content;
+
+    const mailOptions = {
+      from: '"ALERT Preparedness" <noreply@firebase.com>',
+      to: email
+    };
+    mailOptions.subject = title;
+    mailOptions.text = content;
+    return mailTransport.sendMail(mailOptions);
+  }
+  else { 
+    return Promise.resolve(true);
+  }
+}
+
+
+/**
  * Send a network agency validation email
+ * @param {*} ENV The environment the function is deployed too 
  */
 function sendNetworkAgencyValidationEmail(ENV) {
   return functions.database.ref('/training/network/{networkId}/agencies/{agencyId}')
-    .onWrite(event => {
+    .onWrite(async event => {
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
 
-      if (!preData && currData) {
-        console.log("Network agency added");
-
+      if (!preData && currData) { 
         let networkId = event.params['networkId'];
         let agencyId = event.params['agencyId'];
 
-        admin.database().ref('/' + ENV.env + '/network/' + networkId).once("value", (data) => {
+        let network = await refOnce('/' + ENV.env + '/network/' + networkId);
+        if (network == null) { return resolveLog("Network doesn't exist"); }
 
-          let network = data.val();
+        // GLOBAL NETWORK
+        let adminId;
+        let countryOfficeCode = null;
+        if (network.isGlobal) { 
+          adminId = await refOnce('/' + ENV.env + '/agency/' + agencyId + '/adminId');
+          if (adminId == null) { return resolveLog("Global Agency admin id under agency " + agencyId + " doesn't exist"); }
+        }
+        // NON GLOBAL NETWORK
+        else { 
+          countryOfficeCode = await refOnce('/' + ENV.env + '/network/' + networkId + '/agencies/' + agencyId + '/countryCode');
+          if (countryOfficeCode == null) { return resolveLog("Non Global Country office code for Network / " + networkId + " / agencies / " + agencyId + " doesn't exist"); }
 
-          if (data.val().isGlobal) {
-            console.log('isGlobal');
-            admin.database().ref('/' + ENV.env + '/agency/' + agencyId + '/adminId').once("value", (data) => {
-              let adminId = data.val();
-              console.log("admin id: " + adminId);
+          adminId = await refOnce('/' + ENV.env + '/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId');
+          if (adminId == null) { return resolveLog("Non Global AdminId is null for network / " + networkId + " / agencies / " + agencyId + " doesn't exist"); }
+        }
 
-              admin.database().ref('/' + ENV.env + '/userPublic/' + adminId).once("value", (user) => {
-                let email = user.val().email;
-                console.log("admin email: " + email);
+        // Get user admin 
+        let userPublic = await refOnce('/' + ENV.env + '/userPublic/' + adminId);
+        if (userPublic == null) { return resolveLog("Global AgencyId " + agencyId + " AdminId " + adminId + " doesn't exist"); }
 
-                let expiry = moment.utc().add(1, 'weeks').valueOf();
+        let email = userPublic.email;
+        let expiry = moment.utc().add(1, 'weeks').valueOf();
+        let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
-                let validationToken = {'token': uuidv4(), 'expiry': expiry};
+        return admin.database()
+          .ref(ENV.env + '/networkAgencyValidation/' + (countryOfficeCode == null ? adminId : countryOfficeCode) + '/validationToken')
+          .set(validationToken)
+          .then(() => {
+            const mailOptions = {
+              from: '"ALERT Network" <noreply@firebase.com>',
+              to: email
+            };
 
-                admin.database().ref(ENV.env + '/networkAgencyValidation/' + agencyId + '/validationToken').set(validationToken).then(() => {
-                  console.log('success validationToken');
-                  const mailOptions = {
-                    from: '"ALERT Network" <noreply@firebase.com>',
-                    to: email
-                  };
+            mailOptions.subject = `You have been invited to join a network`;
+            mailOptions.text = `Hello,
+                  \nYour Agency was invited to join the network: ${network.name}
+                  \n To confirm, please click on the link below
+                  \n ${ENV.url}/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}${countryOfficeCode == null ? '' : (';countryId=' + countryOfficeCode)}
+                  \n Thanks,
+                  \n ALERT Team `;
 
-                  mailOptions.subject = `You have been invited to join a network`;
-                  mailOptions.text = `Hello,
-                          \nYour Agency was invited to join the network: ${network.name}
-                          \n To confirm, please click on the link below
-                          \n ${ENV.url}/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId}
-                          \n Thanks,
-                          \n ALERT Team `;
-                  console.log('we are executing code here');
-                  return mailTransport.sendMail(mailOptions).then(() => {
-                    console.log('New welcome email sent to:', email);
-                  });
-                }, error => {
-                  console.log(error.message);
-                });
-              });
-            });
-          } else {
-            console.log('isNotGlobal')
-            admin.database().ref('/' + ENV.env + '/network/' + networkId + '/agencies/' + agencyId).once("value", (data) => {
-              let countryOfficeCode = data.val().countryCode;
-              admin.database().ref('/' + ENV.env + '/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId').once("value", (data) => {
-                let adminId = data.val();
-                console.log("admin id: " + adminId);
-
-                admin.database().ref('/' + ENV.env + '/userPublic/' + adminId).once("value", (user) => {
-                  let email = user.val().email;
-                  console.log("admin email: " + email);
-
-                  let expiry = moment.utc().add(1, 'weeks').valueOf();
-
-                  let validationToken = {'token': uuidv4(), 'expiry': expiry};
-
-                  admin.database().ref(ENV.env + '/networkAgencyValidation/' + countryOfficeCode + '/validationToken').set(validationToken).then(() => {
-                    console.log('success validationToken');
-                    const mailOptions = {
-                      from: '"ALERT Network" <noreply@firebase.com>',
-                      to: email
-                    };
-
-                    mailOptions.subject = `You have been invited to join a network`;
-                    mailOptions.text = `Hello,
-                          \nYour Agency was invited to join the network: ${network.name}
-                          \n To confirm, please click on the link below
-                          \n ${ENV.url}/network-agency-validation;token=${validationToken.token};networkId=${networkId};agencyId=${agencyId};countryId=${countryOfficeCode}
-                          \n Thanks,
-                          \n ALERT Team `;
-                    console.log('we are executing code here');
-                    return mailTransport.sendMail(mailOptions).then(() => {
-                      console.log('New welcome email sent to:', email);
-                    });
-                  }, error => {
-                    console.log(error.message);
-                  });
-                });
-              });
-            })
-          }
-        })
+            return mailTransport.sendMail(mailOptions);
+          })
+          .then(() => { 
+            console.log("Email " + email + " adminId + " + adminId + " Successfully saved and sent email");
+            return true;
+          })
+          .catch((err) => { 
+            console.log("Email " + email + " adminId + " + adminId + " Error occured in saving / sending validation token");
+            console.error(err);
+          })
       }
+      return Promise.resolve(true);
+
     });
 }
 
@@ -952,40 +893,33 @@ function sendNetworkAgencyValidationEmail(ENV) {
 function sendBugReportingEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/bugReporting/{countryId}/{bugId}')
     .onWrite(event => {
-
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
-
-      console.log(currData);
-
       let eParams = event.params;
       // Set variables to parameters of the data returned, ready to construct for the email
       let countryId = eParams['countryId'];
       let bugId = eParams['bugId'];
-
-      console.log("countyId: " + countryId);
-
       const mailOptions = {
         from: '"ALERT Network" <noreply@firebase.com>',
         to: 'luis.vidal@helpage.org'
       };
       mailOptions.subject = `ALERT Platform: A problem has been reported`;
       mailOptions.html = `Hello,
-                        <br>
-                        <br> A problem was reported at ${currData.date}
-                        <br>  
-                        <br> Description: <br>
-                        ${currData.description}
-                        <br> <br>        
-                        <a href="${currData.downloadLink}"> Click for image </a>                                          
-                        <br> <br>                         
-                        User details: <br>
-                        ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName}, ${currData.email}
-                        <br>
-                        <br>
-                        System Information: <br>
-                        ${currData.systemInfo}
-                        `;
+        <br>
+        <br> A problem was reported at ${currData.date}
+        <br>  
+        <br> Description: <br>
+        ${currData.description}
+        <br> <br>        
+        <a href="${currData.downloadLink}"> Click for image </a>                                          
+        <br> <br>                         
+        User details: <br>
+        ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName}, ${currData.email}
+        <br>
+        <br>
+        System Information: <br>
+        ${currData.systemInfo}
+        `;
 
       return mailTransport.sendMail(mailOptions).then(() => {
         console.log('New bug reporting email:');
@@ -993,39 +927,39 @@ function sendBugReportingEmail(ENV) {
     });
 }
 
+
 /**
  * Create a network country user
  */
 function createUserNetworkCountry(ENV) {
   return functions.database.ref('/' + ENV.env + '/administratorNetworkCountry/{adminId}')
-    .onWrite(event => {
+    .onWrite(async event => {
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
 
       if (!preData && currData) {
-        console.log("network country admin added");
         let adminId = event.params['adminId'];
-        console.log("admin id: " + adminId);
-        admin.database().ref("/" + ENV.env + "/userPublic/" + adminId)
-          .once("value", data => {
-            let userDb = data.val();
-            console.log(userDb);
 
-            const pass = ENV.label === 'LIVE' ? generateRandomPassword() : TEMP_PASS;
-            admin.auth().createUser({
-              uid: adminId,
-              email: userDb.email,
-              password: pass
-            })
-              .then(user => {
-                console.log("Successfully created new user: " + user.uid)
-              })
-              .catch(error => {
-                console.log("Error creating new user:", error)
-              })
+        let userPublic = await refOnce("/" + ENV.env + "/userPublic/" + adminId);
+        if (userPublic == null) { return resolveLog("User public profile under " + adminId + " is empty!"); }
 
+        const pass = ENV.label === 'LIVE' ? generateRandomPassword() : TEMP_PASS;
+
+        return admin.auth().createUser({
+            uid: adminId,
+            email: userDb.email,
+            password: pass
+          })
+          .then(user => {
+            console.log("Successfully created new user: " + user.uid);
+            return true;
+          })
+          .catch(error => {
+            console.log("Error creating new user");
+            console.error(error);
           });
       }
+      return Promise.resolve(true);
     });
 }
 
@@ -1039,207 +973,184 @@ function updateUserEmail(ENV) {
       const currData = event.data.current.val();
 
       if (preData && currData && preData !== currData) {
-        console.log("email updated");
         let uid = event.params['uid'];
-        console.log("user id email updated: " + uid);
-        admin.auth().updateUser(uid, {
-          email: currData
-        })
-          .then(function (userRecord) {
+        return admin.auth()
+          .updateUser(uid, {
+            email: currData
+          })
+          .then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
             console.log("Successfully updated user", userRecord.toJSON());
+            return true;
           })
-          .catch(function (error) {
+          .catch((error) => {
             console.log("Error updating user:", error);
+            console.error(error);
           });
       }
+      return Promise.resolve(true);
     });
 }
 
 /**
  * Send network country agency validation email
  */
-function sendNetworkCountryAgencyValidationEmail(ENV) {
+function sendNetworkCountryAgencyValidationEmail(ENV) { 
   return functions.database.ref('/' + ENV.env + '/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
-    .onWrite(event => {
+    .onWrite(async event => {
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
 
-      if (!preData && currData) {
-        console.log("network country office agency country added");
-
+      if (!preData && currData) { 
         let networkId = event.params['networkId'];
         let networkCountryId = event.params['networkCountryId'];
         let agencyId = event.params['agencyId'];
         let countryId = event.params['countryId'];
 
-        if (agencyId !== countryId) {
-          admin.database().ref('/' + ENV.env + '/countryOffice/' + agencyId + '/' + countryId + '/adminId').once("value", (data) => {
-            let adminId = data.val();
-            console.log("admin id: " + adminId);
-
-            admin.database().ref('/' + ENV.env + '/userPublic/' + adminId).once("value", (user) => {
-              let email = user.val().email;
-              console.log("admin email: " + email);
-
-              admin.database().ref('/' + ENV.env + '/network/' + networkId).once("value", networkSnap => {
-                let network = networkSnap.val();
-
-                let expiry = moment.utc().add(1, 'weeks').valueOf();
-
-                let validationToken = {'token': uuidv4(), 'expiry': expiry};
-
-                admin.database().ref(ENV.env + '/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
-                  console.log('success validationToken');
-                  const mailOptions = {
-                    from: '"ALERT Network" <noreply@firebase.com>',
-                    to: email
-                  };
-
-                  mailOptions.subject = `You have been invited to join a network`;
-                  mailOptions.text = `Hello,
-                          \nYour Agency was invited to join the network: ${network.name}
-                          \n To confirm, please click on the link below
-                          \n ${ENV.url}/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId};countryId=${countryId}
-                          \n Thanks,
-                          \n ALERT Team `;
-                  return mailTransport.sendMail(mailOptions).then(() => {
-                    console.log('New welcome email sent to:', email);
-                  });
-                }, error => {
-                  console.log(error.message);
-                });
-
-              });
-
-            });
-          });
-        } else {
-          admin.database().ref('/' + ENV.env + '/countryOffice/' + agencyId + '/adminId').once("value", (data) => {
-            let adminId = data.val();
-            console.log("admin id: " + adminId);
-
-            admin.database().ref('/' + ENV.env + '/userPublic/' + adminId).once("value", (user) => {
-              let email = user.val().email;
-              console.log("admin email: " + email);
-
-              admin.database().ref('/' + ENV.env + '/network/' + networkId).once("value", networkSnap => {
-                let network = networkSnap.val();
-
-                let expiry = moment.utc().add(1, 'weeks').valueOf();
-
-                let validationToken = {'token': uuidv4(), 'expiry': expiry};
-
-                admin.database().ref('' + ENV.env + '/networkCountryValidation/' + countryId + '/validationToken').set(validationToken).then(() => {
-                  console.log('success validationToken');
-                  const mailOptions = {
-                    from: '"ALERT Network" <noreply@firebase.com>',
-                    to: email
-                  };
-
-                  mailOptions.subject = `You have been invited to join a network`;
-                  mailOptions.text = `Hello,
-                          \nYour Agency was added into ${network.name} network!.
-                          \n To confirm, please click on the link below
-                          \n ${ENV.url}/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId}
-                          \n Thanks
-                          \n Your ALERT team `;
-                  return mailTransport.sendMail(mailOptions).then(() => {
-                    console.log('New welcome email sent to:', email);
-                  });
-                }, error => {
-                  console.log(error.message);
-                });
-
-              });
-
-            });
-          });
+        if (agencyId !== countryId) { 
+          let adminId = await refOnce('/' + ENV.env + '/countryOffice/' + agencyId + '/' + countryId + '/adminId');
+          if (adminId == null) { return resolveLog("Admin Id inside " + agencyId + " /  "+ countryId + " is null"); }
         }
+        else { 
+          let adminId = await refOnce('/' + ENV.env + '/countryOffice/' + agencyId + '/adminId');
+          if (adminId == null) { return resolveLog("Admin Id " + agencyId + " is null"); }
+        }
+
+        let userPublic = await refOnce('/' + ENV.env + '/userPublic/' + adminId);
+        if (userPublic == null) { return resolveLog("Admin email is null"); }
+
+        let network = await refOnce('/' + ENV.env + '/network/' + networkId);
+        if (network == null) { return resolveLog("Network under " + networkId + " is null"); }
+
+        let expiry = moment.utc().add(1, 'weeks').valueOf();
+        let validationToken = {'token': uuidv4(), 'expiry': expiry};
+
+        return admin.database()
+          .ref(ENV.env + '/networkCountryValidation/' + countryId + '/validationToken')
+          .set(validationToken)
+          .then(() => {
+            console.log('success validationToken');
+            const mailOptions = {
+              from: '"ALERT Network" <noreply@firebase.com>',
+              to: email
+            };
+
+            mailOptions.subject = `You have been invited to join a network`;
+            mailOptions.text = `Hello,
+                    \nYour Agency was invited to join the network: ${network.name}
+                    \n To confirm, please click on the link below
+                    \n ${ENV.url}/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId}${countryId !== agencyId ? (';countryId=' + countryId) : ''}
+                    \n Thanks,
+                    \n ALERT Team `;
+            return mailTransport.sendMail(mailOptions);
+          })
+          .then(() => {   
+            console.log("Successfully sent validation email");
+            return true;
+          })
+          .catch((error) => {
+            console.log("Error occured sending validation token to user");
+            console.error(error);
+          });
       }
+      return Promise.resolve(true);
     });
 }
+
+
+
+
+
+
+
 
 /**
  * Send email to external for alert changes
  */
-function sendEmailToExternalForAlertChange(ENV) {
+function sendEmailToExternalForAlertChange(ENV) { 
   return functions.database.ref('/' + ENV.env + '/alert/{countryId}/{alertId}/alertLevel')
-    .onWrite(event => {
+    .onWrite(async event => {
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
 
-      if (preData !== currData) {
-
+      if (preData !== currData) { 
         let alertId = event.params['alertId'];
         let countryId = event.params['countryId'];
 
-        admin.database().ref('/' + ENV.env + '/alert/' + countryId + '/' + alertId).once("value", (data) => {
-          let alert = data.val();
-          console.log(alert);
-          if (alert.hazardScenario !== -1) {
-            admin.database().ref('/' + ENV.env + '/externalRecipient/' + countryId).once('value', (data) => {
-              console.log("external recipient: ")
-              console.log(data.val())
-              let exObj = data.val();
-              if (exObj) {
-                let recipients = Object.keys(exObj).map(key => {
-                  return exObj[key]
-                })
-                for (let i = 0, len = recipients.length; i < len; i++) {
-                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
-                    console.log("alert change!")
-                    console.log("email need to send to: " + recipients[i].email)
-                    let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
-                    let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
-                    sendEmail(recipients[i].email, title, content)
-                  } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
-                    console.log("red alert request")
-                    console.log("email need to send to: " + recipients[i].email)
-                    let title = `Red alert for ${HAZARDS[alert.hazardScenario]} has been requested`
-                    let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has requested RED level update`
-                    sendEmail(recipients[i].email, title, content)
-                  } else {
-                    console.log("ERROR, please check!")
-                  }
-                }
+        let alert = await refOnce('/' + ENV.env + '/alert/' + countryId + '/' + alertId);
+        if (alert == null) { return resolveLog("Alert is null"); }
+
+        // Standard Hazard Scenario
+        if (alert.hazardScenario !== -1) { 
+          let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
+          if (exObj == null) { return resolveLog("External recipient is null - " + alert.hazardScenario); }
+
+          let recipients = Object.keys(exObj).map(key => exObj[key]);
+
+          return Promise.all(
+            recipients.map((recipient, index) => { 
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`;
+                let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`;
+                sendEmail(recipient.email, title, content);
+              }
+              else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) { 
+                let title = `Red alert for ${HAZARDS[alert.hazardScenario]} has been requested`;
+                let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has requested RED level update`;
+                sendEmail(recipient.email, title, content);
+              }
+              else { 
+                Promise.resolve(true);
               }
             })
-          } else {
-            admin.database().ref('/' + ENV.env + '/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
-              let otherHazardName = data.val()
-              admin.database().ref('/' + ENV.env + '/externalRecipient/' + countryId).once('value', (data) => {
-                let exObj = data.val();
-                if (exObj) {
-                  let recipients = Object.keys(exObj).map(key => {
-                    return exObj[key]
-                  })
-                  for (let i = 0, len = recipients.length; i < len; i++) {
-                    if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
-                      console.log("alert change!")
-                      console.log("email need to send to: " + recipients[i].email)
-                      let title = `The alert level for ${otherHazardName} has been updated`
-                      let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`
-                      sendEmail(recipients[i].email, title, content)
-                    } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
-                      console.log("red alert request")
-                      console.log("email need to send to: " + recipients[i].email)
-                      let title = `Red alert for ${otherHazardName} has been requested`
-                      let content = `The following alert: ${otherHazardName} has requested RED level update`
-                      sendEmail(recipients[i].email, title, content)
-                    } else {
-                      console.log("ERROR, please check!")
-                    }
-                  }
-                }
-              })
+          )
+          .then(() => { 
+            console.log("Successfully sent recipient emails");
+            return true;
+          })
+          .catch((error) => { 
+            console.log("Error sending email promises");
+            console.error(error);
+          });         
+        }
+        // Other hazard scenario
+        else { 
+          let otherHazardName = await refOnce('/' + ENV.env + '/hazardOther/' + alert.otherName + "/name");
+          if (otherHazardName == null) { return resolveLog("Other Hazard Name doesn't exist " + alert.otherName); }
+
+          let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
+          if (exObj == null) { return resolveLog("External recipient is null " + alert.hazardScenario)}
+
+          let recipients = Object.keys(exObj).map(key => exObj[key]);
+
+          return Promise.all(
+            recipients.map((recipient) => { 
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                let title = `The alert level for ${otherHazardName} has been updated`;
+                let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`;
+                return sendEmail(recipient.email, title, content);
+              }
+              else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) { 
+                let title = `Red alert for ${otherHazardName} has been requested`;
+                let content = `The following alert: ${otherHazardName} has requested RED level update`;
+                return sendEmail(recipient.email, title, content);
+              }
+              else { 
+                return Promise.resolve(true);
+              }
             })
-          }
-        })
-      } else {
-        console.log("error!!")
+          )
+          .then(() => { 
+            console.log("Successfully sent recipient emails (OTHER)");
+            return true;
+          })
+          .catch((error) => { 
+            console.log("Error sending email promises (OTHER)");
+            console.error(error);
+          });    
+        }
       }
-    })
+    });
 }
 
 /**
@@ -1247,129 +1158,155 @@ function sendEmailToExternalForAlertChange(ENV) {
  */
 function sendEmailToExternalForAlertChangeRed(ENV) {
   return functions.database.ref('/' + ENV.env + '/alert/{countryId}/{alertId}/approval/countryDirector/{directorId}')
-    .onWrite(event => {
-
+    .onWrite(async event => {
       const currData = event.data.current.val();
-
-      if (currData === APPROVED) {
-        console.log("red alert approved");
-
+  
+      if (currData === APPROVED) { 
         let alertId = event.params['alertId'];
         let countryId = event.params['countryId'];
 
-        admin.database().ref('/' + ENV.env + '/alert/' + countryId + '/' + alertId).once("value", (data) => {
-          let alert = data.val();
-          console.log(alert);
-          if (alert.hazardScenario !== -1) {
-            let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
-            let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated to RED ALERT`
-            admin.database().ref('/' + ENV.env + '/externalRecipient/' + countryId).once('value', (data) => {
-              console.log("external recipient: ")
-              console.log(data.val())
-              let exObj = data.val();
-              if (exObj) {
-                let recipients = Object.keys(exObj).map(key => {
-                  return exObj[key]
-                })
-                for (let i = 0, len = recipients.length; i < len; i++) {
-                  if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
-                    console.log("alert change!")
-                    console.log("email need to send to: " + recipients[i].email)
-                    sendEmail(recipients[i].email, title, content)
-                  } else {
-                    console.log("ERROR, please check!")
-                  }
-                }
+        let alert = await refOnce('/' + ENV.env + '/alert/' + countryId + '/' + alertId);
+        if (alert == null) { return resolveLog("Alert is null"); }
+
+        // Standard Alert Hazard Scenario
+        if (alert.hazardScenario !== -1) { 
+
+          let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
+          if (exObj == null) { return resolveLog("External recipients is null"); }
+
+          let recipients = Object.keys(exObj).map(key => exObj[key]);
+          let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
+          let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated to RED ALERT`
+
+          return Promise.all(
+            recipients.map((recipient) => { 
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) { 
+                return sendEmail(recipient.email, title, content);
               }
+              return Promise.resolve(true);
             })
-          } else {
-            admin.database().ref('/' + ENV.env + '/hazardOther/' + alert.otherName + "/name").once("value", (data) => {
-              let otherHazardName = data.val()
-              admin.database().ref('/' + ENV.env + '/externalRecipient/' + countryId).once('value', (data) => {
-                console.log("external recipient: ")
-                console.log(data.val())
-                let exObj = data.val();
-                if (exObj) {
-                  let recipients = Object.keys(exObj).map(key => {
-                    return exObj[key]
-                  })
-                  for (let i = 0, len = recipients.length; i < len; i++) {
-                    if (recipients[i].notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
-                      console.log("alert change!")
-                      console.log("email need to send to: " + recipients[i].email)
-                      let title = `The alert level for ${otherHazardName} has been updated`
-                      let content = `The following alert: ${otherHazardName} has had its level updated to RED ALERT`
-                      sendEmail(recipients[i].email, title, content)
-                    } else {
-                      console.log("ERROR, please check!")
-                    }
-                  }
-                }
-              })
+          )
+          .then(() => { 
+            console.log("Successfully sent recipient emails (OTHER)");
+            return true;
+          })
+          .catch((error) => { 
+            console.log("Error sending email promises (OTHER)");
+            console.error(error);
+          });    
+        }
+        // Custom Alert Hazard Scenario
+        else { 
+          let otherHazardName = await refOnce('/' + ENV.env + '/hazardOther/' + alert.otherName + "/name");
+          if (otherHazardName == null) { return resolveLog("Other hazard doesn't exist"); }
+
+          let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
+          if (exObj == null) { return resolveLog("External recipients is null"); }
+
+          let recipients = Object.keys(exObj).map(key => exObj[key]);
+          let title = `The alert level for ${otherHazardName} has been updated`
+          let content = `The following alert: ${otherHazardName} has had its level updated to RED ALERT`
+
+          return Promise.all(
+            recipients.map((recipient) => { 
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) { 
+                return sendEmail(recipient.email, title, content);
+              }
+              return Promise.resolve(true);
             })
-          }
-        })
-      } else {
-        console.log("error!!")
+          )
+          .then(() => { 
+            console.log("Successfully sent recipient emails (OTHER)");
+            return true;
+          })
+          .catch((error) => { 
+            console.log("Error sending email promises (OTHER)");
+            console.error(error);
+          });    
+        }
       }
-    })
+
+      return Promise.resolve(true);
+    });
 }
+
+
+
 
 /**
  * Send email to external (what?) for indicator update
  */
 function sendEmailToExternalForIndicatorUpdate(ENV) {
   return functions.database.ref('/' + ENV.env + '/indicator/{hazardId}/{indicatorId}/triggerSelected')
-    .onWrite(event => {
-
+    .onWrite(async event => {
       const preData = event.data.previous.val();
       const currData = event.data.current.val();
 
-      if (preData && currData !== preData) {
-        console.log("indicator updated");
-
+      if (preData && currData !== preData) { 
         let hazardId = event.params['hazardId'];
         let indicatorId = event.params['indicatorId'];
 
-        admin.database().ref('/' + ENV.env + '/indicator/' + hazardId + '/' + indicatorId).once("value", (data) => {
-          let indicator = data.val();
-          if (indicator.hazardScenario['key'] === 'countryContext') {
-            console.log("send email to state indicator for country context was updated")
-            let title = `The indicator ${indicator.name} for Country Context has been updated`
-            let content = `The following indicator: ${indicator.name} for Country Context has been updated`
-            fetchUsersAndSendEmail('' + ENV.env + '', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
-          } else {
-            console.log("fetch country id for hazard")
-            admin.database().ref('/' + ENV.env + '/hazard').once("value", (data) => {
-              let filteredObjs = Object.keys(data.val()).map(key => {
-                let obj = data.val()[key];
-                obj['id'] = key;
-                return obj
-              })
-                .filter(item => {
-                  return item.hasOwnProperty(hazardId)
-                });
+        let indicator = await refOnce('/' + ENV.env + '/indicator/' + hazardId + '/' + indicatorId);        
+        if (indicator == null) { return resolveLog("Indicator for " + hazardId + "/" + indicatorId + " is null"); }
 
-              let countryId = filteredObjs[0]['id'];
-              console.log("fetched country id: " + countryId);
-              if (indicator.hazardScenario.hazardScenario !== -1) {
-                let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-                let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-                fetchUsersAndSendEmail('' + ENV.env + '', countryId, title, content, 0, indicator.assignee)
-              } else {
-                admin.database().ref('/' + ENV.env + '/hazardOther/' + indicator.hazardScenario.otherName + "/name").once("value", (data) => {
-                  let otherHazardName = data.val()
-                  let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`
-                  let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`
-                  fetchUsersAndSendEmail('test', countryId, title, content, UPDATE_HAZARD, indicator.assignee)
-                })
-              }
+        if (indicator.hazardScenario['key'] === 'countryContext') { 
+          let title = `The indicator ${indicator.name} for Country Context has been updated`
+          let content = `The following indicator: ${indicator.name} for Country Context has been updated`
+          return fetchUsersAndSendEmail('' + ENV.env + '', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
+            .then(() => { 
+              console.log("Successful country context update");
+              return true;
             })
+            .catch((error) => { 
+              console.log("Error occured for indicator update");
+              console.error(error);
+            });
+        }
+        else { 
+          let hazard = await refOnce('/' + ENV.env + '/hazard');
+          if (hazard == null) { return resolveLog("Hazard list is empty"); }
+
+          let countriesWithHazardId = Object.keys(data.val()).map(key => {
+              let obj = data.val()[key];
+              obj['id'] = key;
+              return obj
+            })
+            .filter(item => {
+              return item.hasOwnProperty(hazardId)
+            });
+          let countryId = countriesWithHazardId[0]['id'];
+
+          if (indicator.hazardScenario.hazardScenario !== -1) { 
+            let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+            let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+            return fetchUsersAndSendEmail('' + ENV.env + '', countryId, title, content, 0, indicator.assignee)
+              .then(() => { 
+                console.log("Successful hazard scenario ");
+                return true;
+              })
+              .catch((error) => { 
+                console.log("Error occured for indicator update");
+                console.error(error);
+              });
           }
-        })
+          else { 
+            let otherHazardName = await refOnce('/' + ENV.env + '/hazardOther/' + indicator.hazardScenario.otherName + "/name");
+            if (otherHazardName == null) { return resolveLog("Other hazard name is null"); }
+
+            let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`;
+            let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`;
+            return fetchUsersAndSendEmail('test', countryId, title, content, UPDATE_HAZARD, indicator.assignee);
+          }
+        }
       }
+
+      return Promise.resolve(true);
     });
 }
+
+
+
+
 
 /**
  * Send email to external (what?) for plan expired
@@ -1381,21 +1318,34 @@ function sendEmailToExternalForPlanExpired(ENV) {
       const currData = event.data.current.val();
 
       if (preData && !currData) {
-
         let countryId = event.params['countryId'];
         let planId = event.params['planId'];
 
-        console.log("response plan was expired")
-        admin.database().ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
-          let plan = data.val()
-          console.log(plan)
-          let title = `Plan ${plan.name} was expired`;
-          let content = `The following plan: ${plan.name} was expired.`;
-          fetchUsersAndSendEmail(ENV.env, countryId, title, content, PLAN_EXPIRED);
-        })
+        return admin.database()
+          .ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId)
+          .once('value', (data) => {
+            let plan = data.val();
+            let title = `Plan ${plan.name} was expired`;
+            let content = `The following plan: ${plan.name} was expired.`;
+            return fetchUsersAndSendEmail(ENV.env, countryId, title, content, PLAN_EXPIRED);
+          })
+          .then(() => {
+            console.log("Successfully fetched users and send email");
+            return true;
+          })
+          .catch((error) => { 
+            console.log("Error occured sending email to user");
+            console.error(error);
+          });        
       }
+
+      return Promise.resolve(true);
     });
 }
+
+
+
+
 
 /**
  * Send email plan rejected by country director
@@ -1403,23 +1353,16 @@ function sendEmailToExternalForPlanExpired(ENV) {
 function sendEmailPlanRejectedByCountryDirector(ENV) {
   functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
     .onWrite(event => {
-
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-      console.log(currData)
-
-      if (currData === PLAN_NEEDREVIEWING) {
-        console.log("plan rejected by country director")
-        let countryId = event.params['countryId'];
-        let planId = event.params['planId'];
-
-        admin.database().ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
-          let plan = data.val()
-          let title = `Response plan was rejected`;
-          let content = `The following response plan:${plan.name}, was rejected by country director.`
-          fetchUsersAndSendEmail(ENV.env, countryId, title, content, PLAN_REJECTED)
+      
+      return sendEmailPlanRejectedBy(ENV, event, 'country director')
+        .then(() => { 
+          console.log("Send email plan rejected by country director");
+          return true;
         })
-      }
+        .catch((error) => { 
+          console.log("Send email plan rejected error country");
+          console.error(error);
+        });
     })
 }
 
@@ -1429,22 +1372,15 @@ function sendEmailPlanRejectedByCountryDirector(ENV) {
 function sendEmailPlanRejectedByRegionDirector(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
     .onWrite(event => {
-
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-
-      if (currData === PLAN_NEEDREVIEWING) {
-        console.log("plan rejected by region director")
-        let countryId = event.params['countryId'];
-        let planId = event.params['planId'];
-
-        admin.database().ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
-          let plan = data.val()
-          let title = `Response plan was rejected`
-          let content = `The following response plan:${plan.name}, was rejected by region director.`
-          fetchUsersAndSendEmail(ENV.env, countryId, title, content, PLAN_REJECTED)
+      return sendEmailPlanRejectedBy(ENV, event, 'region director')
+        .then(() => { 
+          console.log("Send email plan rejected by region director");
+          return true;
         })
-      }
+        .catch((error) => { 
+          console.log("Send email plan rejected error region");
+          console.error(error);
+        });
     });
 }
 
@@ -1454,23 +1390,33 @@ function sendEmailPlanRejectedByRegionDirector(ENV) {
 function sendEmailPlanRejectedByGlobalDirector(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
     .onWrite(event => {
-
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-
-      if (currData === PLAN_NEEDREVIEWING) {
-        console.log("plan rejected by global director")
-        let countryId = event.params['countryId'];
-        let planId = event.params['planId'];
-
-        admin.database().ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
-          let plan = data.val()
-          let title = `Response plan was rejected`
-          let content = `The following response plan:${plan.name}, was rejected by global director.`
-          fetchUsersAndSendEmail('' + ENV.env + '', countryId, title, content, PLAN_REJECTED)
+      return sendEmailPlanRejectedBy(ENV, event, 'global director')
+        .then(() => { 
+          console.log("Send email plan rejected by global director");
+          return true;
         })
-      }
+        .catch((error) => { 
+          console.log("Send email plan rejected error global");
+          console.error(error);
+        });
     });
+}
+
+async function sendEmailPlanRejectedBy(ENV, event, rejectedBy) { 
+  const preData = event.data.previous.val();
+  const currData = event.data.current.val();
+  if (currData === PLAN_NEEDREVIEWING) {
+    let countryId = event.params['countryId'];
+    let planId = event.params['planId'];
+
+    return admin.database().ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
+      let plan = data.val()
+      let title = `Response plan was rejected`
+      let content = `The following response plan:${plan.name}, was rejected by ${rejectedBy}.`
+      return fetchUsersAndSendEmail('' + ENV.env + '', countryId, title, content, PLAN_REJECTED)
+    })
+  }
+  return Promise.resolve(true);
 }
 
 /**
@@ -2229,21 +2175,38 @@ function sendNotificationWithSetting(env, payload, userId, countryId, notificati
 /**
  * Private functions
  */
+// Return a promise resolution with a message logged beforehand
+function resolveLog(msg) { 
+  console.log(msg);
+  return Promise.resolve(true);
+}
+
+// Get the value of something at a specific reference
+async function refOnce(path) { 
+  let snapshot = await admin.database().ref(path).once('value');
+  if (!snapshot.exists()) { 
+    return null;
+  }
+  else { 
+    return snapshot.val();
+  }
+}
 
 // Fetching users and send an email
 function fetchUsersAndSendEmail(node, countryId, title, content, setting, assignee) {
   console.log("fetchUsersAndSendEmail - gets called!!! " + node)
-  admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
+  return admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
     let exObj = data.val();
     if (exObj) {
-      let recipients = Object.keys(exObj).map(key => {
-        return exObj[key]
-      })
-      for (let i = 0, len = recipients.length; i < len; i++) {
-        if (recipients[i].notificationsSettings[setting]) {
-          sendEmail(recipients[i].email, title, content)
-        }
-      }
+      let recipients = Object.keys(exObj).map(key => exObj[key])
+      return Promise.all(
+        recipients.map((recipient) => { 
+          if (recipients[i].notificationsSettings[setting]) { 
+            return sendEmail(recipient.email, title, content);
+          }
+          return Promise.resolve(true);
+        })
+      );
     }
   })
 }
@@ -2262,7 +2225,7 @@ function getAlertName(level) {
 // Sends a welcome email to the given user.
 function sendWelcomeEmail(email, userPassword) {
   const mailOptions = {
-    from: '"ALERT" <noreply@firebase.com>',
+    from : '"ALERT" <noreply@firebase.com>',
     to: email
   };
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
@@ -2270,7 +2233,7 @@ function sendWelcomeEmail(email, userPassword) {
                       \nWelcome to ${APP_NAME}. I hope you will enjoy our platform.
                       \n Your temporary password is "` + userPassword + `", please login with your email address to update your credentials.
                       \n https://platform.alertpreparedness.org
-                      \n Thanks,
+                     \n Thanks,
                       \n ALERT Team `;
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('New welcome email sent to:', email);
@@ -2285,10 +2248,9 @@ function sendEmail(email, title, content) {
   };
   mailOptions.subject = title
   mailOptions.text = content
-  console.log(mailOptions.title)
-  console.log(mailOptions.text)
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('normal email sent to:', email);
+    return true;
   });
 }
 
