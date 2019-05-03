@@ -35,32 +35,32 @@ const ENVIRONMENT = {
     url: "http://uat-2.portal.alertpreparedness.org"
   },
   D1S1: {
-    labe: "D1S1",
+    label: "D1S1",
     env: "d1s1",
     url: "http://set-1.day-1.training.portal.alertpreparedness.org"
   },
   D1S2: {
-    labe: "D1S2",
+    label: "D1S2",
     env: "d1s2",
     url: "http://set-2.day-1.training.portal.alertpreparedness.org"
   },
   D2S1: {
-    labe: "D2S1",
+    label: "D2S1",
     env: "d2s1",
     url: "http://set-1.day-2.training.portal.alertpreparedness.org"
   },
   D2S2: {
-    labe: "D2S2",
+    label: "D2S2",
     env: "d2s2",
     url: "http://set-2.day-2.training.portal.alertpreparedness.org"
   },
   D3S1: {
-    labe: "D3S1",
+    label: "D3S1",
     env: "d3s1",
     url: "http://set-1.day-3.training.portal.alertpreparedness.org"
   },
   D3S2: {
-    labe: "D3S2",
+    label: "D3S2",
     env: "d3s2",
     url: "http://set-2.day-3.training.portal.alertpreparedness.org"
   },
@@ -112,6 +112,24 @@ const PLAN_IN_PROGRESS = 0;
 const PLAN_WAITINGAPPROVAL = 1;
 const PLAN_APPROVED = 2;
 const PLAN_NEEDREVIEWING = 3;
+
+const NOTIFICATION_ALERT = 0;
+const NOTIFICATION_INDICATOR_ASSIGNED = 1;
+const NOTIFICATION_INDICATOR_RESCHEDULE = 2;
+const NOTIFICATION_ACTION_ASSIGNED = 3;
+const NOTIFICATION_ACTION_RESCHEDULE = 4;
+const NOTIFICATION_ACTION_COUNTRY_RESCHEDULE = 5;
+const NOTIFICATION_ACTION_LOCAL_NETWORK_RESCHEDULE = 6;
+const NOTIFICATION_ACTION_NETWORK_COUNTRY_RESCHEDULE = 7;
+const NOTIFICATION_RESPONSE_PLAN_RESCHEDULE = 8;
+const NOTIFICATION_RESPONSE_PLAN_COUNTRY_RESCHEDULE = 9;
+
+const NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED = 0;
+const NOTIFICATION_SETTING_RED_ALERT_REQUEST = 1;
+const NOTIFICATION_SETTING_UPDATE_HAZARD_INDICATOR = 2;
+const NOTIFICATION_SETTING_MPA_APA_EXPIRED = 3;
+const NOTIFICATION_SETTING_RESPONSE_PLAN_EXPIRED = 4;
+const NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED = 5;
 
 const HAZARDS = {
   "0": "Cold Wave",
@@ -472,34 +490,34 @@ exports.sendResponsePlanMobileNotification_TEST = sendResponsePlanMobileNotifica
 
 // region Delcarations :- UAT
 
-exports.handleUserAccounts_UAT = handleUserAccounts(ENVIRONMENT.UAT);
-exports.sendResponsePlanValidationEmail_UAT = sendResponsePlanValidationEmail(ENVIRONMENT.UAT);
-exports.sendPartnerOrganisationValidationEmail_UAT = sendPartnerOrganisationValidationEmail(ENVIRONMENT.UAT);
-exports.sendSystemAdminNotificationsEmail_UAT = sendSystemAdminNotificationsEmail(ENVIRONMENT.UAT);
-exports.sendAgencyNotificationsEmail_UAT = sendAgencyNotificationsEmail(ENVIRONMENT.UAT);
-exports.sendCountryNotificationsEmail_UAT = sendCountryNotificationsEmail(ENVIRONMENT.UAT);
-exports.sendNetworkAgencyValidationEmail_UAT = sendNetworkAgencyValidationEmail(ENVIRONMENT.UAT);
-exports.sendNetworkCountryAgencyValidationEmail_UAT = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.UAT);
-exports.sendBugReportingEmail_UAT = sendBugReportingEmail(ENVIRONMENT.UAT);
-exports.createUserNetworkCountry_UAT = createUserNetworkCountry(ENVIRONMENT.UAT);
-exports.updateUserEmail_UAT = updateUserEmail(ENVIRONMENT.UAT);
-exports.sendEmailToExternalForAlertChange_UAT = sendEmailToExternalForAlertChange(ENVIRONMENT.UAT);
-exports.sendEmailToExternalForAlertChangeRed_UAT = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.UAT);
-exports.sendEmailToExternalForIndicatorUpdate_UAT = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.UAT);
-exports.sendEmailToExternalForPlanExpired_UAT = sendEmailToExternalForPlanExpired(ENVIRONMENT.UAT);
-exports.sendEmailPlanRejectedByCountryDirector_UAT = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.UAT);
-exports.sendEmailPlanRejectedByRegionDirector_UAT = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.UAT);
-exports.sendEmailPlanRejectedByGlobalDirector_UAT = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.UAT);
-exports.updateLatestToCAllUsers_UAT = updateLatestToCAllUsers(ENVIRONMENT.UAT);
-exports.updateLatestCoCAllUsers_UAT = updateLatestCoCAllUsers(ENVIRONMENT.UAT);
-exports.sendIndicatorAssignedMobileNotification_UAT = sendIndicatorAssignedMobileNotification(ENVIRONMENT.UAT);
-exports.sendResponsePlanApprovalNotification_UAT = sendResponsePlanApprovalNotification(ENVIRONMENT.UAT);
-exports.sendAlertMobileNotification_UAT = sendAlertMobileNotification(ENVIRONMENT.UAT);
-exports.sendActionMobileNotification_UAT = sendActionMobileNotification(ENVIRONMENT.UAT);
-exports.countryOfficeClockSettingsChange_UAT = countryOfficeClockSettingsChange(ENVIRONMENT.UAT);
-exports.networkClockSettingsChange_UAT = networkClockSettingsChange(ENVIRONMENT.UAT);
-exports.networkCountryClockSettingsChange_UAT = networkCountryClockSettingsChange(ENVIRONMENT.UAT);
-exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotification(ENVIRONMENT.UAT);
+// exports.handleUserAccounts_UAT = handleUserAccounts(ENVIRONMENT.UAT);
+// exports.sendResponsePlanValidationEmail_UAT = sendResponsePlanValidationEmail(ENVIRONMENT.UAT);
+// exports.sendPartnerOrganisationValidationEmail_UAT = sendPartnerOrganisationValidationEmail(ENVIRONMENT.UAT);
+// exports.sendSystemAdminNotificationsEmail_UAT = sendSystemAdminNotificationsEmail(ENVIRONMENT.UAT);
+// exports.sendAgencyNotificationsEmail_UAT = sendAgencyNotificationsEmail(ENVIRONMENT.UAT);
+// exports.sendCountryNotificationsEmail_UAT = sendCountryNotificationsEmail(ENVIRONMENT.UAT);
+// exports.sendNetworkAgencyValidationEmail_UAT = sendNetworkAgencyValidationEmail(ENVIRONMENT.UAT);
+// exports.sendNetworkCountryAgencyValidationEmail_UAT = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.UAT);
+// exports.sendBugReportingEmail_UAT = sendBugReportingEmail(ENVIRONMENT.UAT);
+// exports.createUserNetworkCountry_UAT = createUserNetworkCountry(ENVIRONMENT.UAT);
+// exports.updateUserEmail_UAT = updateUserEmail(ENVIRONMENT.UAT);
+// exports.sendEmailToExternalForAlertChange_UAT = sendEmailToExternalForAlertChange(ENVIRONMENT.UAT);
+// exports.sendEmailToExternalForAlertChangeRed_UAT = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.UAT);
+// exports.sendEmailToExternalForIndicatorUpdate_UAT = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.UAT);
+// exports.sendEmailToExternalForPlanExpired_UAT = sendEmailToExternalForPlanExpired(ENVIRONMENT.UAT);
+// exports.sendEmailPlanRejectedByCountryDirector_UAT = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.UAT);
+// exports.sendEmailPlanRejectedByRegionDirector_UAT = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.UAT);
+// exports.sendEmailPlanRejectedByGlobalDirector_UAT = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.UAT);
+// exports.updateLatestToCAllUsers_UAT = updateLatestToCAllUsers(ENVIRONMENT.UAT);
+// exports.updateLatestCoCAllUsers_UAT = updateLatestCoCAllUsers(ENVIRONMENT.UAT);
+// exports.sendIndicatorAssignedMobileNotification_UAT = sendIndicatorAssignedMobileNotification(ENVIRONMENT.UAT);
+// exports.sendResponsePlanApprovalNotification_UAT = sendResponsePlanApprovalNotification(ENVIRONMENT.UAT);
+// exports.sendAlertMobileNotification_UAT = sendAlertMobileNotification(ENVIRONMENT.UAT);
+// exports.sendActionMobileNotification_UAT = sendActionMobileNotification(ENVIRONMENT.UAT);
+// exports.countryOfficeClockSettingsChange_UAT = countryOfficeClockSettingsChange(ENVIRONMENT.UAT);
+// exports.networkClockSettingsChange_UAT = networkClockSettingsChange(ENVIRONMENT.UAT);
+// exports.networkCountryClockSettingsChange_UAT = networkCountryClockSettingsChange(ENVIRONMENT.UAT);
+// exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotification(ENVIRONMENT.UAT);
 
 // endregion
 
@@ -541,16 +559,15 @@ exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotificat
  * Send a welcome email
  */
 function sendWelcomeEmail() {
-  return functions.auth.user().onCreate(async event => {
-    const user = event.data; // The Firebase user.
-    const email = user.email; // The email of the user.
+  return functions.auth.user().onCreate(async (user) => {
+    const email = user.email;
     const userPassword = generateRandomPassword();
     const userUid = user.uid;
     return admin.auth()
-      .updateUser(userUid, { password: userPassword })
+      .updateUser(userUid, {password: userPassword})
       .then(function (userRecord) {
         console.log("Successfully updated user password", userRecord.toJSON());
-        return sendWelcomeEmail(email, userPassword);
+        return sendWelcomeEmailWith(email, userPassword);
       })
       .catch(function (error) {
         console.log("Error updating user password:");
@@ -565,19 +582,18 @@ function sendWelcomeEmail() {
  */
 function handleUserAccounts(ENV) {
   return functions.database.ref('/' + ENV.env + '/userPublic/{userId}')
-    .onWrite(event => {
+    .onWrite((snap, context) => {
+      const userId = context.params.userId;
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      const userId = event.params.userId;
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-
-      if (!preData && currData) { 
-        const pass = ENV.label == 'LIVE' ? generateRandomPassword() : TEMP_PASS;
+      if (!preData && currData) {
+        const pass = ENV.label === 'LIVE' ? generateRandomPassword() : TEMP_PASS;
         return admin.auth().createUser({
-            uid: userId,
-            email: currData.email,
-            password: pass
-          })
+          uid: userId,
+          email: currData.email,
+          password: pass
+        })
           .then(user => {
             console.log("Successfully created new user: " + user.uid);
             return true;
@@ -588,12 +604,12 @@ function handleUserAccounts(ENV) {
           });
       }
 
-      if (preData && currData) { 
+      if (preData && currData) {
         console.log("Update");
         return Promise.resolve(true);
       }
 
-      if (preData && !currData) { 
+      if (preData && !currData) {
         return admin.auth()
           .deleteUser(userId)
           .then(() => {
@@ -611,32 +627,35 @@ function handleUserAccounts(ENV) {
 
 /**
  * Send response plan validation email
- * 
+ *
  * - Look for new data for partner organisation / country id fixes
- * - Make sure a partner user doesn't already exists. 
+ * - Make sure a partner user doesn't already exists.
  * - If it doesn't, we'll send an email to partner organisation
  */
 function sendResponsePlanValidationEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{responsePlanId}/approval/partner/{partnerOrganisationId}')
-    .onWrite(async event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite(async (snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      if (!preData && currData) { 
+      if (!preData && currData) {
         // New data
-        let countryId = event.params['countryId'];
-        let partnerOrganisationId = event.params['partnerOrganisationId'];
-        let responsePlanId = event.params['responsePlanId'];
-      
+        let countryId = context.params.countryId;
+        let partnerOrganisationId = context.params.partnerOrganisationId;
+        let responsePlanId = context.params.responsePlanId;
+
         // Check that partner user doesn't already exist. If it doesn't we'll send an email to partnerOrganisation
         let partnerUser = await refOnce(ENV.env + '/partnerUser/' + partnerOrganisationId);
-        if (partnerUser != null) { return resolveLog("Partner user found") }
+        if (partnerUser != null) {
+          return resolveLog("Partner user found")
+        }
 
         // Partner organisation email exists check
-        let partnerOrganisation = await refOnce(ENV.env + '/partnerOrganisation/' + partnerOrganisationId + '/email');
-        if (partnerOrganisation == null) { return resolveLog("Partner organisation not found"); }
+        let partnerOrganisationEmail = await refOnce(ENV.env + '/partnerOrganisation/' + partnerOrganisationId + '/email');
+        if (partnerOrganisationEmail == null) {
+          return resolveLog("Partner organisation not found");
+        }
 
-        let email = partnerOrganisationSnapshot.val();
         let expiry = moment.utc().add(1, 'weeks').valueOf();
         let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
@@ -646,7 +665,7 @@ function sendResponsePlanValidationEmail(ENV) {
         // Send an email
         const mailOptions = {
           from: '"ALERT partner organisation" <noreply@firebase.com>',
-          to: email
+          to: partnerOrganisationEmail
         };
         mailOptions.subject = `Please validate a response plan!`;
         mailOptions.text = `Hello,
@@ -655,13 +674,13 @@ function sendResponsePlanValidationEmail(ENV) {
                 \n ${ENV.url}/dashboard/review-response-plan;id=${responsePlanId};token=${validationToken.token};countryId=${countryId};partnerOrganisationId=${partnerOrganisationId}
                 \n Thanks,
                 \n ALERT Team`;
-        return mailTransport.sendMail(mailOptions)
+        return mailTransport.sendMail(mailOptions, null)
           .then(() => {
-            console.log('Email sent too: ', email);
+            console.log('Email sent too: ', partnerOrganisationEmail);
             return true;
           })
-          .catch((err) => { 
-            console.log("Sending email to " + email + " error");
+          .catch((err) => {
+            console.log("Sending email to " + partnerOrganisationEmail + " error");
             console.error(err);
           });
       }
@@ -674,16 +693,14 @@ function sendResponsePlanValidationEmail(ENV) {
  */
 function sendPartnerOrganisationValidationEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/partnerOrganisation/{partnerId}')
-    .onWrite(event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-      let partnerOrganisation = event.data.val();
-      let isApproved = partnerOrganisation.isApproved;
+    .onWrite((snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
       // New data
       if (!preData && currData) {
-        let partnerId = event.params['partnerId'];
-        let email = partnerOrganisation.email;
+        let partnerId = context.params.partnerId;
+        let email = currData.email;
         let expiry = moment.utc().add(1, 'weeks').valueOf();
         let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
@@ -696,7 +713,6 @@ function sendPartnerOrganisationValidationEmail(ENV) {
               to: email
             };
 
-            // \n https://uat.portal.alertpreparedness.org
             mailOptions.subject = `Welcome to ${APP_NAME}!`;
             mailOptions.text = `Hello,
                             \nYour Organisation was added as a Partner Organisation on the ${APP_NAME}!.
@@ -704,13 +720,13 @@ function sendPartnerOrganisationValidationEmail(ENV) {
                             \n ${ENV.url}/partner-validation;token=${validationToken.token};partnerId=${partnerId}
                             \n Thanks,
                             \n ALERT Team `;
-            return mailTransport.sendMail(mailOptions);
+            return mailTransport.sendMail(mailOptions, null);
           })
-          .then(() => { 
+          .then(() => {
             console.log("Successfully saved and sent email");
             return true;
           })
-          .catch((err) => { 
+          .catch((err) => {
             console.log("Error occured in saving / sending validation token");
             console.error(err);
           })
@@ -720,19 +736,18 @@ function sendPartnerOrganisationValidationEmail(ENV) {
 }
 
 
-
 /**
  * Sending email when system admin notification is sent
  */
 function sendSystemAdminNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/systemadmin/{groupId}/{userId}/{messageId}')
-    .onWrite(async event => {
-      return this.sendNotificationEmailForUserIdAndMsgId(ENV, event)
+    .onWrite((snap, context) => {
+      return sendNotificationEmailForUserIdAndMsgId(ENV, snap, context)
         .then(() => {
           console.log("Successfully send email");
           return true;
         })
-        .catch((err) => { 
+        .catch((err) => {
           console.log("Error sending notification email");
           console.error(err);
         });
@@ -744,13 +759,13 @@ function sendSystemAdminNotificationsEmail(ENV) {
  */
 function sendAgencyNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/agency/{agencyId}/{groupId}/{userId}/{messageId}')
-    .onWrite(async event => {
-      return this.sendNotificationEmailForUserIdAndMsgId(ENV, event)
+    .onWrite((snap, context) => {
+      return sendNotificationEmailForUserIdAndMsgId(ENV, snap, context)
         .then(() => {
           console.log("Successfully send email");
           return true;
         })
-        .catch((err) => { 
+        .catch((err) => {
           console.log("Error sending notification email");
           console.error(err);
         });
@@ -762,13 +777,13 @@ function sendAgencyNotificationsEmail(ENV) {
  */
 function sendCountryNotificationsEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/messageRef/country/{countryId}/{groupId}/{userId}/{messageId}')
-    .onWrite(event => {
-      return this.sendNotificationEmailForUserIdAndMsgId(ENV, event)
+    .onWrite((snap, context) => {
+      return sendNotificationEmailForUserIdAndMsgId(ENV, snap, context)
         .then(() => {
           console.log("Successfully send email");
           return true;
         })
-        .catch((err) => { 
+        .catch((err) => {
           console.log("Error sending notification email");
           console.error(err);
         });
@@ -777,27 +792,32 @@ function sendCountryNotificationsEmail(ENV) {
 
 /**
  * Method to send notifications
- * 
+ *
  * @param {*} ENV The environment for the deployment
- * @param {*} event The event (Data Snapshot) from the `onWrite()` function
+ * @param {Change<DataSnapshot>} snap The change snapshot
+ * @param {EventContext} context The context of the function
  */
-async function sendNotificationEmailForUserIdAndMsgId(ENV, event) { 
-  const preData = event.data.previous.val();
-  const currData = event.data.current.val();
-  let userId = event.params['userId'];
-  let msgId = event.params['messageId'];
+async function sendNotificationEmailForUserIdAndMsgId(ENV, snap, context) {
+  const preData = snap.before.val();
+  const currData = snap.after.val();
+  let userId = context.params.userId;
+  let msgId = context.params.messageId;
 
   // Send an email 
   if (!preData && currData) {
 
     let email = await refOnce(ENV.env + '/userPublic/' + userId + "/email");
-    if (email == null) { return resolveLog("Email doesn't exist under " + ENV.env + '/userPublic/' + userId); }
+    if (email == null) {
+      return resolveLog("Email doesn't exist under " + ENV.env + '/userPublic/' + userId);
+    }
 
     let messageObj = await refOnce(ENV.env + '/message/' + msgId);
-    if (messageObj == null) { return resolveLog("Message doesn't exist to send to user " + userId); }
+    if (messageObj == null) {
+      return resolveLog("Message doesn't exist to send to user " + userId);
+    }
 
-    let title = messageSnapshot.val().title;
-    let content = messageSnapshot.val().content;
+    let title = messageObj.title;
+    let content = messageObj.content;
 
     const mailOptions = {
       from: '"ALERT Preparedness" <noreply@firebase.com>',
@@ -805,9 +825,8 @@ async function sendNotificationEmailForUserIdAndMsgId(ENV, event) {
     };
     mailOptions.subject = title;
     mailOptions.text = content;
-    return mailTransport.sendMail(mailOptions);
-  }
-  else { 
+    return mailTransport.sendMail(mailOptions, null);
+  } else {
     return Promise.resolve(true);
   }
 }
@@ -815,40 +834,50 @@ async function sendNotificationEmailForUserIdAndMsgId(ENV, event) {
 
 /**
  * Send a network agency validation email
- * @param {*} ENV The environment the function is deployed too 
+ * @param {*} ENV The environment the function is deployed too
  */
 function sendNetworkAgencyValidationEmail(ENV) {
   return functions.database.ref('/training/network/{networkId}/agencies/{agencyId}')
-    .onWrite(async event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite(async (snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      if (!preData && currData) { 
-        let networkId = event.params['networkId'];
-        let agencyId = event.params['agencyId'];
+      if (!preData && currData) {
+        let networkId = context.params.networkId;
+        let agencyId = context.params.agencyId;
 
         let network = await refOnce('/' + ENV.env + '/network/' + networkId);
-        if (network == null) { return resolveLog("Network doesn't exist"); }
+        if (network == null) {
+          return resolveLog("Network doesn't exist");
+        }
 
         // GLOBAL NETWORK
         let adminId;
         let countryOfficeCode = null;
-        if (network.isGlobal) { 
+        if (network.isGlobal) {
           adminId = await refOnce('/' + ENV.env + '/agency/' + agencyId + '/adminId');
-          if (adminId == null) { return resolveLog("Global Agency admin id under agency " + agencyId + " doesn't exist"); }
+          if (adminId == null) {
+            return resolveLog("Global Agency admin id under agency " + agencyId + " doesn't exist");
+          }
         }
         // NON GLOBAL NETWORK
-        else { 
+        else {
           countryOfficeCode = await refOnce('/' + ENV.env + '/network/' + networkId + '/agencies/' + agencyId + '/countryCode');
-          if (countryOfficeCode == null) { return resolveLog("Non Global Country office code for Network / " + networkId + " / agencies / " + agencyId + " doesn't exist"); }
+          if (countryOfficeCode == null) {
+            return resolveLog("Non Global Country office code for Network / " + networkId + " / agencies / " + agencyId + " doesn't exist");
+          }
 
           adminId = await refOnce('/' + ENV.env + '/countryOffice/' + agencyId + '/' + countryOfficeCode + '/adminId');
-          if (adminId == null) { return resolveLog("Non Global AdminId is null for network / " + networkId + " / agencies / " + agencyId + " doesn't exist"); }
+          if (adminId == null) {
+            return resolveLog("Non Global AdminId is null for network / " + networkId + " / agencies / " + agencyId + " doesn't exist");
+          }
         }
 
         // Get user admin 
         let userPublic = await refOnce('/' + ENV.env + '/userPublic/' + adminId);
-        if (userPublic == null) { return resolveLog("Global AgencyId " + agencyId + " AdminId " + adminId + " doesn't exist"); }
+        if (userPublic == null) {
+          return resolveLog("Global AgencyId " + agencyId + " AdminId " + adminId + " doesn't exist");
+        }
 
         let email = userPublic.email;
         let expiry = moment.utc().add(1, 'weeks').valueOf();
@@ -871,13 +900,13 @@ function sendNetworkAgencyValidationEmail(ENV) {
                   \n Thanks,
                   \n ALERT Team `;
 
-            return mailTransport.sendMail(mailOptions);
+            return mailTransport.sendMail(mailOptions, null);
           })
-          .then(() => { 
+          .then(() => {
             console.log("Email " + email + " adminId + " + adminId + " Successfully saved and sent email");
             return true;
           })
-          .catch((err) => { 
+          .catch((err) => {
             console.log("Email " + email + " adminId + " + adminId + " Error occured in saving / sending validation token");
             console.error(err);
           })
@@ -892,13 +921,8 @@ function sendNetworkAgencyValidationEmail(ENV) {
  */
 function sendBugReportingEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/bugReporting/{countryId}/{bugId}')
-    .onWrite(event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
-      let eParams = event.params;
-      // Set variables to parameters of the data returned, ready to construct for the email
-      let countryId = eParams['countryId'];
-      let bugId = eParams['bugId'];
+    .onWrite((snap) => {
+      const currData = snap.after.val();
       const mailOptions = {
         from: '"ALERT Network" <noreply@firebase.com>',
         to: 'luis.vidal@helpage.org'
@@ -921,9 +945,11 @@ function sendBugReportingEmail(ENV) {
         ${currData.systemInfo}
         `;
 
-      return mailTransport.sendMail(mailOptions).then(() => {
-        console.log('New bug reporting email:');
-      });
+      return mailTransport.sendMail(mailOptions, null)
+        .then(() => {
+          console.log('New bug reporting email');
+          return true;
+        });
     });
 }
 
@@ -933,23 +959,25 @@ function sendBugReportingEmail(ENV) {
  */
 function createUserNetworkCountry(ENV) {
   return functions.database.ref('/' + ENV.env + '/administratorNetworkCountry/{adminId}')
-    .onWrite(async event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite(async (snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
       if (!preData && currData) {
-        let adminId = event.params['adminId'];
+        let adminId = context.params.adminId;
 
         let userPublic = await refOnce("/" + ENV.env + "/userPublic/" + adminId);
-        if (userPublic == null) { return resolveLog("User public profile under " + adminId + " is empty!"); }
+        if (userPublic == null) {
+          return resolveLog("User public profile under " + adminId + " is empty!");
+        }
 
         const pass = ENV.label === 'LIVE' ? generateRandomPassword() : TEMP_PASS;
 
         return admin.auth().createUser({
-            uid: adminId,
-            email: userDb.email,
-            password: pass
-          })
+          uid: adminId,
+          email: userPublic.email,
+          password: pass
+        })
           .then(user => {
             console.log("Successfully created new user: " + user.uid);
             return true;
@@ -968,18 +996,15 @@ function createUserNetworkCountry(ENV) {
  */
 function updateUserEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/userPublic/{uid}/email')
-    .onWrite(event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite((snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
       if (preData && currData && preData !== currData) {
-        let uid = event.params['uid'];
+        let uid = context.params.uid;
         return admin.auth()
-          .updateUser(uid, {
-            email: currData
-          })
+          .updateUser(uid, {email: currData})
           .then((userRecord) => {
-            // See the UserRecord reference doc for the contents of userRecord.
             console.log("Successfully updated user", userRecord.toJSON());
             return true;
           })
@@ -995,33 +1020,42 @@ function updateUserEmail(ENV) {
 /**
  * Send network country agency validation email
  */
-function sendNetworkCountryAgencyValidationEmail(ENV) { 
+function sendNetworkCountryAgencyValidationEmail(ENV) {
   return functions.database.ref('/' + ENV.env + '/networkCountry/{networkId}/{networkCountryId}/agencyCountries/{agencyId}/{countryId}')
-    .onWrite(async event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite(async (snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      if (!preData && currData) { 
-        let networkId = event.params['networkId'];
-        let networkCountryId = event.params['networkCountryId'];
-        let agencyId = event.params['agencyId'];
-        let countryId = event.params['countryId'];
+      if (!preData && currData) {
+        let networkId = context.params.networkId;
+        let networkCountryId = context.params.networkCountryId;
+        let agencyId = context.params.agencyId;
+        let countryId = context.params.countryId;
 
-        if (agencyId !== countryId) { 
+        let adminId = "";
+        if (agencyId !== countryId) {
           let adminId = await refOnce('/' + ENV.env + '/countryOffice/' + agencyId + '/' + countryId + '/adminId');
-          if (adminId == null) { return resolveLog("Admin Id inside " + agencyId + " /  "+ countryId + " is null"); }
-        }
-        else { 
+          if (adminId == null) {
+            return resolveLog("Admin Id inside " + agencyId + " /  " + countryId + " is null");
+          }
+        } else {
           let adminId = await refOnce('/' + ENV.env + '/countryOffice/' + agencyId + '/adminId');
-          if (adminId == null) { return resolveLog("Admin Id " + agencyId + " is null"); }
+          if (adminId == null) {
+            return resolveLog("Admin Id " + agencyId + " is null");
+          }
         }
 
         let userPublic = await refOnce('/' + ENV.env + '/userPublic/' + adminId);
-        if (userPublic == null) { return resolveLog("Admin email is null"); }
+        if (userPublic == null) {
+          return resolveLog("Admin email is null");
+        }
 
         let network = await refOnce('/' + ENV.env + '/network/' + networkId);
-        if (network == null) { return resolveLog("Network under " + networkId + " is null"); }
+        if (network == null) {
+          return resolveLog("Network under " + networkId + " is null");
+        }
 
+        let email = userPublic.email;
         let expiry = moment.utc().add(1, 'weeks').valueOf();
         let validationToken = {'token': uuidv4(), 'expiry': expiry};
 
@@ -1042,9 +1076,9 @@ function sendNetworkCountryAgencyValidationEmail(ENV) {
                     \n ${ENV.url}/network-country-validation;token=${validationToken.token};networkId=${networkId};networkCountryId=${networkCountryId};agencyId=${agencyId}${countryId !== agencyId ? (';countryId=' + countryId) : ''}
                     \n Thanks,
                     \n ALERT Team `;
-            return mailTransport.sendMail(mailOptions);
+            return mailTransport.sendMail(mailOptions, null);
           })
-          .then(() => {   
+          .then(() => {
             console.log("Successfully sent validation email");
             return true;
           })
@@ -1058,96 +1092,94 @@ function sendNetworkCountryAgencyValidationEmail(ENV) {
 }
 
 
-
-
-
-
-
-
 /**
  * Send email to external for alert changes
  */
-function sendEmailToExternalForAlertChange(ENV) { 
+function sendEmailToExternalForAlertChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/alert/{countryId}/{alertId}/alertLevel')
-    .onWrite(async event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite(async (snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      if (preData !== currData) { 
-        let alertId = event.params['alertId'];
-        let countryId = event.params['countryId'];
+      if (preData !== currData) {
+        let alertId = context.params.alertId;
+        let countryId = context.params.countryId;
 
         let alert = await refOnce('/' + ENV.env + '/alert/' + countryId + '/' + alertId);
-        if (alert == null) { return resolveLog("Alert is null"); }
+        if (alert == null) {
+          return resolveLog("Alert is null");
+        }
 
         // Standard Hazard Scenario
-        if (alert.hazardScenario !== -1) { 
+        if (alert.hazardScenario !== -1) {
           let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
-          if (exObj == null) { return resolveLog("External recipient is null - " + alert.hazardScenario); }
+          if (exObj == null) {
+            return resolveLog("External recipient is null - " + alert.hazardScenario);
+          }
 
           let recipients = Object.keys(exObj).map(key => exObj[key]);
 
           return Promise.all(
-            recipients.map((recipient, index) => { 
+            recipients.map(recipient => {
               if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
                 let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`;
                 let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`;
                 sendEmail(recipient.email, title, content);
-              }
-              else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) { 
+              } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
                 let title = `Red alert for ${HAZARDS[alert.hazardScenario]} has been requested`;
                 let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has requested RED level update`;
                 sendEmail(recipient.email, title, content);
-              }
-              else { 
-                Promise.resolve(true);
-              }
-            })
-          )
-          .then(() => { 
-            console.log("Successfully sent recipient emails");
-            return true;
-          })
-          .catch((error) => { 
-            console.log("Error sending email promises");
-            console.error(error);
-          });         
-        }
-        // Other hazard scenario
-        else { 
-          let otherHazardName = await refOnce('/' + ENV.env + '/hazardOther/' + alert.otherName + "/name");
-          if (otherHazardName == null) { return resolveLog("Other Hazard Name doesn't exist " + alert.otherName); }
-
-          let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
-          if (exObj == null) { return resolveLog("External recipient is null " + alert.hazardScenario)}
-
-          let recipients = Object.keys(exObj).map(key => exObj[key]);
-
-          return Promise.all(
-            recipients.map((recipient) => { 
-              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
-                let title = `The alert level for ${otherHazardName} has been updated`;
-                let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`;
-                return sendEmail(recipient.email, title, content);
-              }
-              else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) { 
-                let title = `Red alert for ${otherHazardName} has been requested`;
-                let content = `The following alert: ${otherHazardName} has requested RED level update`;
-                return sendEmail(recipient.email, title, content);
-              }
-              else { 
+              } else {
                 return Promise.resolve(true);
               }
             })
           )
-          .then(() => { 
-            console.log("Successfully sent recipient emails (OTHER)");
-            return true;
-          })
-          .catch((error) => { 
-            console.log("Error sending email promises (OTHER)");
-            console.error(error);
-          });    
+            .then(() => {
+              console.log("Successfully sent recipient emails");
+              return true;
+            })
+            .catch((error) => {
+              console.log("Error sending email promises");
+              console.error(error);
+            });
+        }
+        // Other hazard scenario
+        else {
+          let otherHazardName = await refOnce('/' + ENV.env + '/hazardOther/' + alert.otherName + "/name");
+          if (otherHazardName == null) {
+            return resolveLog("Other Hazard Name doesn't exist " + alert.otherName);
+          }
+
+          let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
+          if (exObj == null) {
+            return resolveLog("External recipient is null " + alert.hazardScenario)
+          }
+
+          let recipients = Object.keys(exObj).map(key => exObj[key]);
+
+          return Promise.all(
+            recipients.map((recipient) => {
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+                let title = `The alert level for ${otherHazardName} has been updated`;
+                let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`;
+                return sendEmail(recipient.email, title, content);
+              } else if (recipients[i].notificationsSettings[RED_ALERT_REQUEST]) {
+                let title = `Red alert for ${otherHazardName} has been requested`;
+                let content = `The following alert: ${otherHazardName} has requested RED level update`;
+                return sendEmail(recipient.email, title, content);
+              } else {
+                return Promise.resolve(true);
+              }
+            })
+          )
+            .then(() => {
+              console.log("Successfully sent recipient emails (OTHER)");
+              return true;
+            })
+            .catch((error) => {
+              console.log("Error sending email promises (OTHER)");
+              console.error(error);
+            });
         }
       }
     });
@@ -1158,71 +1190,79 @@ function sendEmailToExternalForAlertChange(ENV) {
  */
 function sendEmailToExternalForAlertChangeRed(ENV) {
   return functions.database.ref('/' + ENV.env + '/alert/{countryId}/{alertId}/approval/countryDirector/{directorId}')
-    .onWrite(async event => {
-      const currData = event.data.current.val();
-  
-      if (currData === APPROVED) { 
-        let alertId = event.params['alertId'];
-        let countryId = event.params['countryId'];
+    .onWrite(async (snap, context) => {
+      const currData = snap.after.val();
+
+      if (currData === APPROVED) {
+        let alertId = context.params.alertId;
+        let countryId = context.params.countryId;
 
         let alert = await refOnce('/' + ENV.env + '/alert/' + countryId + '/' + alertId);
-        if (alert == null) { return resolveLog("Alert is null"); }
+        if (alert == null) {
+          return resolveLog("Alert is null");
+        }
 
         // Standard Alert Hazard Scenario
-        if (alert.hazardScenario !== -1) { 
+        if (alert.hazardScenario !== -1) {
 
           let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
-          if (exObj == null) { return resolveLog("External recipients is null"); }
+          if (exObj == null) {
+            return resolveLog("External recipients is null");
+          }
 
           let recipients = Object.keys(exObj).map(key => exObj[key]);
-          let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`
-          let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated to RED ALERT`
+          let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`;
+          let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated to RED ALERT`;
 
           return Promise.all(
-            recipients.map((recipient) => { 
-              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) { 
+            recipients.map((recipient) => {
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
                 return sendEmail(recipient.email, title, content);
               }
               return Promise.resolve(true);
             })
           )
-          .then(() => { 
-            console.log("Successfully sent recipient emails (OTHER)");
-            return true;
-          })
-          .catch((error) => { 
-            console.log("Error sending email promises (OTHER)");
-            console.error(error);
-          });    
+            .then(() => {
+              console.log("Successfully sent recipient emails (OTHER)");
+              return true;
+            })
+            .catch((error) => {
+              console.log("Error sending email promises (OTHER)");
+              console.error(error);
+            });
         }
         // Custom Alert Hazard Scenario
-        else { 
+        else {
           let otherHazardName = await refOnce('/' + ENV.env + '/hazardOther/' + alert.otherName + "/name");
-          if (otherHazardName == null) { return resolveLog("Other hazard doesn't exist"); }
+          if (otherHazardName == null) {
+            return resolveLog("Other hazard doesn't exist");
+          }
 
           let exObj = await refOnce('/' + ENV.env + '/externalRecipient/' + countryId);
-          if (exObj == null) { return resolveLog("External recipients is null"); }
+          if (exObj == null) {
+            return resolveLog("External recipients is null");
+          }
 
           let recipients = Object.keys(exObj).map(key => exObj[key]);
-          let title = `The alert level for ${otherHazardName} has been updated`
-          let content = `The following alert: ${otherHazardName} has had its level updated to RED ALERT`
+          let title = `The alert level for ${otherHazardName} has been updated`;
+          let content = `The following alert: ${otherHazardName} has had its level updated to RED ALERT`;
 
           return Promise.all(
-            recipients.map((recipient) => { 
-              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) { 
+            recipients.map((recipient) => {
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
                 return sendEmail(recipient.email, title, content);
               }
               return Promise.resolve(true);
             })
           )
-          .then(() => { 
-            console.log("Successfully sent recipient emails (OTHER)");
-            return true;
-          })
-          .catch((error) => { 
-            console.log("Error sending email promises (OTHER)");
-            console.error(error);
-          });    
+            .then(() => {
+              console.log("Successfully sent recipient emails (OTHER)");
+              return true;
+            })
+            .catch((error) => {
+              console.log("Error sending email promises (OTHER)");
+              console.error(error);
+            });
         }
       }
 
@@ -1231,67 +1271,69 @@ function sendEmailToExternalForAlertChangeRed(ENV) {
 }
 
 
-
-
 /**
  * Send email to external (what?) for indicator update
  */
 function sendEmailToExternalForIndicatorUpdate(ENV) {
   return functions.database.ref('/' + ENV.env + '/indicator/{hazardId}/{indicatorId}/triggerSelected')
-    .onWrite(async event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite(async (snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      if (preData && currData !== preData) { 
-        let hazardId = event.params['hazardId'];
-        let indicatorId = event.params['indicatorId'];
+      if (preData && currData !== preData) {
+        let hazardId = context.params.hazardId;
+        let indicatorId = context.params.indicatorId;
 
-        let indicator = await refOnce('/' + ENV.env + '/indicator/' + hazardId + '/' + indicatorId);        
-        if (indicator == null) { return resolveLog("Indicator for " + hazardId + "/" + indicatorId + " is null"); }
+        let indicator = await refOnce('/' + ENV.env + '/indicator/' + hazardId + '/' + indicatorId);
+        if (indicator == null) {
+          return resolveLog("Indicator for " + hazardId + "/" + indicatorId + " is null");
+        }
 
-        if (indicator.hazardScenario['key'] === 'countryContext') { 
-          let title = `The indicator ${indicator.name} for Country Context has been updated`
-          let content = `The following indicator: ${indicator.name} for Country Context has been updated`
+        if (indicator.hazardScenario['key'] === 'countryContext') {
+          let title = `The indicator ${indicator.name} for Country Context has been updated`;
+          let content = `The following indicator: ${indicator.name} for Country Context has been updated`;
           return fetchUsersAndSendEmail('' + ENV.env + '', hazardId, title, content, UPDATE_HAZARD, indicator.assignee)
-            .then(() => { 
+            .then(() => {
               console.log("Successful country context update");
               return true;
             })
-            .catch((error) => { 
+            .catch((error) => {
               console.log("Error occured for indicator update");
               console.error(error);
             });
-        }
-        else { 
+        } else {
           let hazard = await refOnce('/' + ENV.env + '/hazard');
-          if (hazard == null) { return resolveLog("Hazard list is empty"); }
+          if (hazard == null) {
+            return resolveLog("Hazard list is empty");
+          }
 
           let countriesWithHazardId = Object.keys(data.val()).map(key => {
-              let obj = data.val()[key];
-              obj['id'] = key;
-              return obj
-            })
+            let obj = data.val()[key];
+            obj['id'] = key;
+            return obj
+          })
             .filter(item => {
               return item.hasOwnProperty(hazardId)
             });
           let countryId = countriesWithHazardId[0]['id'];
 
-          if (indicator.hazardScenario.hazardScenario !== -1) { 
-            let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
-            let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`
+          if (indicator.hazardScenario.hazardScenario !== -1) {
+            let title = `The indicator ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`;
+            let content = `The following indicator: ${indicator.name} for ${HAZARDS[indicator.hazardScenario.hazardScenario]} has been updated`;
             return fetchUsersAndSendEmail('' + ENV.env + '', countryId, title, content, 0, indicator.assignee)
-              .then(() => { 
+              .then(() => {
                 console.log("Successful hazard scenario ");
                 return true;
               })
-              .catch((error) => { 
-                console.log("Error occured for indicator update");
+              .catch((error) => {
+                console.log("Error occurred for indicator update");
                 console.error(error);
               });
-          }
-          else { 
+          } else {
             let otherHazardName = await refOnce('/' + ENV.env + '/hazardOther/' + indicator.hazardScenario.otherName + "/name");
-            if (otherHazardName == null) { return resolveLog("Other hazard name is null"); }
+            if (otherHazardName == null) {
+              return resolveLog("Other hazard name is null");
+            }
 
             let title = `The indicator ${indicator.name} for ${otherHazardName} has been updated`;
             let content = `The following indicator: ${indicator.name} for ${otherHazardName} has been updated`;
@@ -1305,21 +1347,18 @@ function sendEmailToExternalForIndicatorUpdate(ENV) {
 }
 
 
-
-
-
 /**
  * Send email to external (what?) for plan expired
  */
 function sendEmailToExternalForPlanExpired(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/isActive')
-    .onWrite(event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite((snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
       if (preData && !currData) {
-        let countryId = event.params['countryId'];
-        let planId = event.params['planId'];
+        let countryId = context.params.countryId;
+        let planId = context.params.planId;
 
         return admin.database()
           .ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId)
@@ -1333,10 +1372,10 @@ function sendEmailToExternalForPlanExpired(ENV) {
             console.log("Successfully fetched users and send email");
             return true;
           })
-          .catch((error) => { 
+          .catch((error) => {
             console.log("Error occured sending email to user");
             console.error(error);
-          });        
+          });
       }
 
       return Promise.resolve(true);
@@ -1344,22 +1383,19 @@ function sendEmailToExternalForPlanExpired(ENV) {
 }
 
 
-
-
-
 /**
  * Send email plan rejected by country director
  */
 function sendEmailPlanRejectedByCountryDirector(ENV) {
   functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
-    .onWrite(event => {
-      
-      return sendEmailPlanRejectedBy(ENV, event, 'country director')
-        .then(() => { 
+    .onWrite((snap, context) => {
+
+      return sendEmailPlanRejectedBy(ENV, snap, context, 'country director')
+        .then(() => {
           console.log("Send email plan rejected by country director");
           return true;
         })
-        .catch((error) => { 
+        .catch((error) => {
           console.log("Send email plan rejected error country");
           console.error(error);
         });
@@ -1371,13 +1407,13 @@ function sendEmailPlanRejectedByCountryDirector(ENV) {
  */
 function sendEmailPlanRejectedByRegionDirector(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/regionDirector/{regionDirectorId}')
-    .onWrite(event => {
-      return sendEmailPlanRejectedBy(ENV, event, 'region director')
-        .then(() => { 
+    .onWrite((snap, context) => {
+      return sendEmailPlanRejectedBy(ENV, snap, context, 'region director')
+        .then(() => {
           console.log("Send email plan rejected by region director");
           return true;
         })
-        .catch((error) => { 
+        .catch((error) => {
           console.log("Send email plan rejected error region");
           console.error(error);
         });
@@ -1389,30 +1425,37 @@ function sendEmailPlanRejectedByRegionDirector(ENV) {
  */
 function sendEmailPlanRejectedByGlobalDirector(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/globalDirector/{globalDirectorId}')
-    .onWrite(event => {
-      return sendEmailPlanRejectedBy(ENV, event, 'global director')
-        .then(() => { 
+    .onWrite((snap, context) => {
+      return sendEmailPlanRejectedBy(ENV, snap, context, 'global director')
+        .then(() => {
           console.log("Send email plan rejected by global director");
           return true;
         })
-        .catch((error) => { 
+        .catch((error) => {
           console.log("Send email plan rejected error global");
           console.error(error);
         });
     });
 }
 
-async function sendEmailPlanRejectedBy(ENV, event, rejectedBy) { 
-  const preData = event.data.previous.val();
-  const currData = event.data.current.val();
+/**
+ *
+ * @param ENV
+ * @param {Change<DataSnapshot>} event
+ * @param {string} rejectedBy The string of who it has been rejected by
+ * @param {EventContext} context The context of the function call
+ * @returns {Promise<Promise<admin.database.DataSnapshot>|Promise<boolean>>}
+ */
+async function sendEmailPlanRejectedBy(ENV, event, context, rejectedBy) {
+  const currData = event.after.val();
   if (currData === PLAN_NEEDREVIEWING) {
-    let countryId = event.params['countryId'];
-    let planId = event.params['planId'];
+    let countryId = context.params.countryId;
+    let planId = context.params.planId;
 
     return admin.database().ref('/' + ENV.env + '/responsePlan/' + countryId + '/' + planId).once('value', (data) => {
-      let plan = data.val()
-      let title = `Response plan was rejected`
-      let content = `The following response plan:${plan.name}, was rejected by ${rejectedBy}.`
+      let plan = data.val();
+      let title = `Response plan was rejected`;
+      let content = `The following response plan:${plan.name}, was rejected by ${rejectedBy}.`;
       return fetchUsersAndSendEmail('' + ENV.env + '', countryId, title, content, PLAN_REJECTED)
     })
   }
@@ -1424,8 +1467,8 @@ async function sendEmailPlanRejectedBy(ENV, event, rejectedBy) {
  */
 function updateLatestCoCAllUsers(ENV) {
   return functions.database.ref('/' + ENV.env + '/system/{systemId}/coc')
-    .onWrite(event => {
-      const currData = event.data.current.val();
+    .onWrite((snap) => {
+      const currData = snap.after.val();
       if (currData) {
         let promise = admin.database().ref(ENV.env + '/userPublic/').once('value', (data) => {
           console.log("Fetched data for userPublic");
@@ -1442,18 +1485,16 @@ function updateLatestCoCAllUsers(ENV) {
               console.log("User Public promises resolved");
               return true;
             });
-          }
-          else {
-            console.err("Cannot process user JSON");
-            console.err(data.val());
+          } else {
+            console.error("Cannot process user JSON");
+            console.error(data.val());
           }
         }, error => {
-          console.err(error);
+          console.error(error);
         });
         console.log("Resolving all");
-        return Promise.resolve(promise).then(_ => true);
-      }
-      else {
+        return Promise.resolve(promise);
+      } else {
         return true;
       }
     });
@@ -1464,36 +1505,27 @@ function updateLatestCoCAllUsers(ENV) {
  */
 function updateLatestToCAllUsers(ENV) {
   return functions.database.ref('/' + ENV.env + '/system/{systemId}/toc')
-    .onWrite(event => {
-      const currData = event.data.current.val();
+    .onWrite(async (snap) => {
+      const currData = snap.after.val();
       if (currData) {
-        let promise = admin.database().ref(ENV.env + '/userPublic/').once('value', (data) => {
-          console.log("Fetched data for userPublic");
-          let usersJson = data.val();
-          if (usersJson) {
-            let userIds = Object.keys(usersJson);
-            let promiseList = [];
-            userIds.forEach(userId => {
-              let x = admin.database().ref(ENV.env + '/userPublic/' + userId + '/latestToCAgreed').set(false);
-              promiseList.push(x);
-            });
-            console.log("Resolving all userPublic promise updates");
-            return Promise.all(promiseList).then(() => {
-              console.log("userPublic Promises resolved");
-              return true;
-            });
-          }
-          else {
-            console.err("Cannot process user JSON");
-            console.err(data.val());
-          }
-        }, error => {
-          console.err(error);
+        let allUsers = refOnce(ENV.env + '/userPublic/');
+        if (allUsers == null) {
+          return resolveLog("For some reason, all userPublic is null?!")
+        }
+
+        let userIds = Object.keys(allUsers);
+        let promiseList = [];
+        userIds.forEach(userId => {
+          let x = admin.database().ref(ENV.env + '/userPublic/' + userId + '/latestToCAgreed').set(false);
+          promiseList.push(x);
         });
-        return Promise.resolve(promise).then(_ => true);
-      }
-      else {
-        return true;
+        console.log("Resolving all userPublic promise updates");
+        return Promise.all(promiseList).then(() => {
+          console.log("userPublic Promises resolved");
+          return true;
+        });
+      } else {
+        return Promise.resolve(true);
       }
     });
 }
@@ -1503,46 +1535,43 @@ function updateLatestToCAllUsers(ENV) {
  */
 function sendIndicatorAssignedMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/indicator/{hazardId}/{indicatorId}/')
-    .onWrite(event => {
-      const preIndicatorData = event.data.previous.val();
-      const currIndicatorData = event.data.current.val();
+    .onWrite((snap, context) => {
+      const preIndicatorData = snap.before.val();
+      const currIndicatorData = snap.after.val();
 
-      var preIndicatorAssignee = null;
-      var currIndicatorAssignee = null;
+      let preIndicatorAssignee = null;
+      let currIndicatorAssignee = null;
 
-      var preIndicatorDueDate = null;
-      var currIndicatorDueDate = null;
+      let preIndicatorDueDate = null;
+      let currIndicatorDueDate = null;
 
-      if(preIndicatorData){
+      if (preIndicatorData) {
         preIndicatorAssignee = preIndicatorData.assignee;
         preIndicatorDueDate = preIndicatorData.dueDate;
       }
 
-      if(currIndicatorData){
+      if (currIndicatorData) {
         currIndicatorAssignee = currIndicatorData.assignee;
         currIndicatorDueDate = currIndicatorData.dueDate;
       }
 
-      const hazardId = event.params.hazardId
-      const indicatorId = event.params.indicatorId
+      const hazardId = context.params.hazardId;
+      const indicatorId = context.params.indicatorId;
 
-      var rescheduleNotification = createIndicatorRescheduleNotification(currIndicatorData, hazardId, indicatorId)
-      var assignedNotification = createIndicatorAssignedNotification(currIndicatorData, hazardId, indicatorId)
+      const rescheduleNotification = createIndicatorRescheduleNotification(currIndicatorData, hazardId, indicatorId);
+      const assignedNotification = createIndicatorAssignedNotification(currIndicatorData, hazardId, indicatorId);
 
-      var promises = [];
-      console.log("SENDING: " + currIndicatorAssignee);
+      const promises = [];
 
-      if(currIndicatorAssignee != preIndicatorAssignee){
-        console.log("SENDING: " + currIndicatorAssignee)
-        if(currIndicatorAssignee != null){
-          promises.push(sendNotification(ENV.env, rescheduleNotification, currIndicatorAssignee))
+      if (currIndicatorAssignee !== preIndicatorAssignee) {
+        if (currIndicatorAssignee != null) {
+          promises.push(sendNotification(ENV.env, rescheduleNotification, currIndicatorAssignee));
           promises.push(sendNotification(ENV.env, assignedNotification, currIndicatorAssignee))
         }
-        if(preIndicatorAssignee != null){
+        if (preIndicatorAssignee != null) {
           promises.push(sendNotification(ENV.env, rescheduleNotification, preIndicatorAssignee))
         }
-      }
-      else if(currIndicatorDueDate != preIndicatorDueDate){
+      } else if (currIndicatorDueDate !== preIndicatorDueDate) {
         promises.push(sendNotification(ENV.env, rescheduleNotification, currIndicatorAssignee))
       }
 
@@ -1555,51 +1584,43 @@ function sendIndicatorAssignedMobileNotification(ENV) {
  */
 function sendResponsePlanApprovalNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{groupId}/{responsePlanId}/approval/{groupName}/{approverId}')
-    .onWrite(event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite((snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      const approverId = event.params.approverId
-      const groupId = event.params.groupId
-      const responsePlanId = event.params.responsePlanId
+      const approverId = context.params.approverId;
+      const groupId = context.params.groupId;
+      const responsePlanId = context.params.responsePlanId;
+      const groupName = context.params.groupName;
 
-      const groupName = event.params.groupName
-
-      console.log("Response Plan Updated: " + currData)
-
-      if(preData != currData && (currData == PLAN_WAITINGAPPROVAL || currData == PLAN_REJECTED)){
+      if (preData !== currData && (currData === PLAN_WAITINGAPPROVAL || currData === PLAN_REJECTED)) {
         return admin.database().ref(`/${ENV.env}/responsePlan/${groupId}/${responsePlanId}`).once('value').then(responsePlanSnap => {
-          const responsePlan = responsePlanSnap.val()
+          const responsePlan = responsePlanSnap.val();
 
-          if(currData == PLAN_WAITINGAPPROVAL) {
+          if (currData === PLAN_WAITINGAPPROVAL) {
             const notification = createResponsePlanApprovalSubmittedNotification(responsePlan);
-            if(groupName == "countryDirector"){
+            if (groupName === "countryDirector") {
               return admin.database().ref(`/${ENV.env}/directorCountry/${approverId}`).once('value').then(directorCountrySnap => {
-                return sendNotification(env, notification, directorCountrySnap.val())
+                return sendNotification(ENV.env, notification, directorCountrySnap.val())
               })
-            }
-            else if(groupName == "globalDirector"){
+            } else if (groupName === "globalDirector") {
               return admin.database().ref(`/${ENV.env}/globalDirector`).orderByChild(`agencyAdmin/${approverId}`).equalTo(true).once('value').then(globalDirectorSnap => {
 
-                return globalDirectorSnap.forEach(function(childSnapshot) {
-                  var key = childSnapshot.key;
-                  return sendNotification(env, notification, key)
+                return globalDirectorSnap.forEach(function (childSnapshot) {
+                  const key = childSnapshot.key;
+                  return sendNotification(ENV.env, notification, key)
                 });
               })
-            }
-            else if(groupName == "regionDirector"){
+            } else if (groupName === "regionDirector") {
               return admin.database().ref(`/${ENV.env}/directorRegion/${approverId}`).once('value').then(directorRegionSnap => {
-                return sendNotification(env, notification, directorRegionSnap.val())
+                return sendNotification(ENV.env, notification, directorRegionSnap.val())
               })
+            } else if (groupName === "partner") {
+              return sendNotification(ENV.env, notification, approverId)
             }
-            else if(groupName == "partner"){
-              return sendNotification(env, notification, approverId)
-            }
-          }
-          else if(currData == PLAN_REJECTED){
-            console.log("Plan rejected. " + groupId)
-            const notification = createResponsePlanApprovalRejectedNotification(responsePlan)
-            return sendCountryNetworkNetworkCountryNotification(env, notification, groupId, NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED)
+          } else if (currData === PLAN_REJECTED) {
+            const notification = createResponsePlanApprovalRejectedNotification(responsePlan);
+            return sendCountryNetworkNetworkCountryNotification(ENV.env, notification, groupId, NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED)
           }
         });
       }
@@ -1612,27 +1633,29 @@ function sendResponsePlanApprovalNotification(ENV) {
  */
 function countryOfficeClockSettingsChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/countryOffice/{agencyId}/{countryId}/clockSettings')
-    .onWrite(event => {
-      const preClockSettingsData = event.data.previous.val()
-      const currClockSettingsData = event.data.current.val()
+    .onWrite((snap, context) => {
+      let notification;
+      const preClockSettingsData = snap.before.val();
+      const currClockSettingsData = snap.after.val();
 
-      const agencyId = event.params.agencyId
-      const countryId = event.params.countryId
+      const agencyId = context.params.agencyId;
+      const countryId = context.params.countryId;
 
-      const prePreparednessClockSettings = preClockSettingsData.preparedness
-      const currPreparednessClockSettings = currClockSettingsData.preparedness
+      const prePreparednessClockSettings = preClockSettingsData.preparedness;
+      const currPreparednessClockSettings = currClockSettingsData.preparedness;
 
-      const preResponsePlanClockSettings = preClockSettingsData.responsePlans
-      const currResponsePlanClockSettings = currClockSettingsData.responsePlans
+      const preResponsePlanClockSettings = preClockSettingsData.responsePlans;
+      const currResponsePlanClockSettings = currClockSettingsData.responsePlans;
 
-      if(prePreparednessClockSettings != currPreparednessClockSettings){
-        var notification = createActionCountryRescheduleNotification(agencyId, countryId)
+      if (prePreparednessClockSettings !== currPreparednessClockSettings) {
+        notification = createActionCountryRescheduleNotification(agencyId, countryId);
         return sendNotificationToCountryUsers(ENV.env, notification, countryId)
       }
-      if(preResponsePlanClockSettings != currResponsePlanClockSettings){
-        var notification = createResponsePlanCountryRescheduleNotification(agencyId, countryId)
+      if (preResponsePlanClockSettings !== currResponsePlanClockSettings) {
+        notification = createResponsePlanCountryRescheduleNotification(agencyId, countryId);
         return sendNotificationToCountryUsers(ENV.env, notification, countryId)
       }
+      return Promise.resolve(true);
     });
 }
 
@@ -1641,17 +1664,17 @@ function countryOfficeClockSettingsChange(ENV) {
  */
 function networkClockSettingsChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/network/{networkId}/clockSettings')
-    .onWrite(event => {
-      const preClockSettingsData = event.data.previous.val()
-      const currClockSettingsData = event.data.current.val()
+    .onWrite((snap, context) => {
+      const preClockSettingsData = snap.before.val();
+      const currClockSettingsData = snap.after.val();
 
       const networkId = event.params.networkId;
 
-      const prePreparednessClockSettings = preClockSettingsData.preparedness
-      const currPreparednessClockSettings = currClockSettingsData.preparedness
+      const prePreparednessClockSettings = preClockSettingsData.preparedness;
+      const currPreparednessClockSettings = currClockSettingsData.preparedness;
 
-      if(prePreparednessClockSettings != currPreparednessClockSettings){
-        var notification = createActionNetworkRescheduleNotification(networkId)
+      if (prePreparednessClockSettings !== currPreparednessClockSettings) {
+        const notification = createActionNetworkRescheduleNotification(networkId);
         return sendNotificationToNetworkUsers(ENV.env, notification, networkId)
       }
     });
@@ -1662,70 +1685,69 @@ function networkClockSettingsChange(ENV) {
  */
 function sendActionMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/action/{groupId}/{actionId}/')
-    .onWrite(event => {
-      const preActionData = event.data.previous.val();
-      const currActionData = event.data.current.val();
+    .onWrite((snap, context) => {
+      const preActionData = snap.before.val();
+      const currActionData = snap.after.val();
 
-      var preActionAssignee = null
-      var currActionAssignee = null
-      var preActionDueDate = null
-      var currActionDueDate = null
-      var preActionCompletedAt = null
-      var currActionCompletedAt = null
-      var preActionUpdatedAt = null
-      var currActionUpdatedAt = null
-      var preActionCreatedAt = null
-      var currActionCreatedAt = null
-      var preActionFrequencyBase = null
-      var currActionFrequencyBase = null
-      var preActionFrequencyValue = null
-      var currActionFrequencyValue = null
+      let preActionAssignee = null;
+      let currActionAssignee = null;
+      let preActionDueDate = null;
+      let currActionDueDate = null;
+      let preActionCompletedAt = null;
+      let currActionCompletedAt = null;
+      let preActionUpdatedAt = null;
+      let currActionUpdatedAt = null;
+      let preActionCreatedAt = null;
+      let currActionCreatedAt = null;
+      let preActionFrequencyBase = null;
+      let currActionFrequencyBase = null;
+      let preActionFrequencyValue = null;
+      let currActionFrequencyValue = null;
 
-      if(preActionData != null){
-        preActionAssignee = preActionData.asignee
-        preActionDueDate = preActionData.dueDate
-        preActionCompletedAt = preActionData.isCompleteAt
-        preActionUpdatedAt = preActionData.updatedAt
-        preActionCreatedAt = preActionData.createdAt
-        preActionFrequencyBase = preActionData.frequencyBase
+      if (preActionData != null) {
+        preActionAssignee = preActionData.asignee;
+        preActionDueDate = preActionData.dueDate;
+        preActionCompletedAt = preActionData.isCompleteAt;
+        preActionUpdatedAt = preActionData.updatedAt;
+        preActionCreatedAt = preActionData.createdAt;
+        preActionFrequencyBase = preActionData.frequencyBase;
         preActionFrequencyValue = preActionData.frequencyValue
       }
 
-      if(currActionData != null){
-        currActionAssignee = currActionData.asignee
-        currActionDueDate = currActionData.dueDate
-        currActionCompletedAt = currActionData.isCompleteAt
-        currActionUpdatedAt = currActionData.updatedAt
-        currActionCreatedAt = currActionData.createdAt
-        currActionFrequencyBase = currActionData.frequencyBase
+      if (currActionData != null) {
+        currActionAssignee = currActionData.asignee;
+        currActionDueDate = currActionData.dueDate;
+        currActionCompletedAt = currActionData.isCompleteAt;
+        currActionUpdatedAt = currActionData.updatedAt;
+        currActionCreatedAt = currActionData.createdAt;
+        currActionFrequencyBase = currActionData.frequencyBase;
         currActionFrequencyValue = currActionData.frequencyValue
       }
 
-      const groupId = event.params.groupId
-      const actionId = event.params.actionId
+      const groupId = context.params.groupId;
+      const actionId = context.params.actionId;
 
-      if(currActionData.type == 1 || currActionData.type == 2){
-        var rescheduleNotification = createActionRescheduleNotification(currActionData, groupId, actionId)
-        var assignedNotification = createActionAssignedNotification(currActionData, groupId, actionId)
+      if (currActionData.type === 1 || currActionData.type === 2) {
+        const rescheduleNotification = createActionRescheduleNotification(currActionData, groupId, actionId);
+        const assignedNotification = createActionAssignedNotification(currActionData, groupId, actionId);
 
-        var promises = []
+        const promises = [];
 
-        if(currActionAssignee != preActionAssignee){
-          if(currActionAssignee != null){
-            promises.push(sendNotification(ENV.env, rescheduleNotification, currActionAssignee))
+        if (currActionAssignee !== preActionAssignee) {
+          if (currActionAssignee != null) {
+            promises.push(sendNotification(ENV.env, rescheduleNotification, currActionAssignee));
             promises.push(sendNotification(ENV.env, assignedNotification, currActionAssignee))
           }
-          if(preActionAssignee != null){
+          if (preActionAssignee != null) {
             promises.push(sendNotification(ENV.env, rescheduleNotification, preActionAssignee))
           }
-        }
-        else if(currActionDueDate != preActionDueDate ||
-          currActionCompletedAt != preActionCompletedAt ||
-          currActionUpdatedAt != preActionUpdatedAt ||
-          currActionCreatedAt != preActionCreatedAt ||
-          currActionFrequencyBase != preActionFrequencyBase ||
-          currActionFrequencyValue != preActionFrequencyValue
-        ){
+        } else if (currActionDueDate !== preActionDueDate ||
+          currActionCompletedAt !== preActionCompletedAt ||
+          currActionUpdatedAt !== preActionUpdatedAt ||
+          currActionCreatedAt !== preActionCreatedAt ||
+          currActionFrequencyBase !== preActionFrequencyBase ||
+          currActionFrequencyValue !== preActionFrequencyValue
+        ) {
           promises.push(sendNotification(ENV.env, rescheduleNotification, currActionAssignee))
         }
 
@@ -1739,35 +1761,37 @@ function sendActionMobileNotification(ENV) {
  */
 function sendResponsePlanMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/action/{groupId}/{responsePlanId}/')
-    .onWrite(event => {
-      const preResponsePlanData = event.data.previous.val();
-      const currResponsePlanData = event.data.current.val();
+    .onWrite((snap, context) => {
+      const preResponsePlanData = snap.before.val();
+      const currResponsePlanData = snap.after.val();
 
-      var preResponsePlanTimeCreated = null;
-      var currResponsePlanTimeCreated = null;
-      var preResponsePlanTimeUpdated = null;
-      var currResponsePlanTimeUpdated = null;
+      let preResponsePlanTimeCreated = null;
+      let currResponsePlanTimeCreated = null;
+      let preResponsePlanTimeUpdated = null;
+      let currResponsePlanTimeUpdated = null;
+      let currResponsePlanAsignee = null;
 
-      if(preResponsePlanData != null){
-        preResponsePlanTimeCreated = preResponsePlanData.timeCreated
+      if (preResponsePlanData != null) {
+        preResponsePlanTimeCreated = preResponsePlanData.timeCreated;
         preResponsePlanTimeUpdated = preResponsePlanData.timeUpdated
       }
-      if(currResponsePlanData != null){
-        currResponsePlanTimeCreated = currResponsePlanData.timeCreated
-        currResponsePlanTimeUpdated = currResponsePlanData.timeUpdated
+      if (currResponsePlanData != null) {
+        currResponsePlanTimeCreated = currResponsePlanData.timeCreated;
+        currResponsePlanTimeUpdated = currResponsePlanData.timeUpdated;
+        currResponsePlanAsignee = currResponsePlanData.asignee;
       }
       //For Expiration
 
-      const groupId = event.params.groupId
-      const responsePlanId = event.params.responsePlanId
+      const groupId = context.params.groupId;
+      const responsePlanId = context.params.responsePlanId;
 
-      var rescheduleNotification = createResponsePlanRescheduleNotification(groupId, responsePlanId)
+      let rescheduleNotification = createResponsePlanRescheduleNotification(groupId, responsePlanId);
 
-      if(
-        (currResponsePlanTimeCreated != preResponsePlanTimeCreated ||
-          currResponsePlanTimeUpdated != preResponsePlanTimeUpdated) &&
-        currResponsePlanAssignee != null){
-        return sendNotification(ENV.env, rescheduleNotification, currResponsePlanAssignee)
+      if (
+        (currResponsePlanTimeCreated !== preResponsePlanTimeCreated ||
+          currResponsePlanTimeUpdated !== preResponsePlanTimeUpdated) &&
+        currResponsePlanAsignee != null) {
+        return sendNotification(ENV.env, rescheduleNotification, currResponsePlanAsignee)
       }
     });
 }
@@ -1777,49 +1801,49 @@ function sendResponsePlanMobileNotification(ENV) {
  */
 function sendAlertMobileNotification(ENV) {
   return functions.database.ref('/live/alert/{id}/{alertId}')
-    .onWrite(event => {
-      const preData = event.data.previous.val();
-      const currData = event.data.current.val();
+    .onWrite((snap, context) => {
+      const preData = snap.before.val();
+      const currData = snap.after.val();
 
-      if(preData != null){
-        const preAlertLevel = preData.alertLevel
-        const currAlertLevel = currData.alertLevel
+      if (preData != null) {
+        const preAlertLevel = preData.alertLevel;
+        const currAlertLevel = currData.alertLevel;
 
-        var preApprovalLevel
-        if(preData.approval != null && preData.approval.countryDirector != null && Object.keys(preData.approval.countryDirector).length > 0){
-          preApprovalKey = Object.keys(preData.approval.countryDirector)[0]
+        let preApprovalKey;
+        let preApprovalLevel;
+        if (preData.approval != null && preData.approval.countryDirector != null && Object.keys(preData.approval.countryDirector).length > 0) {
+          preApprovalKey = Object.keys(preData.approval.countryDirector)[0];
           preApprovalLevel = preData.approval.countryDirector[preApprovalKey]
         }
 
-        var currApprovalLevel
-        if(currData.approval != null && currData.approval.countryDirector != null && Object.keys(currData.approval.countryDirector).length > 0){
-          currApprovalKey = Object.keys(currData.approval.countryDirector)[0]
+        let currApprovalKey;
+        let currApprovalLevel;
+        if (currData.approval != null && currData.approval.countryDirector != null && Object.keys(currData.approval.countryDirector).length > 0) {
+          currApprovalKey = Object.keys(currData.approval.countryDirector)[0];
           currApprovalLevel = currData.approval.countryDirector[currApprovalKey]
         }
 
-        console.log(`${preAlertLevel} => ${currAlertLevel} - ${preApprovalLevel} => ${currApprovalLevel}`)
+        console.log(`${preAlertLevel} => ${currAlertLevel} - ${preApprovalLevel} => ${currApprovalLevel}`);
 
-        let toGreenAmber = preAlertLevel != currAlertLevel && (currAlertLevel == ALERT_AMBER || currAlertLevel == ALERT_GREEN)
-        let toApprovedRed  = preApprovalLevel != currApprovalLevel && currAlertLevel == ALERT_RED && currApprovalLevel == APPROVED
-        let redAlertRequested = currAlertLevel == ALERT_RED && currApprovalLevel == WAITING_RESPONSE && (currAlertLevel != preAlertLevel || preApprovalLevel != currApprovalLevel)
+        let toGreenAmber = preAlertLevel !== currAlertLevel && (currAlertLevel === ALERT_AMBER || currAlertLevel === ALERT_GREEN);
+        let toApprovedRed = preApprovalLevel !== currApprovalLevel && currAlertLevel === ALERT_RED && currApprovalLevel === APPROVED;
+        let redAlertRequested = currAlertLevel === ALERT_RED && currApprovalLevel === WAITING_RESPONSE && (currAlertLevel !== preAlertLevel || preApprovalLevel !== currApprovalLevel);
 
-        console.log(`To Green/Amber: ${toGreenAmber} - To Approved Red: ${toApprovedRed} - Red Alert Requested: ${redAlertRequested}`)
-        if(toGreenAmber || toApprovedRed || redAlertRequested){
-          let id = event.params['id'];
-          let alertId = event.params['alertId'];
+        console.log(`To Green/Amber: ${toGreenAmber} - To Approved Red: ${toApprovedRed} - Red Alert Requested: ${redAlertRequested}`);
+        if (toGreenAmber || toApprovedRed || redAlertRequested) {
+          let id = context.params.id;
+          let alertId = context.params.alertId;
           return admin.database().ref(`/${ENV.env}/alert/${id}/${alertId}`).once('value')
             .then(alertSnap => {
-              alert = alertSnap.val()
-              if(toGreenAmber){
-                let notification = createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel)
+              alert = alertSnap.val();
+              if (toGreenAmber) {
+                let notification = createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel);
                 return sendCountryNetworkNetworkCountryNotification(ENV.env, notification, id, NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED)
-              }
-              else if(toApprovedRed){
-                let notification = createRedAlertApprovedNotification(alert, alertId)
+              } else if (toApprovedRed) {
+                let notification = createRedAlertApprovedNotification(alert, alertId);
                 return sendCountryNetworkNetworkCountryNotification(ENV.env, notification, id, NOTIFICATION_SETTING_ALERT_LEVEL_CHANGED)
-              }
-              else if(redAlertRequested){
-                let notification = createRedAlertRequestedNotification(alert, alertId, preAlertLevel, currAlertLevel)
+              } else if (redAlertRequested) {
+                let notification = createRedAlertRequestedNotification(alert, alertId, preAlertLevel, currAlertLevel);
                 return sendCountryNetworkNetworkCountryNotification(ENV.env, notification, id, NOTIFICATION_SETTING_RED_ALERT_REQUEST)
               }
             })
@@ -1833,18 +1857,18 @@ function sendAlertMobileNotification(ENV) {
  */
 function networkCountryClockSettingsChange(ENV) {
   return functions.database.ref('/live/networkCountry/{networkId}/{countryId}/clockSettings')
-    .onWrite(event => {
-      const preClockSettingsData = event.data.previous.val()
-      const currClockSettingsData = event.data.current.val()
+    .onWrite((snap, context) => {
+      const preClockSettingsData = snap.before.val();
+      const currClockSettingsData = snap.after.val();
 
-      const networkId = event.params.networkId
-      const countryId = event.params.countryId
+      const networkId = context.params.networkId;
+      const countryId = context.params.countryId;
 
-      const prePreparednessClockSettings = preClockSettingsData.preparedness
-      const currPreparednessClockSettings = currClockSettingsData.preparedness
+      const prePreparednessClockSettings = preClockSettingsData.preparedness;
+      const currPreparednessClockSettings = currClockSettingsData.preparedness;
 
-      if(prePreparednessClockSettings != currPreparednessClockSettings){
-        var notification = createActionNetworkCountryRescheduleNotification(networkId, countryId)
+      if (prePreparednessClockSettings !== currPreparednessClockSettings) {
+        let notification = createActionNetworkCountryRescheduleNotification(networkId, countryId);
         return sendNotificationToCountryUsers(ENV.env, notification, countryId)
       }
     })
@@ -1853,50 +1877,49 @@ function networkCountryClockSettingsChange(ENV) {
 /**
  * Functions for Mobile
  */
-function sendNotificaitonToLocalNetworkUsers(env, notification, id, notificationSetting){
+function sendNotificationToLocalNetworkUsers(env, notification, id, notificationSetting) {
   let networkPromise = admin.database().ref(`/${env}/network/${id}`).once('value');
 
   return networkPromise.then(networkSnap => {
-    let network = networkSnap.val()
+    let network = networkSnap.val();
 
-    if(network){
-      let agencyPromises = []
-      for (var agencyName in network.agencies) {
+    if (network) {
+      let agencyPromises = [];
+      for (const agencyName in network.agencies) {
         if (network.agencies.hasOwnProperty(agencyName) && network.agencies[agencyName].hasOwnProperty('countryCode') && network.agencies[agencyName].isApproved) {
-          let countryId = network.agencies[agencyName].countryCode
+          let countryId = network.agencies[agencyName].countryCode;
           agencyPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
         }
       }
       return Promise.all(agencyPromises)
-    }
-    else{
+    } else {
       return Promise.reject(new Error('Network doesnt exist'))
     }
   })
 }
 
-function sendNotificationToNetworkCountry(env, notification, id, notificationSetting){
+function sendNotificationToNetworkCountry(env, notification, id, notificationSetting) {
   //Sorry for the climb
   return admin.database().ref(`/${env}/networkCountry/`).once('value').then(networkCountrySnap => {
-    let networkCountryBase = networkCountryBaseSnap.val()
-    for (var networkId in networkCountryBase) {
+    let networkCountryBase = networkCountrySnap.val();
+    for (const networkId in networkCountryBase) {
       //networkCountry/{networkId}
       if (networkCountryBase.hasOwnProperty(networkId)) {
-        for(var networkCountryId in networkCountryBase[networkId]){
+        for (const networkCountryId in networkCountryBase[networkId]) {
           //networkCountry/{networkId}/{networkCountryId}
-          if(networkCountryBase[networkId].hasOwnProperty(networkCountryId)){
-            if(networkCountryId == id){
-              let networkCountry = networkCountryBase[networkId][networkCountryId]
-              let networkCountryPromises = []
-              if(networkCountry.agencyCountries){
-                for(var agencyId in networkCountry.agencyCountries){
+          if (networkCountryBase[networkId].hasOwnProperty(networkCountryId)) {
+            if (networkCountryId === id) {
+              let networkCountry = networkCountryBase[networkId][networkCountryId];
+              let networkCountryPromises = [];
+              if (networkCountry.agencyCountries) {
+                for (const agencyId in networkCountry.agencyCountries) {
                   //networkCountry/{networkId}/{networkCountryId}/{agencyId*ignored*}
-                  if(networkCountry.agencyCountries.hasOwnProperty(agencyId)){
-                    for(var countryId in networkCountry.agencyCountries[agencyId]){
+                  if (networkCountry.agencyCountries.hasOwnProperty(agencyId)) {
+                    for (const countryId in networkCountry.agencyCountries[agencyId]) {
                       //networkCountry/{networkId}/{networkCountryId}/{countryId*ignored*}/{countryId}/
-                      if(networkCountry.agencyCountries[agencyId].hasOwnProperty(countryId)){
-                        var country = networkCountry.agencyCountries[agencyId][countryId]
-                        if(country.isApproved){
+                      if (networkCountry.agencyCountries[agencyId].hasOwnProperty(countryId)) {
+                        const country = networkCountry.agencyCountries[agencyId][countryId];
+                        if (country.isApproved) {
                           networkCountryPromises.push(sendNotificationToCountryUsers(env, notification, countryId, notificationSetting))
                         }
                       }
@@ -1915,64 +1938,57 @@ function sendNotificationToNetworkCountry(env, notification, id, notificationSet
 }
 
 //I know.. Country, Network, or NetworkCountry
-function sendCountryNetworkNetworkCountryNotification(env, notification, id, notificationSetting){
+function sendCountryNetworkNetworkCountryNotification(env, notification, id, notificationSetting) {
   return sendNotificationToCountryUsers(env, notification, id, notificationSetting)
     .then(
       //Success
-      function(){
+      function () {
         return Promise.resolve()
       },
       //Fail
-      function(error){
+      function (error) {
         return sendNotificationToLocalNetworkUsers(env, notification, id, notificationSetting);
       }
     )
     .then(
-      function(){
+      function () {
         return Promise.resolve()
       },
-      function(error){
+      function (error) {
         return sendNotificationToNetworkCountry(env, notification, id, notificationSetting)
       }
     )
 }
 
-function sendNotificationToCountryUsers(env, notification, countryId){
-  return sendNotificationToCountryUsers(env, notification, countryId, null)
-}
-
-function sendNotificationToCountryUsers(env, notification, countryId, notificationSetting){
-
-  console.log("Sending notification to country: " + countryId)
+function sendNotificationToCountryUsers(env, notification, countryId, notificationSetting) {
+  console.log("Sending notification to country: " + countryId);
   return admin.database().ref(`/${env}/group/country/${countryId}/`).once('value').then(countryGroupSnap => {
-    let countryGroup = countryGroupSnap.val()
-    console.log("Got country group : " + countryGroup)
+    let countryGroup = countryGroupSnap.val();
+    console.log("Got country group : " + countryGroup);
 
-    if(countryGroup){
-      var sendAlertPromises = []
-      for (var userId in countryGroup.countryallusersgroup) {
+    if (countryGroup) {
+      const sendAlertPromises = [];
+      for (const userId in countryGroup.countryallusersgroup) {
         if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {
-          console.log("Sending notificaiton to: " + userId)
-          if(notificationSetting == null){
-            console.log("Notification Setting Null")
+          console.log("Sending notificaiton to: " + userId);
+          if (notificationSetting == null) {
+            console.log("Notification Setting Null");
             sendAlertPromises.push(sendNotification(env, notification, userId))
-          }
-          else{
-            console.log("Notification Setting Not Null")
+          } else {
+            console.log("Notification Setting Not Null");
             sendAlertPromises.push(sendNotificationWithSetting(env, notification, userId, countryId, notificationSetting))
           }
         }
       }
       return Promise.all(sendAlertPromises)
-    }
-    else{
+    } else {
       return Promise.reject(new Error(`Country doesnt exist: ${countryId}`))
     }
 
   })
 }
 
-function createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel){
+function createAlertLevelChangedNotification(alert, alertId, preAlertLevel, currAlertLevel) {
   return {
     'notification': {
       'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
@@ -1984,7 +2000,8 @@ function createAlertLevelChangedNotification(alert, alertId, preAlertLevel, curr
     }
   }
 }
-function createRedAlertApprovedNotification(alert, alertId){
+
+function createRedAlertApprovedNotification(alert, alertId) {
   return {
     'notification': {
       'title': `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`,
@@ -1997,7 +2014,7 @@ function createRedAlertApprovedNotification(alert, alertId){
   }
 }
 
-function createRedAlertRequestedNotification(alert, alertId){
+function createRedAlertRequestedNotification(alert, alertId) {
   return {
     'notification': {
       'title': `A red alert level has been requested for ${HAZARDS[alert.hazardScenario]}`,
@@ -2010,7 +2027,7 @@ function createRedAlertRequestedNotification(alert, alertId){
   }
 }
 
-function createIndicatorAssignedNotification(indicator, hazardId, indicatorId){
+function createIndicatorAssignedNotification(indicator, hazardId, indicatorId) {
   return {
     'notification': {
       'title': "An indicator has been assigned to you",
@@ -2024,7 +2041,7 @@ function createIndicatorAssignedNotification(indicator, hazardId, indicatorId){
   }
 }
 
-function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId){
+function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId) {
   return {
     'data': {
       'indicatorId': indicatorId,
@@ -2035,34 +2052,33 @@ function createIndicatorRescheduleNotification(indicator, hazardId, indicatorId)
 }
 
 //LEVEL is apa/mpa
-function createActionAssignedNotification(action, groupId, actionId){
+function createActionAssignedNotification(action, groupId, actionId) {
   return {
     'notification': {
-      'title': `An ${action.level == 1 ? "minimum" : "advanced"} has been assigned to you`,
-      'body': `The following ${action.level == 1 ? "minimum" : "advanced"} preparedness action: ${action.task} has been assigned to you`
+      'title': `An ${action.level === 1 ? "minimum" : "advanced"} has been assigned to you`,
+      'body': `The following ${action.level === 1 ? "minimum" : "advanced"} preparedness action: ${action.task} has been assigned to you`
     },
     'data': {
       'actionId': actionId,
       'groupId': groupId,
-      'actionType': action.level.toString(),//TODO: DELETE THIS LINE if you're reading this in April+, just here for backwards compatibility
       'actionLevel': action.level.toString(),
       'type': NOTIFICATION_ACTION_ASSIGNED.toString()
     }
   }
 }
 
-function createActionRescheduleNotification(action, groupId, actionId){
+function createActionRescheduleNotification(action, groupId, actionId) {
   return {
     'data': {
       'actionId': actionId,
       'groupId': groupId,
-      'actionType': action.level.toString(),//TODO: DELETE THIS LINE if you're reading this in April+, just here for backwards compatibility
       'actionLevel': action.level.toString(),
       'type': NOTIFICATION_ACTION_RESCHEDULE.toString()
     }
   }
 }
-function createResponsePlanRescheduleNotification(groupId, responsePlanId){
+
+function createResponsePlanRescheduleNotification(groupId, responsePlanId) {
   return {
     'data': {
       'responsePlanId': responsePlanId,
@@ -2072,7 +2088,7 @@ function createResponsePlanRescheduleNotification(groupId, responsePlanId){
   }
 }
 
-function createActionCountryRescheduleNotification(agencyId, countryId){
+function createActionCountryRescheduleNotification(agencyId, countryId) {
   return {
     'data': {
       'agencyId': agencyId,
@@ -2082,7 +2098,7 @@ function createActionCountryRescheduleNotification(agencyId, countryId){
   }
 }
 
-function createResponsePlanCountryRescheduleNotification(agencyId, countryId){
+function createResponsePlanCountryRescheduleNotification(agencyId, countryId) {
   return {
     'data': {
       'agencyId': agencyId,
@@ -2092,7 +2108,7 @@ function createResponsePlanCountryRescheduleNotification(agencyId, countryId){
   }
 }
 
-function createActionLocalNetworkRescheduleNotification(networkId){
+function createActionLocalNetworkRescheduleNotification(networkId) {
   return {
     'data': {
       'networkId': networkId,
@@ -2100,7 +2116,8 @@ function createActionLocalNetworkRescheduleNotification(networkId){
     }
   }
 }
-function createActionNetworkCountryRescheduleNotification(networkId, countryId){
+
+function createActionNetworkCountryRescheduleNotification(networkId, countryId) {
   return {
     'data': {
       'networkId': networkId,
@@ -2109,7 +2126,8 @@ function createActionNetworkCountryRescheduleNotification(networkId, countryId){
     }
   }
 }
-function createResponsePlanApprovalSubmittedNotification(responsePlan){
+
+function createResponsePlanApprovalSubmittedNotification(responsePlan) {
   return {
     'notification': {
       'title': "A response plan has been submitted for approval",
@@ -2117,7 +2135,8 @@ function createResponsePlanApprovalSubmittedNotification(responsePlan){
     }
   }
 }
-function createResponsePlanApprovalRejectedNotification(responsePlan){
+
+function createResponsePlanApprovalRejectedNotification(responsePlan) {
   return {
     'notification': {
       'title': "A response plan has been rejected",
@@ -2126,47 +2145,46 @@ function createResponsePlanApprovalRejectedNotification(responsePlan){
   }
 }
 
-function sendNotification(env, payload, userId){
-  console.log("Sending Notification")
+function sendNotification(env, payload, userId) {
+  console.log("Sending Notification");
   return admin.database().ref(`/${env}/userPublic/${userId}/deviceNotificationIds`).once('value')
     .then(deviceNotificationIdsSnap => {
-      let deviceNotificationIds = deviceNotificationIdsSnap.val()
-      if(deviceNotificationIds){
-        let promises = []
+      let deviceNotificationIds = deviceNotificationIdsSnap.val();
+      if (deviceNotificationIds) {
+        let promises = [];
         for (var i = deviceNotificationIds.length - 1; i >= 0; i--) {
-          let deviceNotificationId = deviceNotificationIds[i].val()
-          console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`)
+          let deviceNotificationId = deviceNotificationIds[i].val();
+          console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`);
           promises.push(admin.messaging().sendToDevice(deviceNotificationId, payload))
         }
         return Promise.all(promises)
-      }
-      else{
+      } else {
         return Promise.resolve()
       }
     })
 }
-function sendNotificationWithSetting(env, payload, userId, countryId, notificationGroup){
-  console.log("Send Notification With Setting " + userId + " - " + notificationGroup)
+
+function sendNotificationWithSetting(env, payload, userId, countryId, notificationGroup) {
+  console.log("Send Notification With Setting " + userId + " - " + notificationGroup);
   return admin.database().ref(`/${env}/staff/${countryId}/${userId}/notification/`).once('value')
     .then(notificationSnap => {
-      if(notificationSnap.val() != null){
+      if (notificationSnap.val() != null) {
         for (var i = notificationSnap.val().length - 1; i >= 0; i--) {
-          if(notificationSnap.val()[i] == notificationGroup){
+          if (notificationSnap.val()[i] === notificationGroup) {
             return Promise.resolve()
           }
         }
         return Promise.reject(new Error('fail'))
-      }
-      else{
-        console.log(`Notification Setting Error: user (${userId}) setting (${notificationGroup})`)
+      } else {
+        console.log(`Notification Setting Error: user (${userId}) setting (${notificationGroup})`);
         return Promise.reject(new Error('fail'))
       }
     })
-    .then(function(){
+    .then(function () {
         return sendNotification(env, payload, userId)
 
       },
-      function(error){
+      function (error) {
         return Promise.resolve()
       })
 
@@ -2176,32 +2194,31 @@ function sendNotificationWithSetting(env, payload, userId, countryId, notificati
  * Private functions
  */
 // Return a promise resolution with a message logged beforehand
-function resolveLog(msg) { 
+function resolveLog(msg) {
   console.log(msg);
   return Promise.resolve(true);
 }
 
 // Get the value of something at a specific reference
-async function refOnce(path) { 
+async function refOnce(path) {
   let snapshot = await admin.database().ref(path).once('value');
-  if (!snapshot.exists()) { 
+  if (!snapshot.exists()) {
     return null;
-  }
-  else { 
+  } else {
     return snapshot.val();
   }
 }
 
 // Fetching users and send an email
 function fetchUsersAndSendEmail(node, countryId, title, content, setting, assignee) {
-  console.log("fetchUsersAndSendEmail - gets called!!! " + node)
+  console.log("fetchUsersAndSendEmail - gets called!!! " + node);
   return admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
     let exObj = data.val();
     if (exObj) {
-      let recipients = Object.keys(exObj).map(key => exObj[key])
+      let recipients = Object.keys(exObj).map(key => exObj[key]);
       return Promise.all(
-        recipients.map((recipient) => { 
-          if (recipients[i].notificationsSettings[setting]) { 
+        recipients.map((recipient) => {
+          if (recipients[i].notificationsSettings[setting]) {
             return sendEmail(recipient.email, title, content);
           }
           return Promise.resolve(true);
@@ -2223,9 +2240,9 @@ function getAlertName(level) {
 }
 
 // Sends a welcome email to the given user.
-function sendWelcomeEmail(email, userPassword) {
+function sendWelcomeEmailWith(email, userPassword) {
   const mailOptions = {
-    from : '"ALERT" <noreply@firebase.com>',
+    from: '"ALERT" <noreply@firebase.com>',
     to: email
   };
   mailOptions.subject = `Welcome to ${APP_NAME}!`;
@@ -2246,8 +2263,8 @@ function sendEmail(email, title, content) {
     from: '"ALERT" <noreply@firebase.com>',
     to: email
   };
-  mailOptions.subject = title
-  mailOptions.text = content
+  mailOptions.subject = title;
+  mailOptions.text = content;
   return mailTransport.sendMail(mailOptions).then(() => {
     console.log('normal email sent to:', email);
     return true;
@@ -2259,16 +2276,17 @@ function generateRandomPassword() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXTZ0123456789";
   const string_length = getRandomInt(8, 10);
   let randomstring = '';
+  let rnum;
   let charCount = 0;
   let numCount = 0;
 
   for (let i = 0; i < string_length; i++) {
-    if ((Math.floor(Math.random() * 2) == 0) && numCount < 3 || charCount >= 5) {
-      var rnum = Math.floor(Math.random() * 10);
+    if ((Math.floor(Math.random() * 2) === 0) && numCount < 3 || charCount >= 5) {
+      rnum = Math.floor(Math.random() * 10);
       randomstring += rnum;
       numCount += 1;
     } else {
-      var rnum = Math.floor(Math.random() * chars.length);
+      rnum = Math.floor(Math.random() * chars.length);
       randomstring += chars.substring(rnum, rnum + 1);
       charCount += 1;
     }
