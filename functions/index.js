@@ -104,10 +104,6 @@ const ACTION_EXPIRED = 3;
 const PLAN_EXPIRED = 4;
 const PLAN_REJECTED = 5;
 
-const WAITING_RESPONSE = 0;
-const APPROVED = 1;
-const REJECTED = 2;
-
 const PLAN_IN_PROGRESS = 0;
 const PLAN_WAITINGAPPROVAL = 1;
 const PLAN_APPROVED = 2;
@@ -159,6 +155,12 @@ const HAZARDS = {
   "24": "Tsunami",
   "25": "Violent Wind",
   "26": "Volcano"
+};
+
+const LEVELS = {
+  "0": "Green",
+  "1": "Amber",
+  "2": "Red"
 };
 
 const COUNTRIES = [
@@ -490,34 +492,34 @@ exports.sendResponsePlanMobileNotification_TEST = sendResponsePlanMobileNotifica
 
 // region Delcarations :- UAT
 
-// exports.handleUserAccounts_UAT = handleUserAccounts(ENVIRONMENT.UAT);
-// exports.sendResponsePlanValidationEmail_UAT = sendResponsePlanValidationEmail(ENVIRONMENT.UAT);
-// exports.sendPartnerOrganisationValidationEmail_UAT = sendPartnerOrganisationValidationEmail(ENVIRONMENT.UAT);
-// exports.sendSystemAdminNotificationsEmail_UAT = sendSystemAdminNotificationsEmail(ENVIRONMENT.UAT);
-// exports.sendAgencyNotificationsEmail_UAT = sendAgencyNotificationsEmail(ENVIRONMENT.UAT);
-// exports.sendCountryNotificationsEmail_UAT = sendCountryNotificationsEmail(ENVIRONMENT.UAT);
-// exports.sendNetworkAgencyValidationEmail_UAT = sendNetworkAgencyValidationEmail(ENVIRONMENT.UAT);
-// exports.sendNetworkCountryAgencyValidationEmail_UAT = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.UAT);
-// exports.sendBugReportingEmail_UAT = sendBugReportingEmail(ENVIRONMENT.UAT);
-// exports.createUserNetworkCountry_UAT = createUserNetworkCountry(ENVIRONMENT.UAT);
-// exports.updateUserEmail_UAT = updateUserEmail(ENVIRONMENT.UAT);
-// exports.sendEmailToExternalForAlertChange_UAT = sendEmailToExternalForAlertChange(ENVIRONMENT.UAT);
-// exports.sendEmailToExternalForAlertChangeRed_UAT = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.UAT);
-// exports.sendEmailToExternalForIndicatorUpdate_UAT = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.UAT);
-// exports.sendEmailToExternalForPlanExpired_UAT = sendEmailToExternalForPlanExpired(ENVIRONMENT.UAT);
-// exports.sendEmailPlanRejectedByCountryDirector_UAT = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.UAT);
-// exports.sendEmailPlanRejectedByRegionDirector_UAT = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.UAT);
-// exports.sendEmailPlanRejectedByGlobalDirector_UAT = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.UAT);
-// exports.updateLatestToCAllUsers_UAT = updateLatestToCAllUsers(ENVIRONMENT.UAT);
-// exports.updateLatestCoCAllUsers_UAT = updateLatestCoCAllUsers(ENVIRONMENT.UAT);
-// exports.sendIndicatorAssignedMobileNotification_UAT = sendIndicatorAssignedMobileNotification(ENVIRONMENT.UAT);
-// exports.sendResponsePlanApprovalNotification_UAT = sendResponsePlanApprovalNotification(ENVIRONMENT.UAT);
-// exports.sendAlertMobileNotification_UAT = sendAlertMobileNotification(ENVIRONMENT.UAT);
-// exports.sendActionMobileNotification_UAT = sendActionMobileNotification(ENVIRONMENT.UAT);
-// exports.countryOfficeClockSettingsChange_UAT = countryOfficeClockSettingsChange(ENVIRONMENT.UAT);
-// exports.networkClockSettingsChange_UAT = networkClockSettingsChange(ENVIRONMENT.UAT);
-// exports.networkCountryClockSettingsChange_UAT = networkCountryClockSettingsChange(ENVIRONMENT.UAT);
-// exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotification(ENVIRONMENT.UAT);
+exports.handleUserAccounts_UAT = handleUserAccounts(ENVIRONMENT.UAT);
+exports.sendResponsePlanValidationEmail_UAT = sendResponsePlanValidationEmail(ENVIRONMENT.UAT);
+exports.sendPartnerOrganisationValidationEmail_UAT = sendPartnerOrganisationValidationEmail(ENVIRONMENT.UAT);
+exports.sendSystemAdminNotificationsEmail_UAT = sendSystemAdminNotificationsEmail(ENVIRONMENT.UAT);
+exports.sendAgencyNotificationsEmail_UAT = sendAgencyNotificationsEmail(ENVIRONMENT.UAT);
+exports.sendCountryNotificationsEmail_UAT = sendCountryNotificationsEmail(ENVIRONMENT.UAT);
+exports.sendNetworkAgencyValidationEmail_UAT = sendNetworkAgencyValidationEmail(ENVIRONMENT.UAT);
+exports.sendNetworkCountryAgencyValidationEmail_UAT = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.UAT);
+exports.sendBugReportingEmail_UAT = sendBugReportingEmail(ENVIRONMENT.UAT);
+exports.createUserNetworkCountry_UAT = createUserNetworkCountry(ENVIRONMENT.UAT);
+exports.updateUserEmail_UAT = updateUserEmail(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForAlertChange_UAT = sendEmailToExternalForAlertChange(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForAlertChangeRed_UAT = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForIndicatorUpdate_UAT = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.UAT);
+exports.sendEmailToExternalForPlanExpired_UAT = sendEmailToExternalForPlanExpired(ENVIRONMENT.UAT);
+exports.sendEmailPlanRejectedByCountryDirector_UAT = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.UAT);
+exports.sendEmailPlanRejectedByRegionDirector_UAT = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.UAT);
+exports.sendEmailPlanRejectedByGlobalDirector_UAT = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.UAT);
+exports.updateLatestToCAllUsers_UAT = updateLatestToCAllUsers(ENVIRONMENT.UAT);
+exports.updateLatestCoCAllUsers_UAT = updateLatestCoCAllUsers(ENVIRONMENT.UAT);
+exports.sendIndicatorAssignedMobileNotification_UAT = sendIndicatorAssignedMobileNotification(ENVIRONMENT.UAT);
+exports.sendResponsePlanApprovalNotification_UAT = sendResponsePlanApprovalNotification(ENVIRONMENT.UAT);
+exports.sendAlertMobileNotification_UAT = sendAlertMobileNotification(ENVIRONMENT.UAT);
+exports.sendActionMobileNotification_UAT = sendActionMobileNotification(ENVIRONMENT.UAT);
+exports.countryOfficeClockSettingsChange_UAT = countryOfficeClockSettingsChange(ENVIRONMENT.UAT);
+exports.networkClockSettingsChange_UAT = networkClockSettingsChange(ENVIRONMENT.UAT);
+exports.networkCountryClockSettingsChange_UAT = networkCountryClockSettingsChange(ENVIRONMENT.UAT);
+exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotification(ENVIRONMENT.UAT);
 
 // endregion
 
@@ -803,7 +805,7 @@ async function sendNotificationEmailForUserIdAndMsgId(ENV, snap, context) {
   let userId = context.params.userId;
   let msgId = context.params.messageId;
 
-  // Send an email 
+  // Send an email
   if (!preData && currData) {
 
     let email = await refOnce(ENV.env + '/userPublic/' + userId + "/email");
@@ -873,7 +875,7 @@ function sendNetworkAgencyValidationEmail(ENV) {
           }
         }
 
-        // Get user admin 
+        // Get user admin
         let userPublic = await refOnce('/' + ENV.env + '/userPublic/' + adminId);
         if (userPublic == null) {
           return resolveLog("Global AgencyId " + agencyId + " AdminId " + adminId + " doesn't exist");
@@ -1121,7 +1123,7 @@ function sendEmailToExternalForAlertChange(ENV) {
 
           return Promise.all(
             recipients.map(recipient => {
-              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === PLAN_APPROVED))) {
                 let title = `The alert level for ${HAZARDS[alert.hazardScenario]} has been updated`;
                 let content = `The following alert: ${HAZARDS[alert.hazardScenario]} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`;
                 sendEmail(recipient.email, title, content);
@@ -1159,7 +1161,7 @@ function sendEmailToExternalForAlertChange(ENV) {
 
           return Promise.all(
             recipients.map((recipient) => {
-              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === PLAN_APPROVED))) {
                 let title = `The alert level for ${otherHazardName} has been updated`;
                 let content = `The following alert: ${otherHazardName} has had its level updated from ${getAlertName(preData)} to ${getAlertName(currData)}`;
                 return sendEmail(recipient.email, title, content);
@@ -1193,7 +1195,7 @@ function sendEmailToExternalForAlertChangeRed(ENV) {
     .onWrite(async (snap, context) => {
       const currData = snap.after.val();
 
-      if (currData === APPROVED) {
+      if (currData === PLAN_APPROVED) {
         let alertId = context.params.alertId;
         let countryId = context.params.countryId;
 
@@ -1216,7 +1218,7 @@ function sendEmailToExternalForAlertChangeRed(ENV) {
 
           return Promise.all(
             recipients.map((recipient) => {
-              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === PLAN_APPROVED))) {
                 return sendEmail(recipient.email, title, content);
               }
               return Promise.resolve(true);
@@ -1249,7 +1251,7 @@ function sendEmailToExternalForAlertChangeRed(ENV) {
 
           return Promise.all(
             recipients.map((recipient) => {
-              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === APPROVED))) {
+              if (recipient.notificationsSettings[ALERT_LEVEL_CHANGED] && (!alert.hasOwnProperty('approval') || (alert.hasOwnProperty('approval') && alert['approval']['countryDirector'][Object.keys(alert['approval']['countryDirector'])[0]] === PLAN_APPROVED))) {
                 return sendEmail(recipient.email, title, content);
               }
               return Promise.resolve(true);
@@ -1387,7 +1389,7 @@ function sendEmailToExternalForPlanExpired(ENV) {
  * Send email plan rejected by country director
  */
 function sendEmailPlanRejectedByCountryDirector(ENV) {
-  functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
+  return functions.database.ref('/' + ENV.env + '/responsePlan/{countryId}/{planId}/approval/countryDirector/{countryDirectorId}')
     .onWrite((snap, context) => {
 
       return sendEmailPlanRejectedBy(ENV, snap, context, 'country director')
@@ -1530,9 +1532,7 @@ function updateLatestToCAllUsers(ENV) {
     });
 }
 
-/**
- * Send indicator assigned mobile notification event
- */
+
 function sendIndicatorAssignedMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/indicator/{hazardId}/{indicatorId}/')
     .onWrite((snap, context) => {
@@ -1547,12 +1547,12 @@ function sendIndicatorAssignedMobileNotification(ENV) {
 
       if (preIndicatorData) {
         preIndicatorAssignee = preIndicatorData.assignee;
-        preIndicatorDueDate = preIndicatorData.dueDate;
+        preIndicatorDueDate = preIndicatorData.dueDate
       }
 
       if (currIndicatorData) {
         currIndicatorAssignee = currIndicatorData.assignee;
-        currIndicatorDueDate = currIndicatorData.dueDate;
+        currIndicatorDueDate = currIndicatorData.dueDate
       }
 
       const hazardId = context.params.hazardId;
@@ -1566,22 +1566,19 @@ function sendIndicatorAssignedMobileNotification(ENV) {
       if (currIndicatorAssignee !== preIndicatorAssignee) {
         if (currIndicatorAssignee != null) {
           promises.push(sendNotification(ENV.env, rescheduleNotification, currIndicatorAssignee));
-          promises.push(sendNotification(ENV.env, assignedNotification, currIndicatorAssignee))
+          promises.push(sendNotification(ENV.env, assignedNotification, currIndicatorAssignee));
         }
         if (preIndicatorAssignee != null) {
-          promises.push(sendNotification(ENV.env, rescheduleNotification, preIndicatorAssignee))
+          promises.push(sendNotification(ENV.env, rescheduleNotification, preIndicatorAssignee));
         }
       } else if (currIndicatorDueDate !== preIndicatorDueDate) {
-        promises.push(sendNotification(ENV.env, rescheduleNotification, currIndicatorAssignee))
+        promises.push(sendNotification(ENV.env, rescheduleNotification, currIndicatorAssignee));
       }
 
-      return Promise.all(promises)
+      return Promise.all(promises);
     });
 }
 
-/**
- * Send response plan approval notification
- */
 function sendResponsePlanApprovalNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/responsePlan/{groupId}/{responsePlanId}/approval/{groupName}/{approverId}')
     .onWrite((snap, context) => {
@@ -1603,38 +1600,41 @@ function sendResponsePlanApprovalNotification(ENV) {
               return admin.database().ref(`/${ENV.env}/directorCountry/${approverId}`).once('value').then(directorCountrySnap => {
                 return sendNotification(ENV.env, notification, directorCountrySnap.val())
               })
-            } else if (groupName === "globalDirector") {
+            }
+            else if (groupName === "globalDirector") {
               return admin.database().ref(`/${ENV.env}/globalDirector`).orderByChild(`agencyAdmin/${approverId}`).equalTo(true).once('value').then(globalDirectorSnap => {
 
                 return globalDirectorSnap.forEach(function (childSnapshot) {
-                  const key = childSnapshot.key;
+                  let key = childSnapshot.key;
                   return sendNotification(ENV.env, notification, key)
                 });
               })
-            } else if (groupName === "regionDirector") {
+            }
+            else if (groupName === "regionDirector") {
               return admin.database().ref(`/${ENV.env}/directorRegion/${approverId}`).once('value').then(directorRegionSnap => {
                 return sendNotification(ENV.env, notification, directorRegionSnap.val())
               })
-            } else if (groupName === "partner") {
+            }
+            else if (groupName === "partner") {
               return sendNotification(ENV.env, notification, approverId)
             }
-          } else if (currData === PLAN_REJECTED) {
+          }
+          else if (currData === PLAN_REJECTED) {
+            console.log("Plan rejected. " + groupId);
             const notification = createResponsePlanApprovalRejectedNotification(responsePlan);
             return sendCountryNetworkNetworkCountryNotification(ENV.env, notification, groupId, NOTIFICATION_SETTING_RESPONSE_PLAN_REJECTED)
           }
         });
       }
-
+      return Promise.resolve(true);
     });
+
 }
 
-/**
- * Change the clock settings in country office
- */
+
 function countryOfficeClockSettingsChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/countryOffice/{agencyId}/{countryId}/clockSettings')
     .onWrite((snap, context) => {
-      let notification;
       const preClockSettingsData = snap.before.val();
       const currClockSettingsData = snap.after.val();
 
@@ -1647,6 +1647,8 @@ function countryOfficeClockSettingsChange(ENV) {
       const preResponsePlanClockSettings = preClockSettingsData.responsePlans;
       const currResponsePlanClockSettings = currClockSettingsData.responsePlans;
 
+      let notification;
+
       if (prePreparednessClockSettings !== currPreparednessClockSettings) {
         notification = createActionCountryRescheduleNotification(agencyId, countryId);
         return sendNotificationToCountryUsers(ENV.env, notification, countryId)
@@ -1655,37 +1657,55 @@ function countryOfficeClockSettingsChange(ENV) {
         notification = createResponsePlanCountryRescheduleNotification(agencyId, countryId);
         return sendNotificationToCountryUsers(ENV.env, notification, countryId)
       }
-      return Promise.resolve(true);
     });
 }
 
-/**
- * Change network clock settings
- */
+
 function networkClockSettingsChange(ENV) {
   return functions.database.ref('/' + ENV.env + '/network/{networkId}/clockSettings')
     .onWrite((snap, context) => {
       const preClockSettingsData = snap.before.val();
       const currClockSettingsData = snap.after.val();
 
-      const networkId = event.params.networkId;
+      const networkId = context.params.networkId;
 
       const prePreparednessClockSettings = preClockSettingsData.preparedness;
       const currPreparednessClockSettings = currClockSettingsData.preparedness;
 
       if (prePreparednessClockSettings !== currPreparednessClockSettings) {
-        const notification = createActionNetworkRescheduleNotification(networkId);
-        return sendNotificationToNetworkUsers(ENV.env, notification, networkId)
+        let notification = createActionLocalNetworkRescheduleNotification(networkId);
+
+        return sendNotificationToLocalNetworkUsers(ENV.env, notification, networkId)
       }
     });
 }
 
-/**
- * Send an action mobile notification
- */
+
+
+function networkCountryClockSettingsChange(ENV) {
+  return functions.database.ref('/' + ENV.env + '/networkCountry/{networkId}/{countryId}/clockSettings')
+    .onWrite((snap, context) => {
+      const preClockSettingsData = snap.before.val();
+      const currClockSettingsData = snap.after.val();
+
+      const networkId = context.params.networkId;
+      const countryId = context.params.countryId;
+
+      const prePreparednessClockSettings = preClockSettingsData.preparedness;
+      const currPreparednessClockSettings = currClockSettingsData.preparedness;
+
+      if (prePreparednessClockSettings !== currPreparednessClockSettings) {
+        let notification = createActionNetworkCountryRescheduleNotification(networkId, countryId);
+        return sendNotificationToCountryUsers(ENV.env, notification, countryId)
+      }
+    });
+}
+
+
 function sendActionMobileNotification(ENV) {
   return functions.database.ref('/' + ENV.env + '/action/{groupId}/{actionId}/')
     .onWrite((snap, context) => {
+
       const preActionData = snap.before.val();
       const currActionData = snap.after.val();
 
@@ -1711,7 +1731,7 @@ function sendActionMobileNotification(ENV) {
         preActionUpdatedAt = preActionData.updatedAt;
         preActionCreatedAt = preActionData.createdAt;
         preActionFrequencyBase = preActionData.frequencyBase;
-        preActionFrequencyValue = preActionData.frequencyValue
+        preActionFrequencyValue = preActionData.frequencyValue;
       }
 
       if (currActionData != null) {
@@ -1721,7 +1741,7 @@ function sendActionMobileNotification(ENV) {
         currActionUpdatedAt = currActionData.updatedAt;
         currActionCreatedAt = currActionData.createdAt;
         currActionFrequencyBase = currActionData.frequencyBase;
-        currActionFrequencyValue = currActionData.frequencyValue
+        currActionFrequencyValue = currActionData.frequencyValue;
       }
 
       const groupId = context.params.groupId;
@@ -1756,11 +1776,8 @@ function sendActionMobileNotification(ENV) {
     });
 }
 
-/**
- * Send response plan mobile notification
- */
 function sendResponsePlanMobileNotification(ENV) {
-  return functions.database.ref('/' + ENV.env + '/action/{groupId}/{responsePlanId}/')
+  return functions.database.ref('/uat/action/{groupId}/{responsePlanId}/')
     .onWrite((snap, context) => {
       const preResponsePlanData = snap.before.val();
       const currResponsePlanData = snap.after.val();
@@ -1784,23 +1801,18 @@ function sendResponsePlanMobileNotification(ENV) {
 
       const groupId = context.params.groupId;
       const responsePlanId = context.params.responsePlanId;
+      const rescheduleNotification = createResponsePlanRescheduleNotification(groupId, responsePlanId);
 
-      let rescheduleNotification = createResponsePlanRescheduleNotification(groupId, responsePlanId);
-
-      if (
-        (currResponsePlanTimeCreated !== preResponsePlanTimeCreated ||
-          currResponsePlanTimeUpdated !== preResponsePlanTimeUpdated) &&
-        currResponsePlanAsignee != null) {
+      if ((currResponsePlanTimeCreated !== preResponsePlanTimeCreated ||
+          currResponsePlanTimeUpdated !== preResponsePlanTimeUpdated) && currResponsePlanAsignee != null) {
         return sendNotification(ENV.env, rescheduleNotification, currResponsePlanAsignee)
       }
     });
+
 }
 
-/**
- * Send alert mobile notification
- */
 function sendAlertMobileNotification(ENV) {
-  return functions.database.ref('/live/alert/{id}/{alertId}')
+  return functions.database.ref('/' + ENV.env + '/alert/{id}/{alertId}')
     .onWrite((snap, context) => {
       const preData = snap.before.val();
       const currData = snap.after.val();
@@ -1823,13 +1835,10 @@ function sendAlertMobileNotification(ENV) {
           currApprovalLevel = currData.approval.countryDirector[currApprovalKey]
         }
 
-        console.log(`${preAlertLevel} => ${currAlertLevel} - ${preApprovalLevel} => ${currApprovalLevel}`);
-
         let toGreenAmber = preAlertLevel !== currAlertLevel && (currAlertLevel === ALERT_AMBER || currAlertLevel === ALERT_GREEN);
-        let toApprovedRed = preApprovalLevel !== currApprovalLevel && currAlertLevel === ALERT_RED && currApprovalLevel === APPROVED;
-        let redAlertRequested = currAlertLevel === ALERT_RED && currApprovalLevel === WAITING_RESPONSE && (currAlertLevel !== preAlertLevel || preApprovalLevel !== currApprovalLevel);
+        let toApprovedRed = preApprovalLevel !== currApprovalLevel && currAlertLevel === ALERT_RED && currApprovalLevel === PLAN_APPROVED;
+        let redAlertRequested = currAlertLevel === ALERT_RED && currApprovalLevel === PLAN_WAITINGAPPROVAL && (currAlertLevel !== preAlertLevel || preApprovalLevel !== currApprovalLevel);
 
-        console.log(`To Green/Amber: ${toGreenAmber} - To Approved Red: ${toApprovedRed} - Red Alert Requested: ${redAlertRequested}`);
         if (toGreenAmber || toApprovedRed || redAlertRequested) {
           let id = context.params.id;
           let alertId = context.params.alertId;
@@ -1849,34 +1858,10 @@ function sendAlertMobileNotification(ENV) {
             })
         }
       }
+      return Promise.resolve(true);
     });
 }
 
-/**
- * Network Country Clock Settings
- */
-function networkCountryClockSettingsChange(ENV) {
-  return functions.database.ref('/live/networkCountry/{networkId}/{countryId}/clockSettings')
-    .onWrite((snap, context) => {
-      const preClockSettingsData = snap.before.val();
-      const currClockSettingsData = snap.after.val();
-
-      const networkId = context.params.networkId;
-      const countryId = context.params.countryId;
-
-      const prePreparednessClockSettings = preClockSettingsData.preparedness;
-      const currPreparednessClockSettings = currClockSettingsData.preparedness;
-
-      if (prePreparednessClockSettings !== currPreparednessClockSettings) {
-        let notification = createActionNetworkCountryRescheduleNotification(networkId, countryId);
-        return sendNotificationToCountryUsers(ENV.env, notification, countryId)
-      }
-    })
-}
-
-/**
- * Functions for Mobile
- */
 function sendNotificationToLocalNetworkUsers(env, notification, id, notificationSetting) {
   let networkPromise = admin.database().ref(`/${env}/network/${id}`).once('value');
 
@@ -1947,6 +1932,7 @@ function sendCountryNetworkNetworkCountryNotification(env, notification, id, not
       },
       //Fail
       function (error) {
+        console.log(error);
         return sendNotificationToLocalNetworkUsers(env, notification, id, notificationSetting);
       }
     )
@@ -1955,27 +1941,24 @@ function sendCountryNetworkNetworkCountryNotification(env, notification, id, not
         return Promise.resolve()
       },
       function (error) {
+        console.log(error);
         return sendNotificationToNetworkCountry(env, notification, id, notificationSetting)
       }
     )
 }
-
 function sendNotificationToCountryUsers(env, notification, countryId, notificationSetting) {
-  console.log("Sending notification to country: " + countryId);
+  if (notificationSetting === undefined) {
+    notificationSetting = null;
+  }
   return admin.database().ref(`/${env}/group/country/${countryId}/`).once('value').then(countryGroupSnap => {
     let countryGroup = countryGroupSnap.val();
-    console.log("Got country group : " + countryGroup);
-
     if (countryGroup) {
       const sendAlertPromises = [];
       for (const userId in countryGroup.countryallusersgroup) {
         if (countryGroup.countryallusersgroup.hasOwnProperty(userId)) {
-          console.log("Sending notificaiton to: " + userId);
           if (notificationSetting == null) {
-            console.log("Notification Setting Null");
             sendAlertPromises.push(sendNotification(env, notification, userId))
           } else {
-            console.log("Notification Setting Not Null");
             sendAlertPromises.push(sendNotificationWithSetting(env, notification, userId, countryId, notificationSetting))
           }
         }
@@ -1984,7 +1967,6 @@ function sendNotificationToCountryUsers(env, notification, countryId, notificati
     } else {
       return Promise.reject(new Error(`Country doesnt exist: ${countryId}`))
     }
-
   })
 }
 
@@ -2152,9 +2134,8 @@ function sendNotification(env, payload, userId) {
       let deviceNotificationIds = deviceNotificationIdsSnap.val();
       if (deviceNotificationIds) {
         let promises = [];
-        for (var i = deviceNotificationIds.length - 1; i >= 0; i--) {
+        for (let i = deviceNotificationIds.length - 1; i >= 0; i--) {
           let deviceNotificationId = deviceNotificationIds[i].val();
-          console.log(`Sending notification to ${userId} (${deviceNotificationId}): ${JSON.stringify(payload)}`);
           promises.push(admin.messaging().sendToDevice(deviceNotificationId, payload))
         }
         return Promise.all(promises)
@@ -2169,7 +2150,7 @@ function sendNotificationWithSetting(env, payload, userId, countryId, notificati
   return admin.database().ref(`/${env}/staff/${countryId}/${userId}/notification/`).once('value')
     .then(notificationSnap => {
       if (notificationSnap.val() != null) {
-        for (var i = notificationSnap.val().length - 1; i >= 0; i--) {
+        for (let i = notificationSnap.val().length - 1; i >= 0; i--) {
           if (notificationSnap.val()[i] === notificationGroup) {
             return Promise.resolve()
           }
@@ -2181,14 +2162,14 @@ function sendNotificationWithSetting(env, payload, userId, countryId, notificati
       }
     })
     .then(function () {
-        return sendNotification(env, payload, userId)
-
-      },
-      function (error) {
-        return Promise.resolve()
-      })
-
+      return sendNotification(env, payload, userId)
+    })
+    .catch(function (error) {
+      console.log(error);
+      return Promise.resolve()
+    });
 }
+
 
 /**
  * Private functions
@@ -2211,6 +2192,7 @@ async function refOnce(path) {
 
 // Fetching users and send an email
 function fetchUsersAndSendEmail(node, countryId, title, content, setting, assignee) {
+  if (assignee === undefined) { assignee = null; }
   console.log("fetchUsersAndSendEmail - gets called!!! " + node);
   return admin.database().ref('/' + node + '/externalRecipient/' + countryId).once('value', (data) => {
     let exObj = data.val();
@@ -2252,7 +2234,7 @@ function sendWelcomeEmailWith(email, userPassword) {
                       \n https://platform.alertpreparedness.org
                      \n Thanks,
                       \n ALERT Team `;
-  return mailTransport.sendMail(mailOptions).then(() => {
+  return mailTransport.sendMail(mailOptions, null).then(() => {
     console.log('New welcome email sent to:', email);
   });
 }
@@ -2265,7 +2247,7 @@ function sendEmail(email, title, content) {
   };
   mailOptions.subject = title;
   mailOptions.text = content;
-  return mailTransport.sendMail(mailOptions).then(() => {
+  return mailTransport.sendMail(mailOptions, null).then(() => {
     console.log('normal email sent to:', email);
     return true;
   });
