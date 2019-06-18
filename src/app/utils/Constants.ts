@@ -21,7 +21,7 @@ export class Constants {
 
   /*PATHS*/
   //TODO CHANGE APP MODULE AS WELL FOR LIVE
-  static APP_STATUS = "/test";
+  static APP_STATUS = "/live";
   static LOGIN_PATH = "/login";
   // static COUNTRY_LEVELS_FILE = "/assets/json/country_levels.json";
   static COUNTRY_LEVELS_VALUES_FILE = "/assets/json/country_levels_values.json";

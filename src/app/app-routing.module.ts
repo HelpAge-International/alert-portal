@@ -273,6 +273,7 @@ import {NetworkCountryAdminViewCocComponent} from "./network-country-admin/netwo
 import {AgencyAdminViewTocComponent} from "./agency-admin/agency-account-settings/agency-admin-view-toc/agency-admin-view-toc.component";
 import {LocalAgencyViewTocComponent} from "./local-agency/local-agency-account-details/local-agency-view-toc/local-agency-view-toc.component";
 import {SystemAdminModule} from "./system-admin/system-admin.module";
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -284,6 +285,11 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'login/:emailEntered', component: LoginComponent},
+
+  /**
+   * Privacy Policy
+   */
+  {path: 'privacy-policy', component: PrivacyPolicyComponent},
 
   /**
    * New User
@@ -356,9 +362,6 @@ const routes: Routes = [
   /**
    * Country admin
    */
-
-
-
   {path: 'country-admin/settings/field-offices/add-edit', component: CountryOfficeAddEditFieldOfficeComponent},
   {path: 'country-admin/settings/field-offices/add-edit/:id', component: CountryOfficeAddEditFieldOfficeComponent},
   {path: 'country-admin/new-country/new-country-password', component: NewCountryPasswordComponent},
