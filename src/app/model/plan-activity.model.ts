@@ -88,49 +88,56 @@ export class ModelPlanActivity extends BaseModel {
     if (!this.indicator && !this.isExcluded('indicator', excludedFields)) {
       return new AlertMessageModel('RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.NO_INDICATOR');
     }
-    if ((!this.hasFurtherBeneficiary && (!this.beneficiary[0].value && !this.isExcluded('femaleRange1', excludedFields) ||
-      !this.beneficiary[1].value && !this.isExcluded('femaleRange2', excludedFields) ||
-      !this.beneficiary[2].value && !this.isExcluded('femaleRange3', excludedFields) ||
-      !this.beneficiary[3].value && !this.isExcluded('maleRange1', excludedFields) ||
-      !this.beneficiary[4].value && !this.isExcluded('maleRange2', excludedFields) ||
-      !this.beneficiary[5].value && !this.isExcluded('maleRange3', excludedFields))) ||
-      (this.hasFurtherBeneficiary && (!this.furtherBeneficiary[0].value && !this.isExcluded('femaleFB1', excludedFields) ||
-        !this.furtherBeneficiary[1].value && !this.isExcluded('femaleFB2', excludedFields) ||
-        !this.furtherBeneficiary[2].value && !this.isExcluded('femaleFB3', excludedFields) ||
-        !this.furtherBeneficiary[3].value && !this.isExcluded('femaleFB4', excludedFields) ||
-        !this.furtherBeneficiary[4].value && !this.isExcluded('femaleFB5', excludedFields) ||
-        !this.furtherBeneficiary[5].value && !this.isExcluded('femaleFB6', excludedFields) ||
-        !this.furtherBeneficiary[6].value && !this.isExcluded('femaleFB7', excludedFields) ||
-        !this.furtherBeneficiary[7].value && !this.isExcluded('femaleFB8', excludedFields) ||
-        !this.furtherBeneficiary[8].value && !this.isExcluded('maleFB1', excludedFields) ||
-        !this.furtherBeneficiary[9].value && !this.isExcluded('maleFB2', excludedFields) ||
-        !this.furtherBeneficiary[10].value && !this.isExcluded('maleFB3', excludedFields) ||
-        !this.furtherBeneficiary[11].value && !this.isExcluded('maleFB4', excludedFields) ||
-        !this.furtherBeneficiary[12].value && !this.isExcluded('maleFB5', excludedFields) ||
-        !this.furtherBeneficiary[13].value && !this.isExcluded('maleFB6', excludedFields) ||
-        !this.furtherBeneficiary[14].value && !this.isExcluded('maleFB7', excludedFields) ||
-        !this.furtherBeneficiary[15].value && !this.isExcluded('maleFB8', excludedFields))) ||
-      (this.hasDisability && !this.hasFurtherBeneficiary && (!this.disability[0].value && !this.isExcluded('femaleDB1', excludedFields) ||
-        !this.disability[1].value && !this.isExcluded('femaleDB2', excludedFields) ||
-        !this.disability[2].value && !this.isExcluded('femaleDB3', excludedFields) ||
-        !this.disability[3].value && !this.isExcluded('maleDB1', excludedFields) ||
-        !this.disability[4].value && !this.isExcluded('maleDB2', excludedFields) ||
-        !this.disability[5].value && !this.isExcluded('maleDB3', excludedFields)) && (this.hasDisability && this.hasFurtherBeneficiary && (!this.furtherDisability[0].value && !this.isExcluded('femaleFD1', excludedFields) ||
-        !this.furtherDisability[1].value && !this.isExcluded('femaleFD2', excludedFields) ||
-        !this.furtherDisability[2].value && !this.isExcluded('femaleFD3', excludedFields) ||
-        !this.furtherDisability[3].value && !this.isExcluded('femaleFD4', excludedFields) ||
-        !this.furtherDisability[4].value && !this.isExcluded('femaleFD5', excludedFields) ||
-        !this.furtherDisability[5].value && !this.isExcluded('femaleFD6', excludedFields) ||
-        !this.furtherDisability[6].value && !this.isExcluded('femaleFD7', excludedFields) ||
-        !this.furtherDisability[7].value && !this.isExcluded('femaleFD8', excludedFields) ||
-        !this.furtherDisability[8].value && !this.isExcluded('maleFD1', excludedFields) ||
-        !this.furtherDisability[9].value && !this.isExcluded('maleFD2', excludedFields) ||
-        !this.furtherDisability[10].value && !this.isExcluded('maleFD3', excludedFields) ||
-        !this.furtherDisability[11].value && !this.isExcluded('maleFD4', excludedFields) ||
-        !this.furtherDisability[12].value && !this.isExcluded('maleFD5', excludedFields) ||
-        !this.furtherDisability[13].value && !this.isExcluded('maleFD6', excludedFields) ||
-        !this.furtherDisability[14].value && !this.isExcluded('maleFD7', excludedFields) ||
-        !this.furtherDisability[15].value && !this.isExcluded('maleFD8', excludedFields))))
+    if ((!this.hasFurtherBeneficiary && (
+        (!this.beneficiary[0].value && this.beneficiary[0].value !== 0) && !this.isExcluded('femaleRange1', excludedFields) ||
+        (!this.beneficiary[1].value && this.beneficiary[1].value !== 0) && !this.isExcluded('femaleRange2', excludedFields) ||
+        (!this.beneficiary[2].value && this.beneficiary[2].value !== 0) && !this.isExcluded('femaleRange3', excludedFields) ||
+        (!this.beneficiary[3].value && this.beneficiary[3].value !== 0) && !this.isExcluded('maleRange1', excludedFields) ||
+        (!this.beneficiary[4].value && this.beneficiary[4].value !== 0) && !this.isExcluded('maleRange2', excludedFields) ||
+        (!this.beneficiary[5].value && this.beneficiary[5].value !== 0) && !this.isExcluded('maleRange3', excludedFields))
+      ) ||
+      (this.hasFurtherBeneficiary && (
+        (!this.furtherBeneficiary[0].value && this.furtherBeneficiary[0].value !== 0) && !this.isExcluded('femaleFB1', excludedFields) ||
+        (!this.furtherBeneficiary[1].value && this.furtherBeneficiary[1].value !== 0) && !this.isExcluded('femaleFB2', excludedFields) ||
+        (!this.furtherBeneficiary[2].value && this.furtherBeneficiary[2].value !== 0) && !this.isExcluded('femaleFB3', excludedFields) ||
+        (!this.furtherBeneficiary[3].value && this.furtherBeneficiary[3].value !== 0) && !this.isExcluded('femaleFB4', excludedFields) ||
+        (!this.furtherBeneficiary[4].value && this.furtherBeneficiary[4].value !== 0) && !this.isExcluded('femaleFB5', excludedFields) ||
+        (!this.furtherBeneficiary[5].value && this.furtherBeneficiary[5].value !== 0) && !this.isExcluded('femaleFB6', excludedFields) ||
+        (!this.furtherBeneficiary[6].value && this.furtherBeneficiary[6].value !== 0) && !this.isExcluded('femaleFB7', excludedFields) ||
+        (!this.furtherBeneficiary[7].value && this.furtherBeneficiary[7].value !== 0) && !this.isExcluded('femaleFB8', excludedFields) ||
+        (!this.furtherBeneficiary[8].value && this.furtherBeneficiary[8].value !== 0) && !this.isExcluded('maleFB1', excludedFields) ||
+        (!this.furtherBeneficiary[9].value && this.furtherBeneficiary[9].value !== 0) && !this.isExcluded('maleFB2', excludedFields) ||
+        (!this.furtherBeneficiary[10].value && this.furtherBeneficiary[10].value !== 0) && !this.isExcluded('maleFB3', excludedFields) ||
+        (!this.furtherBeneficiary[11].value && this.furtherBeneficiary[11].value !== 0) && !this.isExcluded('maleFB4', excludedFields) ||
+        (!this.furtherBeneficiary[12].value && this.furtherBeneficiary[12].value !== 0) && !this.isExcluded('maleFB5', excludedFields) ||
+        (!this.furtherBeneficiary[13].value && this.furtherBeneficiary[13].value !== 0) && !this.isExcluded('maleFB6', excludedFields) ||
+        (!this.furtherBeneficiary[14].value && this.furtherBeneficiary[14].value !== 0) && !this.isExcluded('maleFB7', excludedFields) ||
+        (!this.furtherBeneficiary[15].value && this.furtherBeneficiary[15].value !== 0) && !this.isExcluded('maleFB8', excludedFields))
+      ) ||
+      (this.hasDisability && !this.hasFurtherBeneficiary && (
+        (!this.disability[0].value && this.disability[0].value !== 0) && !this.isExcluded('femaleDB1', excludedFields) ||
+        (!this.disability[1].value && this.disability[1].value !== 0) && !this.isExcluded('femaleDB2', excludedFields) ||
+        (!this.disability[2].value && this.disability[2].value !== 0) && !this.isExcluded('femaleDB3', excludedFields) ||
+        (!this.disability[3].value && this.disability[3].value !== 0) && !this.isExcluded('maleDB1', excludedFields) ||
+        (!this.disability[4].value && this.disability[4].value !== 0) && !this.isExcluded('maleDB2', excludedFields) ||
+        (!this.disability[5].value && this.disability[5].value !== 0) && !this.isExcluded('maleDB3', excludedFields)) && (this.hasDisability && this.hasFurtherBeneficiary && (
+        (!this.furtherDisability[0].value && this.furtherDisability[0].value !== 0) && !this.isExcluded('femaleFD1', excludedFields) ||
+        (!this.furtherDisability[1].value && this.furtherDisability[1].value !== 0) && !this.isExcluded('femaleFD2', excludedFields) ||
+        (!this.furtherDisability[2].value && this.furtherDisability[2].value !== 0) && !this.isExcluded('femaleFD3', excludedFields) ||
+        (!this.furtherDisability[3].value && this.furtherDisability[3].value !== 0) && !this.isExcluded('femaleFD4', excludedFields) ||
+        (!this.furtherDisability[4].value && this.furtherDisability[4].value !== 0) && !this.isExcluded('femaleFD5', excludedFields) ||
+        (!this.furtherDisability[5].value && this.furtherDisability[5].value !== 0) && !this.isExcluded('femaleFD6', excludedFields) ||
+        (!this.furtherDisability[6].value && this.furtherDisability[6].value !== 0) && !this.isExcluded('femaleFD7', excludedFields) ||
+        (!this.furtherDisability[7].value && this.furtherDisability[7].value !== 0) && !this.isExcluded('femaleFD8', excludedFields) ||
+        (!this.furtherDisability[8].value && this.furtherDisability[8].value !== 0) && !this.isExcluded('maleFD1', excludedFields) ||
+        (!this.furtherDisability[9].value && this.furtherDisability[9].value !== 0) && !this.isExcluded('maleFD2', excludedFields) ||
+        (!this.furtherDisability[10].value && this.furtherDisability[10].value !== 0) && !this.isExcluded('maleFD3', excludedFields) ||
+        (!this.furtherDisability[11].value && this.furtherDisability[11].value !== 0) && !this.isExcluded('maleFD4', excludedFields) ||
+        (!this.furtherDisability[12].value && this.furtherDisability[12].value !== 0) && !this.isExcluded('maleFD5', excludedFields) ||
+        (!this.furtherDisability[13].value && this.furtherDisability[13].value !== 0) && !this.isExcluded('maleFD6', excludedFields) ||
+        (!this.furtherDisability[14].value && this.furtherDisability[14].value !== 0) && !this.isExcluded('maleFD7', excludedFields) ||
+        (!this.furtherDisability[15].value && this.furtherDisability[15].value !== 0) && !this.isExcluded('maleFD8', excludedFields)))
+      )
       ) {
       return new AlertMessageModel('RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.BENEFICIARIES');
     }
