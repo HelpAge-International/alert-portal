@@ -39,6 +39,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   private cocText: string;
   private tocText: string;
 
+  public isLive: boolean = Constants.APP_STATUS == '/live';
+  public environmentLabel: string = Constants.APP_STATUS.substr(1);
+
   // Temporary values for the login user type.
   //  - Won't be used for anything else
   private mCheckLoginDisallowCountryId: string;
@@ -56,6 +59,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    console.log(this.isLive + " - " + this.environmentLabel);
     //clear local storage
     this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_SELECTED_ID)
 
