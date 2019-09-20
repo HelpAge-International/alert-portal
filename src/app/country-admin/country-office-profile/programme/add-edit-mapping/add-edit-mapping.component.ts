@@ -425,7 +425,12 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     this.programme.level1 = selected;
     console.log("LEVEL 1: ", this.programme.level1);
     console.log(this.selectedValue, 'preset value');
-    this.levelTwoDisplay = this.levelOneDisplay[selected].levelTwoValues;
+    for (var i = 0; i < this.levelOneDisplay.length; i++) { 
+      var x = this.levelOneDisplay[i];
+      if (x['id'] == selected) {
+        this.levelTwoDisplay = this.levelOneDisplay[i].levelTwoValues;
+      }
+    }
   }
 
   setLevel2Value(selected){

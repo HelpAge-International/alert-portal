@@ -47,7 +47,7 @@
 
       <input type="submit" class="btn btn-primary Login__button--submit" value="{{'LOGIN.LOGIN' | translate}}"/>
       <a routerLink="/forgot-password" class="Login__forgotten-pass">{{"LOGIN.FORGOT_PASSWORD_BUTTON" | translate}}</a>
-      <p class="Login__version">{{"VERSION_TEXT" | translate}} 1.2.1.1</p>
+      <p class="Login__version">{{"VERSION_TEXT" | translate}} {{version}} {{ !isLive ? ('- (Environment: ' + environmentLabel + ')') : ''}}</p>
     </form>
   </div>
 </div>
