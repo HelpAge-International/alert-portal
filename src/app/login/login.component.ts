@@ -39,6 +39,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   private cocText: string;
   private tocText: string;
 
+  public version = Constants.VERSION;
+
   public isLive: boolean = Constants.APP_STATUS == '/live';
   public environmentLabel: string = Constants.APP_STATUS.substr(1);
 

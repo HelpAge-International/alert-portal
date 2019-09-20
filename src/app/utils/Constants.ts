@@ -7,6 +7,9 @@ import {
 } from "./Enums";
 
 export class Constants {
+  //TODO CHANGE APP MODULE AS WELL FOR LIVE
+  static APP_STATUS = "/test";
+  static VERSION = "1.2.1.2";
 
   /* ENABLING THE MAINTENANCE PAGE */
   static SHOW_MAINTENANCE_PAGE: boolean = false;
@@ -20,8 +23,6 @@ export class Constants {
   static INFORM_WORKFLOW: number = 261;
 
   /*PATHS*/
-  //TODO CHANGE APP MODULE AS WELL FOR LIVE
-  static APP_STATUS = "/test";
   static LOGIN_PATH = "/login";
   // static COUNTRY_LEVELS_FILE = "/assets/json/country_levels.json";
   static COUNTRY_LEVELS_VALUES_FILE = "/assets/json/country_levels_values.json";
