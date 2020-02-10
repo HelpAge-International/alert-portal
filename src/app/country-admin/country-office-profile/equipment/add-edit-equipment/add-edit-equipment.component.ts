@@ -186,7 +186,12 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
 
   setLevel1Value(selected) {
     this.equipment.level1 = selected;
-    this.levelTwoDisplay = this.levelOneDisplay[selected].levelTwoValues;
+    for (var i = 0; i < this.levelOneDisplay.length; i++) { 
+      var x = this.levelOneDisplay[i];
+      if (x['id'] == selected) {
+        this.levelTwoDisplay = this.levelOneDisplay[i].levelTwoValues;
+      }
+    }
   }
 
   setLevel2Value(selected) {

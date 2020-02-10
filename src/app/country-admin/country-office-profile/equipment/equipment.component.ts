@@ -534,14 +534,28 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
+
+        var l1Index = 0;
+
         if (mapping.location && mapping.location > -1) {
           obj.country = this.countries[mapping.location];
         }
-        if (mapping.level1 && mapping.level1 > -1) {
-          obj.areas = ", " + json[mapping.location].levelOneValues[mapping.level1].value
+        if (mapping.location && mapping.level1 && mapping.level1 > -1) {
+          for (var i = 0; i < json[mapping.location].levelOneValues.length; i++) {
+            var x = json[mapping.location].levelOneValues[i];
+            if (x['id'] === +mapping.level1) { 
+              obj.areas = ", " + x.value    
+              l1Index = i;
+            }
+          }
         }
-        if (mapping.level2 && mapping.level2) {
-          obj.areas = obj.areas + ", " + json[mapping.location].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
+        if (mapping.location && mapping.level2 && mapping.level2) {
+          for (var i = 0; i < json[mapping.location].levelOneValues[l1Index].levelTwoValues.length; i++) { 
+            var x = json[mapping.location].levelOneValues[l1Index].levelTwoValues[i];
+            if (x['id'] === +mapping.level2) {
+              obj.areas = obj.areas + ", " + x.value; 
+            }
+          }
         }
         this.locationObjs.push(obj);
       });
