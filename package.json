@@ -25,6 +25,7 @@
     "@angular/platform-browser-dynamic": "^4.1.0",
     "@angular/platform-server": "^4.1.0",
     "@angular/router": "^4.1.0",
+    "@grpc/grpc-js": "^0.6.16",
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.20",
     "@ngx-translate/core": "^6.0.0",
     "@ngx-translate/http-loader": "0.0.3",

@@ -74,39 +74,20 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  ngOnInit() {
+  ngOnInit() {    
     this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
+  private initCountryOffice() {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.userType = userType;
+      this.countryId = countryId
+      this.agencyId = agencyId
 
-  private initCountryOffice(){
-
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((params: Params) => {
-        if (params["countryId"]) {
-          this.countryId = params["countryId"];
-        }
-        if (params["isViewing"]) {
-          this.isViewing = params["isViewing"];
-        }
-        if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
-        }
-
-        if (this.countryId && this.agencyId && this.isViewing) {
-          this.loadViewData();
-        } else {
-          this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-        }
-
-      })
-  }
-
-  private loadViewData() {
     this._stockService.getStockCapacities(this.countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(stockCapacities => {
+      .subscribe(stockCapacities => {        
         this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
         this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
         this.generateLocations();
@@ -134,6 +115,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           });
         })
       });
+    });
   }
 
   private initLocalAgency() {
@@ -198,7 +180,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditStockCapacity(stockType: StockType, stockCapacityId?: string) {
-    console.log(stockType)
     if (this.isLocalAgency) {
       if (stockCapacityId) {
         this.router.navigate(['/local-agency/profile/stock-capacity/add-edit-stock-capacity',
