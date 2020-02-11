@@ -119,7 +119,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   private initLocalAgency() {
-
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
@@ -303,14 +302,27 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           areas: ""
         };
 
+        var l1Index = 0;
+
         if (stockCapacity.location && stockCapacity.location > -1) {
           obj.country = this.countries[stockCapacity.location];
         }
-        if (stockCapacity.level1 && stockCapacity.level1 > -1) {
-          obj.areas = ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].value
+        if (stockCapacity.location && stockCapacity.level1 && stockCapacity.level1 > -1) {
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues.length; i++) {
+            var x = json[stockCapacity.location].levelOneValues[i];
+            if (x['id'] === +stockCapacity.level1) { 
+              obj.areas = ", " + x.value    
+              l1Index = i;
+            }
+          }
         }
-        if (stockCapacity.level2) {
-          obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
+        if (stockCapacity.location && stockCapacity.level2) {
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues.length; i++) { 
+            var x = json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues[i];
+            if (x['id'] === +stockCapacity.level2) {
+              obj.areas = obj.areas + ", " + x.value; 
+            }
+          }
         }
         this.locationObjsStocksIn.push(obj);
       });
@@ -320,14 +332,28 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
+
+        var l1Index = 0;
+
         if (stockCapacity.location && stockCapacity.location > -1) {
           obj.country = this.countries[stockCapacity.location];
         }
-        if (stockCapacity.level1 && stockCapacity.level1 > -1) {
-          obj.areas = ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].value
+        if (stockCapacity.location && stockCapacity.level1 && stockCapacity.level1 > -1) {
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues.length; i++) {
+            var x = json[stockCapacity.location].levelOneValues[i];
+            if (x['id'] === +stockCapacity.level1) { 
+              obj.areas = ", " + x.value    
+              l1Index = i;
+            }
+          }
         }
         if (stockCapacity.level2) {
-          obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues.length; i++) { 
+            var x = json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues[i];
+            if (x['id'] === +stockCapacity.level2) {
+              obj.areas = obj.areas + ", " + x.value; 
+            }
+          }
         }
         this.locationObjsStocksOut.push(obj);
       });

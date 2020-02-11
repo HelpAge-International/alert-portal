@@ -549,7 +549,7 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
             }
           }
         }
-        if (mapping.location && mapping.level2 && mapping.level2) {
+        if (mapping.location && mapping.level2) {
           for (var i = 0; i < json[mapping.location].levelOneValues[l1Index].levelTwoValues.length; i++) { 
             var x = json[mapping.location].levelOneValues[l1Index].levelTwoValues[i];
             if (x['id'] === +mapping.level2) {

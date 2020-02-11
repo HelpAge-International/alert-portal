@@ -245,28 +245,35 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       });
   }
 
+  resetValue(){
+    // Reset Values to remove level 2 drop down
+    this.levelTwoDisplay.length = 0;
+  }
+
   // This function below is to determine the country selected
   // Return the array of level1 areas in the country selected.
-  setCountryLevel(){
+  setCountryLevel(selectedCountry) {
+    this.stockCapacity.location = selectedCountry;
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
         // Below needs to return the level1 array of the id selected
-        this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
+        this.levelOneDisplay = content[selectedCountry].levelOneValues;
       });
   }
 
-  resetValue(){
-    console.log('reset selection');
-    // Reset Values to remove level 2 drop down
-    this.levelTwoDisplay.length = 0;
-
+  setLevel1Value(selected) {
+    this.stockCapacity.level1 = selected
+    for (var i = 0; i < this.levelOneDisplay.length; i++) { 
+      var x = this.levelOneDisplay[i];
+      if (x['id'] == selected) {
+        this.levelTwoDisplay = this.levelOneDisplay[i].levelTwoValues;
+      }
+    }
   }
 
-  setLevel1Value(){
-    console.log(this.selectedValue, 'preset value');
-    this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
-
+  setLevel2Value(selected) {
+    this.stockCapacity.level2 = selected;
   }
 }

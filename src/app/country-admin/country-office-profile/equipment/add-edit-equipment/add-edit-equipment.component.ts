@@ -165,23 +165,22 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
 
   }
 
-  // This function below is to determine the country selected
+  resetValue() {
+    // Reset Values to remove level 2 drop down
+    this.levelTwoDisplay.length = 0;
+  }
+
+    // This function below is to determine the country selected
   // Return the array of level1 areas in the country selected.
-  setCountryLevel(selectedC) {
-    this.equipment.location = selectedC;
+  setCountryLevel(selectedCountry) {
+    this.equipment.location = selectedCountry;
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
         // Below needs to return the level1 array of the id selected
-        this.levelOneDisplay = content[selectedC].levelOneValues;
+        this.levelOneDisplay = content[selectedCountry].levelOneValues;
       });
-  }
-
-  resetValue() {
-    console.log('reset selection');
-    // Reset Values to remove level 2 drop down
-    this.levelTwoDisplay.length = 0;
   }
 
   setLevel1Value(selected) {
