@@ -1587,9 +1587,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
   private checkSection10() {
     if (this.transportBudget != null && this.securityBudget != null && this.logisticsAndOverheadsBudget != null &&
       this.staffingAndSupportBudget != null && this.monitoringAndEvolutionBudget != null &&
-      this.capitalItemsBudget != null && this.managementSupportPercentage != null && this.transportNarrative != "" &&
-      this.securityNarrative != "" && this.logisticsAndOverheadsNarrative != "" && this.staffingAndSupportNarrative != "" &&
-      this.monitoringAndEvolutionNarrative != "" && this.capitalItemsNarrative != "" && this.managementSupportNarrative != "") {
+      this.capitalItemsBudget != null && this.managementSupportPercentage != null) {
       this.section10Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[9], true);
     } else {
