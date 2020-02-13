@@ -100,7 +100,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
           x.id = snapshot.key;
           x.name = snapshot.val().name;
           this.departments.push(x);
-          this.departmentMap.set(x.id, x.name);
+          this.departmentMap.set(x.id, x.name);  
         })
       });
     //country level
@@ -155,19 +155,6 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
               }
             });
         });
-        // this.partnersList = partners;
-        // this.partnersList.forEach(partner => {
-        //   this._userService.getUser(partner.id)
-        //     .takeUntil(this.ngUnsubscribe)
-        //     .subscribe(partnerPublicUser => {
-        //       this.partnerPublicUser[partner.id] = partnerPublicUser;
-        //     });
-        //   this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-        //     .takeUntil(this.ngUnsubscribe)
-        //     .subscribe(partnerOrganisation => {
-        //       this.partnerOrganisations[partner.id] = partnerOrganisation
-        //     });
-        // });
       });
   }
 
@@ -198,11 +185,13 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.staff.id = item.$key;
     this.staff.position = item.position;
     this.staff.department = item.department;
+    this.staff.departments = item.departments;
     this.staff.officeType = item.officeType;
     this.staff.userType = item.userType;
     this.staff.training = item.training;
     this.staff.skill = item.skill;
     this.staff.notification = item.notification;
+
     if (item.fieldOffice) {
       this.staff.fieldOffice = item.fieldOffice
     }
@@ -249,6 +238,14 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
 
         this.staffPublicUser[userId].phone = userPublic.phone;
       });
+  }
+
+  getDepartmentName(departments) {
+    var departmentName = []
+    for(let department of departments) {
+      departmentName.push(this.departmentMap.get(department))
+    }
+    return departmentName.join(', ')
   }
 
   closeAdditionalInfo(staffId) {

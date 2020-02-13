@@ -94,9 +94,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private editedSkills: any = [];
   private SupportSkill = SkillType.Support;
   private TechSkill = SkillType.Tech;
-  private allDepartments: any = {};
-  private departmentKeys: string[] = [];
-
+  
   public fieldOffices: Array<fieldOffice>
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
