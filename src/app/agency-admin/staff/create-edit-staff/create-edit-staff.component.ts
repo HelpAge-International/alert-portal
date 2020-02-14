@@ -44,7 +44,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   userType: number;
   countryOffice: any;
   region: any;
-  department: string;
   position: string;
   officeType: number;
   email: string;
@@ -75,7 +74,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private skillsMap = new Map();
   private staffSkills: string[] = [];
   private notificationsMap = new Map();
+  private departmentMap = new Map();
   private staffNotifications: number[] = [];
+  private staffDepartments: string[] = [];
+
   private selectedStaffId: string;
   private isEdit: boolean;
   private selectedOfficeId: string;
@@ -149,14 +151,25 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         this.userType = staff.userType;
         this.editInitialUserType = staff.userType;
         this.checkUserType();
-        this.department = staff.department;
         this.position = staff.position;
         this.officeType = staff.officeType;
+
+        if (staff.departments && staff.departments.length > 0) {
+          for (let department of staff.departments) {
+            this.departmentMap.set(department, true);
+          }
+        } else {
+          if(staff.department) {
+            this.departmentMap.set(staff.department, true);
+          }
+        }
+
         if (staff.skill && staff.skill.length > 0) {
           for (let skill of staff.skill) {
             this.skillsMap.set(skill, true);
           }
         }
+
         this.trainingNeeds = staff.training;
         this.isResponseMember = staff.isResponseMember;
         if (staff.notification && staff.notification.length > 0) {
@@ -343,7 +356,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.showAlert();
       return false;
     }
-    else if (!this.department) {
+    else if (!this.departmentSelected()) {
       this.waringMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR";
       this.showAlert();
       return false;
@@ -378,8 +391,17 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     }
   }
 
-  submit() {
+  departmentSelected() {
+    var selected = []
+    this.departmentMap.forEach((value, key) => {
+      if (value) {
+        selected.push(value)
+      }
+    });
+    return selected.filter(item => item == true).length > 0
+  }
 
+  submit() {
     if (!CustomerValidator.EmailValidator(this.email)) {
       this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
       this.showAlert();
@@ -388,7 +410,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (!this.validateForm()) {
       return;
     }
-    console.log("submit");
     this.collectData();
   }
 
@@ -396,6 +417,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     this.skillsMap.forEach((value, key) => {
       if (value) {
         this.staffSkills.push(key);
+      }
+    });
+    this.departmentMap.forEach((value, key) => {
+      if (value) {
+        this.staffDepartments.push(key);
       }
     });
     this.notificationsMap.forEach((value, key) => {
@@ -495,7 +521,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     //staff extra info
     let staff = new ModelStaff();
     staff.userType = Number(this.userType);
-    staff.department = this.department;
+    staff.departments = this.staffDepartments;
     staff.position = this.position;
     staff.officeType = Number(this.officeType);
     staff.skill = this.staffSkills;
@@ -690,6 +716,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   techSkillCheck(skill, isCheck) {
     this.skillsMap.set(skill.$key, isCheck);
+  }
+
+  departmentCheck(department, isCheck) {
+    this.departmentMap.set(department.id, isCheck)
   }
 
   notificationCheck(notification, isCheck) {

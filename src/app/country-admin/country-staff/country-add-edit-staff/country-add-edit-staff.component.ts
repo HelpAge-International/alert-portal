@@ -70,7 +70,6 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   lastName: string;
   userType: number;
   countryOffice: any;
-  departments: string[] = [];
   position: string;
   officeType: number;
   email: string;
@@ -253,9 +252,9 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_USER_TYPE';
       return false;
     }
-    if (this.departmentMap.size == 0) {
+    if (!this.departmentSelected()) {
       this.warningMessage = 'AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR';
-      return false;
+      return false
     }
     if (!this.position) {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_POSITION';
@@ -286,6 +285,16 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       return false;
     }
     return true;
+  }
+
+  departmentSelected() {
+    var selected = []
+    this.departmentMap.forEach((value, key) => {
+      if (value) {
+        selected.push(value)
+      }
+    });
+    return selected.filter(item => item == true).length > 0
   }
 
   submit() {
@@ -531,21 +540,27 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         this.userType = staff.userType;
         this.editInitialUserType = staff.userType;
         this.checkUserType();
-
+        
+        this.position = staff.position;
+        this.officeType = staff.officeType;
+        this.fieldOffice = staff.fieldOffice;
+        
         if (staff.departments && staff.departments.length > 0) {
           for (let department of staff.departments) {
             this.departmentMap.set(department, true);
           }
+        } else {
+          if(staff.department) {
+            this.departmentMap.set(staff.department, true);
+          }
         }
-      
-        this.position = staff.position;
-        this.officeType = staff.officeType;
-        this.fieldOffice = staff.fieldOffice;
+
         if (staff.skill && staff.skill.length > 0) {
           for (let skill of staff.skill) {
             this.skillsMap.set(skill, true);
           }
         }
+
         this.trainingNeeds = staff.training;
         this.isResponseMember = staff.isResponseMember;
         if (staff.notification && staff.notification.length > 0) {

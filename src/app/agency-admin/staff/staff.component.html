@@ -65,7 +65,7 @@
         <div *ngFor="let staff of office?.staffs" class="row Line-row Small-spaced align-items-center"
              style="position:relative;">
           <div class="col-sm-2">{{staffObjMap.get(staff.id)?.firstName +' '+staffObjMap.get(staff.id)?.lastName}}</div>
-          <div class="col-sm-2">{{departmentMap.get(staff.department)}}</div>
+          <div class="col-lg-2 col-md-2">{{ staff.department ? departmentMap.get(staff.department) : getDepartmentName(staff.departments) }}</div>
           <div class="col-sm-2">{{USER_TYPE[staff.userType] | translate}}</div>
           <div class="col-sm-3">{{OFFICE_TYPE[staff.officeType] | translate}} {{staff.fieldOffice ? '('+fieldOfficeMap.get(staff.fieldOffice)+')' : ''}}
           </div>

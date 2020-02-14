@@ -242,8 +242,10 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
 
   getDepartmentName(departments) {
     var departmentName = []
-    for(let department of departments) {
-      departmentName.push(this.departmentMap.get(department))
+    if(departments) {
+      for(let department of departments) {
+        departmentName.push(this.departmentMap.get(department))
+      }
     }
     return departmentName.join(', ')
   }

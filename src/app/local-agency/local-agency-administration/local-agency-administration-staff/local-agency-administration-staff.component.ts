@@ -158,6 +158,7 @@ export class LocalAgencyAdministrationStaffComponent implements OnInit {
     this.staff.id = item.$key;
     this.staff.position = item.position;
     this.staff.department = item.department;
+    this.staff.departments = item.departments;
     this.staff.officeType = item.officeType;
     this.staff.userType = item.userType;
     this.staff.training = item.training;
@@ -206,6 +207,16 @@ export class LocalAgencyAdministrationStaffComponent implements OnInit {
 
         this.staffPublicUser[userId].phone = userPublic.phone;
       });
+  }
+
+  getDepartmentName(departments) {
+    var departmentName = []
+    if(departments) {
+      for(let department of departments) {
+        departmentName.push(this.departmentMap.get(department))
+      }
+    }
+    return departmentName.join(', ')
   }
 
   closeAdditionalInfo(staffId) {
