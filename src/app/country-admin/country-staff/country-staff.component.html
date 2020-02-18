@@ -41,7 +41,7 @@
         <div class="Empty--ribbon" *ngIf="staffList?.length == 0">{{"COUNTRY_ADMIN.STAFF.EMPTY_LIST"| translate}}</div>
         <div *ngFor="let staff of staffList" class="row align-items-center Line-row Small-spaced" [hidden] = "hideFilteredStaff(staff)">
             <div class="col-lg-2 col-md-2">{{ staffPublicUser[staff?.id]?.firstName }} {{ staffPublicUser[staff?.id]?.lastName }}</div>
-            <div class="col-lg-2 col-md-2">{{ departmentMap.get(staff.department) }}</div>
+            <div class="col-lg-2 col-md-2">{{ staff.department ? departmentMap.get(staff.department) : getDepartmentName(staff.departments) }}</div>
             <div class="col-lg-2 col-md-2">{{ getStaffUserType(staff.userType) | translate}}</div>
             <div class="col-lg-3 col-md-3">{{OfficeType[staff.officeType] | translate}} {{fieldOfficeMap.get(staff?.fieldOffice) ? ' ('+fieldOfficeMap.get(staff?.fieldOffice)+')' : ''}}</div>
             <div class="col-lg-2 col-md-2 additional-info">

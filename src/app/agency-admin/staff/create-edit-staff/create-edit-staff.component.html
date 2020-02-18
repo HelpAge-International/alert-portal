@@ -65,14 +65,6 @@
             </option>
           </select>
         </div>
-        <div class="col-lg-4 col-md-6 form-group">
-          <label for="Department">{{"GLOBAL.DEPARTMENT"| translate}}</label>
-          <select class="form-control" id="Department" [(ngModel)]="department" name="department" required>
-            <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-            <option *ngFor="let department of departmentList | async" [ngValue]="department.id">{{department.name}}</option>
-            <option *ngFor="let dep of selectedDepartments" [ngValue]="dep.id">{{dep.name}}</option>
-          </select>
-        </div>
 
         <div class="col-lg-4 col-md-6 form-group">
           <label for="Position">{{"GLOBAL.USER_INFO.POSITION"| translate}}</label>
@@ -132,8 +124,19 @@
         </div>
       </div>
 
-      <div class="form-group"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
-      <div class="row Spaced">
+      <div class="form-group">
+        <label>{{"GLOBAL.DEPARTMENT"| translate}}</label>
+      </div>
+
+      <div class="row">
+        <label *ngFor="let department of departmentList | async"
+          class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
+          <input type="checkbox" #box (change)="departmentCheck(department, box.checked)"
+            [checked]="departmentMap.get(department.id)">{{department.name}}</label>
+      </div>
+
+      <div class="form-group Spaced"><label>{{"GLOBAL.NOTIFICATIONS"| translate}}</label></div>
+      <div class="row">
         <label *ngFor="let notification of notificationList | async"
                class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
           <input type="checkbox" #box (change)="notificationCheck(notification, box.checked)"
@@ -141,7 +144,7 @@
           translate}}</label>
       </div>
 
-      <div class="form-group"><label>{{"AGENCY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM?"| translate}}</label></div>
+      <div class="form-group Spaced"><label>{{"AGENCY_ADMIN.STAFF.IS_PART_OF_RESPONSE_TEAM?"| translate}}</label></div>
       <div class="row">
         <label for="RT_no" class="Checkbox--ribbon col-md-1 col-sm-2">
           <input type="radio" name="RT" id="RT_no" [value]="false" [(ngModel)]="isResponseMember">{{"GLOBAL.NO"|
