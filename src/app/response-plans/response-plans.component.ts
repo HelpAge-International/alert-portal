@@ -70,7 +70,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private directorSubmissionRequireMap = new Map<number, boolean>();
   private agencyPlanExpireDuration: number;
 
-  //phase 2 approval
   private directorIdMap = new Map<string, string>()
   private directorModelMap = new Map<string, ModelUserPublic>()
   private countryRegionAgencyIdMap = new Map<string, string>()
@@ -89,7 +88,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private selectedDirectorMap = new Map<string, boolean>()
   private selectedPartnerApprovalIdMap = new Map()
   private countryDirectorExist: boolean
-
 
   constructor(private pageControl: PageControlService,
     private route: ActivatedRoute,
@@ -114,14 +112,12 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         this.agencyService.getAgencyResponsePlanClockSettingsDuration(agencyId)
           .takeUntil(this.ngUnsubscribe)
           .subscribe(duration => {
-            console.log(duration);
             this.agencyPlanExpireDuration = duration;
 
             this.getResponsePlans(this.agencyId);
             this.handleRequireSubmissionTagForLocalAgencyDirector();
             this.getApprovalHierachySettings()
             this.checkIsThereLocalAgencyDirector()
-
           });
       } else {
         this.uid = user.auth.uid;
@@ -136,7 +132,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.agencyService.getAgencyResponsePlanClockSettingsDuration(agencyId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(duration => {
-              console.log(duration);
               this.agencyPlanExpireDuration = duration;
 
               if (this.userType == UserType.PartnerUser) {
@@ -174,7 +169,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private getResponsePlans(id: string) {
     /*Active Plans*/
-    console.log(Constants.APP_STATUS + "/responsePlan/" + id)
     this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + id).takeUntil(this.ngUnsubscribe).subscribe(plans => {
       this.activePlans = [];
       plans.forEach(plan => {
@@ -206,7 +200,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   private expirePlanIfNeed(plan: any, countryId: string, agencyPlanExpireDuration: number) {
     let timeNow = moment().utc().valueOf();
     if ((timeNow - plan.timeUpdated) > agencyPlanExpireDuration) {
-      console.log("expire this plan");
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + plan.$key + "/isActive").set(false);
     }
   }
@@ -286,27 +279,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       };
       if (this.agencyOverview) {
         headers["agencyOverview"] = this.agencyOverview;
-        // this.router.navigate(["/response-plans/view-plan", {
-        //   "id": plan.$key,
-        //   "isViewing": isViewing,
-        //   "countryId": this.countryIdForViewing,
-        //   "agencyId": this.agencyId,
-        //   "canCopy": this.canCopy,
-        //   "agencyOverview": this.agencyOverview
-        // }]);
       }
       if (this.canCopy) {
         headers["canCopy"] = this.canCopy;
       }
-      // else {
-      //   this.router.navigate(["/response-plans/view-plan", {
-      //     "id": plan.$key,
-      //     "isViewing": isViewing,
-      //     "countryId": this.countryIdForViewing,
-      //     "agencyId": this.agencyId,
-      //     "canCopy": this.canCopy
-      //   }]);
-      // }
       headers["isAgencyAdmin"] = this.isAgencyAdmin;
       this.router.navigate(this.isLocalAgency ? ["/local-agency/response-plans/view-plan", headers] : ["/response-plans/view-plan", headers]);
     } else {
@@ -392,16 +368,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         }
       })
     }
-    // this.needShowDialog = this.service.needShowWaringBypassValidation(plan);
     this.planToApproval = plan;
-    console.log(this.planToApproval);
-    // if (this.needShowDialog) {
-    //   jQuery("#dialog-action").modal("show");
-    //   this.dialogTitle = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_TITLE";
-    //   this.dialogContent = "RESPONSE_PLANS.HOME.SUBMIT_WITHOUT_PARTNER_VALIDATION_CONTENT";
-    // } else {
     this.isLocalAgency ? this.confirmDialogLocalAgency() : this.confirmDialog();
-    // }
   }
 
   submitForPartnerValidation(plan) {
@@ -420,8 +388,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
         counter++;
-        console.log(counter);
-        console.log(result);
         if (counter === 1 && result.$value && result.$value != "null") {
           this.directorSubmissionRequireMap.set(1, true);
           this.directorIdMap.set("countryDirector", result.$value)
@@ -437,7 +403,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.directorIdMap.set("globalDirector", result[0].$key)
           this.countryRegionAgencyIdMap.set("globalDirector", this.agencyId)
         }
-        console.log(this.directorIdMap)
         this.initDirectorsModel(this.directorIdMap)
       });
   }
@@ -451,8 +416,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(result => {
         counter++;
-        console.log(counter);
-        console.log(result);
         if (counter === 1 && result.$value && result.$value != null) {
           this.directorSubmissionRequireMap.set(1, true);
           this.directorIdMap.set("countryDirector", result.$value)
@@ -468,7 +431,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.directorIdMap.set("globalDirector", result[0].$key)
           this.countryRegionAgencyIdMap.set("globalDirector", this.agencyId)
         }
-        console.log(this.directorIdMap)
         this.initDirectorsModel(this.directorIdMap)
       });
   }
@@ -500,12 +462,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   confirmDialog() {
-    // if (this.needShowDialog) {
-    //   jQuery("#dialog-action").modal("hide");
-    // }
     if (this.userType == UserType.CountryAdmin || this.userType == UserType.ErtLeader || this.userType == UserType.Ert || this.userType == UserType.CountryDirector) {
       jQuery("#directorSelection").modal("show");
-      console.log(this.planToApproval)
       if (this.planToApproval.approval && this.planToApproval.approval["countryDirector"]) {
         if (Object.keys(this.planToApproval.approval["countryDirector"]).map(key => this.planToApproval.approval["countryDirector"][key])[0] != ApprovalStatus.InProgress) {
           this.countryDirectorSelected = true
@@ -524,67 +482,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.selectedDirectorMap.set("globalDirector", true)
         }
       }
-      //logic for partners
       this.updatePartnerApprovalSelection(this.planToApproval);
-
-      // let approvalData = {};
-      // let countryId = "";
-      // let agencyId = "";
-      // this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
-      //   .flatMap(countryAdmin => {
-      //     countryId = countryAdmin.countryId;
-      //     agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
-      //     return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
-      //   })
-      //   .do(director => {
-      //     if (director && director.$value) {
-      //       // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
-      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.WaitingApproval;
-      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
-      //
-      //       // Send notification to country director
-      //       let notification = new MessageModel();
-      //       notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-      //       notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
-      //       notification.time = new Date().getTime();
-      //       this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
-      //       });
-      //
-      //     } else {
-      //       this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
-      //       this.showAlert();
-      //       return;
-      //     }
-      //   })
-      //   .flatMap(() => {
-      //     return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
-      //   })
-      //   .map(approvalSettings => {
-      //     let setting = [];
-      //     approvalSettings.forEach(item => {
-      //       setting.push(item.$value);
-      //     });
-      //     return setting;
-      //   })
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(approvalSettings => {
-      //     if (approvalSettings[0] == false && approvalSettings[1] == false) {
-      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
-      //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
-      //       this.updatePartnerValidation(countryId, approvalData);
-      //
-      //     } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
-      //       console.log("regional enabled");
-      //       this.updateWithRegionalApproval(agencyId, countryId, approvalData);
-      //     } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-      //       console.log("global enabled");
-      //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
-      //     } else {
-      //       console.log("both directors enabled");
-      //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
-      //       this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
-      //     }
-      //   });
     }
   }
 
@@ -598,7 +496,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           return obj
         })
         .forEach(item => {
-          console.log(item)
           if (item["value"] == ApprovalStatus.InProgress) {
             this.partnerApprovalIdMap.set(item["key"], false)
             this.selectedPartnerApprovalIdMap.set(item["key"], false)
@@ -606,19 +503,11 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             this.partnerApprovalIdMap.set(item["key"], true)
             this.selectedPartnerApprovalIdMap.set(item["key"], true)
           }
-          // if (item["value"] == ApprovalStatus.WaitingApproval) {
-          //   this.partnerApprovalIdMap.set(item["key"], true)
-          // } else if (item["value"] == ApprovalStatus.InProgress) {
-          //   this.partnerApprovalIdMap.set(item["key"], false)
-          // }
         })
     }
   }
 
   confirmDialogLocalAgency() {
-    // if (this.needShowDialog) {
-    //   jQuery("#dialog-action").modal("hide");
-    // }
     if (this.userType == UserType.LocalAgencyAdmin || this.userType == UserType.LocalAgencyDirector || this.userType == UserType.ErtLeader || this.userType == UserType.Ert) {
       jQuery("#directorSelection").modal("show");
 
@@ -640,67 +529,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           this.selectedDirectorMap.set("globalDirector", true)
         }
       }
-      //logic for partners
       this.updatePartnerApprovalSelection(this.planToApproval);
-
-      // let approvalData = {};
-      // let countryId = "";
-      // let agencyId = "";
-      // this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
-      //   .flatMap(countryAdmin => {
-      //     countryId = countryAdmin.countryId;
-      //     agencyId = countryAdmin.agencyId
-      //     return this.af.database.object(Constants.APP_STATUS + "/directorLocalAgency/" + agencyId);
-      //   })
-      //   .do(director => {
-      //     if (director && director.$value) {
-      //       // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
-      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
-      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
-      //
-      //       // Send notification to country director
-      //       let notification = new MessageModel();
-      //       notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-      //       notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
-      //       notification.time = new Date().getTime();
-      //       this.notificationService.saveUserNotificationLocalAgency(director.$value, notification, UserType.LocalAgencyDirector, agencyId).then(() => {
-      //       });
-      //
-      //     } else {
-      //       this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
-      //       this.showAlert();
-      //       return;
-      //     }
-      //   })
-      //   .flatMap(() => {
-      //     return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
-      //   })
-      //   .map(approvalSettings => {
-      //     let setting = [];
-      //     approvalSettings.forEach(item => {
-      //       setting.push(item.$value);
-      //     });
-      //     return setting;
-      //   })
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(approvalSettings => {
-      //     if (approvalSettings[0] == false && approvalSettings[1] == false) {
-      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
-      //       approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
-      //       this.updatePartnerValidation(agencyId, approvalData);
-      //
-      //     } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
-      //       console.log("regional enabled");
-      //       this.updateWithRegionalApprovalLocalAgency(agencyId, approvalData);
-      //     } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-      //       console.log("global enabled");
-      //       this.updateWithGlobalApprovalLocalAgency(this.agencyId, approvalData);
-      //     } else {
-      //       console.log("both directors enabled");
-      //       this.updateWithGlobalApprovalLocalAgency(this.agencyId, approvalData);
-      //       this.updateWithRegionalApprovalLocalAgency(this.agencyId, approvalData);
-      //     }
-      //   });
     }
   }
 
@@ -712,31 +541,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     });
   }
 
-  // private updateWithRegionalApproval(agencyId: string, countryId: string, approvalData: {}) {
-  //
-  //   this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
-  //     .takeUntil(this.ngUnsubscribe)
-  //     .subscribe(id => {
-  //       if (id && id.$value && id.$value != "null") {
-  //         approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/" + id.$value] = ApprovalStatus.WaitingApproval;
-  //
-  //         // Send notification to regional director
-  //         let notification = new MessageModel();
-  //         notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-  //         notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
-  //         notification.time = new Date().getTime();
-  //         this.notificationService.saveUserNotification(id.$value, notification, UserType.RegionalDirector, agencyId, countryId).then(() => {
-  //         });
-  //       }
-  //       this.updatePartnerValidation(countryId, approvalData);
-  //     });
-  // }
   private updateWithRegionalApproval(agencyId: string, countryId: string, approvalData: {}) {
-    console.log("region approval")
-
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .flatMap(id => {
-        console.log(id);
         if (id && id.$value && id.$value != "null") {
           // Send notification to regional director
           let notification = new MessageModel();
@@ -759,11 +566,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private updateWithRegionalApprovalLocalAgency(agencyId: string, approvalData: {}) {
-    console.log("region approval")
-
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + agencyId)
       .flatMap(id => {
-        console.log(id);
         if (id && id.$value && id.$value != "null") {
           // Send notification to regional director
           let notification = new MessageModel();
@@ -795,7 +599,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(globalDirector => {
         if (globalDirector.length > 0 && globalDirector[0].$key) {
-          // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
           approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
 
           // Send notification to global director
@@ -821,7 +624,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .first()
       .subscribe(globalDirector => {
         if (globalDirector.length > 0 && globalDirector[0].$key) {
-          // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
           approvalData["/responsePlan/" + agencyId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + this.agencyId] = ApprovalStatus.WaitingApproval;
 
           // Send notification to global director
@@ -864,16 +666,10 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       return -1;
     }
     let list = Object.keys(approve).map(key => approve[key]);
-    // return list[0] == ApprovalStatus.Approved;
     return list[0];
   }
 
   activatePlan(plan) {
-    // let activateData = {};
-    // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive"] = true;
-    // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/status"] = ApprovalStatus.NeedsReviewing;
-    // activateData["/responsePlan/" + this.countryId + "/" + plan.$key + "/timeUpdated"] = moment().utc().valueOf();
-    // this.af.database.object(Constants.APP_STATUS).update(activateData);
     if (this.isLocalAgency) {
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/isActive").set(true);
       this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.agencyId + "/" + plan.$key + "/status").set(ApprovalStatus.NeedsReviewing);
@@ -990,7 +786,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   selectPartner(partnerId, hasChecked) {
-    console.log((this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId) + "/" + hasChecked)
     let id = this.partnerUserMap.get(partnerId) ? this.partnerUserMap.get(partnerId) : partnerId
     this.partnerApprovalIdMap.set(id, hasChecked)
   }
@@ -1020,12 +815,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   submitPlanToApproval() {
     let approvalData = {};
-    console.log(this.getApprovalStatus("countryDirector"))
-    console.log(this.getApprovalStatus("regionDirector"))
-    console.log(this.getApprovalStatus("globalDirector"))
-    console.log(this.countryDirectorSelected)
-    console.log(this.regionDirectorSelected)
-    console.log(this.globalDirectorSelected)
 
     //check country director
     if (this.countryDirectorSelected) {
@@ -1099,12 +888,9 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
             approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval
 
-            console.log("start create message for partner users***")
-            console.log(k)
             this.userService.getUser(k)
               .first()
               .subscribe(user => {
-                console.log(user)
                 if (user) {
                   // Send notification to country director
                   let notification = new MessageModel();
@@ -1138,67 +924,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     if (approvalData) {
       this.updatePartnerValidation(null, approvalData)
     }
-
-    // this.resetDirectorSelection()
-
-
-    // let countryId = "";
-    // let agencyId = "";
-    // this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[this.userType] + "/" + this.uid)
-    //   .flatMap(countryAdmin => {
-    //     countryId = countryAdmin.countryId;
-    //     agencyId = Object.keys(countryAdmin.agencyAdmin)[0];
-    //     return this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
-    //   })
-    //   .do(director => {
-    //     if (director && director.$value) {
-    //       // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + director.$value] = ApprovalStatus.WaitingApproval;
-    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/countryDirector/" + this.countryId] = ApprovalStatus.WaitingApproval;
-    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/status"] = ApprovalStatus.WaitingApproval;
-    //
-    //       // Send notification to country director
-    //       let notification = new MessageModel();
-    //       notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-    //       notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
-    //       notification.time = new Date().getTime();
-    //       this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
-    //       });
-    //
-    //     } else {
-    //       this.waringMessage = "RESPONSE_PLANS.HOME.ERROR_NO_COUNTRY_DIRECTOR";
-    //       this.showAlert();
-    //       return;
-    //     }
-    //   })
-    //   .flatMap(() => {
-    //     return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/responsePlanSettings/approvalHierachy")
-    //   })
-    //   .map(approvalSettings => {
-    //     let setting = [];
-    //     approvalSettings.forEach(item => {
-    //       setting.push(item.$value);
-    //     });
-    //     return setting;
-    //   })
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe(approvalSettings => {
-    //     if (approvalSettings[0] == false && approvalSettings[1] == false) {
-    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/regionDirector/"] = null;
-    //       approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/"] = null;
-    //       this.updatePartnerValidation(countryId, approvalData);
-    //
-    //     } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
-    //       console.log("regional enabled");
-    //       this.updateWithRegionalApproval(agencyId, countryId, approvalData);
-    //     } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-    //       console.log("global enabled");
-    //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
-    //     } else {
-    //       console.log("both directors enabled");
-    //       this.updateWithGlobalApproval(this.agencyId, countryId, approvalData);
-    //       this.updateWithRegionalApproval(this.agencyId, countryId, approvalData);
-    //     }
-    //   });
   }
 
   private initDirectorsModel(directorIdMap: Map<string, string>) {
@@ -1207,7 +932,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         .first()
         .subscribe(director => {
           this.directorModelMap.set(k, director)
-          console.log(this.directorModelMap)
         })
     })
   }
@@ -1224,7 +948,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
         if (snap.val()) {
           this.countryRegionAgencyIdMap.set("regionDirector", snap.val())
         }
-        console.log(this.countryRegionAgencyIdMap)
       });
   }
 
@@ -1238,7 +961,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
           } else {
             this.agencyApprovalSettingMap.set("globalDirector", setting.$value)
           }
-          console.log(this.agencyApprovalSettingMap)
         })
       });
   }
@@ -1258,8 +980,6 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private getPartnersToApprove(plan) {
     const orgUserMap = new Map<string, string>();
-    // const needValidResponsePlanId = plan.$key;
-
     let partnerOrgIds = [];
 
     if (plan.partnerOrganisations) {
@@ -1297,47 +1017,14 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
       .subscribe(snap => {
         if (snap && snap.val()) {
           orgUserMap.set(snap.val().partnerOrganisationId, snap.key);
-          // console.log(orgUserMap)
-          // let updateData = {};
-          // updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + snap.key] = ApprovalStatus.WaitingApproval;
-          // console.log(updateData);
-          // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-          //   console.log("update success")
-          // }, error => {
-          //   console.log(error.message);
-          // });
-        } else {
-          // console.log("no partner user found!!!!!!!");
-          // console.log(noPartnerUserOrg);
-          // console.log(orgUserMap);
-
-          // let updateData = {};
-          // orgUserMap.forEach((v, k) => {
-          //   if (!v) {
-          //     updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval;
-          //   }
-          // });
-          // console.log(updateData);
-          // this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
-          //   console.log("update success")
-          // }, error => {
-          //   console.log(error.message);
-          // });
-        }
-        console.log(orgUserMap)
+        } 
+    
         this.getPartnerDetail(orgUserMap)
         this.partnerList = CommonUtils.convertMapToKeysInArray(orgUserMap)
-        console.log(this.partnerList)
-        // //update response plan status
-        // if (orgUserMap.size === partnerOrgIds.length) {
-        //   this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key + "/status").set(ApprovalStatus.WaitingApproval);
-        // }
-
       });
   }
 
   private getPartnerDetail(orgUserMap) {
-    console.log(orgUserMap)
     orgUserMap.forEach((v, k) => {
       if (!v) {
         this.service.getPartnerOrgnisation(k)
