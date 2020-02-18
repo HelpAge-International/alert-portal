@@ -1,24 +1,22 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
-import {AlertMessageModel} from "../../model/alert-message.model";
-import {AlertMessageType, ApprovalStatus, UserType} from "../../utils/Enums";
-import {PageControlService} from "../../services/pagecontrol.service";
-import {NetworkService} from "../../services/network.service";
-import {ActivatedRoute, Params, Router} from "@angular/router";
-import {AngularFire, FirebaseListObservable} from "angularfire2";
-import {Constants} from "../../utils/Constants";
-import {ResponsePlanService} from "../../services/response-plan.service";
-import {UserService} from "../../services/user.service";
-import {AgencyService} from "../../services/agency-service.service";
-import {TranslateService} from "@ngx-translate/core";
-import {PartnerOrganisationService} from "../../services/partner-organisation.service";
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
+import { LocalStorageService } from "angular-2-local-storage";
+import { AngularFire, FirebaseListObservable } from "angularfire2";
 import * as moment from "moment";
-import {MessageModel} from "../../model/message.model";
-import {NotificationService} from "../../services/notification.service";
-import {CommonUtils} from "../../utils/CommonUtils";
-import {ModelAgency} from "../../model/agency.model";
-import {LocalStorageService} from "angular-2-local-storage";
-import {ResponsePlan} from "../../model/responsePlan";
+import { Subject } from "rxjs/Subject";
+import { ModelAgency } from "../../model/agency.model";
+import { AlertMessageModel } from "../../model/alert-message.model";
+import { MessageModel } from "../../model/message.model";
+import { AgencyService } from "../../services/agency-service.service";
+import { NetworkService } from "../../services/network.service";
+import { NotificationService } from "../../services/notification.service";
+import { PageControlService } from "../../services/pagecontrol.service";
+import { PartnerOrganisationService } from "../../services/partner-organisation.service";
+import { ResponsePlanService } from "../../services/response-plan.service";
+import { UserService } from "../../services/user.service";
+import { Constants } from "../../utils/Constants";
+import { AlertMessageType, ApprovalStatus, UserType } from "../../utils/Enums";
 
 declare const jQuery: any;
 
@@ -36,11 +34,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private HazardScenariosList = Constants.HAZARD_SCENARIOS;
   private ApprovalStatus = ApprovalStatus;
 
-
   // Models
   private alertMessage: AlertMessageModel = null;
   private alertMessageType = AlertMessageType;
-
 
   //logic
   private networkId: string;
@@ -79,6 +75,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private activePlans: any[] = [];
   private archivedPlans: FirebaseListObservable<any[]>;
   private planToApproval: any;
+  private planToDelete: any;
   private waringMessage: string;
   private notesMap = new Map();
   private needShowDialog: boolean;
@@ -92,17 +89,17 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService,
-              private af: AngularFire,
-              private networkService: NetworkService,
-              private planService: ResponsePlanService,
-              private notificationService: NotificationService,
-              private userService: UserService,
-              private agencyService: AgencyService,
-              private route: ActivatedRoute,
-              private translate: TranslateService,
-              private partnerService: PartnerOrganisationService,
-              private storageService: LocalStorageService,
-              private router: Router) {
+    private af: AngularFire,
+    private networkService: NetworkService,
+    private planService: ResponsePlanService,
+    private notificationService: NotificationService,
+    private userService: UserService,
+    private agencyService: AgencyService,
+    private route: ActivatedRoute,
+    private translate: TranslateService,
+    private partnerService: PartnerOrganisationService,
+    private storageService: LocalStorageService,
+    private router: Router) {
   }
 
   ngOnInit() {
@@ -175,7 +172,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
 
   private networkCountryAccess() {
-    console.log("networkCountryAccess")
     this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
       this.showLoader = true;
       this.uid = user.uid;
@@ -248,28 +244,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         this.getResponsePlans(this.networkId).then(() => {
           this.initAgencyForLocalNetwork()
         })
-        // this.networkService.getAgencyCountryOfficesByNetwork(this.networkId)
-        //   .takeUntil(this.ngUnsubscribe)
-        //   .subscribe(map => {
-        //     this.agencyCountryMap = map;
-        //     this.agenciesNeedToApprove = [];
-        //     if (this.agencyCountryMap) {
-        //       CommonUtils.convertMapToKeysInArray(this.agencyCountryMap).forEach(agencyId => {
-        //         this.userService.getAgencyModel(agencyId)
-        //           .takeUntil(this.ngUnsubscribe)
-        //           .subscribe(model => {
-        //             console.log(model);
-        //             this.agenciesNeedToApprove.push(model);
-        //           });
-        //         //prepare agency region map
-        //         this.networkService.getRegionIdForCountry(this.agencyCountryMap.get(agencyId))
-        //           .takeUntil(this.ngUnsubscribe)
-        //           .subscribe(regionId => {
-        //             this.agencyRegionMap.set(agencyId, regionId);
-        //           });
-        //       });
-        //     }
-        //   });
       });
   }
 
@@ -287,12 +261,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         .subscribe(plans => {
           this.activePlans = [];
           plans.forEach(plan => {
-            console.log(plans)
             if (plan.isActive) {
               this.activePlans.push(plan);
-              console.log(plan.approval);
               this.planApprovalObjMap.set(plan.$key, plan.approval);
-              console.log(this.planApprovalObjMap);
               this.getNotes(plan);
 
               if (this.networkPlanExpireDuration && plan.timeUpdated && plan.status === ApprovalStatus.Approved) {
@@ -321,7 +292,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   private expirePlanIfNeed(plan: any, countryId: string, agencyPlanExpireDuration: number) {
     let timeNow = moment().utc().valueOf();
     if ((timeNow - plan.timeUpdated) > agencyPlanExpireDuration) {
-      console.log("expire this plan");
       this.planService.expirePlan(countryId, plan.$key);
     }
   }
@@ -338,7 +308,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       return -1;
     }
     let list = Object.keys(approve).map(key => approve[key]);
-    // return list[0] == ApprovalStatus.Approved;
     return list[0];
   }
 
@@ -353,7 +322,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
     let notification = new MessageModel();
     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToResend.name});
+    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToResend.name });
     notification.time = new Date().getTime();
 
     if (user == 'countryDirector') {
@@ -432,22 +401,18 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       if (plan.partnerOrganisations) {
         let partnerOrgIds = Object.keys(plan.partnerOrganisations).map(key => plan.partnerOrganisations[key]);
         partnerOrgIds.forEach(partnerOrgId => {
-          console.log(partnerOrgId);
           //check has user or not first
           this.partnerService.getPartnerOrganisation(partnerOrgId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(org => {
-              console.log(org);
               if (org.partners.length != 0) {
                 this.planService.getPartnerBasedOnOrgId(partnerOrgId)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(partnerId => {
                     this.partnersApprovalMap.set(org.id, partnerId);
-                    console.log(this.partnersApprovalMap);
                   });
               } else {
                 this.partnersApprovalMap.set(org.id, org.id);
-                console.log(this.partnersApprovalMap);
               }
             });
         })
@@ -456,7 +421,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   exportStartFund(responsePlan) {
-    let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key})
+    let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), { id: responsePlan.$key })
     this.isViewing ?
       this.router.navigate(['/export-start-fund', values])
       :
@@ -465,14 +430,15 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         "networkCountryId": this.networkId,
         "isLocalNetworkAdmin": true
       } : {
-        id: responsePlan.$key,
-        "networkCountryId": this.networkCountryId
-      }]);
+          id: responsePlan.$key,
+          "networkCountryId": this.networkCountryId
+        }
+      ]);
   }
 
   exportProposal(responsePlan, isExcel: boolean) {
     if (isExcel) {
-      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key}, {excel: 1})
+      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), { id: responsePlan.$key }, { excel: 1 })
       this.isViewing ? this.router.navigate(['/export-proposal', values])
         :
         this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
@@ -481,12 +447,13 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           "networkCountryId": this.networkId,
           "isLocalNetworkAdmin": true
         } : {
-          id: responsePlan.$key,
-          excel: 1,
-          "networkCountryId": this.networkCountryId
-        }]);
+            id: responsePlan.$key,
+            excel: 1,
+            "networkCountryId": this.networkCountryId
+          }
+        ]);
     } else {
-      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), {id: responsePlan.$key}, {excel: 0})
+      let values = Object.assign({}, this.storageService.get(Constants.NETWORK_VIEW_VALUES), { id: responsePlan.$key }, { excel: 0 })
       this.isViewing ? this.router.navigate(['/export-proposal', values])
         :
         this.router.navigate(['/export-proposal', this.isLocalNetworkAdmin ? {
@@ -495,10 +462,11 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
           "networkCountryId": this.networkId,
           "isLocalNetworkAdmin": true
         } : {
-          id: responsePlan.$key,
-          excel: 0,
-          "networkCountryId": this.networkCountryId
-        }]);
+            id: responsePlan.$key,
+            excel: 0,
+            "networkCountryId": this.networkCountryId
+          }
+        ]);
     }
   }
 
@@ -510,11 +478,20 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     updateData["/responsePlan/" + id + "/" + plan.$key + "/isActive"] = false;
     updateData["/responsePlanValidation/" + plan.$key] = null;
     this.networkService.updateNetworkField(updateData);
-    // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + this.countryId + "/" + plan.$key + "/isActive").set(false);
+  }
+
+  showDeleteModalFor(plan) {
+    this.planToDelete = plan
+    jQuery('#delete-plan').modal('show');
+  }
+
+  deletePlan() {
+    let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
+    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + id + "/" + this.planToDelete.$key).set(null)
+    this.closeModal('#delete-plan')
   }
 
   activatePlan(plan) {
-    console.log("activate plan");
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.networkService.setNetworkField("/responsePlan/" + id + "/" + plan.$key + "/isActive", true);
     this.networkService.setNetworkField("/responsePlan/" + id + "/" + plan.$key + "/status", ApprovalStatus.NeedsReviewing);
@@ -582,7 +559,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       this.router.navigate(['network-country/network-plans/create-edit-network-plan', this.isViewing ? networkViewObj : this.isLocalNetworkAdmin ? {
         id: this.responsePlanToEdit.$key,
         "isLocalNetworkAdmin": this.isLocalNetworkAdmin
-      } : {id: this.responsePlanToEdit.$key}]);
+      } : { id: this.responsePlanToEdit.$key }]);
     }
   }
 
@@ -602,7 +579,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     if (this.needShowDialog) {
       jQuery("#dialog-action").modal("hide");
     }
-    this.af.database.object(Constants.APP_STATUS + "/directorCountry", {preserveSnapshot: true})
+    this.af.database.object(Constants.APP_STATUS + "/directorCountry", { preserveSnapshot: true })
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snap => {
         if (snap && snap.val()) {
@@ -630,10 +607,9 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
                     // Send notification to country director
                     let notification = new MessageModel();
                     notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-                    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+                    notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name });
                     notification.time = new Date().getTime();
                     this.notificationService.saveUserNotification(director.$value, notification, UserType.CountryDirector, agencyId, countryId).then(() => {
-                      console.log('we in here');
                     });
 
                   } else {
@@ -661,13 +637,10 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
                     this.updatePartnerValidation(approvalData);
 
                   } else if (approvalSettings[0] != false && approvalSettings[1] == false) {
-                    console.log("regional enabled");
                     this.updateWithRegionalApproval(agencyId, countryId, approvalData);
                   } else if (approvalSettings[0] == false && approvalSettings[1] != false) {
-                    console.log("global enabled");
                     this.updateWithGlobalApproval(agencyId, countryId, approvalData);
                   } else {
-                    console.log("both directors enabled");
                     this.updateWithGlobalApproval(agencyId, countryId, approvalData);
                     this.updateWithRegionalApproval(agencyId, countryId, approvalData);
                   }
@@ -691,21 +664,18 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   private updateWithRegionalApproval(agencyId: string, countryId: string, approvalData: {}) {
-    console.log("region approval");
-
     this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
       .flatMap(id => {
         if (id && id.$value && id.$value != "null") {
-          console.log(id);
           // Send notification to regional director
           let notification = new MessageModel();
           notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name });
           notification.time = new Date().getTime();
           this.notificationService.saveUserNotification(id.$value, notification, UserType.RegionalDirector, agencyId, countryId).then(() => {
           });
 
-          return this.af.database.object(Constants.APP_STATUS + "/regionDirector/" + id.$value + "/regionId", {preserveSnapshot: true});
+          return this.af.database.object(Constants.APP_STATUS + "/regionDirector/" + id.$value + "/regionId", { preserveSnapshot: true });
         }
       })
       .takeUntil(this.ngUnsubscribe)
@@ -729,13 +699,12 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       .subscribe(globalDirector => {
         if (globalDirector.length > 0 && globalDirector[0].$key) {
           let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
-          // approvalData["/responsePlan/" + countryId + "/" + this.planToApproval.$key + "/approval/globalDirector/" + globalDirector[0].$key] = ApprovalStatus.WaitingApproval;
           approvalData["/responsePlan/" + id + "/" + this.planToApproval.$key + "/approval/globalDirector/" + agencyId] = ApprovalStatus.WaitingApproval;
 
           // Send notification to global director
           let notification = new MessageModel();
           notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_TITLE");
-          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", {responsePlan: this.planToApproval.name});
+          notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.RESPONSE_PLAN_APPROVAL_CONTENT", { responsePlan: this.planToApproval.name });
           notification.time = new Date().getTime();
 
           this.notificationService.saveUserNotification(globalDirector[0].$key, notification, UserType.GlobalDirector, agencyId, countryId).then(() => {
@@ -748,9 +717,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   submitForPartnerValidation(plan) {
     let id = this.isLocalNetworkAdmin ? this.networkId : this.networkCountryId;
     this.planService.submitForPartnerValidation(plan, id);
-
-    // //sort out require submission tag
-    // this.handleRequireSubmissionTagForDirectors();
   }
 
   private getDirectorId() {
@@ -814,7 +780,6 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   viewResponsePlan(plan, isViewingFromExternal) {
-    console.log(plan)
     if (this.isViewingFromExternal) {
       let headers = {
         "id": plan.$key,
@@ -851,7 +816,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         "id": plan.$key,
         "networkCountryId": this.networkId,
         "isLocalNetworkAdmin": true
-      } : {"id": plan.$key, "networkCountryId": this.networkCountryId}]);
+      } : { "id": plan.$key, "networkCountryId": this.networkCountryId }]);
     }
   }
 
@@ -861,11 +826,7 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       this.userService.getAgencyModel(agencyId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(model => {
-          console.log(model);
-
-
           this.agenciesNeedToApprove.push(model);
-
         });
     });
   }
