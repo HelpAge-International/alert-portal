@@ -526,7 +526,19 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
       });
     });
   }
+
+  sectorNames(sectors, otherSectorName) {
+    var sectorNames = []
+    if (sectors.length > 0) {
+      for (let sector of sectors) {
+        sector == ResponsePlanSectors.other ? sectorNames.push(otherSectorName + " (Other)") : sectorNames.push(ResponsePlanSectors[sector])
+      }
+      return sectorNames.join(', ')
+    } else {
+      if (sectors == ResponsePlanSectors.other) {
+        return otherSectorName + " (Other)"
+      }
+      return ResponsePlanSectors[sectors]
+    }
+  }
 }
-
-
-

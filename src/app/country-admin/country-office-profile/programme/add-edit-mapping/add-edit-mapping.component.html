@@ -30,24 +30,65 @@
       </div>
     </div>
 
-    <div class="row">
+    <!-- <div class="row">
       <div class="Item__selectable Icon__selectable" *ngFor="let sector of ResponsePlanSectorsList">
         <div (click)="isActive(sector)" [ngClass]="setSelectorClass(sector)"
              class="{{ResponsePlanSectors[sector] | translate | lowercase}}"></div>
         <label>{{ResponsePlanSectors[sector] | translate}}</label>
       </div>
+    </div> -->
+
+    <div class="Selection-row">
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" [class.Selected]="waSHSectorSelected" class="water"
+             (click)="isWaSHSectorSelected()"></div>
+        <label>{{"SECTOR_WASH" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="health" [class.Selected]="healthSectorSelected"
+             (click)="isHealthSectorSelected()"></div>
+        <label>{{"SECTOR_HEALTH" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="shelter" [class.Selected]="shelterSectorSelected"
+             (click)="isShelterSectorSelected()"></div>
+        <label>{{"SECTOR_SHELTER" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="nutrition"
+             [class.Selected]="nutritionSectorSelected"
+             (click)="isNutritionSectorSelected()"></div>
+        <label>{{"SECTOR_NUTRITION" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="food"
+             [class.Selected]="foodSecAndLivelihoodsSectorSelected"
+             (click)="isFoodSecAndLivelihoodsSectorSelected()"></div>
+        <label>{{"SECTOR_FOOD_SECURITY_LIVELIHOOD" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="protection"
+             [class.Selected]="protectionSectorSelected"
+             (click)="isProtectionSectorSelected()"></div>
+        <label>{{"SECTOR_PROTECTION" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="education"
+             [class.Selected]="educationSectorSelected"
+             (click)="isEducationSectorSelected()"></div>
+        <label>{{"SECTOR_EDUCATION" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="camp"
+             [class.Selected]="campManagementSectorSelected"
+             (click)="isCampManagementSectorSelected()"></div>
+        <label>{{"SECTOR_CAMP_MANAGEMENT" | translate}}</label></div>
+      <div class="Item__selectable Icon__selectable">
+        <div onClick="$(this).toggleClass('Selected');" class="misc" [class.Selected]="otherSectorSelected"
+             (click)="isOtherSectorSelected()"></div>
+        <label>{{"SECTOR_OTHER" | translate}}</label></div>
     </div>
 
-    <ng-container *ngIf="programme.sector == ResponsePlansEnum.other">
-      <div class="row Spaced-above">
-        <h6 class="font-weight-bold">Sector Name</h6>
-      </div>
-      <div class="row">
-        <input class="col-sm-4" type="text" placeholder="{{'GLOBAL.PLEASE_ENTER' | translate}}"
+    <div class="row Spaced subitem" *ngIf="otherSectorSelected">
+      <div class="col-lg-6 col-md-6">
+        <label for="O-relate">{{"GLOBAL.PLEASE_SPECIFY" | translate}}</label>
+        <input type="text" class="form-control" id="O-relate" placeholder="{{'GLOBAL.TYPE_HERE' | translate}}"
                [(ngModel)]="programme.otherName">
       </div>
-
-    </ng-container>
+    </div>
 
     <br>
     <div class="row Spaced-above"><h6 class="font-weight-bold">{{"COUNTRY_ADMIN.PROFILE.PROGRAMME.COMMON.TABLE_WHAT" |
