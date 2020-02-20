@@ -1,26 +1,20 @@
-import {Component, OnInit, OnDestroy, Input} from '@angular/core';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {UserService} from "../../../../services/user.service";
-import {Constants} from '../../../../utils/Constants';
-import {ResponsePlanSectors, AlertMessageType, Month} from '../../../../utils/Enums';
-import {AlertMessageModel} from '../../../../model/alert-message.model';
-import {ProgrammeMappingModel} from '../../../../model/programme-mapping.model';
-import {AngularFire} from "angularfire2";
-import {Subject} from "rxjs";
-import {PageControlService} from "../../../../services/pagecontrol.service";
+import { Location } from "@angular/common";
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { TranslateService } from "@ngx-translate/core";
+import { AngularFire } from "angularfire2";
 import * as moment from "moment";
-import {CommonService} from "../../../../services/common.service";
-import {AgencyService} from "../../../../services/agency-service.service"
-import {OperationAreaModel} from "../../../../model/operation-area.model";
-import {Location} from "@angular/common";
-import {CountryAdminHeaderComponent} from "../../../country-admin-header/country-admin-header.component";
-import {NetworkService} from "../../../../services/network.service";
-import {Indicator} from "../../../../model/indicator";
-import {TranslateService} from "@ngx-translate/core";
-import {
-  ModelJsonLocation
-} from "../../../../model/json-location.model";
-import {PartnerOrganisationProjectModel} from "../../../../model/partner-organisation.model";
+import { Subject } from "rxjs";
+import { AlertMessageModel } from '../../../../model/alert-message.model';
+import { Indicator } from "../../../../model/indicator";
+import { OperationAreaModel } from "../../../../model/operation-area.model";
+import { ProgrammeMappingModel } from '../../../../model/programme-mapping.model';
+import { AgencyService } from "../../../../services/agency-service.service";
+import { CommonService } from "../../../../services/common.service";
+import { PageControlService } from "../../../../services/pagecontrol.service";
+import { UserService } from "../../../../services/user.service";
+import { Constants } from '../../../../utils/Constants';
+import { AlertMessageType, Month, ResponsePlanSectors } from '../../../../utils/Enums';
 
 declare var jQuery: any;
 
@@ -239,7 +233,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   saveMapping() {
     this.alertMessage = this.programme.validate();
-    console.log("PROGRAMME: "+this.programme);
 
     if (!this.alertMessage) {
       let dataToSave = this.programme;
@@ -253,9 +246,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       if (!this.programmeId) {
         if (this.countryID) {
           dataToSave.updatedAt = new Date().getTime();
-          console.log("url:"+Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/');
-          console.log("this.programme:"+this.programme);
-          console.log("this.programme.where:"+this.programme.where);
 
           this.af.database.list(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/')
             .push(dataToSave)
@@ -274,7 +264,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
       } else {
         dataToSave.updatedAt = new Date().getTime();
         delete dataToSave.id;
-        //console.log('url',  Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
 
         const newData = {};
         Object.keys(dataToSave).forEach((key) => {
@@ -283,13 +272,9 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
           }
         });
 
-        console.log('data', dataToSave);
-        console.log('new', newData);
-        console.log('url' + Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId);
         this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + this.countryID + '/4WMapping/' + this.programmeId)
           .update(newData)
           .then((newData) => {
-            console.log('saved', newData)
             this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.SUCCESS_EDIT_MAPPING', AlertMessageType.Success);
             this.router.navigate(['/country-admin/country-office-profile/programme/']);
           }).catch((error: any) => {
@@ -382,49 +367,22 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     console.log(this.indicatorData)
   }
 
-  // This function below is to determine the country selected
-  // TODO: Return the array of level1 areas in the country selected.
-  // setCountryLevel(id: any){
-  //   console.log(id);
-  //   this.curCountrySelection(Constants.COUNTRY_LEVELS_VALUES_FILE)
-  //     .takeUntil(this.ngUnsubscribe)
-  //     .subscribe(content => {
-  //       this.countryLevelsValues = content;
-  //       err => console.log(err);
-  //       // TODO: Below needs to return the level1 array of the id selected
-  //       this.curCountrySelection = this.countryLevelsValues.filter(value => value.id === parseInt(id));
-  //     });
-  //
-  // }
-
-
   resetValue() {
-
-    console.log('reset selection');
-    // Reset Values to remove level 2 drop down
     this.levelTwoDisplay.length = 0;
-
   }
 
-  // This function below is to determine the country selected
-  // TODO: Return the array of level1 areas in the country selected.
   setCountryLevel(selectedC) {
     this.programme.where = selectedC;
-    console.log("Country: ", this.programme.where);
-
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
-        // TODO: Below needs to return the level1 array of the id selected
         this.levelOneDisplay = content[selectedC].levelOneValues;
       });
   }
 
   setLevel1Value(selected) {
     this.programme.level1 = selected;
-    console.log("LEVEL 1: ", this.programme.level1);
-    console.log(this.selectedValue, 'preset value');
     for (var i = 0; i < this.levelOneDisplay.length; i++) { 
       var x = this.levelOneDisplay[i];
       if (x['id'] == selected) {
@@ -435,7 +393,6 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   setLevel2Value(selected){
     this.programme.level2 = selected;
-    console.log("LEVEL 2: ", this.programme.level2);
   }
 
   checkTypeof(param: any) {
