@@ -60,8 +60,6 @@
               <button data-toggle="modal" data-target="#sectorSelection"
                       class="btn btn-outline-primary text-uppercase">{{"EDIT" | translate}}
               </button>
-              <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#sectorSelection">{{"EDIT" |-->
-              <!--translate}}</a>-->
             </div>
           </div>
 
@@ -103,23 +101,11 @@
           </div>
           <div class="Line-row margin-left"></div>
           <div *ngFor="let m of mapping.get(agency.$key); let mappingIndex = index">
-
-
             <div class="row">
-              <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"dd/MM/yyyy") :
-                '-'}}</p>
-              </div> <!--Updated-->
-              <div class="col-sm-2">
-                <p>
-                  <img src="assets/images/icons/{{ResponsePlanSectorsIcons[m.sector] | lowercase }}.svg"
-                       alt="{{ResponsePlanSectorsIcons[m.sector] | translate}}"> {{ResponsePlanSectors[m.sector] |
-                  translate}}
-                </p>
-              </div>
-              <!--Sector-->
+              <div class="col-sm-1"><p style="text-align: center;">{{m.updatedAt ? (m.updatedAt | date:"dd/MM/yyyy") : '-'}}</p></div> <!--Updated-->
+              <div class="col-sm-2 text-capitalize">{{ sectorNames(m.sector, m.otherName) }}</div><!--Sector-->
               <div class="col-sm-2"><p>{{m.what ? m.what : ''}}</p></div> <!--What-->
-              <div class="col-sm-2"><p *ngIf="locationObjs[mappingIndex]">{{ locationObjs[mappingIndex].country |
-                translate }}{{ locationObjs[mappingIndex].areas }}</p></div> <!--Where-->
+              <div class="col-sm-2"><p *ngIf="locationObjs[mappingIndex]">{{ locationObjs[mappingIndex].country | translate }}{{ locationObjs[mappingIndex].areas }}</p></div> <!--Where-->
               <div class="col-sm-2"><p>{{m.toWho ? m.toWho : ''}}</p></div> <!--To Who-->
               <div class="col-sm-1"><p>{{m.when | date:"dd/MM/yyyy"}}</p></div> <!--When-->
               <div class="col-sm-1"><p>{{m.toDate | date:"dd/MM/yyyy"}}</p></div> <!--To-->

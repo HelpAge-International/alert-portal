@@ -235,62 +235,59 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   private updateSectorSelections(sectors: any[]) {
-    sectors.forEach(sector => {
-      switch (Number(sector)) {
-        case ResponsePlanSectors.wash: {
-          this.waSHSectorSelected = true;
-          break;
-        }
-        case ResponsePlanSectors.health: {
-          this.healthSectorSelected = true; 
-          break;
-        }
-        case ResponsePlanSectors.shelter: {
-          this.shelterSectorSelected = true; 
-          break;
-        }
-        case ResponsePlanSectors.nutrition: {
-          this.nutritionSectorSelected = true; 
-          break;
-        }
-        case ResponsePlanSectors.foodSecurityAndLivelihoods: {
-          this.foodSecAndLivelihoodsSectorSelected = true; 
-          break;
-        }
-        case ResponsePlanSectors.protection: {
-          this.protectionSectorSelected = true; 
-          break;
-        }
-        case ResponsePlanSectors.education: {
-          this.educationSectorSelected = true; 
-          break;
-        }
-        case ResponsePlanSectors.campmanagement: {
-          this.campManagementSectorSelected = true; 
-          break;
-        }
-        case ResponsePlanSectors.other: {
-          this.otherSectorSelected = true; 
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-      this.selectedSectors.push(sector)
-    });
-  }
-
-  setSelectorClass(sectorID: any) {
-    var selected = '';  
-    if (this.programme.sector == sectorID) {
-      selected = 'Selected';
+    if (sectors.length > 0) {
+      sectors.forEach(sector => {
+        this.switchSelectedSector(sector)
+        this.selectedSectors.push(sector)
+      });
+    } else {
+      this.switchSelectedSector(sectors)
+      this.selectedSectors.push(String(sectors))
     }
-    return selected;
   }
 
-  isActive(sectorID: any) {
-    this.selectedSectors.push(sectorID)
+  private switchSelectedSector(sector: any) {
+    switch (Number(sector)) {
+      case ResponsePlanSectors.wash: {
+        this.waSHSectorSelected = true;
+        break;
+      }
+      case ResponsePlanSectors.health: {
+        this.healthSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.shelter: {
+        this.shelterSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.nutrition: {
+        this.nutritionSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.foodSecurityAndLivelihoods: {
+        this.foodSecAndLivelihoodsSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.protection: {
+        this.protectionSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.education: {
+        this.educationSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.campmanagement: {
+        this.campManagementSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.other: {
+        this.otherSectorSelected = true; 
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   }
 
   backButton() {

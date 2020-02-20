@@ -30,14 +30,6 @@
       </div>
     </div>
 
-    <!-- <div class="row">
-      <div class="Item__selectable Icon__selectable" *ngFor="let sector of ResponsePlanSectorsList">
-        <div (click)="isActive(sector)" [ngClass]="setSelectorClass(sector)"
-             class="{{ResponsePlanSectors[sector] | translate | lowercase}}"></div>
-        <label>{{ResponsePlanSectors[sector] | translate}}</label>
-      </div>
-    </div> -->
-
     <div class="Selection-row">
       <div class="Item__selectable Icon__selectable">
         <div onClick="$(this).toggleClass('Selected');" [class.Selected]="waSHSectorSelected" class="water"

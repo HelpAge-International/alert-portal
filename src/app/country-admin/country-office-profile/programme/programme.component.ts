@@ -10,6 +10,7 @@ import {Subject} from "rxjs/Subject";
 import {AddEditMappingProgrammeComponent} from "./add-edit-mapping/add-edit-mapping.component";
 import {CommonService} from "../../../services/common.service";
 import {AgencyService} from "../../../services/agency-service.service";
+import { TranslateService } from "@ngx-translate/core";
 
 declare var jQuery: any;
 
@@ -75,7 +76,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private jsonService: CommonService,
               private agencyService: AgencyService,
-              private af: AngularFire) {
+              private af: AngularFire,
+              private translate: TranslateService) {
 
   }
 
@@ -531,7 +533,49 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
     var sectorNames = []
     if (sectors.length > 0) {
       for (let sector of sectors) {
-        sector == ResponsePlanSectors.other ? sectorNames.push(otherSectorName + " (Other)") : sectorNames.push(ResponsePlanSectors[sector])
+        var sectorName = "" 
+        switch (Number(sector)) {
+          case ResponsePlanSectors.wash: {
+            sectorName = "SECTOR_WASH"
+            break;
+          }
+          case ResponsePlanSectors.health: {
+            sectorName = "SECTOR_HEALTH"
+            break;
+          }
+          case ResponsePlanSectors.shelter: {
+            sectorName = "SECTOR_SHELTER"
+            break;
+          }
+          case ResponsePlanSectors.nutrition: {
+            sectorName = "SECTOR_NUTRITION"
+            break;
+          }
+          case ResponsePlanSectors.foodSecurityAndLivelihoods: {
+            sectorName = "SECTOR_FOOD_SECURITY_LIVELIHOOD" 
+            break;
+          }
+          case ResponsePlanSectors.protection: {
+            sectorName = "SECTOR_PROTECTION" 
+            break;
+          }
+          case ResponsePlanSectors.education: {
+            sectorName = "SECTOR_EDUCATION" 
+            break;
+          }
+          case ResponsePlanSectors.campmanagement: {
+            sectorName = "SECTOR_CAMP_MANAGEMENT" 
+            break;
+          }
+          case ResponsePlanSectors.other: {
+            sectorName = "SECTOR_OTHER" 
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+        sector == ResponsePlanSectors.other ? sectorNames.push(otherSectorName + " (Other)") : sectorNames.push(this.translate.instant(sectorName))
       }
       return sectorNames.join(', ')
     } else {
