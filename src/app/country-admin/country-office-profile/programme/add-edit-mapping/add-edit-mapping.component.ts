@@ -46,6 +46,16 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
     ResponsePlanSectors.other
   ];
 
+  private waSHSectorSelected: boolean = false;
+  private healthSectorSelected: boolean = false;
+  private shelterSectorSelected: boolean = false;
+  private nutritionSectorSelected: boolean = false;
+  private foodSecAndLivelihoodsSectorSelected: boolean = false;
+  private protectionSectorSelected: boolean = false;
+  private educationSectorSelected: boolean = false;
+  private campManagementSectorSelected: boolean = false;
+  private otherSectorSelected: boolean = false;
+
   private Month = Constants.MONTH;
   private MonthList: number[] = [
     Month.january, Month.february, Month.march, Month.april,
@@ -55,6 +65,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   private mapping: any[] = [];
   private sectorExpertise: any[] = [];
+  private selectedSectors: string[] = [];
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private programmeId: string;
   private programme: any;
@@ -197,6 +208,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.selectedCountry = programme.where;
         this.selectedValue = programme.level1;
         this.selectedValueL2 = programme.level2;
+        this.updateSectorSelections(programme.sector)
       });
   }
 
@@ -212,19 +224,64 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         this.selectedCountry = programme.where;
         this.selectedValue = programme.level1;
         this.selectedValueL2 = programme.level2;
+        this.updateSectorSelections(programme.sector)
       });
   }
 
-  setSelectorClass(sectorID: any) {
-    var selected = '';
-    if (this.programme.sector == sectorID) {
-      selected = 'Selected';
+  private updateSectorSelections(sectors: any[]) {
+    if (sectors.length > 0) {
+      sectors.forEach(sector => {
+        this.switchSelectedSector(sector)
+        this.selectedSectors.push(sector)
+      });
+    } else {
+      this.switchSelectedSector(sectors)
+      this.selectedSectors.push(String(sectors))
     }
-    return selected;
   }
 
-  isActive(sectorID: any) {
-    this.programme.sector = sectorID;
+  private switchSelectedSector(sector: any) {
+    switch (Number(sector)) {
+      case ResponsePlanSectors.wash: {
+        this.waSHSectorSelected = true;
+        break;
+      }
+      case ResponsePlanSectors.health: {
+        this.healthSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.shelter: {
+        this.shelterSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.nutrition: {
+        this.nutritionSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.foodSecurityAndLivelihoods: {
+        this.foodSecAndLivelihoodsSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.protection: {
+        this.protectionSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.education: {
+        this.educationSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.campmanagement: {
+        this.campManagementSectorSelected = true; 
+        break;
+      }
+      case ResponsePlanSectors.other: {
+        this.otherSectorSelected = true; 
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   }
 
   backButton() {
@@ -232,6 +289,7 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   saveMapping() {
+    this.programme.sector = this.selectedSectors
     this.alertMessage = this.programme.validate();
 
     if (!this.alertMessage) {
@@ -331,6 +389,69 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         });
       }
     }
+  }
+
+  private updateSectorsList(sectorSelected, sectorEnum) {
+    if (sectorSelected) {
+      // Add
+      if (!(this.selectedSectors.includes(sectorEnum))) {
+        this.selectedSectors.push(sectorEnum);
+      }
+    } 
+    else {
+      // Remove
+      if (this.selectedSectors.includes(sectorEnum)) {
+        let index: number = this.selectedSectors.indexOf(sectorEnum, 0);
+        if (index > -1) {
+          this.selectedSectors.splice(index, 1);
+        }
+      }
+    }    
+  }
+
+  isWaSHSectorSelected() {
+    this.waSHSectorSelected = !this.waSHSectorSelected;
+    this.updateSectorsList(this.waSHSectorSelected, ResponsePlanSectors.wash);
+  }
+
+  isHealthSectorSelected() {
+    this.healthSectorSelected = !this.healthSectorSelected;
+    this.updateSectorsList(this.healthSectorSelected, ResponsePlanSectors.health);
+  }
+
+  isShelterSectorSelected() {
+    this.shelterSectorSelected = !this.shelterSectorSelected;
+    this.updateSectorsList(this.shelterSectorSelected, ResponsePlanSectors.shelter);
+  }
+
+  isNutritionSectorSelected() {
+    this.nutritionSectorSelected = !this.nutritionSectorSelected;
+    this.updateSectorsList(this.nutritionSectorSelected, ResponsePlanSectors.nutrition);
+  }
+
+  isFoodSecAndLivelihoodsSectorSelected() {
+    this.foodSecAndLivelihoodsSectorSelected = !this.foodSecAndLivelihoodsSectorSelected;
+    this.updateSectorsList(this.foodSecAndLivelihoodsSectorSelected, ResponsePlanSectors.foodSecurityAndLivelihoods);
+  }
+
+  isProtectionSectorSelected() {
+    this.protectionSectorSelected = !this.protectionSectorSelected;
+    this.updateSectorsList(this.protectionSectorSelected, ResponsePlanSectors.protection);
+  }
+
+  isEducationSectorSelected() {
+    this.educationSectorSelected = !this.educationSectorSelected;
+    this.updateSectorsList(this.educationSectorSelected, ResponsePlanSectors.education);
+  }
+
+  isCampManagementSectorSelected() {
+    this.campManagementSectorSelected = !this.campManagementSectorSelected;
+    this.updateSectorsList(this.campManagementSectorSelected, ResponsePlanSectors.campmanagement);
+  }
+
+  isOtherSectorSelected() {
+    this.otherSectorSelected = !this.otherSectorSelected;
+    this.updateSectorsList(this.otherSectorSelected, ResponsePlanSectors.other);
   }
 
   setWhenDate(when) {
