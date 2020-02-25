@@ -748,9 +748,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.checkSection7();
     this.checkSection8();
     this.checkSection9();
-    // if (this.forEditing) {
-    //   this.continueButtonPressedOnSection9();
-    // }
     this.checkSection10();
   }
 
@@ -1729,9 +1726,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     if (numOfActivities != 0 && this.checkSectorInfo()) {
       this.section7Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[6], true);
-      this.section9();
       this.doublerCounting();
-      //this.continueButtonPressedOnSection9();
+      this.section9();
     } else {
       this.section7Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[6], false);
@@ -1795,8 +1791,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
    */
   section9() {
     console.log("in section 9");
-
-    this.doublerCounting();
     let doubleCounting = {};
 
     for (let i = 0; i < 6; i++) {
@@ -1842,6 +1836,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private checkSection9() {
+    this.doublerCounting()
     if (this.isDoubleCountingDone) {
       this.section9Status = "GLOBAL.COMPLETE";
       this.sectionsCompleted.set(this.sections[8], true);
@@ -1849,7 +1844,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
       this.section9Status = "GLOBAL.INCOMPLETE";
       this.sectionsCompleted.set(this.sections[8], false);
     }
-    this.isDoubleCountingDone = true;
   }
 
   doublerCounting() {
@@ -1864,14 +1858,9 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
     this.activityMap.forEach((v,) => {
       modelPlanList = modelPlanList.concat(v);
     });
-    let beneficiaryList = [];
-    modelPlanList.forEach(modelPlan => {
-      beneficiaryList = beneficiaryList.concat(modelPlan.beneficiary);
-    });
 
     modelPlanList.forEach(modelPlan => {
       if (!modelPlan.hasFurtherBeneficiary) {
-        console.log("in--")
         modelPlan.beneficiary.forEach(item => {
           if (item["age"] == AgeRange.Less18 && item["gender"] == Gender.feMale) {
             this.numberFemaleLessThan18 += Number(item["value"]);
@@ -1890,7 +1879,6 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
 
       } else {
         modelPlan.furtherBeneficiary.forEach(item => {
-          console.log("out--")
           if (item["age"] < 3 && item["gender"] == Gender.feMale) {
             this.numberFemaleLessThan18 += Number(item["value"]);
           } else if (item["age"] == 3 && item["gender"] == Gender.feMale) {
@@ -1905,29 +1893,18 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
             this.numberMalegreaterThan50 += Number(item["value"]);
           }
         })
-
       }
     });
 
-    if (this.forEditing && !this.isDoubleCountingDone) {
-      console.log("in true")
-      this.adjustedFemaleLessThan18 = this.loadResponsePlan.doubleCounting[0].value;
-      this.adjustedFemale18To50 = this.loadResponsePlan.doubleCounting[1].value;
-      this.adjustedFemalegreaterThan50 = this.loadResponsePlan.doubleCounting[2].value;
-      this.adjustedMaleLessThan18 = this.loadResponsePlan.doubleCounting[3].value;
-      this.adjustedMale18To50 = this.loadResponsePlan.doubleCounting[4].value;
-      this.adjustedMalegreaterThan50 = this.loadResponsePlan.doubleCounting[5].value;
-      console.log("Female 18 "+this.adjustedFemaleLessThan18)
-
-    } else {
-      console.log("in false")
-      this.adjustedFemaleLessThan18 = this.numberFemaleLessThan18;
-      this.adjustedFemale18To50 = this.numberFemale18To50;
-      this.adjustedFemalegreaterThan50 = this.numberFemalegreaterThan50;
-      this.adjustedMaleLessThan18 = this.numberMaleLessThan18;
-      this.adjustedMale18To50 = this.numberMale18To50;
-      this.adjustedMalegreaterThan50 = this.numberMalegreaterThan50;
-   }
+    if (!(this.forEditing && this.isDoubleCountingDone)) {
+      this.adjustedFemaleLessThan18 = Number(this.numberFemaleLessThan18);
+      this.adjustedFemale18To50 = Number(this.numberFemale18To50);
+      this.adjustedFemalegreaterThan50 = Number(this.numberFemalegreaterThan50);
+      this.adjustedMaleLessThan18 = Number(this.numberMaleLessThan18);
+      this.adjustedMale18To50 = Number(this.numberMale18To50);
+      this.adjustedMalegreaterThan50 = Number(this.numberMalegreaterThan50);
+    }
+    this.isDoubleCountingDone = true;
   }
 
   /**
