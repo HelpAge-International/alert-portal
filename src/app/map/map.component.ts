@@ -2,12 +2,12 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Countries} from "../utils/Enums";
+import {Countries, CountriesMapsSearchInterface} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../services/user.service";
 import {AgencyModulesEnabled, PageControlService} from "../services/pagecontrol.service";
-import {MapCountry, MapService} from "../services/map.service";
+import {MapCountry, OlMapService} from "../services/ol.map.service";
 import {TranslateService} from "@ngx-translate/core";
 import {SettingsService} from "../services/settings.service";
 import {AgencyService} from "../services/agency-service.service";
@@ -16,12 +16,8 @@ import {Observable} from "rxjs/Observable";
 import 'ol/ol.css';
 import Map from "ol/Map";
 import Tile from "ol/layer/Tile";
-import OSM from "ol/source/OSM";
-import View from "ol/View";
-import GeoJSON from 'ol/format/GeoJSON';
 import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import {Fill, Stroke, Style, Text} from 'ol/style';
+import View from "ol/View";
 
 declare var jQuery: any;
 
@@ -38,7 +34,7 @@ export class MapComponent implements OnInit, OnDestroy {
   public uid: string;
   public mapHelper: SuperMapComponents;
 
-  public mapService: MapService;
+  public mapService: OlMapService;
 
   public department: SDepHolder;
   private countries: MapCountry[] = [];
@@ -51,6 +47,9 @@ export class MapComponent implements OnInit, OnDestroy {
 
   private isDirector: boolean;
   private userTypePath: string;
+
+  private raster: Tile;
+  private vector: VectorLayer;
 
   // public DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
 
@@ -73,117 +72,90 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.initialiseMap()
+    this.loadMapData()
+    // this.initialiseMap()
   }
 
-  initialiseMap() {
-    var style = new Style({
-      fill: new Fill({
-        color: 'rgba(255, 255, 255, 0.6)'
-      }),
-      stroke: new Stroke({
-        color: '#319FD3',
-        width: 1
-      }),
-      text: new Text({
-        font: '12px Calibri,sans-serif',
-        fill: new Fill({
-          color: '#000'
-        }),
-        stroke: new Stroke({
-          color: '#fff',
-          width: 3
-        })
-      })
-    });
-    
-    var vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        url: 'https://raw.githubusercontent.com/openlayers/ol3/6838fdd4c94fe80f1a3c98ca92f84cf1454e232a/examples/data/geojson/countries.geojson',
-        format: new GeoJSON()
-      }),
-      style: function(feature) {
-        style.getText().setText(feature.get('name'));
-        return style;
-      }
-    });
-    
-    var map = new Map({
-      layers: [vectorLayer],
-      target: 'map',
-      view: new View({
-        center: [0, 0],
-        zoom: 1
-      })
-    });
-    
-    var highlightStyle = new Style({
-      stroke: new Stroke({
-        color: '#f00',
-        width: 1
-      }),
-      fill: new Fill({
-        color: 'rgba(255,0,0,0.1)'
-      }),
-      text: new Text({
-        font: '12px Calibri,sans-serif',
-        fill: new Fill({
-          color: '#000'
-        }),
-        stroke: new Stroke({
-          color: '#f00',
-          width: 3
-        })
-      })
-    });
-    
-    var featureOverlay = new VectorLayer({
-      source: new VectorSource(),
-      map: map,
-      style: function(feature) {
-        highlightStyle.getText().setText(feature.get('name'));
-        return highlightStyle;
-      }
-    });
-    
-    var highlight;
-    var displayFeatureInfo = function(pixel) {
-    
-      var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
-        return feature;
-      });
-    
-      var info = document.getElementById('info');
-      if (feature) {
-        info.innerHTML = feature.getId() + ': ' + feature.get('name');
-      } else {
-        info.innerHTML = '&nbsp;';
-      }
-    
-      if (feature !== highlight) {
-        if (highlight) {
-          featureOverlay.getSource().removeFeature(highlight);
+  loadMapData() {
+    this.department = new SDepHolder("Something");
+    this.department.location = -1;
+    this.department.departments.push(new DepHolder("Loading", 100, 1));
+
+    this.route.params
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((params: Params) => {
+        if (params["isDirector"]) {
+          this.isDirector = params["isDirector"];
         }
-        // if (feature) {
-        //   featureOverlay.getSource().addFeature(feature);
-        // }
-        highlight = feature;
-      }
-    
-    };
-    
-    map.on('pointermove', function(evt) {
-      if (evt.dragging) {
-        return;
-      }
-      var pixel = map.getEventPixel(evt.originalEvent);
-      displayFeatureInfo(pixel);
-    });
-    
-    map.on('click', function(evt) {
-      displayFeatureInfo(evt.pixel);
-    });
+
+        this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+          this.uid = user.uid;
+          this.userTypePath = Constants.USER_PATHS[userType];
+
+          this.mapService = OlMapService.init(this.af, this.ngUnsubscribe);
+          this.mapService.initialiseMap(this.uid, userType, countryId, agencyId, systemId,
+            ((countries, green, yellow, vector, rastor) => {
+              this.countries = countries;
+              this.minThreshGreen = green;
+              this.minThreshYellow = yellow;
+              this.vector = vector;
+              this.raster = rastor
+            }));
+            
+            
+          // this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/departments", {preserveSnapshot: true})
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe((snap) => {
+          //     this.DEPARTMENT_MAP.clear();
+          //     this.DEPARTMENT_MAP.set("unassigned", this.translate.instant("UNASSIGNED"));
+          //     for (let x of snap) {
+          //       this.DEPARTMENT_MAP.set(x.key, x.val().name);
+          //     }
+
+          //     //try to add country local departments here
+          //     if (this.isDirector) {
+          //       this.agencyService.getAllCountryIdsForAgency(agencyId)
+          //         .mergeMap(ids => Observable.from(ids))
+          //         .mergeMap(id => this.settingService.getCountryLocalDepartments(agencyId, id))
+          //         .takeUntil(this.ngUnsubscribe)
+          //         .subscribe(depts => depts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name)))
+          //     } else {
+          //       this.settingService.getCountryLocalDepartments(agencyId, countryId)
+          //         .takeUntil(this.ngUnsubscribe)
+          //         .subscribe(localDepts => {
+          //           localDepts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name))
+          //         })
+          //     }
+          //   });
+
+          // /** Load in the markers on the map! */
+          // PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {
+          //   this.moduleAccess = isEnabled;
+          //   if (isEnabled.riskMonitoring) {
+          //     this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (marker) => {
+          //       marker.setMap(this.mapHelper.map);
+          //     });
+          //   }
+          // });
+
+          // /** Get the Agency logo */
+          // this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (logo) => {
+          //   this.agencyLogo = logo;
+          // });
+        });
+      });
+
+      var map = new Map({
+        target: 'map',
+        layers: [this.raster, this.vector],
+        view: new View({
+          center: [0, 0],
+          zoom: 2
+        })
+      });
   }
+
+
 
 
 

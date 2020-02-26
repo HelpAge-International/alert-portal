@@ -377,6 +377,7 @@ import {SharedModule} from "./commons/shared.module";
 import {SystemAdminModule} from "./system-admin/system-admin.module";
 import {ExportPersonalService} from "./services/export-personal";
 import { PrivacyPolicyComponent } from "./privacy-policy/privacy-policy.component";
+import {OlMapService} from "./services/ol.map.service";
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -809,7 +810,8 @@ const firebaseAuthConfig = {
     PartnerOrganisationService,
     SurgeCapacityService,
     FieldOfficeService,
-    BugReportingService
+    BugReportingService,
+    OlMapService
   ],
   bootstrap: [AppComponent]
 })
