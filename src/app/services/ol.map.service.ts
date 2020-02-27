@@ -15,7 +15,8 @@ import GeocoderResult = google.maps.GeocoderResult;
 import {NetworkMapCountry} from "./networkmap.service";
 
 import 'ol/ol.css';
-// import Map from "ol/Map";
+import OlMap from "ol/Map";
+import View from "ol/View";
 import Tile from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import GeoJSON from 'ol/format/GeoJSON';
@@ -56,9 +57,6 @@ export class OlMapService {
   private departments: ModelDepartment[] = [];
   private date: number = (new Date()).getTime();
 
-  private raster: Tile;
-  private vector: VectorLayer;
-
   // Other hazards text translator service
   public otherHazardMap: Map<string, string> = new Map<string, string>();
 
@@ -68,7 +66,7 @@ export class OlMapService {
   private holderMandatedActions: Map<string, MapPrepAction> = new Map<string, MapPrepAction>();
   private modulesEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
 
-  private done: (countries: MapCountry[], green: number, yellow: number, vector: VectorLayer, tile: Tile) => void;
+  private done: (countries: MapCountry[], green: number, yellow: number) => void;
   private clickedCountry: (country: string) => void;
 
   private countryId: string;
@@ -86,7 +84,7 @@ export class OlMapService {
     this.initialiseMap(uid, userType, countryId, agencyId, systemId, done);
   }
 
-  public initialiseMap(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number, vector: VectorLayer, tile: Tile) => void)  {
+  public initialiseMap(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
     this.uid = uid;
     this.agencyId = agencyId;
     this.systemId = systemId;
@@ -121,39 +119,40 @@ export class OlMapService {
       value.calculateDepartments();
       value.calculateHazardsList();
       this.listCountries.push(value);
+      this.initMap(CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location))
+
       let position = 0;
       if (this.clickedCountry != null) {
         let count: number = 0;
         value.hazards.forEach((_, hazardScenario) => {
           console.log("For " + value.countryId + " -> " + Countries[value.location]);
-          this.initMap(CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location))
-          // this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-          //   if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-          //     let pos = {
-          //       lng: geoResult[0].geometry.location.lng() + position,
-          //       lat: geoResult[0].geometry.location.lat()
-          //     };
-          //     let marker = new google.maps.Marker({
-          //       position: pos,
-          //       icon: HazardImages.init().get(hazardScenario)
-          //     });
-          //     marker.setMap(this.map);
-          //     count++;
-          //     if (count % 2 == 0) {
-          //       position *= -1;
-          //     }
-          //     else {
-          //       position += 1.2;
-          //     }
-          //   }
-          // });
+          this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
+            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
+              let pos = {
+                lng: geoResult[0].geometry.location.lng() + position,
+                lat: geoResult[0].geometry.location.lat()
+              };
+              let marker = new google.maps.Marker({
+                position: pos,
+                icon: HazardImages.init().get(hazardScenario)
+              });
+              marker.setMap(this.map);
+              count++;
+              if (count % 2 == 0) {
+                position *= -1;
+              }
+              else {
+                position += 1.2;
+              }
+            }
+          });
         });
       }
     });
     if (this.clickedCountry != null) {
       this.doneWithEmbeddedStyles(this.clickedCountry);
     }
-    this.done(this.listCountries, this.threshGreen, this.threshYellow, this.vector, this.raster);
+    this.done(this.listCountries, this.threshGreen, this.threshYellow);
   }
 
   private downloadThreshold(fun: () => void) {
@@ -344,11 +343,11 @@ export class OlMapService {
   }
 
   initMap(countryName) {
-    this.raster = new Tile({
+    var raster = new Tile({
       source: new OSM(),
     });
 
-    this.vector = new VectorLayer({
+    var vector = new VectorLayer({
       source: new VectorSource({
         format: new GeoJSON(),
         url: 'https://raw.githubusercontent.com/openlayers/ol3/6838fdd4c94fe80f1a3c98ca92f84cf1454e232a/examples/data/geojson/countries.geojson'
@@ -366,6 +365,15 @@ export class OlMapService {
             });
           }
       }
+    });
+
+    var map = new OlMap({
+      target: 'map',
+      layers: [raster, vector],
+      view: new View({
+        center: [0, 0],
+        zoom: 2
+      })
     });
   }
 

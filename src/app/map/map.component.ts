@@ -13,12 +13,6 @@ import {SettingsService} from "../services/settings.service";
 import {AgencyService} from "../services/agency-service.service";
 import {Observable} from "rxjs/Observable";
 
-import 'ol/ol.css';
-import Map from "ol/Map";
-import Tile from "ol/layer/Tile";
-import VectorLayer from 'ol/layer/Vector';
-import View from "ol/View";
-
 declare var jQuery: any;
 
 @Component({
@@ -38,7 +32,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   public department: SDepHolder;
   private countries: MapCountry[] = [];
-  // private agencyMap: Map<string, string> = new Map<string, string>();
+  private agencyMap: Map<string, string> = new Map<string, string>();
 
   public agencyLogo: string;
 
@@ -48,10 +42,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private isDirector: boolean;
   private userTypePath: string;
 
-  private raster: Tile;
-  private vector: VectorLayer;
-
-  // public DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
+  public DEPARTMENT_MAP: Map<string, string> = new Map<string, string>();
 
   public moduleAccess: AgencyModulesEnabled = new AgencyModulesEnabled();
   private map;
@@ -94,12 +85,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
           this.mapService = OlMapService.init(this.af, this.ngUnsubscribe);
           this.mapService.initialiseMap(this.uid, userType, countryId, agencyId, systemId,
-            ((countries, green, yellow, vector, rastor) => {
+            ((countries, green, yellow) => {
               this.countries = countries;
               this.minThreshGreen = green;
               this.minThreshYellow = yellow;
-              this.vector = vector;
-              this.raster = rastor
             }));
             
             
@@ -145,14 +134,7 @@ export class MapComponent implements OnInit, OnDestroy {
         });
       });
 
-      var map = new Map({
-        target: 'map',
-        layers: [this.raster, this.vector],
-        view: new View({
-          center: [0, 0],
-          zoom: 2
-        })
-      });
+      
   }
 
 
