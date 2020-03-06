@@ -153,9 +153,9 @@ export class OlMapService {
 
     this.initMap()
 
-    if (this.clickedCountry != null) {
-      this.doneWithEmbeddedStyles(this.clickedCountry);
-    }
+    // if (this.clickedCountry != null) {
+      // this.doneWithEmbedde dStyles(this.clickedCountry);
+    // }
     this.done(this.listCountries, this.threshGreen, this.threshYellow);
   }
 
@@ -347,11 +347,29 @@ export class OlMapService {
   }
 
   private namesOfAffectedCountries() {
-    var countries = []
-    for(var country of this.listCountries) {
-      var name = CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(country.location)
-      countries.push(name)
+    var countries: [Country]
+    let country: Country = new Country('', '')
+
+    for (let x of this.listCountries) {
+      var name = CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(x.location)      
+      console.log(name);
+console.log(country.name);
+
+      country.name = name != undefined || name != null ? name : ''
+      
+      if (x.overall() == -1) {
+        country.colour = 'blue'
+      } else if (x.overall() >= this.threshGreen) {
+        country.colour = 'red'
+      } else if (x.overall() >= this.threshYellow) {
+        country.colour = 'yellow'
+      } else {
+        country.colour = 'red'
+      }
+
+      countries.push(country)
     }
+
     return countries
   }
 
@@ -360,23 +378,24 @@ export class OlMapService {
       source: new OSM(),
     });
 
-    let names = this.namesOfAffectedCountries()
-
+    let countries = this.namesOfAffectedCountries() as [Country]
+    console.log(countries);
+    
     this.vector = new VectorLayer({
       source: new VectorSource({
         format: new GeoJSON(),
         url: 'https://raw.githubusercontent.com/openlayers/ol3/6838fdd4c94fe80f1a3c98ca92f84cf1454e232a/examples/data/geojson/countries.geojson'
       }),
       style: function (feature, res) {
-        for (var name of names) {
-          if (feature.get("name") == name) {
+        for (var country of countries) {
+          if (feature.get("name") == country.name) {
             return new Style({
               stroke: new Stroke({
-                color: 'red',
+                color: String(country.colour),
                 width: 2
               }),
               fill: new Fill({
-                color: 'red'
+                color: String(country.colour)
               })
             });
           }
@@ -506,6 +525,16 @@ export class OlMapService {
       s += ")";
       return s;
     }
+  }
+}
+
+export class Country {
+  public name: String
+  public colour: String
+
+  constructor(name: String, colour: String) {
+    this.name = name
+    this.colour = colour
   }
 }
 
