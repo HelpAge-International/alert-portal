@@ -57,6 +57,9 @@ export class OlMapService {
   private departments: ModelDepartment[] = [];
   private date: number = (new Date()).getTime();
 
+  private raster: Tile
+  private vector: VectorLayer
+
   // Other hazards text translator service
   public otherHazardMap: Map<string, string> = new Map<string, string>();
 
@@ -119,13 +122,11 @@ export class OlMapService {
       value.calculateDepartments();
       value.calculateHazardsList();
       this.listCountries.push(value);
-      this.initMap(CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location))
 
       let position = 0;
       if (this.clickedCountry != null) {
         let count: number = 0;
         value.hazards.forEach((_, hazardScenario) => {
-          console.log("For " + value.countryId + " -> " + Countries[value.location]);
           this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
             if (status == GeocoderStatus.OK && geoResult.length >= 1) {
               let pos = {
@@ -149,6 +150,9 @@ export class OlMapService {
         });
       }
     });
+
+    this.initMap()
+
     if (this.clickedCountry != null) {
       this.doneWithEmbeddedStyles(this.clickedCountry);
     }
@@ -342,18 +346,30 @@ export class OlMapService {
     }
   }
 
-  initMap(countryName) {
-    var raster = new Tile({
+  private namesOfAffectedCountries() {
+    var countries = []
+    for(var country of this.listCountries) {
+      var name = CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(country.location)
+      countries.push(name)
+    }
+    return countries
+  }
+
+  private initMap() {
+    this.raster = new Tile({
       source: new OSM(),
     });
 
-    var vector = new VectorLayer({
+    let names = this.namesOfAffectedCountries()
+
+    this.vector = new VectorLayer({
       source: new VectorSource({
         format: new GeoJSON(),
         url: 'https://raw.githubusercontent.com/openlayers/ol3/6838fdd4c94fe80f1a3c98ca92f84cf1454e232a/examples/data/geojson/countries.geojson'
       }),
       style: function (feature, res) {
-          if (feature.get("name") == countryName) {
+        for (var name of names) {
+          if (feature.get("name") == name) {
             return new Style({
               stroke: new Stroke({
                 color: 'red',
@@ -364,12 +380,13 @@ export class OlMapService {
               })
             });
           }
+        }
       }
     });
 
     var map = new OlMap({
       target: 'map',
-      layers: [raster, vector],
+      layers: [this.raster, this.vector],
       view: new View({
         center: [0, 0],
         zoom: 2
