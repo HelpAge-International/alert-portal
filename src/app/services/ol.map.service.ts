@@ -346,16 +346,13 @@ export class OlMapService {
     }
   }
 
-  private namesOfAffectedCountries() {
-    var countries: [Country]
-    let country: Country = new Country('', '')
+  private getAffectedCountries() {
+    var countries = new Array()
 
     for (let x of this.listCountries) {
       var name = CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(x.location)      
-      console.log(name);
-console.log(country.name);
-
-      country.name = name != undefined || name != null ? name : ''
+      let country: Country = new Country('', '')
+      country.name = name
       
       if (x.overall() == -1) {
         country.colour = 'blue'
@@ -369,7 +366,6 @@ console.log(country.name);
 
       countries.push(country)
     }
-
     return countries
   }
 
@@ -378,8 +374,7 @@ console.log(country.name);
       source: new OSM(),
     });
 
-    let countries = this.namesOfAffectedCountries() as [Country]
-    console.log(countries);
+    let countries = this.getAffectedCountries() as [Country]
     
     this.vector = new VectorLayer({
       source: new VectorSource({
