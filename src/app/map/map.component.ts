@@ -13,6 +13,17 @@ import {SettingsService} from "../services/settings.service";
 import {AgencyService} from "../services/agency-service.service";
 import {Observable} from "rxjs/Observable";
 
+import 'ol/ol.css';
+import OlMap from "ol/Map";
+import View from "ol/View";
+import Tile from "ol/layer/Tile";
+import OSM from "ol/source/OSM";
+import GeoJSON from 'ol/format/GeoJSON';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import {Fill, Stroke, Style, Text} from 'ol/style';
+
+
 declare var jQuery: any;
 
 @Component({
@@ -64,7 +75,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadMapData()
-    // this.initialiseMap()
   }
 
   loadMapData() {
@@ -84,57 +94,193 @@ export class MapComponent implements OnInit, OnDestroy {
           this.userTypePath = Constants.USER_PATHS[userType];
 
           this.mapService = OlMapService.init(this.af, this.ngUnsubscribe);
-          this.mapService.initialiseMap(this.uid, userType, countryId, agencyId, systemId,
+          this.mapService.initMap(this.uid, userType, countryId, agencyId, systemId,
             ((countries, green, yellow) => {
               this.countries = countries;
               this.minThreshGreen = green;
               this.minThreshYellow = yellow;
-            }));
-            
-            
-          // this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/departments", {preserveSnapshot: true})
-          //   .takeUntil(this.ngUnsubscribe)
-          //   .subscribe((snap) => {
-          //     this.DEPARTMENT_MAP.clear();
-          //     this.DEPARTMENT_MAP.set("unassigned", this.translate.instant("UNASSIGNED"));
-          //     for (let x of snap) {
-          //       this.DEPARTMENT_MAP.set(x.key, x.val().name);
-          //     }
+              this.initialiseMap(countries)
+            }),
+            (countryClicked) => {
+              if (this.countries != null) {
+                this.openMinimumPreparednessModal(countryClicked);
+              }
+            });
 
-          //     //try to add country local departments here
-          //     if (this.isDirector) {
-          //       this.agencyService.getAllCountryIdsForAgency(agencyId)
-          //         .mergeMap(ids => Observable.from(ids))
-          //         .mergeMap(id => this.settingService.getCountryLocalDepartments(agencyId, id))
-          //         .takeUntil(this.ngUnsubscribe)
-          //         .subscribe(depts => depts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name)))
-          //     } else {
-          //       this.settingService.getCountryLocalDepartments(agencyId, countryId)
-          //         .takeUntil(this.ngUnsubscribe)
-          //         .subscribe(localDepts => {
-          //           localDepts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name))
-          //         })
-          //     }
-          //   });
+          this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/departments", {preserveSnapshot: true})
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe((snap) => {
+              this.DEPARTMENT_MAP.clear();
+              this.DEPARTMENT_MAP.set("unassigned", this.translate.instant("UNASSIGNED"));
+              for (let x of snap) {
+                this.DEPARTMENT_MAP.set(x.key, x.val().name);
+              }
 
-          // /** Load in the markers on the map! */
-          // PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {
-          //   this.moduleAccess = isEnabled;
-          //   if (isEnabled.riskMonitoring) {
-          //     this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (marker) => {
-          //       marker.setMap(this.mapHelper.map);
-          //     });
-          //   }
-          // });
+              //try to add country local departments here
+              if (this.isDirector) {
+                this.agencyService.getAllCountryIdsForAgency(agencyId)
+                  .mergeMap(ids => Observable.from(ids))
+                  .mergeMap(id => this.settingService.getCountryLocalDepartments(agencyId, id))
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(depts => depts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name)))
+              } else {
+                this.settingService.getCountryLocalDepartments(agencyId, countryId)
+                  .takeUntil(this.ngUnsubscribe)
+                  .subscribe(localDepts => {
+                    localDepts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name))
+                  })
+              }
+            });
 
-          // /** Get the Agency logo */
-          // this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (logo) => {
-          //   this.agencyLogo = logo;
-          // });
+          /** Load in the markers on the map! */
+          PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {
+            this.moduleAccess = isEnabled;
+            if (isEnabled.riskMonitoring) {
+              this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (marker) => {
+                marker.setMap(this.mapHelper.map);
+              });
+            }
+          });
+
+          /** Get the Agency logo */
+          this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (logo) => {
+            this.agencyLogo = logo;
+          });
         });
       });
+  }
 
-      
+  initialiseMap(countries) {
+    var raster = new Tile({
+      source: new OSM(),
+    });
+
+    var vector = new VectorLayer({
+      source: new VectorSource({
+        format: new GeoJSON(),
+        url: 'https://raw.githubusercontent.com/openlayers/ol3/6838fdd4c94fe80f1a3c98ca92f84cf1454e232a/examples/data/geojson/countries.geojson'
+      }),
+      style: this.mapStyle()
+    });
+
+    var map = new OlMap({
+      target: 'map',
+      layers: [raster, vector],
+      view: new View({
+        center: [0, 0],
+        zoom: 2
+      })
+    });
+
+    var featureOverlay = new VectorLayer({
+      source: new VectorSource(),
+      map: map,
+      style: this.mapStyle()
+    });
+
+    var highlight;
+    var feature;
+
+    var displayFeatureInfo = function(pixel) {
+      feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+        return feature;
+      });
+    
+      var info = document.getElementById('info');
+      if (feature) {
+        info.innerHTML = feature.getId() + ': ' + feature.get('name');
+      } else {
+        info.innerHTML = '&nbsp;';
+      }
+    
+      if (feature !== highlight) {
+        if (highlight) {
+          featureOverlay.getSource().removeFeature(highlight);
+        }
+        if (feature) {
+          featureOverlay.getSource().addFeature(feature);
+        }
+        highlight = feature;
+      }
+    };
+
+    map.on('pointermove', function(evt) {
+      if (evt.dragging) {
+        return;
+      }
+      var pixel = map.getEventPixel(evt.originalEvent);
+      displayFeatureInfo(pixel);
+    });
+
+    map.on('click', function(evt) {
+      if (feature != undefined) {
+        displayFeatureInfo(evt.pixel)
+        
+        for (let x of countries) {
+          var name = CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(x.location)
+
+          if (feature.get("name") == name) {
+            jQuery("#minimum-prep-modal-" + Countries[x.location]).modal("show");
+          } 
+        }
+      }
+    });
+  }
+
+  private mapStyle() {
+    let countries = this.getAffectedCountries() as [Country]
+    return function (feature, res) {
+      for (var country of countries) {
+        if (feature.get("name") == country.name) {
+          return new Style({
+            stroke: new Stroke({
+              color: String(country.colour),
+              width: 2
+            }),
+            fill: new Fill({
+              color: String(country.colour)
+            })
+          });
+        }
+      }
+    }
+  }
+
+  private getAffectedCountries() {
+    var countries = new Array()
+
+    for (let x of this.countries) {
+      var name = CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(x.location)      
+      let country: Country = new Country('', '')
+      country.name = name
+
+      if (x.overall() == -1) {
+        country.colour = 'blue'
+      } else if (x.overall() >= this.minThreshGreen) {
+        country.colour = 'red'
+      } else if (x.overall() >= this.minThreshYellow) {
+        country.colour = 'yellow'
+      } else {
+        country.colour = 'red'
+      }
+      countries.push(country)
+    }
+    return countries
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  public getCountryCode(location: number) {
+    return Countries[location];
+  }
+
+  public openMinimumPreparednessModal(countryCode: string) {
+    if (this.moduleAccess.minimumPreparedness) {
+      jQuery("#minimum-prep-modal-" + countryCode).modal("show");
+    }
   }
 
 
@@ -246,36 +392,33 @@ export class MapComponent implements OnInit, OnDestroy {
   //             }
   //           });
 
-  //         /** Load in the markers on the map! */
-  //         PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {
-  //           this.moduleAccess = isEnabled;
-  //           if (isEnabled.riskMonitoring) {
-  //             this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (marker) => {
-  //               marker.setMap(this.mapHelper.map);
-  //             });
-  //           }
-  //         });
+          // /** Load in the markers on the map! */
+          // PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], isEnabled => {
+          //   this.moduleAccess = isEnabled;
+          //   if (isEnabled.riskMonitoring) {
+          //     this.mapHelper.markersForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (marker) => {
+          //       marker.setMap(this.mapHelper.map);
+          //     });
+          //   }
+          // });
 
-  //         /** Get the Agency logo */
-  //         this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (logo) => {
-  //           this.agencyLogo = logo;
-  //         });
+          // /** Get the Agency logo */
+          // this.mapHelper.logoForAgencyAdmin(this.uid, Constants.USER_PATHS[userType], (logo) => {
+          //   this.agencyLogo = logo;
+          // });
   //       });
   //     });
   // }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
-  }
+  
+}
 
-  public getCountryCode(location: number) {
-    return Countries[location];
-  }
+export class Country {
+  public name: String
+  public colour: String
 
-  public openMinimumPreparednessModal(countryCode: string) {
-    if (this.moduleAccess.minimumPreparedness) {
-      jQuery("#minimum-prep-modal-" + countryCode).modal("show");
-    }
+  constructor(name: String, colour: String) {
+    this.name = name
+    this.colour = colour
   }
 }

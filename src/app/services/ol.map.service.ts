@@ -82,17 +82,23 @@ export class OlMapService {
     return x;
   }
 
-  public initCountries(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void) {
-    this.clickedCountry = null;
-    this.initialiseMap(uid, userType, countryId, agencyId, systemId, done);
+  public initMap(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
+    this.clickedCountry = countryClicked;
+    this.init(uid, userType, countryId, agencyId, systemId, done);
   }
 
-  public initialiseMap(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
+  public initCountries(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void) {
+    this.clickedCountry = null;
+    this.init(uid, userType, countryId, agencyId, systemId, done);
+  }
+
+  public init(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
     this.uid = uid;
     this.agencyId = agencyId;
     this.systemId = systemId;
     this.done = done;
     this.countryId = countryId
+
 
     // Download everything we need then set the parallel actions calls going
     this.downloadThreshold(() => {
@@ -151,11 +157,8 @@ export class OlMapService {
       }
     });
 
-    this.initMap()
+    // this.formatMap(this.clickedCountry)
 
-    // if (this.clickedCountry != null) {
-      // this.doneWithEmbedde dStyles(this.clickedCountry);
-    // }
     this.done(this.listCountries, this.threshGreen, this.threshYellow);
   }
 
@@ -369,7 +372,7 @@ export class OlMapService {
     return countries
   }
 
-  private initMap() {
+  private formatMap(countryClicked: (country: string) => void) {
     this.raster = new Tile({
       source: new OSM(),
     });
@@ -405,6 +408,53 @@ export class OlMapService {
         center: [0, 0],
         zoom: 2
       })
+    });
+
+    var featureOverlay = new VectorLayer({
+      source: new VectorSource(),
+      map: map,
+      style: new Style({
+        stroke: new Stroke({
+          color: '#f00',
+          width: 1
+        }),
+        fill: new Fill({
+          color: 'rgba(255,0,0,0.1)'
+        })
+      })
+    });
+
+    var highlight;
+    var feature;
+
+    var displayFeatureInfo = function(pixel) {
+    
+      feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+        return feature;
+      });
+    
+      var info = document.getElementById('info');
+      if (feature) {
+        info.innerHTML = feature.getId() + ': ' + feature.get('name');
+      } else {
+        info.innerHTML = '&nbsp;';
+      }
+    
+      if (feature !== highlight) {
+        if (highlight) {
+          featureOverlay.getSource().removeFeature(highlight);
+        }
+        if (feature) {
+          featureOverlay.getSource().addFeature(feature);
+        }
+        highlight = feature;
+      }
+    
+    };
+
+    map.on('click', function(evt) {
+      console.log("clicked: " + feature.get('name'));
+      displayFeatureInfo(evt.pixel)
     });
   }
 
