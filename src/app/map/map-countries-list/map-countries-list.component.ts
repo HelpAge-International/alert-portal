@@ -83,7 +83,7 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
       this.initDepartments();
 
       // Initialise the countries
-      this.mapService.initCountries(this.uid, userType, countryId, agencyId, systemId, (countries, minGreen, minYellow) => {
+      this.mapService.init(this.uid, userType, countryId, agencyId, systemId, (countries, minGreen, minYellow) => {
         this.countries = countries;
         this.minThreshGreen = minGreen;
         this.minThreshYellow = minYellow;

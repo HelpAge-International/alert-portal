@@ -1,24 +1,17 @@
-import {Subject} from "rxjs/Subject";
-import {AngularFire} from "angularfire2";
-import {Constants} from "../utils/Constants";
-import {
-  ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface, HazardScenario,
-  UserType
-} from "../utils/Enums";
-import {PrepActionService} from "./prepactions.service";
-import {ModelDepartment} from "../model/department.model";
-import {AgencyModulesEnabled, PageControlService} from "./pagecontrol.service";
-import {ModelRegion} from "../model/region.model";
+import { AngularFire } from "angularfire2";
+import { Subject } from "rxjs/Subject";
+import { ModelDepartment } from "../model/department.model";
+import { ModelRegion } from "../model/region.model";
+import { Constants } from "../utils/Constants";
+import { ActionLevel, ActionType, AlertLevels, Countries, UserType } from "../utils/Enums";
+import { AgencyModulesEnabled, PageControlService } from "./pagecontrol.service";
+import { PrepActionService } from "./prepactions.service";
 import GeocoderStatus = google.maps.GeocoderStatus;
-import {HazardImages} from "../utils/HazardImages";
 import GeocoderResult = google.maps.GeocoderResult;
-import {NetworkMapCountry} from "./networkmap.service";
 /**
  * Created by jordan on 09/07/2017.
  */
-
 export class MapService {
-
   public static COLOUR_BLUE = "#66A8C6";
   public static COLOUR_RED = "#CD2811";
   public static COLOUR_YELLOW = "#E3A700";
@@ -56,11 +49,7 @@ export class MapService {
   private modulesEnabled: AgencyModulesEnabled = new AgencyModulesEnabled();
 
   private done: (countries: MapCountry[], green: number, yellow: number) => void;
-  private clickedCountry: (country: string) => void;
-
   private countryId: string;
-
-
 
   public static init(af: AngularFire, ngUnsubscribe: Subject<void>): MapService {
     let x: MapService = new MapService();
@@ -70,21 +59,7 @@ export class MapService {
     return x;
   }
 
-  public initMap(elementId: string, uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
-    // Download everything we need then set the parallel actions calls going
-    if (this.map == null) {
-      this.initBlankMap(elementId);
-    }
-    this.clickedCountry = countryClicked;
-    this.initialiseMap(uid, userType, countryId, agencyId, systemId, done);
-  }
-
-  public initCountries(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void) {
-    this.clickedCountry = null;
-    this.initialiseMap(uid, userType, countryId, agencyId, systemId, done);
-  }
-
-  private initialiseMap(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
+  public init(uid: string, userType: UserType, countryId:string, agencyId: string, systemId: string, done:(countries: MapCountry[], minGreen: number, minYellow: number) => void)  {
     this.uid = uid;
     this.agencyId = agencyId;
     this.systemId = systemId;
@@ -119,37 +94,7 @@ export class MapService {
       value.calculateDepartments();
       value.calculateHazardsList();
       this.listCountries.push(value);
-      let position = 0;
-      if (this.clickedCountry != null) {
-        let count: number = 0;
-        value.hazards.forEach((_, hazardScenario) => {
-          console.log("For " + value.countryId + " -> " + Countries[value.location]);
-          this.geocoder.geocode({"address": CountriesMapsSearchInterface.getEnglishLocationFromEnumValue(value.location)}, (geoResult: GeocoderResult[], status: GeocoderStatus) => {
-            if (status == GeocoderStatus.OK && geoResult.length >= 1) {
-              let pos = {
-                lng: geoResult[0].geometry.location.lng() + position,
-                lat: geoResult[0].geometry.location.lat()
-              };
-              let marker = new google.maps.Marker({
-                position: pos,
-                icon: HazardImages.init().get(hazardScenario)
-              });
-              marker.setMap(this.map);
-              count++;
-              if (count % 2 == 0) {
-                position *= -1;
-              }
-              else {
-                position += 1.2;
-              }
-            }
-          });
-        });
-      }
     });
-    if (this.clickedCountry != null) {
-      this.doneWithEmbeddedStyles(this.clickedCountry);
-    }
     this.done(this.listCountries, this.threshGreen, this.threshYellow);
   }
 
@@ -164,6 +109,7 @@ export class MapService {
         }
       });
   }
+
   private downloadDefaultClockSettings(fun: () => void) {
     if(this.countryId == null) {
       this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
@@ -175,8 +121,7 @@ export class MapService {
             fun();
           }
         });
-    }
-    else {
+    } else {
       this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/clockSettings", {preserveSnapshot: true})
         .takeUntil(this.ngUnsubscribe)
         .subscribe((snap) => {
@@ -187,6 +132,7 @@ export class MapService {
         });
     }
   }
+
   private downloadDepartments(fun: () => void) {
     this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -230,7 +176,6 @@ export class MapService {
 
   private beginDownloadAllActions() {
     this.downloadAllCountries()
-    // this.downloadAllCHSActions();
     this.downloadAllMandatedActions();
   }
 
@@ -335,7 +280,6 @@ export class MapService {
   private doneDownloadingAndProcessingActions() {
     this.asyncWaitActionsCount--;
     if (this.asyncWaitActionsCount == 0) {
-      // Everything is done. Init the map!
       this.doneDownloadingAllActions();
     }
   }
@@ -355,7 +299,6 @@ export class MapService {
                 }
               }
             }
-            console.log(snapshot.val());
             if (hazardRedAlert.get(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName) != true) {
               hazardRedAlert.set(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName, res);
             }
@@ -369,11 +312,9 @@ export class MapService {
             this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
               .takeUntil(this.ngUnsubscribe)
               .subscribe((snap) => {
-                console.log(snap.key);
-                console.log(snap.val());
+              
                 if (snap.val() != null) {
                   this.otherHazardMap.set(snap.key, snap.val().name);
-                  console.log(this.otherHazardMap);
                 }
               });
           }
@@ -389,8 +330,6 @@ export class MapService {
         }
         this.doneDownloadingAndProcessingActions();
       });
-
-    // Populate actions
   }
 
   public getRegionsForAgency(agencyId: string, funct: (key: string, region: ModelRegion) => void) {
@@ -406,376 +345,8 @@ export class MapService {
       });
   }
 
-  /**
-   * Map initialisation stuff
-   */
-  public initBlankMap(elementId: string) {
-    this.initBlankMapObj(this.map, elementId);
-  }
-  public initBlankMapObj(map: google.maps.Map, elementId: string) {
-    let uluru = {lat: 20, lng: 0};
-    this.map = new google.maps.Map(document.getElementById(elementId), {
-      zoom: 2,
-      center: uluru,
-      mapTypeControlOptions: {
-        mapTypeIds: []
-      },
-      streetViewControl: false,
-      styles: [
-        {
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#b0b1b3"
-            }
-          ]
-        },
-        {
-          elementType: "labels",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              "color": "#523735"
-            }
-          ]
-        },
-        {
-          featureType: "administrative",
-          elementType: "geometry.stroke",
-          stylers: [
-            {
-              "color": "#c9b2a6"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.country",
-          elementType: "geometry.stroke",
-          stylers: [
-            {
-              "color": "#f0f0f1"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.country",
-          elementType: "labels",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.land_parcel",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.land_parcel",
-          elementType: "geometry.stroke",
-          stylers: [
-            {
-              "color": "#dcd2be"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.land_parcel",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              "color": "#ae9e90"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.locality",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.neighborhood",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.province",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "landscape.man_made",
-          stylers: [
-            {
-              "color": "#b0b1b3"
-            }
-          ]
-        },
-        {
-          featureType: "landscape.natural",
-          elementType: "geometry.fill",
-          stylers: [
-            {
-              "color": "#b0b1b3"
-            }
-          ]
-        },
-        {
-          featureType: "landscape.natural.terrain",
-          stylers: [
-            {
-              "color": "#b0b1b3"
-            }
-          ]
-        },
-        {
-          featureType: "poi",
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#dfd2ae"
-            }
-          ]
-        },
-        {
-          featureType: "poi",
-          elementType: "labels.text",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "poi",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              "color": "#93817c"
-            }
-          ]
-        },
-        {
-          featureType: "poi.park",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "poi.business",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "poi.park",
-          elementType: "geometry.fill",
-          stylers: [
-            {
-              "color": "#a5b076"
-            }
-          ]
-        },
-        {
-          featureType: "poi.park",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              "color": "#447530"
-            }
-          ]
-        },
-        {
-          featureType: "road",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "road",
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#f5f1e6"
-            }
-          ]
-        },
-        {
-          featureType: "road",
-          elementType: "labels",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "road",
-          elementType: "labels.icon",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "road.arterial",
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#fdfcf8"
-            }
-          ]
-        },
-        {
-          featureType: "road.highway",
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#f8c967"
-            }
-          ]
-        },
-        {
-          featureType: "road.highway",
-          elementType: "geometry.stroke",
-          stylers: [
-            {
-              "color": "#e9bc62"
-            }
-          ]
-        },
-        {
-          featureType: "road.highway.controlled_access",
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#e98d58"
-            }
-          ]
-        },
-        {
-          featureType: "road.highway.controlled_access",
-          elementType: "geometry.stroke",
-          stylers: [
-            {
-              "color": "#db8555"
-            }
-          ]
-        },
-        {
-          featureType: "road.local",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              "color": "#806b63"
-            }
-          ]
-        },
-        {
-          featureType: "transit",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "transit.line",
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#dfd2ae"
-            }
-          ]
-        },
-        {
-          featureType: "transit.line",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              "color": "#8f7d77"
-            }
-          ]
-        },
-        {
-          featureType: "transit.line",
-          elementType: "labels.text.stroke",
-          stylers: [
-            {
-              "color": "#ebe3cd"
-            }
-          ]
-        },
-        {
-          featureType: "transit.station",
-          elementType: "geometry",
-          stylers: [
-            {
-              "color": "#dfd2ae"
-            }
-          ]
-        },
-        {
-          featureType: "water",
-          elementType: "geometry.fill",
-          stylers: [
-            {
-              "color": "#e5eff7"
-            }
-          ]
-        },
-        {
-          featureType: "water",
-          elementType: "labels.text",
-          stylers: [
-            {
-              "visibility": "off"
-            }
-          ]
-        },
-        {
-          featureType: "water",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              "color": "#92998d"
-            }
-          ]
-        }
-      ]
-    });
-  }
-
   /** Function for where **/
   private doneWithEmbeddedStyles(countryClicked: (country: string) => void) {
-
     let blue: string[] = [];
     let red: string[] = [];
     let yellow: string[] = [];
@@ -795,86 +366,6 @@ export class MapService {
         red.push(Countries[x.location]);
       }
     }
-
-    let layer = new google.maps.FusionTablesLayer({
-      suppressInfoWindows: true,
-      query: {
-        select: '*',
-        from: '1Y4YEcr06223cs93DmixwCGOsz4jzXW_p4UTWzPyi',
-        where: MapService.arrayToQuote(red.concat(yellow.concat(green.concat(blue))))
-      },
-      styles: [
-        {
-          polygonOptions: {
-            fillColor: '#f00ff9',
-            strokeOpacity: 0.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(blue),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_BLUE,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
-          },
-          polylineOptions: {
-            strokeColor: "#FFFFFF",
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(red),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_RED,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
-          },
-          polylineOptions: {
-            strokeColor: "#FFFFFF",
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(yellow),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_YELLOW,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
-          },
-          polylineOptions: {
-            strokeColor: "#FFFFFF",
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(green),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_GREEN,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: "#FFFFFF"
-          },
-          polylineOptions: {
-            strokeColor: "#FFFFFF",
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        }
-      ]
-    });
-    layer.setMap(this.map);
-    google.maps.event.addListener(layer, 'click', function (e) {
-      console.log(e.row.ISO_2DIGIT.value);
-      countryClicked(e.row.ISO_2DIGIT.value);
-      // let c: Countries = <Countries>Countries["GB"];
-
-    });
   }
 
   /** Convert array of countries to string list **/
@@ -894,8 +385,15 @@ export class MapService {
     }
   }
 }
+export class Country {
+  public name: String
+  public colour: String
 
-
+  constructor(name: String, colour: String) {
+    this.name = name
+    this.colour = colour
+  }
+}
 export class MapCountry {
   public location: number;
   public countryId: string;
@@ -911,8 +409,6 @@ export class MapCountry {
   }
 
   public calculateDepartments() {
-
-
     let depMap: Map<string, MapDepartment> = new Map<string, MapDepartment>();
     this.actionMap.forEach((value, key) => {
       let department = (value.department ? value.department : 'unassigned');
@@ -931,8 +427,6 @@ export class MapCountry {
   public calculateHazardsList() {
     this.hazardScenarioList = [];
     this.hazards.forEach((value, key) => {
-      console.log(key);
-      console.log(value);
       if (value) {
         this.hazardScenarioList.push(key);
       }
@@ -962,7 +456,6 @@ export class MapCountry {
 }
 
 export class MapDepartment {
-
   constructor(id: string) {
     this.id = id;
   }
@@ -1024,10 +517,6 @@ export class MapPrepAction {
     }
     else if (this.level == ActionLevel.MPA) {
       if (this.calculatedIsComplete != null) {
-        console.log("this.isCompleteAt " + this.isCompleteAt);
-        console.log("this.calculatedClock " + this.calculatedClock);
-        console.log("date " + date);
-        
         return this.isCompleteAt + this.calculatedClock > date;
       }
     }

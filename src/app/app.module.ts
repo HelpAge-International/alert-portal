@@ -378,7 +378,6 @@ import {SystemAdminModule} from "./system-admin/system-admin.module";
 import {ExportPersonalService} from "./services/export-personal";
 import { PrivacyPolicyComponent } from "./privacy-policy/privacy-policy.component";
 
-
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
 }

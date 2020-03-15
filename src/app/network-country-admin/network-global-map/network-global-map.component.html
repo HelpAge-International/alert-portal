@@ -29,7 +29,8 @@
     </div>
     <p>{{"AGENCY_ADMIN.SETTINGS.MODULE_NAME.MAP_KEY_VALUE" | translate}}</p>
     <div class="Ribbon__section__wrap Spaced">
-      <div id="global-map" style="height: 500px;"></div>
+      <div id="map" class="map"></div>
+      <div id="info">&nbsp;</div>
     </div>
     <div *ngFor="let country of networkMapService.countries" class="modal fade"  id="minimum-prep-modal-{{getCountryCode(country.location)}}"
          tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

@@ -20,7 +20,8 @@
       "prefix": "app",
       "styles": [
         "../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-        "styles.scss"
+        "styles.scss",
+        "../node_modules/ol/ol.css"
       ],
       "scripts": [
       ],
