@@ -18,7 +18,6 @@
     <div class="Ribbon__section__wrap Spaced">
       <div id="map" class="map"></div>
       <div id="info">&nbsp;</div>
-      <!-- <div id="global-map" style="height: 500px;"></div> -->
     </div>
     <div *ngIf="(countries != null)">
       <div *ngFor="let x of countries" class="modal fade" id="minimum-prep-modal-{{getCountryCode(x.location)}}"
