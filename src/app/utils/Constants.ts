@@ -9,7 +9,7 @@ import {
 export class Constants {
   //TODO CHANGE APP MODULE AS WELL FOR LIVE
   static APP_STATUS = "/test";
-  static VERSION = "1.2.1.2";
+  static VERSION = "1.2.1.3";
 
   /* ENABLING THE MAINTENANCE PAGE */
   static SHOW_MAINTENANCE_PAGE: boolean = false;
