@@ -166,7 +166,6 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   }
 
   resetValue() {
-    // Reset Values to remove level 2 drop down
     this.levelTwoDisplay.length = 0;
   }
 

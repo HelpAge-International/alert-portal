@@ -43,6 +43,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private directorCountryID: string;
   private alertData: any;
   public permRiskMonitoring = false;
+  public selectedLevel1Index: number
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -445,6 +446,10 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       event.preventDefault();
       this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.ERROR_ONLY_NUMBERS', AlertMessageType.Error);
     }
+  }
+
+  selectedLevel1(country, index) {  
+    this.selectedLevel1Index = this.countryLevelsValues[country].levelOneValues.indexOf(this.countryLevelsValues[country].levelOneValues.filter(l1 => l1.id == index)[0])
   }
 
   isNumber(n) {
