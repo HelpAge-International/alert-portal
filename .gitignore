@@ -45,3 +45,6 @@ alert-portal.iml
 # extra
 /documents
 /cors
+
+# firebase
+.runtimeconfig.json
