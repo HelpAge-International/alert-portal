@@ -84,12 +84,9 @@
         </div>
       </div>
 
-      <div *ngIf="officeType == officeTypeEnum.FieldOffice" class="form-group">
-        <label>{{"FIELD_OFFICE"| translate}}</label></div>
-
-      <div *ngIf="officeType == officeTypeEnum.FieldOffice" class="row">
-
+      <div *ngIf="fieldOffices.length > 0 && officeType == officeTypeEnum.FieldOffice" class="row">
         <div class="col-lg-4 col-md-6 form-group">
+          <label for="fieldOffice">{{"FIELD_OFFICE"| translate}}</label>
           <select class="form-control" id="fieldOffice" [(ngModel)]="fieldOffice" name="fieldOffice" required>
             <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
             <option *ngFor="let office of fieldOffices" [value]="office.id">
@@ -97,7 +94,6 @@
             </option>
           </select>
         </div>
-
       </div>
 
       <div class="form-group"><label>{{"SUPPORT_SKILLS"| translate}}
