@@ -756,33 +756,33 @@ const firebaseAuthConfig = {
     CookieLawModule,
     BrowserModule,
     FormsModule,
-    HttpClientModule,
+    //HttpClientModule,
     AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
-    NgbModule.forRoot(),
+    //AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
+    //NgbModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
+        //deps: [HttpClient]
       }
     }),
-    ModalModule.forRoot(),
-    BootstrapModalModule,
+    //ModalModule.forRoot(),
+    //BootstrapModalModule,
     DatepickerModule,
     BrowserAnimationsModule,
     BsDatepickerModule.forRoot(),
-    LocalStorageModule.withConfig({
-      prefix: 'my-app',
-      storageType: 'localStorage'
-    }),
+    // LocalStorageModule.withConfig({
+    //   prefix: 'my-app',
+    //   storageType: 'localStorage'
+    // }),
     Angulartics2Module.forRoot([Angulartics2GoogleAnalytics]),
     SharedModule,
     SystemAdminModule
   ],
   providers: [
     RxHelper,
-    Modal,
+    // Modal,
     UserService,
     SessionService,
     CommonService,

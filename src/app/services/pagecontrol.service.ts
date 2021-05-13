@@ -7,7 +7,7 @@ import {Subject, Observable} from "rxjs";
 import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Inject, Injectable} from "@angular/core";
-import {DOCUMENT} from "@angular/platform-browser";
+import { DOCUMENT } from "@angular/common";
 import {Pair} from "../utils/bundles";
 import {SettingsService} from "./settings.service";
 import {PermissionSettingsModel} from "../model/permission-settings.model";
