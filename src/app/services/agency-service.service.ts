@@ -1,4 +1,6 @@
 
+import {mergeMap, map} from 'rxjs/operators';
+
 import {from as observableFrom, Subject, Observable} from 'rxjs';
 import {Injectable} from "@angular/core";
 import {Constants} from "../utils/Constants";
@@ -21,12 +23,12 @@ export class AgencyService {
 
   getAgencyId(agencyAdminId) {
     return this.afd.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId + "/agencyId")
-      .valueChanges()
-      .map((id:any) => {
+      .valueChanges().pipe(
+      map((id:any) => {
         if (id.$value) {
           return id.$value;
         }
-      });
+      }));
   }
 
   getAgency(agencyId) {
@@ -35,19 +37,19 @@ export class AgencyService {
 
   getAgencyModel(agencyId) {
     return this.afd.object(Constants.APP_STATUS + "/agency/" + agencyId)
-      .valueChanges()
-      .map((agency:any) => {
+      .valueChanges().pipe(
+      map((agency:any) => {
         let model = new ModelAgency(agency.name);
         model.mapFromObject(agency);
         model.id = agency.$key;
         return model;
-      });
+      }));
   }
 
   getAgencyResponsePlanClockSettingsDuration(agencyId) {
     return this.afd.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/responsePlans")
-      .valueChanges()
-      .map((settings:any) => {
+      .valueChanges().pipe(
+      map((settings:any) => {
         console.log(settings);
         let duration = 0;
         let oneDay = 24 * 60 * 60 * 1000;
@@ -61,15 +63,15 @@ export class AgencyService {
           duration = value * 365 * oneDay;
         }
         return duration;
-      });
+      }));
   }
 
   getSystemId(agencyAdminId): Observable<any> {
     return this.afd.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId + "/systemAdmin/")
-      .valueChanges()
-      .map((system:any) => {
+      .valueChanges().pipe(
+      map((system:any) => {
         return Object.keys(system.val()).shift();
-      });
+      }));
   }
 
   getAgencyModuleSetting(agencyId) {
@@ -91,10 +93,10 @@ export class AgencyService {
 
   getCountryDirector(countryId) {
     return this.afd.object(Constants.APP_STATUS + "/directorCountry/" + countryId)
-      .valueChanges()
-      .flatMap((directorId: any) => {
+      .valueChanges().pipe(
+      mergeMap((directorId: any) => {
         return this.afd.object(Constants.APP_STATUS + "/userPublic/" + directorId.$value).valueChanges();
-      });
+      }));
   }
 
   getAllAgencySameCountry(countryId, agencyId) {
@@ -169,8 +171,8 @@ export class AgencyService {
 
   public getPrivacySettingForAgency(agencyId): Observable<any> {
     return this.afd.object(Constants.APP_STATUS + "/module/" + agencyId)
-      .valueChanges()
-      .map((snap:any) => {
+      .valueChanges().pipe(
+      map((snap:any) => {
         if (snap.val()) {
           let privacy = new ModelAgencyPrivacy();
           privacy.mpa = snap.val()[0].privacy;
@@ -181,13 +183,13 @@ export class AgencyService {
           privacy.responsePlan = snap.val()[5].privacy;
           return privacy;
         }
-      });
+      }));
   }
 
   public getAllAgencyFromPlatform() {
     return this.afd.list(Constants.APP_STATUS + "/agency")
-      .valueChanges()
-      .map((agencies:any) => {
+      .valueChanges().pipe(
+      map((agencies:any) => {
         let models: ModelAgency[] = [];
         agencies.forEach(item => {
           let modelAgency = new ModelAgency(item.name);
@@ -196,27 +198,27 @@ export class AgencyService {
           models.push(modelAgency);
         });
         return models;
-      })
+      }))
   }
 
   public getApprovedAgenciesByNetwork(networkId) {
     return this.afd.list(Constants.APP_STATUS + "/network/" + networkId + "/agencies")
-      .valueChanges()
-      .map((agencies:any) => {
+      .valueChanges().pipe(
+      map((agencies:any) => {
         return agencies.filter(agency => agency.isApproved);
-      })
-      .map(filteredAgencies => {
+      }),
+      map(filteredAgencies => {
         return filteredAgencies.map(agency => {
           return this.afd.object(Constants.APP_STATUS + "/agency/" + agency.$key)
-            .valueChanges()
-            .map((agency: any) => {
+            .valueChanges().pipe(
+            map((agency: any) => {
               let modelAgency = new ModelAgency(agency.name);
               modelAgency.mapFromObject(agency);
               modelAgency.id = agency.$key;
               return modelAgency;
-            })
+            }))
         });
-      })
+      }),)
   }
 
   public countryExistInAgency(countryLocation, agencyId) {
@@ -240,31 +242,31 @@ export class AgencyService {
 
   getSkillsForAgency(agencyId) {
     return this.afd.list(Constants.APP_STATUS + "/agency/" + agencyId + "/skills")
-      .valueChanges()
-      .flatMap(skills => {
+      .valueChanges().pipe(
+      mergeMap(skills => {
         let mapedSkills = skills.map((item:any) => {
           item["id"] = item.$key
           return item
         })
         return observableFrom(mapedSkills)
-      })
-      .flatMap(skill =>{
+      }),
+      mergeMap(skill =>{
         return this.afd.object(Constants.APP_STATUS + "/skill/" + skill["id"]).valueChanges()
-      })
+      }),)
   }
 
   getAllCountryIdsForAgency(agencyId) {
     return this.afd.list<AgencyService>(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-      .valueChanges()
-      .map((offices: any) =>{
+      .valueChanges().pipe(
+      map((offices: any) =>{
         return offices.map(office => office.$key)
-      })
+      }))
   }
 
   getAgencyNotificationSettings(agencyId:string) {
     return this.getAgency(agencyId)
-      .valueChanges()
-      .map((agency:any) => agency.notificationSetting)
+      .valueChanges().pipe(
+      map((agency:any) => agency.notificationSetting))
   }
 
   unSubscribeNow() {

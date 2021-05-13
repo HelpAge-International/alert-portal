@@ -1,4 +1,6 @@
 
+import {mergeMap} from 'rxjs/operators';
+
 import {from as observableFrom, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
@@ -501,11 +503,11 @@ export class StaffComponent implements OnInit, OnDestroy {
   }
 
   private initFieldOffice() {
-    this.agencyService.getAllCountryIdsForAgency(this.agencyId)
-      .flatMap(countryIds => observableFrom(countryIds))
-      .flatMap(countryId => {
+    this.agencyService.getAllCountryIdsForAgency(this.agencyId).pipe(
+      mergeMap(countryIds => observableFrom(countryIds)),
+      mergeMap(countryId => {
         return this.fieldService.getFieldOffices(countryId.toString())
-      })
+      }),)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(offices => {
         offices.forEach(office => this.fieldOfficeMap.set(office.id, office.name))

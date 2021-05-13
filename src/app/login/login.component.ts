@@ -3,12 +3,12 @@ import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
 import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
-import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
+import {FirebaseApp, Auth, AuthProviders} from "@angular/fire";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
-import {LocalStorageService} from "angular-2-local-storage";
+//import {LocalStorageService} from "angular-2-local-storage";
 import {NetworkService} from "../services/network.service";
 import * as firebase from "firebase";
 
@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private mCheckLoginDisallowCountryId: string;
   private mCheckLoginDisallowFirstLogin: boolean;
 
-  constructor(public af: AngularFire,
+  constructor(public af: FirebaseApp,
               private router: Router,
               private route: ActivatedRoute,
               private networkService: NetworkService,

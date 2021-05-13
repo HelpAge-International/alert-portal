@@ -1,7 +1,7 @@
 
-import {from as observableFrom,  Observable ,  Subject } from 'rxjs';
+import {mergeMap, takeUntil} from 'rxjs/operators';
 
-import {takeUntil} from 'rxjs/operators';
+import {from as observableFrom,  Observable ,  Subject } from 'rxjs';
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
@@ -115,9 +115,9 @@ export class MapComponent implements OnInit, OnDestroy {
               }
 
               if (this.isDirector) {
-                this.agencyService.getAllCountryIdsForAgency(agencyId)
-                  .mergeMap(ids => observableFrom(ids))
-                  .mergeMap(id => this.settingService.getCountryLocalDepartments(agencyId, id))
+                this.agencyService.getAllCountryIdsForAgency(agencyId).pipe(
+                  mergeMap(ids => observableFrom(ids)),
+                  mergeMap(id => this.settingService.getCountryLocalDepartments(agencyId, id)),)
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(depts => depts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name)))
               } else {
