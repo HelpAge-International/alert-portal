@@ -1,5 +1,7 @@
+
+import {first} from 'rxjs/operators/first';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {SettingsService} from "../../../services/settings.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -105,12 +107,12 @@ export class NetworkModuleSettingsComponent implements OnInit, OnDestroy {
     let module = new NetworkPrivacyModel();
     module.mapObject(moduleItems);
     console.log(module);
-    this.networkService.getNetworkCountriesForNetwork(this.networkId)
-      .first()
+    this.networkService.getNetworkCountriesForNetwork(this.networkId).pipe(
+      first())
       .subscribe(networkCountryIds => {
         networkCountryIds.forEach(networkCountryId =>{
-          this.networkService.getPrivacySettingForNetworkCountry(networkCountryId)
-            .first()
+          this.networkService.getPrivacySettingForNetworkCountry(networkCountryId).pipe(
+            first())
             .subscribe((networkCountryPrivacy:NetworkPrivacyModel) =>{
               this.networkService.updateNetworkCountryPrivacy(networkCountryId, module, networkCountryPrivacy)
             })

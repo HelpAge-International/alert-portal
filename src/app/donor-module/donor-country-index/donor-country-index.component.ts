@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Countries, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -61,8 +63,8 @@ export class DonorCountryIndexComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.systemAdminId = systemId;
       this.UserType = userType;
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
 
           if (params["countryId"]) {

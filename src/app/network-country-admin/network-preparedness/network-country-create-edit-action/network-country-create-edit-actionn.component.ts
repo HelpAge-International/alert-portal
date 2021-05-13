@@ -1,5 +1,15 @@
+
+import {from as observableFrom} from 'rxjs';
+
+import {distinct} from 'rxjs/operators/distinct';
+
+import {mergeMap} from 'rxjs/operators/mergeMap';
+
+import {first} from 'rxjs/operators/first';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {ActionsService} from './../../../services/actions.service';
@@ -32,7 +42,7 @@ import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
 import {identifierModuleUrl} from '@angular/compiler';
 import {CommonUtils} from "../../../utils/CommonUtils";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 declare var jQuery: any;
 
@@ -233,8 +243,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           // this.initStaff();
           this.calculateCurrency();
 
-          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(systemId => {
               this.systemId = systemId;
 
@@ -277,8 +287,8 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
           // this.initStaff();
           this.calculateCurrency();
 
-          this.networkService.getSystemIdForNetworkAdmin(this.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(systemId => {
               this.systemId = systemId;
 
@@ -747,7 +757,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                   notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES." + translateText + "_CONTENT", {actionName: (updateObj.task ? updateObj.task : (this.action.task ? this.action.task : ''))});
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe();
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).pipe(first()).subscribe();
                 }
                 // this._location.back()
                 this.backToRightPage(this.action)
@@ -805,7 +815,7 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
                       : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
 
                     notification.time = new Date().getTime();
-                    this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe();
+                    this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).pipe(first()).subscribe();
                   }
                   // this._location.back();
                   this.backToRightPage(this.action)
@@ -1097,16 +1107,16 @@ export class NetworkCountryCreateEditActionComponent implements OnInit, OnDestro
   }
 
   private getAgenciesForLocalNetwork() {
-    this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
-      .flatMap(agencyCountryMap => {
+    this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId).pipe(
+      mergeMap(agencyCountryMap => {
         this.agenciesInNetwork = []
-        return Observable.from(CommonUtils.convertMapToKeysInArray(agencyCountryMap))
-      })
-      .flatMap(agencyId => {
+        return observableFrom(CommonUtils.convertMapToKeysInArray(agencyCountryMap))
+      }),
+      mergeMap(agencyId => {
         return this._agencyService.getAgencyModel(agencyId)
-      })
-      .distinct(agency => agency.id)
-      .takeUntil(this.ngUnsubscribe)
+      }),
+      distinct(agency => agency.id),
+      takeUntil(this.ngUnsubscribe),)
       .subscribe(agency => this.agenciesInNetwork.push(agency))
   }
 

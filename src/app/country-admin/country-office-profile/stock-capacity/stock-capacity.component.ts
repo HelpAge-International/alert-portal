@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, StockType, UserType} from "../../../utils/Enums";
@@ -9,7 +11,7 @@ import {StockService} from "../../../services/stock.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AngularFire} from "angularfire2";
 import {AgencyService} from "../../../services/agency-service.service";
 import {CommonService} from "../../../services/common.service";
@@ -85,8 +87,8 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
       this.countryId = countryId
       this.agencyId = agencyId
 
-    this._stockService.getStockCapacities(this.countryId)
-      .takeUntil(this.ngUnsubscribe)
+    this._stockService.getStockCapacities(this.countryId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(stockCapacities => {        
         this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
         this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
@@ -97,7 +99,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
             .replace('{countryId}', this.countryId)
             .replace('{id}', stockCapacity.id);
-          this._noteService.getNotes(stockCapacityNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(stockCapacityNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             notes.forEach(note => {
               if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
                 this.agencyService.getAgency(note.agencyId)
@@ -124,7 +126,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
       this.userType = userType;
       this.agencyId = agencyId
 
-      this._stockService.getStockCapacitiesLocalAgency(this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(stockCapacities => {
+      this._stockService.getStockCapacitiesLocalAgency(this.agencyId).pipe(takeUntil(this.ngUnsubscribe)).subscribe(stockCapacities => {
         this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Agency);
         this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.AgencyExternal);
         this.generateLocations();
@@ -134,7 +136,7 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           const stockCapacityNode = Constants.STOCK_CAPACITY_NODE_LOCAL_AGENCY
             .replace('{agencyId}', this.agencyId)
             .replace('{id}', stockCapacity.id);
-          this._noteService.getNotes(stockCapacityNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(stockCapacityNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             stockCapacity.notes = notes;
 
             // Create the new note model for partner organisation

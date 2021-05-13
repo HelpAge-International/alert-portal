@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {UserService} from "../../../../services/user.service";
@@ -55,8 +57,8 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
   initLocalAgency(){
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.agencyId = agencyId;
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.isEditing = true;
@@ -71,8 +73,8 @@ export class AddEditSurgeCapacityComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.countryId = countryId;
       console.log(this.countryId)
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.isEditing = true;

@@ -1,8 +1,11 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
 import * as firebase from "firebase";
@@ -64,8 +67,8 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["id"]) {
           console.log("load: " + params["id"]);
@@ -126,8 +129,8 @@ export class CreateEditGlobalNetworkComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.hideWarning = true;
     });
   }

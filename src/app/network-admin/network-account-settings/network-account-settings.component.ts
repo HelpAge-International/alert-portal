@@ -1,6 +1,8 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PageControlService} from "../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ModelUserPublic} from "../../model/user-public.model";
@@ -53,8 +55,8 @@ export class NetworkAccountSettingsComponent implements OnInit, OnDestroy {
       this.uid = authState.auth.uid;
 
       //get user detail
-      this.userService.getUser(this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((user: ModelUserPublic) => {
           console.log(user);
           this.userPublic = user;

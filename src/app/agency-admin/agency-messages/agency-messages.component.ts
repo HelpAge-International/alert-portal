@@ -1,8 +1,9 @@
+
+import {from as observableFrom, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import Promise = firebase.Promise;
 declare var jQuery: any;
@@ -36,7 +37,7 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
             list.forEach(x => {
               tempList.push(x);
             });
-            return Observable.from(tempList)
+            return observableFrom(tempList)
           })
           .flatMap(item => {
             return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)

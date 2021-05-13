@@ -1,9 +1,10 @@
+
+import {from as observableFrom, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ModelStaffDisplay} from "../../model/staff-display.model";
-import {Observable, Subject} from "rxjs";
 import {ModelStaff} from "../../model/staff.model";
 import {OfficeType, SkillType, UserType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -151,7 +152,7 @@ export class StaffComponent implements OnInit, OnDestroy {
         list.forEach(x => {
           ids.push(x.$key);
         });
-        return Observable.from(ids);
+        return observableFrom(ids);
       })
       .map(id => {
         this.officeId.push(id);
@@ -295,7 +296,7 @@ export class StaffComponent implements OnInit, OnDestroy {
           return userSkill;
         })
         .flatMap(skills => {
-          return Observable.from(skills);
+          return observableFrom(skills);
         })
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
@@ -327,7 +328,7 @@ export class StaffComponent implements OnInit, OnDestroy {
           return userSkill;
         })
         .flatMap(skills => {
-          return Observable.from(skills);
+          return observableFrom(skills);
         })
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
@@ -501,7 +502,7 @@ export class StaffComponent implements OnInit, OnDestroy {
 
   private initFieldOffice() {
     this.agencyService.getAllCountryIdsForAgency(this.agencyId)
-      .flatMap(countryIds => Observable.from(countryIds))
+      .flatMap(countryIds => observableFrom(countryIds))
       .flatMap(countryId => {
         return this.fieldService.getFieldOffices(countryId.toString())
       })

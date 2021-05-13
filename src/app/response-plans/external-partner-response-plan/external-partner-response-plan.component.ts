@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
@@ -6,7 +8,7 @@ import {Constants} from "../../utils/Constants";
 import {AlertMessageType} from "../../utils/Enums";
 import {AlertMessageModel} from '../../model/alert-message.model';
 import {AngularFireAuth} from 'angularfire2/auth';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 
@@ -59,7 +61,7 @@ export class ExternalPartnerResponsePlan implements OnInit, OnDestroy {
     }
 
     initData() {
-        this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params:Params) => {
+        this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params:Params) => {
             this.token = params['token'] ? params['token'] : false;
             this.countryID = params['countryID'] ? params['countryID'] : false;
             this.responsePlanID = params['responsePlanID'] ? params['responsePlanID'] : false;

@@ -1,9 +1,12 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ModelUserPublic} from "../../model/user-public.model";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../utils/CustomValidator";
 import {PageControlService} from "../../services/pagecontrol.service";
 
@@ -138,14 +141,14 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
   private showAlert(error: boolean) {
     if (error) {
       this.errorInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.errorInactive = true;
       });
     } else {
       this.successInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.successInactive = true;
       });
     }

@@ -6,7 +6,7 @@ import {PageControlService} from '../../services/pagecontrol.service';
 import {NetworkService} from '../../services/network.service';
 import {RegionHolder} from '../../map/map-countries-list/map-countries-list.component';
 import {Constants} from '../../utils/Constants';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {Countries} from "../../utils/Enums";
 import {HazardImages} from "../../utils/HazardImages";
 

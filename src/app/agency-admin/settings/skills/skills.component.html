@@ -28,7 +28,7 @@
 
         <h4>{{"SUPPORT_SKILLS" | translate}}</h4>
         <div class="Agency-settings_skills">
-            <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+            <ng-template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
               <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == SupportSkill">
                     <label for="{{skillKey}}" *ngIf="deleting">
                         <input class="form-check-input" type="checkbox" id="{{skillKey}}" [value]="skillKey" (change)="onSkillSelected(skillKey)"> {{skills[skillKey].name}}
@@ -38,7 +38,7 @@
                     </ng-container>
                     <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skills[skillKey].name"  (ngModelChange)="setSkillValue(skillKey, $event)">
                 </div>
-            </template>
+            </ng-template>
             <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
                     <input type="text" class="form-control" placeholder="Add a new support skill" [(ngModel)]="skillName[SupportSkill]">
@@ -51,7 +51,7 @@
 
         <h4>{{"TECHNICAL_SKILLS" | translate}}</h4>
         <div class="Agency-settings_skills">
-            <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+            <ng-template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
               <div class="row Editable-check-text Large-spacing-top" *ngIf="skills[skillKey].type == TechSkill">
                     <label for="{{skillKey}}" *ngIf="deleting">
                         <input class="form-check-input" type="checkbox" id="{{skillKey}}" [value]="skillKey" (change)="onSkillSelected(skillKey)"> {{skills[skillKey].name}}
@@ -61,7 +61,7 @@
                     </ng-container>
                     <input type="text" class="form-control col-md-4"  *ngIf="editing" [ngModel]="skills[skillKey].name"  (ngModelChange)="setSkillValue(skillKey, $event)">
                 </div>
-            </template>
+            </ng-template>
             <div class="row Add-new-department no-gutters" *ngIf="!deleting && !editing">
                 <div class="col-md-4 col-8">
                     <input type="text" class="form-control" placeholder="Add a new technical skill" [(ngModel)]="skillName[TechSkill]">

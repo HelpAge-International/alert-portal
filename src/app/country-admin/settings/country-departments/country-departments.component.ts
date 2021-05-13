@@ -1,8 +1,12 @@
+
+import {timer as observableTimer} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserType} from "../../../utils/Enums";
 import {ModelDepartmentCanDelete} from "../../../agency-admin/settings/department/department.component";
 import {ModelDepartment} from "../../../model/department.model";
-import {Observable, Subject} from "rxjs/Rx";
+import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
@@ -249,8 +253,8 @@ export class CountryDepartmentsComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.newDepartmentErrorInactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.newDepartmentErrorInactive = true;
     });
   }

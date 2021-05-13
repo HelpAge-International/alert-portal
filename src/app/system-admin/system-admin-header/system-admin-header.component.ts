@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators/map';
 import {Component, OnInit, OnDestroy} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
@@ -119,8 +121,8 @@ export class SystemAdminHeaderComponent implements OnInit, OnDestroy {
 
   loadJSON() {
 
-    return this.http.get(this.languageSelectPath)
-      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res: Response) => res.json().GLOBAL.LANGUAGES));
 
   }
 

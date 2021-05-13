@@ -1,3 +1,7 @@
+
+import {from as observableFrom, interval as observableInterval, Subject, Observable} from 'rxjs';
+
+import {mergeMap, take, takeWhile, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, Privacy, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
@@ -8,14 +12,12 @@ import {LogModel} from "../model/log.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../services/user.service";
-import {Subject} from "rxjs/Subject";
 import {CountryPermissionsMatrix, PageControlService} from "../services/pagecontrol.service";
 import * as moment from "moment";
 import {HazardImages} from "../utils/HazardImages";
 import {WindowRefService} from "../services/window-ref.service";
 import * as jsPDF from 'jspdf'
 import {ModelUserPublic} from "../model/user-public.model";
-import {Observable} from "rxjs/Observable";
 import {AgencyService} from "../services/agency-service.service";
 import {SettingsService} from "../services/settings.service";
 import {NetworkService} from "../services/network.service";
@@ -169,8 +171,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.usersForAssign = [];
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         console.log(params)
         if (params["countryId"]) {
@@ -206,8 +208,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
         if (params['updateIndicatorID']) {
           this.updateIndicatorId = params['updateIndicatorID'];
 
-          Observable.interval(5000)
-            .takeWhile(() => !this.stopCondition)
+          observableInterval(5000).pipe(
+            takeWhile(() => !this.stopCondition))
             .subscribe(i => {
               this.triggerScrollTo()
               this.stopCondition = true
@@ -246,8 +248,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
               })
           });
 
-          this.settingService.getPrivacySettingForCountry(this.countryID)
-            .takeUntil(this.ngUnsubscribe)
+          this.settingService.getPrivacySettingForCountry(this.countryID).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(privacy => {
               this.overviewCountryPrivacy = privacy
               this._getHazards();
@@ -1868,8 +1870,8 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
     } else {
       let hazardScenario = hazard.hazardScenario;
       console.log(this.UserType)
-      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
-        .take(1)
+      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid).pipe(
+        take(1))
         .subscribe(ownCountryId => {
           console.log(ownCountryId);
           this.af.database.list(Constants.APP_STATUS + "/hazard/" + ownCountryId, {
@@ -2068,14 +2070,14 @@ export class RiskMonitoringComponent implements OnInit, OnDestroy {
   private initStaffs() {
     let staff = this.userService.getStaffList(this.countryID);
     if(staff){
-      staff
-        .flatMap(staffList => {
-          return Observable.from(staffList.map(staff => staff.id))
-        })
-        .flatMap(staffId => {
+      staff.pipe(
+        mergeMap(staffList => {
+          return observableFrom(staffList.map(staff => staff.id))
+        }),
+        mergeMap(staffId => {
           return this.userService.getUser(staffId)
-        })
-        .takeUntil(this.ngUnsubscribe)
+        }),
+        takeUntil(this.ngUnsubscribe),)
         .subscribe(user => {
           this.staffMap.set(user.id, user)
         });

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../services/user.service";
@@ -42,7 +44,7 @@ export class DonorAccountSettingsComponent implements OnInit, OnDestroy {
     this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
       this.uid = auth.auth.uid;
       this.authState = auth;
-      this._userService.getUser(this.uid).takeUntil(this.ngUnsubscribe).subscribe(userPublic => {
+      this._userService.getUser(this.uid).pipe(takeUntil(this.ngUnsubscribe)).subscribe(userPublic => {
         if (userPublic.id) {
           this.userPublic = userPublic;
         } else {

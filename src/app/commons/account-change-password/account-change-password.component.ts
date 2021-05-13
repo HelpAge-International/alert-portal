@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
 import {ChangePasswordModel} from "../../model/change-password.model";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -38,18 +40,18 @@ export class DonorNotificationsComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
           
-        this._userService.getUserType(this.uid)
-          .takeUntil(this.ngUnsubscribe)
+        this._userService.getUserType(this.uid).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(userType => {
           
           this.USER_TYPE = Constants.USER_PATHS[userType];
           
-          this._userService.getAgencyId(this.USER_TYPE, this.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this._userService.getAgencyId(this.USER_TYPE, this.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(agencyId => {
               this.agencyId = agencyId;
-              this._userService.getCountryId(this.USER_TYPE, this.uid)
-                .takeUntil(this.ngUnsubscribe)
+              this._userService.getCountryId(this.USER_TYPE, this.uid).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(countryId => {
                   this.countryId = countryId;
                   this.loaderInactive = true;

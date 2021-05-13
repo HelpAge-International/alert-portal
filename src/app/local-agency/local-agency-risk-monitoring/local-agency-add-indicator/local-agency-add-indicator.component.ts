@@ -1,3 +1,7 @@
+
+import {first} from 'rxjs/operators/first';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../../model/indicator";
 import {Location} from '@angular/common';
@@ -136,8 +140,8 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         console.log(params)
 
@@ -187,8 +191,8 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
           this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
 
           // get the country levels values
-          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-            .takeUntil(this.ngUnsubscribe)
+          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(content => {
               this.countryLevelsValues = content;
               err => console.log(err);
@@ -233,8 +237,8 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
   }
 
   initIndicatorData() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         this.indicatorData = new Indicator();
         if (!params['hazardID']) {
@@ -431,7 +435,7 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
                 notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).first().subscribe(() => {
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).pipe(first()).subscribe(() => {
                 });
               }
 
@@ -461,7 +465,7 @@ export class LocalAgencyAddIndicatorComponent implements OnInit {
                 notification.title = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_TITLE");
                 notification.content = this._translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_INDICATOR_CONTENT", {indicatorName: dataToSave.name});
                 notification.time = new Date().getTime();
-                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).first().subscribe(() => {
+                this._notificationService.saveUserNotificationWithoutDetails(dataToSave.assignee, notification).pipe(first()).subscribe(() => {
                 });
               }
               this.backToRiskHome();

@@ -7,7 +7,7 @@ import {NetworkPrivacyModel} from "../../model/network-privacy.model";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NetworkService} from "../../services/network.service";
 import {SettingsService} from "../../services/settings.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 

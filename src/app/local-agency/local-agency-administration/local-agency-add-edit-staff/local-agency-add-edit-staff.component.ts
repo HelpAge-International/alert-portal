@@ -1,3 +1,7 @@
+
+import {timer as observableTimer} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -101,8 +105,8 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
       this.systemId = systemId
       this.agencyId = agencyId
             this.initData();
-            this.route.params
-              .takeUntil(this.ngUnsubscribe)
+            this.route.params.pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe((params: Params) => {
                 if (params['id']) {
                   this.selectedStaffId = params['id'];
@@ -123,8 +127,8 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
 
   private showAlert() {
     this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe)
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         this.hideWarning = true;
       });
@@ -452,8 +456,8 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.hideWarning = true;
       this.hideSuccess = false;
-      Observable.timer(1500)
-        .takeUntil(this.ngUnsubscribe)
+      observableTimer(1500).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
           this.router.navigateByUrl('/local-agency/agency-staff');
         });

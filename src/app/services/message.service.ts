@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AngularFire} from 'angularfire2';
 import {Constants} from '../utils/Constants';
@@ -186,8 +188,8 @@ export class MessageService {
 
               if (message.userType[UserType.CountryAdmin]) {
                 const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryAdmin);
-                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
-                  .takeUntil(this.ngUnsubscribe)
+                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(refData => {
                     this.af.database.object(Constants.APP_STATUS).update(refData);
                   });
@@ -195,8 +197,8 @@ export class MessageService {
 
               if (message.userType[UserType.CountryDirector]) {
                 const countryDirectorUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryDirector);
-                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData)
-                  .takeUntil(this.ngUnsubscribe)
+                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(refData => {
                     this.af.database.object(Constants.APP_STATUS).update(refData);
                   });
@@ -210,8 +212,8 @@ export class MessageService {
             if (value) {
               const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(Number(value));
               if (Number(value) === UserType.CountryAdmin || Number(value) === UserType.CountryDirector) {
-                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
-                  .takeUntil(this.ngUnsubscribe)
+                this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(refData => {
                     this.af.database.object(Constants.APP_STATUS).update(refData);
                   });
@@ -254,8 +256,8 @@ export class MessageService {
 
                 if (message.userType[UserType.CountryAdmin]) {
                   const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryAdmin);
-                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(refData => {
                       this.af.database.object(Constants.APP_STATUS).update(refData);
                     });
@@ -263,8 +265,8 @@ export class MessageService {
 
                 if (message.userType[UserType.CountryDirector]) {
                   const countryDirectorUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryDirector);
-                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(refData => {
                       this.af.database.object(Constants.APP_STATUS).update(refData);
                     });
@@ -282,8 +284,8 @@ export class MessageService {
               if (value) {
                 const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(Number(value));
                 if (Number(value) === UserType.CountryAdmin || Number(value) === UserType.CountryDirector) {
-                  this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(refData => {
                       this.af.database.object(Constants.APP_STATUS).update(refData);
                     });
@@ -329,8 +331,8 @@ export class MessageService {
 
                 if (message.userType[UserType.CountryAdmin]) {
                   const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryAdmin);
-                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(refData => {
                       this.af.database.object(Constants.APP_STATUS).update(refData);
                     });
@@ -338,8 +340,8 @@ export class MessageService {
 
                 if (message.userType[UserType.CountryDirector]) {
                   const countryDirectorUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(UserType.CountryDirector);
-                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.saveAgencyUserTypeMessage(countryAgencyMap.get(countryId), message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryDirectorUserTypeIndex], messageRefData).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(refData => {
                       this.af.database.object(Constants.APP_STATUS).update(refData);
                     });
@@ -357,8 +359,8 @@ export class MessageService {
               if (value) {
                 const countryAdminUserTypeIndex = Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_SELECTION.indexOf(Number(value));
                 if (Number(value) === UserType.CountryAdmin || Number(value) === UserType.CountryDirector) {
-                  this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.saveAgencyUserTypeMessage(agencyId, message, msgId.key, Constants.COUNTRY_ADMIN_MESSAGES_USER_TYPE_NODES[countryAdminUserTypeIndex], messageRefData).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(refData => {
                       this.af.database.object(Constants.APP_STATUS).update(refData);
                     });

@@ -8,7 +8,7 @@ import {UserService} from "../../../../services/user.service";
 import {CountryOfficeAddressModel} from "../../../../model/countryoffice.address.model";
 import {AgencyService} from "../../../../services/agency-service.service";
 import {PageControlService} from "../../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-country-office-edit-office-details',

@@ -1,5 +1,13 @@
+
+import {interval as observableInterval} from 'rxjs';
+
+import {first} from 'rxjs/operators/first';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
+
+import {takeWhile} from 'rxjs/operators/takeWhile';
 import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {
   ActionLevel,
@@ -43,7 +51,7 @@ import * as firebase from "firebase";
 import {ModelAgency} from "../../../model/agency.model";
 import {ModelNetwork} from "../../../model/network.model";
 import {MandatedListModel} from "../../../agency-admin/agency-mpa/agency-mpa.component";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {ModelStaff} from "../../../model/staff.model";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
 
@@ -216,8 +224,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.updateActionId = params['updateActionID'];
 
         console.log("UPD ActionID: " + this.updateActionId)
-        Observable.interval(2000)
-          .takeWhile(() => !this.stopCondition)
+        observableInterval(2000).pipe(
+          takeWhile(() => !this.stopCondition))
           .subscribe(i => {
             this.triggerScrollTo()
             this.stopCondition = true
@@ -257,8 +265,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.networkCountryId = selection["networkCountryId"];
           this.getStaffDetails(this.uid, true);
 
-          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(systemId => {
               this.systemAdminId = systemId;
               this.showLoader = false;
@@ -272,8 +280,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.modulesAreEnabled = matrix);
 
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(agencyCountryMap => {
               this.initAgencies(agencyCountryMap)
             });
@@ -304,8 +312,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.getStaffDetails(this.uid, true);
 
-          this.networkService.getSystemIdForNetworkAdmin(this.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(systemId => {
               this.systemAdminId = systemId;
               this.showLoader = false;
@@ -318,8 +326,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.modulesAreEnabled = matrix);
 
-          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(agencyCountryMap => {
               this.initAgencies(agencyCountryMap)
             });
@@ -340,8 +348,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
                 this.networkModuleMap.set(networkId, matrix)
               })
 
-            this.networkService.getNetworkDetail(networkId)
-              .takeUntil(this.ngUnsubscribe)
+            this.networkService.getNetworkDetail(networkId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(network => {
                 this.networkModelMap.set(networkId, network)
               })
@@ -393,8 +401,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
               this.networkModuleMap.set(networkId, matrix)
             })
 
-          this.networkService.getNetworkDetail(networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkDetail(networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(network => {
               this.networkModelMap.set(networkId, network)
             })
@@ -420,8 +428,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
               this.networkModuleMap.set(networkId, matrix)
             })
 
-          this.networkService.getNetworkDetail(networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkDetail(networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(network => {
               this.networkModelMap.set(networkId, network)
             })
@@ -487,8 +495,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
   }
 
   private getLocalNetworkAdminAssignees() {
-    this.networkService.getLocalNetwork(this.networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getLocalNetwork(this.networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(network => {
         console.log(network)
         if (network.agencies) {
@@ -526,8 +534,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
 
   private getNetworkCountryAdminAssignees() {
-    this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getNetworkCountry(this.networkId, this.networkCountryId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(network => {
         if (network.agencyCountries) {
           Object.keys(network.agencyCountries).forEach(agencyKey => {
@@ -692,8 +700,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private initNetworkAdmin(map: Map<string, string>) {
     CommonUtils.convertMapToKeysInArray(map).forEach(networkId => {
-      this.networkService.getNetworkCountry(networkId, map.get(networkId))
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.getNetworkCountry(networkId, map.get(networkId)).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((model: NetworkCountryModel) => {
           this.getStaffDetails(model.adminId, false)
         })
@@ -702,8 +710,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private initLocalNetworkAdmin(networkIds) {
     networkIds.forEach(networkId => {
-      this.networkService.getNetworkDetail(networkId)
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.getNetworkDetail(networkId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((model: ModelNetwork) => {
           this.getStaffDetails(model.networkAdminId, false)
         })
@@ -779,7 +787,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
                 notification.title = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_TITLE");
                 notification.content = this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_MPA_ACTION_CONTENT", {actionName: task ? task.$value : ''});
                 notification.time = new Date().getTime();
-                this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).first().subscribe(() => {
+                this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).pipe(first()).subscribe(() => {
                 });
               });
           }
@@ -1408,8 +1416,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private initAgenciesDetails(networkMap: Map<string, string>) {
     CommonUtils.convertMapToKeysInArray(networkMap).forEach(networkId => {
-      this.networkService.mapAgencyCountryForNetworkCountry(networkId, networkMap.get(networkId))
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.mapAgencyCountryForNetworkCountry(networkId, networkMap.get(networkId)).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(agencyCountryMap => {
           // agencyCountryMap.forEach((countryId, agencyId) => {
           //   this.initStaff(this.uid, agencyId, countryId);
@@ -1427,8 +1435,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private initAgenciesDetailsForLocal(networkIds) {
     networkIds.forEach(networkId => {
-      this.networkService.mapAgencyCountryForLocalNetworkCountry(networkId)
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.mapAgencyCountryForLocalNetworkCountry(networkId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(agencyCountryMap => {
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)

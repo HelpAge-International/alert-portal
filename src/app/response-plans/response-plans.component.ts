@@ -1,10 +1,12 @@
+
+import {from as observableFrom, timer as observableTimer,  Observable ,  Subject } from 'rxjs';
+
+import {tap, mergeMap, first, takeUntil} from 'rxjs/operators';
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { AngularFire, FirebaseListObservable } from "angularfire2";
 import * as moment from "moment";
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
 import { MessageModel } from "../model/message.model";
 import { ModelUserPublic } from "../model/user-public.model";
 import { AgencyService } from "../services/agency-service.service";
@@ -150,8 +152,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
   }
 
   private getSystemAgencyCountryIds(userPath: string) {
-    this.userService.getAgencyId(userPath, this.uid)
-      .takeUntil(this.ngUnsubscribe)
+    this.userService.getAgencyId(userPath, this.uid).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(agencyId => {
         this.agencyId = agencyId;
         this.af.database.object(Constants.APP_STATUS + "/" + userPath + "/" + this.uid + "/countryId")
@@ -384,8 +386,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.directorSubmissionRequireMap.set(2, false);
     this.directorSubmissionRequireMap.set(3, false);
     let counter = 0;
-    this.service.getDirectors(this.countryId, this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this.service.getDirectors(this.countryId, this.agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(result => {
         counter++;
         if (counter === 1 && result.$value && result.$value != "null") {
@@ -412,8 +414,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     this.directorSubmissionRequireMap.set(2, false);
     this.directorSubmissionRequireMap.set(3, false);
     let counter = 0;
-    this.service.getLocalAgencyDirector(this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this.service.getLocalAgencyDirector(this.agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(result => {
         counter++;
         if (counter === 1 && result.$value && result.$value != null) {
@@ -649,7 +651,7 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION).takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.hideWarning = true;
     });
   }
@@ -888,8 +890,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
             (this.planToApproval.approval["partner"][k] != ApprovalStatus.Approved || this.planToApproval.approval["partner"][k] != ApprovalStatus.NeedsReviewing))) {
             approvalData["/responsePlan/" + (this.isLocalAgency ? this.agencyId : this.countryId) + "/" + this.planToApproval.$key + "/approval/partner/" + k] = ApprovalStatus.WaitingApproval
 
-            this.userService.getUser(k)
-              .first()
+            this.userService.getUser(k).pipe(
+              first())
               .subscribe(user => {
                 if (user) {
                   // Send notification to country director
@@ -928,8 +930,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
 
   private initDirectorsModel(directorIdMap: Map<string, string>) {
     directorIdMap.forEach((v, k) => {
-      this.userService.getUser(directorIdMap.get(k))
-        .first()
+      this.userService.getUser(directorIdMap.get(k)).pipe(
+        first())
         .subscribe(director => {
           this.directorModelMap.set(k, director)
         })
@@ -990,18 +992,18 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
     let noPartnerUserOrg;
 
 
-    Observable.from(partnerOrgIds)
-      .flatMap(partnerOrgId => {
+    observableFrom(partnerOrgIds).pipe(
+      mergeMap(partnerOrgId => {
         return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId, { preserveSnapshot: true });
-      })
-      .do(snap => {
+      }),
+      tap(snap => {
         if (snap && snap.val()) {
           noPartnerUserOrg = snap.val();
           noPartnerUserOrg["key"] = snap.key;
           this.validPartnerMap.set(snap.key, snap.val().isApproved);
         }
-      })
-      .flatMap(snap => {
+      }),
+      mergeMap(snap => {
         if (snap && snap.val()) {
           orgUserMap.set(snap.key, "");
           return this.af.database.object(Constants.APP_STATUS + "/partner/" + snap.val().validationPartnerUserId, { preserveSnapshot: true })
@@ -1012,8 +1014,8 @@ export class ResponsePlansComponent implements OnInit, OnDestroy {
               }
             });
         }
-      })
-      .takeUntil(this.ngUnsubscribe)
+      }),
+      takeUntil(this.ngUnsubscribe),)
       .subscribe(snap => {
         if (snap && snap.val()) {
           orgUserMap.set(snap.val().partnerOrganisationId, snap.key);

@@ -9,7 +9,7 @@ import * as firebase from 'firebase';
 import * as html2canvas from 'html2canvas'
 
 declare const jQuery: any;
-import {Subject} from "rxjs/Rx";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Countries, NetworkUserAccountType, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";

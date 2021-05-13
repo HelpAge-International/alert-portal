@@ -10,7 +10,7 @@ import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {ModelSystem} from "../model/system.model";
 import {ModelRegion} from "../model/region.model";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 /**
  * Created by jordan on 05/05/2017.
  */

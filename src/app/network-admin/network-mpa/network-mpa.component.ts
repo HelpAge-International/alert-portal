@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject, Observable} from "rxjs";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {ActionLevel, AlertMessageType, GenericActionCategory} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -7,7 +7,6 @@ import {NetworkService} from "../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../services/agency-service.service";
 import {UserService} from "../../services/user.service";
-import {Observable} from "rxjs/Observable";
 import {NetworkActionModel} from "./network-create-edit-mpa/network-mpa.model";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";

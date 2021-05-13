@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators/map';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
@@ -140,8 +142,8 @@ export class AgencyAdminHeaderComponent implements OnInit, OnDestroy {
   // Dan's Modal functions
 
   loadJSON() {
-    return this.http.get(this.languageSelectPath)
-      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res: Response) => res.json().GLOBAL.LANGUAGES));
   }
 
   openLanguageModal() {

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageType, UserType} from "../../../../utils/Enums";
@@ -9,10 +11,9 @@ import {UserService} from "../../../../services/user.service";
 import {PointOfContactModel} from "../../../../model/point-of-contact.model";
 import {ModelStaff} from "../../../../model/staff.model";
 import {ContactService} from "../../../../services/contact.service";
-import {Subject} from "rxjs/Subject";
+import {Subject, Observable} from "rxjs";
 import {CountryPermissionsMatrix, PageControlService} from "../../../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
-import {Observable} from "rxjs/Observable";
 import {ModelUserPublic} from "../../../../model/user-public.model";
 
 declare var jQuery: any;
@@ -74,11 +75,11 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
 
       this.admin = this._userService.getLocalAgencyAdmin(agencyId)
 
-      this._userService.getStaffList(this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(staffList => {
+      this._userService.getStaffList(this.agencyId).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staffList => {
         this.staffList = staffList;
         this.staffList.forEach(staff => {
 
-          this._userService.getUser(staff.id).takeUntil(this.ngUnsubscribe).subscribe(user => {
+          this._userService.getUser(staff.id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
             this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
           });
         });
@@ -86,8 +87,8 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
 
       this.route.params.subscribe((params: Params) => {
         if (params['id']) {
-          this._contactService.getPointOfContactLocalAgency(this.agencyId, params['id'])
-            .takeUntil(this.ngUnsubscribe)
+          this._contactService.getPointOfContactLocalAgency(this.agencyId, params['id']).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(pointOfContact => {
               this.pointOfContact = pointOfContact;
             });
@@ -105,11 +106,11 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
 
       this.admin = this._userService.getCountryAdmin(agencyId, countryId)
 
-      this._userService.getStaffList(this.countryId).takeUntil(this.ngUnsubscribe).subscribe(staffList => {
+      this._userService.getStaffList(this.countryId).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staffList => {
         this.staffList = staffList;
         this.staffList.forEach(staff => {
 
-          this._userService.getUser(staff.id).takeUntil(this.ngUnsubscribe).subscribe(user => {
+          this._userService.getUser(staff.id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
             this.staffNamesList[staff.id] = user.firstName + ' ' + user.lastName;
           });
         });
@@ -117,8 +118,8 @@ export class CountryOfficeAddEditPointOfContactComponent implements OnInit, OnDe
 
       this.route.params.subscribe((params: Params) => {
         if (params['id']) {
-          this._contactService.getPointOfContact(this.countryId, params['id'])
-            .takeUntil(this.ngUnsubscribe)
+          this._contactService.getPointOfContact(this.countryId, params['id']).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(pointOfContact => {
               this.pointOfContact = pointOfContact;
             });

@@ -1,7 +1,9 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {PermissionsAgency, UserType} from "../utils/Enums";
 import {AngularFire, AngularFireAuth, FirebaseAuthState} from "angularfire2";
 import {UserService} from "./user.service";
-import {Subject} from "rxjs/Subject";
+import {Subject, Observable} from "rxjs";
 import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Inject, Injectable} from "@angular/core";
@@ -9,7 +11,6 @@ import {DOCUMENT} from "@angular/platform-browser";
 import {Pair} from "../utils/bundles";
 import {SettingsService} from "./settings.service";
 import {PermissionSettingsModel} from "../model/permission-settings.model";
-import {Observable} from "rxjs/Observable";
 
 /**
  * Created by jordan on 16/06/2017.
@@ -432,7 +433,7 @@ export class PageControlService {
       console.log("in page control now***************")
       af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
           if (auth) {
-            UserService.getUserType(af, auth.auth.uid).takeUntil(ngUnsubscribe).subscribe(userType => {
+            UserService.getUserType(af, auth.auth.uid).pipe(takeUntil(ngUnsubscribe)).subscribe(userType => {
               console.log(userType)
               if (userType == null) {
                 if (authUser != null) {

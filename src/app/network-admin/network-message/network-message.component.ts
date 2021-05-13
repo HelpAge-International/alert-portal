@@ -1,11 +1,11 @@
+
+import {from as observableFrom, Subject, Observable} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {Constants} from "../../utils/Constants";
-import {Observable} from "rxjs/Observable";
 declare var jQuery: any;
 
 @Component({
@@ -122,7 +122,7 @@ export class NetworkMessageComponent implements OnInit, OnDestroy {
         list.forEach(x => {
           tempList.push(x);
         });
-        return Observable.from(tempList)
+        return observableFrom(tempList)
       })
       .flatMap(item => {
         return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)

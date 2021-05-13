@@ -104,11 +104,11 @@
         </label></div>
 
       <div class="row">
-        <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+        <ng-template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
           <label *ngIf="allSkills[skillKey].type == SupportSkill" class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5">
             <input type="checkbox" #box (change)="supportSkillCheck(allSkills[skillKey],box.checked)"
               [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
-        </template>
+        </ng-template>
       </div>
 
       <div class="form-group"><label>{{"TECHNICAL_SKILLS"| translate}}
@@ -119,12 +119,12 @@
         </label></div>
 
       <div class="row">
-        <template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
+        <ng-template ngFor let-skillKey [ngForOf]="skillKeys" let-i="index">
           <label *ngIf="allSkills[skillKey].type == TechSkill"
             class="Checkbox--ribbon col-lg-3 col-md-4 col-sm-5"><input type="checkbox" #box
               (change)="techSkillCheck(allSkills[skillKey],box.checked)"
               [checked]="skillsMap.get(skillKey)">{{allSkills[skillKey].name}}</label>
-        </template>
+        </ng-template>
       </div>
 
       <div class="row Spaced">

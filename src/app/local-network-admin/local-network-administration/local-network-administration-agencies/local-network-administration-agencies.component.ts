@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -63,8 +65,8 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
 
           console.log(this.networkId)
 
-          this.networkService.getNetworkDetail(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkDetail(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(network => {
               this.networkCountryCode = network.countryCode
               if (!network.isGlobal) {
@@ -72,8 +74,8 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
               }
             })
 
-          this.networkService.mapAgencyCountryForLocalNetworkCountryWithNotApproved(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.mapAgencyCountryForLocalNetworkCountryWithNotApproved(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(agencyCountryMap => this.agencyCountryMap = agencyCountryMap)
 
           //fetch network agencies
@@ -92,8 +94,8 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
                       model.adminId = agency.adminId;
 
                       //get agency admin detail
-                      this.userService.getUser(model.adminId)
-                        .takeUntil(this.ngUnsubscribe)
+                      this.userService.getUser(model.adminId).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(user => {
                           console.log(user)
                           model.adminEmail = user.email;

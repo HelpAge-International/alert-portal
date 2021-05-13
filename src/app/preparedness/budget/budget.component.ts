@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -55,8 +57,8 @@ export class BudgetPreparednessComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];

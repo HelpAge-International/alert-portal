@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {NetworkService} from "../../../services/network.service";
@@ -7,7 +9,7 @@ import {AlertMessageType, Privacy, ResponsePlanSectors, UserType} from "../../..
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 import {SettingsService} from "../../../services/settings.service";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
@@ -96,8 +98,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -130,8 +132,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
     if (this.isViewing) {
       if (this.networkCountryId) {
-        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(map => {
             console.log(map);
             this.agencies = [];
@@ -141,8 +143,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(agency => this.agencies.push(agency));
               //get privacy for country
-              this.settingService.getPrivacySettingForCountry(v)
-                .takeUntil(this.ngUnsubscribe)
+              this.settingService.getPrivacySettingForCountry(v).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(privacy => {
                   this.agencyCountryPrivacyMap.set(k, privacy)
                 })
@@ -150,8 +152,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
             this._getProgramme(map);
           });
       } else {
-        this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(map => {
             console.log(map);
             this.agencies = [];
@@ -161,8 +163,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(agency => this.agencies.push(agency));
               //get privacy for country
-              this.settingService.getPrivacySettingForCountry(v)
-                .takeUntil(this.ngUnsubscribe)
+              this.settingService.getPrivacySettingForCountry(v).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(privacy => {
                   this.agencyCountryPrivacyMap.set(k, privacy)
                 })
@@ -181,8 +183,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
             this.networkId = selection["id"];
             this.networkCountryId = selection["networkCountryId"];
 
-            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(map => {
                 console.log(map);
                 this.agencies = [];
@@ -193,8 +195,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
                     .subscribe(agency => this.agencies.push(agency));
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(v)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(v).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(k, privacy)
                     })
@@ -223,8 +225,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
               })
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -252,8 +254,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
                       this.agencies.push(agency)
                     })
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, Privacy, UserType} from "../../../utils/Enums";
@@ -13,7 +15,7 @@ import {ContactService} from "../../../services/contact.service";
 import {PointOfContactModel} from "../../../model/point-of-contact.model";
 import {ModelStaff} from "../../../model/staff.model";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AngularFire} from "angularfire2";
 import {LocalStorageService} from "angular-2-local-storage";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
@@ -86,8 +88,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -119,8 +121,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
 
   private networkCountryAccess() {
     if (this.isViewing) {
-      this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
+      this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(officeAgencyMap => {
 
           this.agencies = []
@@ -137,8 +139,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
               });
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -156,8 +158,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
             this.networkID = selection["id"];
             this.networkCountryId = selection["networkCountryId"];
 
-            this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
+            this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(officeAgencyMap => {
 
                 this.agencies = []
@@ -181,15 +183,15 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
                           this.countryOfficeAddress.set(key, countryOfficeAddress)
                         });
 
-                      this._contactService.getPointsOfContact(value)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._contactService.getPointsOfContact(value).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(pointsOfContact => {
                           this.pointsOfContact.set(key, pointsOfContact)
                           this.pointsOfContact.get(key).forEach(pointOfContact => {
-                            this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+                            this._userService.getUser(pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
                               this.userPublicDetails[pointOfContact.staffMember] = user;
                             });
-                            this._userService.getStaff(value, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+                            this._userService.getStaff(value, pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staff => {
                               this.staffList[pointOfContact.staffMember] = staff;
                             });
                           });
@@ -197,8 +199,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
                     });
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })
@@ -231,8 +233,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
               });
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -269,15 +271,15 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
                         .subscribe(countryOfficeAddress => {
                           this.countryOfficeAddress.set(key, countryOfficeAddress)
                         });
-                      this._contactService.getPointsOfContact(value)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._contactService.getPointsOfContact(value).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(pointsOfContact => {
                           this.pointsOfContact.set(key, pointsOfContact)
                           this.pointsOfContact.get(key).forEach(pointOfContact => {
-                            this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+                            this._userService.getUser(pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
                               this.userPublicDetails[pointOfContact.staffMember] = user;
                             });
-                            this._userService.getStaff(value, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+                            this._userService.getStaff(value, pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staff => {
                               this.staffList[pointOfContact.staffMember] = staff;
                             });
                           });
@@ -285,8 +287,8 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
                     });
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })
@@ -371,15 +373,15 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
         this.countryOfficeAddress.set(key, countryOfficeAddress)
       });
 
-    this._contactService.getPointsOfContact(value)
-      .takeUntil(this.ngUnsubscribe)
+    this._contactService.getPointsOfContact(value).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(pointsOfContact => {
         this.pointsOfContact.set(key, pointsOfContact)
         this.pointsOfContact.get(key).forEach(pointOfContact => {
-          this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+          this._userService.getUser(pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
             this.userPublicDetails[pointOfContact.staffMember] = user;
           });
-          this._userService.getStaff(value, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+          this._userService.getStaff(value, pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staff => {
             this.staffList[pointOfContact.staffMember] = staff;
           });
         });
@@ -399,15 +401,15 @@ export class LocalNetworkProfileContactsComponent implements OnInit, OnDestroy {
         this.countryOfficeAddress.set(agencyId, localAgencyAddress)
       });
 
-    this._contactService.getPointsOfContactLocalAgency(agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this._contactService.getPointsOfContactLocalAgency(agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(pointsOfContact => {
         this.pointsOfContact.set(agencyId, pointsOfContact)
         this.pointsOfContact.get(agencyId).forEach(pointOfContact => {
-          this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+          this._userService.getUser(pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
             this.userPublicDetails[pointOfContact.staffMember] = user;
           });
-          this._userService.getStaff(agencyId, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+          this._userService.getStaff(agencyId, pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staff => {
             this.staffList[pointOfContact.staffMember] = staff;
           });
         });

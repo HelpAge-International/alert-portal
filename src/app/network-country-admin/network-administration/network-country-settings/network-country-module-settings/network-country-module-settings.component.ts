@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 import {AlertMessageType, ModuleName, ModuleNameNetwork, Privacy} from "../../../../utils/Enums";
 import {PageControlService} from "../../../../services/pagecontrol.service";
@@ -55,20 +57,20 @@ export class NetworkCountryModuleSettingsComponent implements OnInit, OnDestroy 
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
 
-          this.networkService.getPrivacySettingForNetwork(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getPrivacySettingForNetwork(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(networkPrivacy => {
               this.networkPrivacy = networkPrivacy
             })
 
-          this.settingService.getCountryModulesSettings(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.settingService.getCountryModulesSettings(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(networkModules =>{
               this.networkModules = networkModules
             })
 
-          this.settingService.getCountryModulesSettings(this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.settingService.getCountryModulesSettings(this.networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(modules => {
               this.modules = modules;
               console.log(this.modules)

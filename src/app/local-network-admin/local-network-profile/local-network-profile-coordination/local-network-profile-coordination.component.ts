@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {ResponsePlanSectors} from "../../../utils/Enums";
@@ -7,7 +9,7 @@ import {NetworkService} from "../../../services/network.service";
 import {CoordinationArrangementService} from "../../../services/coordination-arrangement.service";
 import {CoordinationArrangementNetworkModel} from "../../../model/coordination-arrangement-network.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
@@ -64,8 +66,8 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
   ngOnInit() {
 
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -103,8 +105,8 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
       //   this.uid = user.uid;
       //   console.log(this.uid)
 
-        this._coordinationArrangementService.getCoordinationArrangementsNetworkCountry(this.networkCountryId)
-          .takeUntil(this.ngUnsubscribe)
+        this._coordinationArrangementService.getCoordinationArrangementsNetworkCountry(this.networkCountryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(coordinationArrangements => {
 
             coordinationArrangements.forEach(coordinationArrangement => {
@@ -153,8 +155,8 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
             this.networkId = selection["id"];
             this.networkCountryId = selection["networkCountryId"];
 
-            this._coordinationArrangementService.getCoordinationArrangementsNetworkCountry(this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
+            this._coordinationArrangementService.getCoordinationArrangementsNetworkCountry(this.networkCountryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(coordinationArrangements => {
 
                 coordinationArrangements.forEach(coordinationArrangement => {
@@ -202,8 +204,8 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
   private localNetworkAdminAccess() {
 
     if (this.isViewing) {
-      this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId)
-        .takeUntil(this.ngUnsubscribe)
+      this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(coordinationArrangements => {
 
           coordinationArrangements.forEach(coordinationArrangement => {
@@ -249,8 +251,8 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
           .takeUntil(this.ngUnsubscribe)
           .subscribe(selection => {
             this.networkId = selection["id"];
-            this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId)
-              .takeUntil(this.ngUnsubscribe)
+            this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(coordinationArrangements => {
 
                 coordinationArrangements.forEach(coordinationArrangement => {

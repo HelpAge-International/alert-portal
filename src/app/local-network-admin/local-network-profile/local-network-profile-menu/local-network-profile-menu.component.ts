@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, NavigationEnd, NavigationStart} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {LocalStorageService} from "angular-2-local-storage";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 
 
 @Component({

@@ -28,7 +28,7 @@
             </tooltip>-->
             <div class="col-lg-3 col-md-3 col-sm-6">{{"GLOBAL.STATUS" | translate}}</div>
         </div>
-        <template ngFor let-module [ngForOf]="modules" let-moduleIdx="index">
+        <ng-template ngFor let-module [ngForOf]="modules" let-moduleIdx="index">
             <div class="row Line-row Small-spaced align-items-center">
                 <div class="col-lg-4 col-md-4 col-sm-12">{{MODULE_NAME[moduleIdx] | translate}}</div>
                 <div class="col-lg-5 col-md-5 col-sm-7">
@@ -50,6 +50,6 @@
                   </div>
                 </div>
             </div>
-        </template>
+        </ng-template>
     </div>
 </div>

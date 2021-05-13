@@ -1,8 +1,7 @@
 import {Component, OnInit, OnDestroy, Inject, Input} from '@angular/core';
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Observable} from 'rxjs';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 
 import { AlertMessageModel } from "../../model/alert-message.model";

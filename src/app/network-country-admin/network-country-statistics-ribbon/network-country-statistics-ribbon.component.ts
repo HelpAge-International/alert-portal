@@ -11,7 +11,7 @@ import {
 } from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
 import {PrepActionService, PreparednessAction} from "../../services/prepactions.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";

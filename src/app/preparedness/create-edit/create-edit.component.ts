@@ -1,3 +1,7 @@
+
+import {first} from 'rxjs/operators';
+
+import {takeUntil} from 'rxjs/operators';
 import {ActionsService} from './../../services/actions.service';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
@@ -128,7 +132,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+    this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
       if (params['id']) {
         this.action.id = params['id'];
         this.editDisableLoading = true;
@@ -701,7 +705,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   console.log(notification.content);
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).pipe(first()).subscribe(() => {
                   });
                 }
 
@@ -784,7 +788,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
                   notification.time = new Date().getTime();
 
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).pipe(first()).subscribe(() => {
                   });
                 }
 
@@ -850,7 +854,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                     : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).pipe(first()).subscribe(() => {
                   });
                 }
 
@@ -916,7 +920,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                     : this.translate.instant("NOTIFICATIONS.TEMPLATES.ASSIGNED_APA_ACTION_CONTENT", {actionName: updateObj.task});
 
                   notification.time = new Date().getTime();
-                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).first().subscribe(() => {
+                  this.notificationService.saveUserNotificationWithoutDetails(updateObj.asignee, notification).pipe(first()).subscribe(() => {
                   });
                 }
 

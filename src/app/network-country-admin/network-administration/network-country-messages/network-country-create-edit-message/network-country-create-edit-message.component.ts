@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 import {AlertMessageType, UserType} from "../../../../utils/Enums";
 import {PageControlService} from "../../../../services/pagecontrol.service";
@@ -69,8 +71,8 @@ export class NetworkCountryCreateEditMessageComponent implements OnInit, OnDestr
           this.networkCountryId = selection["networkCountryId"];
           this.showLoader = false;
 
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(map => this.agencyCountryMap = map);
 
         });

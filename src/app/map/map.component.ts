@@ -1,3 +1,7 @@
+
+import {from as observableFrom,  Observable ,  Subject } from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
@@ -16,8 +20,6 @@ import { Fill, Stroke, Style } from 'ol/style';
 import Icon from 'ol/style/Icon';
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import View from "ol/View";
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
 import { AgencyService } from "../services/agency-service.service";
 import { MapCountry, MapService } from "../services/map.service";
 import { AgencyModulesEnabled, PageControlService } from "../services/pagecontrol.service";
@@ -83,8 +85,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.department.location = -1;
     this.department.departments.push(new DepHolder("Loading", 100, 1));
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["isDirector"]) {
           this.isDirector = params["isDirector"];
@@ -114,7 +116,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
               if (this.isDirector) {
                 this.agencyService.getAllCountryIdsForAgency(agencyId)
-                  .mergeMap(ids => Observable.from(ids))
+                  .mergeMap(ids => observableFrom(ids))
                   .mergeMap(id => this.settingService.getCountryLocalDepartments(agencyId, id))
                   .takeUntil(this.ngUnsubscribe)
                   .subscribe(depts => depts.forEach(dep => this.DEPARTMENT_MAP.set(dep.id, dep.name)))

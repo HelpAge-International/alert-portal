@@ -1,10 +1,13 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {ChsMinPreparednessAction} from '../../../model/chsMinPreparednessAction';
 import {Constants} from '../../../utils/Constants';
 import {ActionType, ActionLevel} from '../../../utils/Enums';
-import {Observable, Subject} from "rxjs";
 import {AgencyModulesEnabled, PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
@@ -33,8 +36,8 @@ export class CreateActionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["id"]) {
           // EDIT MODE
@@ -105,8 +108,8 @@ export class CreateActionComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.inactive = true;
     });
   }

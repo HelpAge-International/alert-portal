@@ -1,3 +1,7 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {first, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -8,7 +12,6 @@ import * as firebase from "firebase";
 import {firebaseConfig} from "../../../app.module";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {ModelCountryOffice} from "../../../model/countryoffice.model";
-import {Observable, Subject} from "rxjs";
 import {AgencyService} from "../../../services/agency-service.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
@@ -77,8 +80,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
       this.handleModuleSettings(this.agencyId);
       this.handleNotificationSettings(this.agencyId);
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((param: Params) => {
           if (param["id"]) {
             this.countryOfficeId = param["id"];
@@ -266,8 +269,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
     console.log("create new user...");
     // let tempPass = Constants.TEMP_PASSWORD;
 
-    this.userService.getUserByEmail(this.countryAdminEmail)
-      .first()
+    this.userService.getUserByEmail(this.countryAdminEmail).pipe(
+      first())
       .subscribe(existUser => {
         if (!existUser) {
           let countryId = this.networkService.generateKeyUserPublic();
@@ -662,8 +665,8 @@ export class CreateEditCountryComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.hideWarning = true;
     });
   }

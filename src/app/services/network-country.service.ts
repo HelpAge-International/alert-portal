@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {NetworkOfficeModel} from "../network-admin/network-offices/add-edit-network-office/network-office.model";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 @Injectable()
 export class NetworkCountryService {

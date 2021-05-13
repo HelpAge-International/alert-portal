@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 
@@ -44,8 +46,8 @@ export class CountryMessagesComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.countryId = countryId;
 
-      this._messageService.getCountrySentMessages(this.countryId)
-        .takeUntil(this.ngUnsubscribe)
+      this._messageService.getCountrySentMessages(this.countryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(sentMessages => {
           if (sentMessages) {
             this.sentMessages = sentMessages;

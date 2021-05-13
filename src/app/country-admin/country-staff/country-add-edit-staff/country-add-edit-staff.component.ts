@@ -1,9 +1,12 @@
+
+import {combineLatest as observableCombineLatest, timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {first, map, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {NotificationSettingEvents, SkillType, UserType, OfficeType} from "../../../utils/Enums";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
 import {UUID} from "../../../utils/UUID";
@@ -118,8 +121,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.agencyAdminId = agencyId
       this.systemId = systemId
       this.initData();
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params['id']) {
             this.selectedStaffId = params['id'];
@@ -146,8 +149,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe)
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         this.hideWarning = true;
       });
@@ -163,9 +166,9 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     this.countryList = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId);
 
     //agency level dep
-    this.departmentList = Observable.combineLatest(this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true}),
-      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments', {preserveSnapshot: true}))
-      .map(departments => {
+    this.departmentList = observableCombineLatest(this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true}),
+      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments', {preserveSnapshot: true})).pipe(
+      map(departments => {
         let names: ModelDepartment[] = [];
         departments.forEach(department => {
           if (department.val()) {
@@ -175,7 +178,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
           }
         }); 
         return names;
-      })
+      }))
 
     //get skills
     this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/skills')
@@ -373,8 +376,8 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   }
 
   private createNewUser() {
-    this.userService.getUserByEmail(this.email)
-      .first()
+    this.userService.getUserByEmail(this.email).pipe(
+      first())
       .subscribe(existUser => {
         if (!existUser) {
           let userId = this.networkService.generateKeyUserPublic()
@@ -509,7 +512,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS).update(staffData).then(() => {
       this.hideWarning = true;
       this.hideSuccess = false;
-      Observable.timer(1500).subscribe(() => {
+      observableTimer(1500).subscribe(() => {
         this.router.navigateByUrl('/country-admin/country-staff');
       });
     }, error => {

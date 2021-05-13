@@ -1,7 +1,9 @@
+
+import {takeUntil} from 'rxjs/operators';
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { AngularFire } from "angularfire2";
-import { Subject } from "rxjs/Subject";
+import { Subject } from "rxjs";
 import { DisplayError } from "../../../../errors/display.error";
 import { AlertMessageModel } from "../../../../model/alert-message.model";
 import { Indicator } from "../../../../model/indicator";
@@ -224,8 +226,8 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
         /**
          * Pass country to the level one values for selection
          */
-        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-          .takeUntil(this.ngUnsubscribe)
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(pre => {
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
           })
@@ -238,8 +240,8 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   setCountryLevel(selectedCountry) {
-    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .takeUntil(this.ngUnsubscribe)
+    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(content => {
         err => console.log(err);
         this.levelOneDisplay = content[selectedCountry].levelOneValues;

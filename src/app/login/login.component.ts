@@ -1,8 +1,11 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {AngularFire, AuthMethods, AuthProviders} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../utils/CustomValidator";
 import {AgencyService} from "../services/agency-service.service";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -69,8 +72,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (Constants.SHOW_MAINTENANCE_PAGE) {
       this.router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
     } else {
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["emailEntered"]) {
             this.successMessage = "FORGOT_PASSWORD.SUCCESS_MESSAGE";
@@ -279,8 +282,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           if (snap.val() && snap.val().networkIds) {
             Object.keys(snap.val().networkIds).forEach(networkId => {
               this.networkCount++
-              this.networkService.getNetworkDetail(networkId)
-                .takeUntil(this.ngUnsubscribe)
+              this.networkService.getNetworkDetail(networkId).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(network => {
                   if (network.isActive) {
                     this.networkAdmin = true
@@ -316,12 +319,12 @@ export class LoginComponent implements OnInit, OnDestroy {
             countryList.forEach(obj => {
               this.networkCount++
 
-              this.networkService.getNetworkDetail(obj["networkId"])
-                .takeUntil(this.ngUnsubscribe)
+              this.networkService.getNetworkDetail(obj["networkId"]).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(network => {
                   if (network.isActive) {
-                    this.networkService.getNetworkCountry(obj["networkId"], obj["networkCountryId"])
-                      .takeUntil(this.ngUnsubscribe)
+                    this.networkService.getNetworkCountry(obj["networkId"], obj["networkCountryId"]).pipe(
+                      takeUntil(this.ngUnsubscribe))
                       .subscribe(networkCountry => {
                         if (networkCountry.isActive) {
                           this.networkCountryAdmin = true
@@ -569,15 +572,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (error) {
       this.af.auth.logout();
       this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe)
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
           this.inactive = true;
         });
     } else {
       this.successInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe)
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
           this.successInactive = true;
         });

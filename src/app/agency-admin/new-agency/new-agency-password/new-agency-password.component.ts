@@ -1,8 +1,11 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseAuthState} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {UserType} from "../../../utils/Enums";
@@ -58,8 +61,8 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
     if (this.validate()) {
       this.authState.auth.updatePassword(this.passwordEntered).then(() => {
         this.successInactive = false;
-        Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-          .takeUntil(this.ngUnsubscribe).subscribe(() => {
+        observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
+          takeUntil(this.ngUnsubscribe)).subscribe(() => {
           this.successInactive = true;
           console.log('navigating to /agency-admin/new-agency/new-agency-details')
             this.router.navigateByUrl('/agency-admin/new-agency/new-agency-details');
@@ -76,8 +79,8 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.errorInactive = true;
     });
   }

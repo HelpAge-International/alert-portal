@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
@@ -49,8 +51,8 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
 
       this.userType = userType;
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["countryId"]) {
             this.countryId = params["countryId"];
@@ -118,16 +120,16 @@ export class ViewPlanComponent implements OnInit, OnDestroy {
   }
 
   private initNetworkData(networkCountryId, networkId) {
-    this.networkService.getNetworkCountry(networkId, networkCountryId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getNetworkCountry(networkId, networkCountryId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(networkCountry => {
         this.countryName = Constants.COUNTRIES[networkCountry.location]
       })
   }
 
   private initLocalNetworkData(networkId) {
-    this.networkService.getLocalNetwork(networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getLocalNetwork(networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(local => {
         this.countryName = Constants.COUNTRIES[local.countryCode]
       })

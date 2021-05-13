@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../model/indicator";
 import {Location} from '@angular/common';
@@ -139,8 +141,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
 
         if (params["countryId"]) {
@@ -206,8 +208,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
           this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
 
           // get the country levels values
-          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-            .takeUntil(this.ngUnsubscribe)
+          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(content => {
               this.countryLevelsValues = content;
               err => console.log(err);
@@ -265,8 +267,8 @@ export class AddIndicatorRiskMonitoringComponent implements OnInit, OnDestroy {
   }
 
   initIndicatorData() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         this.indicatorData = new Indicator();
         if (!params['hazardID']) {

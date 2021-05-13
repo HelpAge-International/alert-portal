@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Constants} from '../utils/Constants';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
 import {MapService, MapCountry} from './map.service';
 import {ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
@@ -9,7 +9,7 @@ import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {HazardImages} from '../utils/HazardImages';
 import {PrepActionService} from './prepactions.service';
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 /**
  * Network map service

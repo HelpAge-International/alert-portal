@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {MessageService} from "../../../../services/message.service";
@@ -52,13 +54,13 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.countryId = countryId;
       try {
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
+        this.route.params.pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe((params: Params) => {
             if (params['id']) {
               this.isEdit = true;
-              this._messageService.getCountryExternalRecipient(this.countryId, params['id'])
-                .takeUntil(this.ngUnsubscribe)
+              this._messageService.getCountryExternalRecipient(this.countryId, params['id']).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(externalRecipient => {
                     if (externalRecipient) {
                       this.externalRecipient = externalRecipient;
@@ -70,8 +72,8 @@ export class CountryAddExternalRecipientComponent implements OnInit, OnDestroy {
                     throw new Error(err.message);
                   });
             } else {
-              this._notificationSettingsService.getNotificationSettings(this.agencyId)
-                .takeUntil(this.ngUnsubscribe)
+              this._notificationSettingsService.getNotificationSettings(this.agencyId).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(notificationSettings => {
                   this.externalRecipient.notificationsSettings = notificationSettings
                 });

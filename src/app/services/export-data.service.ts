@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators/map';
 import {Injectable} from '@angular/core';
 import {Constants} from "../utils/Constants";
 import * as XLSX from "xlsx";
@@ -19,11 +21,11 @@ import {
   StockType
 } from "../utils/Enums";
 import {PartnerOrganisationService} from "./partner-organisation.service";
-import {Observable} from "rxjs/Rx";
+import {Observable} from "rxjs";
 import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AgencyService} from "./agency-service.service";
 import {isBoolean} from "util";
 
@@ -540,10 +542,10 @@ export class ExportDataService {
   }
 
   private fetchOfficeCapacityData(countryId: string, wb: WorkBook, agencyId?: string) {
-    this.userService.getStaffList(countryId)
-      .map(list => {
+    this.userService.getStaffList(countryId).pipe(
+      map(list => {
         return list.filter(item => item.isResponseMember)
-      })
+      }))
       .first()
       .subscribe(staffList => {
         if (staffList.length > 0) {

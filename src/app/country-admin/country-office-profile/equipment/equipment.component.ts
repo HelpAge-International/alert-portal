@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, Countries, UserType} from "../../../utils/Enums";
@@ -10,7 +12,7 @@ import {EquipmentService} from "../../../services/equipment.service";
 import {EquipmentModel} from "../../../model/equipment.model";
 import {SurgeEquipmentModel} from "../../../model/equipment-surge.model";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AngularFire} from "angularfire2";
 import {CountryOfficeAddEditEquipmentComponent} from "./add-edit-equipment/add-edit-equipment.component";
 import {AgencyService} from "../../../services/agency-service.service";
@@ -88,8 +90,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
 
   private initLocalAgency() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -102,15 +104,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
         }
 
         if (this.countryId && this.agencyId && this.isViewing) {
-          this._equipmentService.getEquipments(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
+          this._equipmentService.getEquipments(this.countryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(equipments => {
               this.equipments = equipments;
 
               this.equipments.forEach(equipment => {
                 const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', equipment.id);
 
-                this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                this._noteService.getNotes(equipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                   notes.forEach(note => {
                     if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
                       this.agencyService.getAgency(note.agencyId)
@@ -129,15 +131,15 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
               this.generateLocations();
             });
 
-          this._equipmentService.getSurgeEquipments(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
+          this._equipmentService.getSurgeEquipments(this.countryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(surgeEquipments => {
               this.surgeEquipments = surgeEquipments;
 
               this.surgeEquipments.forEach(surgeEquipment => {
                 const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', this.countryId).replace('{id}', surgeEquipment.id);
 
-                this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                this._noteService.getNotes(surgeEquipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                   notes.forEach(note => {
                     if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
                       this.agencyService.getAgency(note.agencyId)
@@ -162,14 +164,14 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
             this.userType = userType;
             this.agencyId = agencyId;
 
-            this._equipmentService.getEquipmentsLocalAgency(this.agencyId)
-              .takeUntil(this.ngUnsubscribe)
+            this._equipmentService.getEquipmentsLocalAgency(this.agencyId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(equipments => {
                 this.equipments = equipments;
 
                 this.equipments.forEach(equipment => {
                   const equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', this.agencyId).replace('{id}', equipment.id);
-                  this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                  this._noteService.getNotes(equipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                     equipment.notes = notes;
                   });
 
@@ -180,8 +182,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
                 this.generateLocations();
               });
 
-            this._equipmentService.getSurgeEquipmentsLocalAgency(this.agencyId)
-              .takeUntil(this.ngUnsubscribe)
+            this._equipmentService.getSurgeEquipmentsLocalAgency(this.agencyId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(surgeEquipments => {
                 this.surgeEquipments = surgeEquipments;
 
@@ -204,8 +206,8 @@ export class CountryOfficeEquipmentComponent implements OnInit, OnDestroy {
   }
 
   private initCountryOffice() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];

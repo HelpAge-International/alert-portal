@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 import {Countries, Countries3ISO, HazardScenario, InformCodes} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
 import {Http, RequestOptions, Response, Headers} from "@angular/http";
@@ -30,11 +32,11 @@ export class InformService {
     headers.append('accept', '*/*');
     let options = new RequestOptions({ headers: headers });
     console.log('here2')
-    this.http.get(this.buildUrl(countryCode), options)
-      .map((res: Response) => {
+    this.http.get(this.buildUrl(countryCode), options).pipe(
+      map((res: Response) => {
         console.log(res)
         return res.json();
-      })
+      }))
       .subscribe(response => {
         console.log('here4')
         let holder: InformHolder[] = [];

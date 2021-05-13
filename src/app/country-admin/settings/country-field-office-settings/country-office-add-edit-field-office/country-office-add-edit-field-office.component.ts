@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -6,7 +8,7 @@ import {fieldOffice} from "../../../../model/fieldOffice.model";
 import { Constants } from "../../../../utils/Constants";
 import {AgencyService} from "../../../../services/agency-service.service";
 import {CommonService} from "../../../../services/common.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {FieldOfficeService} from "../../../../services/field-office.service";
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 
@@ -39,8 +41,8 @@ export class CountryOfficeAddEditFieldOfficeComponent implements OnInit, OnDestr
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if(params['id']){
           this.fieldOfficeId = params['id']
@@ -77,8 +79,8 @@ export class CountryOfficeAddEditFieldOfficeComponent implements OnInit, OnDestr
               }
 
 
-              this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                .takeUntil(this.ngUnsubscribe)
+              this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(content => {
                   if(!this.fieldOfficeId) {
                     this.fieldOffice.locationLevel1 = null;

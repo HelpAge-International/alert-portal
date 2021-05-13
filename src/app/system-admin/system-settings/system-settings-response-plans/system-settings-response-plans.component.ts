@@ -1,7 +1,10 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable, Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {PageControlService} from "../../../services/pagecontrol.service";
 
@@ -113,14 +116,14 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   private showAlert(error: boolean) {
     if (error) {
       this.errorInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.errorInactive = true;
       });
     } else {
       this.successInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.successInactive = true;
       });
     }
@@ -134,8 +137,8 @@ export class SystemSettingsResponsePlansComponent implements OnInit, OnDestroy {
   private validateNewGroup() {
     if (!(this.newGroupName)) {
       this.alerts[this.newGroupName] = true;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.alerts[this.newGroupName] = false;
       });
       this.errorMessage = "SYSTEM_ADMIN.SETTING.ERROR_NO_GROUP_NAME";

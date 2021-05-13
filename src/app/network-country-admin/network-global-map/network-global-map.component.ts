@@ -15,7 +15,7 @@ import { Fill, Stroke, Style } from 'ol/style';
 import Icon from 'ol/style/Icon';
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import View from "ol/View";
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { NetworkService } from '../../services/network.service';
 import { NetworkMapCountry, NetworkMapService } from '../../services/networkmap.service';
 import { PageControlService } from '../../services/pagecontrol.service';

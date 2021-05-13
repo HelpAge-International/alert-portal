@@ -1,3 +1,7 @@
+
+import {interval as observableInterval, Subject, Observable} from 'rxjs';
+
+import {take, takeWhile, takeUntil} from 'rxjs/operators';
 import {Component, Inject, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -16,7 +20,6 @@ import {
   SizeType,
   UserType
 } from "../../utils/Enums";
-import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UserService} from "../../services/user.service";
 import {
@@ -44,7 +47,6 @@ import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
-import {Observable} from "rxjs/Observable";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 declare var jQuery: any;
@@ -201,8 +203,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
   }
 
   initCountryOffice() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -222,8 +224,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
         if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];
 
-          Observable.interval(5000)
-            .takeWhile(() => !this.stopCondition)
+          observableInterval(5000).pipe(
+            takeWhile(() => !this.stopCondition))
             .subscribe(i => {
               this.triggerScrollTo()
               this.stopCondition = true
@@ -252,8 +254,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
             this.initAlerts();
             this.calculateCurrency();
 
-            this.countryService.getPrivacySettingForCountry(this.countryId)
-              .takeUntil(this.ngUnsubscribe)
+            this.countryService.getPrivacySettingForCountry(this.countryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe((privacy: ModelAgencyPrivacy) => {
                 this.privacy = privacy;
               });
@@ -288,8 +290,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
                       this.networkModuleMap.set(networkId, matrix)
                     })
 
-                  this.networkService.getNetworkDetail(networkId)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.networkService.getNetworkDetail(networkId).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(network => {
                       this.networkModelMap.set(networkId, network)
                     })
@@ -307,8 +309,8 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
                       this.networkModuleMap.set(networkCountryId.id, matrix)
                     })
 
-                  this.networkService.getNetworkDetail(networkCountryId.id)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.networkService.getNetworkDetail(networkCountryId.id).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(network => {
                       this.networkModelMap.set(networkCountryId.id, network)
                     })
@@ -568,7 +570,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               console.log(notification.content);
 
               notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).take(1).subscribe(() => {
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).pipe(take(1)).subscribe(() => {
               });
             });
         });
@@ -584,7 +586,7 @@ export class AdvancedPreparednessComponent implements OnInit, OnDestroy {
               console.log(notification.content);
 
               notification.time = new Date().getTime();
-              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).take(1).subscribe(() => {
+              this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).pipe(take(1)).subscribe(() => {
               });
             });
         });

@@ -1,3 +1,7 @@
+
+import {empty as observableEmpty, of as observableOf, Observable} from 'rxjs';
+
+import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {
@@ -5,7 +9,6 @@ import {
   Privacy
 } from "../utils/Enums";
 import {Constants} from "../utils/Constants";
-import {Observable} from "rxjs/Observable";
 import {NetworkAgencyModel} from "../network-admin/network-agencies/network-agency.model";
 import * as moment from "moment";
 import * as firebase from "firebase/app";
@@ -79,9 +82,9 @@ export class NetworkService {
             selectData["id"] = selection.selectedNetwork;
             selectData["networkCountryId"] = selection.selectedNetworkCountry;
           }
-          return Observable.of(selectData);
+          return observableOf(selectData);
         } else {
-          return Observable.empty();
+          return observableEmpty();
         }
       })
   }
@@ -719,8 +722,8 @@ export class NetworkService {
   }
 
   mapAgencyCountryForNetworkCountry(networkId, networkCountryId) {
-    return this.getNetworkCountry(networkId, networkCountryId)
-      .map(networkCountry => {
+    return this.getNetworkCountry(networkId, networkCountryId).pipe(
+      map(networkCountry => {
         if (networkCountry.agencyCountries) {
           let agencyCountries = networkCountry.agencyCountries;
           let agencyCountryList = Object.keys(agencyCountries).map(key => {
@@ -737,12 +740,12 @@ export class NetworkService {
           });
           return agencyCountryMap;
         }
-      });
+      }));
   }
 
   mapAgencyCountryForNetworkCountryWithNotApproved(networkId, networkCountryId) {
-    return this.getNetworkCountry(networkId, networkCountryId)
-      .map(networkCountry => {
+    return this.getNetworkCountry(networkId, networkCountryId).pipe(
+      map(networkCountry => {
         if (networkCountry.agencyCountries) {
           let agencyCountries = networkCountry.agencyCountries;
           let agencyCountryList = Object.keys(agencyCountries).map(key => {
@@ -759,12 +762,12 @@ export class NetworkService {
           });
           return agencyCountryMap;
         }
-      });
+      }));
   }
 
   mapAgencyCountryForLocalNetworkCountry(networkId) {
-    return this.getLocalNetwork(networkId)
-      .map(localNetwork => {
+    return this.getLocalNetwork(networkId).pipe(
+      map(localNetwork => {
         if (localNetwork.agencies) {
           let agencyCountries = localNetwork.agencies;
           let agencyCountryList = Object.keys(agencyCountries).map(key => {
@@ -780,12 +783,12 @@ export class NetworkService {
           });
           return agencyCountryMap;
         }
-      });
+      }));
   }
 
   mapAgencyCountryForLocalNetworkCountryWithNotApproved(networkId) {
-    return this.getLocalNetwork(networkId)
-      .map(localNetwork => {
+    return this.getLocalNetwork(networkId).pipe(
+      map(localNetwork => {
         if (localNetwork.agencies) {
           let agencyCountries = localNetwork.agencies;
           let agencyCountryList = Object.keys(agencyCountries).map(key => {
@@ -801,7 +804,7 @@ export class NetworkService {
           });
           return agencyCountryMap;
         }
-      });
+      }));
   }
 
   validateNetworkCountryToken(countryId, token) {
@@ -938,7 +941,7 @@ export class NetworkService {
         if (id && id.$value && id.$value != "null") {
           return this.af.database.object(Constants.APP_STATUS + "/regionDirector/" + id.$value + "/regionId", {preserveSnapshot: true});
         } else {
-          return Observable.of(null);
+          return observableOf(null);
         }
       })
       .map(snap => {

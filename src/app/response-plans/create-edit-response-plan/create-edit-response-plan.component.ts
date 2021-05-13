@@ -1,8 +1,11 @@
+
+import {from as observableFrom,  Observable, Subject } from 'rxjs';
+
+import {take} from 'rxjs/operators';
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { AngularFire } from "angularfire2";
 import * as moment from "moment";
-import { Observable, Subject } from "rxjs";
 import { AlertMessageModel } from "../../model/alert-message.model";
 import { ModelBudgetItem } from "../../model/budget-item.model";
 import { ModelPlanActivity } from "../../model/plan-activity.model";
@@ -1443,8 +1446,8 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
 
 
   private setupForEdit() {
-    this.route.params
-      .take(1)
+    this.route.params.pipe(
+      take(1))
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -1954,7 +1957,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         list.forEach(x => {
           tempList.push(x.$key)
         });
-        return Observable.from(tempList)
+        return observableFrom(tempList)
       })
       .flatMap(item => {
         return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item)
@@ -1980,7 +1983,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         list.forEach(x => {
           tempList.push(x.$key)
         });
-        return Observable.from(tempList)
+        return observableFrom(tempList)
       })
       .flatMap(item => {
         return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + item)
@@ -2000,7 +2003,7 @@ export class CreateEditResponsePlanComponent implements OnInit, OnDestroy {
         if (snapshot && snapshot.val()) {
           tempList = Object.keys(snapshot.val());
         }
-        return Observable.from(tempList)
+        return observableFrom(tempList)
       })
       .flatMap(item => {
         return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item)

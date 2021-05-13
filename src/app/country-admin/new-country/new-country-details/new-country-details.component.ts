@@ -1,9 +1,12 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy, Inject} from '@angular/core';
 import {AngularFire, FirebaseApp} from 'angularfire2';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
 import {Countries, PhonePrefix} from '../../../utils/Enums';
-import {Observable, Subject} from 'rxjs';
 import {CountryOfficeAddressModel} from '../../../model/countryoffice.address.model';
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {CustomerValidator} from "../../../utils/CustomValidator";
@@ -86,8 +89,8 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
         this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + this.uid + '/').update({firstLogin: false});
 
         this.successInactive = false;
-        let subscription = Observable.timer(1500)
-          .takeUntil(this.ngUnsubscribe)
+        let subscription = observableTimer(1500).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(() => {
             this.successInactive = true;
             this.router.navigateByUrl(Constants.COUNTRY_ADMIN_HOME);
@@ -111,8 +114,8 @@ export class NewCountryDetailsComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.errorInactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe)
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         this.errorInactive = true;
       });

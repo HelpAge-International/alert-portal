@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, Privacy, UserType} from "../../../utils/Enums";
@@ -12,7 +14,7 @@ import {EquipmentService} from "../../../services/equipment.service";
 import {EquipmentModel} from "../../../model/equipment.model";
 import {SurgeEquipmentModel} from "../../../model/equipment-surge.model";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AngularFire} from "angularfire2";
 import {LocalStorageService} from "angular-2-local-storage";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
@@ -88,8 +90,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -122,8 +124,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   private networkCountryAccess() {
     if (this.isViewing) {
 
-      this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
+      this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(map => {
           this.officeAgencyMap = map;
 
@@ -137,8 +139,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
               })
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -158,8 +160,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
             this.networkCountryId = selection["networkCountryId"];
             console.log(selection)
 
-            this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
+            this._networkService.mapAgencyCountryForNetworkCountry(this.networkID, this.networkCountryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(map => {
                 this.officeAgencyMap = map;
 
@@ -169,15 +171,15 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                     .subscribe(agency => {
                       this.agencies.push(agency);
 
-                      this._equipmentService.getEquipments(value)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._equipmentService.getEquipments(value).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(equipments => {
                           this.equipments.set(key, equipments);
 
                           this.equipments.get(key).forEach(equipment => {
                             const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
 
-                            this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                            this._noteService.getNotes(equipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                               equipment.notes = notes;
                             });
 
@@ -187,15 +189,15 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                           });
                         });
 
-                      this._equipmentService.getSurgeEquipments(value)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._equipmentService.getSurgeEquipments(value).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(surgeEquipments => {
                           this.surgeEquipments.set(key, surgeEquipments);
 
                           this.surgeEquipments.get(key).forEach(surgeEquipment => {
                             const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
 
-                            this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                            this._noteService.getNotes(surgeEquipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                               surgeEquipment.notes = notes;
                             });
 
@@ -208,8 +210,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                     })
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })
@@ -224,15 +226,15 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   }
 
   private getCountryEquipments(value: string, key: string) {
-    this._equipmentService.getEquipments(value)
-      .takeUntil(this.ngUnsubscribe)
+    this._equipmentService.getEquipments(value).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(equipments => {
         this.equipments.set(key, equipments);
 
         this.equipments.get(key).forEach(equipment => {
           const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
 
-          this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(equipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             equipment.notes = notes;
           });
 
@@ -242,15 +244,15 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
         });
       });
 
-    this._equipmentService.getSurgeEquipments(value)
-      .takeUntil(this.ngUnsubscribe)
+    this._equipmentService.getSurgeEquipments(value).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(surgeEquipments => {
         this.surgeEquipments.set(key, surgeEquipments);
 
         this.surgeEquipments.get(key).forEach(surgeEquipment => {
           const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
 
-          this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(surgeEquipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             surgeEquipment.notes = notes;
           });
 
@@ -263,15 +265,15 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
   }
 
   private getLocalAgencyEquipments(agencyId:string) {
-    this._equipmentService.getEquipmentsLocalAgency(agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this._equipmentService.getEquipmentsLocalAgency(agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(equipments => {
         this.equipments.set(agencyId, equipments);
 
         this.equipments.get(agencyId).forEach(equipment => {
           const equipmentNode = Constants.EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', agencyId).replace('{id}', equipment.id);
 
-          this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(equipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             equipment.notes = notes;
           });
 
@@ -281,15 +283,15 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
         });
       });
 
-    this._equipmentService.getSurgeEquipmentsLocalAgency(agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this._equipmentService.getSurgeEquipmentsLocalAgency(agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(surgeEquipments => {
         this.surgeEquipments.set(agencyId, surgeEquipments);
 
         this.surgeEquipments.get(agencyId).forEach(surgeEquipment => {
           const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE_LOCAL_AGENCY.replace('{agencyId}', agencyId).replace('{id}', surgeEquipment.id);
 
-          this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(surgeEquipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             surgeEquipment.notes = notes;
           });
 
@@ -320,8 +322,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
             value !== key ? this.getCountryEquipments(value, key) : this.getLocalAgencyEquipments(key)
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -351,8 +353,8 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                     })
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })
@@ -364,7 +366,7 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                       this.equipments.get(key).forEach(equipment => {
                         const equipmentNode = Constants.EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', equipment.id);
 
-                        this._noteService.getNotes(equipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                        this._noteService.getNotes(equipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                           equipment.notes = notes;
                         });
 
@@ -381,7 +383,7 @@ export class LocalNetworkProfileEquipmentComponent implements OnInit, OnDestroy 
                       this.surgeEquipments.get(key).forEach(surgeEquipment => {
                         const surgeEquipmentNode = Constants.SURGE_EQUIPMENT_NODE.replace('{countryId}', value).replace('{id}', surgeEquipment.id);
 
-                        this._noteService.getNotes(surgeEquipmentNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                        this._noteService.getNotes(surgeEquipmentNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                           surgeEquipment.notes = notes;
                         });
 

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../services/user.service";
@@ -43,7 +45,7 @@ export class CountryAccountSettingsComponent implements OnInit, OnDestroy {
       this.uid = auth.auth.uid;
       this.authState = auth;
 
-      this._userService.getUser(this.uid).takeUntil(this.ngUnsubscribe).subscribe(userPublic => {
+      this._userService.getUser(this.uid).pipe(takeUntil(this.ngUnsubscribe)).subscribe(userPublic => {
         if (userPublic.id) {
           this.userPublic = userPublic;
         } else {

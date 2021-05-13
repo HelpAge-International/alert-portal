@@ -1,6 +1,9 @@
+
+import {from as observableFrom, Observable} from 'rxjs';
+
+import {map} from 'rxjs/operators';
 import {Injectable} from "@angular/core";
 import {Http} from "@angular/http";
-import {Observable} from "rxjs";
 import {Constants} from "../utils/Constants";
 import {TranslateService} from "@ngx-translate/core";
 import {AngularFire} from "angularfire2";
@@ -15,9 +18,9 @@ export class CommonService {
 
 
   getJsonContent(path: string): Observable<any> {
-    return this._http.get(path).map(res => {
+    return this._http.get(path).pipe(map(res => {
       return res.json() || {}
-    });
+    }));
   }
 
   getAreaNameList(jsonContent: {}, areas: string[]): string[] {
@@ -109,7 +112,7 @@ export class CommonService {
   getCountryTotalForSystem() {
     return this.af.database.list(Constants.APP_STATUS + "/agency")
       .flatMap(agencies => {
-        return Observable.from(agencies)
+        return observableFrom(agencies)
       })
       .flatMap((agency: any) => {
         return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agency.$key, {preserveSnapshot: true})

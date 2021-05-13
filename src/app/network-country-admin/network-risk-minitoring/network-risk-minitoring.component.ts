@@ -1,3 +1,13 @@
+
+import {timer as observableTimer} from 'rxjs';
+
+import {mergeMap} from 'rxjs/operators/mergeMap';
+
+import {take} from 'rxjs/operators/take';
+
+import {first} from 'rxjs/operators/first';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {
   AlertMessageType, Countries, DetailedDurationType, HazardScenario, ModuleNameNetwork, Privacy,
@@ -14,7 +24,7 @@ import {UserService} from "../../services/user.service";
 import {CommonService} from "../../services/common.service";
 import {NetworkService} from "../../services/network.service";
 import {AgencyService} from "../../services/agency-service.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import {HazardImages} from "../../utils/HazardImages";
@@ -24,7 +34,7 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {NetworkCountryModel} from "../network-country.model";
 import {SettingsService} from "../../services/settings.service";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 declare var jQuery: any;
 
@@ -181,8 +191,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
     this.usersForAssign = [];
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryID = params["countryId"];
@@ -226,8 +236,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
         if (params['updateIndicatorID']) {
           this.updateIndicatorId = params['updateIndicatorID'];
 
-          Observable.timer(5000)
-            .first()
+          observableTimer(5000).pipe(
+            first())
             .subscribe(() => {
               this.triggerScrollTo()
             })
@@ -257,8 +267,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
           this.getCountryLocation()
             .then(_ => {
               // get the country levels values
-              this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                .takeUntil(this.ngUnsubscribe)
+              this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(content => {
 
                   this.countryLevelsValues = content[this.countryLocation];
@@ -303,8 +313,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 this.getNetworkCountryLocation()
                   .then(_ => {
                     // get the country levels values
-                    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                      .takeUntil(this.ngUnsubscribe)
+                    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                      takeUntil(this.ngUnsubscribe))
                       .subscribe(content => {
 
                         this.countryLevelsValues = content[this.countryLocation];
@@ -315,8 +325,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
                 this._getCountryContextIndicators();
                 this.getUsersForAssign();
 
-                this.settingService.getCountryModulesSettings(this.networkId)
-                  .takeUntil(this.ngUnsubscribe)
+                this.settingService.getCountryModulesSettings(this.networkId).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(modules => {
                     console.log(modules)
                     this.modules = modules
@@ -335,12 +345,12 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       .subscribe(ids => {
         ids.forEach(id => {
           //get normal staffs
-          this.userService.getStaffList(id)
-            .takeUntil(this.ngUnsubscribe)
+          this.userService.getStaffList(id).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(staffs => {
               staffs.forEach(staff => {
-                this.userService.getUser(staff.id)
-                  .takeUntil(this.ngUnsubscribe)
+                this.userService.getUser(staff.id).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(user => {
                     this.staffMap.set(user.id, user)
                   })
@@ -437,8 +447,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
   showSubNationalAreas(areas) {
     for (let area in areas) {
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe)
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(content => {
           this.countryLevelsValues = content;
           // console.log(this.getLocationName(areas[area]));
@@ -468,8 +478,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
 
   private getNetworkCountryLocation() {
     return new Promise((res, rej) => {
-      this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.getNetworkCountry(this.networkId, this.networkCountryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((networkCountry: NetworkCountryModel) => {
           this.countryLocation = networkCountry.location
           res(true)
@@ -537,8 +547,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
           officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 if (agencyKey == this.agencyId || privacy.riskMonitoring != Privacy.Private) {
                   this.af.database.list(Constants.APP_STATUS + "/indicator/" + value).takeUntil(this.ngUnsubscribe).subscribe((indicators: any) => {
@@ -691,8 +701,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
             officeAgencyMap.forEach((value: string, agencyKey: string) => {
 
               //get privacy for country
-              this.settingService.getPrivacySettingForCountry(value)
-                .takeUntil(this.ngUnsubscribe)
+              this.settingService.getPrivacySettingForCountry(value).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(privacy => {
                   if (agencyKey == this.agencyId || privacy.riskMonitoring != Privacy.Private) {
                     this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
@@ -1218,8 +1228,8 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
       let hazardScenario = hazard.hazardScenario;
       console.log(this.uid)
       console.log(this.UserType)
-      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid)
-        .take(1)
+      this.userService.getCountryId(Constants.USER_PATHS[this.UserType], this.uid).pipe(
+        take(1))
         .subscribe(ownCountryId => {
           console.log(ownCountryId);
           this.af.database.list(Constants.APP_STATUS + "/hazard/" + ownCountryId, {
@@ -1430,9 +1440,9 @@ export class NetworkRiskMinitoringComponent implements OnInit, OnDestroy {
   }
 
   private getNetworkAdmin(networkId: string, networkCountryId:string) {
-    this.networkService.getNetworkCountry(networkId, networkCountryId)
-      .flatMap(networkCountry => this.userService.getUser(networkCountry.adminId))
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getNetworkCountry(networkId, networkCountryId).pipe(
+      mergeMap(networkCountry => this.userService.getUser(networkCountry.adminId)),
+      takeUntil(this.ngUnsubscribe),)
       .subscribe(networkAdmin => this.staffMap.set(networkAdmin.id, networkAdmin))
   }
 

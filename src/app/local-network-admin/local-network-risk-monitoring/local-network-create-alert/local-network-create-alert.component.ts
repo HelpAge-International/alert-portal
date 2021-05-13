@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
@@ -9,7 +11,7 @@ import {OperationAreaModel} from "../../../model/operation-area.model";
 import {ModelAlert} from "../../../model/alert.model";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../../services/user.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
@@ -105,8 +107,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryID = params["countryId"];
@@ -132,8 +134,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
 
         if(this.isViewing){
 
-                this.networkService.getNetworkDetail(this.networkId)
-                  .takeUntil(this.ngUnsubscribe)
+                this.networkService.getNetworkDetail(this.networkId).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe( network => {
                     console.log(network)
                     this.leadAgencyId = network.leadAgencyId
@@ -152,8 +154,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
 
 
             // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+              takeUntil(this.ngUnsubscribe)).subscribe(content => {
               this.countryLevelsValues = content;
               err => console.log(err);
             });
@@ -174,8 +176,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
 
 
                 console.log(this.networkId)
-                this.networkService.getNetworkDetail(this.networkId)
-                  .takeUntil(this.ngUnsubscribe)
+                this.networkService.getNetworkDetail(this.networkId).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe( network => {
                     console.log(network)
                     this.leadAgencyId = network.leadAgencyId
@@ -194,8 +196,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
               })
 
             // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+              takeUntil(this.ngUnsubscribe)).subscribe(content => {
               this.countryLevelsValues = content;
               err => console.log(err);
             });

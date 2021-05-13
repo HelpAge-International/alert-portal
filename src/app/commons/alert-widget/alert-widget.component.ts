@@ -7,7 +7,7 @@ import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browse
 import {Observable} from 'rxjs';
 import {HazardImages} from "../../utils/HazardImages";
 import {PageControlService} from "../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({

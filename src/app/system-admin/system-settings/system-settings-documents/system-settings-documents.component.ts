@@ -1,7 +1,10 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable, Subject} from "rxjs";
 import {Constants, FILE_SETTING} from "../../../utils/Constants";
 import {ModelSystem} from "../../../model/system.model";
 import {FileType} from "../../../utils/Enums";
@@ -131,8 +134,8 @@ export class SystemSettingsDocumentsComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.isSaved = true;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       console.log("time up");
       this.isSaved = false;
     });

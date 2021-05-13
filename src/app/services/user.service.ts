@@ -1,8 +1,11 @@
+
+import {of as observableOf, Observable, Subject, Subscription} from 'rxjs';
+
+import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AngularFire, AuthMethods, AuthProviders, FirebaseAuthState} from 'angularfire2';
 import {Constants} from '../utils/Constants';
 import {RxHelper} from '../utils/RxHelper';
-import {Observable, Subject} from 'rxjs';
 import {firebaseConfig} from '../app.module';
 import {UUID} from '../utils/UUID';
 import * as firebase from "firebase";
@@ -12,7 +15,6 @@ import {PartnerModel} from "../model/partner.model";
 import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
-import {Subscription} from "rxjs/Subscription";
 import {ChangePasswordModel} from "../model/change-password.model";
 import {recognize} from "@angular/router/src/recognize";
 import {ModelStaff} from "../model/staff.model";
@@ -545,14 +547,14 @@ export class UserService {
     return af.database.object(Constants.APP_STATUS + "/system/" + uid, {preserveSnapshot: true})
       .flatMap((snap) => {
         if (snap.val() != null) {
-          return Observable.of(UserType.SystemAdmin);
+          return observableOf(UserType.SystemAdmin);
         }
         else {
           return af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
             .flatMap((mySnap) => {
               if (mySnap.val() != null) {
 
-                return Observable.of(UserType.LocalAgencyDirector);
+                return observableOf(UserType.LocalAgencyDirector);
 
               }
               else {
@@ -561,7 +563,7 @@ export class UserService {
                 .flatMap((mySnap) => {
                   if (mySnap.val() != null) {
 
-                    return Observable.of(UserType.LocalAgencyAdmin);
+                    return observableOf(UserType.LocalAgencyAdmin);
 
                   }else{
 
@@ -570,7 +572,7 @@ export class UserService {
                     return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
                       .flatMap((snap) => {
                         if (snap.val() != null) {
-                          return Observable.of(UserType.AgencyAdmin);
+                          return observableOf(UserType.AgencyAdmin);
                         } else {
                           return UserService.recursiveUserMap(af, paths, 0);
                         }
@@ -585,12 +587,12 @@ export class UserService {
 
   private static recursiveUserMap(af: AngularFire, paths, index: number) {
     if (index == paths.length) {
-      return Observable.of(null);
+      return observableOf(null);
     }
     return af.database.object(paths[index].path)
       .flatMap(obj => {
         if (obj.systemAdmin) {
-          return Observable.of(paths[index].type);
+          return observableOf(paths[index].type);
         }
         else {
           return UserService.recursiveUserMap(af, paths, index + 1);
@@ -623,21 +625,21 @@ export class UserService {
     return this.af.database.object(Constants.APP_STATUS + "/system/" + uid, {preserveSnapshot: true})
       .flatMap((snap) => {
         if (snap.val() != null) {
-          return Observable.of(UserType.SystemAdmin);
+          return observableOf(UserType.SystemAdmin);
         }
         else {
           return this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
             .flatMap((mySnap) => {
 
               if (mySnap.val() != null) {
-                return Observable.of(UserType.AgencyAdmin);
+                return observableOf(UserType.AgencyAdmin);
               }
               else {
 
                 return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
                   .flatMap((snap) => {
                     if (snap.val() != null) {
-                      return Observable.of(UserType.AgencyAdmin);
+                      return observableOf(UserType.AgencyAdmin);
                     } else {
                       return UserService.recursiveUserMap(this.af, paths, 0);
                     }
@@ -767,10 +769,10 @@ export class UserService {
   }
 
   getUserName(uid): Observable<string> {
-    return this.getUser(uid)
-      .map(user => {
+    return this.getUser(uid).pipe(
+      map(user => {
         return user.firstName + " " + user.lastName;
-      });
+      }));
   }
 
   logout() {

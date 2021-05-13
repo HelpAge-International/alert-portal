@@ -1,7 +1,9 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import * as moment from "moment";
 import {AlertMessageType, ResponsePlanSectors} from "../../utils/Enums";
@@ -46,8 +48,8 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["token"] && params["partnerId"]) {
           this.accessToken = params["token"];
@@ -78,8 +80,8 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
                         return;
                       }
 
-                      this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                        .takeUntil(this.ngUnsubscribe)
+                      this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(areaJson => {
                           this.areaJson = areaJson;
                           this.loadPartnerOrgInfo(this.partnerOrgId);
@@ -130,8 +132,8 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
   }
 
   private loadPartnerOrgInfo(partnerOrgId: string) {
-    this.orgService.getPartnerOrganisation(partnerOrgId)
-      .takeUntil(this.ngUnsubscribe)
+    this.orgService.getPartnerOrganisation(partnerOrgId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(org => {
         this.modelPartnerOrg = org;
         this.modelPartnerOrg.projects.forEach(project => {

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, UserType} from "../../../utils/Enums";
@@ -12,7 +14,7 @@ import {ContactService} from "../../../services/contact.service";
 import {PointOfContactModel} from "../../../model/point-of-contact.model";
 import {ModelStaff} from "../../../model/staff.model";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AngularFire} from "angularfire2";
 
 @Component({
@@ -65,8 +67,8 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -107,15 +109,15 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
           .subscribe(countryOfficeAddress => {
             this.countryOfficeAddress = countryOfficeAddress;
           });
-        this._contactService.getPointsOfContact(this.countryId)
-          .takeUntil(this.ngUnsubscribe)
+        this._contactService.getPointsOfContact(this.countryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(pointsOfContact => {
             this.pointsOfContact = pointsOfContact;
             this.pointsOfContact.forEach(pointOfContact => {
-              this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+              this._userService.getUser(pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
                 this.userPublicDetails[pointOfContact.staffMember] = user;
               });
-              this._userService.getStaff(this.countryId, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+              this._userService.getStaff(this.countryId, pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staff => {
                 this.staffList[pointOfContact.staffMember] = staff;
               });
             });
@@ -145,15 +147,15 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
 
           this.countryOfficeAddress = countryOfficeAddress;
         });
-      this._contactService.getPointsOfContactLocalAgency(this.agencyId)
-        .takeUntil(this.ngUnsubscribe)
+      this._contactService.getPointsOfContactLocalAgency(this.agencyId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(pointsOfContact => {
           this.pointsOfContact = pointsOfContact;
           this.pointsOfContact.forEach(pointOfContact => {
-            this._userService.getUser(pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(user => {
+            this._userService.getUser(pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
               this.userPublicDetails[pointOfContact.staffMember] = user;
             });
-            this._userService.getStaff(this.agencyId, pointOfContact.staffMember).takeUntil(this.ngUnsubscribe).subscribe(staff => {
+            this._userService.getStaff(this.agencyId, pointOfContact.staffMember).pipe(takeUntil(this.ngUnsubscribe)).subscribe(staff => {
               this.staffList[pointOfContact.staffMember] = staff;
             });
           });
@@ -191,8 +193,8 @@ export class CountryOfficeContactsComponent implements OnInit, OnDestroy {
             .subscribe(countryOfficeAddress => {
               this.countryOfficeAddress = countryOfficeAddress;
             });
-          this._contactService.getPointsOfContact(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
+          this._contactService.getPointsOfContact(this.countryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(pointsOfContact => {
               this.pointsOfContact = pointsOfContact;
               this.pointsOfContact.forEach(pointOfContact => {

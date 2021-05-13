@@ -1,6 +1,8 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-local-agency-profile-menu',
@@ -38,8 +40,8 @@ export class LocalAgencyProfileMenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];

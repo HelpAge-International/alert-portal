@@ -1,8 +1,9 @@
+
+import {from as observableFrom, Observable} from 'rxjs';
 import { Injectable } from '@angular/core';
 import {AngularFire} from 'angularfire2';
 import {Constants} from '../utils/Constants';
 import {RxHelper} from '../utils/RxHelper';
-import {Observable} from 'rxjs';
 
 import { PartnerOrganisationModel } from "../model/partner-organisation.model";
 
@@ -16,7 +17,7 @@ export class PartnerOrganisationService {
      const partnerOrganisationSubscription =
           this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
       .flatMap(partnerOrganisations => {
-        return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+        return observableFrom(partnerOrganisations.map(organisation => organisation.$key));
         })
       .flatMap( organisationId => {
         return this.getPartnerOrganisation(organisationId as string);
@@ -34,7 +35,7 @@ export class PartnerOrganisationService {
     const partnerOrganisationSubscription =
       this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partnerOrganisations')
         .flatMap(partnerOrganisations => {
-          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+          return observableFrom(partnerOrganisations.map(organisation => organisation.$key));
         })
         .flatMap( organisationId => {
           return this.getPartnerOrganisation(organisationId as string);
@@ -52,7 +53,7 @@ export class PartnerOrganisationService {
     const partnerOrganisationSubscription =
       this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations')
         .flatMap(partnerOrganisations => {
-          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+          return observableFrom(partnerOrganisations.map(organisation => organisation.$key));
         })
         .flatMap( organisationId => {
           return this.getPartnerOrganisation(organisationId as string);
@@ -72,7 +73,7 @@ export class PartnerOrganisationService {
     const partnerOrganisationSubscription =
       this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partnerOrganisations')
         .flatMap(partnerOrganisations => {
-          return Observable.from(partnerOrganisations.map(organisation => organisation.$key));
+          return observableFrom(partnerOrganisations.map(organisation => organisation.$key));
         })
         .flatMap( organisationId => {
           return this.getPartnerOrganisation(organisationId as string);

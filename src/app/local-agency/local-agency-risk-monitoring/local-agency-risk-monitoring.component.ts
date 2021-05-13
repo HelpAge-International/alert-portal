@@ -1,3 +1,5 @@
+
+import {take} from 'rxjs/operators/take';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -8,7 +10,7 @@ import {LogModel} from "../../model/log.model";
 import {LocalStorageService} from "angular-2-local-storage";
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../../services/user.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import {HazardImages} from "../../utils/HazardImages";
@@ -1620,8 +1622,8 @@ export class LocalAgencyRiskMonitoringComponent implements OnInit {
 
     } else {
       let hazardScenario = hazard.hazardScenario;
-      this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid)
-        .take(1)
+      this.userService.getAgencyId(Constants.USER_PATHS[this.UserType], this.uid).pipe(
+        take(1))
         .subscribe(ownAgencyId => {
           console.log(ownAgencyId);
           this.af.database.list(Constants.APP_STATUS + "/hazard/" + ownAgencyId, {

@@ -1,4 +1,4 @@
-import {Subscription, TeardownLogic} from "rxjs/Subscription";
+import {Subscription, TeardownLogic} from "rxjs";
 import {RxHelper} from "./RxHelper";
 import {AngularFireDatabase, FirebaseObjectObservable} from "angularfire2";
 

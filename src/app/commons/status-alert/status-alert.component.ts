@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angu
 import {Constants} from "../../utils/Constants";
 import {TimerObservable} from "rxjs/observable/TimerObservable";
 import {RxHelper} from '../../utils/RxHelper';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-status-alert',

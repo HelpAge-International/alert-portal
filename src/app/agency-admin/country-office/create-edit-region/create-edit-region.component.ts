@@ -1,8 +1,11 @@
+
+import {timer as observableTimer, from as observableFrom, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {Countries, UserType} from "../../../utils/Enums";
 import {ModelRegion} from "../../../model/region.model";
 import {UserService} from "../../../services/user.service";
@@ -55,8 +58,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.agencyId = agencyId;
       //check if edit mode
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.regionId = params["id"];
@@ -121,7 +124,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
               staffs.forEach(staff => {
                 ids.push(staff.$key);
               });
-              return Observable.from(ids);
+              return observableFrom(ids);
             })
             .flatMap(id => {
                 return this.af.database.object(Constants.APP_STATUS + "/userPublic/" + id)
@@ -383,8 +386,8 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
 
   showAlert() {
     this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.hideWarning = true;
     });
   }
@@ -452,7 +455,7 @@ export class CreateEditRegionComponent implements OnInit, OnDestroy {
         if (region.countries) {
           countries = Object.keys(region.countries);
         }
-        return Observable.from(countries);
+        return observableFrom(countries);
       })
       .flatMap(countryId => {
         return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + countryId)

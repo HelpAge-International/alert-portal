@@ -1,7 +1,10 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState} from 'angularfire2';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, Subject} from 'rxjs';
 import {Constants} from "../utils/Constants";
 import {PageControlService} from "../services/pagecontrol.service";
 import {CustomerValidator} from "../utils/CustomValidator";
@@ -65,8 +68,8 @@ export class NewUserPasswordComponent implements OnInit, OnDestroy {
 
         this.af.database.object(Constants.APP_STATUS).update(directorData).then(() => {
           this.successInactive = false;
-          Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-            .takeUntil(this.ngUnsubscribe)
+          observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(() => {
               this.successInactive = true;
 
@@ -114,8 +117,8 @@ export class NewUserPasswordComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe)
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         this.errorInactive = true;
       });

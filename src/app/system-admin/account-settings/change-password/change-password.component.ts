@@ -1,8 +1,11 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire, FirebaseAuthState, AuthProviders, AuthMethods} from 'angularfire2';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
-import {Observable, Subject} from 'rxjs';
 import {CustomerValidator} from '../../../utils/CustomValidator';
 import {PageControlService} from "../../../services/pagecontrol.service";
 
@@ -78,15 +81,15 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   private showAlert(error: boolean) {
     if (error) {
       this.errorInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe)
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
         this.errorInactive = true;
       });
     } else {
       this.successInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe)
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
         this.successInactive = true;
       });

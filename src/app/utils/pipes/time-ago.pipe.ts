@@ -1,10 +1,20 @@
+
+import {of as observableOf} from 'rxjs';
+
+import {mergeMap} from 'rxjs/operators/mergeMap';
+
+import {map} from 'rxjs/operators/map';
+
+import {takeWhile} from 'rxjs/operators/takeWhile';
+
+import {repeatWhen} from 'rxjs/operators/repeatWhen';
 import { OnDestroy, ChangeDetectorRef, Pipe, PipeTransform } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/interval';
-import 'rxjs/add/operator/repeatWhen';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/takeWhile';
+import { Observable } from 'rxjs';
+
+
+
+
 
 @Pipe({
   name: 'timeAgo',
@@ -45,17 +55,16 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
   }
 
   private getObservable() {
-    return Observable
-      .of(1)
-      .repeatWhen(notifications => {
+    return observableOf(1).pipe(
+      repeatWhen(notifications => {
         // for each next raised by the source sequence, map it to the result of the returned observable
-        return notifications.flatMap((x, i) => {
+        return notifications.pipe(mergeMap((x, i) => {
           const sleep = i < 60 ? 1000 : 30000;
           return Observable.timer(sleep);
-        });
-      })
-      .takeWhile(_ => !this.isDestroyed)
-      .map((x, i) => this.elapsed());
+        }));
+      }),
+      takeWhile(_ => !this.isDestroyed),
+      map((x, i) => this.elapsed()),);
   };
 
   private elapsed(): string {

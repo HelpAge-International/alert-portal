@@ -1,3 +1,7 @@
+
+import {interval as observableInterval, Subject, Observable} from 'rxjs';
+
+import {first, takeWhile, takeUntil} from 'rxjs/operators';
 import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AngularFire, FirebaseApp} from "angularfire2";
@@ -14,7 +18,6 @@ import {
   SizeType,
   UserType
 } from "../../utils/Enums";
-import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 import * as firebase from "firebase";
 import {UserService} from "../../services/user.service";
@@ -42,7 +45,6 @@ import {WindowRefService} from "../../services/window-ref.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
-import {Observable} from "rxjs/Observable";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
 import {NoteService} from "../../services/note.service";
 
@@ -228,8 +230,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   initCountryOffice() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -249,8 +251,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         if (params['updateActionID']) {
           this.updateActionId = params['updateActionID'];
 
-          Observable.interval(2000)
-            .takeWhile(() => !this.stopCondition)
+          observableInterval(2000).pipe(
+            takeWhile(() => !this.stopCondition))
             .subscribe(i => {
               this.triggerScrollTo()
               this.stopCondition = true
@@ -290,8 +292,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
             this.modulesAreEnabled = isEnabled;
           });
 
-          this.countryService.getPrivacySettingForCountry(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.countryService.getPrivacySettingForCountry(this.countryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(privacy => {
               this.privacy = privacy;
             });
@@ -315,8 +317,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                       this.networkModuleMap.set(networkId, matrix)
                     })
 
-                  this.networkService.getNetworkDetail(networkId)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.networkService.getNetworkDetail(networkId).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(network => {
                       this.networkModelMap.set(networkId, network)
                     })
@@ -340,8 +342,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                       this.networkModuleMap.set(localNetwork.id, matrix)
                     })
 
-                  this.networkService.getNetworkDetail(localNetwork.id)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.networkService.getNetworkDetail(localNetwork.id).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(network => {
                       this.networkModelMap.set(localNetwork.id, network)
                     })
@@ -595,7 +597,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                       console.log(notification.content);
 
                       notification.time = new Date().getTime();
-                      this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).first().subscribe();
+                      this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).pipe(first()).subscribe();
                     });
                 });
             })
@@ -649,7 +651,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
                 console.log(notification.content);
 
                 notification.time = new Date().getTime();
-                this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).first().subscribe(() => {
+                this.notificationService.saveUserNotificationWithoutDetails(this.assignActionAsignee, notification).pipe(first()).subscribe(() => {
                 });
               });
           })
@@ -1384,14 +1386,14 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   private fetchUnassignedNetworkActions(networkId: string) {
-    this.networkService.getUnassignedNetworkActionsForAgency(this.agencyId, networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getUnassignedNetworkActionsForAgency(this.agencyId, networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(networkUnassignedActions => {
         for (let i in networkUnassignedActions) {
           let action = networkUnassignedActions[i]
           let path = "/note/"+networkId+"/"+action.$key
-          this.noteService.getNotes(path)
-            .takeUntil(this.ngUnsubscribe)
+          this.noteService.getNotes(path).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(notes => {
               networkUnassignedActions[i]['notes'] = notes
             })

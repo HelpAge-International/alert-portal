@@ -1,3 +1,5 @@
+
+import {first} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
@@ -15,8 +17,8 @@ export class AfterValidationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .first()
+    this.route.params.pipe(
+      first())
       .subscribe((params: Params) => {
         if (params["partner"]) {
           this.msg = this._translate.instant("AFTER_ACCEPT_PARTNER_VALIDATION");

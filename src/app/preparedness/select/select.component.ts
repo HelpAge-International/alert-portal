@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router, NavigationExtras, ActivatedRoute} from "@angular/router";
@@ -54,8 +56,8 @@ export class SelectPreparednessComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-        this.userService.getSystemAdminId(Constants.USER_PATHS[userType], this.uid)
-          .takeUntil(this.ngUnsubscribe)
+        this.userService.getSystemAdminId(Constants.USER_PATHS[userType], this.uid).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe((systemAdmin) => {
             this.systemAdminUid = systemAdmin;
             this.initGenericActions();

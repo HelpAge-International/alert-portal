@@ -1,4 +1,6 @@
 
+import {takeUntil} from 'rxjs/operators';
+
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, PermissionsAgency, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";
@@ -9,7 +11,7 @@ import {OperationAreaModel} from "../../model/operation-area.model";
 import {ModelAlert} from "../../model/alert.model";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {AgencyPermissionObject, PageControlService} from "../../services/pagecontrol.service";
 import {NotificationService} from "../../services/notification.service";
@@ -126,8 +128,8 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       });
 
       // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe).subscribe(content => {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(content => {
         this.countryLevelsValues = content;
         err => console.log(err);
       });

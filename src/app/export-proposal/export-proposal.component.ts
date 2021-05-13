@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Subject} from "rxjs";
 import {PageControlService} from "../services/pagecontrol.service";
@@ -193,13 +195,13 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
    */
 
   private downloadData() {
-    this.userService.getUserType(this.uid)
-      .takeUntil(this.ngUnsubscribe)
+    this.userService.getUserType(this.uid).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(usertype => {
         this.USER_TYPE = Constants.USER_PATHS[usertype];
         if (usertype == UserType.GlobalDirector) {
-          this.route.params
-            .takeUntil(this.ngUnsubscribe)
+          this.route.params.pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe((params: Params) => {
               if (params["countryId"]) {
                 this.countryId = params["countryId"];
@@ -225,8 +227,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private downloadResponsePlanData() {
     if (!this.responsePlanId) {
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.responsePlanId = params["id"];
@@ -258,8 +260,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private downloadResponsePlanDataLocalAgency() {
     if (!this.responsePlanId) {
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.responsePlanId = params["id"];
@@ -291,8 +293,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private downloadAgencyData(userType) {
     const normalUser = () => {
-      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getAgencyId(Constants.USER_PATHS[userType], this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((agencyId) => {
           this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/name").takeUntil(this.ngUnsubscribe).subscribe(name => {
             if (name != null) {
@@ -324,8 +326,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private bindProjectLeadData(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
-      this.userService.getUser(responsePlan.planLead)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(responsePlan.planLead).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(user => {
           console.log(user);
           this.planLeadName = user.firstName + " " + user.lastName;
@@ -343,8 +345,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
 
   private bindProjectLeadDataLocalAgency(responsePlan: ResponsePlan) {
     if (responsePlan.planLead) {
-      this.userService.getUser(responsePlan.planLead)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(responsePlan.planLead).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(user => {
           console.log(user);
           this.planLeadName = user.firstName + " " + user.lastName;
@@ -401,8 +403,8 @@ export class ExportProposalComponent implements OnInit, OnDestroy {
         this.downloadGroups(responsePlan);
       } else {
         let networkUserType = this.isLocalNetworkAdmin ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
-        this.networkService.getSystemIdForNetwork(this.uid, networkUserType)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.getSystemIdForNetwork(this.uid, networkUserType).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(systemId => {
             this.systemAdminUid = systemId;
             this.downloadGroups(responsePlan);

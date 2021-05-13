@@ -1,3 +1,9 @@
+
+import {map} from 'rxjs/operators';
+
+import {takeUntil} from 'rxjs/operators';
+
+import {first} from 'rxjs/operators';
 import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
@@ -128,7 +134,7 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
       this.isAnonym = !(user && !user.anonymous);
       this.languageSelectPath = "../../../assets/i18n/" + this.browserLang + ".json";
 
-      this.loadJSON().first().subscribe(data => {
+      this.loadJSON().pipe(first()).subscribe(data => {
         for (var key in data) {
           this.userLang.push(key);
           this.languageMap.set(key, data[key]);
@@ -159,8 +165,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
           let networkId = this.storageService.get(Constants.NETWORK_VIEW_SELECTED_ID);
           if (networkId) {
             this.isViewingNetwork = true;
-            this.networkService.getNetworkDetail(networkId)
-              .takeUntil(this.ngUnsubscribe)
+            this.networkService.getNetworkDetail(networkId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(network => {
                 this.selectedNetwork = network
 
@@ -403,8 +409,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   loadJSON() {
 
-    return this.http.get(this.languageSelectPath)
-      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res: Response) => res.json().GLOBAL.LANGUAGES));
 
   }
 
@@ -479,12 +485,12 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
         })
           .forEach(item => {
-            item.takeUntil(this.ngUnsubscribe).subscribe(network => {
+            item.pipe(takeUntil(this.ngUnsubscribe)).subscribe(network => {
               if (!CommonUtils.itemExistInList(network.id, this.networks)) {
                 if (!(this.selectedNetwork && network.id == this.selectedNetwork.id) && network.isActive) {
                   let networkCountryId = networkModels.filter(model => model.networkId === network.id)[0].networkCountryId;
-                  this.networkService.getNetworkCountry(network.id, networkCountryId)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.networkService.getNetworkCountry(network.id, networkCountryId).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(networkCountry => {
                       if (networkCountry.isActive) {
                         this.networks.push(network);

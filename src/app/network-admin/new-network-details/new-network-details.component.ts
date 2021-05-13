@@ -1,8 +1,11 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, Inject, Input, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelNetwork} from "../../model/network.model";
 import {NetworkService} from "../../services/network.service";
@@ -146,8 +149,8 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
 
             this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId).update(newNetwork).then(() => {
               this.successInactive = false;
-              Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-                .takeUntil(this.ngUnsubscribe)
+              observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(() => {
                   this.successInactive = true;
 
@@ -172,8 +175,8 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
         console.log("Without logo");
         this.af.database.object(Constants.APP_STATUS + "/network/" + this.networkId).update(newNetwork).then(() => {
           this.successInactive = false;
-          Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-            .takeUntil(this.ngUnsubscribe)
+          observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(() => {
               this.successInactive = true;
 
@@ -241,8 +244,8 @@ export class NewNetworkDetailsComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.errorInactive = true;
     });
   }

@@ -1,3 +1,5 @@
+
+import {first, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
@@ -5,14 +7,13 @@ import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, OfficeType, ResponsePlanSectors, SkillType, UserType} from "../../../utils/Enums";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
-import {Subject} from "rxjs";
+import {Subject, Observable} from "rxjs";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {SurgeCapacityService} from "../../../services/surge-capacity.service";
 import {AgencyService} from "../../../services/agency-service.service";
 import * as moment from "moment";
-import {Observable} from "rxjs/Observable";
 import {ModelUserPublic} from "../../../model/user-public.model";
 
 declare var jQuery: any;
@@ -117,8 +118,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   private initLocalAgency() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
@@ -151,7 +152,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           }
           this.adminNote.uploadedBy = this.uid
           this.countryAdmin = this.getLocalAgencyAdmin(this.agencyID)
-          this.adminNotes = this.countryAdmin.flatMap(admin => this._noteService.getNotes('/adminNotes/' + admin.id))
+          this.adminNotes = this.countryAdmin.pipe(mergeMap(admin => this._noteService.getNotes('/adminNotes/' + admin.id)))
           this._getSkills();
 
         });
@@ -161,8 +162,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   private initCountryOffice() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryID = params["countryId"];
@@ -195,7 +196,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
           this.adminNote.uploadedBy = this.uid
           this.countryAdmin = this.getCountryAdmin(this.countryID, this.agencyID)
-          this.adminNotes = this.countryAdmin.flatMap(admin => this._noteService.getNotes('/adminNotes/' + admin.id))
+          this.adminNotes = this.countryAdmin.pipe(mergeMap(admin => this._noteService.getNotes('/adminNotes/' + admin.id)))
 
 
           this._getSkills();
@@ -307,8 +308,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
 
   getStaff() {
-    this._userService.getStaffList(this.countryID)
-      .map(staffs => {
+    this._userService.getStaffList(this.countryID).pipe(
+      map(staffs => {
         let responseStaffs = [];
         staffs.forEach(staff => {
           if (staff.isResponseMember) {
@@ -319,8 +320,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.newNote[staff.id].uploadedBy = this.uid;
         });
         return responseStaffs;
-      })
-      .takeUntil(this.ngUnsubscribe)
+      }),
+      takeUntil(this.ngUnsubscribe),)
       .subscribe(responseStaffs => {
         this.totalResponseStaff = responseStaffs.length;
         this.responseStaffs = responseStaffs;
@@ -333,8 +334,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.staffNoteMap.set(staff.id, []);
 
           //get staff name
-          this._userService.getUser(staff.id)
-            .takeUntil(this.ngUnsubscribe)
+          this._userService.getUser(staff.id).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               this.userMap.set(user.id, user.firstName + " " + user.lastName);
             });
@@ -371,8 +372,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
   }
 
   getStaffLocalAgency() {
-    this._userService.getStaffList(this.agencyID)
-      .map(staffs => {
+    this._userService.getStaffList(this.agencyID).pipe(
+      map(staffs => {
         let responseStaffs = [];
         staffs.forEach(staff => {
           if (staff.isResponseMember) {
@@ -383,8 +384,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.newNote[staff.id].uploadedBy = this.uid;
         });
         return responseStaffs;
-      })
-      .takeUntil(this.ngUnsubscribe)
+      }),
+      takeUntil(this.ngUnsubscribe),)
       .subscribe(responseStaffs => {
         this.totalResponseStaff = responseStaffs.length;
         this.responseStaffs = responseStaffs;
@@ -397,8 +398,8 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
           this.staffNoteMap.set(staff.id, []);
 
           //get staff name
-          this._userService.getUser(staff.id)
-            .takeUntil(this.ngUnsubscribe)
+          this._userService.getUser(staff.id).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               this.userMap.set(user.id, user.firstName + " " + user.lastName);
             });
@@ -654,7 +655,7 @@ export class CountryOfficeCapacityComponent implements OnInit, OnDestroy {
 
     if (!userId) return userName;
 
-    this._userService.getUser(userId).first().subscribe(user => {
+    this._userService.getUser(userId).pipe(first()).subscribe(user => {
       userName = user.firstName + ' ' + user.lastName;
     });
 

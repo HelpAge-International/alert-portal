@@ -4,7 +4,7 @@ import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AlertLevels, Countries, CountriesMapsSearchInterface, HazardScenario} from "../utils/Enums";
 import {DepHolder, SDepHolder, SuperMapComponents} from "../utils/MapHelper";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../services/user.service";
 import {PageControlService} from "../services/pagecontrol.service";
 import {MapService} from "../services/map.service";

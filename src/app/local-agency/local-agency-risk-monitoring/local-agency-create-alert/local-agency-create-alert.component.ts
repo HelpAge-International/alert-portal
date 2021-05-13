@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit, Output} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";
@@ -8,7 +10,7 @@ import {OperationAreaModel} from "../../../model/operation-area.model";
 import {ModelAlert} from "../../../model/alert.model";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../../services/user.service";
 import {AgencyService} from "../../../services/agency-service.service"
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -116,8 +118,8 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId);
 
       // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe).subscribe(content => {
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(content => {
         this.countryLevelsValues = content;
         err => console.log(err);
       });

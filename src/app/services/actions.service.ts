@@ -1,13 +1,15 @@
+
+import {from as observableFrom, Observable, Subject} from 'rxjs';
+
+import {map, takeUntil} from 'rxjs/operators';
 import {Injectable} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import * as moment from "moment";
-import {Observable} from "rxjs/Observable";
 import {ActionLevel, ActionType, AlertLevels, AlertStatus, ApprovalStatus} from "../utils/Enums";
 import {ModelAlert} from "../model/alert.model";
 import {ModelAffectedArea} from "../model/affectedArea.model";
 import {UserService} from "./user.service";
-import {Subject} from "rxjs/Subject";
 import {CommonService} from "./common.service";
 import {ModelJsonLocation} from "../model/json-location.model";
 import {Router} from "@angular/router";
@@ -83,7 +85,7 @@ export class ActionsService {
 
     let countryIndicators = this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
       .flatMap(hazards => {
-        return Observable.from(hazards.filter(hazard => hazard.isActive).map(hazard => hazard.$key));
+        return observableFrom(hazards.filter(hazard => hazard.isActive).map(hazard => hazard.$key));
       })
       .flatMap(hazardId => {
         return this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazardId, {
@@ -258,8 +260,8 @@ export class ActionsService {
       })
       .do(alertList => {
         alertList.forEach(alert => {
-          this.userService.getUser(alert.createdBy)
-            .takeUntil(this.ngUnsubscribe)
+          this.userService.getUser(alert.createdBy).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               alert.createdByName = user.firstName + " " + user.lastName
             });
@@ -268,8 +270,8 @@ export class ActionsService {
       .do(alertList => {
         alertList.forEach(alert => {
           if (alert.updatedBy) {
-            this.userService.getUser(alert.updatedBy)
-              .takeUntil(this.ngUnsubscribe)
+            this.userService.getUser(alert.updatedBy).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(user => {
                 alert.updatedByName = user.firstName + " " + user.lastName
               });
@@ -280,7 +282,7 @@ export class ActionsService {
         alertList.forEach(alert => {
           let affectedAreasToDisplay: any[] = [];
           alert.affectedAreas.forEach(affectedArea => {
-            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).takeUntil(this.ngUnsubscribe).subscribe((value) => {
+            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(takeUntil(this.ngUnsubscribe)).subscribe((value) => {
               let obj = {
                 country: "",
                 areas: ""
@@ -380,8 +382,8 @@ export class ActionsService {
       })
       .do(alertList => {
         alertList.forEach(alert => {
-          this.userService.getUser(alert.createdBy)
-            .takeUntil(this.ngUnsubscribe)
+          this.userService.getUser(alert.createdBy).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               alert.createdByName = user.firstName + " " + user.lastName
             });
@@ -390,8 +392,8 @@ export class ActionsService {
       .do(alertList => {
         alertList.forEach(alert => {
           if (alert.updatedBy) {
-            this.userService.getUser(alert.updatedBy)
-              .takeUntil(this.ngUnsubscribe)
+            this.userService.getUser(alert.updatedBy).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(user => {
                 alert.updatedByName = user.firstName + " " + user.lastName
               });
@@ -431,8 +433,8 @@ export class ActionsService {
 
   private getAreaValues() {
     // get the country levels values
-    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .takeUntil(this.ngUnsubscribe)
+    this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(content => {
         this.areaContent = content;
       });
@@ -485,8 +487,8 @@ export class ActionsService {
         }
       })
       .do(modelAlert => {
-        this.userService.getUser(modelAlert.updatedBy ? modelAlert.updatedBy : modelAlert.createdBy)
-          .takeUntil(this.ngUnsubscribe)
+        this.userService.getUser(modelAlert.updatedBy ? modelAlert.updatedBy : modelAlert.createdBy).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(user => {
             modelAlert.createdByName = user.firstName + " " + user.lastName
           });
@@ -544,8 +546,8 @@ export class ActionsService {
         }
       })
       .do(modelAlert => {
-        this.userService.getUser(modelAlert.updatedBy ? modelAlert.updatedBy : modelAlert.createdBy)
-          .takeUntil(this.ngUnsubscribe)
+        this.userService.getUser(modelAlert.updatedBy ? modelAlert.updatedBy : modelAlert.createdBy).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(user => {
             modelAlert.createdByName = user.firstName + " " + user.lastName
           });
@@ -553,8 +555,8 @@ export class ActionsService {
   }
 
   getAllLevelInfo(country: number) {
-    return this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .map(result => {
+    return this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+      map(result => {
         let level1values: ModelJsonLocation[] = [];
         if (result[country] && result[country]['levelOneValues']) {
           result[country]['levelOneValues'].forEach(item => {
@@ -575,7 +577,7 @@ export class ActionsService {
           });
         }
         return level1values;
-      });
+      }));
   }
 
   updateAlert(alert: ModelAlert, alertLevelBefore: number, countryId: string, agencyId: string, networkCountryId?, networkId?, networkViewValues?) {
@@ -798,8 +800,8 @@ export class ActionsService {
       })
       .do(alertList => {
         alertList.forEach(alert => {
-          this.userService.getUser(alert.createdBy)
-            .takeUntil(this.ngUnsubscribe)
+          this.userService.getUser(alert.createdBy).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               alert.createdByName = user.firstName + " " + user.lastName
             });
@@ -901,8 +903,8 @@ export class ActionsService {
       })
       .do(alertList => {
         alertList.forEach(alert => {
-          this.userService.getUser(alert.createdBy)
-            .takeUntil(this.ngUnsubscribe)
+          this.userService.getUser(alert.createdBy).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               alert.createdByName = user.firstName + " " + user.lastName
             });
@@ -1024,8 +1026,8 @@ export class ActionsService {
       })
       .do(alertList => {
         alertList.forEach(alert => {
-          this.userService.getUser(alert.createdBy)
-            .takeUntil(this.ngUnsubscribe)
+          this.userService.getUser(alert.createdBy).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               alert.createdByName = user.firstName + " " + user.lastName
             });
@@ -1127,8 +1129,8 @@ export class ActionsService {
       })
       .do(alertList => {
         alertList.forEach(alert => {
-          this.userService.getUser(alert.createdBy)
-            .takeUntil(this.ngUnsubscribe)
+          this.userService.getUser(alert.createdBy).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(user => {
               alert.createdByName = user.firstName + " " + user.lastName
             });

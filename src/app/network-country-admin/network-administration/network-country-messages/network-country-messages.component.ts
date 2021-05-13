@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -62,8 +64,8 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
 
-          this._messageService.getCountrySentMessagesNetwork(user.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this._messageService.getCountrySentMessagesNetwork(user.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(sentMessages => {
               this.showLoader = false;
               if (sentMessages) {
@@ -71,8 +73,8 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
               }
             });
 
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(map => this.agencyCountryMap = map);
 
         });
@@ -90,8 +92,8 @@ export class NetworkCountryMessagesComponent implements OnInit, OnDestroy {
         .subscribe(selection => {
           this.networkId = selection["id"];
 
-          this._messageService.getSentMessagesLocalNetwork(user.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this._messageService.getSentMessagesLocalNetwork(user.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(sentMessages => {
               this.showLoader = false;
               if (sentMessages) {

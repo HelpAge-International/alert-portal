@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
@@ -141,8 +143,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   initCountryOffice(){
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.responsePlanId = params["id"];
@@ -264,8 +266,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   initLocalAgency(){
     console.log("initLocalAgency")
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.responsePlanId = params["id"];
@@ -437,8 +439,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       this.handleLoadResponsePlan();
     } else {
       if (userType == UserType.GlobalDirector || userType == UserType.RegionalDirector) {
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
+        this.route.params.pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe((params: Params) => {
             if (params["countryId"]) {
               this.countryId = params["countryId"];
@@ -464,8 +466,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     if (this.responsePlanId) {
       this.loadResponsePlanData();
     } else {
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.responsePlanId = params["id"];
@@ -479,8 +481,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     if (this.responsePlanId) {
       this.loadResponsePlanDataLocalAgency();
     } else {
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.responsePlanId = params["id"];
@@ -503,16 +505,16 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
     };
     const networkUser = () => {
       if (this.isLocalNetworkAdmin) {
-        this.networkService.getSystemIdForNetworkAdmin(this.uid)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(systemId => {
             console.log(systemId)
             this.systemAdminUid = systemId;
             this.getGroups(responsePlan);
           });
       } else {
-        this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.getSystemIdForNetworkCountryAdmin(this.uid).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(systemId => {
             this.systemAdminUid = systemId;
             this.getGroups(responsePlan);
@@ -575,7 +577,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         }
 
         if(id === this.countryId) {
-          this.userService.getAgencyId(this.userPath, this.uid).takeUntil(this.ngUnsubscribe).subscribe(id => {
+          this.userService.getAgencyId(this.userPath, this.uid).pipe(takeUntil(this.ngUnsubscribe)).subscribe(id => {
             this.countryService.getCountryResponsePlanClockSettingsDuration(id, this.countryId).takeUntil(this.ngUnsubscribe)
               .subscribe(duration => {
                 this.expiryDate = (duration - 604800000) + responsePlan.timeCreated
@@ -636,8 +638,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
     if (responsePlan.planLead) {
       const normalUser = () => {
-        this.userService.getUser(responsePlan.planLead)
-          .takeUntil(this.ngUnsubscribe)
+        this.userService.getUser(responsePlan.planLead).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(user => {
             this.planLeadName = user.firstName + " " + user.lastName;
           });

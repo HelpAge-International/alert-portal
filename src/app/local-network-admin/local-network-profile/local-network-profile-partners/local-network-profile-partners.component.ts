@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, Privacy, ResponsePlanSectors, UserType} from "../../../utils/Enums";
@@ -15,7 +17,7 @@ import {CommonService} from "../../../services/common.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AngularFire} from "angularfire2";
 import {OperationAreaModel} from "../../../model/operation-area.model";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -109,8 +111,8 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -141,8 +143,8 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   private networkCountryAccess() {
     if (this.isViewing) {
 
-      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(map => {
           console.log(map);
           this.officeAgencyMap = map;
@@ -155,16 +157,16 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                 value !== key ? this.getCountryPartnerOrgs(key, value) : this.getLocalAgencyPartnerOrgs(key)
 
                 // get the country levels values
-                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                  .takeUntil(this.ngUnsubscribe)
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(content => {
                     this.countryLevelsValues = content;
                   });
               })
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -182,8 +184,8 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
             this.networkId = selection["id"];
             this.networkCountryId = selection["networkCountryId"];
 
-            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(map => {
                 console.log(map);
                 this.officeAgencyMap = map;
@@ -194,8 +196,8 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                     .subscribe(agency => {
                       this.agencies.push(agency);
 
-                      this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(partnerOrganisations => {
                           this.partnerOrganisations.set(key, partnerOrganisations);
 
@@ -215,16 +217,16 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                         });
 
                       // get the country levels values
-                      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(content => {
                           this.countryLevelsValues = content;
                         });
                     })
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })
@@ -239,8 +241,8 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   }
 
   private getCountryPartnerOrgs(key: string, value: string) {
-    this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
-      .takeUntil(this.ngUnsubscribe)
+    this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(partnerOrganisations => {
         this.partnerOrganisations.set(key, partnerOrganisations);
 
@@ -249,7 +251,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
         // Get the partner organisation notes
         this.partnerOrganisations.get(key).forEach(partnerOrganisation => {
           const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-          this._noteService.getNotes(partnerOrganisationNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(partnerOrganisationNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             partnerOrganisation.notes = notes;
           });
 
@@ -261,8 +263,8 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
   }
 
   private getLocalAgencyPartnerOrgs(agencyId:string) {
-    this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this._partnerOrganisationService.getLocalAgencyPartnerOrganisations(agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(partnerOrganisations => {
         this.partnerOrganisations.set(agencyId, partnerOrganisations);
 
@@ -271,7 +273,7 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
         // Get the partner organisation notes
         this.partnerOrganisations.get(agencyId).forEach(partnerOrganisation => {
           const partnerOrganisationNode = Constants.PARTNER_ORGANISATION_NODE.replace('{id}', partnerOrganisation.id);
-          this._noteService.getNotes(partnerOrganisationNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+          this._noteService.getNotes(partnerOrganisationNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
             partnerOrganisation.notes = notes;
           });
 
@@ -297,16 +299,16 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                 value !== key ? this.getCountryPartnerOrgs(key, value) : this.getLocalAgencyPartnerOrgs(key)
 
                 // get the country levels values
-                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                  .takeUntil(this.ngUnsubscribe)
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(content => {
                     this.countryLevelsValues = content;
                   });
               })
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -332,8 +334,8 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                     .subscribe(agency => {
                       this.agencies.push(agency)
 
-                      this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._partnerOrganisationService.getCountryOfficePartnerOrganisations(key, value).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(partnerOrganisations => {
                           this.partnerOrganisations.set(key, partnerOrganisations)
 
@@ -353,16 +355,16 @@ export class LocalNetworkProfilePartnersComponent implements OnInit, OnDestroy {
                         });
 
                       // get the country levels values
-                      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                        .takeUntil(this.ngUnsubscribe)
+                      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(content => {
                           this.countryLevelsValues = content;
                         });
                     })
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })

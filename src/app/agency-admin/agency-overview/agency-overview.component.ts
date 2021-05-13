@@ -1,9 +1,11 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {AlertLevels, AlertStatus} from "../../utils/Enums";
 import {HazardImages} from "../../utils/HazardImages";
 import {Constants} from "../../utils/Constants";
@@ -64,8 +66,8 @@ export class AgencyOverviewComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];

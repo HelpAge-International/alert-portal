@@ -1,11 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NetworkService} from "../../services/network.service";
-import {Subject} from "rxjs/Subject";
+import {Subject, Observable} from "rxjs";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs/Observable";
 import {NetworkOfficeModel} from "./add-edit-network-office/network-office.model";
 import {Constants} from "../../utils/Constants";
 import {UserService} from "../../services/user.service";

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Constants} from '../../../utils/Constants';
@@ -54,8 +56,8 @@ export class CountryClockSettingsComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.countryId = countryId;
 
-      this._settingsService.getCountryClockSettings(this.agencyId, this.countryId)
-        .takeUntil(this.ngUnsubscribe)
+      this._settingsService.getCountryClockSettings(this.agencyId, this.countryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(clockSettings => {
           this.clockSettings = clockSettings;
         })

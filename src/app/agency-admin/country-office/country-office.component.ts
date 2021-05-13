@@ -1,8 +1,11 @@
+
+import {from as observableFrom, Observable, Scheduler, Subject} from 'rxjs';
+
+import {takeUntil, mergeMap} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Observable, Scheduler, Subject} from "rxjs";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {UserType} from "../../utils/Enums";
@@ -144,11 +147,11 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   private retrieveOtherCountries(diff: string[]) {
     // console.log('do have other countries, fetch data!');
-    Observable.from(diff)
-      .flatMap(id => {
+    observableFrom(diff).pipe(
+      mergeMap(id => {
         return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + id);
-      })
-      .takeUntil(this.ngUnsubscribe)
+      }),
+      takeUntil(this.ngUnsubscribe),)
       .subscribe(result => {
         let exist = this.otherCountries.filter(country => country.$key == result.$key).length > 0;
         if (!exist) {

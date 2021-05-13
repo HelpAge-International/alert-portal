@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {FirebaseAuthState} from "angularfire2";
 import {ChangePasswordModel} from "../../../model/change-password.model";
 import {AlertMessageType} from "../../../utils/Enums";

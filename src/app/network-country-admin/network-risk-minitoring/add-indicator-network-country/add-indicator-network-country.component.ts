@@ -1,3 +1,7 @@
+
+import {first} from 'rxjs/operators/first';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Indicator} from "../../../model/indicator";
 import {Location} from '@angular/common';
@@ -146,8 +150,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
 
         console.log(params)
@@ -198,8 +202,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
           this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
 
           // get the country levels values
-          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-            .takeUntil(this.ngUnsubscribe)
+          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(content => {
               this.countryLevelsValues = content;
               err => console.log(err);
@@ -226,8 +230,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
                 this.oldIndicatorData = Object.assign({}, this.indicatorData); // clones the object to see if the assignee changes in order to send notification
 
                 // get the country levels values
-                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                  .takeUntil(this.ngUnsubscribe)
+                this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(content => {
                     this.countryLevelsValues = content;
                     err => console.log(err);
@@ -245,8 +249,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   private initPreSelection() {
-    this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-      .first()
+    this.networkService.getNetworkCountry(this.networkId, this.networkCountryId).pipe(
+      first())
       .subscribe(networkCountry => {
         this.countryLocation = networkCountry.location
       })
@@ -280,8 +284,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   }
 
   initIndicatorData() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         this.indicatorData = new Indicator();
         if (!params['hazardID']) {
@@ -372,16 +376,16 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
   getUsersForAssign() {
     console.log(this.UserType)
     if (this.UserType == NetworkUserAccountType.NetworkCountryAdmin) {
-      this.userService.getUser(this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((user: ModelUserPublic) => {
           console.log(user)
           let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName + "(Network Country Admin)"};
           this.usersForAssign.push(userToPush);
         })
 
-      this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.getNetworkCountry(this.networkId, this.networkCountryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(network => {
           Object.keys(network.agencyCountries).forEach(agencyKey => {
             this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyKey)
@@ -419,8 +423,8 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
 
     } else if (this.UserType == UserType.GlobalDirector) {
       console.log('globalDirector')
-      this.userService.getUser(this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((user: ModelUserPublic) => {
           let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
           this.usersForAssign.push(userToPush);

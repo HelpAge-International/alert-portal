@@ -1,9 +1,12 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {first, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {NotificationSettingEvents, OfficeType, SkillType, UserType} from "../../../utils/Enums";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {firebaseConfig} from "../../../app.module";
@@ -213,7 +216,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
     }
 
-    this.userService.getUserType(staffId).takeUntil(this.ngUnsubscribe).subscribe(userType => {
+    this.userService.getUserType(staffId).pipe(takeUntil(this.ngUnsubscribe)).subscribe(userType => {
       this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + '/' + staffId + '/firstLogin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe(value => {
@@ -309,7 +312,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
     this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/notificationSetting");
 
-    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+    this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
       if (params["id"]) {
         this.selectedStaffId = params["id"];
         this.selectedOfficeId = params["officeId"];
@@ -470,8 +473,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private createNewUser() {
 
-    this.userService.getUserByEmail(this.email)
-      .first()
+    this.userService.getUserByEmail(this.email).pipe(
+      first())
       .subscribe(existUser => {
         if (!existUser) {
           let userId = this.networkService.generateKeyUserPublic()
@@ -732,8 +735,8 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.hideWarning = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.hideWarning = true;
     });
   }

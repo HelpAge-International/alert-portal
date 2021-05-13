@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../../services/user.service";
 import {AngularFire} from "angularfire2";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {PermissionsAgency, UserType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";

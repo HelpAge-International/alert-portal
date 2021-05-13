@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
@@ -68,8 +70,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(networkAdmin => this.networkAdmin = networkAdmin);
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["id"]) {
             this.networkCountryId = params["id"];
@@ -92,8 +94,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
               this.isEditing ? this.initEditOffice() : this.initCreateOffice();
 
               //filter out used countries
-              this.networkCountryService.getAssignedCountries(this.networkId, this.networkCountryId)
-                .takeUntil(this.ngUnsubscribe)
+              this.networkCountryService.getAssignedCountries(this.networkId, this.networkCountryId).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(assignedLocations => {
                   const isavailable = country => assignedLocations.indexOf(country) == -1;
                   this.COUNTRY_SELECTION = this.COUNTRY_SELECTION.filter(isavailable);
@@ -106,8 +108,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
   private initCreateOffice() {
 
     //get network module setting
-    this.settingService.getCountryModulesSettings(this.networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.settingService.getCountryModulesSettings(this.networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((networkModuleSetting: ModuleSettingsModel[]) => {
         this.networkModuleSetting = networkModuleSetting;
         let conflictSetting = new ModuleSettingsModel();
@@ -124,8 +126,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
       .subscribe(networkOffice => {
         this.networkOffice = networkOffice;
 
-        this.userService.getUser(networkOffice.adminId)
-          .takeUntil(this.ngUnsubscribe)
+        this.userService.getUser(networkOffice.adminId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(user => {
             this.oldEmail = user.email;
             this.oldUid = user.id
@@ -165,8 +167,8 @@ export class AddEditNetworkOfficeComponent implements OnInit, OnDestroy {
 
       console.log("old email now is: " + this.oldEmail)
       console.log("new email now is: " + this.networkCountryUser.email)
-      this.userService.getUserByEmail(this.networkCountryUser.email)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUserByEmail(this.networkCountryUser.email).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((user: ModelUserPublic) => {
           console.log(user);
           if (user) {

@@ -1,9 +1,12 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Currency, UserType} from "../../../utils/Enums";
-import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
 
@@ -129,8 +132,8 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
             this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
               this.successInactive = false;
-              Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-                .takeUntil(this.ngUnsubscribe)
+              observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(() => {
                 this.successInactive = true;
 
@@ -157,8 +160,8 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
         this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
           this.successInactive = false;
-          Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-            .takeUntil(this.ngUnsubscribe)
+          observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(() => {
             this.successInactive = true;
 
@@ -230,8 +233,8 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.errorInactive = true;
     });
   }

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {AlertMessageType, HazardScenario} from "../../../utils/Enums";
@@ -8,7 +10,7 @@ import {ModelHazard} from "../../../model/hazard.model";
 import {AlertMessageModel} from '../../../model/alert-message.model';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {InformHolder, InformService} from "../../../services/inform.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../../services/user.service";
 import {NetworkService} from "../../../services/network.service";
 import {Http} from "@angular/http";
@@ -113,8 +115,8 @@ export class AddHazardLocalNetworkComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryID = params["countryId"];

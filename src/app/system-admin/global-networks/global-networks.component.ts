@@ -2,11 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
-import {Subject} from "rxjs";
+import {Subject, Observable} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
 import {ModelNetwork} from "../../model/network.model";
-import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 

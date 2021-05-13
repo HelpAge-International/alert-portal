@@ -1,3 +1,7 @@
+
+import {map} from 'rxjs/operators';
+
+import {first} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AngularFire} from 'angularfire2';
 import {Constants} from '../utils/Constants';
@@ -183,7 +187,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
   saveUserNotificationBasedOnNotificationSetting(message: MessageModel, notificationSetting: number, agencyId: string, countryId: string)
   {
     // Regular staff
-    this._userService.getStaffList(countryId ? countryId : agencyId).first().subscribe(staffs => {
+    this._userService.getStaffList(countryId ? countryId : agencyId).pipe(first()).subscribe(staffs => {
       staffs.forEach(staff => {
         if(staff.notification && staff.notification.indexOf(notificationSetting) !== -1)
         {
@@ -234,28 +238,28 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
       throw new Error('userId or message missing.');
     }
 
-    return this._userService.getUserType(userId)
-        .map(x => {
+    return this._userService.getUserType(userId).pipe(
+        map(x => {
           let userType = x;
           console.log(userType)
           console.log(userId)
 
           const userTypePath = Constants.USER_PATHS[userType];
           console.log(userTypePath)
-          return this._userService.getAgencyId(userTypePath, userId)
-            .first()
+          return this._userService.getAgencyId(userTypePath, userId).pipe(
+            first())
             .subscribe(agency => {
               console.log('first subscribe')
               let agencyId = agency;
-              return this._userService.getCountryId(userTypePath, userId)
-                .first()
+              return this._userService.getCountryId(userTypePath, userId).pipe(
+                first())
                 .subscribe(country => {
                   let countryId = country;
                   console.log('final return')
                   return this.saveUserNotification(userId, message, userType, agencyId, countryId);
                 });
             });
-          });
+          }));
   }
   saveUserNotification(userId: string, message: MessageModel, userType: number, agencyId: string, countryId: string): firebase.Promise<any>{
     let node = '';

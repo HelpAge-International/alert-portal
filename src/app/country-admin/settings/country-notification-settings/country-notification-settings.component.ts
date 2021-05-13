@@ -1,3 +1,7 @@
+
+import {first} from 'rxjs/operators';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {UserService} from "../../../services/user.service";
@@ -69,14 +73,14 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
       * */
       this.oneCheckToCorrectOldData();
 
-      this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId)
-        .takeUntil(this.ngUnsubscribe)
+      this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(notificationSettings => {
           this.notificationSettings = notificationSettings;
         });
 
-      this._messageService.getCountryExternalRecipients(this.countryId)
-        .takeUntil(this.ngUnsubscribe)
+      this._messageService.getCountryExternalRecipients(this.countryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(externalRecipients => {
           this.externalRecipients = externalRecipients;
         });
@@ -157,8 +161,8 @@ export class CountryNotificationSettingsComponent implements OnInit, OnDestroy {
   }
 
   private oneCheckToCorrectOldData() {
-    this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId)
-      .first()
+    this._settingsService.getCountryNotificationSettings(this.agencyId, this.countryId).pipe(
+      first())
       .subscribe(notificationSettings => {
         if (notificationSettings[0].usersNotified[0]) {
           this.agencyService.getAgencyNotificationSettings(this.agencyId)

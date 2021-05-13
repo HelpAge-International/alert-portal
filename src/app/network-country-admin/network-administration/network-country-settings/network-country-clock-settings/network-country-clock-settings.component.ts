@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 import {AlertMessageType, DurationType} from "../../../../utils/Enums";

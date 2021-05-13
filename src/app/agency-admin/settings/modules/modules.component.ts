@@ -1,3 +1,5 @@
+
+import {first} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -140,12 +142,12 @@ export class ModulesComponent implements OnInit, OnDestroy {
     let module = new ModelAgencyPrivacy();
     module.mapObject(moduleItems);
     console.log(module);
-    this.userService.getAllCountryIdsForAgency(this.agencyId)
-      .first()
+    this.userService.getAllCountryIdsForAgency(this.agencyId).pipe(
+      first())
       .subscribe(countryIds => {
         countryIds.forEach(countryId => {
-          this.settingService.getPrivacySettingForCountry(countryId)
-            .first()
+          this.settingService.getPrivacySettingForCountry(countryId).pipe(
+            first())
             .subscribe((countryPrivacy: ModelAgencyPrivacy) => {
 
               this.settingService.updateCountryPrivacy(countryId, module, countryPrivacy);

@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators/map';
 import {Component, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
@@ -123,8 +125,8 @@ export class DonorHeaderComponent implements OnInit {
 
   loadJSON(){
 
-    return this.http.get(this.languageSelectPath)
-      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res:Response) => res.json().GLOBAL.LANGUAGES));
 
   }
 

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
@@ -48,7 +50,7 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.url.takeUntil(this.ngUnsubscribe).subscribe(url => {
+    this.route.url.pipe(takeUntil(this.ngUnsubscribe)).subscribe(url => {
       if(url[0].path == 'local-agency'){
         this.isLocalAgency = true;
 
@@ -113,13 +115,13 @@ export class CountryAgenciesComponent implements OnInit, OnDestroy {
       .subscribe(networkMap => {
         this.networkCountryData = []
         networkMap.forEach((networkCountryId, networkId) => {
-          this.networkService.getNetworkCountry(networkId, networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkCountry(networkId, networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(networkCountry => {
               this.networkCountryData.push(networkCountry)
             })
-          this.networkService.getNetworkDetail(networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkDetail(networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(network => {
               this.globalNetworks[networkCountryId] = network
             })

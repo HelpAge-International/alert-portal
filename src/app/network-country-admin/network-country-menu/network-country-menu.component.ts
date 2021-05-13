@@ -4,7 +4,7 @@ import {Constants} from "../../utils/Constants";
 import {NetworkViewModel} from "../../country-admin/country-admin-header/network-view.model";
 import {CommonUtils} from "../../utils/CommonUtils";
 import {NetworkService} from "../../services/network.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {SettingsService} from "../../services/settings.service";
 import {NetworkPrivacyModel} from "../../model/network-privacy.model";

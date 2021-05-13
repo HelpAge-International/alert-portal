@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {SDepHolder, SuperMapComponents} from "../../utils/MapHelper";
@@ -8,7 +10,7 @@ import {ModelRegion} from "../../model/region.model";
 import {Countries, UserType} from "../../utils/Enums";
 import {ModelHazard} from "../../model/hazard.model";
 import {HazardImages} from "../../utils/HazardImages";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {Constants} from "../../utils/Constants";
 import {AgencyModulesEnabled, PageControlService} from "../../services/pagecontrol.service";
@@ -66,8 +68,8 @@ export class MapCountriesListComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.countryId = countryId
 
-      this.route.params
-        .takeUntil(this.ngUnsubscribe)
+      this.route.params.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((params: Params) => {
           if (params["isDirector"]) {
             this.isDirector = params["isDirector"];

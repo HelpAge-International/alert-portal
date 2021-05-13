@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {ActionLevel, ActionType, AlertMessageType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -56,8 +58,8 @@ export class NetworkCreateEditMpaComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
 
           //get params
-          this.route.params
-            .takeUntil(this.ngUnsubscribe)
+          this.route.params.pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe((params: Params) => {
               if (params["id"]) {
                 this.actionId = params["id"];
@@ -71,8 +73,8 @@ export class NetworkCreateEditMpaComponent implements OnInit, OnDestroy {
   }
 
   private loadAction(actionId: string) {
-    this.networkService.getNetworkActionDetail(this.networkId, actionId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getNetworkActionDetail(this.networkId, actionId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(action => {
         this.networkActionModel = action;
         //fix the problem level snot showing on html

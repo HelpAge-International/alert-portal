@@ -525,34 +525,34 @@ exports.sendResponsePlanMobileNotification_UAT = sendResponsePlanMobileNotificat
 
 // region Delcarations :- LIVE
 
-// exports.handleUserAccounts_LIVE = handleUserAccounts(ENVIRONMENT.LIVE);
-// exports.sendResponsePlanValidationEmail_LIVE = sendResponsePlanValidationEmail(ENVIRONMENT.LIVE);
-// exports.sendPartnerOrganisationValidationEmail_LIVE = sendPartnerOrganisationValidationEmail(ENVIRONMENT.LIVE);
-// exports.sendSystemAdminNotificationsEmail_LIVE = sendSystemAdminNotificationsEmail(ENVIRONMENT.LIVE);
-// exports.sendAgencyNotificationsEmail_LIVE = sendAgencyNotificationsEmail(ENVIRONMENT.LIVE);
-// exports.sendCountryNotificationsEmail_LIVE = sendCountryNotificationsEmail(ENVIRONMENT.LIVE);
-// exports.sendNetworkAgencyValidationEmail_LIVE = sendNetworkAgencyValidationEmail(ENVIRONMENT.LIVE);
-// exports.sendNetworkCountryAgencyValidationEmail_LIVE = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.LIVE);
-// exports.sendBugReportingEmail_LIVE = sendBugReportingEmail(ENVIRONMENT.LIVE);
-// exports.createUserNetworkCountry_LIVE = createUserNetworkCountry(ENVIRONMENT.LIVE);
-// exports.updateUserEmail_LIVE = updateUserEmail(ENVIRONMENT.LIVE);
-// exports.sendEmailToExternalForAlertChange_LIVE = sendEmailToExternalForAlertChange(ENVIRONMENT.LIVE);
-// exports.sendEmailToExternalForAlertChangeRed_LIVE = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.LIVE);
-// exports.sendEmailToExternalForIndicatorUpdate_LIVE = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.LIVE);
-// exports.sendEmailToExternalForPlanExpired_LIVE = sendEmailToExternalForPlanExpired(ENVIRONMENT.LIVE);
-// exports.sendEmailPlanRejectedByCountryDirector_LIVE = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.LIVE);
-// exports.sendEmailPlanRejectedByRegionDirector_LIVE = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.LIVE);
-// exports.sendEmailPlanRejectedByGlobalDirector_LIVE = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.LIVE);
-// exports.updateLatestToCAllUsers_LIVE = updateLatestToCAllUsers(ENVIRONMENT.LIVE);
-// exports.updateLatestCoCAllUsers_LIVE = updateLatestCoCAllUsers(ENVIRONMENT.LIVE);
-// exports.sendIndicatorAssignedMobileNotification_LIVE = sendIndicatorAssignedMobileNotification(ENVIRONMENT.LIVE);
-// exports.sendResponsePlanApprovalNotification_LIVE = sendResponsePlanApprovalNotification(ENVIRONMENT.LIVE);
-// exports.sendAlertMobileNotification_LIVE = sendAlertMobileNotification(ENVIRONMENT.LIVE);
-// exports.sendActionMobileNotification_LIVE = sendActionMobileNotification(ENVIRONMENT.LIVE);
-// exports.countryOfficeClockSettingsChange_LIVE = countryOfficeClockSettingsChange(ENVIRONMENT.LIVE);
-// exports.networkClockSettingsChange_LIVE = networkClockSettingsChange(ENVIRONMENT.LIVE);
-// exports.networkCountryClockSettingsChange_LIVE = networkCountryClockSettingsChange(ENVIRONMENT.LIVE);
-// exports.sendResponsePlanMobileNotification_LIVE = sendResponsePlanMobileNotification(ENVIRONMENT.LIVE);
+exports.handleUserAccounts_LIVE = handleUserAccounts(ENVIRONMENT.LIVE);
+exports.sendResponsePlanValidationEmail_LIVE = sendResponsePlanValidationEmail(ENVIRONMENT.LIVE);
+exports.sendPartnerOrganisationValidationEmail_LIVE = sendPartnerOrganisationValidationEmail(ENVIRONMENT.LIVE);
+exports.sendSystemAdminNotificationsEmail_LIVE = sendSystemAdminNotificationsEmail(ENVIRONMENT.LIVE);
+exports.sendAgencyNotificationsEmail_LIVE = sendAgencyNotificationsEmail(ENVIRONMENT.LIVE);
+exports.sendCountryNotificationsEmail_LIVE = sendCountryNotificationsEmail(ENVIRONMENT.LIVE);
+exports.sendNetworkAgencyValidationEmail_LIVE = sendNetworkAgencyValidationEmail(ENVIRONMENT.LIVE);
+exports.sendNetworkCountryAgencyValidationEmail_LIVE = sendNetworkCountryAgencyValidationEmail(ENVIRONMENT.LIVE);
+exports.sendBugReportingEmail_LIVE = sendBugReportingEmail(ENVIRONMENT.LIVE);
+exports.createUserNetworkCountry_LIVE = createUserNetworkCountry(ENVIRONMENT.LIVE);
+exports.updateUserEmail_LIVE = updateUserEmail(ENVIRONMENT.LIVE);
+exports.sendEmailToExternalForAlertChange_LIVE = sendEmailToExternalForAlertChange(ENVIRONMENT.LIVE);
+exports.sendEmailToExternalForAlertChangeRed_LIVE = sendEmailToExternalForAlertChangeRed(ENVIRONMENT.LIVE);
+exports.sendEmailToExternalForIndicatorUpdate_LIVE = sendEmailToExternalForIndicatorUpdate(ENVIRONMENT.LIVE);
+exports.sendEmailToExternalForPlanExpired_LIVE = sendEmailToExternalForPlanExpired(ENVIRONMENT.LIVE);
+exports.sendEmailPlanRejectedByCountryDirector_LIVE = sendEmailPlanRejectedByCountryDirector(ENVIRONMENT.LIVE);
+exports.sendEmailPlanRejectedByRegionDirector_LIVE = sendEmailPlanRejectedByRegionDirector(ENVIRONMENT.LIVE);
+exports.sendEmailPlanRejectedByGlobalDirector_LIVE = sendEmailPlanRejectedByGlobalDirector(ENVIRONMENT.LIVE);
+exports.updateLatestToCAllUsers_LIVE = updateLatestToCAllUsers(ENVIRONMENT.LIVE);
+exports.updateLatestCoCAllUsers_LIVE = updateLatestCoCAllUsers(ENVIRONMENT.LIVE);
+exports.sendIndicatorAssignedMobileNotification_LIVE = sendIndicatorAssignedMobileNotification(ENVIRONMENT.LIVE);
+exports.sendResponsePlanApprovalNotification_LIVE = sendResponsePlanApprovalNotification(ENVIRONMENT.LIVE);
+exports.sendAlertMobileNotification_LIVE = sendAlertMobileNotification(ENVIRONMENT.LIVE);
+exports.sendActionMobileNotification_LIVE = sendActionMobileNotification(ENVIRONMENT.LIVE);
+exports.countryOfficeClockSettingsChange_LIVE = countryOfficeClockSettingsChange(ENVIRONMENT.LIVE);
+exports.networkClockSettingsChange_LIVE = networkClockSettingsChange(ENVIRONMENT.LIVE);
+exports.networkCountryClockSettingsChange_LIVE = networkCountryClockSettingsChange(ENVIRONMENT.LIVE);
+exports.sendResponsePlanMobileNotification_LIVE = sendResponsePlanMobileNotification(ENVIRONMENT.LIVE);
 
 // endregion
 
@@ -933,12 +933,12 @@ function sendBugReportingEmail(ENV) {
       mailOptions.html = `Hello,
         <br>
         <br> A problem was reported at ${currData.date}
-        <br>  
+        <br>
         <br> Description: <br>
         ${currData.description}
-        <br> <br>        
-        <a href="${currData.downloadLink}"> Click for image </a>                                          
-        <br> <br>                         
+        <br> <br>
+        <a href="${currData.downloadLink}"> Click for image </a>
+        <br> <br>
         User details: <br>
         ${currData.firstName} ${currData.lastName}, ${currData.country}, ${currData.agencyName}, ${currData.email}
         <br>

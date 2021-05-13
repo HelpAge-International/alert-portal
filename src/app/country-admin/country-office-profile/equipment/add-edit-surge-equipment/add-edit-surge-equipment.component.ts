@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageType} from "../../../../utils/Enums";
@@ -8,7 +10,7 @@ import {UserService} from "../../../../services/user.service";
 import {EquipmentService} from "../../../../services/equipment.service";
 import {SurgeEquipmentModel} from "../../../../model/equipment-surge.model";
 import {PageControlService} from "../../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({
@@ -55,10 +57,10 @@ export class CountryOfficeAddEditSurgeEquipmentComponent implements OnInit, OnDe
       this.agencyId = agencyId;
 
 
-      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+      this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
         if (params['id']) {
-          this._equipmentService.getSurgeEquipmentLocalAgency(this.agencyId, params['id'])
-            .takeUntil(this.ngUnsubscribe)
+          this._equipmentService.getSurgeEquipmentLocalAgency(this.agencyId, params['id']).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(equipment => {
               this.surgeEquipment = equipment;
             });
@@ -73,10 +75,10 @@ export class CountryOfficeAddEditSurgeEquipmentComponent implements OnInit, OnDe
       this.countryId = countryId;
 
 
-      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+      this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
         if (params['id']) {
-          this._equipmentService.getSurgeEquipment(this.countryId, params['id'])
-            .takeUntil(this.ngUnsubscribe)
+          this._equipmentService.getSurgeEquipment(this.countryId, params['id']).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(equipment => {
               this.surgeEquipment = equipment;
             });

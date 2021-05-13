@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {MessageModel} from "../../model/message.model";
 import {NotificationService} from "../../services/notification.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";

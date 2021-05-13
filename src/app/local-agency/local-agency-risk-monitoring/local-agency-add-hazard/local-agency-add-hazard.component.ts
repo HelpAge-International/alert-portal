@@ -8,7 +8,7 @@ import {ModelHazard} from "../../../model/hazard.model";
 import {AlertMessageModel} from '../../../model/alert-message.model';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {InformHolder, InformService} from "../../../services/inform.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {UserService} from "../../../services/user.service";
 import {Http} from "@angular/http";
 import {Location} from "@angular/common";

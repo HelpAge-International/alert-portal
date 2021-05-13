@@ -1,6 +1,6 @@
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {BaseModel} from "../../../model/base.model";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 export class NetworkOfficeModel extends BaseModel {
 

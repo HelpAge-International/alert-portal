@@ -1,10 +1,14 @@
+
+import {first} from 'rxjs/operators/first';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { LocalStorageService } from "angular-2-local-storage";
 import { AngularFire, FirebaseListObservable } from "angularfire2";
 import * as moment from "moment";
-import { Subject } from "rxjs/Subject";
+import { Subject } from "rxjs";
 import { ModelAgency } from "../../model/agency.model";
 import { AlertMessageModel } from "../../model/alert-message.model";
 import { MessageModel } from "../../model/message.model";
@@ -207,8 +211,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
   }
 
   initAgencyData() {
-    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(map => {
         this.agencyCountryMap = map;
 
@@ -343,14 +347,14 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
       this.planService.getNotesForPlan(plan.$key)
         .do(list => {
           list.forEach(note => {
-            this.userService.getUser(note.uploadBy)
-              .first()
+            this.userService.getUser(note.uploadBy).pipe(
+              first())
               .subscribe(user => {
                 if (user) {
                   note["uploadByName"] = user.firstName + " " + user.lastName;
                 } else {
-                  this.partnerService.getPartnerOrganisation(note.uploadBy)
-                    .first()
+                  this.partnerService.getPartnerOrganisation(note.uploadBy).pipe(
+                    first())
                     .subscribe(org => {
                       note["uploadByName"] = org.organisationName;
                     });
@@ -402,8 +406,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
         let partnerOrgIds = Object.keys(plan.partnerOrganisations).map(key => plan.partnerOrganisations[key]);
         partnerOrgIds.forEach(partnerOrgId => {
           //check has user or not first
-          this.partnerService.getPartnerOrganisation(partnerOrgId)
-            .takeUntil(this.ngUnsubscribe)
+          this.partnerService.getPartnerOrganisation(partnerOrgId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(org => {
               if (org.partners.length != 0) {
                 this.planService.getPartnerBasedOnOrgId(partnerOrgId)
@@ -542,8 +546,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
     jQuery("#dialog-responseplan-editing").modal("hide");
 
     if (this.responsePlanToEdit.isEditing && this.responsePlanToEdit.editingUserId != this.uid) {
-      this.userService.getUser(this.responsePlanToEdit.editingUserId)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(this.responsePlanToEdit.editingUserId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(editingUser => {
           jQuery("#dialog-acknowledge").modal("show");
           this.dialogTitle = "RESPONSE_PLANS.HOME.EDIT_WHILE_ANOTHER_EDITING_TITLE";
@@ -721,8 +725,8 @@ export class NetworkPlansComponent implements OnInit, OnDestroy {
 
   private getDirectorId() {
     let counter = 0;
-    this.planService.getDirectors(this.countryId, this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this.planService.getDirectors(this.countryId, this.agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(result => {
         counter++;
         if (counter === 1 && result.$value && result.$value != "null") {

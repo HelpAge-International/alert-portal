@@ -55,17 +55,17 @@
 
         <select class="form-control" id="Documents" [(ngModel)]="docTypeSelected" (change)="filter()">
           <option value="-1" selected>{{ 'ALL_DOCUMENTS' | translate }}</option>
-          <template ngFor let-docType [ngForOf]="DocTypeEnum" let-docTypeIdx="index">
+          <ng-template ngFor let-docType [ngForOf]="DocTypeEnum" let-docTypeIdx="index">
             <option value="{{docType}}">{{DOCUMENT_TYPE[docTypeIdx] | translate}}</option>
-          </template>
+          </ng-template>
         </select>
       </div>
       <div class="col-lg-3 col-md-3">
         <select class="form-control" id="Uploader" [(ngModel)]="userSelected" (change)="filter()">
           <option value="-1" selected>{{ 'DOCUMENTS.UPLOADED_BY_EVERYONE' | translate }}</option>
-          <template ngFor let-user [ngForOf]="users" let-userIdx="index">
+          <ng-template ngFor let-user [ngForOf]="users" let-userIdx="index">
             <option value="{{users[userIdx]?.key}}">{{users[userIdx]?.fullName}}</option>
-          </template>
+          </ng-template>
         </select>
       </div>
       <div class="offset-lg-1 col-lg-3 col-md-3">
@@ -75,7 +75,7 @@
     </div>
 
     <div class="Ribbon__section__wrap Spaced">
-      <template ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
+      <ng-template ngFor let-country [ngForOf]="countries" let-moduleIdx="index">
        <ng-container *ngIf="countrySelected == -1 || country.location == countrySelected">
         <div class="Accordion--b-white Accordion__hide-links">
           <div class="row align-items-center no-gutters">
@@ -122,7 +122,7 @@
           </div>
         </div>
          </ng-container>
-      </template>
+      </ng-template>
     </div>
   </div>
 

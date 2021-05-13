@@ -1,13 +1,15 @@
+
+import {merge as observableMerge, from as observableFrom, of as observableOf, Observable, Subject} from 'rxjs';
+
+import {merge, takeUntil} from 'rxjs/operators';
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs";
 import {ActionLevel, ActionType, AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../utils/Enums";
 import {UserService} from "../services/user.service";
 import {ActionsService} from "../services/actions.service";
 import * as moment from "moment";
-import {Subject} from "rxjs/Subject";
 import {HazardImages} from "../utils/HazardImages";
 import {ModelAlert} from "../model/alert.model";
 import {
@@ -336,8 +338,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private initData() {
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
-    this.actionService.getActionsDueInWeek(this.countryId, this.uid)
-      .takeUntil(this.ngUnsubscribe)
+    this.actionService.getActionsDueInWeek(this.countryId, this.uid).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(actions => {
 
         // Display APA only if there is a red alert
@@ -439,60 +441,60 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     if (this.userType == UserType.PartnerUser) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
-      this.responsePlansForApprovalNetwork = Observable.of([])
-      this.responsePlansForApprovalNetworkLocal = Observable.of([])
+      this.responsePlansForApprovalNetwork = observableOf([])
+      this.responsePlansForApprovalNetworkLocal = observableOf([])
 
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {
-          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
-          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.pipe(merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId)));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.pipe(merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId)));
         })
       }
       if (this.localNetworks) {
         this.localNetworks.forEach(networkId => {
           console.log(networkId)
-          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.pipe(merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId)));
         })
       }
 
     } else if (this.userType == UserType.CountryDirector) {
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, false);
-      this.responsePlansForApprovalNetwork = Observable.of([]);
-      this.responsePlansForApprovalNetworkLocal = Observable.of([]);
+      this.responsePlansForApprovalNetwork = observableOf([]);
+      this.responsePlansForApprovalNetworkLocal = observableOf([]);
 
       if (this.networkMap) {
         this.networkMap.forEach((networkCountryId, networkId) => {
-          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId));
-          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+          this.responsePlansForApprovalNetwork = this.responsePlansForApprovalNetwork.pipe(merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkCountryId)));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.pipe(merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId)));
         })
       }
       if (this.localNetworks) {
         this.localNetworks.forEach(networkId => {
           console.log(networkId)
-          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId));
+          this.responsePlansForApprovalNetworkLocal = this.responsePlansForApprovalNetworkLocal.pipe(merge(this.actionService.getResponsePlanForCountryDirectorToApprovalNetwork(this.countryId, networkId)));
         })
       }
 
     }
     if (this.responsePlansForApproval) {
-      this.responsePlansForApproval
-        .takeUntil(this.ngUnsubscribe)
+      this.responsePlansForApproval.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(plans => {
           this.approvalPlans = plans;
           console.log(plans)
         });
     }
     if (this.responsePlansForApprovalNetwork) {
-      this.responsePlansForApprovalNetwork
-        .takeUntil(this.ngUnsubscribe)
+      this.responsePlansForApprovalNetwork.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(plans => {
           console.log(plans)
           this.approvalPlansNetwork = plans;
         });
     }
     if (this.responsePlansForApprovalNetworkLocal) {
-      this.responsePlansForApprovalNetworkLocal
-        .takeUntil(this.ngUnsubscribe)
+      this.responsePlansForApprovalNetworkLocal.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(plans => {
           this.approvalPlansNetworkLocal = plans
           console.log(this.approvalPlansNetworkLocal)
@@ -552,15 +554,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } else if (this.DashboardTypeUsed == DashboardType.director) {
       this.alerts = this.actionService.getAlertsForDirectorToApprove(this.uid, this.countryId);
       if (this.networkMap) {
-        this.alertsNetwork = Observable.from([])
+        this.alertsNetwork = observableFrom([])
         this.networkMap.forEach((networkCountryId, networkId) => {
-          this.alertsNetwork = Observable.merge(this.alertsNetwork, this.actionService.getAlertsForDirectorToApproveNetwork(this.countryId, networkCountryId, networkId))
+          this.alertsNetwork = observableMerge(this.alertsNetwork, this.actionService.getAlertsForDirectorToApproveNetwork(this.countryId, networkCountryId, networkId))
         })
       }
       if (this.localNetworks) {
-        this.alertsLocalNetwork = Observable.from([])
+        this.alertsLocalNetwork = observableFrom([])
         this.localNetworks.forEach((networkId) => {
-          this.alertsLocalNetwork = Observable.merge(this.alertsLocalNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
+          this.alertsLocalNetwork = observableMerge(this.alertsLocalNetwork, this.actionService.getAlertsForDirectorToApproveLocalNetwork(this.countryId, networkId))
         })
       }
 
@@ -623,7 +625,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             tempList.push(hazard);
           }
         });
-        return Observable.from(tempList)
+        return observableFrom(tempList)
       })
       .flatMap(hazard => {
         return this.af.database.object(Constants.APP_STATUS + '/indicator/' + hazard.$key);
@@ -881,8 +883,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
       this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkCountryId).then(() => {
-        this.networkService.mapAgencyCountryForNetworkCountry(alert.networkId, alert.networkCountryId)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.mapAgencyCountryForNetworkCountry(alert.networkId, alert.networkCountryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(agencyCountryMap => {
             this.actionService.getAlertObj(alert.networkCountryId, alert.id)
               .takeUntil(this.ngUnsubscribe)
@@ -996,8 +998,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
       this.actionService.approveRedAlertNetwork(this.countryId, alert.id, alert.networkId).then(() => {
-        this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.mapAgencyCountryForLocalNetworkCountry(alert.networkId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(agencyCountryMap => {
             this.actionService.getAlertObj(alert.networkId, alert.id)
               .takeUntil(this.ngUnsubscribe)
@@ -1089,8 +1091,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionsTodayNetwork = [];
     this.actionsThisWeekNetwork = [];
     CommonUtils.convertMapToValuesInArray(networkMap).forEach(networkCountryId => {
-      this.actionService.getActionsDueInWeek(networkCountryId, this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.actionService.getActionsDueInWeek(networkCountryId, this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(actions => {
 
           // Display APA only if there is a red alert
@@ -1138,8 +1140,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.actionsTodayNetwork = [];
     this.actionsThisWeekNetwork = [];
     localNetworks.forEach(networkId => {
-      this.actionService.getActionsDueInWeek(networkId, this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.actionService.getActionsDueInWeek(networkId, this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(actions => {
 
           // Display APA only if there is a red alert

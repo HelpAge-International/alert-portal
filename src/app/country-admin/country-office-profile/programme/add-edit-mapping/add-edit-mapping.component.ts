@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import { Location } from "@angular/common";
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -143,8 +145,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   initLocalAgency() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
 
         if (params && params['programmeId']) {
@@ -156,8 +158,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
   }
 
   initCountryOffice() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         // this._getCountryID().then(() => {
         if (params && params['programmeId']) {
@@ -179,8 +181,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
         /**
          * Pass country to the level one values for selection
          */
-        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-          .takeUntil(this.ngUnsubscribe)
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(pre => {
             this.levelOneDisplay = pre[this.selectedCountry].levelOneValues;
             this.setCountryLevel(this.selectedCountry);
@@ -494,8 +496,8 @@ export class AddEditMappingProgrammeComponent implements OnInit, OnDestroy {
 
   setCountryLevel(selectedC) {
     this.programme.where = selectedC;
-    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .takeUntil(this.ngUnsubscribe)
+    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(content => {
         err => console.log(err);
         this.levelOneDisplay = content[selectedC].levelOneValues;

@@ -1,10 +1,13 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Router, ActivatedRoute, Params} from "@angular/router";
 import {GenericMpaOrApaAction} from '../../../model/genericMPAAPA';
 import {Constants} from "../../../utils/Constants";
 import {ActionType, ActionLevel, GenericActionCategory} from "../../../utils/Enums";
-import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 
 @Component({
@@ -41,8 +44,8 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.pageTitle = 'SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.EDIT_MPA_APA';
@@ -128,8 +131,8 @@ export class CreateMpaActionComponent implements OnInit,OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.inactive = true;
     });
   }

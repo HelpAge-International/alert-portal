@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators/map';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Subject} from "rxjs";
@@ -123,8 +125,8 @@ export class DirectorHeaderComponent implements OnInit, OnDestroy {
 
   loadJSON(){
 
-    return this.http.get(this.languageSelectPath)
-      .map((res:Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res:Response) => res.json().GLOBAL.LANGUAGES));
 
   }
 

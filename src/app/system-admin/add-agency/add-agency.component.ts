@@ -1,3 +1,7 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {first, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {CustomerValidator} from "../../utils/CustomValidator";
 import * as firebase from "firebase";
@@ -10,7 +14,6 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/mergeMap";
 import {DurationType, Privacy, UserType} from "../../utils/Enums";
-import {Observable, Subject} from "rxjs";
 import {UUID} from "../../utils/UUID";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
 import {NotificationSettingsModel} from "../../model/notification-settings.model";
@@ -77,8 +80,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
         this.systemAdminUid = systemId;
         this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
         this.inactive = true;
-        this.route.params
-          .takeUntil(this.ngUnsubscribe)
+        this.route.params.pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe((params: Params) => {
             if (params["id"]) {
               this.agencyId = params["id"];
@@ -307,8 +310,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
     console.log("start register new agency");
     // let secondApp = firebase.initializeApp(firebaseConfig, "fourth");
 
-    this.userService.getUserByEmail(this.agencyAdminEmail)
-      .first()
+    this.userService.getUserByEmail(this.agencyAdminEmail).pipe(
+      first())
       .subscribe(existUser => {
         if (!existUser) {
           let userId = this.networkService.generateKeyUserPublic()
@@ -491,8 +494,8 @@ export class AddAgencyComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe)
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         this.inactive = true;
       });

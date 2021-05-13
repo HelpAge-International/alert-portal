@@ -1,3 +1,7 @@
+
+import {from as observableFrom} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -105,24 +109,24 @@ export class LocalAgencyAdministrationStaffComponent implements OnInit {
   }
 
   private getPartnerData() {
-    this._userService.getPartnerUserIdsForAgency(this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this._userService.getPartnerUserIdsForAgency(this.agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(partners => {
         this.partnersList = [];
         partners.forEach(partnerId => {
-          this._userService.getPartnerUserById(partnerId)
-            .takeUntil(this.ngUnsubscribe)
+          this._userService.getPartnerUserById(partnerId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(partner => {
               this.partnersList.push(partner);
 
-              this._userService.getUser(partner.id)
-                .takeUntil(this.ngUnsubscribe)
+              this._userService.getUser(partner.id).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(partnerPublicUser => {
                   this.partnerPublicUser[partner.id] = partnerPublicUser;
                 });
 
-              this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId)
-                .takeUntil(this.ngUnsubscribe)
+              this._partnerOrganisationService.getPartnerOrganisation(partner.partnerOrganisationId).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(partnerOrganisation => {
                   this.partnerOrganisations[partner.id] = partnerOrganisation
                 });
@@ -239,7 +243,7 @@ export class LocalAgencyAdministrationStaffComponent implements OnInit {
           return userSkill;
         })
         .flatMap(skills => {
-          return Observable.from(skills);
+          return observableFrom(skills);
         })
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
@@ -270,7 +274,7 @@ export class LocalAgencyAdministrationStaffComponent implements OnInit {
           return userSkill;
         })
         .flatMap(skills => {
-          return Observable.from(skills);
+          return observableFrom(skills);
         })
         .flatMap(skill => {
           return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);

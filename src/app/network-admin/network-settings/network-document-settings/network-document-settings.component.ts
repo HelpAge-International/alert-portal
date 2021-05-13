@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../../utils/Constants";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";

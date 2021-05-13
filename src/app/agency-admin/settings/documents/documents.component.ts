@@ -3,8 +3,7 @@ import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Countries, DocumentType, SizeType} from "../../../utils/Enums";
-import {Subject} from "rxjs";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {Subject, BehaviorSubject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 declare var jQuery: any;
 

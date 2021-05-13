@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, ElementRef, ViewChild} from "@angular/core";
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
@@ -63,8 +65,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["token"]) {
           this.accessToken = params["token"];
@@ -146,14 +148,14 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
               this.isLocalAgency = true;
             }
             if (this.userType === UserType.RegionalDirector) {
-              this.userService.getRegionId(Constants.USER_PATHS[this.userType], this.uid)
-                .takeUntil(this.ngUnsubscribe)
+              this.userService.getRegionId(Constants.USER_PATHS[this.userType], this.uid).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(regionId => {
                   this.regionId = regionId;
                 });
             }
-            this.route.params
-              .takeUntil(this.ngUnsubscribe)
+            this.route.params.pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe((params: Params) => {
                 if (params["isDirector"]) {
                   this.isDirector = params["isDirector"];
@@ -246,8 +248,8 @@ export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
             .take(1)
             .subscribe(snap => {
               if (snap.val()) {
-                this.userService.getUser(partner.id)
-                  .takeUntil(this.ngUnsubscribe)
+                this.userService.getUser(partner.id).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(user => {
                     partner.name = user.firstName + " " + user.lastName;
                   });

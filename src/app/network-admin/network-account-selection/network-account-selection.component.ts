@@ -1,7 +1,10 @@
+
+import {merge as observableMerge, from as observableFrom, Observable, Subject} from 'rxjs';
+
+import {take, mergeMap, takeUntil} from 'rxjs/operators';
 import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseApp} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkAdminAccount} from "./models/network-admin-account";
 import {Constants} from "../../utils/Constants";
@@ -60,17 +63,17 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
       this.downloadAllNetworkCountryAdminAccounts();
 
 
-      this.userSerivce.getUserType(this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.userSerivce.getUserType(this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(userType => {
           if (userType) {
             this.userType = userType;
-            this.userSerivce.getAgencyId(Constants.USER_PATHS[userType], this.uid)
-              .flatMap(agencyId => {
+            this.userSerivce.getAgencyId(Constants.USER_PATHS[userType], this.uid).pipe(
+              mergeMap(agencyId => {
                 console.log(agencyId)
                 return this.userSerivce.getAgencyDetail(agencyId);
-              })
-              .takeUntil(this.ngUnsubscribe)
+              }),
+              takeUntil(this.ngUnsubscribe),)
               .subscribe(agencyDetail => {
                 this.agencyDetail = agencyDetail;
                 console.log(this.agencyDetail)
@@ -96,7 +99,7 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
         networkIds.forEach(id => {
           keys.push(id.$key);
         });
-        return Observable.from(keys);
+        return observableFrom(keys);
       })
       .flatMap(key => {
         return this.af.database.object(Constants.APP_STATUS + "/network/" + key);
@@ -247,8 +250,8 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
       let firstLoginCheck = [];
       if (this.userType) {
-        Observable.merge(this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType), this.userSerivce.checkFirstLoginRegular(this.uid, this.userType))
-          .take(2)
+        observableMerge(this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType), this.userSerivce.checkFirstLoginRegular(this.uid, this.userType)).pipe(
+          take(2))
           .subscribe(firstLogin => {
             firstLoginCheck.push(firstLogin);
             if (firstLoginCheck.length == 2) {
@@ -285,8 +288,8 @@ export class NetworkAccountSelectionComponent implements OnInit, OnDestroy {
 
       let firstLoginCheck = [];
       if (this.userType) {
-        Observable.merge(this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType), this.userSerivce.checkFirstLoginRegular(this.uid, this.userType))
-          .take(2)
+        observableMerge(this.networkService.checkNetworkUserFirstLogin(this.uid, this.selectedUserAccountType), this.userSerivce.checkFirstLoginRegular(this.uid, this.userType)).pipe(
+          take(2))
           .subscribe(firstLogin => {
             firstLoginCheck.push(firstLogin);
             if (firstLoginCheck.length == 2) {

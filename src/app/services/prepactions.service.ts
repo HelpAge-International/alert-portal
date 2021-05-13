@@ -5,7 +5,7 @@
 import {ActionLevel, ActionType, DurationType, HazardScenario, UserType} from "../utils/Enums";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ModelNetwork} from "../model/network.model";
 
 declare var jQuery: any;

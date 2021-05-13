@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 import {AlertMessageType} from "../../../../utils/Enums";
 import {PageControlService} from "../../../../services/pagecontrol.service";
@@ -62,15 +64,15 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
           this.networkCountryId = selection["networkCountryId"];
           this.showLoader = false;
 
-          this.networkService.getNetworkDetail(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkDetail(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(network => {
               this.networkModel = network
             })
 
           //get network country object
-          this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkCountry(this.networkId, this.networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(networkCountry => {
 
               //get all approved agencies

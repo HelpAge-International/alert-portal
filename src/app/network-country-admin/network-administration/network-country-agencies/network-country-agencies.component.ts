@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
 import {AngularFire, FirebaseObjectObservable} from "angularfire2";
@@ -72,8 +74,8 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
           //   .takeUntil(this.ngUnsubscribe)
           //   .subscribe(map => this.agencyCountryMapWithNotApproved = map)
 
-          this.networkService.mapAgencyCountryForNetworkCountryWithNotApproved(this.networkId, this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.mapAgencyCountryForNetworkCountryWithNotApproved(this.networkId, this.networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(agencyMap => {
               this.agencyCountryMap = agencyMap;
               console.log(this.agencyCountryMap)
@@ -184,8 +186,8 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
 
   private getLocalAgencyAdmin(model: NetworkAgencyModel) {
     console.log(model)
-    this.userService.getUser(model.adminId)
-      .takeUntil(this.ngUnsubscribe)
+    this.userService.getUser(model.adminId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(user => {
         model.adminEmail = user.email;
         model.adminName = user.firstName + " " + user.lastName;

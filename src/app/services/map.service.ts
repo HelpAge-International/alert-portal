@@ -1,5 +1,5 @@
 import { AngularFire } from "angularfire2";
-import { Subject } from "rxjs/Subject";
+import { Subject } from "rxjs";
 import { ModelDepartment } from "../model/department.model";
 import { ModelRegion } from "../model/region.model";
 import { Constants } from "../utils/Constants";

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PermissionSettingsModel} from "../../../model/permission-settings.model";
@@ -56,8 +58,8 @@ export class CountryPermissionSettingsComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.countryId = countryId;
 
-      this._settingsService.getCountryPermissionSettings(this.agencyId, this.countryId)
-        .takeUntil(this.ngUnsubscribe)
+      this._settingsService.getCountryPermissionSettings(this.agencyId, this.countryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(permissions => {
           this.permissionSettings = permissions;
         });

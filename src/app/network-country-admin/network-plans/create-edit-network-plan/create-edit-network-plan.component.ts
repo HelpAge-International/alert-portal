@@ -1,10 +1,16 @@
+
+import {from as observableFrom} from 'rxjs';
+
+import {take} from 'rxjs/operators/take';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { LocalStorageService } from "angular-2-local-storage";
 import { AngularFire } from "angularfire2";
 import * as moment from "moment";
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs";
+import { Subject } from "rxjs";
 import { ModelAgency } from "../../../model/agency.model";
 import { AlertMessageModel } from "../../../model/alert-message.model";
 import { ModelBudgetItem } from "../../../model/budget-item.model";
@@ -340,8 +346,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private setupEditForLocalNetwork() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -356,8 +362,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private setupEditForNetworkCountry() {
-    this.route.params
-      .take(1)
+    this.route.params.pipe(
+      take(1))
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.forEditing = true;
@@ -617,7 +623,7 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
           if (snapshot && snapshot.val()) {
             tempList = Object.keys(snapshot.val());
           }
-          return Observable.from(tempList)
+          return observableFrom(tempList)
         })
         .flatMap(item => {
           return this.af.database.object(Constants.APP_STATUS + '/partnerOrganisation/' + item)
@@ -659,8 +665,8 @@ export class CreateEditNetworkPlanComponent implements OnInit, OnDestroy {
   }
 
   private getAgenciesForNetworkCountry() {
-    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(agencyCountryMap => {
         this.agencyCountryMap = agencyCountryMap;
         this.participatedAgencies = [];

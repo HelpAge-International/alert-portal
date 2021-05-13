@@ -1,9 +1,11 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import { UserType } from './../../../utils/Enums';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActionsService} from "../../../services/actions.service";
 import {ModelAlert} from "../../../model/alert.model";
 import {AlertLevels, AlertStatus} from "../../../utils/Enums";
@@ -92,8 +94,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
   ngOnInit() {
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryID = params["countryId"];
@@ -120,8 +122,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
         this._getHazards()
         if(this.isViewing){
 
-                this.route.params
-                  .takeUntil(this.ngUnsubscribe)
+                this.route.params.pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe((param: Params) => {
                     if (param['id']) {
                       this.alertId = param['id'];
@@ -130,8 +132,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
                     }
                   });
 
-                this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-                  .takeUntil(this.ngUnsubscribe)
+                this.networkService.getNetworkCountry(this.networkId, this.networkCountryId).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(network => {
                     this.leadAgencyId = network.leadAgencyId
                     Object.keys(network.agencyCountries[this.leadAgencyId]).forEach(key => {
@@ -141,8 +143,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
 
 
             // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+              takeUntil(this.ngUnsubscribe)).subscribe(content => {
               this.countryLevelsValues = content;
               err => console.log(err);
             });
@@ -158,8 +160,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
               .subscribe(selection => {
                 this.networkId = selection["id"];
                 this.networkCountryId = selection["networkCountryId"];
-                this.route.params
-                  .takeUntil(this.ngUnsubscribe)
+                this.route.params.pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe((param: Params) => {
                     if (param['id']) {
                       this.alertId = param['id'];
@@ -169,8 +171,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
                     }
                   });
 
-                this.networkService.getNetworkCountry(this.networkId, this.networkCountryId)
-                  .takeUntil(this.ngUnsubscribe)
+                this.networkService.getNetworkCountry(this.networkId, this.networkCountryId).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(network => {
                     this.leadAgencyId = network.leadAgencyId
                     Object.keys(network.agencyCountries[this.leadAgencyId]).forEach(key => {
@@ -180,8 +182,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
               })
 
             // get the country levels values
-            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-              .takeUntil(this.ngUnsubscribe).subscribe(content => {
+            this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+              takeUntil(this.ngUnsubscribe)).subscribe(content => {
               this.countryLevelsValues = content;
               err => console.log(err);
             });
@@ -220,8 +222,8 @@ export class NetworkDashboardUpdateAlertLevelComponent implements OnInit, OnDest
             }
 
             this.loadedAlert.affectedAreas.forEach(area => {
-              this.alertService.getAllLevelInfo(area.affectedCountry)
-                .takeUntil(this.ngUnsubscribe)
+              this.alertService.getAllLevelInfo(area.affectedCountry).pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe(geoInfo => {
                   this.geoMap.set(area.affectedCountry, geoInfo);
                 });

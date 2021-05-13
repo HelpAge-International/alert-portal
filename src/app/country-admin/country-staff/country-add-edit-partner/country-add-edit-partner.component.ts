@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../../utils/Constants";
@@ -14,7 +16,7 @@ import {CountryAdminModel} from "../../../model/country-admin.model";
 import {DisplayError} from "../../../errors/display.error";
 import {SessionService} from "../../../services/session.service";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 
 declare var jQuery: any;
 
@@ -85,19 +87,19 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
       try {
 
-        this._partnerOrganisationService.getApprovedLocalAgencyPartnerOrganisations(this.agencyId)
-          .takeUntil(this.ngUnsubscribe)
+        this._partnerOrganisationService.getApprovedLocalAgencyPartnerOrganisations(this.agencyId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(partnerOrganisations => {
             console.log(partnerOrganisations)
             this.partnerOrganisations = partnerOrganisations;
           });
 
-        this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+        this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
           if (params['id']) {
             this.isEdit = true;
 
-            this._userService.getUser(params['id'])
-              .takeUntil(this.ngUnsubscribe)
+            this._userService.getUser(params['id']).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(user => {
                 if (user) {
                   if (user) {
@@ -106,8 +108,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
                 }
               });
 
-            this._userService.getPartnerUser(params['id'])
-              .takeUntil(this.ngUnsubscribe)
+            this._userService.getPartnerUser(params['id']).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(partner => {
                 if (partner) {
                   if (partner) {
@@ -116,8 +118,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
                 }
               });
           } else {
-            this._notificationSettingsService.getNotificationSettings(this.agencyId)
-              .takeUntil(this.ngUnsubscribe)
+            this._notificationSettingsService.getNotificationSettings(this.agencyId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(notificationSettings => {
                 this.partner.notificationSettings = notificationSettings
               });
@@ -143,18 +145,18 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
 
       try {
 
-        this._partnerOrganisationService.getApprovedCountryOfficePartnerOrganisations(this.agencyId, this.countryId)
-          .takeUntil(this.ngUnsubscribe)
+        this._partnerOrganisationService.getApprovedCountryOfficePartnerOrganisations(this.agencyId, this.countryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(partnerOrganisations => {
             this.partnerOrganisations = partnerOrganisations;
           });
 
-        this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+        this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
           if (params['id']) {
             this.isEdit = true;
 
-            this._userService.getUser(params['id'])
-              .takeUntil(this.ngUnsubscribe)
+            this._userService.getUser(params['id']).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(user => {
                 if (user) {
                   if (user) {
@@ -163,8 +165,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
                 }
               });
 
-            this._userService.getPartnerUser(params['id'])
-              .takeUntil(this.ngUnsubscribe)
+            this._userService.getPartnerUser(params['id']).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(partner => {
                 if (partner) {
                   if (partner) {
@@ -173,8 +175,8 @@ export class CountryAddEditPartnerComponent implements OnInit, OnDestroy {
                 }
               });
           } else {
-            this._notificationSettingsService.getNotificationSettings(this.agencyId)
-              .takeUntil(this.ngUnsubscribe)
+            this._notificationSettingsService.getNotificationSettings(this.agencyId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(notificationSettings => {
                 this.partner.notificationSettings = notificationSettings
               });

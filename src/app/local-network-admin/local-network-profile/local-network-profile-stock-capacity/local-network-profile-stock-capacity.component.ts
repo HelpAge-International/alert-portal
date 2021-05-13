@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, Privacy, StockType, UserType} from "../../../utils/Enums";
@@ -10,7 +12,7 @@ import {UserService} from "../../../services/user.service";
 import {NoteModel} from "../../../model/note.model";
 import {NoteService} from "../../../services/note.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AngularFire} from "angularfire2";
 import {LocalStorageService} from "angular-2-local-storage";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
@@ -92,8 +94,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
   ngOnInit() {
 
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -126,8 +128,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
   private networkCountryAccess() {
     if (this.isViewing) {
 
-      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(map => {
           console.log(map);
           this.agencyCountryMap = map;
@@ -141,8 +143,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
               })
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(countryId)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(countryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(agencyId, privacy)
               })
@@ -169,7 +171,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                   }
 
                   const notePath = countryId !== agencyId ? "/countryOfficeProfile/capacity/stockCapacity/" + countryId + "/" + stock.$key + "/notes" : "/localAgencyProfile/capacity/stockCapacity/" + agencyId + "/" + stock.$key + "/notes"
-                  this._noteService.getNotes(notePath).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                  this._noteService.getNotes(notePath).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
 
                     stock.notes = notes;
 
@@ -184,8 +186,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
               })
           })
 
-          this._stockService.getStockCapacitiesLocalNetworkCountry(this.networkCountryId)
-            .takeUntil(this.ngUnsubscribe)
+          this._stockService.getStockCapacitiesLocalNetworkCountry(this.networkCountryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(stockCapacities => {
               this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Network);
               this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
@@ -195,7 +197,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
               // Get notes
               stockCapacities.forEach(stockCapacity => {
                 const stockCapacityNode = "/networkCountryOfficeProfile/capacity/stockCapacity/" + this.networkCountryId + "/" + stockCapacity.id + "/notes"
-                this._noteService.getNotes(stockCapacityNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                this._noteService.getNotes(stockCapacityNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                   stockCapacity.notes = notes;
 
                   // Create the new note model for partner organisation
@@ -217,8 +219,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
             this.networkId = selection["id"];
             this.networkCountryId = selection["networkCountryId"];
 
-            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(map => {
                 console.log(map);
                 this.agencyCountryMap = map;
@@ -233,8 +235,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                       });
 
                     //get privacy for country
-                    this.settingService.getPrivacySettingForCountry(countryId)
-                      .takeUntil(this.ngUnsubscribe)
+                    this.settingService.getPrivacySettingForCountry(countryId).pipe(
+                      takeUntil(this.ngUnsubscribe))
                       .subscribe(privacy => {
                         this.agencyCountryPrivacyMap.set(agencyId, privacy)
                       });
@@ -257,7 +259,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                             console.log(this.countryExtMap);
                           }
 
-                          this._noteService.getNotes("/countryOfficeProfile/capacity/stockCapacity/" + countryId + "/" + stock.$key + "/notes").takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                          this._noteService.getNotes("/countryOfficeProfile/capacity/stockCapacity/" + countryId + "/" + stock.$key + "/notes").pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
 
                             console.log("/countryOfficeProfile/capacity/stockCapacity/" + countryId + "/" + stock.$key + "/notes")
                             stock.notes = notes;
@@ -274,8 +276,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                   });
                 }
 
-                this._stockService.getStockCapacitiesLocalNetworkCountry(this.networkCountryId)
-                  .takeUntil(this.ngUnsubscribe)
+                this._stockService.getStockCapacitiesLocalNetworkCountry(this.networkCountryId).pipe(
+                  takeUntil(this.ngUnsubscribe))
                   .subscribe(stockCapacities => {
                     this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Network);
                     this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
@@ -285,7 +287,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                     // Get notes
                     stockCapacities.forEach(stockCapacity => {
                       const stockCapacityNode = "/networkCountryOfficeProfile/capacity/stockCapacity/" + this.networkCountryId + "/" + stockCapacity.id + "/notes"
-                      this._noteService.getNotes(stockCapacityNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                      this._noteService.getNotes(stockCapacityNode).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
                         stockCapacity.notes = notes;
 
                         // Create the new note model for partner organisation
@@ -338,8 +340,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
               })
 
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(agency.countryCode)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(agency.countryCode).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(agency.$key, privacy)
               })
@@ -363,7 +365,7 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                   }
 
                   const notePath = agency.$key !== agency.countryCode ? "/countryOfficeProfile/capacity/stockCapacity/" + agency.countryCode + "/" + stock.$key + "/notes" : "/localAgencyProfile/capacity/stockCapacity/" + agency.$key + "/" + stock.$key + "/notes"
-                  this._noteService.getNotes(notePath).takeUntil(this.ngUnsubscribe).subscribe(notes => {
+                  this._noteService.getNotes(notePath).pipe(takeUntil(this.ngUnsubscribe)).subscribe(notes => {
 
                     stock.notes = notes;
 
@@ -423,8 +425,8 @@ export class LocalNetworkProfileStockCapacityComponent implements OnInit, OnDest
                     })
 
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(agency.countryCode)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(agency.countryCode).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(agency.$key, privacy)
                     })

@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
@@ -47,8 +49,8 @@ export class NetworkCountryAccountSettingsComponent implements OnInit,OnDestroy 
       this.uid = authState.auth.uid;
 
       //get user detail
-      this.userService.getUser(this.uid)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(this.uid).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((user: ModelUserPublic) => {
           console.log(user);
           this.userPublic = user;

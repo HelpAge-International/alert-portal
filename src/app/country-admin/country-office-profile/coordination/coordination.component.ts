@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors, UserType} from "../../../utils/Enums";
@@ -9,7 +11,7 @@ import {ModelAgency} from "../../../model/agency.model";
 import {CoordinationArrangementService} from "../../../services/coordination-arrangement.service";
 import {CoordinationArrangementModel} from "../../../model/coordination-arrangement.model";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 
 declare var jQuery: any;
 
@@ -61,8 +63,8 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -94,8 +96,8 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
       .subscribe(agency => {
         this.agency = agency;
 
-        this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-          .takeUntil(this.ngUnsubscribe)
+        this._coordinationArrangementService.getCoordinationArrangements(this.countryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(coordinationArrangements => {
             this.coordinationArrangements = coordinationArrangements;
           });
@@ -117,8 +119,8 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
         .subscribe(agency => {
           this.agency = agency;
 
-          this._coordinationArrangementService.getCoordinationArrangementsLocalAgency(this.agencyId)
-            .takeUntil(this.ngUnsubscribe)
+          this._coordinationArrangementService.getCoordinationArrangementsLocalAgency(this.agencyId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(coordinationArrangements => {
               this.coordinationArrangements = coordinationArrangements;
             });
@@ -143,8 +145,8 @@ export class CountryOfficeCoordinationComponent implements OnInit, OnDestroy {
         .subscribe(agency => {
           this.agency = agency;
 
-          this._coordinationArrangementService.getCoordinationArrangements(this.countryId)
-            .takeUntil(this.ngUnsubscribe)
+          this._coordinationArrangementService.getCoordinationArrangements(this.countryId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(coordinationArrangements => {
               this.coordinationArrangements = coordinationArrangements;
             });

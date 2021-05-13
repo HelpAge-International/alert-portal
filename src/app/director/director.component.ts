@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject} from "rxjs";
@@ -106,8 +108,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
       this.checkCoCUpdated();
 
       if (this.userType == UserType.RegionalDirector) {
-        this.userService.getRegionId(Constants.USER_PATHS[userType], this.uid)
-          .takeUntil(this.ngUnsubscribe)
+        this.userService.getRegionId(Constants.USER_PATHS[userType], this.uid).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(regionId => {
             this.regionId = regionId;
             this.loadData();
@@ -162,8 +164,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
 
     this.directorName = "UNASSIGNED";
     if (directorId && directorId != "null") {
-      this.userService.getUser(directorId)
-        .takeUntil(this.ngUnsubscribe)
+      this.userService.getUser(directorId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(user => {
           this.directorName = user.firstName + " " + user.lastName;
         });
@@ -176,8 +178,8 @@ export class DirectorComponent implements OnInit, OnDestroy {
    */
 
   private loadData() {
-    this.userService.getAllCountryOfficesForAgency(this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this.userService.getAllCountryOfficesForAgency(this.agencyId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(countryOffices => {
         this.countryOffices = countryOffices;
         console.log(this.countryOffices)

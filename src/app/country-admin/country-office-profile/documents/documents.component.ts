@@ -1,16 +1,17 @@
+
+import {of as observableOf, Subject, BehaviorSubject, Observable} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Countries, DocumentType, SizeType, UserType} from "../../../utils/Enums";
-import {Subject} from "rxjs";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {UserService} from "../../../services/user.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {NetworkUserAccountType} from "../../../utils/Enums";
 import {NetworkOfficeModel} from "../../../network-admin/network-offices/add-edit-network-office/network-office.model";
-import {Observable} from "rxjs/Observable";
 import {CommonUtils} from "../../../utils/CommonUtils";
 
 declare var jQuery: any;
@@ -107,8 +108,8 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -214,7 +215,7 @@ export class CountryOfficeDocumentsComponent implements OnInit, OnDestroy {
                   selectData["id"] = selection.selectedNetwork;
                   selectData["networkCountryId"] = selection.selectedNetworkCountry;
                 }
-                return Observable.of(selectData)
+                return observableOf(selectData)
               }
             }).takeUntil(this.ngUnsubscribe).subscribe(idObj => {
 

@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../../model/alert-message.model";
 import {AlertMessageType} from "../../../../utils/Enums";
 import {PageControlService} from "../../../../services/pagecontrol.service";
@@ -57,8 +59,8 @@ export class LocalInviteAgenciesComponent implements OnInit, OnDestroy {
           this.showLoader = false;
 
           //fetch all agencies
-          this.networkService.getNetworkDetail(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getNetworkDetail(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(network => {
               this.networkCountryCode = network.countryCode
 

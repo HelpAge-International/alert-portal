@@ -1,8 +1,9 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Constants} from "../../utils/Constants";
-import {Subject} from "rxjs/Subject";
+import {Subject, Observable} from "rxjs";
 import {AlertLevels, AlertMessageType, AlertStatus, Privacy, UserType} from "../../utils/Enums";
-import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
@@ -100,8 +101,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryId = params["countryId"];
@@ -176,8 +177,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                   let networkCountryIds = CommonUtils.convertMapToValuesInArray(networkCountryMap);
                   this.withinNetwork = networkCountryIds.includes(this.networkCountryId)
 
-                  this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.networkService.getPrivacySettingForNetworkCountry(this.networkCountryId).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.privacyNetwork = privacy
                       this.updateMainMenuNetwork(this.privacyNetwork)
@@ -189,8 +190,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(localNetworks => {
                   this.withinNetwork = localNetworks.map(network => network.id).includes(this.networkId)
-                  this.networkService.getPrivacySettingForNetwork(this.networkId)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.networkService.getPrivacySettingForNetwork(this.networkId).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.privacyNetwork = privacy
                       this.updateMainMenuNetwork(this.privacyNetwork)
@@ -199,8 +200,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
             }
 
           } else {
-            this.countryService.getPrivacySettingForCountry(this.countryId)
-              .takeUntil(this.ngUnsubscribe)
+            this.countryService.getPrivacySettingForCountry(this.countryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.privacy = privacy;
                 this.updateMainMenu(this.privacy);
@@ -326,8 +327,8 @@ export class DashboardOverviewComponent implements OnInit, OnDestroy {
   }
 
   private getNetworkName(networkId: string) {
-    this.networkService.getNetworkDetail(networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getNetworkDetail(networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(network => this.networkName = network.name)
   }
 }

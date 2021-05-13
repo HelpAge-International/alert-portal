@@ -32,7 +32,7 @@
     <h6 class="Spaced-above"><b>{{"RISK_MONITORING.ADD_INDICATOR.INPUTS.HAZARD" | translate}}</b></h6>
     <div class="Spaced-above form-group col-sm-12 row" *ngIf="checkTypeof(indicatorData.category)">
       <select class="form-control col-sm-4" name="hazardID" (change)="setNewHazardID($event)">
-        <template ngFor let-hazard [ngForOf]="hazards" let-hazardIdx="index">
+        <ng-template ngFor let-hazard [ngForOf]="hazards" let-hazardIdx="index">
           <option [value]="hazard.key" [selected]="hazard.key == hazardID ? true : false"
                   *ngIf="hazard.key == 'countryContext'">{{"RISK_MONITORING.MAIN_PAGE.COUNTRY_CONTEXT" | translate}}
           </option>
@@ -40,7 +40,7 @@
                   *ngIf="hazard.key != 'countryContext'">{{hazard.hazardScenario != -1 ?
             (hazardScenario[hazard.hazardScenario] | translate) : hazard?.displayName}}
           </option>
-        </template>
+        </ng-template>
       </select>
       <span class="col-sm-1"> </span>
     </div>

@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators/map';
 import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";
@@ -404,8 +406,8 @@ export class LocalAgencyHeaderComponent implements OnInit {
 
   loadJSON() {
 
-    return this.http.get(this.languageSelectPath)
-      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res: Response) => res.json().GLOBAL.LANGUAGES));
 
   }
 

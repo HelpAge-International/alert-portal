@@ -1,3 +1,7 @@
+
+import {map} from 'rxjs/operators/map';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
@@ -127,8 +131,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   ngOnInit() {
 
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -161,8 +165,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
     if (this.isViewing) {
 
-      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-        .takeUntil(this.ngUnsubscribe)
+      this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(map => {
           console.log(map);
           this.officeAgencyMap = map;
@@ -175,8 +179,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                 this._getSkills();
               })
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -200,8 +204,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
             this.networkId = selection["id"];
             this.networkCountryId = selection["networkCountryId"];
 
-            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-              .takeUntil(this.ngUnsubscribe)
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(map => {
                 console.log(map);
                 this.officeAgencyMap = map;
@@ -216,8 +220,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                       this._getSkills();
                     })
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })
@@ -251,8 +255,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                 this._getSkills();
               })
             //get privacy for country
-            this.settingService.getPrivacySettingForCountry(value)
-              .takeUntil(this.ngUnsubscribe)
+            this.settingService.getPrivacySettingForCountry(value).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(privacy => {
                 this.agencyCountryPrivacyMap.set(key, privacy)
               })
@@ -292,8 +296,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
                       this._getSkills();
                     })
                   //get privacy for country
-                  this.settingService.getPrivacySettingForCountry(value)
-                    .takeUntil(this.ngUnsubscribe)
+                  this.settingService.getPrivacySettingForCountry(value).pipe(
+                    takeUntil(this.ngUnsubscribe))
                     .subscribe(privacy => {
                       this.agencyCountryPrivacyMap.set(key, privacy)
                     })
@@ -400,8 +404,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
   //
   getStaff(officeAgencyMap) {
     officeAgencyMap.forEach((value: string, key: string) => {
-      this._userService.getStaffList(value)
-        .map(staffs => {
+      this._userService.getStaffList(value).pipe(
+        map(staffs => {
           let responseStaffs = [];
           staffs.forEach(staff => {
             if (staff.isResponseMember) {
@@ -412,7 +416,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
             this.newNote[staff.id].uploadedBy = this.uid;
           });
           return responseStaffs;
-        })
+        }))
         .subscribe(responseStaffs => {
           this.totalResponseStaff.set(key, responseStaffs.length)
           this.responseStaffs.set(key, responseStaffs)
@@ -425,8 +429,8 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
             this.staffNoteMap.set(staff.id, []);
 
             //get staff name
-            this._userService.getUser(staff.id)
-              .takeUntil(this.ngUnsubscribe)
+            this._userService.getUser(staff.id).pipe(
+              takeUntil(this.ngUnsubscribe))
               .subscribe(user => {
                 this.userMap.set(user.id, user.firstName + " " + user.lastName);
               });
@@ -596,7 +600,7 @@ export class LocalNetworkProfileOfficeCapacityComponent implements OnInit, OnDes
 
     if (!userId) return userName;
 
-    this._userService.getUser(userId).takeUntil(this.ngUnsubscribe).subscribe(user => {
+    this._userService.getUser(userId).pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
       userName = user.firstName + ' ' + user.lastName;
     });
 

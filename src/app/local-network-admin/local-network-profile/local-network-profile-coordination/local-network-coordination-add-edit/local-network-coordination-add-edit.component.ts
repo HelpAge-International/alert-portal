@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageType, ResponsePlanSectors} from "../../../../utils/Enums";
@@ -10,7 +12,7 @@ import {CoordinationArrangementNetworkModel} from "../../../../model/coordinatio
 import {ModelStaff} from "../../../../model/staff.model";
 import {AgencyService} from "../../../../services/agency-service.service";
 import {PageControlService} from "../../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {isEmptyObject} from "angularfire2/utils";
 import {LocalStorageService} from "angular-2-local-storage";
 
@@ -85,8 +87,8 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
 
   ngOnInit() {
     this.networkViewValues = this.storageService.get(Constants.NETWORK_VIEW_VALUES);
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params['isViewing']) {
           this.isViewing = params['isViewing'];
@@ -197,8 +199,8 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   private getCoordinationForNetworkCountry(params: Params) {
-    this._coordinationArrangementService.getCoordinationArrangementNetworkCountry(this.networkCountryId, params['id'])
-      .takeUntil(this.ngUnsubscribe)
+    this._coordinationArrangementService.getCoordinationArrangementNetworkCountry(this.networkCountryId, params['id']).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(coordinationArrangement => {
         this.coordinationArrangement = coordinationArrangement;
         if (coordinationArrangement.agencies) {
@@ -209,8 +211,8 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   private getAgenciesForLocalNetworkAdmin() {
-    this.networkService.getNetworkDetail(this.networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getNetworkDetail(this.networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(network => {
         Object.keys(network.agencies).forEach(agencyId => {
           this.agenciesIds.push(agencyId)
@@ -227,8 +229,8 @@ export class LocalNetworkCoordinationAddEditComponent implements OnInit, OnDestr
   }
 
   private getAgenciesForNetworkCountry() {
-    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(agencyCountryMap => {
         agencyCountryMap.forEach((v, k) => {
           this.agenciesIds.push(k)

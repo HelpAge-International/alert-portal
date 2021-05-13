@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageType, StockType} from "../../../../utils/Enums";
@@ -9,7 +11,7 @@ import {NetworkService} from "../../../../services/network.service";
 import {StockCapacityModel} from "../../../../model/stock-capacity.model";
 import {StockService} from "../../../../services/stock.service";
 import {PageControlService} from "../../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {LocalStorageService} from "angular-2-local-storage";
 
 declare var jQuery: any;
@@ -114,16 +116,16 @@ export class LocalNetworkProfileStockCapacityAddEditComponent implements OnInit,
   }
 
   private getStockCapacityForNetworkCountry(params: Params) {
-    this._stockService.getStockCapacityLocalNetworkCountry(this.networkCountryId, params['id'])
-      .takeUntil(this.ngUnsubscribe)
+    this._stockService.getStockCapacityLocalNetworkCountry(this.networkCountryId, params['id']).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(stockCapacity => {
         this.stockCapacity = stockCapacity;
       });
   }
 
   private getStockCapacityForLocalNetworkAdmin(params: Params) {
-    this._stockService.getStockCapacityLocalNetwork(this.networkId, params['id'])
-      .takeUntil(this.ngUnsubscribe)
+    this._stockService.getStockCapacityLocalNetwork(this.networkId, params['id']).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(stockCapacity => {
         this.stockCapacity = stockCapacity;
       });

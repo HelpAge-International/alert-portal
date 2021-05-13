@@ -1,6 +1,8 @@
+
+import {map} from 'rxjs/operators/map';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PageControlService} from "../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {NetworkService} from "../../services/network.service";
@@ -129,8 +131,8 @@ export class LocalNetworkHeaderComponent implements OnInit, OnDestroy {
 
   loadJSON() {
 
-    return this.http.get(this.languageSelectPath)
-      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res: Response) => res.json().GLOBAL.LANGUAGES));
 
   }
 

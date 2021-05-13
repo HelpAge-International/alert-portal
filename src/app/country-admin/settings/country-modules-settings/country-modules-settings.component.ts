@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from "../../../services/user.service";
@@ -51,16 +53,16 @@ export class CountryModulesSettingsComponent implements OnInit, OnDestroy {
       this.agencyId = agencyId;
       this.countryId = countryId;
 
-      this.agencyService.getPrivacySettingForAgency(agencyId)
-        .takeUntil(this.ngUnsubscribe)
+      this.agencyService.getPrivacySettingForAgency(agencyId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe((privacy: ModelAgencyPrivacy) => {
           this.agencyPrivacy = privacy;
         });
 
       if (userType == UserType.CountryAdmin) {
 
-        this._settingsService.getCountryModulesSettings(this.countryId)
-          .takeUntil(this.ngUnsubscribe)
+        this._settingsService.getCountryModulesSettings(this.countryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe((modules: ModuleSettingsModel[]) => {
             this.moduleSettings = modules;
             //to make sure old data work, check length here, if it's old data, push one in

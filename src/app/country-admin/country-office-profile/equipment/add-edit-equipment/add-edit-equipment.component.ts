@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {Constants} from "../../../../utils/Constants";
 import {AlertMessageType, GeoLocation} from "../../../../utils/Enums";
@@ -8,7 +10,7 @@ import {UserService} from "../../../../services/user.service";
 import {EquipmentService} from "../../../../services/equipment.service";
 import {EquipmentModel} from "../../../../model/equipment.model";
 import {PageControlService} from "../../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Indicator} from "../../../../model/indicator";
 import {CommonService} from "../../../../services/common.service";
 import {Location} from "@angular/common";
@@ -92,10 +94,10 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
 
       this.agencyId = agencyId;
 
-      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+      this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
         if (params['id']) {
-          this._equipmentService.getEquipmentLocalAgency(this.agencyId, params['id'])
-            .takeUntil(this.ngUnsubscribe)
+          this._equipmentService.getEquipmentLocalAgency(this.agencyId, params['id']).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(equipment => {
               this.equipmentId = params['id'];
               this.equipment = equipment;
@@ -118,10 +120,10 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
       // this._userService.getCountryAdminUser(this.uid).subscribe(countryAdminUser => {
       //   this.countryId = countryAdminUser.countryId;
 
-      this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+      this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
         if (params['id']) {
-          this._equipmentService.getEquipment(this.countryId, params['id'])
-            .takeUntil(this.ngUnsubscribe)
+          this._equipmentService.getEquipment(this.countryId, params['id']).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(equipment => {
               this.equipmentId = params['id'];
               this.equipment = equipment;
@@ -151,8 +153,8 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
         /**
          * Pass country to the level one values for selection
          */
-        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-          .takeUntil(this.ngUnsubscribe)
+        this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(content => {
             err => console.log(err);
             // Below needs to return the level1 array of the id selected
@@ -173,8 +175,8 @@ export class CountryOfficeAddEditEquipmentComponent implements OnInit, OnDestroy
   // Return the array of level1 areas in the country selected.
   setCountryLevel(selectedCountry) {
     this.equipment.location = selectedCountry;
-    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .takeUntil(this.ngUnsubscribe)
+    this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(content => {
         err => console.log(err);
         // Below needs to return the level1 array of the id selected

@@ -1,7 +1,10 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
 import {FirebaseApp} from 'angularfire2';
 import {Router} from '@angular/router';
-import {Observable, Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {CustomerValidator} from "../../utils/CustomValidator";
 
@@ -61,8 +64,8 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   private showAlert() {
     this.inactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.inactive = true;
     });
   }

@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
@@ -82,8 +84,8 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
       this.partnerOrganisation.agencyId = this.agencyId;
 
       // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe)
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(content => {
           this.countryLevelsValues = content;
           this._userService.getAgencyDetail(this.agencyId)
@@ -91,15 +93,15 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
             .subscribe(agency => {
               this.defaultCountry = agency.country;
 
-              this.route.params
-                .takeUntil(this.ngUnsubscribe)
+              this.route.params.pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe((params: Params) => {
                   if (params["fromResponsePlans"]) {
                     this.fromResponsePlans = true;
                   }
                   if (params['id']) {
                     this.isEdit = true;
-                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).takeUntil(this.ngUnsubscribe).subscribe(partnerOrganisation => {
+                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).pipe(takeUntil(this.ngUnsubscribe)).subscribe(partnerOrganisation => {
                       this.partnerOrganisation = partnerOrganisation;
                     })
                   }
@@ -125,8 +127,8 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
       this.partnerOrganisation.countryId = this.countryId;
 
       // get the country levels values
-      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-        .takeUntil(this.ngUnsubscribe)
+      this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(content => {
           this.countryLevelsValues = content;
 
@@ -135,16 +137,16 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
             .subscribe(country => {
               this.defaultCountry = country;
 
-              this.route.params
-                .takeUntil(this.ngUnsubscribe)
+              this.route.params.pipe(
+                takeUntil(this.ngUnsubscribe))
                 .subscribe((params: Params) => {
                   if (params["fromResponsePlans"]) {
                     this.fromResponsePlans = true;
                   }
                   if (params['id']) {
                     this.isEdit = true;
-                    this._partnerOrganisationService.getPartnerOrganisation(params['id'])
-                      .takeUntil(this.ngUnsubscribe)
+                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).pipe(
+                      takeUntil(this.ngUnsubscribe))
                       .subscribe(partnerOrganisation => {
                         this.partnerOrganisation = partnerOrganisation;
                       })

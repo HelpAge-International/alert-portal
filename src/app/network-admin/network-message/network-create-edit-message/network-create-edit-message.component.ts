@@ -1,7 +1,9 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -9,7 +11,7 @@ import {UserService} from "../../../services/user.service";
 import {NetworkMessageModel} from "./network-message.model";
 import {NetworkMessageRecipientModel} from "./network-message-recipient.model";
 import {AgencyService} from "../../../services/agency-service.service";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 
 @Component({
@@ -83,8 +85,8 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
       if(this.networkService.hasAgencyLevelUsers(this.agencyIds)){
         this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
       }else{
-        this.networkService.hasNetworkLevelUsers(this.networkId)
-          .takeUntil(this.ngUnsubscribe).subscribe (hasUsers => {
+        this.networkService.hasNetworkLevelUsers(this.networkId).pipe(
+          takeUntil(this.ngUnsubscribe)).subscribe (hasUsers => {
           if (hasUsers){
             this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
           }else{
@@ -94,8 +96,8 @@ export class NetworkCreateEditMessageComponent implements OnInit, OnDestroy {
       }
     }else{
       if(this.recipients.networkCountryAdmins){
-        this.networkService.hasNetworkLevelUsers(this.networkId)
-          .takeUntil(this.ngUnsubscribe).subscribe (hasUsers => {
+        this.networkService.hasNetworkLevelUsers(this.networkId).pipe(
+          takeUntil(this.ngUnsubscribe)).subscribe (hasUsers => {
           if (hasUsers){
             this.networkService.createMessage(this, this.uid, this.networkId, this.agencyIds, this.recipients.getRecipientTypes(), this.message, this.storeMessageDataCallback);
           }else{

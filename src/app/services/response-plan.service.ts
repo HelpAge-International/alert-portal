@@ -1,11 +1,13 @@
+
+import {merge as observableMerge, from as observableFrom, Subject, Observable} from 'rxjs';
+
+import {takeUntil, tap, mergeMap} from 'rxjs/operators';
 import {Injectable} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {UserService} from "./user.service";
 import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
-import {Subject} from "rxjs/Subject";
 import {Router} from "@angular/router";
-import {Observable} from "rxjs/Observable";
 import {TranslateService} from "@ngx-translate/core";
 import {NotificationService} from "./notification.service";
 import {MessageModel} from "../model/message.model";
@@ -51,18 +53,18 @@ export class ResponsePlanService {
 
     let noPartnerUserOrg;
 
-    Observable.from(partnerOrgIds)
-      .flatMap(partnerOrgId => {
+    observableFrom(partnerOrgIds).pipe(
+      mergeMap(partnerOrgId => {
         return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId, {preserveSnapshot: true});
-      })
-      .do(snap => {
+      }),
+      tap(snap => {
         if (snap && snap.val()) {
           noPartnerUserOrg = snap.val();
           noPartnerUserOrg["key"] = snap.key;
           this.validPartnerMap.set(snap.key, snap.val().isApproved);
         }
-      })
-      .flatMap(snap => {
+      }),
+      mergeMap(snap => {
         if (snap && snap.val()) {
           orgUserMap.set(snap.key, "");
           return this.af.database.object(Constants.APP_STATUS + "/partner/" + snap.val().validationPartnerUserId, {preserveSnapshot: true})
@@ -73,8 +75,8 @@ export class ResponsePlanService {
               }
             });
         }
-      })
-      .takeUntil(this.ngUnsubscribe)
+      }),
+      takeUntil(this.ngUnsubscribe),)
       .subscribe(snap => {
         console.log(snap);
         if (snap && snap.val()) {
@@ -245,7 +247,7 @@ export class ResponsePlanService {
         if (partnerOrg.partners) {
           partnerIds = Object.keys(partnerOrg.partners);
         }
-        return Observable.from(partnerIds);
+        return observableFrom(partnerIds);
       })
       .flatMap(partnerId => {
         return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerId)
@@ -268,7 +270,7 @@ export class ResponsePlanService {
         equalTo: true,
       }
     });
-    return Observable.merge(directorCountry, directorRegion, directorGlobal);
+    return observableMerge(directorCountry, directorRegion, directorGlobal);
   }
 
   getLocalAgencyDirector(agencyId): Observable<any> {

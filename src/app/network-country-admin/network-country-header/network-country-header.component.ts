@@ -1,7 +1,9 @@
+
+import {map} from 'rxjs/operators/map';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertLevels, AlertStatus, Countries, NetworkUserAccountType} from "../../utils/Enums";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {NetworkService} from "../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -138,8 +140,8 @@ export class NetworkCountryHeaderComponent implements OnInit, OnDestroy {
 
   loadJSON() {
 
-    return this.http.get(this.languageSelectPath)
-      .map((res: Response) => res.json().GLOBAL.LANGUAGES);
+    return this.http.get(this.languageSelectPath).pipe(
+      map((res: Response) => res.json().GLOBAL.LANGUAGES));
 
   }
 

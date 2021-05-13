@@ -1,9 +1,12 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Constants} from "../../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../utils/CustomValidator";
 import {NetworkService} from "../../services/network.service";
 import {NetworkUserAccountType} from "../../utils/Enums";
@@ -85,8 +88,8 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
         }
         console.log(path);
         this.af.database.object(path).set(false);
-        Observable.timer(Constants.ALERT_REDIRECT_DURATION)
-          .takeUntil(this.ngUnsubscribe).subscribe(() => {
+        observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
+          takeUntil(this.ngUnsubscribe)).subscribe(() => {
           this.successInactive = true;
           this.networkUserType == NetworkUserAccountType.NetworkAdmin ? this.router.navigateByUrl('network/new-network-details') : this.router.navigateByUrl('network-country/network-dashboard');
         });
@@ -105,8 +108,8 @@ export class NetworkCreatePasswordComponent implements OnInit, OnDestroy {
   private showAlert() {
 
     this.errorInactive = false;
-    Observable.timer(Constants.ALERT_DURATION)
-      .takeUntil(this.ngUnsubscribe).subscribe(() => {
+    observableTimer(Constants.ALERT_DURATION).pipe(
+      takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.errorInactive = true;
     });
   }

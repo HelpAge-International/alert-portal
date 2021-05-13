@@ -11,7 +11,7 @@ import {ModelStaff} from "../../../../model/staff.model";
 import {AgencyService} from "../../../../services/agency-service.service";
 import {ModelAgency} from "../../../../model/agency.model";
 import {PageControlService} from "../../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 declare var jQuery: any;
 
 @Component({

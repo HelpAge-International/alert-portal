@@ -1,10 +1,13 @@
+
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {MandatedPreparednessAction} from "../../../model/mandatedPA";
 import {Constants} from "../../../utils/Constants";
 import {ActionLevel, ActionStatus, ActionType} from "../../../utils/Enums";
-import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ModelDepartment} from "../../../model/department.model";
 declare var jQuery: any;
@@ -51,8 +54,8 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["id"]) {
           this.pageTitle = 'AGENCY_ADMIN.MANDATED_PA.EDIT_MANDATED_PA';
@@ -85,8 +88,8 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
       this.updateMandatedPrepAction();
     } else {
       this.inactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.inactive = true;
       });
     }
@@ -189,14 +192,14 @@ export class CreateEditMpaComponent implements OnInit, OnDestroy {
   private showAlert(error: boolean) {
     if (error) {
       this.newDepartmentErrorInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.newDepartmentErrorInactive = true;
       });
     } else {
       this.successInactive = false;
-      Observable.timer(Constants.ALERT_DURATION)
-        .takeUntil(this.ngUnsubscribe).subscribe(() => {
+      observableTimer(Constants.ALERT_DURATION).pipe(
+        takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.successInactive = true;
       });
     }

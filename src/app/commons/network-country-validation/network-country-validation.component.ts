@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {NetworkService} from "../../services/network.service";
 import {Constants} from "../../utils/Constants";
@@ -39,8 +41,8 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.showLoader = true
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["token"] && params["networkId"] && params["networkCountryId"] && params["agencyId"]) {
           this.accessToken = params["token"];
@@ -86,8 +88,8 @@ export class NetworkCountryValidationComponent implements OnInit, OnDestroy {
   }
 
   private getNetworkInfo(networkId: string) {
-    this.networkService.getNetworkDetail(networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.getNetworkDetail(networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(network => {
         this.network = network;
       })

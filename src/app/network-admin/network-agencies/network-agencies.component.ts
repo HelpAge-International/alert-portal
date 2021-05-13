@@ -1,5 +1,9 @@
+
+import {first} from 'rxjs/operators';
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {AlertMessageType} from "../../utils/Enums";
 import {PageControlService} from "../../services/pagecontrol.service";
@@ -71,8 +75,8 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
                       model.adminId = agency.adminId;
 
                       //get agency admin detail
-                      this.userService.getUser(model.adminId)
-                        .takeUntil(this.ngUnsubscribe)
+                      this.userService.getUser(model.adminId).pipe(
+                        takeUntil(this.ngUnsubscribe))
                         .subscribe(user => {
                           model.adminEmail = user.email;
                           model.adminName = user.firstName + " " + user.lastName;
@@ -133,8 +137,8 @@ export class NetworkAgenciesComponent implements OnInit, OnDestroy {
           console.log(networkCountries)
           networkCountries.forEach(networkCountry => {
             // delete network from normal country
-            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, networkCountry.$key)
-              .first()
+            this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, networkCountry.$key).pipe(
+              first())
               .subscribe(map => {
                 console.log(map)
                 map.forEach((value, key) => {

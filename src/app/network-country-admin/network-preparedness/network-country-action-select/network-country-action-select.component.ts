@@ -1,5 +1,7 @@
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {ActionLevel, GenericActionCategory, UserType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -124,8 +126,8 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
           this.networkCountryId = selection["networkCountryId"];
           this.showLoader = false;
 
-          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getSystemIdForNetworkCountryAdmin(this.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(systemId => {
               this.systemAdminUid = systemId;
               this.initGenericActions();
@@ -148,8 +150,8 @@ export class NetworkCountryActionSelectComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.showLoader = false;
 
-          this.networkService.getSystemIdForNetworkAdmin(this.uid)
-            .takeUntil(this.ngUnsubscribe)
+          this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(systemId => {
 
               this.systemAdminUid = systemId;

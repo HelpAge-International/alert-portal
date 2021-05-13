@@ -1,10 +1,10 @@
+
+import {from as observableFrom, Subject, Observable} from 'rxjs';
 import {Injectable} from "@angular/core";
 import {Constants} from "../utils/Constants";
 import {AngularFire} from "angularfire2";
-import {Subject} from "rxjs/Subject";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
 import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
-import {Observable} from "rxjs/Observable";
 import {DurationType} from "../utils/Enums";
 import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
 import {ModelAgency} from "../model/agency.model";
@@ -233,7 +233,7 @@ export class AgencyService {
           item["id"] = item.$key
           return item
         })
-        return Observable.from(mapedSkills)
+        return observableFrom(mapedSkills)
       })
       .flatMap(skill =>{
         return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill["id"])

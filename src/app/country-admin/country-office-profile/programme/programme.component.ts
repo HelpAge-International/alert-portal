@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";
@@ -6,7 +8,7 @@ import {AlertMessageType, Countries, ResponsePlanSectors, UserType} from "../../
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AngularFire} from "angularfire2";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AddEditMappingProgrammeComponent} from "./add-edit-mapping/add-edit-mapping.component";
 import {CommonService} from "../../../services/common.service";
 import {AgencyService} from "../../../services/agency-service.service";
@@ -91,8 +93,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   initLocalAgency() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["isViewing"]) {
           this.isViewing = params["isViewing"];
@@ -122,8 +124,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   initCountryOffice() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe((params: Params) => {
         if (params["countryId"]) {
           this.countryID = params["countryId"];
@@ -493,7 +495,7 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
   }
 
   generateLocations() {
-    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).takeUntil(this.ngUnsubscribe).subscribe((json) => {
+    this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).pipe(takeUntil(this.ngUnsubscribe)).subscribe((json) => {
       this.mapping.forEach(mapping => {
         let obj = {
           country: "",

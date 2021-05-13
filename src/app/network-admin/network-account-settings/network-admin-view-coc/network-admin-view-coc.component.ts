@@ -3,7 +3,7 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {UserService} from "../../../services/user.service";
 import {AngularFire, FirebaseAuthState} from "angularfire2";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 
 @Component({

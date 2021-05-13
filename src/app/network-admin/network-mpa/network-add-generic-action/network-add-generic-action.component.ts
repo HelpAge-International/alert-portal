@@ -1,11 +1,15 @@
+
+import {map} from 'rxjs/operators/map';
+
+import {mergeMap} from 'rxjs/operators/mergeMap';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {ActionLevel, AlertMessageType, GenericActionCategory} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {GenericActionModel} from "./generic-action.model";
 import {Constants} from "../../../utils/Constants";
 
@@ -64,10 +68,10 @@ export class NetworkAddGenericActionComponent implements OnInit, OnDestroy {
   }
 
   private getGenericActions(uid) {
-    this.genericActions = this.networkService.getSystemIdForNetworkAdmin(uid)
-      .flatMap(systemId => {
+    this.genericActions = this.networkService.getSystemIdForNetworkAdmin(uid).pipe(
+      mergeMap(systemId => {
         return this.networkService.getGenericActions(systemId)
-      });
+      }));
   }
 
   ngOnDestroy() {
@@ -108,32 +112,32 @@ export class NetworkAddGenericActionComponent implements OnInit, OnDestroy {
 
   private fetchAllLevels() {
     this.selectedCategory == GenericActionCategory.All ?
-      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
-        .flatMap(systemId => {
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+        mergeMap(systemId => {
           return this.networkService.getGenericActions(systemId)
-        }) :
-      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
-        .flatMap(systemId => {
+        })) :
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+        mergeMap(systemId => {
           return this.networkService.getGenericActions(systemId)
-        })
-        .map(actions => {
+        }),
+        map(actions => {
           return actions.filter(action => action.category == this.selectedCategory);
-        });
+        }),);
   }
 
   private fetchSpecificLevel(level) {
     this.selectedCategory == GenericActionCategory.All ?
-      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
-        .flatMap(systemId => {
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+        mergeMap(systemId => {
           return this.networkService.getGenericActionsByFilter(systemId, level);
-        }) :
-      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid)
-        .flatMap(systemId => {
+        })) :
+      this.genericActions = this.networkService.getSystemIdForNetworkAdmin(this.uid).pipe(
+        mergeMap(systemId => {
           return this.networkService.getGenericActionsByFilter(systemId, level);
-        })
-        .map(actions => {
+        }),
+        map(actions => {
           return actions.filter(action => action.category == this.selectedCategory);
-        });
+        }),);
   }
 
 }

@@ -1,3 +1,7 @@
+
+import {of as observableOf} from 'rxjs';
+
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
@@ -5,7 +9,7 @@ import {NetworkService} from "../../services/network.service";
 import {NotificationService} from "../../services/notification.service";
 import {UserService} from "../../services/user.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
@@ -22,7 +26,7 @@ import {
   UserType
 } from "../../utils/Enums";
 import {ModelAlert} from "../../model/alert.model";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import * as moment from "moment";
 import {
@@ -162,7 +166,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
+    this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((params: Params) => {
       if (params["isViewing"]) {
         this.isViewing = params["isViewing"];
       }
@@ -236,8 +240,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
 
-          this.settingService.getCountryModulesSettings(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.settingService.getCountryModulesSettings(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(modules => {
               this.networkModules = modules
               console.log(this.networkModules)
@@ -263,8 +267,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
           console.log(this.mandatedMap);
 
         });
-        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(agencyCountryMap => {
             console.log(agencyCountryMap)
             this.agencyCountryMap = agencyCountryMap
@@ -342,8 +346,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
             .takeUntil(this.ngUnsubscribe)
             .subscribe(matrix => this.moduleSettings = matrix);
 
-          this.settingService.getCountryModulesSettings(this.networkId)
-            .takeUntil(this.ngUnsubscribe)
+          this.settingService.getCountryModulesSettings(this.networkId).pipe(
+            takeUntil(this.ngUnsubscribe))
             .subscribe(modules => {
               this.networkModules = modules
               console.log(this.networkModules)
@@ -364,8 +368,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       return
     }
 
-    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-      .takeUntil(this.ngUnsubscribe)
+    this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(agencyCountryMap => {
         console.log(agencyCountryMap)
         this.agencyCountryMap = agencyCountryMap;
@@ -380,8 +384,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.moduleSettings = matrix);
 
-    this.settingService.getCountryModulesSettings(this.networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.settingService.getCountryModulesSettings(this.networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(modules => {
         this.networkModules = modules
         console.log(this.networkModules)
@@ -420,8 +424,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
       .takeUntil(this.ngUnsubscribe)
       .subscribe(matrix => this.moduleSettings = matrix);
 
-    this.settingService.getCountryModulesSettings(this.networkId)
-      .takeUntil(this.ngUnsubscribe)
+    this.settingService.getCountryModulesSettings(this.networkId).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(modules => {
         this.networkModules = modules
       })
@@ -541,8 +545,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     console.log(id)
     let startOfToday = moment().startOf("day").valueOf();
     let endOfToday = moment().endOf("day").valueOf();
-    this.actionService.getActionsDueInWeek(id, this.uid)
-      .takeUntil(this.ngUnsubscribe)
+    this.actionService.getActionsDueInWeek(id, this.uid).pipe(
+      takeUntil(this.ngUnsubscribe))
       .subscribe(actions => {
         console.log(actions, 'actions');
         // Display APA only if there is a red alert
@@ -634,7 +638,7 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     if (this.userType == UserType.PartnerUser) {
       console.log("approval for partner user");
       this.responsePlansForApproval = this.actionService.getResponsePlanForCountryDirectorToApproval(this.countryId, this.uid, true);
-      this.responsePlansForApprovalNetworkLocal = Observable.of([])
+      this.responsePlansForApprovalNetworkLocal = observableOf([])
 
       if (this.networkCountryId) {
         this.responsePlansForApprovalNetwork = this.actionService.getResponsePlanForCountryDirectorToApproval(this.networkCountryId, this.uid, true);
@@ -669,16 +673,16 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     }
 
     if (this.responsePlansForApproval) {
-      this.responsePlansForApproval
-        .takeUntil(this.ngUnsubscribe)
+      this.responsePlansForApproval.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(plans => {
           this.approvalPlans = plans;
 
         });
     }
     if (this.responsePlansForApprovalNetwork) {
-      this.responsePlansForApprovalNetwork
-        .takeUntil(this.ngUnsubscribe)
+      this.responsePlansForApprovalNetwork.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(plans => {
           console.log(plans)
           this.approvalPlansNetwork = plans
@@ -686,8 +690,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     }
 
     if (this.responsePlansForApprovalNetworkLocal) {
-      this.responsePlansForApprovalNetworkLocal
-        .takeUntil(this.ngUnsubscribe)
+      this.responsePlansForApprovalNetworkLocal.pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(plans => {
           this.approvalPlansNetworkLocal = plans
           console.log(this.approvalPlansNetworkLocal)
@@ -841,8 +845,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   private getHazardsForCountriesInNetwork() {
     CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
-      this.settingService.getPrivacySettingForCountry(countryId)
-        .takeUntil(this.ngUnsubscribe)
+      this.settingService.getPrivacySettingForCountry(countryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(privacy => {
           console.log(privacy)
           let agencyKey = CommonUtils.reverseMap(this.agencyCountryMap).get(countryId)
@@ -914,8 +918,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
     //get other countries in network
     CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(countryId => {
-      this.settingService.getPrivacySettingForCountry(countryId)
-        .takeUntil(this.ngUnsubscribe)
+      this.settingService.getPrivacySettingForCountry(countryId).pipe(
+        takeUntil(this.ngUnsubscribe))
         .subscribe(privacy => {
           let agencyKey = CommonUtils.reverseMap(this.agencyCountryMap).get(countryId)
           if (agencyKey == this.agencyId || privacy.riskMonitoring != Privacy.Private) {
@@ -1111,8 +1115,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
     this.actionService.approveRedAlertNetwork(this.countryId, alertId, id).then(() => {
       if (this.isLocalNetworkAdmin) {
-        this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(map => {
             this.actionService.getAlertObj(this.networkId, alertId)
               .first()
@@ -1121,8 +1125,8 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
               })
           })
       } else {
-        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
-          .takeUntil(this.ngUnsubscribe)
+        this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId).pipe(
+          takeUntil(this.ngUnsubscribe))
           .subscribe(map => {
             console.log(map)
             this.actionService.getAlertObj(this.networkCountryId, alertId)
