@@ -24,7 +24,7 @@ declare var jQuery: any;
 })
 
 export class ReviewResponsePlanComponent implements OnInit, OnDestroy {
-  @ViewChild('rejectPlanScrollContainer', {static: false}) private rejectPlanScrollContainer: ElementRef;
+  @ViewChild('rejectPlanScrollContainer') private rejectPlanScrollContainer: ElementRef;
 
   private isDirector: boolean;
 

@@ -7,9 +7,11 @@ import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";
 import {Subject} from "rxjs";
 import {ModelNetwork} from "../model/network.model";
+import { Injectable } from "@angular/core";
 
 declare var jQuery: any;
 
+@Injectable()
 export class PrepActionService {
 
   private uid: string;

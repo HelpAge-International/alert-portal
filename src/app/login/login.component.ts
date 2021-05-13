@@ -21,7 +21,7 @@ declare var jQuery: any;
   providers: [AgencyService]
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  @ViewChild('cookieLaw', {static: false})
+  @ViewChild('cookieLaw')
   private cookieLawEl: any;
 
   private loaderInactive: boolean = true;

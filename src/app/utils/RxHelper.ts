@@ -1,8 +1,10 @@
 import {Subscription} from "rxjs";
+import { Injectable } from "@angular/core";
 /**
  * Created by Fei on 16/03/2017.
  */
 
+@Injectable()
 export class RxHelper {
   subscriptions: Array<Subscription> = [];
 

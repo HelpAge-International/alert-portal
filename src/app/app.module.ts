@@ -753,7 +753,7 @@ const firebaseAuthConfig = {
     PrivacyPolicyComponent
   ],
   imports: [
-    CookieLawModule,
+    //CookieLawModule,
     BrowserModule,
     FormsModule,
     //HttpClientModule,

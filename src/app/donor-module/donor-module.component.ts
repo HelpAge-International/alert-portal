@@ -47,7 +47,7 @@ export class DonorModuleComponent implements OnInit, OnDestroy {
 
   private userTypePath: string;
 
-  @ViewChild("globalMap", {static: false}) globalMap: ElementRef;
+  @ViewChild("globalMap") globalMap: ElementRef;
   private hazardMap = new Map<number, Set<number>>();
   private countryLocationMap = new Map<string, number>();
   private countryAgencyRefMap = new Map<number, any>();
