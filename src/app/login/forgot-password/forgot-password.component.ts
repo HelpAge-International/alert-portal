@@ -3,7 +3,7 @@ import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
 import {takeUntil} from 'rxjs/operators';
 import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
-import {FirebaseApp} from 'angularfire2';
+import {FirebaseApp} from '@angular/fire';
 import {Router} from '@angular/router';
 import {Constants} from "../../utils/Constants";
 import {CustomerValidator} from "../../utils/CustomValidator";
