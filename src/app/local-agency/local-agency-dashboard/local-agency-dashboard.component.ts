@@ -1,23 +1,15 @@
 
-import {merge as observableMerge} from 'rxjs';
+import {merge as observableMerge, from as observableFrom, of as observableOf, Observable, Subject} from 'rxjs';
 
-import {from as observableFrom} from 'rxjs';
-
-import {of as observableOf} from 'rxjs';
-
-import {merge} from 'rxjs/operators/merge';
-
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {merge, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../utils/Constants";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs";
 import {ActionLevel, ActionType, AlertLevels, AlertStatus, Countries, DashboardType, UserType} from "../../utils/Enums";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
 import * as moment from "moment";
-import {Subject} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import {ModelAlert} from "../../model/alert.model";
 import {

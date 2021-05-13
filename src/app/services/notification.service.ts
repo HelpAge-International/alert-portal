@@ -1,7 +1,5 @@
 
-import {map} from 'rxjs/operators';
-
-import {first} from 'rxjs/operators';
+import {map, first} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AngularFire} from 'angularfire2';
 import {Constants} from '../utils/Constants';

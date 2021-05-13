@@ -1,5 +1,5 @@
 
-import {map} from 'rxjs/operators/map';
+import {map} from 'rxjs/operators';
 import {Component, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";

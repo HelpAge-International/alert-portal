@@ -1,9 +1,9 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
-import {Subject} from "rxjs";
+import {Subject, Observable} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -11,7 +11,6 @@ import {UserService} from "../../../services/user.service";
 import {NetworkMessageModel} from "./network-message.model";
 import {NetworkMessageRecipientModel} from "./network-message-recipient.model";
 import {AgencyService} from "../../../services/agency-service.service";
-import {Observable} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 
 @Component({

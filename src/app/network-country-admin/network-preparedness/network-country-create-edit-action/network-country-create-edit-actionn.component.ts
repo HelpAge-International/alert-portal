@@ -1,15 +1,8 @@
 
-import {from as observableFrom} from 'rxjs';
+import {from as observableFrom, Subject, Observable} from 'rxjs';
 
-import {distinct} from 'rxjs/operators/distinct';
-
-import {mergeMap} from 'rxjs/operators/mergeMap';
-
-import {first} from 'rxjs/operators/first';
-
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {distinct, mergeMap, first, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {ActionsService} from './../../../services/actions.service';
@@ -42,7 +35,6 @@ import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
 import {identifierModuleUrl} from '@angular/compiler';
 import {CommonUtils} from "../../../utils/CommonUtils";
-import {Observable} from "rxjs";
 
 declare var jQuery: any;
 

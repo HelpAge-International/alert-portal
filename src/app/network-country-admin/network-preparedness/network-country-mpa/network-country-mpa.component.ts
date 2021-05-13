@@ -1,13 +1,8 @@
 
-import {interval as observableInterval} from 'rxjs';
+import {interval as observableInterval, Subject, Observable} from 'rxjs';
 
-import {first} from 'rxjs/operators/first';
-
-import {takeUntil} from 'rxjs/operators/takeUntil';
-
-import {takeWhile} from 'rxjs/operators/takeWhile';
+import {first, takeUntil, takeWhile} from 'rxjs/operators';
 import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";
 import {
   ActionLevel,
@@ -51,7 +46,6 @@ import * as firebase from "firebase";
 import {ModelAgency} from "../../../model/agency.model";
 import {ModelNetwork} from "../../../model/network.model";
 import {MandatedListModel} from "../../../agency-admin/agency-mpa/agency-mpa.component";
-import {Observable} from "rxjs";
 import {ModelStaff} from "../../../model/staff.model";
 import {el} from "@angular/platform-browser/testing/src/browser_util";
 

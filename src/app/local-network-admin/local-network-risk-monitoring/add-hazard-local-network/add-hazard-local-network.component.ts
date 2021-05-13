@@ -1,5 +1,5 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {AlertMessageType, HazardScenario} from "../../../utils/Enums";

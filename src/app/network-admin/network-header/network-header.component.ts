@@ -1,5 +1,5 @@
 
-import {map} from 'rxjs/operators/map';
+import {map} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PageControlService} from "../../services/pagecontrol.service";
 import {Subject} from "rxjs";

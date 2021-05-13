@@ -1,7 +1,5 @@
 
-import {map} from 'rxjs/operators/map';
-
-import {mergeMap} from 'rxjs/operators/mergeMap';
+import {map, mergeMap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AngularFire} from "angularfire2";
 import {Constants} from "../utils/Constants";

@@ -1,7 +1,5 @@
 
-import {first} from 'rxjs/operators';
-
-import {takeUntil} from 'rxjs/operators';
+import {first, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
 import {AlertMessageModel} from "../../model/alert-message.model";

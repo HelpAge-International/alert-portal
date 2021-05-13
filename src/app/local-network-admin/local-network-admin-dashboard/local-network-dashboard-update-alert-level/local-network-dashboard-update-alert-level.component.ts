@@ -1,5 +1,5 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import { UserType } from './../../../utils/Enums';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";

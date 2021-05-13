@@ -1,13 +1,7 @@
 
-import {timer as observableTimer} from 'rxjs';
+import {timer as observableTimer, Subject, Observable} from 'rxjs';
 
-import {mergeMap} from 'rxjs/operators/mergeMap';
-
-import {take} from 'rxjs/operators/take';
-
-import {first} from 'rxjs/operators/first';
-
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {mergeMap, take, first, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {
   AlertMessageType, Countries, DetailedDurationType, HazardScenario, ModuleNameNetwork, Privacy,
@@ -24,7 +18,6 @@ import {UserService} from "../../services/user.service";
 import {CommonService} from "../../services/common.service";
 import {NetworkService} from "../../services/network.service";
 import {AgencyService} from "../../services/agency-service.service";
-import {Subject} from "rxjs";
 import {CountryPermissionsMatrix, PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import {HazardImages} from "../../utils/HazardImages";
@@ -34,7 +27,6 @@ import {ModelUserPublic} from "../../model/user-public.model";
 import {NetworkCountryModel} from "../network-country.model";
 import {SettingsService} from "../../services/settings.service";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
-import {Observable} from "rxjs";
 
 declare var jQuery: any;
 

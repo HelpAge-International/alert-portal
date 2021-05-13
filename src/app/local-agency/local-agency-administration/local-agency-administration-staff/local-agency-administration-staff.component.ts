@@ -1,12 +1,11 @@
 
-import {from as observableFrom} from 'rxjs';
+import {from as observableFrom, Observable, Subject} from 'rxjs';
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
-import {Observable, Subject} from "rxjs";
 import {ModelStaff} from "../../../model/staff.model";
 import {ModelUserPublic} from "../../../model/user-public.model";
 import {OfficeType, SkillType} from "../../../utils/Enums";

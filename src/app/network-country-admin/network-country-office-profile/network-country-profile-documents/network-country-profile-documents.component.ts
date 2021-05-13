@@ -1,12 +1,11 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Countries, DocumentType, SizeType, UserType} from "../../../utils/Enums";
-import {Subject} from "rxjs";
-import {BehaviorSubject} from "rxjs";
+import {Subject, BehaviorSubject} from "rxjs";
 import {UserService} from "../../../services/user.service";
 import {NetworkService} from "../../../services/network.service";
 import {CountryPermissionsMatrix, PageControlService} from "../../../services/pagecontrol.service";

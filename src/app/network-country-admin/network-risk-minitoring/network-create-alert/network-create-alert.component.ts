@@ -1,5 +1,5 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertLevels, AlertMessageType, DurationType, PermissionsAgency, UserType} from "../../../utils/Enums";
 import {Constants} from "../../../utils/Constants";

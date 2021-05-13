@@ -1,7 +1,7 @@
 
-import {of as observableOf} from 'rxjs';
+import {of as observableOf, Subject, Observable} from 'rxjs';
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NetworkModulesEnabledModel, PageControlService} from "../../services/pagecontrol.service";
 import {AngularFire} from "angularfire2";
@@ -9,7 +9,6 @@ import {NetworkService} from "../../services/network.service";
 import {NotificationService} from "../../services/notification.service";
 import {UserService} from "../../services/user.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Subject} from "rxjs";
 import {Constants} from "../../utils/Constants";
 import {AlertMessageModel} from "../../model/alert-message.model";
 import {
@@ -26,7 +25,6 @@ import {
   UserType
 } from "../../utils/Enums";
 import {ModelAlert} from "../../model/alert.model";
-import {Observable} from "rxjs";
 import {HazardImages} from "../../utils/HazardImages";
 import * as moment from "moment";
 import {

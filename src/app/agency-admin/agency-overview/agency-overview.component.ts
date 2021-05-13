@@ -1,11 +1,10 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Subject} from "rxjs";
+import {Subject, Observable} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {ActionsService} from "../../services/actions.service";
-import {Observable} from "rxjs";
 import {AlertLevels, AlertStatus} from "../../utils/Enums";
 import {HazardImages} from "../../utils/HazardImages";
 import {Constants} from "../../utils/Constants";

@@ -1,12 +1,11 @@
 
-import {timer as observableTimer} from 'rxjs';
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserType} from "../../../utils/Enums";
 import {ModelDepartmentCanDelete} from "../../../agency-admin/settings/department/department.component";
 import {ModelDepartment} from "../../../model/department.model";
-import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AngularFire} from "angularfire2";

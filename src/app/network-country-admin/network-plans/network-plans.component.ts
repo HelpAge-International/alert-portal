@@ -1,7 +1,5 @@
 
-import {first} from 'rxjs/operators/first';
-
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {first, takeUntil} from 'rxjs/operators';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";

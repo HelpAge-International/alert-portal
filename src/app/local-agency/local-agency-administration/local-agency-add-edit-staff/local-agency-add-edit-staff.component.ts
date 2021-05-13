@@ -1,13 +1,12 @@
 
-import {timer as observableTimer} from 'rxjs';
+import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire, FirebaseListObservable} from "angularfire2";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {NotificationSettingEvents, SkillType, UserType} from "../../../utils/Enums";
-import {Observable, Subject} from "rxjs";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {firebaseConfig} from "../../../app.module";
 import {UUID} from "../../../utils/UUID";

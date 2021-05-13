@@ -1,5 +1,5 @@
 
-import {map} from 'rxjs/operators/map';
+import {map} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AngularFire} from "angularfire2";
 import {Constants} from "../../utils/Constants";

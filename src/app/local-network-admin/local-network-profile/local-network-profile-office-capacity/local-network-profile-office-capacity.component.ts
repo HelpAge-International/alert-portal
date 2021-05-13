@@ -1,7 +1,5 @@
 
-import {map} from 'rxjs/operators/map';
-
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {map, takeUntil} from 'rxjs/operators';
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {UserService} from "../../../services/user.service";

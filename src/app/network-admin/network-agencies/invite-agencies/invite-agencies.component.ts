@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs";
+import {Subject, Observable} from "rxjs";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType, NetworkUserAccountType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
@@ -7,7 +7,6 @@ import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../services/agency-service.service";
 import {ModelAgency} from "../../../model/agency.model";
-import {Observable} from "rxjs";
 
 declare const jQuery: any;
 

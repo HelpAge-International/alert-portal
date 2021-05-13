@@ -1,15 +1,12 @@
 
-import {map} from 'rxjs/operators/map';
-
-import {mergeMap} from 'rxjs/operators/mergeMap';
+import {map, mergeMap} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs";
+import {Subject, Observable} from "rxjs";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {ActionLevel, AlertMessageType, GenericActionCategory} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs";
 import {GenericActionModel} from "./generic-action.model";
 import {Constants} from "../../../utils/Constants";
 

@@ -1,5 +1,5 @@
 
-import {map} from 'rxjs/operators/map';
+import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Constants} from "../utils/Constants";
 import * as XLSX from "xlsx";
@@ -21,11 +21,10 @@ import {
   StockType
 } from "../utils/Enums";
 import {PartnerOrganisationService} from "./partner-organisation.service";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
-import {Subject} from "rxjs";
 import {AgencyService} from "./agency-service.service";
 import {isBoolean} from "util";
 

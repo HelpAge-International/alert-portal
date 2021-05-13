@@ -1,7 +1,5 @@
 
-import {first} from 'rxjs/operators';
-
-import {takeUntil} from 'rxjs/operators';
+import {first, takeUntil} from 'rxjs/operators';
 import {ActionsService} from './../../services/actions.service';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFire} from "angularfire2";

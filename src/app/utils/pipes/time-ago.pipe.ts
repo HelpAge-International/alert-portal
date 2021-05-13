@@ -1,16 +1,9 @@
 
-import {of as observableOf} from 'rxjs';
+import {of as observableOf,  Observable } from 'rxjs';
 
-import {mergeMap} from 'rxjs/operators/mergeMap';
-
-import {map} from 'rxjs/operators/map';
-
-import {takeWhile} from 'rxjs/operators/takeWhile';
-
-import {repeatWhen} from 'rxjs/operators/repeatWhen';
+import {mergeMap, map, takeWhile, repeatWhen} from 'rxjs/operators';
 import { OnDestroy, ChangeDetectorRef, Pipe, PipeTransform } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Observable } from 'rxjs';
 
 
 

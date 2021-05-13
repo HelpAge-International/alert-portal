@@ -1,5 +1,5 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PageControlService} from "../../../../services/pagecontrol.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";

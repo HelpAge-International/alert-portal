@@ -1,5 +1,5 @@
 
-import {take} from 'rxjs/operators/take';
+import {take} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AlertMessageType, Countries, DetailedDurationType, HazardScenario, UserType} from "../../utils/Enums";
 import {Constants} from "../../utils/Constants";

@@ -1,5 +1,5 @@
 
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";

@@ -1,5 +1,5 @@
 
-import {first} from 'rxjs/operators/first';
+import {first} from 'rxjs/operators';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
 import {Constants} from "../../../utils/Constants";

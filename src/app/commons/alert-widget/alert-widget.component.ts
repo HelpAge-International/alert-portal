@@ -4,10 +4,9 @@ import {RxHelper} from '../../utils/RxHelper';
 import {AngularFire, FirebaseListObservable, FirebaseObjectObservable, FirebaseApp} from "angularfire2";
 import {ActionType, ActionLevel, ActionStatus, SizeType, DocumentType, ThresholdName} from "../../utils/Enums";
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {HazardImages} from "../../utils/HazardImages";
 import {PageControlService} from "../../services/pagecontrol.service";
-import {Subject} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
