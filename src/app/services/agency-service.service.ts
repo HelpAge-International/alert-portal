@@ -4,7 +4,7 @@ import {mergeMap, map} from 'rxjs/operators';
 import {from as observableFrom, Subject, Observable} from 'rxjs';
 import {Injectable} from "@angular/core";
 import {Constants} from "../utils/Constants";
-import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
+import {AngularFireDatabase, AngularFireObject, SnapshotAction} from "@angular/fire/database";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
 import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
 import {DurationType} from "../utils/Enums";
@@ -79,7 +79,7 @@ export class AgencyService {
     return this.afd.object(Constants.APP_STATUS + "/module/" + agencyId);
   }
 
-  getCountryOffice(countryId, agencyId) {
+  getCountryOffice(countryId, agencyId): AngularFireObject<CountryOfficeAddressModel>{
     return this.afd.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId);
   }
 

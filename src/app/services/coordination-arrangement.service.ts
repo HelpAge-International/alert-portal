@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import {AngularFireDatabase} from '@angular/fire/database';
 import {Constants} from '../utils/Constants';
 import {Observable, Subject} from 'rxjs';
 import { CoordinationArrangementModel } from "../model/coordination-arrangement.model";
@@ -8,20 +8,21 @@ import { CoordinationArrangementNetworkModel } from "../model/coordination-arran
 @Injectable()
 export class CoordinationArrangementService {
 
-  constructor(private af: AngularFire) { }
+  constructor(private afd: AngularFireDatabase) { }
 
     public getCoordinationArrangements(countryId: string): Observable<CoordinationArrangementModel[]> {
       if (!countryId) {
         return;
       }
 
-      const getCoordinationArrangementsSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId)
+      const getCoordinationArrangementsSubscription = this.afd.list(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId)
+        .snapshotChanges()
       .map(items => {
         const coordinationArrangements: CoordinationArrangementModel[] = [];
         items.forEach(item => {
           let coordinationArrangement = new CoordinationArrangementModel();
-          coordinationArrangement.mapFromObject(item);
-          coordinationArrangement.id = item.$key;
+          coordinationArrangement.mapFromObject(item.payload.val());
+          coordinationArrangement.id = item.key;
           coordinationArrangements.push(coordinationArrangement);
         });
         return coordinationArrangements;
@@ -35,13 +36,14 @@ export class CoordinationArrangementService {
       return;
     }
 
-    const getCoordinationArrangementsSubscription = this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId)
+    const getCoordinationArrangementsSubscription = this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId)
+      .snapshotChanges()
       .map(items => {
         const coordinationArrangements: CoordinationArrangementModel[] = [];
         items.forEach(item => {
           let coordinationArrangement = new CoordinationArrangementModel();
-          coordinationArrangement.mapFromObject(item);
-          coordinationArrangement.id = item.$key;
+          coordinationArrangement.mapFromObject(item.payload.val());
+          coordinationArrangement.id = item.key;
           coordinationArrangements.push(coordinationArrangement);
         });
         return coordinationArrangements;
@@ -55,13 +57,14 @@ export class CoordinationArrangementService {
       return;
     }
 
-    const getCoordinationArrangementsSubscription = this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId)
+    const getCoordinationArrangementsSubscription = this.afd.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId)
+      .snapshotChanges()
       .map(items => {
         const coordinationArrangements: CoordinationArrangementNetworkModel[] = [];
         items.forEach(item => {
           let coordinationArrangement = new CoordinationArrangementNetworkModel();
-          coordinationArrangement.mapFromObject(item);
-          coordinationArrangement.id = item.$key;
+          coordinationArrangement.mapFromObject(item.payload.val());
+          coordinationArrangement.id = item.key;
           coordinationArrangements.push(coordinationArrangement);
         });
         return coordinationArrangements;
@@ -75,13 +78,14 @@ export class CoordinationArrangementService {
       return;
     }
 
-    const getCoordinationArrangementsSubscription = this.af.database.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + countryId)
+    const getCoordinationArrangementsSubscription = this.afd.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + countryId)
+      .snapshotChanges()
       .map(items => {
         const coordinationArrangements: CoordinationArrangementNetworkModel[] = [];
         items.forEach(item => {
           let coordinationArrangement = new CoordinationArrangementNetworkModel();
-          coordinationArrangement.mapFromObject(item);
-          coordinationArrangement.id = item.$key;
+          coordinationArrangement.mapFromObject(item.payload.val());
+          coordinationArrangement.id = item.key;
           coordinationArrangements.push(coordinationArrangement);
         });
         return coordinationArrangements;
@@ -96,11 +100,12 @@ export class CoordinationArrangementService {
       }
 
       const getCoordinationArrangementSubscription =
-              this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangementId)
+              this.afd.object(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangementId)
+                .snapshotChanges()
       .map(item => {
         let coordinationArrangement = new CoordinationArrangementModel();
-        coordinationArrangement.mapFromObject(item);
-        coordinationArrangement.id = item.$key;
+        coordinationArrangement.mapFromObject(item.payload.val());
+        coordinationArrangement.id = item.key;
         return coordinationArrangement;
       });
 
@@ -113,11 +118,12 @@ export class CoordinationArrangementService {
     }
 
     const getCoordinationArrangementSubscription =
-      this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId + '/' + coordinationArrangementId)
+      this.afd.object(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId + '/' + coordinationArrangementId)
+        .snapshotChanges()
         .map(item => {
           let coordinationArrangement = new CoordinationArrangementModel();
-          coordinationArrangement.mapFromObject(item);
-          coordinationArrangement.id = item.$key;
+          coordinationArrangement.mapFromObject(item.payload.val());
+          coordinationArrangement.id = item.key;
           return coordinationArrangement;
         });
 
@@ -130,11 +136,12 @@ export class CoordinationArrangementService {
     }
 
     const getCoordinationArrangementSubscription =
-      this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangementId)
+      this.afd.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangementId)
+        .snapshotChanges()
         .map(item => {
           let coordinationArrangement = new CoordinationArrangementNetworkModel();
-          coordinationArrangement.mapFromObject(item);
-          coordinationArrangement.id = item.$key;
+          coordinationArrangement.mapFromObject(item.payload.val());
+          coordinationArrangement.id = item.key;
           return coordinationArrangement;
         });
 
@@ -147,11 +154,12 @@ export class CoordinationArrangementService {
     }
 
     const getCoordinationArrangementSubscription =
-      this.af.database.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkCountryId + '/' + coordinationArrangementId)
+      this.afd.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkCountryId + '/' + coordinationArrangementId)
+        .snapshotChanges()
         .map(item => {
           let coordinationArrangement = new CoordinationArrangementNetworkModel();
-          coordinationArrangement.mapFromObject(item);
-          coordinationArrangement.id = item.$key;
+          coordinationArrangement.mapFromObject(item.payload.val());
+          coordinationArrangement.id = item.key;
           return coordinationArrangement;
         });
 
@@ -162,7 +170,7 @@ export class CoordinationArrangementService {
     if (!networkCountryId || !coordinationArrangementId) {
       return;
     }
-    return this.af.database.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkCountryId + '/' + coordinationArrangementId )
+    return this.afd.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkCountryId + '/' + coordinationArrangementId )
 
 
   }
@@ -171,7 +179,7 @@ export class CoordinationArrangementService {
     if (!networkId || !coordinationArrangementId) {
       return;
     }
-    return this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangementId )
+    return this.afd.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangementId )
 
 
   }
@@ -180,12 +188,12 @@ export class CoordinationArrangementService {
     if (!networkCountryId || !coordinationArrangementId) {
       return;
     }
-    return this.af.database.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkCountryId + '/' + coordinationArrangementId )
+    return this.afd.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkCountryId + '/' + coordinationArrangementId )
 
 
   }
 
-  public saveCoordinationArrangement(countryId: string, coordinationArrangement: CoordinationArrangementModel): firebase.Promise<any>{
+  public saveCoordinationArrangement(countryId: string, coordinationArrangement: CoordinationArrangementModel): Promise<any>{
     if(!countryId || !coordinationArrangement)
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
@@ -198,13 +206,13 @@ export class CoordinationArrangementService {
     {
       const equipmentData = {};
       equipmentData['/countryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = coordinationArrangement;
-      return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+      return this.afd.object(Constants.APP_STATUS).update(equipmentData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId).push(coordinationArrangement);
+      return this.afd.list(Constants.APP_STATUS + '/countryOfficeProfile/coordination/' + countryId).push(coordinationArrangement).then();
     }
   }
 
-  public saveCoordinationArrangementLocalAgency(agencyId: string, coordinationArrangement: CoordinationArrangementModel): firebase.Promise<any>{
+  public saveCoordinationArrangementLocalAgency(agencyId: string, coordinationArrangement: CoordinationArrangementModel): Promise<any>{
     if(!agencyId || !coordinationArrangement)
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
@@ -217,13 +225,13 @@ export class CoordinationArrangementService {
     {
       const equipmentData = {};
       equipmentData['/localAgencyProfile/coordination/' + agencyId + '/' + coordinationArrangement.id] = coordinationArrangement;
-      return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+      return this.afd.object(Constants.APP_STATUS).update(equipmentData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId).push(coordinationArrangement);
+      return this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/coordination/' + agencyId).push(coordinationArrangement).then();
     }
   }
 
-  public saveCoordinationArrangementNetwork(networkId: string, coordinationArrangement: CoordinationArrangementNetworkModel, nonAlertMembers: string[]): firebase.Promise<any>{
+  public saveCoordinationArrangementNetwork(networkId: string, coordinationArrangement: CoordinationArrangementNetworkModel, nonAlertMembers: string[]): Promise<any>{
     if(!networkId || !coordinationArrangement)
     {
       return Promise.reject('Missing networkId or coordinationArrangement');
@@ -237,15 +245,13 @@ export class CoordinationArrangementService {
     {
       const equipmentData = {};
       equipmentData['/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id] = coordinationArrangement;
-      return this.af.database.object(Constants.APP_STATUS).update(equipmentData)
+      return this.afd.object(Constants.APP_STATUS).update(equipmentData)
         .then(( ) => {
-
-
-              this.af.database.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").remove()
+              this.afd.object(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").remove()
               if(nonAlertMembers){
                 nonAlertMembers.forEach( member => {
                   if(member){
-                    this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push({"name": member});
+                    this.afd.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push({"name": member});
                   }
                 })
               }
@@ -254,12 +260,12 @@ export class CoordinationArrangementService {
 
 
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId).push(coordinationArrangement)
+      return this.afd.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId).push(coordinationArrangement)
         .then((newCoordination => {
           if(nonAlertMembers){
               nonAlertMembers.forEach( member => {
                 if(member){
-                  this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + newCoordination.key + "/nonAlertMembers").push({"name": member});
+                  this.afd.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + newCoordination.key + "/nonAlertMembers").push({"name": member});
                 }
               })
             }
@@ -268,7 +274,7 @@ export class CoordinationArrangementService {
     }
   }
 
-  public saveCoordinationArrangementNetworkCountry(networkId: string, coordinationArrangement: CoordinationArrangementNetworkModel, nonAlertMembers: string[]): firebase.Promise<any>{
+  public saveCoordinationArrangementNetworkCountry(networkId: string, coordinationArrangement: CoordinationArrangementNetworkModel, nonAlertMembers: string[]): Promise<any>{
     if(!networkId || !coordinationArrangement)
     {
       return Promise.reject('Missing networkId or coordinationArrangement');
@@ -282,15 +288,13 @@ export class CoordinationArrangementService {
     {
       const equipmentData = {};
       equipmentData['/networkCountryOfficeProfile/coordination/' + networkId + '/' + coordinationArrangement.id] = coordinationArrangement;
-      return this.af.database.object(Constants.APP_STATUS).update(equipmentData)
+      return this.afd.object(Constants.APP_STATUS).update(equipmentData)
         .then(( ) => {
-
-
-          this.af.database.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").remove()
+          this.afd.object(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").remove()
           if(nonAlertMembers){
             nonAlertMembers.forEach( member => {
               if(member){
-                this.af.database.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push({"name": member});
+                this.afd.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push({"name": member});
               }
             })
           }
@@ -299,12 +303,12 @@ export class CoordinationArrangementService {
 
 
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId).push(coordinationArrangement)
+      return this.afd.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId).push(coordinationArrangement)
         .then((newCoordination => {
           if(nonAlertMembers){
             nonAlertMembers.forEach( member => {
               if(member){
-                this.af.database.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId + '/' + newCoordination.key + "/nonAlertMembers").push({"name": member});
+                this.afd.list(Constants.APP_STATUS + '/networkCountryOfficeProfile/coordination/' + networkId + '/' + newCoordination.key + "/nonAlertMembers").push({"name": member});
               }
             })
           }
@@ -318,20 +322,20 @@ export class CoordinationArrangementService {
       if (nonAlertMembers) {
         nonAlertMembers.forEach(member => {
           if (member) {
-            this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push(member);
+            this.afd.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push(member);
           }
         })
       }
     } else {
       nonAlertMembers.forEach( member => {
         if(member){
-          this.af.database.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push(member);
+          this.afd.list(Constants.APP_STATUS + '/localNetworkProfile/coordination/' + networkId + '/' + coordinationArrangement.id + "/nonAlertMembers").push(member);
         }
       })
     }
   }
 
-  public deleteCoordinationArrangement(countryId: string, coordinationArrangement: CoordinationArrangementModel): firebase.Promise<any>{
+  public deleteCoordinationArrangement(countryId: string, coordinationArrangement: CoordinationArrangementModel): Promise<any>{
     if(!countryId || !coordinationArrangement || !coordinationArrangement.id )
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
@@ -341,10 +345,10 @@ export class CoordinationArrangementService {
 
     coordinationArrangementData['/countryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
+    return this.afd.object(Constants.APP_STATUS).update(coordinationArrangementData);
   }
 
-  public deleteCoordinationArrangementLocalAgency(agencyId: string, coordinationArrangement: CoordinationArrangementModel): firebase.Promise<any>{
+  public deleteCoordinationArrangementLocalAgency(agencyId: string, coordinationArrangement: CoordinationArrangementModel): Promise<any>{
     if(!agencyId || !coordinationArrangement || !coordinationArrangement.id )
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
@@ -354,10 +358,10 @@ export class CoordinationArrangementService {
 
     coordinationArrangementData['/localAgencyProfile/coordination/' + agencyId + '/' + coordinationArrangement.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
+    return this.afd.object(Constants.APP_STATUS).update(coordinationArrangementData);
   }
 
-  public deleteCoordinationArrangementLocalNetwork(countryId: string, coordinationArrangement: CoordinationArrangementNetworkModel): firebase.Promise<any>{
+  public deleteCoordinationArrangementLocalNetwork(countryId: string, coordinationArrangement: CoordinationArrangementNetworkModel): Promise<any>{
     if(!countryId || !coordinationArrangement || !coordinationArrangement.id )
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
@@ -367,10 +371,10 @@ export class CoordinationArrangementService {
 
     coordinationArrangementData['/localNetworkProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
+    return this.afd.object(Constants.APP_STATUS).update(coordinationArrangementData);
   }
 
-  public deleteCoordinationArrangementNetworkCountry(countryId: string, coordinationArrangement: CoordinationArrangementNetworkModel): firebase.Promise<any>{
+  public deleteCoordinationArrangementNetworkCountry(countryId: string, coordinationArrangement: CoordinationArrangementNetworkModel): Promise<any>{
     if(!countryId || !coordinationArrangement || !coordinationArrangement.id )
     {
       return Promise.reject('Missing countryId or coordinationArrangement');
@@ -381,6 +385,6 @@ export class CoordinationArrangementService {
 
     coordinationArrangementData['/networkCountryOfficeProfile/coordination/' + countryId + '/' + coordinationArrangement.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(coordinationArrangementData);
+    return this.afd.object(Constants.APP_STATUS).update(coordinationArrangementData);
   }
 }

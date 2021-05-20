@@ -1,14 +1,15 @@
 
-import {of as observableOf, Observable, Subject, Subscription} from 'rxjs';
+import {of as observableOf, Observable, Subject, Subscription, EMPTY} from 'rxjs';
 
-import {map} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {AngularFire, AuthMethods, AuthProviders, FirebaseAuthState} from 'angularfire2';
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
+import {AngularFireAuth, } from "@angular/fire/auth";
 import {Constants} from '../utils/Constants';
 import {RxHelper} from '../utils/RxHelper';
 import {firebaseConfig} from '../app.module';
 import {UUID} from '../utils/UUID';
-import * as firebase from "firebase";
+import firebase from "firebase";
 
 import {CountryAdminModel} from "../model/country-admin.model";
 import {PartnerModel} from "../model/partner.model";
@@ -22,6 +23,8 @@ import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {ModelAgency} from "../model/agency.model";
 import * as XLSX from "xlsx";
 import * as moment from "moment";
+import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
+import {ModelCountryOffice} from "../model/countryoffice.model";
 
 @Injectable()
 export class UserService {
@@ -32,7 +35,7 @@ export class UserService {
   public partner: PartnerModel;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private af: AngularFire) {
+  constructor(private afd: AngularFireDatabase, private afa: AngularFireAuth) {
     this.secondApp = firebase.initializeApp(firebaseConfig, UUID.createUUID());
   }
 
@@ -42,7 +45,7 @@ export class UserService {
   }
 
   // FIREBASE
-  createNewFirebaseUser(email: string, password: string): firebase.Promise<any> {
+  createNewFirebaseUser(email: string, password: string): Promise<any> {
     return this.secondApp.auth().createUserWithEmailAndPassword(email, password)
       .then(newUser => {
         this.secondApp.auth().signOut();
@@ -55,12 +58,13 @@ export class UserService {
     if (!uid) {
       return null
     }
-    const userSubscription = this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uid)
+    const userSubscription = this.afd.object(Constants.APP_STATUS + '/userPublic/' + uid)
+      .snapshotChanges()
       .map(user => {
-        if (user.$key) {
+        if (user.key) {
           let userPublic = new ModelUserPublic(null, null, null, null);
           userPublic.id = uid;
-          userPublic.mapFromObject(user);
+          userPublic.mapFromObject(user.payload.val());
 
           return userPublic;
         }
@@ -74,18 +78,14 @@ export class UserService {
     if (!email) {
       return null;
     }
-    const userSubscription = this.af.database.list(Constants.APP_STATUS + '/userPublic', {
-      query: {
-        orderByChild: "email",
-        equalTo: email
-      }
-    })
-      .first()
+    const userSubscription = this.afd.list(Constants.APP_STATUS + '/userPublic', ref => ref.orderByChild('email').equalTo(email))
+      .snapshotChanges()
+      .pipe(first())
       .map(item => {
         if (item.length > 0) {
           let userPublic = new ModelUserPublic(null, null, null, null);
-          userPublic.id = item[0].$key;
-          userPublic.mapFromObject(item[0]);
+          userPublic.id = item[0].key;
+          userPublic.mapFromObject(item[0].payload.val());
           return userPublic;
         } else {
           return null;
@@ -95,7 +95,7 @@ export class UserService {
     return userSubscription;
   }
 
-  saveUserPublic(userPublic: ModelUserPublic, authState: FirebaseAuthState): firebase.Promise<any> {
+  saveUserPublic(userPublic: ModelUserPublic): Promise<any> {
     const userPublicData = {};
 
     let uid = userPublic.id;
@@ -113,38 +113,36 @@ export class UserService {
     this.getUser(uid).subscribe(oldUser => {
       if (oldUser.email && oldUser.email !== userPublic.email) {
         // this.getAuthUser();
-        return authState.auth.updateEmail(userPublic.email).then(bool => {
-            return this.saveUserPublic(userPublic, authState);
+        return this.afa.authState.map(
+          user=>
+          user.updateEmail(userPublic.email).then(bool => {
+            return this.saveUserPublic(userPublic);
           },
           error => () => {
             throw new Error('Cannot update user email')
           })
           .catch(err => {
             throw new Error(err.message);
-          });
+          })
+        )
       }
     });
 
     userPublicData['/userPublic/' + uid + '/'] = userPublic;
 
-    return this.af.database.object(Constants.APP_STATUS).update(userPublicData);
+    return this.afd.object(Constants.APP_STATUS).update(userPublicData);
     //}
   }
 
-  changePassword(email: string, password: ChangePasswordModel, authState: FirebaseAuthState): firebase.Promise<any> {
-    return this.af.auth.login({
-        email: email,
-        password: password.currentPassword
-      },
-      {
-        provider: AuthProviders.Password,
-        method: AuthMethods.Password,
-      })
+  changePassword(email: string, password: ChangePasswordModel): Promise<any> {
+    return this.afa.signInWithEmailAndPassword(email,password.currentPassword)
       .then(() => {
-        authState.auth.updatePassword(password.newPassword).then(() => {
+        this.afa.authState.map(
+          user=>
+          user.updatePassword(password.newPassword).then(() => {
         }, error => {
           throw new Error('Cannot update password');
-        });
+        }))
       }, error => {
         throw new DisplayError('GLOBAL.ACCOUNT_SETTINGS.INCORRECT_CURRENT_PASSWORD')
       })
@@ -155,10 +153,11 @@ export class UserService {
     if (!uid) {
       return null;
     }
-    const countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorCountry/' + uid)
+    const countryAdminSubscription = this.afd.object(Constants.APP_STATUS + '/administratorCountry/' + uid)
+      .snapshotChanges()
       .map(item => {
-        if (item.$key) {
-          return item as CountryAdminModel;
+        if (item.key) {
+          return item.payload.val() as CountryAdminModel;
         }
         return null;
       });
@@ -167,16 +166,18 @@ export class UserService {
   }
 
   getCountryAdmin(agencyId: string, countryId: string) : Observable<ModelUserPublic> {
-    return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + "/" + countryId)
-      .flatMap(country => {
+    return this.afd.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + "/" + countryId)
+      .valueChanges()
+      .flatMap((country: any) => {
         return this.getUser(country.adminId)
       });
 
   }
 
   getLocalAgencyAdmin(agencyId: string) : Observable<ModelUserPublic> {
-    return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId)
-      .flatMap(localAgency => {
+    return this.afd.object(Constants.APP_STATUS + '/agency/' + agencyId)
+      .valueChanges()
+      .flatMap((localAgency: ModelAgency) => {
         return this.getUser(localAgency.adminId)
       });
 
@@ -186,10 +187,11 @@ export class UserService {
     if (!uid) {
       return null;
     }
-    const countryAdminSubscription = this.af.database.object(Constants.APP_STATUS + '/administratorLocalAgency/' + uid)
+    const countryAdminSubscription = this.afd.object(Constants.APP_STATUS + '/administratorLocalAgency/' + uid)
+      .snapshotChanges()
       .map(item => {
-        if (item.$key) {
-          return item;
+        if (item.key) {
+          return item.payload.val();
         }
         return null;
       });
@@ -203,11 +205,12 @@ export class UserService {
       return null;
     }
 
-    const partnerUserSubscription = this.af.database.object(Constants.APP_STATUS + '/partner/' + uid)
+    const partnerUserSubscription = this.afd.object(Constants.APP_STATUS + '/partner/' + uid)
+      .snapshotChanges()
       .map(item => {
-        if (item.$key) {
+        if (item.key) {
           let partner = new PartnerModel();
-          partner.mapFromObject(item);
+          partner.mapFromObject(item.payload.val());
           partner.id = uid;
           return partner;
         }
@@ -218,14 +221,15 @@ export class UserService {
   }
 
   getPartnerUsers(agencyId, countryId): Observable<PartnerModel[]> {
-    const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner')
+    const partnerUsersSubscription = this.afd.list(Constants.APP_STATUS + '/partner')
+      .snapshotChanges()
       .map(items => {
         let partners: PartnerModel[] = [];
         items.forEach(item => {
 
           // Add the organisation ID
-          let partner = item as PartnerModel;
-          partner.id = item.$key;
+          let partner = item.payload.val() as PartnerModel;
+          partner.id = item.key;
 
           partners.push(partner);
         });
@@ -236,32 +240,35 @@ export class UserService {
   }
 
   getPartnerUserIds(agencyId, countryId): Observable<string[]> {
-    return this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partners')
+    return this.afd.list(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partners')
+      .snapshotChanges()
       .map(partners => {
-        let partnerIds = [];
+        let partnerIds: string[] = [];
         partners.forEach(partner => {
-          partnerIds.push(partner.$key);
+          partnerIds.push(partner.key);
         });
         return partnerIds;
       })
   }
 
   getPartnerUserIdsForAgency(agencyId): Observable<string[]> {
-    return this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partners')
+    return this.afd.list(Constants.APP_STATUS + '/agency/' + agencyId + '/partners')
+      .snapshotChanges()
       .map(partners => {
-        let partnerIds = [];
+        let partnerIds: string[] = [];
         partners.forEach(partner => {
-          partnerIds.push(partner.$key);
+          partnerIds.push(partner.key);
         });
         return partnerIds;
       })
   }
 
   getPartnerUserById(partnerId): Observable<PartnerModel> {
-    return this.af.database.object(Constants.APP_STATUS + '/partner/' + partnerId)
+    return this.afd.object(Constants.APP_STATUS + '/partner/' + partnerId)
+      .snapshotChanges()
       .map(partner => {
-        let user = partner as PartnerModel;
-        user.id = partner.$key;
+        let user = partner.payload.val() as PartnerModel;
+        user.id = partner.key;
         return user;
       });
 
@@ -269,19 +276,15 @@ export class UserService {
 
 
   getPartnerUsersBy(key: string, value: string): Observable<PartnerModel[]> {
-    const partnerUsersSubscription = this.af.database.list(Constants.APP_STATUS + '/partner', {
-      query: {
-        orderByChild: key,
-        equalTo: value
-      }
-    })
+    const partnerUsersSubscription = this.afd.list(Constants.APP_STATUS + '/partner', ref => ref.orderByChild(key).equalTo(value))
+      .snapshotChanges()
       .map(items => {
         let partners: PartnerModel[] = [];
         items.forEach(item => {
 
           // Add the organisation ID
-          let partner = item as PartnerModel;
-          partner.id = item.$key;
+          let partner = item.payload.val() as PartnerModel;
+          partner.id = item.key;
 
           partners.push(partner);
         });
@@ -291,7 +294,7 @@ export class UserService {
     return partnerUsersSubscription;
   }
 
-  savePartnerUser(systemId: string, agencyId: string, countryId: string, partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): firebase.Promise<any> {
+  savePartnerUser(systemId: string, agencyId: string, countryId: string, partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): Promise<any> {
     let uid = partner.id || userPublic.id;
 
     if (!uid) {
@@ -323,7 +326,7 @@ export class UserService {
               return this.deletePartnerUser(oldPartner);
             })
               .catch(err => {
-                return firebase.Promise.reject(err);
+                return Promise.reject(err);
               });
           });
         }
@@ -358,11 +361,11 @@ export class UserService {
         + '/validationPartnerUserId/'] = partner.id; // add the partner who as permission to organisation validationPartnerUserId node
       }
 
-      return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+      return this.afd.object(Constants.APP_STATUS).update(partnerData);
     }
   }
 
-  savePartnerUserLocalAgency(systemId: string, agencyId: string, partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): firebase.Promise<any> {
+  savePartnerUserLocalAgency(systemId: string, agencyId: string, partner: PartnerModel, userPublic: ModelUserPublic, partnerData = {}): Promise<any> {
     let uid = partner.id || userPublic.id;
 
     if (!uid) {
@@ -393,7 +396,7 @@ export class UserService {
               return this.deletePartnerUser(oldPartner);
             })
               .catch(err => {
-                return firebase.Promise.reject(err);
+                return Promise.reject(err);
               });
           });
         }
@@ -428,27 +431,23 @@ export class UserService {
         + '/validationPartnerUserId/'] = partner.id; // add the partner who as permission to organisation validationPartnerUserId node
       }
 
-      return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+      return this.afd.object(Constants.APP_STATUS).update(partnerData);
     }
   }
 
   findPartnerId(email) {
-    return this.af.database.list(Constants.APP_STATUS + "/userPublic", {
-      query: {
-        orderByChild: "email",
-        equalTo: email
-      }
-    })
+    return this.afd.list(Constants.APP_STATUS + "/userPublic", ref => ref.orderByChild('email').equalTo(email))
+      .snapshotChanges()
       .flatMap(users => {
         if (users.length > 0) {
-          return this.af.database.object(Constants.APP_STATUS + "/partner/" + users[0].$key, {preserveSnapshot: true})
+          return this.afd.object(Constants.APP_STATUS + "/partner/" + users[0].key).valueChanges()
         } else {
-          return Observable.empty;
+          return EMPTY;
         }
       })
   }
 
-  deletePartnerUser(partner: PartnerModel): firebase.Promise<any> {
+  deletePartnerUser(partner: PartnerModel): Promise<any> {
     const partnerData = {};
     if (!partner) {
       throw new Error('Partner not present');
@@ -459,7 +458,7 @@ export class UserService {
     partnerData['/partnerOrganisation/' + partner.partnerOrganisationId
     + '/partners/' + partner.id] = null; // remove the partner from the partner organisation
 
-    return this.af.database.object(Constants.APP_STATUS).update(partnerData);
+    return this.afd.object(Constants.APP_STATUS).update(partnerData);
   }
 
   // STAFF MEMBER
@@ -469,14 +468,15 @@ export class UserService {
       return;
     }
 
-    const staffListSubscription = this.af.database.list(Constants.APP_STATUS + '/staff/' + countryId)
+    const staffListSubscription = this.afd.list(Constants.APP_STATUS + '/staff/' + countryId)
+      .snapshotChanges()
       .map(items => {
         let staffList: ModelStaff[] = [];
         items.forEach(item => {
 
           let staff = new ModelStaff();
-          staff.mapFromObject(item);
-          staff.id = item.$key;
+          staff.mapFromObject(item.payload.val());
+          staff.id = item.key;
           staffList.push(staff);
         });
         return staffList;
@@ -490,14 +490,15 @@ export class UserService {
       return;
     }
 
-    const globalStaffListSubscription = this.af.database.list(Constants.APP_STATUS + '/staff/globalUser/' + agencyId)
+    const globalStaffListSubscription = this.afd.list(Constants.APP_STATUS + '/staff/globalUser/' + agencyId)
+      .snapshotChanges()
       .map(items => {
         let staffList: ModelStaff[] = [];
         items.forEach(item => {
 
           let staff = new ModelStaff();
-          staff.mapFromObject(item);
-          staff.id = item.$key;
+          staff.mapFromObject(item.payload.val());
+          staff.id = item.key;
           staffList.push(staff);
         });
         return staffList;
@@ -511,12 +512,13 @@ export class UserService {
       return;
     }
 
-    const staffSubscription = this.af.database.object(Constants.APP_STATUS + '/staff/' + countryId + '/' + staffId)
+    const staffSubscription = this.afd.object(Constants.APP_STATUS + '/staff/' + countryId + '/' + staffId)
+      .snapshotChanges()
       .map(item => {
 
         let staff = new ModelStaff();
-        staff.mapFromObject(item);
-        staff.id = item.$key;
+        staff.mapFromObject(item.payload.val());
+        staff.id = item.key;
 
         return staff;
       });
@@ -528,7 +530,7 @@ export class UserService {
   /**
    * Static method for getting the user type
    */
-  static getUserType(af: AngularFire, uid: string): Observable<any> {
+  static getUserType(afd: AngularFireDatabase  , uid: string): Observable<any> {
     const paths = [
       {path: Constants.APP_STATUS + "/administratorCountry/" + uid, type: UserType.CountryAdmin},
       {path: Constants.APP_STATUS + "/countryDirector/" + uid, type: UserType.CountryDirector},
@@ -544,24 +546,27 @@ export class UserService {
       // {path: Constants.APP_STATUS + "/administratorAgency/" + uid, type: UserType.AgencyAdmin}
     ];
     // Check if it's a system admin
-    return af.database.object(Constants.APP_STATUS + "/system/" + uid, {preserveSnapshot: true})
+    return afd.object(Constants.APP_STATUS + "/system/" + uid) //, {preserveSnapshot: true})
+      .snapshotChanges()
       .flatMap((snap) => {
-        if (snap.val() != null) {
+        if (snap.payload.val() != null) {
           return observableOf(UserType.SystemAdmin);
         }
         else {
-          return af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
+          return afd.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid) //, {preserveSnapshot: true})
+            .snapshotChanges()
             .flatMap((mySnap) => {
-              if (mySnap.val() != null) {
+              if (mySnap.payload.val() != null) {
 
                 return observableOf(UserType.LocalAgencyDirector);
 
               }
               else {
 
-                return af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+                return afd.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid) //, {preserveSnapshot: true})
+                  .snapshotChanges()
                 .flatMap((mySnap) => {
-                  if (mySnap.val() != null) {
+                  if (mySnap.payload.val() != null) {
 
                     return observableOf(UserType.LocalAgencyAdmin);
 
@@ -569,12 +574,13 @@ export class UserService {
 
 
                     //TODO: for this to work we need to push the local agency admins to /administratorLocalAgency when creating the local agency within system admin.
-                    return af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+                    return afd.object(Constants.APP_STATUS + "/administratorAgency/" + uid) //, {preserveSnapshot: true})
+                      .snapshotChanges()
                       .flatMap((snap) => {
-                        if (snap.val() != null) {
+                        if (snap.payload.val() != null) {
                           return observableOf(UserType.AgencyAdmin);
                         } else {
-                          return UserService.recursiveUserMap(af, paths, 0);
+                          return UserService.recursiveUserMap(afd, paths, 0);
                         }
                       })
                     }
@@ -585,17 +591,18 @@ export class UserService {
       });
   }
 
-  private static recursiveUserMap(af: AngularFire, paths, index: number) {
+  private static recursiveUserMap(afd: AngularFireDatabase, paths, index: number) {
     if (index == paths.length) {
       return observableOf(null);
     }
-    return af.database.object(paths[index].path)
-      .flatMap(obj => {
+    return afd.object(paths[index].path)
+      .valueChanges()
+      .flatMap((obj: any) => {
         if (obj.systemAdmin) {
           return observableOf(paths[index].type);
         }
         else {
-          return UserService.recursiveUserMap(af, paths, index + 1);
+          return UserService.recursiveUserMap(afd, paths, index + 1);
         }
       });
   }
@@ -622,26 +629,29 @@ export class UserService {
       return null;
     }
 
-    return this.af.database.object(Constants.APP_STATUS + "/system/" + uid, {preserveSnapshot: true})
+    return this.afd.object(Constants.APP_STATUS + "/system/" + uid) //, {preserveSnapshot: true})
+      .snapshotChanges()
       .flatMap((snap) => {
-        if (snap.val() != null) {
+        if (snap.payload.val() != null) {
           return observableOf(UserType.SystemAdmin);
         }
         else {
-          return this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
+          return this.afd.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid) //, {preserveSnapshot: true})
+            .snapshotChanges()
             .flatMap((mySnap) => {
 
-              if (mySnap.val() != null) {
+              if (mySnap.payload.val() != null) {
                 return observableOf(UserType.AgencyAdmin);
               }
               else {
 
-                return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid, {preserveSnapshot: true})
+                return this.afd.object(Constants.APP_STATUS + "/administratorAgency/" + uid) //, {preserveSnapshot: true})
+                  .snapshotChanges()
                   .flatMap((snap) => {
-                    if (snap.val() != null) {
+                    if (snap.payload.val() != null) {
                       return observableOf(UserType.AgencyAdmin);
                     } else {
-                      return UserService.recursiveUserMap(this.af, paths, 0);
+                      return UserService.recursiveUserMap(this.afd, paths, 0);
                     }
                   })
 
@@ -653,35 +663,39 @@ export class UserService {
 
   //get user country id
   getCountryId(userType: string, uid): Observable<string> {
-    return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
-      .map(countryId => {
-        if (countryId.$value) {
-          return countryId.$value
+    return this.afd.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/countryId")
+      .valueChanges()
+      .map((countryId: string | null) => {
+        if (countryId) {
+          return countryId
         }
       });
   }
 
   getAgencyId(userType: string, uid): Observable<string> {
     if (userType == "administratorAgency") {
-      return this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + uid + '/agencyId')
-        .map(agencyId => {
-          return agencyId.$value;
+      return this.afd.object(Constants.APP_STATUS + "/administratorAgency/" + uid + '/agencyId')
+        .valueChanges()
+        .map((agencyId: string) => {
+          return agencyId;
         });
     } else {
-      return this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
-        .map(agencyIds => {
-          if (agencyIds.length > 0 && agencyIds[0].$value) {
-            return agencyIds[0].$key;
+      return this.afd.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/agencyAdmin')
+        .snapshotChanges()
+        .map((agencyIds: SnapshotAction<string>[]) => {
+          if (agencyIds.length > 0 && agencyIds[0].payload.val()) {
+            return agencyIds[0].key;
           }
         });
     }
   }
 
   getSystemAdminId(userType: string, uid): Observable<string> {
-    let subscription = this.af.database.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
+    let subscription = this.afd.list(Constants.APP_STATUS + "/" + userType + "/" + uid + '/systemAdmin')
+      .snapshotChanges()
       .map(systemIds => {
-        if (systemIds.length > 0 && systemIds[0].$value) {
-          return systemIds[0].$key;
+        if (systemIds.length > 0 && systemIds[0].payload.val()) {
+          return systemIds[0].key;
         }
       });
     return subscription;
@@ -689,27 +703,30 @@ export class UserService {
 
   // Get region id os the regional director
   getRegionId(userType: string, uid): Observable<string> {
-    return this.af.database.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/regionId")
-      .map(regionId => {
-        if (regionId.$value) {
-          return regionId.$value
+    return this.afd.object(Constants.APP_STATUS + "/" + userType + "/" + uid + "/regionId")
+      .valueChanges()
+      .map((regionId: string | null) => {
+        if (regionId) {
+          return regionId
         }
       });
   }
 
   getAllCountryIdsForAgency(agencyId: string): Observable<any> {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .snapshotChanges()
       .map(countries => {
         let countryIds = [];
         countries.forEach(country => {
-          countryIds.push(country.$key);
+          countryIds.push(country.key);
         });
         return countryIds;
       })
   }
 
   getAllCountryOfficesForAgency(agencyId: string): Observable<any> {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .valueChanges()
       .map(countries => {
         let countryOffices = [];
         countries.forEach(country => {
@@ -720,50 +737,53 @@ export class UserService {
   }
 
   getAllCountryAlertLevelsForAgency(agencyId: string): Observable<any> {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-      .map(countries => {
+    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .snapshotChanges()
+      .map((countries: SnapshotAction<any>[]) => {
         let countryAlertLevels = [];
         countries.forEach(country => {
-          countryAlertLevels[country.$key] = country.alertLevel;
+          countryAlertLevels[country.key] = country.payload.val().alertLevel;
         });
         return countryAlertLevels;
       })
   }
 
   getOrganisationName(id) {
-    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
+    return this.afd.object(Constants.APP_STATUS + "/partnerOrganisation/" + id)
   }
 
   getCountryDetail(countryId, agencyId) {
-    return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId);
+    return this.afd.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId);
   }
 
   getAgencyDetail(agencyId) {
-    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
+    return this.afd.object(Constants.APP_STATUS + "/agency/" + agencyId);
   }
 
   getNetworkAdminDetail(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId);
+    return this.afd.object(Constants.APP_STATUS + "/network/" + networkId);
   }
 
   getNetworkCountryDetail(networkId, networkCountryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId);
+    return this.afd.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId);
   }
 
 
   getAgencyModel(agencyId) {
-    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
+    return this.afd.object(Constants.APP_STATUS + "/agency/" + agencyId)
+      .snapshotChanges()
       .map(agency => {
         let model = new ModelAgency(null);
-        model.mapFromObject(agency);
-        model.id = agency.$key;
+        model.mapFromObject(agency.payload.val());
+        model.id = agency.key;
         return model;
       });
   }
 
   checkFirstLoginRegular(uid, type) {
-    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[type] + "/" + uid)
-      .map(user => {
+    return this.afd.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[type] + "/" + uid)
+      .valueChanges()
+      .map((user: any) => {
         return user.firstLogin ? user.firstLogin : false;
       });
   }
@@ -780,24 +800,25 @@ export class UserService {
   }
 
   saveUserNetworkSelection(uid, userType, networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork").set(networkId);
+    return this.afd.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork").set(networkId);
   }
 
   deleteUserNetworkSelection(uid, userType) {
-    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork").remove();
+    return this.afd.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork").remove();
   }
 
   getUserNetworkSelection(uid, userType) {
-    return this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork")
+    return this.afd.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid + "/selectedNetwork")
+      .valueChanges()
       .map(selectedObj => {
-        if (selectedObj.$value) {
-          return selectedObj.$value;
+        if (selectedObj) {
+          return selectedObj;
         }
       })
   }
 
   getSkill(skillId) {
-    return this.af.database.object(Constants.APP_STATUS + "/skill/" + skillId)
+    return this.afd.object(Constants.APP_STATUS + "/skill/" + skillId)
   }
 
   getCountryAdminOrLocalAgencyAdmin(agencyId:string, countryId?:string) : Observable<ModelUserPublic> {

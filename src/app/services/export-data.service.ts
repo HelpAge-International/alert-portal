@@ -1,11 +1,11 @@
 
-import {map} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Constants} from "../utils/Constants";
 import * as XLSX from "xlsx";
 import {WorkBook} from "xlsx";
 import * as moment from "moment";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
 import {CommonService} from "./common.service";
 import {toInteger} from "@ng-bootstrap/ng-bootstrap/util/util";
 import {TranslateService} from "@ngx-translate/core";
@@ -21,12 +21,20 @@ import {
   StockType
 } from "../utils/Enums";
 import {PartnerOrganisationService} from "./partner-organisation.service";
-import {Observable, Subject} from "rxjs";
+import {from, Subject, timer} from "rxjs";
 import {SurgeCapacityService} from "./surge-capacity.service";
 import {CommonUtils} from "../utils/CommonUtils";
 import {SettingsService} from "./settings.service";
 import {AgencyService} from "./agency-service.service";
-import {isBoolean} from "util";
+import {Indicator} from "../model/indicator";
+import {ModelHazard} from "../model/hazard.model";
+import {ModelAgency} from "../model/agency.model";
+import {StockCapacityModel} from "../model/stock-capacity.model";
+import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
+import {ModelCountryOffice} from "../model/countryoffice.model";
+import {Action} from "../model/action";
+import {ResponsePlan} from "../model/responsePlan";
+import {ModelAlert} from "../model/alert.model";
 
 @Injectable()
 export class ExportDataService {
@@ -92,7 +100,7 @@ export class ExportDataService {
   private systemCanExport: boolean = true
 
 
-  constructor(private af: AngularFire,
+  constructor(private afd: AngularFireDatabase,
               private translateService: TranslateService,
               private userService: UserService,
               private partnerService: PartnerOrganisationService,
@@ -189,10 +197,10 @@ export class ExportDataService {
     this.exportFrom = EXPORT_FROM.FromAgency
     this.wbAgency = XLSX.utils.book_new()
     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .first()
+      .pipe(first())
       .subscribe(areaContent => {
         this.agencyService.getAllCountryIdsForAgency(agencyId)
-          .first()
+          .pipe(first())
           .subscribe(countryIds => {
             console.log(countryIds)
             this.totalCountries = countryIds.length
@@ -200,10 +208,12 @@ export class ExportDataService {
             let tempCounter = 0
             countryIds.forEach(countryId => {
               this.agencyService.getCountryOffice(countryId, agencyId)
-                .first()
-                .subscribe(countryOffice => {
+                .snapshotChanges()
+                .pipe(first())
+                .subscribe(countryOfficeSnap => {
+                  const countryOffice = countryOfficeSnap.payload.val()
                   let countryName = Constants.COUNTRIES[countryOffice.location] ? this.translateService.instant(Constants.COUNTRIES[countryOffice.location]) : ""
-                  this.countryNameMap.set(countryOffice.$key, countryName)
+                  this.countryNameMap.set(countryOfficeSnap.key, countryName)
                   tempCounter++
                   if (tempCounter === this.totalCountries) {
                     //loop again to fetch info
@@ -222,12 +232,12 @@ export class ExportDataService {
   private getCountryStuff(countryId: string, agencyId: string, areaContent) {
     //get all staff for this country
     this.userService.getStaffList(countryId)
-      .first()
+      .pipe(first())
       .subscribe(staffs => {
         let staffMap = new Map<string, string>()
         //get country admin first
         this.userService.getCountryAdmin(agencyId, countryId)
-          .first()
+          .pipe(first())
           .subscribe(admin => {
             staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
 
@@ -235,7 +245,7 @@ export class ExportDataService {
               //get rest staffs for country
               staffs.forEach(staff => {
                 this.userService.getUser(staff.id)
-                  .first()
+                  .pipe(first())
                   .subscribe(user => {
                     staffMap.set(user.id, user.firstName + " " + user.lastName)
 
@@ -257,12 +267,12 @@ export class ExportDataService {
   private getLocalAgencyStuff(agencyId: string, areaContent) {
     //get all staff for this country
     this.userService.getStaffList(agencyId)
-      .first()
+      .pipe(first())
       .subscribe(staffs => {
         let staffMap = new Map<string, string>()
         //get country admin first
         this.userService.getLocalAgencyAdmin(agencyId)
-          .first()
+          .pipe(first())
           .subscribe(admin => {
             staffMap.set(admin.id, admin.firstName + " " + admin.lastName)
 
@@ -270,7 +280,7 @@ export class ExportDataService {
               //get rest staffs for country
               staffs.forEach(staff => {
                 this.userService.getUser(staff.id)
-                  .first()
+                  .pipe(first())
                   .subscribe(user => {
                     staffMap.set(user.id, user.firstName + " " + user.lastName)
 
@@ -298,27 +308,29 @@ export class ExportDataService {
     this.exportFrom = fromWhere
     this.wbSystem = XLSX.utils.book_new()
     this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-      .first()
+      .pipe(first())
       .subscribe(areaContent => {
         this.commonService.getTotalAgencies()
-          .first()
-          .subscribe(agencies => {
+          .pipe(first())
+          .subscribe((agencies: SnapshotAction<ModelAgency>[]) => {
             let totalAgency = agencies.length
             let agencyCounter = 0
             let countryAgencyMap = new Map<string, string>()
-            agencies.forEach(agency => this.agencyNameMap.set(agency.$key, agency.name))
+            agencies.forEach(agency => this.agencyNameMap.set(agency.key, agency.payload.val().name))
 
             //region get local agencies
             this.commonService.getTotalLocalAgencies()
-              .first()
-              .subscribe(localAgencies => {
+              .snapshotChanges()
+              .pipe(first())
+              .subscribe((localAgencies: SnapshotAction<ModelAgency>[]) => {
                 this.totalCountries += localAgencies.length
                 this.total = this.totalCountries * this.COUNTRY_SHEETS
-                localAgencies.forEach(localAgency => {
-                  this.agencyNameMap.set(localAgency.$key, localAgency.name)
+                localAgencies.forEach(localAgencySnap => {
+                  const localAgency = localAgencySnap.payload.val()
+                  this.agencyNameMap.set(localAgencySnap.key, localAgency.name)
                   let countryName = Constants.COUNTRIES[localAgency.countryCode] ? this.translateService.instant(Constants.COUNTRIES[localAgency.countryCode]) : ""
-                  this.countryNameMap.set(localAgency.$key, countryName)
-                  this.getLocalAgencyStuff(localAgency.$key, areaContent)
+                  this.countryNameMap.set(localAgencySnap.key, countryName)
+                  this.getLocalAgencyStuff(localAgencySnap.key, areaContent)
                 })
               })
             //endregion
@@ -345,9 +357,10 @@ export class ExportDataService {
   }
 
   private fetchRiskMonitoringData(countryId: string, staffMap: Map<string, string>, areaContent: any, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/indicator/" + countryId)
-      .first()
-      .subscribe(countryIndicators => {
+    this.afd.list(Constants.APP_STATUS + "/indicator/" + countryId)
+      .valueChanges()
+      .pipe(first())
+      .subscribe((countryIndicators: Indicator[]) => {
         let allIndicators = []
         //first fetch country context indicators
         let indicators = countryIndicators.map(item => {
@@ -356,15 +369,17 @@ export class ExportDataService {
         allIndicators = allIndicators.concat(indicators)
 
         //then fetch all other indicators
-        this.af.database.list(Constants.APP_STATUS + "/hazard/" + countryId)
-          .first()
-          .subscribe(hazards => {
+        this.afd.list(Constants.APP_STATUS + "/hazard/" + countryId)
+          .snapshotChanges()
+          .pipe(first())
+          .subscribe((hazards:SnapshotAction<ModelHazard>[]) => {
             if (hazards.length > 0) {
               let hazardIndicatorCounter = 0
               hazards.forEach(hazard => {
-                this.af.database.list(Constants.APP_STATUS + "/indicator/" + hazard.$key)
-                  .first()
-                  .subscribe(hazardIndicatorList => {
+                this.afd.list(Constants.APP_STATUS + "/indicator/" + hazard.key)
+                  .valueChanges()
+                  .pipe(first())
+                  .subscribe((hazardIndicatorList: Indicator[]) => {
                     //dealing with pre-defined hazard
                     let hazardIndicators = hazardIndicatorList.filter(item => item.hazardScenario.hazardScenario && item.hazardScenario.hazardScenario != -1).map(item => {
                       let hazardScenarioName = Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario] ? this.translateService.instant(Constants.HAZARD_SCENARIOS[item.hazardScenario.hazardScenario]) : ""
@@ -380,9 +395,10 @@ export class ExportDataService {
                     if (hazardIndicatorsCustom.length > 0) {
                       let transformedCustomNameList = []
                       hazardIndicatorsCustom.forEach(custom => {
-                        this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + custom["Hazard"])
-                          .first()
-                          .subscribe(customName => {
+                        this.afd.object(Constants.APP_STATUS + "/hazardOther/" + custom["Hazard"])
+                          .valueChanges()
+                          .pipe(first())
+                          .subscribe((customName:{name: string}) => {
                             custom["Hazard"] = customName.name
                             transformedCustomNameList.push(custom)
                             if (transformedCustomNameList.length == hazardIndicatorsCustom.length) {
@@ -464,12 +480,13 @@ export class ExportDataService {
 
   private fetchSectorExpertiseData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/programme/" + countryId + '/sectorExpertise/' : Constants.APP_STATUS + "/countryOfficeProfile/programme/" + countryId + '/sectorExpertise/'
-    this.af.database.list(path)
-      .first()
+    this.afd.list(path)
+      .snapshotChanges()
+      .pipe(first())
       .subscribe(sectorList => {
         if (sectorList.length > 0) {
           let sectors = []
-          let expertise = sectorList.map(sector => Constants.RESPONSE_PLANS_SECTORS[sector.$key] ? this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[sector.$key]) : "").toString()
+          let expertise = sectorList.map(sector => Constants.RESPONSE_PLANS_SECTORS[sector.key] ? this.translateService.instant(Constants.RESPONSE_PLANS_SECTORS[sector.key]) : "").toString()
           let obj = {}
           if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
             obj["Agency"] = this.agencyNameMap.get(agencyId)
@@ -501,8 +518,9 @@ export class ExportDataService {
 
   private fetchProgram4wData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/programme/" + countryId + '/4WMapping/' : Constants.APP_STATUS + "/countryOfficeProfile/programme/" + countryId + '/4WMapping/'
-    this.af.database.list(path)
-      .first()
+    this.afd.list(path)
+      .valueChanges()
+      .pipe(first())
       .subscribe(mappings => {
         if (mappings.length > 0) {
           let program4w = mappings.map(mapping => {
@@ -545,7 +563,7 @@ export class ExportDataService {
       map(list => {
         return list.filter(item => item.isResponseMember)
       }))
-      .first()
+      .pipe(first())
       .subscribe(staffList => {
         if (staffList.length > 0) {
           let transformedList = []
@@ -555,15 +573,16 @@ export class ExportDataService {
               //fetch skills first
               staff.skill.forEach(skill => {
                 this.userService.getSkill(skill)
-                  .first()
+                  .snapshotChanges()
+                  .pipe(first())
                   .subscribe(skillObj => {
-                    skillMap.set(skillObj.$key, skillObj)
+                    skillMap.set(skillObj.key, skillObj.payload.val())
                     if (skillMap.size == staff.skill.length) {
                       let techList = CommonUtils.convertMapToValuesInArray(skillMap).filter(skill => skill.type == SkillType.Tech).map(skill => skill.name).toString()
                       let supList = CommonUtils.convertMapToValuesInArray(skillMap).filter(skill => skill.type == SkillType.Support).map(skill => skill.name).toString()
                       //all skills ready
                       this.userService.getUser(staff.id)
-                        .first()
+                        .pipe(first())
                         .subscribe(user => {
                           let obj = {}
                           if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
@@ -597,7 +616,7 @@ export class ExportDataService {
 
             } else {
               this.userService.getUser(staff.id)
-                .first()
+                .pipe(first())
                 .subscribe(user => {
                   let obj = {}
                   if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
@@ -675,13 +694,14 @@ export class ExportDataService {
 
   private fetchPartnerOrgData(agencyId: string, countryId: string, wb: WorkBook, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + '/agency/' + countryId + '/partnerOrganisations' : Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/partnerOrganisations'
-    this.af.database.list(path)
-      .first()
+    this.afd.list(path)
+      .snapshotChanges()
+      .pipe(first())
       .subscribe(partnerOrganisations => {
         if (partnerOrganisations.length > 0) {
           let total = partnerOrganisations.length
           let orgs = []
-          Observable.from(partnerOrganisations.map(organisation => organisation.$key))
+          from(partnerOrganisations.map(organisation => organisation.key))
             .flatMap(organisationId => {
               return this.partnerService.getPartnerOrganisation(organisationId as string);
             })
@@ -728,8 +748,9 @@ export class ExportDataService {
 
   private fetchSurgeEquipmentData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/surgeEquipment/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/surgeEquipment/" + countryId
-    this.af.database.list(path)
-      .first()
+    this.afd.list(path)
+      .valueChanges()
+      .pipe(first())
       .subscribe(surgeEquipmentList => {
         if (surgeEquipmentList.length > 0) {
           let surgeEquipments = surgeEquipmentList.map(sEquipment => {
@@ -764,8 +785,9 @@ export class ExportDataService {
 
   private fetchEquipmentData(countryId: string, areaContent: any, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/equipment/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/equipment/" + countryId
-    this.af.database.list(path)
-      .first()
+    this.afd.list(path)
+      .valueChanges()
+      .pipe(first())
       .subscribe(countryEquipments => {
         if (countryEquipments.length > 0) {
           let equipments = countryEquipments.map(equipment => {
@@ -814,8 +836,9 @@ export class ExportDataService {
 
   private fetchCoordinationData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/coordination/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/coordination/" + countryId
-    this.af.database.list(path)
-      .first()
+    this.afd.list(path)
+      .valueChanges()
+      .pipe(first())
       .subscribe(cos => {
         if (cos.length > 0) {
           let coordinations = cos.map(co => {
@@ -849,7 +872,7 @@ export class ExportDataService {
             let counter = 0
             coordinations.forEach(coor => {
               this.userService.getUser(coor["Staff member represting your agency?"])
-                .first()
+                .pipe(first())
                 .subscribe(staff => {
                   coor["Staff member represting your agency?"] = staff.firstName + " " + staff.lastName
                   counter++
@@ -873,9 +896,10 @@ export class ExportDataService {
 
   private fetchStockCapacity(countryId: string, areaContent: any, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/capacity/stockCapacity/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/capacity/stockCapacity/" + countryId
-    this.af.database.list(path)
-      .first()
-      .subscribe(stockInCountry => {
+    this.afd.list(path)
+      .valueChanges()
+      .pipe(first())
+      .subscribe((stockInCountry: StockCapacityModel[]) => {
         if (stockInCountry.length > 0) {
           let stocksInCountry = stockInCountry.filter(stock => stock.stockType == (localAgencyIs ? StockType.Agency : StockType.Country)).map(stock => {
             let obj = {}
@@ -955,9 +979,10 @@ export class ExportDataService {
 
   private fetchCountryOfficeDetail(agencyId: string, countryId: string, wb: WorkBook, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/agency/" + agencyId : Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId
-    this.af.database.object(path)
-      .first()
-      .subscribe(countryOffice => {
+    this.afd.object(path)
+      .valueChanges()
+      .pipe(first())
+      .subscribe((countryOffice: ModelCountryOffice & CountryOfficeAddressModel) => {
         let offices = []
         let office = {}
         if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
@@ -975,7 +1000,7 @@ export class ExportDataService {
         office["Phone Number"] = countryOffice.phone
 
         this.userService.getUser(countryOffice.adminId)
-          .first()
+          .pipe(first())
           .subscribe(countryAdmin => {
             office["Email Address"] = countryAdmin.email
 
@@ -993,9 +1018,10 @@ export class ExportDataService {
 
   private fetchPointOfContactData(countryId: string, wb: WorkBook, agencyId?: string, localAgencyIs?: boolean) {
     let path = localAgencyIs ? Constants.APP_STATUS + "/localAgencyProfile/contacts/" + countryId : Constants.APP_STATUS + "/countryOfficeProfile/contacts/" + countryId
-    this.af.database.list(path)
-      .first()
-      .subscribe(contactsList => {
+    this.afd.list(path)
+      .valueChanges()
+      .pipe(first())
+      .subscribe((contactsList: any) => {
         if (contactsList.length > 0) {
           let contacts = contactsList.map(contact => {
             let obj = {}
@@ -1015,7 +1041,7 @@ export class ExportDataService {
           let contactCounter = 0
           contacts.forEach(contact => {
             this.userService.getUser(contact.staffId)
-              .first()
+              .pipe(first())
               .subscribe(staff => {
                 contact["Name of contact"] = staff.firstName + " " + staff.lastName
                 contact["Contact Email"] = staff.email
@@ -1059,11 +1085,13 @@ export class ExportDataService {
       this.fetchNotesForActionUnderCountry(countryId).then((noteNumberMap: Map<string, number>) => {
         this.fetchActionClockSettings(agencyId, countryId, localAgencyIs).then((expireDuration: number) => {
           this.fetchAlertScenarioForCountry(countryId).then((alertScenarioMap: Map<string, boolean>) => {
-            this.af.database.list(Constants.APP_STATUS + "/action/" + countryId)
-              .first()
-              .subscribe(actionList => {
+            this.afd.list(Constants.APP_STATUS + "/action/" + countryId)
+              .snapshotChanges()
+              .pipe(first())
+              .subscribe((actionList: SnapshotAction<Action>[]) => {
                 if (actionList.length > 0) {
-                  let actions = actionList.map(action => {
+                  let actions = actionList.map(actionSnap => {
+                    const action = actionSnap.payload.val()
                     let obj = {}
                     if (this.exportFrom == EXPORT_FROM.FromSystem || this.exportFrom == EXPORT_FROM.FromDonor) {
                       obj["Agency"] = this.agencyNameMap.get(agencyId)
@@ -1081,7 +1109,7 @@ export class ExportDataService {
                     obj["Document Required"] = action["requireDoc"] ? "Yes" : "No"
                     obj["Status"] = this.translateService.instant(this.getActionStatus(expireDuration, action, alertScenarioMap))
                     obj["Expires"] = this.getExpireDate(expireDuration, action)
-                    obj["Notes"] = noteNumberMap.get(action.$key) ? noteNumberMap.get(action.$key) : 0
+                    obj["Notes"] = noteNumberMap.get(actionSnap.key) ? noteNumberMap.get(actionSnap.key) : 0
                     obj["Completed within due date?"] = !action.isCompleteAt || !action.dueDate ? "" : action.isCompleteAt < action.dueDate ? "Yes" : "No"
                     obj["Green state"] = this.getTimeTrackingInfoInPercentage(action, "green")
                     obj["Amber state"] = this.getTimeTrackingInfoInPercentage(action, "amber")
@@ -1116,9 +1144,10 @@ export class ExportDataService {
   }
 
   private fetchResponsePlanData(countryId: string, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId)
-      .first()
-      .subscribe(planList => {
+    this.afd.list(Constants.APP_STATUS + "/responsePlan/" + countryId)
+      .valueChanges()
+      .pipe(first())
+      .subscribe((planList: ResponsePlan[]) => {
         if (planList.length > 0) {
           let plans = planList.map(plan => {
             let obj = {}
@@ -1157,9 +1186,10 @@ export class ExportDataService {
   }
 
   private fetchCountryAlertsData(countryId: string, customNameMap: Map<string, string>, areaContent: any, wb: WorkBook, agencyId?: string) {
-    this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId)
-      .first()
-      .subscribe(alertList => {
+    this.afd.list(Constants.APP_STATUS + "/alert/" + countryId)
+      .valueChanges()
+      .pipe(first())
+      .subscribe((alertList: ModelAlert[]) => {
         if (alertList.length > 0) {
           let alerts = alertList.map(alert => {
             let obj = {}
@@ -1224,7 +1254,7 @@ export class ExportDataService {
         // }
         if ((total - counter < this.tolerateNumber) && this.countryCanExport) {
           this.countryCanExport = false
-          Observable.timer(this.delayTime).first().subscribe(() => {
+          timer(this.delayTime).pipe(first()).subscribe(() => {
             XLSX.writeFile(wb, 'SheetJS.xlsx')
             this.exportSubject.next(true)
           })
@@ -1240,7 +1270,7 @@ export class ExportDataService {
     // console.log("agency total: "+total)
     if (total - counter < Math.round(total/4) && this.agencyCanExport) {
       this.agencyCanExport = false
-      Observable.timer(this.delayTime).first().subscribe(() => {
+      timer(this.delayTime).pipe(first()).subscribe(() => {
         const alertsForAgencySheet = XLSX.utils.json_to_sheet(this.alertsForAgency);
         const indicatorsForAgencySheet = XLSX.utils.json_to_sheet(this.indicatorsForAgency);
         const plansForAgencySheet = XLSX.utils.json_to_sheet(this.plansForAgency);
@@ -1288,7 +1318,7 @@ export class ExportDataService {
     // console.log("system counter: " + counter)
     if (total - counter < Math.round(total/4) && this.systemCanExport) {
       this.systemCanExport = false
-      Observable.timer(this.delayTime).first().subscribe(() => {
+      timer(this.delayTime).pipe(first()).subscribe(() => {
         // if (counter == total - 2) {
         console.log("system export triggered*****")
         const alertsForSystemSheet = XLSX.utils.json_to_sheet(this.alertsForSystem);
@@ -1336,14 +1366,10 @@ export class ExportDataService {
 
   private fetchCustomHazardNameForAlertsCountry(countryId) {
     return new Promise((res,) => {
-      this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
-        query: {
-          orderByChild: "hazardScenario",
-          equalTo: -1
-        }
-      })
-        .first()
-        .subscribe(customAlerts => {
+      this.afd.list(Constants.APP_STATUS + "/alert/" + countryId, ref => ref.orderByChild('hazardScenario').equalTo(-1))
+        .valueChanges()
+        .pipe(first())
+        .subscribe((customAlerts: ModelAlert[]) => {
           let totalCustomAlerts = customAlerts.length
           let customNameMap = new Map<string, string>()
           let customCounter = 0
@@ -1351,9 +1377,10 @@ export class ExportDataService {
             res(customNameMap)
           } else {
             customAlerts.forEach(alert => {
-              this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
-                .first()
-                .subscribe(obj => {
+              this.afd.object(Constants.APP_STATUS + "/hazardOther/" + alert.otherName)
+                .valueChanges()
+                .pipe(first())
+                .subscribe((obj: ModelHazard) => {
                   customNameMap.set(alert.otherName, obj.name)
                   customCounter++
 
@@ -1410,12 +1437,13 @@ export class ExportDataService {
   private fetchNotesForActionUnderCountry(countryId) {
     let notesNumberMap = new Map<string, number>()
     return new Promise((res,) => {
-      this.af.database.object(Constants.APP_STATUS + "/note/" + countryId, {preserveSnapshot: true})
-        .first()
+      this.afd.object(Constants.APP_STATUS + "/note/" + countryId) //, {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(first())
         .subscribe(snap => {
-          if (snap && snap.val()) {
-            Object.keys(snap.val()).forEach(key => {
-              notesNumberMap.set(key, Object.keys(snap.val()[key]).length)
+          if (snap && snap.payload.val()) {
+            Object.keys(snap.payload.val()).forEach(key => {
+              notesNumberMap.set(key, Object.keys(snap.payload.val()[key]).length)
             })
             res(notesNumberMap)
           } else {
@@ -1428,11 +1456,12 @@ export class ExportDataService {
   private fetchActionClockSettings(agencyId, countryId, localAgencyIs?: boolean) {
     return new Promise((res,) => {
       let path = localAgencyIs ? Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/preparedness/" : Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/clockSettings/preparedness/"
-      this.af.database.object(path, {preserveSnapshot: true})
-        .first()
-        .subscribe(snap => {
-          let durationType = snap.val().durationType;
-          let value = snap.val().value;
+      this.afd.object(path) //, {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(first())
+        .subscribe((snap: SnapshotAction<any>) => {
+          let durationType = snap.payload.val().durationType;
+          let value = snap.payload.val().value;
           let expireDuration = 0
           switch (durationType) {
             case DurationType.Week: {
@@ -1459,13 +1488,14 @@ export class ExportDataService {
   private fetchAlertScenarioForCountry(countryId) {
     let alertScenarioMap = new Map<string, boolean>()
     return new Promise((res,) => {
-      this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId)
-        .first()
-        .subscribe(alertList => {
+      this.afd.list(Constants.APP_STATUS + "/alert/" + countryId)
+        .valueChanges()
+        .pipe(first())
+        .subscribe((alertList: ModelAlert[]) => {
           alertList
             .filter(alert => (alert.alertLevel == AlertLevels.Red && this.checkAlertApproval(alert)))
             .forEach(alert => {
-              alert.hazardScenario != -1 ? alertScenarioMap.set(alert.hazardScenario, true) : alertScenarioMap.set(alert.otherName, true)
+              alert.hazardScenario != -1 ? alertScenarioMap.set(String(alert.hazardScenario), true) : alertScenarioMap.set(alert.otherName, true)
             })
           res(alertScenarioMap)
         })
@@ -1475,12 +1505,13 @@ export class ExportDataService {
   private fetchAlertsForCountry(countryId) {
     let alertMap = new Map<string, any>()
     return new Promise((res,) => {
-      this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId)
-        .first()
-        .subscribe(alertList => {
+      this.afd.list(Constants.APP_STATUS + "/alert/" + countryId)
+        .snapshotChanges()
+        .pipe(first())
+        .subscribe((alertList: SnapshotAction<ModelAlert>[]) => {
           alertList
             .forEach(alert => {
-              alertMap.set(alert.$key, alert)
+              alertMap.set(alert.key, alert.payload.val())
             })
           res(alertMap)
         })
@@ -1836,9 +1867,11 @@ export class ExportDataService {
         let counter = 0
         countries.forEach(obj => {
           this.agencyService.getCountryOffice(obj.countryId, obj.agencyId)
-            .first()
-            .subscribe(countryOffice => {
-              this.countryNameMap.set(countryOffice.$key, Constants.COUNTRIES[countryOffice.location] ? this.translateService.instant(Constants.COUNTRIES[countryOffice.location]) : "")
+            .snapshotChanges()
+            .pipe(first())
+            .subscribe(countryOfficeSnap => {
+              const countryOffice = countryOfficeSnap.payload.val()
+              this.countryNameMap.set(countryOfficeSnap.key, Constants.COUNTRIES[countryOffice.location] ? this.translateService.instant(Constants.COUNTRIES[countryOffice.location]) : "")
               counter++
               if (counter === countries.length) {
                 res(true)

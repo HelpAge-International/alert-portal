@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import {AngularFireDatabase} from '@angular/fire/database';
 import {Constants} from '../utils/Constants';
 import {Observable, Subject} from 'rxjs';
 import {PointOfContactModel} from '../model/point-of-contact.model';
@@ -7,24 +7,25 @@ import {PointOfContactModel} from '../model/point-of-contact.model';
 @Injectable()
 export class ContactService {
 
-  constructor(private af: AngularFire) { }
+  constructor(private afd: AngularFireDatabase) { }
 
     public getPointsOfContact(countryId: string): Observable<PointOfContactModel[]> {
       if (!countryId) {
         return;
       }
 
-      const getPointsOfContactSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId)
-      .map(items => {
-        const pointsOfContact: PointOfContactModel[] = [];
-        items.forEach(item => {
-          let pointOfContact = new PointOfContactModel();
-          pointOfContact.mapFromObject(item);
-          pointOfContact.id = item.$key;
-          pointsOfContact.push(pointOfContact);
+      const getPointsOfContactSubscription = this.afd.list(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId)
+        .snapshotChanges()
+        .map(items => {
+          const pointsOfContact: PointOfContactModel[] = [];
+          items.forEach(itemSnap => {
+            let pointOfContact = new PointOfContactModel();
+            pointOfContact.mapFromObject(itemSnap.payload.val());
+            pointOfContact.id = itemSnap.key;
+            pointsOfContact.push(pointOfContact);
+          });
+          return pointsOfContact;
         });
-        return pointsOfContact;
-      });
 
     return getPointsOfContactSubscription;
   }
@@ -34,13 +35,14 @@ export class ContactService {
       return;
     }
 
-    const getPointsOfContactSubscription = this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/contacts/' + agencyId)
+    const getPointsOfContactSubscription = this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/contacts/' + agencyId)
+      .snapshotChanges()
       .map(items => {
         const pointsOfContact: PointOfContactModel[] = [];
         items.forEach(item => {
           let pointOfContact = new PointOfContactModel();
-          pointOfContact.mapFromObject(item);
-          pointOfContact.id = item.$key;
+          pointOfContact.mapFromObject(item.payload.val());
+          pointOfContact.id = item.key;
           pointsOfContact.push(pointOfContact);
         });
         return pointsOfContact;
@@ -55,11 +57,12 @@ export class ContactService {
       }
 
       const getPointsOfContactubscription =
-              this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId + '/' + pointOfContactId)
+              this.afd.object(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId + '/' + pointOfContactId)
+                .snapshotChanges()
       .map(item => {
         let pointOfContact = new PointOfContactModel();
-        pointOfContact.mapFromObject(item);
-        pointOfContact.id = item.$key;
+        pointOfContact.mapFromObject(item.payload.val());
+        pointOfContact.id = item.key;
         return pointOfContact;
       });
 
@@ -72,18 +75,19 @@ export class ContactService {
     }
 
     const getPointsOfContactubscription =
-      this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/contacts/' + agencyId + '/' + pointOfContactId)
+      this.afd.object(Constants.APP_STATUS + '/localAgencyProfile/contacts/' + agencyId + '/' + pointOfContactId)
+        .snapshotChanges()
         .map(item => {
           let pointOfContact = new PointOfContactModel();
-          pointOfContact.mapFromObject(item);
-          pointOfContact.id = item.$key;
+          pointOfContact.mapFromObject(item.payload.val());
+          pointOfContact.id = item.key;
           return pointOfContact;
         });
 
     return getPointsOfContactubscription;
   }
 
-  public savePointOfContact(countryId: string, pointOfContact: PointOfContactModel): firebase.Promise<any>{
+  public savePointOfContact(countryId: string, pointOfContact: PointOfContactModel): Promise<any>{
     if(!countryId || !pointOfContact)
     {
       return Promise.reject('Missing countryId or point of contact');
@@ -98,13 +102,13 @@ export class ContactService {
 
       pointOfContactData['/countryOfficeProfile/contacts/' + countryId + '/' + pointOfContact.id] = pointOfContact;
 
-      return this.af.database.object(Constants.APP_STATUS).update(pointOfContactData);
+      return this.afd.object(Constants.APP_STATUS).update(pointOfContactData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId).push(pointOfContact);
+      return this.afd.list(Constants.APP_STATUS + '/countryOfficeProfile/contacts/' + countryId).push(pointOfContact).then();
     }
   }
 
-  public savePointOfContactLocalAgency(agencyId: string, pointOfContact: PointOfContactModel): firebase.Promise<any>{
+  public savePointOfContactLocalAgency(agencyId: string, pointOfContact: PointOfContactModel): Promise<any>{
     if(!agencyId || !pointOfContact)
     {
       return Promise.reject('Missing countryId or point of contact');
@@ -119,13 +123,13 @@ export class ContactService {
 
       pointOfContactData['/localAgencyProfile/contacts/' + agencyId + '/' + pointOfContact.id] = pointOfContact;
 
-      return this.af.database.object(Constants.APP_STATUS).update(pointOfContactData);
+      return this.afd.object(Constants.APP_STATUS).update(pointOfContactData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/contacts/' + agencyId).push(pointOfContact);
+      return this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/contacts/' + agencyId).push(pointOfContact).then();
     }
   }
 
-  public deletePointOfContact(countryId: string, pointOfContact: PointOfContactModel): firebase.Promise<any>{
+  public deletePointOfContact(countryId: string, pointOfContact: PointOfContactModel): Promise<any>{
     if(!countryId || !pointOfContact || !pointOfContact.id )
     {
       return Promise.reject('Missing countryId or pointOfContact');
@@ -135,10 +139,10 @@ export class ContactService {
 
     pointOfContactData['/countryOfficeProfile/contacts/' + countryId + '/' + pointOfContact.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(pointOfContactData);
+    return this.afd.object(Constants.APP_STATUS).update(pointOfContactData);
  }
 
-  public deletePointOfContactLocalAgency(agencyId: string, pointOfContact: PointOfContactModel): firebase.Promise<any>{
+  public deletePointOfContactLocalAgency(agencyId: string, pointOfContact: PointOfContactModel): Promise<any>{
     if(!agencyId || !pointOfContact || !pointOfContact.id )
     {
       return Promise.reject('Missing countryId or pointOfContact');
@@ -148,6 +152,6 @@ export class ContactService {
 
     pointOfContactData['/localAgencyProfile/contacts/' + agencyId + '/' + pointOfContact.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(pointOfContactData);
+    return this.afd.object(Constants.APP_STATUS).update(pointOfContactData);
   }
 }

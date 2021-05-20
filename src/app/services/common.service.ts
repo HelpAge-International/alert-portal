@@ -3,22 +3,23 @@ import {from as observableFrom, Observable} from 'rxjs';
 
 import {map} from 'rxjs/operators';
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 import {Constants} from "../utils/Constants";
 import {TranslateService} from "@ngx-translate/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
+import {ModelAgency} from "../model/agency.model";
 
 @Injectable()
 export class CommonService {
 
-  constructor(private _http: Http,
-              private af: AngularFire,
+  constructor(private _http: HttpClient,
+              private afd: AngularFireDatabase,
               private translate: TranslateService) {
   }
 
 
   getJsonContent(path: string): Observable<any> {
-    return this._http.get(path).pipe(map(res => {
+    return this._http.get(path).pipe(map((res: any) => {
       return res.json() || {}
     }));
   }
@@ -97,29 +98,25 @@ export class CommonService {
   }
 
   getTotalAgencies() {
-    return this.af.database.list(Constants.APP_STATUS + "/agency")
+    return this.afd.list(Constants.APP_STATUS + "/agency").snapshotChanges()
   }
 
   getTotalLocalAgencies() {
-    return this.af.database.list(Constants.APP_STATUS + "/agency", {
-      query: {
-        orderByChild: "isGlobalAgency",
-        equalTo: false
-      }
-    })
+    return this.afd.list(Constants.APP_STATUS + "/agency", ref => ref.orderByChild("isGlobalAgency").equalTo(false))
   }
 
   getCountryTotalForSystem() {
-    return this.af.database.list(Constants.APP_STATUS + "/agency")
-      .flatMap(agencies => {
+    return this.afd.list(Constants.APP_STATUS + "/agency")
+      .snapshotChanges()
+      .flatMap((agencies: SnapshotAction<ModelAgency>[]) => {
         return observableFrom(agencies)
       })
-      .flatMap((agency: any) => {
-        return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agency.$key, {preserveSnapshot: true})
+      .flatMap(agency => {
+        return this.afd.object(Constants.APP_STATUS + "/countryOffice/" + agency.key).snapshotChanges()
       })
       .map(snap => {
-        if (snap.val()) {
-          return Object.keys(snap.val()).filter(key => key != "undefined").map(key => {
+        if (snap.payload.val()) {
+          return Object.keys(snap.payload.val()).filter(key => key != "undefined").map(key => {
             return {agencyId: snap.key, countryId: key}
           })
         } else {

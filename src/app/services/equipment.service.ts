@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import {AngularFireDatabase} from '@angular/fire/database';
 import {Constants} from '../utils/Constants';
 import {Observable, Subject} from 'rxjs';
 import { EquipmentModel } from "../model/equipment.model";
@@ -9,20 +9,21 @@ import { AddEditMappingProgrammeComponent } from "../country-admin/country-offic
 @Injectable()
 export class EquipmentService {
 
-  constructor(private af: AngularFire) { }
+  constructor(private afd: AngularFireDatabase) { }
 
   public getEquipments(countryId: string): Observable<EquipmentModel[]> {
       if (!countryId) {
         return;
       }
 
-      const getEquipmentsSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + countryId)
+      const getEquipmentsSubscription = this.afd.list(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + countryId)
+        .snapshotChanges()
       .map(items => {
         const equipments: EquipmentModel[] = [];
         items.forEach(item => {
           let equipment = new EquipmentModel();
-          equipment.mapFromObject(item);
-          equipment.id = item.$key;
+          equipment.mapFromObject(item.payload.val());
+          equipment.id = item.key;
           equipments.push(equipment);
 
         });
@@ -37,13 +38,14 @@ export class EquipmentService {
       return;
     }
 
-    const getEquipmentsSubscription = this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/equipment/' + agencyId)
+    const getEquipmentsSubscription = this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/equipment/' + agencyId)
+      .snapshotChanges()
       .map(items => {
         const equipments: EquipmentModel[] = [];
         items.forEach(item => {
           let equipment = new EquipmentModel();
-          equipment.mapFromObject(item);
-          equipment.id = item.$key;
+          equipment.mapFromObject(item.payload.val());
+          equipment.id = item.key;
           equipments.push(equipment);
         });
         return equipments;
@@ -57,11 +59,12 @@ export class EquipmentService {
         return;
       }
 
-      const getEquipmentSubscription = this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + countryId + '/' + equipmentId)
+      const getEquipmentSubscription = this.afd.object(Constants.APP_STATUS + '/countryOfficeProfile/equipment/' + countryId + '/' + equipmentId)
+        .snapshotChanges()
       .map(item => {
         let equipment = new EquipmentModel();
-        equipment.mapFromObject(item);
-        equipment.id = item.$key;
+        equipment.mapFromObject(item.payload.val());
+        equipment.id = item.key;
         return equipment;
       });
 
@@ -73,20 +76,19 @@ export class EquipmentService {
       return;
     }
 
-    const getEquipmentSubscription = this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/equipment/' + agencyId + '/' + equipmentId)
+    const getEquipmentSubscription = this.afd.object(Constants.APP_STATUS + '/localAgencyProfile/equipment/' + agencyId + '/' + equipmentId)
+      .snapshotChanges()
       .map(item => {
         let equipment = new EquipmentModel();
-        equipment.mapFromObject(item);
-        equipment.id = item.$key;
+        equipment.mapFromObject(item.payload.val());
+        equipment.id = item.key;
         return equipment;
       });
 
     return getEquipmentSubscription;
   }
 
-  public saveEquipment(countryId: string, equipment: EquipmentModel): firebase.Promise<any>{
-
-
+  public saveEquipment(countryId: string, equipment: EquipmentModel): Promise<any>{
     if(!countryId || !equipment)
     {
       return Promise.reject('Missing countryId or equipment');
@@ -100,7 +102,7 @@ export class EquipmentService {
       console.log('true');
       const equipmentData = {};
       equipmentData['/countryOfficeProfile/equipment/' + countryId + '/' + equipment.id] = equipment;
-      return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+      return this.afd.object(Constants.APP_STATUS).update(equipmentData);
 
     }/*else{
       console.log('false');
@@ -108,7 +110,7 @@ export class EquipmentService {
     }*/
   }
 
-  public saveEquipmentLocalAgency(agencyId: string, equipment: EquipmentModel): firebase.Promise<any>{
+  public saveEquipmentLocalAgency(agencyId: string, equipment: EquipmentModel): Promise<any>{
     if(!agencyId || !equipment)
     {
       return Promise.reject('Missing agencyId or equipment');
@@ -121,13 +123,13 @@ export class EquipmentService {
     {
       const equipmentData = {};
       equipmentData['/localAgencyProfile/equipment/' + agencyId + '/' + equipment.id] = equipment;
-      return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+      return this.afd.object(Constants.APP_STATUS).update(equipmentData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/equipment/' + agencyId).push(equipment);
+      return this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/equipment/' + agencyId).push(equipment).then();
     }
   }
 
-  public deleteEquipment(countryId: string, equipment: EquipmentModel): firebase.Promise<any>{
+  public deleteEquipment(countryId: string, equipment: EquipmentModel): Promise<any>{
     if(!countryId || !equipment || !equipment.id )
     {
       return Promise.reject('Missing countryId or equipment');
@@ -137,10 +139,10 @@ export class EquipmentService {
 
     equipmentData['/countryOfficeProfile/equipment/' + countryId + '/' + equipment.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+    return this.afd.object(Constants.APP_STATUS).update(equipmentData);
   }
 
-  public deleteEquipmentLocalAgency(agencyId: string, equipment: EquipmentModel): firebase.Promise<any>{
+  public deleteEquipmentLocalAgency(agencyId: string, equipment: EquipmentModel): Promise<any>{
     if(!agencyId || !equipment || !equipment.id )
     {
       return Promise.reject('Missing agencyId or equipment');
@@ -150,7 +152,7 @@ export class EquipmentService {
 
     equipmentData['/localAgencyProfile/equipment/' + agencyId + '/' + equipment.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(equipmentData);
+    return this.afd.object(Constants.APP_STATUS).update(equipmentData);
   }
 
   public getSurgeEquipments(countryId: string): Observable<SurgeEquipmentModel[]> {
@@ -158,13 +160,14 @@ export class EquipmentService {
         return;
       }
 
-      const getSurgeEquipmentSubscription = this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/surgeEquipment/' + countryId)
+      const getSurgeEquipmentSubscription = this.afd.list(Constants.APP_STATUS + '/countryOfficeProfile/surgeEquipment/' + countryId)
+        .snapshotChanges()
       .map(items => {
         const equipments: SurgeEquipmentModel[] = [];
         items.forEach(item => {
           let equipment = new SurgeEquipmentModel();
-          equipment.mapFromObject(item);
-          equipment.id = item.$key;
+          equipment.mapFromObject(item.payload.val());
+          equipment.id = item.key;
           equipments.push(equipment);
         });
         return equipments;
@@ -178,13 +181,14 @@ export class EquipmentService {
       return;
     }
 
-    const getSurgeEquipmentSubscription = this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/surgeEquipment/' + agencyId)
+    const getSurgeEquipmentSubscription = this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/surgeEquipment/' + agencyId)
+      .snapshotChanges()
       .map(items => {
         const equipments: SurgeEquipmentModel[] = [];
         items.forEach(item => {
           let equipment = new SurgeEquipmentModel();
-          equipment.mapFromObject(item);
-          equipment.id = item.$key;
+          equipment.mapFromObject(item.payload.val());
+          equipment.id = item.key;
           equipments.push(equipment);
         });
         return equipments;
@@ -198,11 +202,12 @@ export class EquipmentService {
         return;
       }
 
-      const getSurgeEquipmentSubscription = this.af.database.object(Constants.APP_STATUS + '/countryOfficeProfile/surgeEquipment/' + countryId + '/' + surgeEquipmentId)
+      const getSurgeEquipmentSubscription = this.afd.object(Constants.APP_STATUS + '/countryOfficeProfile/surgeEquipment/' + countryId + '/' + surgeEquipmentId)
+        .snapshotChanges()
       .map(item => {
         let equipment = new SurgeEquipmentModel();
-        equipment.mapFromObject(item);
-        equipment.id = item.$key;
+        equipment.mapFromObject(item.payload.val());
+        equipment.id = item.key;
         return equipment;
       });
 
@@ -214,18 +219,19 @@ export class EquipmentService {
       return;
     }
 
-    const getSurgeEquipmentSubscription = this.af.database.object(Constants.APP_STATUS + '/localAgencyProfile/surgeEquipment/' + agencyId + '/' + surgeEquipmentId)
+    const getSurgeEquipmentSubscription = this.afd.object(Constants.APP_STATUS + '/localAgencyProfile/surgeEquipment/' + agencyId + '/' + surgeEquipmentId)
+      .snapshotChanges()
       .map(item => {
         let equipment = new SurgeEquipmentModel();
-        equipment.mapFromObject(item);
-        equipment.id = item.$key;
+        equipment.mapFromObject(item.payload.val());
+        equipment.id = item.key;
         return equipment;
       });
 
     return getSurgeEquipmentSubscription;
   }
 
-  public saveSurgeEquipment(countryId: string, surgeEquipment: SurgeEquipmentModel): firebase.Promise<any>{
+  public saveSurgeEquipment(countryId: string, surgeEquipment: SurgeEquipmentModel): Promise<any>{
     if(!countryId || !surgeEquipment)
     {
       return Promise.reject('Missing countryId or surge equipment');
@@ -238,13 +244,13 @@ export class EquipmentService {
     {
       const surgeEquipmentData = {};
       surgeEquipmentData['/countryOfficeProfile/surgeEquipment/' + countryId + '/' + surgeEquipment.id] = surgeEquipment;
-      return this.af.database.object(Constants.APP_STATUS).update(surgeEquipmentData);
+      return this.afd.object(Constants.APP_STATUS).update(surgeEquipmentData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/countryOfficeProfile/surgeEquipment/' + countryId).push(surgeEquipment);
+      return this.afd.list(Constants.APP_STATUS + '/countryOfficeProfile/surgeEquipment/' + countryId).push(surgeEquipment).then();
     }
   }
 
-  public saveSurgeEquipmentLocalAgency(agencyId: string, surgeEquipment: SurgeEquipmentModel): firebase.Promise<any>{
+  public saveSurgeEquipmentLocalAgency(agencyId: string, surgeEquipment: SurgeEquipmentModel): Promise<any>{
     if(!agencyId || !surgeEquipment)
     {
       return Promise.reject('Missing countryId or surge equipment');
@@ -257,13 +263,13 @@ export class EquipmentService {
     {
       const surgeEquipmentData = {};
       surgeEquipmentData['/localAgencyProfile/surgeEquipment/' + agencyId + '/' + surgeEquipment.id] = surgeEquipment;
-      return this.af.database.object(Constants.APP_STATUS).update(surgeEquipmentData);
+      return this.afd.object(Constants.APP_STATUS).update(surgeEquipmentData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + '/localAgencyProfile/surgeEquipment/' + agencyId).push(surgeEquipment);
+      return this.afd.list(Constants.APP_STATUS + '/localAgencyProfile/surgeEquipment/' + agencyId).push(surgeEquipment).then();
     }
   }
 
-  public deleteSurgeEquipment(countryId: string, surgeEquipment: SurgeEquipmentModel): firebase.Promise<any>{
+  public deleteSurgeEquipment(countryId: string, surgeEquipment: SurgeEquipmentModel): Promise<any>{
     if(!countryId || !surgeEquipment || !surgeEquipment.id )
     {
       return Promise.reject('Missing countryId or surgeEquipment');
@@ -273,10 +279,10 @@ export class EquipmentService {
 
     surgeEquipmentData['/countryOfficeProfile/surgeEquipment/' + countryId + '/' + surgeEquipment.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(surgeEquipmentData);
+    return this.afd.object(Constants.APP_STATUS).update(surgeEquipmentData);
   }
 
-  public deleteSurgeEquipmentLocalAgency(agencyId: string, surgeEquipment: SurgeEquipmentModel): firebase.Promise<any>{
+  public deleteSurgeEquipmentLocalAgency(agencyId: string, surgeEquipment: SurgeEquipmentModel): Promise<any>{
     if(!agencyId || !surgeEquipment || !surgeEquipment.id )
     {
       return Promise.reject('Missing agencyId or surgeEquipment');
@@ -286,6 +292,6 @@ export class EquipmentService {
 
     surgeEquipmentData['/localAgencyProfile/surgeEquipment/' + agencyId + '/' + surgeEquipment.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(surgeEquipmentData);
+    return this.afd.object(Constants.APP_STATUS).update(surgeEquipmentData);
   }
 }

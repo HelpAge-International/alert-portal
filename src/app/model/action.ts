@@ -25,6 +25,7 @@ export class Action extends BaseModel {
     public type: ActionType;
     public assignHazard: any = [];
     public actionStatus: number;
+    public isCompleteAt: number;
 
 
     validate(excludedFields = []): AlertMessageModel {

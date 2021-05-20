@@ -8,7 +8,7 @@ import {AlertMessageModel} from "./alert-message.model";
 
 export class ModelHazard extends BaseModel {
   public id: string;
-
+  public name: string;
   public category: number;
   public isSeasonal: boolean;
   public location: Map<number, number>;
