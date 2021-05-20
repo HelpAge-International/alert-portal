@@ -19,6 +19,7 @@ export class Action extends BaseModel {
     public frequencyBase: number;
     public frequencyValue: number;
     public isActive: boolean;
+    public isArchived?: boolean
     public isComplete: boolean;
     public progressState: number;
     public type: ActionType;

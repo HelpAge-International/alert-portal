@@ -15,7 +15,7 @@ export class ModelAlert extends BaseModel {
   public approvalDirectorId: string;
   public approvalCountryId: string;
   public approvalStatus: AlertStatus;
-  public approval: any[] = [];
+  public approval: any;
   public createdBy: string;
   public createdByName: string;
   public estimatedPopulation: number;

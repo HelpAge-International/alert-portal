@@ -17,6 +17,7 @@ export class ModelAgency extends BaseModel{
   public headOfficeCountry?: number;
   public currency:number;
   public isActive:boolean;
+  public isApproved: boolean;
   public isDonor:boolean;
   public logoPath:string;
   public systemAdmin: Map<string, boolean>;

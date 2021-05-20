@@ -4,14 +4,14 @@ import {mergeMap, map} from 'rxjs/operators';
 import {from as observableFrom, Subject, Observable} from 'rxjs';
 import {Injectable} from "@angular/core";
 import {Constants} from "../utils/Constants";
-import {AngularFireDatabase } from "@angular/fire/database";
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
 import {ModelFaceToFce} from "../dashboard/facetoface-meeting-request/facetoface.model";
 import {CountryOfficeAddressModel} from "../model/countryoffice.address.model";
-import {DurationType, SkillType} from "../utils/Enums";
+import {DurationType} from "../utils/Enums";
 import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
 import {ModelAgency} from "../model/agency.model";
 import {ModelCountryOffice} from "../model/countryoffice.model";
-import {takeUntil} from "rxjs/operator/takeUntil";
+import {takeUntil} from "rxjs/operators";
 
 @Injectable()
 export class AgencyService {
@@ -24,9 +24,9 @@ export class AgencyService {
   getAgencyId(agencyAdminId) {
     return this.afd.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId + "/agencyId")
       .valueChanges().pipe(
-      map((id:any) => {
-        if (id.$value) {
-          return id.$value;
+      map((id:string) => {
+        if (id) {
+          return id;
         }
       }));
   }
@@ -37,11 +37,12 @@ export class AgencyService {
 
   getAgencyModel(agencyId) {
     return this.afd.object(Constants.APP_STATUS + "/agency/" + agencyId)
-      .valueChanges().pipe(
-      map((agency:any) => {
+      .snapshotChanges().pipe(
+      map((agencySnap: SnapshotAction<ModelAgency>) => {
+        const agency = agencySnap.payload.val()
         let model = new ModelAgency(agency.name);
         model.mapFromObject(agency);
-        model.id = agency.$key;
+        model.id = agencySnap.key;
         return model;
       }));
   }
@@ -49,7 +50,7 @@ export class AgencyService {
   getAgencyResponsePlanClockSettingsDuration(agencyId) {
     return this.afd.object(Constants.APP_STATUS + "/agency/" + agencyId + "/clockSettings/responsePlans")
       .valueChanges().pipe(
-      map((settings:any) => {
+      map((settings: {durationType: number, value :number}) => {
         console.log(settings);
         let duration = 0;
         let oneDay = 24 * 60 * 60 * 1000;
@@ -69,8 +70,8 @@ export class AgencyService {
   getSystemId(agencyAdminId): Observable<any> {
     return this.afd.object(Constants.APP_STATUS + "/administratorAgency/" + agencyAdminId + "/systemAdmin/")
       .valueChanges().pipe(
-      map((system:any) => {
-        return Object.keys(system.val()).shift();
+      map((system: any) => {
+        return Object.keys(system).shift();
       }));
   }
 
@@ -105,16 +106,15 @@ export class AgencyService {
     this.afd.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId)
       .valueChanges()
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((country:any) => {
-
-
+      .subscribe((country:ModelCountryOffice) => {
         this.afd.list(Constants.APP_STATUS + "/countryOffice/")
-          .valueChanges()
+          .snapshotChanges()
           .pipe(takeUntil(this.ngUnsubscribe))
-          .subscribe((agencies: any) => {
-            agencies = agencies.filter(agency => agency.$key != agencyId);
+          .subscribe((agencies: SnapshotAction<ModelAgency>[]) => {
+            agencies = agencies.filter(agency => agency.key != agencyId);
             // console.log(agencies);
-            agencies.forEach(agency => {
+            agencies.forEach(agencySnap => {
+              const agency = agencySnap.payload.val()
               // console.log(agency);
               let countries = Object.keys(agency).map(key => {
                 let temp = agency[key];
@@ -125,7 +125,7 @@ export class AgencyService {
               // console.log(countries);
               if (countries.length > 0) {
                 let faceToface = new ModelFaceToFce();
-                faceToface.agencyId = agency.$key;
+                faceToface.agencyId = agencySnap.key;
                 faceToface.countryId = countries[0].countryId;
                 displayList.push(faceToface);
               }
@@ -137,12 +137,7 @@ export class AgencyService {
 
   getAllAgencyByNetworkCountry(countryCode, agencyId) {
 
-    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId, {
-      query: {
-        orderByChild: "location",
-        equalTo: countryCode
-      }
-    })
+    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId, ref => ref.orderByChild('location').equalTo(countryCode) )
 
   }
 
@@ -153,7 +148,7 @@ export class AgencyService {
   }
 
 
-  public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
+  public saveCountryOfficeAddress(agencyId: string, countryId: string, countryOfficeAddress: CountryOfficeAddressModel): Promise<any> {
     if (!agencyId || !countryId || !countryOfficeAddress) {
       return Promise.reject('Missing agencyId, countryId or countryOfficeAddress');
     }
@@ -161,7 +156,7 @@ export class AgencyService {
     return this.afd.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId).set(countryOfficeAddress);
   }
 
-  public saveLocalAgencyAddress(agencyId: string, countryOfficeAddress: CountryOfficeAddressModel): firebase.Promise<any> {
+  public saveLocalAgencyAddress(agencyId: string, countryOfficeAddress: CountryOfficeAddressModel): Promise<any> {
     if (!agencyId || !countryOfficeAddress) {
       return Promise.reject('Missing agencyId or countryOfficeAddress');
     }
@@ -171,16 +166,16 @@ export class AgencyService {
 
   public getPrivacySettingForAgency(agencyId): Observable<any> {
     return this.afd.object(Constants.APP_STATUS + "/module/" + agencyId)
-      .valueChanges().pipe(
-      map((snap:any) => {
-        if (snap.val()) {
+      .snapshotChanges().pipe(
+      map((snap:SnapshotAction<any>) => {
+        if (snap.payload.val()) {
           let privacy = new ModelAgencyPrivacy();
-          privacy.mpa = snap.val()[0].privacy;
-          privacy.apa = snap.val()[1].privacy;
-          privacy.chs = snap.val()[2].privacy;
-          privacy.riskMonitoring = snap.val()[3].privacy;
-          privacy.officeProfile = snap.val()[4].privacy;
-          privacy.responsePlan = snap.val()[5].privacy;
+          privacy.mpa = snap.payload.val()[0].privacy;
+          privacy.apa = snap.payload.val()[1].privacy;
+          privacy.chs = snap.payload.val()[2].privacy;
+          privacy.riskMonitoring = snap.payload.val()[3].privacy;
+          privacy.officeProfile = snap.payload.val()[4].privacy;
+          privacy.responsePlan = snap.payload.val()[5].privacy;
           return privacy;
         }
       }));
@@ -188,51 +183,53 @@ export class AgencyService {
 
   public getAllAgencyFromPlatform() {
     return this.afd.list(Constants.APP_STATUS + "/agency")
-      .valueChanges().pipe(
-      map((agencies:any) => {
-        let models: ModelAgency[] = [];
-        agencies.forEach(item => {
-          let modelAgency = new ModelAgency(item.name);
-          modelAgency.mapFromObject(item);
-          modelAgency.id = item.$key;
-          models.push(modelAgency);
-        });
-        return models;
-      }))
+      .snapshotChanges()
+      .pipe(
+        map((agencies:SnapshotAction<ModelAgency>[]) => {
+          let models: ModelAgency[] = [];
+          agencies.forEach(snap => {
+            const agency = snap.payload.val()
+            let modelAgency = new ModelAgency(agency.name);
+            modelAgency.mapFromObject(agency);
+            modelAgency.id = snap.key;
+            models.push(modelAgency);
+          });
+          return models;
+        })
+      )
   }
 
   public getApprovedAgenciesByNetwork(networkId) {
     return this.afd.list(Constants.APP_STATUS + "/network/" + networkId + "/agencies")
-      .valueChanges().pipe(
-      map((agencies:any) => {
-        return agencies.filter(agency => agency.isApproved);
+      .snapshotChanges().pipe(
+      map((agencies: SnapshotAction<ModelAgency>[]) => {
+        return agencies.filter(agencySnap => agencySnap.payload.val().isApproved);
       }),
       map(filteredAgencies => {
-        return filteredAgencies.map(agency => {
-          return this.afd.object(Constants.APP_STATUS + "/agency/" + agency.$key)
-            .valueChanges().pipe(
-            map((agency: any) => {
-              let modelAgency = new ModelAgency(agency.name);
-              modelAgency.mapFromObject(agency);
-              modelAgency.id = agency.$key;
-              return modelAgency;
-            }))
+        return filteredAgencies.map(agencySnap => {
+          return this.afd.object(Constants.APP_STATUS + "/agency/" + agencySnap.key)
+            .snapshotChanges()
+            .pipe(
+              map((agencySnap: SnapshotAction<ModelAgency>) => {
+                const agency = agencySnap.payload.val()
+                let modelAgency = new ModelAgency(agency.name);
+                modelAgency.mapFromObject(agency);
+                modelAgency.id = agencySnap.key;
+                return modelAgency;
+              })
+            )
         });
       }),)
   }
 
   public countryExistInAgency(countryLocation, agencyId) {
-    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId, {
-      query: {
-        orderByChild: "location",
-        equalTo: Number(countryLocation)
-      }
-    })
-      .map(list => {
+    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId, ref => ref.orderByChild('location').equalTo(Number(countryLocation)))
+      .snapshotChanges()
+      .map((list:SnapshotAction<ModelCountryOffice>[]) => {
         if (list.length > 0) {
           let model = new ModelCountryOffice();
-          model.mapFromObject(list[0]);
-          model.id = list[0].$key;
+          model.mapFromObject(list[0].payload.val());
+          model.id = list[0].key;
           return model;
         } else {
           return null;
@@ -242,17 +239,20 @@ export class AgencyService {
 
   getSkillsForAgency(agencyId) {
     return this.afd.list(Constants.APP_STATUS + "/agency/" + agencyId + "/skills")
-      .valueChanges().pipe(
-      mergeMap(skills => {
-        let mapedSkills = skills.map((item:any) => {
-          item["id"] = item.$key
-          return item
-        })
-        return observableFrom(mapedSkills)
-      }),
-      mergeMap(skill =>{
-        return this.afd.object(Constants.APP_STATUS + "/skill/" + skill["id"]).valueChanges()
-      }),)
+      .snapshotChanges()
+      .pipe(
+        mergeMap((skills: SnapshotAction<any>[]) => {
+          let mapedSkills = skills.map((itemSnap) => {
+            const item = itemSnap.payload.val()
+            item["id"] = itemSnap.key
+            return item
+          })
+          return observableFrom(mapedSkills)
+        }),
+        mergeMap(skill =>{
+          return this.afd.object(Constants.APP_STATUS + "/skill/" + skill["id"]).valueChanges()
+        }),
+      )
   }
 
   getAllCountryIdsForAgency(agencyId) {
@@ -266,7 +266,7 @@ export class AgencyService {
   getAgencyNotificationSettings(agencyId:string) {
     return this.getAgency(agencyId)
       .valueChanges().pipe(
-      map((agency:any) => agency.notificationSetting))
+      map((agency: ModelAgency) => agency.notificationSetting))
   }
 
   unSubscribeNow() {
