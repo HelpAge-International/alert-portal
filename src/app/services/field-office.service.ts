@@ -1,40 +1,42 @@
 import { Injectable } from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
 import {fieldOffice} from "../model/fieldOffice.model";
 import {Constants} from "../utils/Constants";
 
 @Injectable()
 export class FieldOfficeService {
 
-  constructor(private af: AngularFire) { }
+  constructor(private afd: AngularFireDatabase) { }
 
   public getFieldOffices(countryId: string){
-    return this.af.database.list(Constants.APP_STATUS + '/fieldOffice/' + countryId)
-      .map(fieldOffices =>{
-        fieldOffices.forEach(office => {
-          office.id = office.$key
+    return this.afd.list(Constants.APP_STATUS + '/fieldOffice/' + countryId)
+      .snapshotChanges()
+      .map((fieldOfficesSnaps: SnapshotAction<fieldOffice>[]) =>{
+        return fieldOfficesSnaps.map(officeSnap => {
+          const office = officeSnap.payload.val()
+          office.id = officeSnap.key
+          return office
         })
-        return fieldOffices
       })
   }
 
   public getFieldOffice(countryId: string, fieldOfficeId: string){
-    return this.af.database.object(Constants.APP_STATUS + '/fieldOffice/' + countryId + '/' + fieldOfficeId)
+    return this.afd.object(Constants.APP_STATUS + '/fieldOffice/' + countryId + '/' + fieldOfficeId).valueChanges()
   }
 
   public addFieldOffice(fieldOffice: fieldOffice, countryId: string){
-    return this.af.database.list(Constants.APP_STATUS + '/fieldOffice/' + countryId)
+    return this.afd.list(Constants.APP_STATUS + '/fieldOffice/' + countryId)
       .push(fieldOffice)
   }
 
   public updateFieldOffice(fieldOffice: fieldOffice, countryId: string){
     console.log(fieldOffice)
-    return this.af.database.object(Constants.APP_STATUS + '/fieldOffice/' + countryId + '/' + fieldOffice.id)
+    return this.afd.object(Constants.APP_STATUS + '/fieldOffice/' + countryId + '/' + fieldOffice.id)
       .update(fieldOffice)
   }
 
   public removeFieldOffice(countryId: string, fieldOfficeId: string){
-    return this.af.database.object(Constants.APP_STATUS + '/fieldOffice/' + countryId + '/' + fieldOfficeId)
+    return this.afd.object(Constants.APP_STATUS + '/fieldOffice/' + countryId + '/' + fieldOfficeId)
       .remove();
   }
 

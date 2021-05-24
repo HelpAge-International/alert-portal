@@ -1,7 +1,6 @@
 import {BrowserModule} from "@angular/platform-browser";
 import {NgModule} from "@angular/core";
 import {FormsModule} from "@angular/forms";
-import {HttpClient, HttpClientModule} from "@angular/http";
 import {AngularFireModule, AuthMethods, AuthProviders} from "angularfire2";
 import {AppComponent} from "./app.component";
 import {LoginComponent} from "./login/login.component";
@@ -377,6 +376,7 @@ import {SharedModule} from "./commons/shared.module";
 import {SystemAdminModule} from "./system-admin/system-admin.module";
 import {ExportPersonalService} from "./services/export-personal";
 import { PrivacyPolicyComponent } from "./privacy-policy/privacy-policy.component";
+import { HttpClientModule, HttpClient  } from '@angular/common/http';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -756,7 +756,7 @@ const firebaseAuthConfig = {
     //CookieLawModule,
     BrowserModule,
     FormsModule,
-    //HttpClientModule,
+    HttpClientModule,
     AppRoutingModule,
     //AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig),
     //NgbModule.forRoot(),

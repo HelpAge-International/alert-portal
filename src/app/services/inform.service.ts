@@ -2,16 +2,17 @@
 import {map} from 'rxjs/operators';
 import {Countries, Countries3ISO, HazardScenario, InformCodes} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
-import {Http, RequestOptions, Response, Headers} from "@angular/http";
+import {HttpClient, HttpHeaders } from "@angular/common/http";
+// import {Http, RequestOptions, Response, Headers} from "@angular/http";
 declare var jQuery: any;
 
 export class InformService {
 
   public info: Countries3ISO;
   public informInfo: InformCodes;
-  private http: Http;
+  private http: HttpClient;
 
-  constructor(http: Http) {
+  constructor(http: HttpClient ) {
     this.http = http;
     this.info = Countries3ISO.init();
     this.informInfo = InformCodes.init();
@@ -27,10 +28,10 @@ export class InformService {
   }
   private sendForTopHazards3digit(countryCode: string, numberOfItems: number, fun: (list: InformHolder[]) => void) {
     console.log(countryCode)
-    let headers = new Headers();
+    let headers = new HttpHeaders ();
     headers.append('content-type', 'application/json');
     headers.append('accept', '*/*');
-    let options = new RequestOptions({ headers: headers });
+    let options = { headers: headers }
     console.log('here2')
     this.http.get(this.buildUrl(countryCode), options).pipe(
       map((res: Response) => {

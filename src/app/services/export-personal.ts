@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {TranslateService} from "@ngx-translate/core";
 import {SettingsService} from "./settings.service";
 import {SurgeCapacityService} from "./surge-capacity.service";
@@ -10,12 +10,15 @@ import {PartnerOrganisationService} from "./partner-organisation.service";
 import {Constants} from "../utils/Constants";
 import {Countries, CountriesMapsSearchInterface, Department, PersonTitle} from "../utils/Enums";
 import {Angular2Csv} from "angular2-csv";
+import {first} from "rxjs/operators";
+import {ModelUserPublic} from "../model/user-public.model";
+import {ModelStaff} from "../model/staff.model";
 
 
 @Injectable()
 export class ExportPersonalService {
 
-  constructor(private af: AngularFire,
+  constructor(private afd: AngularFireDatabase,
               private translateService: TranslateService,
               private userService: UserService,
               private partnerService: PartnerOrganisationService,
@@ -28,9 +31,10 @@ export class ExportPersonalService {
 
   public exportPersonalData(userId: string, countryId: string) {
     let personalData: any = {};
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + userId)
-      .first()
-      .subscribe((snap) => {
+    this.afd.object(Constants.APP_STATUS + "/userPublic/" + userId)
+      .valueChanges()
+      .pipe(first())
+      .subscribe((snap: ModelUserPublic) => {
         // Names
         personalData.Title = PersonTitle[snap.title];
         personalData.First_Name = snap.firstName == null || snap.firstName == undefined ? '' : snap.firstName;
@@ -53,17 +57,18 @@ export class ExportPersonalService {
         personalData.Postcode = snap.postCode == null || snap.postCode == undefined ? '' : snap.postCode;
 
         // TOS
-        personalData.Agreed_to_Terms_And_Conditions = snap.latestToCAgreed;
-        personalData.Agreed_to_Code_Of_Conduct = snap.latestCoCAgreed;
+        personalData.Agreed_to_Terms_And_Conditions = (snap as any).latestToCAgreed;
+        personalData.Agreed_to_Code_Of_Conduct = (snap as any).latestCoCAgreed;
 
         // Staff information
         if (countryId == null) {
           this.exportCSV([personalData], "Personal Information");
         }
         else {
-          this.af.database.object(Constants.APP_STATUS + "/staff/" + countryId + "/" + userId)
-            .first()
-            .subscribe(staffSnap => {
+          this.afd.object(Constants.APP_STATUS + "/staff/" + countryId + "/" + userId)
+            .valueChanges()
+            .pipe(first())
+            .subscribe((staffSnap: ModelStaff) => {
               personalData.Position = staffSnap.position == null || staffSnap.position == undefined ? '' : staffSnap.position;
               personalData.Department = Department[staffSnap.department];
               this.exportCSV([personalData], "Personal Information");

@@ -12,6 +12,7 @@ export class ModelUserPublic extends BaseModel {
   phone: string;
   title: number;
   email: string;
+  language: string;
   addressLine1: string;
   addressLine2: string;
   addressLine3: string;
