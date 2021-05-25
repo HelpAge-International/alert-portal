@@ -1,4 +1,4 @@
-import { AngularFire } from "angularfire2";
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
 import { Subject } from "rxjs";
 import { ModelDepartment } from "../model/department.model";
 import { ModelRegion } from "../model/region.model";
@@ -8,6 +8,12 @@ import { AgencyModulesEnabled, PageControlService } from "./pagecontrol.service"
 import { PrepActionService } from "./prepactions.service";
 import GeocoderStatus = google.maps.GeocoderStatus;
 import GeocoderResult = google.maps.GeocoderResult;
+import {takeUntil} from "rxjs/operators";
+import {ModelSystem} from "../model/system.model";
+import {Action} from "../model/action";
+import {ModelCountryOffice} from "../model/countryoffice.model";
+import {ModelHazard} from "../model/hazard.model";
+import {ModelAlert} from "../model/alert.model";
 /**
  * Created by jordan on 09/07/2017.
  */
@@ -22,7 +28,7 @@ export class MapService {
   private systemId: string;
   private initMapEnabled: boolean = false;
 
-  private af: AngularFire;
+  private afd: AngularFireDatabase;
   private ngUnsubscribe: Subject<void>;
   public map: google.maps.Map;
   private geocoder: google.maps.Geocoder;
@@ -51,9 +57,9 @@ export class MapService {
   private done: (countries: MapCountry[], green: number, yellow: number) => void;
   private countryId: string;
 
-  public static init(af: AngularFire, ngUnsubscribe: Subject<void>): MapService {
+  public static init(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>): MapService {
     let x: MapService = new MapService();
-    x.af = af;
+    x.afd = afd;
     x.ngUnsubscribe = ngUnsubscribe;
     x.geocoder = new google.maps.Geocoder;
     return x;
@@ -71,7 +77,7 @@ export class MapService {
       this.downloadDefaultClockSettings(() => {
         this.downloadDepartments(() => {
           this.downloadCountryDepartments(()=>{
-            PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
+            PageControlService.agencyQuickEnabledMatrix(this.afd, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
               this.modulesEnabled = isEnabled;
               this.beginDownloadAllActions();
             });
@@ -99,12 +105,13 @@ export class MapService {
   }
 
   private downloadThreshold(fun: () => void) {
-    this.af.database.object(Constants.APP_STATUS + "/system/" + this.systemId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        if (snap.val().minThreshold.length >= 2) {
-          this.threshGreen = snap.val().minThreshold[0];
-          this.threshYellow = snap.val().minThreshold[1];
+    this.afd.object(Constants.APP_STATUS + "/system/" + this.systemId) // , {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((snap: SnapshotAction<ModelSystem>) => {
+        if (snap.payload.val().minThreshold.length >= 2) {
+          this.threshGreen = snap.payload.val().minThreshold[0];
+          this.threshYellow = snap.payload.val().minThreshold[1];
           fun();
         }
       });
@@ -112,21 +119,23 @@ export class MapService {
 
   private downloadDefaultClockSettings(fun: () => void) {
     if(this.countryId == null) {
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/clockSettings/preparedness", {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
-          if (snap.val() != null) {
-            this.defaultClockValue = snap.val().value;
-            this.defaultClockType = snap.val().durationType;
+      this.afd.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/clockSettings/preparedness")// , {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((snap: SnapshotAction<any>) => {
+          if (snap.payload.val() != null) {
+            this.defaultClockValue = snap.payload.val().value;
+            this.defaultClockType = snap.payload.val().durationType;
             fun();
           }
         });
     } else {
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/clockSettings", {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
-          this.defaultClockValue = (+(snap.val().preparedness.value));
-          this.defaultClockType = (+(snap.val().preparedness.durationType));
+      this.afd.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/clockSettings")// , {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((snap: SnapshotAction<any>) => {
+          this.defaultClockValue = (+(snap.payload.val().preparedness.value));
+          this.defaultClockType = (+(snap.payload.val().preparedness.durationType));
           fun();
 
         });
@@ -134,26 +143,28 @@ export class MapService {
   }
 
   private downloadDepartments(fun: () => void) {
-    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
+    this.afd.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments") // , {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((snaps:SnapshotAction<ModelDepartment>[]) => {
         this.departments = [];
         this.departmentMap.clear();
-        for (let x of snap) {
-          this.departmentMap.set(x.key, x.val());
-          this.departments.push(ModelDepartment.create(x.key, x.val()));
+        for (let x of snaps) {
+          this.departmentMap.set(x.key, x.payload.val().name);
+          this.departments.push(ModelDepartment.create(x.key, x.payload.val().name));
         }
         fun();
       });
   }
 
   private downloadCountryDepartments(fun: () => void) {
-    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
-        for (let x of snap) {
-          this.departmentMap.set(x.key, x.val());
-          this.departments.push(ModelDepartment.create(x.key, x.val()));
+    this.afd.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/departments")//, {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((snaps: SnapshotAction<ModelDepartment>[]) => {
+        for (let x of snaps) {
+          this.departmentMap.set(x.key, x.payload.val().name);
+          this.departments.push(ModelDepartment.create(x.key, x.payload.val().name));
         }
         fun();
       });
@@ -181,10 +192,11 @@ export class MapService {
 
   private downloadAllCHSActions() {
     if (this.modulesEnabled.chsPreparedness) {
-      this.af.database.list(Constants.APP_STATUS + "/actionCHS/" + this.systemId, {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
-          for (let x of snap) {
+      this.afd.list(Constants.APP_STATUS + "/actionCHS/" + this.systemId)//, {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((snaps:SnapshotAction<Action>[]) => {
+          for (let x of snaps) {
             this.holderCHSActions.set(x.key, MapPrepAction.CHS(x.key, ActionLevel.MPA));
           }
           this.downloadAllCountries();
@@ -195,12 +207,13 @@ export class MapService {
   }
 
   private downloadAllMandatedActions() {
-    this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
+    this.afd.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId) // , {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((snap:SnapshotAction<Action>[]) => {
         for (let x of snap) {
-          if (x.val().level == ActionLevel.MPA) {
-            this.holderMandatedActions.set(x.key, MapPrepAction.Mandated(x.key, ActionLevel.MPA, x.val().department));
+          if (x.payload.val().level == ActionLevel.MPA) {
+            this.holderMandatedActions.set(x.key, MapPrepAction.Mandated(x.key, ActionLevel.MPA, x.payload.val().department));
           }
         }
         this.downloadAllCountries()
@@ -210,12 +223,13 @@ export class MapService {
   private downloadAllCountries() {
     this.asyncWaitCount--;
     if (this.asyncWaitCount == 0) {
-      this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId, {preserveSnapshot: true})
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe((snap) => {
+      this.afd.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)//, {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((snap:SnapshotAction<ModelCountryOffice>[]) => {
           this.asyncWaitActionsCount = snap.length * 2; // Two because downloadActions and initHazards
           for (let x of snap) {
-            let mapCountry: MapCountry = new MapCountry(x.key, x.val().location);
+            let mapCountry: MapCountry = new MapCountry(x.key, x.payload.val().location);
             this.holderCHSActions.forEach((value, key) => {
               let copy: MapPrepAction = MapPrepAction.CHS(value.id, value.level);
               mapCountry.actionMap.set(key, copy);
@@ -233,12 +247,13 @@ export class MapService {
   }
 
   private downloadActions(id: string) {
-    this.af.database.list(Constants.APP_STATUS + "/action/" + id, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
+    this.afd.list(Constants.APP_STATUS + "/action/" + id) //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((snap: SnapshotAction<Action>[]) => {
         for (let x of snap) {
-          if (x.val().level != ActionLevel.APA && (this.modulesEnabled.minimumPreparedness)) {
-            this.processAction(id, x.key, x.val());
+          if (x.payload.val().level != ActionLevel.APA && (this.modulesEnabled.minimumPreparedness)) {
+            this.processAction(id, x.key, x.payload.val());
           }
         }
         this.doneDownloadingAndProcessingActions();
@@ -285,36 +300,38 @@ export class MapService {
   }
 
   private initAlerts(countryId: string) {
-    this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snap) => {
+    this.afd.list(Constants.APP_STATUS + "/alert/" + countryId)// , {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((snap: SnapshotAction<ModelAlert>[]) => {
         let hazardRedAlert: Map<any, boolean> = new Map<any, boolean>();
         snap.forEach((snapshot) => {
-          if (snapshot.val().alertLevel == AlertLevels.Red) {
+          if (snapshot.payload.val().alertLevel == AlertLevels.Red) {
             let res: boolean = false;
-            for (const userTypes in snapshot.val().approval) {
-              for (const thisUid in snapshot.val().approval[userTypes]) {
-                if (snapshot.val().approval[userTypes][thisUid] != 0) {
+            for (const userTypes in snapshot.payload.val().approval) {
+              for (const thisUid in snapshot.payload.val().approval[userTypes]) {
+                if (snapshot.payload.val().approval[userTypes][thisUid] != 0) {
                   res = true;
                 }
               }
             }
-            if (hazardRedAlert.get(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName) != true) {
-              hazardRedAlert.set(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName, res);
+            if (hazardRedAlert.get(snapshot.payload.val().hazardScenario != -1 ? snapshot.payload.val().hazardScenario : snapshot.payload.val().otherName) != true) {
+              hazardRedAlert.set(snapshot.payload.val().hazardScenario != -1 ? snapshot.payload.val().hazardScenario : snapshot.payload.val().otherName, res);
             }
           }
           else {
-            if (hazardRedAlert.get(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName) != true) {
-              hazardRedAlert.set(snapshot.val().hazardScenario != -1 ? snapshot.val().hazardScenario : snapshot.val().otherName, false);
+            if (hazardRedAlert.get(snapshot.payload.val().hazardScenario != -1 ? snapshot.payload.val().hazardScenario : snapshot.payload.val().otherName) != true) {
+              hazardRedAlert.set(snapshot.payload.val().hazardScenario != -1 ? snapshot.payload.val().hazardScenario : snapshot.payload.val().otherName, false);
             }
           }
-          if (snapshot.val().hazardScenario == -1) {
-            this.af.database.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.val().otherName, {preserveSnapshot: true})
-              .takeUntil(this.ngUnsubscribe)
-              .subscribe((snap) => {
-              
-                if (snap.val() != null) {
-                  this.otherHazardMap.set(snap.key, snap.val().name);
+          if (snapshot.payload.val().hazardScenario == -1) {
+            this.afd.object(Constants.APP_STATUS + "/hazardOther/" + snapshot.payload.val().otherName) //, {preserveSnapshot: true})
+              .snapshotChanges()
+              .pipe(takeUntil(this.ngUnsubscribe))
+              .subscribe((snap: SnapshotAction<ModelHazard>) => {
+
+                if (snap.payload.val() != null) {
+                  this.otherHazardMap.set(snap.key, snap.payload.val().name);
                 }
               });
           }
@@ -333,14 +350,16 @@ export class MapService {
   }
 
   public getRegionsForAgency(agencyId: string, funct: (key: string, region: ModelRegion) => void) {
-    this.af.database.object(Constants.APP_STATUS + "/region/" + agencyId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((result) => {
-        if (result.childCount == 0) {
+    this.afd.object(Constants.APP_STATUS + "/region/" + agencyId)// , {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((result:SnapshotAction<ModelRegion>) => {
+        if (result.payload.numChildren() == 0) {
           funct("", null);
         }
-        result.forEach((snapshot) => {
+        result.payload.forEach((snapshot) => {
           funct(snapshot.key, snapshot.val());
+          return true
         })
       });
   }

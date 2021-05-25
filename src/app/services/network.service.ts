@@ -3,7 +3,7 @@ import {empty as observableEmpty, of as observableOf, Observable} from 'rxjs';
 
 import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {AngularFire, FirebaseObjectObservable} from "angularfire2";
+import {AngularFireDatabase, AngularFireObject, SnapshotAction} from "@angular/fire/database";
 import {
   ActionLevel, AlertLevels, AlertMessageType, DurationType, NetworkMessageRecipientType, NetworkUserAccountType,
   Privacy
@@ -11,7 +11,7 @@ import {
 import {Constants} from "../utils/Constants";
 import {NetworkAgencyModel} from "../network-admin/network-agencies/network-agency.model";
 import * as moment from "moment";
-import * as firebase from "firebase/app";
+import * as firebase from "firebase";
 import {NetworkOfficeModel} from "../network-admin/network-offices/add-edit-network-office/network-office.model";
 import {ModelNetwork} from "../model/network.model";
 import {NetworkActionModel} from "../network-admin/network-mpa/network-create-edit-mpa/network-mpa.model";
@@ -19,60 +19,69 @@ import {GenericActionModel} from "../network-admin/network-mpa/network-add-gener
 import {NetworkMessageModel} from "../network-admin/network-message/network-create-edit-message/network-message.model";
 import {NetworkCountryModel} from "../network-country-admin/network-country.model";
 import {NetworkModulesEnabledModel} from "./pagecontrol.service";
-import {isEmptyObject} from "angularfire2/utils";
 import {NetworkWithCountryModel} from "../country-admin/country-admin-header/network-with-country.model";
-import {ClockSettingsModel} from "../model/clock-settings.model";
-import {ModelAgencyPrivacy} from "../model/agency-privacy.model";
+import {ClockSettingModel, ClockSettingsModel} from "../model/clock-settings.model";
 import {NetworkPrivacyModel} from "../model/network-privacy.model";
 import {LogModel} from "../model/log.model";
-import {AlertMessageModel} from "../model/alert-message.model";
+import {NetworkOfficeAdminModel} from "../network-admin/network-offices/add-edit-network-office/network-office-admin.model";
+import {ModelCountryOffice} from "../model/countryoffice.model";
+import {Action} from "../model/action";
+import {ModuleSettingsModel} from "../model/module-settings.model";
+import {Network} from "../network-admin/network-account-selection/models/network";
+import {ModelRegion} from "../model/region.model";
+import {ModelAgency} from "../model/agency.model";
 
 @Injectable()
 export class NetworkService {
 
-  constructor(private af: AngularFire) {
+  constructor(private afd: AngularFireDatabase) {
   }
 
   checkNetworkUserFirstLogin(uid: string, type: NetworkUserAccountType) {
     if (type == NetworkUserAccountType.NetworkAdmin) {
-      return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid)
-        .map(networkAdmin => {
+      return this.afd.object(Constants.APP_STATUS + "/administratorNetwork/" + uid)
+        .valueChanges()
+        .map((networkAdmin: NetworkOfficeAdminModel) => {
           return networkAdmin.firstLogin ? networkAdmin.firstLogin : false;
         });
     } else {
-      return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid)
-        .map(networkCountryAdmin => {
+      return this.afd.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid)
+        .valueChanges()
+        .map((networkCountryAdmin: NetworkOfficeAdminModel) => {
           return networkCountryAdmin.firstLogin ? networkCountryAdmin.firstLogin : false;
         });
     }
   }
 
   getNetworkUserType(uid) {
-    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid, {preserveSnapshot: true})
-      .map(snap => {
-        return snap.val() ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
+    return this.afd.object(Constants.APP_STATUS + "/administratorNetwork/" + uid) //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .map((snap: SnapshotAction<NetworkOfficeAdminModel>) => {
+        return snap.payload.val() ? NetworkUserAccountType.NetworkAdmin : NetworkUserAccountType.NetworkCountryAdmin;
       })
   }
 
   getNetworkDetail(networkId): Observable<ModelNetwork> {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId)
-      .map(network => {
+    return this.afd.object(Constants.APP_STATUS + "/network/" + networkId)
+      .snapshotChanges()
+      .map((network: SnapshotAction<ModelNetwork>) => {
         let model = new ModelNetwork();
-        model.mapFromObject(network);
-        model.id = network.$key;
+        model.mapFromObject(network.payload.val());
+        model.id = network.key;
         return model;
       });
   }
 
-  getNetworkAdmin(uid) {
-    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid)
+  getNetworkAdmin(uid): AngularFireObject<NetworkOfficeAdminModel> {
+    return this.afd.object<NetworkOfficeAdminModel>(Constants.APP_STATUS + "/administratorNetwork/" + uid)
   }
 
   getSelectedIdObj(uid: string) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
-      .flatMap(snap => {
-        if (snap.val()) {
-          let selection = snap.val();
+    return this.afd.object(Constants.APP_STATUS + "/networkUserSelection/" + uid) //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .flatMap((snap: SnapshotAction<NetworkOfficeAdminModel>) => {
+        if (snap.payload.val()) {
+          let selection = snap.payload.val();
           let selectData = {};
           if (!selection.selectedNetworkCountry) {
             selectData["userType"] = NetworkUserAccountType.NetworkAdmin;
@@ -94,9 +103,10 @@ export class NetworkService {
   }
 
   getLeadAgencyId(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/leadAgencyId")
-      .map(data => {
-        return data.$value;
+    return this.afd.object(Constants.APP_STATUS + "/network/" + networkId + "/leadAgencyId")
+      .valueChanges()
+      .map((data: string) => {
+        return data;
       });
   }
 
@@ -108,7 +118,7 @@ export class NetworkService {
       item["isApproved"] = false;
       data["/network/" + networkId + "/agencies/" + agencyId] = item;
     });
-    return this.af.database.object(Constants.APP_STATUS).update(data);
+    return this.afd.object(Constants.APP_STATUS).update(data);
   }
 
   updateAgencyForLocalNetwork(networkId: string, leadAgencyId: string, agencyId: string, countryCode: string) {
@@ -120,17 +130,19 @@ export class NetworkService {
     item["isApproved"] = false;
     data["/network/" + networkId + "/agencies/" + agencyId] = item;
 
-    return this.af.database.object(Constants.APP_STATUS).update(data);
+    return this.afd.object(Constants.APP_STATUS).update(data);
   }
 
 
   getCountryCodeForAgency(agencyId: string, networkId: number) {
     let data = ''
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-      .map(countryOffices => {
-        countryOffices.forEach(office => {
+    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
+      .snapshotChanges()
+      .map((countryOffices: SnapshotAction<ModelCountryOffice>[]) => {
+        countryOffices.forEach(officeSnap => {
+          const office = officeSnap.payload.val()
           if (office.location == networkId) {
-            data = office.$key;
+            data = officeSnap.key;
           }
         })
         return data;
@@ -138,14 +150,15 @@ export class NetworkService {
   }
 
   getAgenciesForNetwork(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + "/network/" + networkId + "/agencies")
-      .map(agencies => {
+    return this.afd.list(Constants.APP_STATUS + "/network/" + networkId + "/agencies")
+      .snapshotChanges()
+      .map((agencies: SnapshotAction<NetworkAgencyModel>[]) => {
         if (agencies.length > 0) {
           let agencyModels = [];
           agencies.forEach(agency => {
             let model = new NetworkAgencyModel();
-            model.id = agency.$key;
-            model.isApproved = agency.isApproved;
+            model.id = agency.key;
+            model.isApproved = agency.payload.val().isApproved;
             agencyModels.push(model);
           });
           return agencyModels;
@@ -155,23 +168,26 @@ export class NetworkService {
 
 
   getAgencyIdsForNetwork(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies", {preserveSnapshot: true})
-      .map(snap => {
-        if (snap && snap.val()) {
-          return Object.keys(snap.val());
+    return this.afd.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies") //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .map((snap: SnapshotAction<NetworkAgencyModel>) => {
+        if (snap && snap.payload.val()) {
+          return Object.keys(snap.payload.val());
         }
       })
   }
 
   getApprovedAgencyIdsForNetwork(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies", {preserveSnapshot: true})
-      .map(snap => {
+    return this.afd.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies") //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .map((snap: SnapshotAction<NetworkAgencyModel>) => {
         let agencyIds = [];
-        if (snap && snap.val()) {
-          snap.forEach(agencySnap => {
+        if (snap && snap.payload.val()) {
+          snap.payload.forEach(agencySnap => {
             if (agencySnap.val().isApproved) {
               agencyIds.push(Object.keys(agencySnap));
             }
+            return true;
           });
           return agencyIds;
         }
@@ -179,30 +195,31 @@ export class NetworkService {
   }
 
   updateNetworkField(data) {
-    return this.af.database.object(Constants.APP_STATUS).update(data);
+    return this.afd.object(Constants.APP_STATUS).update(data);
   }
 
   updateNetworkFieldByObject(path, model) {
     console.log(model)
-    return this.af.database.object(Constants.APP_STATUS + path).update(model);
+    return this.afd.object(Constants.APP_STATUS + path).update(model);
   }
 
   setNetworkField(path, value) {
-    this.af.database.object(Constants.APP_STATUS + path).set(value)
+    this.afd.object(Constants.APP_STATUS + path).set(value)
   }
 
   deleteNetworkField(path) {
-    return this.af.database.object(Constants.APP_STATUS + path).set(null);
+    return this.afd.object(Constants.APP_STATUS + path).set(null);
 
   }
 
   deleteNetworks(countryOfficePath) {
-    return this.af.database.list(Constants.APP_STATUS + countryOfficePath).remove();
+    return this.afd.list(Constants.APP_STATUS + countryOfficePath).remove();
   }
 
   validateNetworkAgencyToken(agencyId, token) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkAgencyValidation/" + agencyId + "/validationToken")
-      .map(tokenObj => {
+    return this.afd.object(Constants.APP_STATUS + "/networkAgencyValidation/" + agencyId + "/validationToken")
+      .valueChanges()
+      .map((tokenObj: any) => {
         if (tokenObj) {
           if (token === tokenObj.token) {
             let expiry = tokenObj.expiry;
@@ -217,13 +234,14 @@ export class NetworkService {
   }
 
   getNetworkOffices(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
-      .map(officeObjs => {
+    return this.afd.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
+      .snapshotChanges()
+      .map((officeObjs: SnapshotAction<NetworkOfficeModel>[]) => {
         let officeModels: NetworkOfficeModel[] = [];
         officeObjs.forEach(obj => {
           let office = new NetworkOfficeModel();
-          office.mapFromObject(obj);
-          office.id = obj.$key;
+          office.mapFromObject(obj.payload.val());
+          office.id = obj.key;
           officeModels.push(office);
         });
         return officeModels;
@@ -236,30 +254,31 @@ export class NetworkService {
       data["countryCode"] = countryCode
     }
     data["isApproved"] = false;
-    this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(null).then(() => {
-      this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(data);
+    this.afd.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(null).then(() => {
+      this.afd.object(Constants.APP_STATUS + "/network/" + networkId + "/agencies/" + agencyId).set(data);
     });
   }
 
   public generateKeyForNetworkCountry(): string {
-    return firebase.database().ref(Constants.APP_STATUS + "/networkCountry/").push().key;
+    return this.afd.list(Constants.APP_STATUS + "/networkCountry/").push(null).key;
   }
 
   public generateKeyUserPublic(): string {
-    return firebase.database().ref(Constants.APP_STATUS + "/userPublic/").push().key;
+    return this.afd.list(Constants.APP_STATUS + "/userPublic/").push(null).key;
   }
 
   public generateKeyNetworkMpa(networkId): string {
-    return firebase.database().ref(Constants.APP_STATUS + "/actionMandated/" + networkId).push().key;
+    return this.afd.list(Constants.APP_STATUS + "/actionMandated/" + networkId).push(null).key;
   }
 
   getNetworkActions(networkId): Observable<NetworkActionModel[]> {
-    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId)
-      .map(mpaObjs => {
+    return this.afd.list(Constants.APP_STATUS + "/actionMandated/" + networkId)
+      .snapshotChanges()
+      .map((mpaObjs: SnapshotAction<NetworkActionModel>[]) => {
         let actions = mpaObjs.map(obj => {
           let model = new NetworkActionModel();
-          model.mapFromObject(obj);
-          model.id = obj.$key;
+          model.mapFromObject(obj.payload.val());
+          model.id = obj.key;
           return model;
         });
         actions.sort((a, b) => b.createdAt - a.createdAt);
@@ -268,17 +287,13 @@ export class NetworkService {
   }
 
   getNetworkMpa(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId, {
-      query: {
-        orderByChild: "level",
-        equalTo: String(ActionLevel.MPA)
-      }
-    })
+    return this.afd.list<NetworkActionModel>(Constants.APP_STATUS + "/actionMandated/" + networkId, ref => ref.orderByChild('level').equalTo(String(ActionLevel.MPA)))
+      .snapshotChanges()
       .map(mpaObjs => {
         let actions = mpaObjs.map(obj => {
           let model = new NetworkActionModel();
-          model.mapFromObject(obj);
-          model.id = obj.$key;
+          model.mapFromObject(obj.payload.val());
+          model.id = obj.key;
           return model;
         });
         actions.sort((a, b) => b.createdAt - a.createdAt);
@@ -287,17 +302,13 @@ export class NetworkService {
   }
 
   getNetworkApa(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId, {
-      query: {
-        orderByChild: "level",
-        equalTo: String(ActionLevel.APA)
-      }
-    })
-      .map(mpaObjs => {
+    return this.afd.list<NetworkActionModel>(Constants.APP_STATUS + "/actionMandated/" + networkId, ref => ref.orderByChild('level').equalTo(String(ActionLevel.APA)))
+      .snapshotChanges()
+      .map((mpaObjs: SnapshotAction<NetworkActionModel>[]) => {
         let actions = mpaObjs.map(obj => {
           let model = new NetworkActionModel();
-          model.mapFromObject(obj);
-          model.id = obj.$key;
+          model.mapFromObject(obj.payload.val());
+          model.id = obj.key;
           return model;
         });
         actions.sort((a, b) => b.createdAt - a.createdAt);
@@ -306,12 +317,8 @@ export class NetworkService {
   }
 
   getUnassignedNetworkActionsForAgency(agencyId: string, networkId: string): Observable<any> {
-    return this.af.database.list(Constants.APP_STATUS + "/action/" + networkId, {
-      query: {
-        orderByChild: "agencyAssign",
-        equalTo: agencyId
-      }
-    })
+    return this.afd.list<Action>(Constants.APP_STATUS + "/action/" + networkId, ref => ref.orderByChild('agencyAssign').equalTo(agencyId))
+      .valueChanges()
       .map(actions => actions.filter(action => !action.asignee).map(action => {
         let obj = action
         obj["idToQuery"] = networkId
@@ -320,65 +327,65 @@ export class NetworkService {
   }
 
   getNetworkActionDetail(networkId, actionId): Observable<NetworkActionModel> {
-    return this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId)
+    return this.afd.object<NetworkActionModel>(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId)
+      .snapshotChanges()
       .map(obj => {
         let model = new NetworkActionModel();
-        model.mapFromObject(obj);
-        model.id = obj.$key;
+        model.mapFromObject(obj.payload.val());
+        model.id = obj.key;
         return model;
       });
   }
 
   saveNetworkAction(networkId: string, action: NetworkActionModel) {
-    return this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + networkId).push(action);
+    return this.afd.list(Constants.APP_STATUS + "/actionMandated/" + networkId).push(action);
   }
 
   updateNetworkAction(networkId: string, actionId: string, action: NetworkActionModel) {
-    return this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId).update(action);
+    return this.afd.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId).update(action);
   }
 
   deleteNetworkAction(networkId: string, actionId: string) {
-    return this.af.database.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId).remove();
+    return this.afd.object(Constants.APP_STATUS + "/actionMandated/" + networkId + "/" + actionId).remove();
   }
 
   getGenericActions(systemId): Observable<GenericActionModel[]> {
-    return this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + systemId)
+    return this.afd.list<GenericActionModel>(Constants.APP_STATUS + "/actionGeneric/" + systemId)
+      .snapshotChanges()
       .map(actions => {
         return actions.map(action => {
           let model = new GenericActionModel();
-          model.mapFromObject(action);
-          model.id = action.$key;
+          model.mapFromObject(action.payload.val());
+          model.id = action.key;
           return model;
         });
       })
   }
 
   getGenericActionsByFilter(systemId: string, level: ActionLevel): Observable<GenericActionModel[]> {
-    return this.af.database.list(Constants.APP_STATUS + "/actionGeneric/" + systemId, {
-      query: {
-        orderByChild: "level",
-        equalTo: Number(level)
-      }
-    })
+    return this.afd.list<GenericActionModel>(Constants.APP_STATUS + "/actionGeneric/" + systemId, ref => ref.orderByChild('level').equalTo(Number(level)))
+      .snapshotChanges()
       .map(actions => {
         return actions.map(action => {
           let model = new GenericActionModel();
-          model.mapFromObject(action);
-          model.id = action.$key;
+          model.mapFromObject(action.payload.val());
+          model.id = action.key;
           return model;
         });
       })
   }
 
   getSystemIdForNetworkAdmin(uid): Observable<string> {
-    return this.af.database.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/systemAdmin")
+    return this.afd.object(Constants.APP_STATUS + "/administratorNetwork/" + uid + "/systemAdmin")
+      .valueChanges()
       .map(obj => {
         return Object.keys(obj).shift();
       })
   }
 
   getSystemIdForNetworkCountryAdmin(uid): Observable<string> {
-    return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/systemAdmin")
+    return this.afd.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/systemAdmin")
+      .valueChanges()
       .map(obj => {
         return Object.keys(obj).shift();
       })
@@ -400,7 +407,8 @@ export class NetworkService {
 
   hasNetworkLevelUsers(networkId: string): Observable<boolean> {
     let networkGroupPath = Constants.APP_STATUS + '/group/network/' + networkId;
-    return this.af.database.list(networkGroupPath)
+    return this.afd.list(networkGroupPath)
+      .valueChanges()
       .map(userGroups => {
         return (userGroups != null && userGroups.length > 0);
       });
@@ -415,7 +423,7 @@ export class NetworkService {
     message.senderId = uid;
     message.time = NetworkService.getUnixTimestampMilliseconds();
 
-    this.af.database.list(messagePath).push(message)
+    this.afd.list(messagePath).push(message)
       .then(msg => {
         this.createMessageReferences(context, uid, networkId, agencyIds, recipientTypes, msg.key, callback);
       })
@@ -439,12 +447,13 @@ export class NetworkService {
         agencyIds.forEach(agencyId => {
           let groupPathName = 'agencyallusersgroup';
           let agencyAllUsersSelected: string = agencyGroupPath + agencyId + '/' + groupPathName;
-          this.af.database.list(agencyAllUsersSelected, {preserveSnapshot: true})
+          this.afd.list(agencyAllUsersSelected) //, {preserveSnapshot: true})
+            .snapshotChanges()
             .subscribe((snapshots) => {
               snapshots.forEach(snapshot => {
                 msgRefData[agencyMessageRefPath + agencyId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
               });
-              this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
+              this.afd.object(Constants.APP_STATUS).update(msgRefData).then(() => {
                 callback(null, context);
               }).catch(error => {
                 callback(error, context);
@@ -454,12 +463,13 @@ export class NetworkService {
       }
       let groupPathName = 'networkallusersgroup';
       let networkAllUsersSelected: string = networkGroupPath + networkId + '/' + groupPathName;
-      this.af.database.list(networkAllUsersSelected, {preserveSnapshot: true})
+      this.afd.list(networkAllUsersSelected) //, {preserveSnapshot: true})
+        .snapshotChanges()
         .subscribe((snapshots) => {
           snapshots.forEach(snapshot => {
             msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
           });
-          this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
+          this.afd.object(Constants.APP_STATUS).update(msgRefData).then(() => {
             callback(null, context);
           }).catch(error => {
             callback(error, context);
@@ -475,12 +485,13 @@ export class NetworkService {
                 return;
               }
               let usersSelected: string = agencyGroupPath + agencyId + '/' + groupPathName;
-              this.af.database.list(usersSelected, {preserveSnapshot: true})
+              this.afd.list(usersSelected) //, {preserveSnapshot: true})
+                .snapshotChanges()
                 .subscribe((snapshots) => {
                   snapshots.forEach(snapshot => {
                     msgRefData[agencyMessageRefPath + agencyId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
                   });
-                  this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
+                  this.afd.object(Constants.APP_STATUS).update(msgRefData).then(() => {
                     callback(null, context);
                   }).catch(error => {
                     callback(error, context);
@@ -495,12 +506,13 @@ export class NetworkService {
         let groupPathName = NetworkService.getGroupPathNameForRecipientType(NetworkMessageRecipientType.NetworkCountryAdmins);
         let networkCountryAdmins: string = networkGroupPath + networkId + '/' + groupPathName;
 
-        this.af.database.list(networkCountryAdmins, {preserveSnapshot: true})
+        this.afd.list(networkCountryAdmins) //, {preserveSnapshot: true})
+          .snapshotChanges()
           .subscribe((snapshots) => {
             snapshots.forEach(snapshot => {
               msgRefData[networkMessageRefPath + networkId + '/' + groupPathName + '/' + snapshot.key + '/' + msgId] = true;
             });
-            this.af.database.object(Constants.APP_STATUS).update(msgRefData).then(() => {
+            this.afd.object(Constants.APP_STATUS).update(msgRefData).then(() => {
               callback(null, context);
             }).catch(error => {
               callback(error, context);
@@ -552,22 +564,24 @@ export class NetworkService {
   }
 
   getNetworkModuleMatrix(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + "/module/" + networkId)
+    return this.afd.list<ModuleSettingsModel>(Constants.APP_STATUS + "/module/" + networkId)
+      .valueChanges()
       .map(matrix => {
         let model = new NetworkModulesEnabledModel();
-        model.minimumPreparedness = matrix[0].privacy;
-        model.advancedPreparedness = matrix[1].privacy;
-        model.chsPreparedness = matrix[2].privacy;
-        model.riskMonitoring = matrix[3].privacy;
-        model.conflictIndicator = matrix[4].privacy;
-        model.networkOffice = matrix[5].privacy;
-        model.responsePlan = matrix[6].privacy;
+        model.minimumPreparedness = Boolean(matrix[0].privacy);
+        model.advancedPreparedness = Boolean(matrix[1].privacy);
+        model.chsPreparedness = Boolean(matrix[2].privacy);
+        model.riskMonitoring = Boolean(matrix[3].privacy);
+        model.conflictIndicator = Boolean(matrix[4].privacy);
+        model.networkOffice = Boolean(matrix[5].privacy);
+        model.responsePlan = Boolean(matrix[6].privacy);
         return model;
       });
   }
 
   getNetworkResponsePlanClockSettingsDuration(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/clockSettings/responsePlans")
+    return this.afd.object<ClockSettingModel>(Constants.APP_STATUS + "/network/" + networkId + "/clockSettings/responsePlans")
+      .valueChanges()
       .map(settings => {
         let duration = 0;
         let oneDay = 24 * 60 * 60 * 1000;
@@ -585,7 +599,8 @@ export class NetworkService {
   }
 
   getNetworkCountryResponsePlanClockSettingsDuration(networkId, networkCountryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/clockSettings/responsePlans")
+    return this.afd.object<ClockSettingModel>(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/clockSettings/responsePlans")
+      .valueChanges()
       .map(settings => {
         let duration = 0;
         let oneDay = 24 * 60 * 60 * 1000;
@@ -603,11 +618,12 @@ export class NetworkService {
   }
 
   getAllNetworkCountriesByNetwork(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
+    return this.afd.list<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry/" + networkId)
   }
 
   getNetworkClockSettings(networkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId + "/clockSettings")
+    return this.afd.object<ClockSettingModel>(Constants.APP_STATUS + "/network/" + networkId + "/clockSettings")
+      .valueChanges()
       .map(obj => {
         let setting = new ClockSettingsModel()
         setting.mapFromObject(obj)
@@ -619,50 +635,53 @@ export class NetworkService {
   /**
    * NETWORK COUNTRY OFFICE ADMIN
    */
-  getNetworkCountryAdminDetail(uid): FirebaseObjectObservable<any> {
-    return this.af.database.object(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid)
+  getNetworkCountryAdminDetail(uid) {
+    return this.afd.object<NetworkOfficeAdminModel>(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid)
   }
 
   getListOfAllNetworkCountries() {
-    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/");
+    return this.afd.list<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry/");
   }
 
   getGlobalNetwork(globalNetworkId) {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + globalNetworkId);
+    return this.afd.object<Network>(Constants.APP_STATUS + "/network/" + globalNetworkId);
   }
 
   getAllNetworkCountries(uid) {
-    return this.af.database.list(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/networkCountryIds", {preserveSnapshot: true})
+    return this.afd.list(Constants.APP_STATUS + "/administratorNetworkCountry/" + uid + "/networkCountryIds")//, {preserveSnapshot: true})
+      .snapshotChanges()
       .map(snaps => {
         return snaps.map(snap => {
-          let officeObj = {};
-          officeObj["networkId"] = snap.key;
-          officeObj["networkCountryIds"] = snap.val() ? Object.keys(snap.val()) : [];
-          return officeObj;
+          return {
+            networkId: snap.key,
+            networkCountryIds: snap.payload.val() ? Object.keys(snap.payload.val()) : []
+          };
         })
       })
   }
 
   getNetworkCountry(networkId, networkCountryId): Observable<NetworkCountryModel> {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId)
+    return this.afd.object<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId)
+      .snapshotChanges()
       .map(networkCountry => {
         let model = new NetworkCountryModel();
-        model.mapFromObject(networkCountry);
-        model.id = networkCountry.$key;
+        model.mapFromObject(networkCountry.payload.val());
+        model.id = networkCountry.key;
         model.networkId = networkId
         return model;
       })
   }
 
-  getLocalNetwork(networkId): Observable<any> {
-    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId)
+  getLocalNetwork(networkId): Observable<ModelNetwork> {
+    return this.afd.object<ModelNetwork>(Constants.APP_STATUS + "/network/" + networkId).valueChanges()
   }
 
   getAgencyIdsForNetworkCountryOffice(networkId, networkCountryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries", {preserveSnapshot: true})
+    return this.afd.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries") //, {preserveSnapshot: true})
+      .snapshotChanges()
       .map(snap => {
-        if (snap && snap.val()) {
-          return Object.keys(snap.val());
+        if (snap && snap.payload.val()) {
+          return Object.keys(snap.payload.val());
         }
       })
   }
@@ -680,13 +699,14 @@ export class NetworkService {
         }
       }
     });
-    return this.af.database.object(Constants.APP_STATUS).update(data);
+    return this.afd.object(Constants.APP_STATUS).update(data);
   }
 
   getLeadAgencyIdForNetworkCountry(networkId, networkCountryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId")
+    return this.afd.object<string>(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId")
+      .valueChanges()
       .map(data => {
-        return data.$value;
+        return data;
       });
   }
 
@@ -694,15 +714,17 @@ export class NetworkService {
     console.log(networkId)
     console.log(networkCountryId)
     console.log(agencyCountryMap)
-    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries")
+    return this.afd.list<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries")
+      .snapshotChanges()
       .map(agencies => {
         if (agencies) {
           let agencyModels = [];
-          agencies.forEach(agency => {
+          agencies.forEach(agencySnap => {
+            const agency = agencySnap.payload.val()
             console.log(agency)
             let model = new NetworkAgencyModel();
-            model.id = agency.$key;
-            model.isApproved = agencyCountryMap.get(agency.$key) ? (agency.$key !== agencyCountryMap.get(agency.$key) ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : agency[agency.$key]["isApproved"]) : false
+            model.id = agencySnap.key;
+            model.isApproved = agencyCountryMap.get(agencySnap.key) ? (agencySnap.key !== agencyCountryMap.get(agencySnap.key) ? agency[agencyCountryMap.get(agencySnap.key)].isApproved : agency[agencySnap.key].isApproved) : false
             agencyModels.push(model);
           });
           return agencyModels;
@@ -716,8 +738,8 @@ export class NetworkService {
     if (!countryId) {
       data["isLocalAgency"] = true;
     }
-    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(null).then(() => {
-      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(data);
+    this.afd.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(null).then(() => {
+      this.afd.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(data);
     });
   }
 
@@ -808,7 +830,8 @@ export class NetworkService {
   }
 
   validateNetworkCountryToken(countryId, token) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountryValidation/" + countryId + "/validationToken")
+    return this.afd.object<any>(Constants.APP_STATUS + "/networkCountryValidation/" + countryId + "/validationToken")
+      .valueChanges()
       .map(tokenObj => {
         if (tokenObj) {
           if (token === tokenObj.token) {
@@ -824,140 +847,155 @@ export class NetworkService {
   }
 
   getNetworksForCountry(agencyId, countryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks", {preserveSnapshot: true})
+    return this.afd.object<NetworkWithCountryModel>(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks") //, {preserveSnapshot: true})
+      .snapshotChanges()
       .map(snap => {
         let ids = [];
-        if (snap.val()) {
-          return Object.keys(snap.val()).map(key => snap.val()[key]["networkCountryId"]);
+        if (snap.payload.val()) {
+          return Object.keys(snap.payload.val()).map(key => snap.payload.val()[key].networkCountryId);
         }
         return ids;
       })
   }
 
   getNetworkWithCountryModelsForCountry(agencyId, countryId) {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+    return this.afd.list<NetworkWithCountryModel>(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+      .snapshotChanges()
       .map(networks => {
         return networks.map(network => {
           let model = new NetworkWithCountryModel();
-          model.networkId = network.$key;
-          model.networkCountryId = network.networkCountryId;
+          model.networkId = network.key;
+          model.networkCountryId = network.payload.val().networkCountryId;
           return model;
         })
       })
   }
 
   getNetworkWithCountryModelsForLocalAgency(agencyId) {
-    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
+    return this.afd.list<NetworkWithCountryModel>(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
+      .snapshotChanges()
       .map(networks => {
         return networks.map(network => {
           let model = new NetworkWithCountryModel();
-          model.networkId = network.$key;
-          model.networkCountryId = network.networkCountryId;
+          model.networkId = network.key;
+          model.networkCountryId = network.payload.val().networkCountryId;
           return model;
         })
       })
   }
 
   getLocalNetworkModelsForCountry(agencyId, countryId) {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
+    return this.afd.list<ModelNetwork>(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
+      .snapshotChanges()
       .map(networks => {
         return networks.map(network => {
           let model = new ModelNetwork();
-          model.id = network.$key;
+          model.mapFromObject(network.payload.val())
+          model.id = network.key;
           return model;
         })
       })
   }
 
   getLocalNetworkModelsForLocalAgency(agencyId: string) {
-    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
+    return this.afd.list<ModelNetwork>(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
+      .snapshotChanges()
       .map(networks => {
         return networks.map(network => {
           let model = new ModelNetwork();
-          model.id = network.$key;
+          model.mapFromObject(network.payload.val())
+          model.id = network.key;
           return model;
         })
       })
   }
 
   mapNetworkWithCountryForCountry(agencyId, countryId) {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+    return this.afd.list<NetworkWithCountryModel>(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
+      .snapshotChanges()
       .map(networks => {
         let map = new Map<string, string>();
         networks.forEach(network => {
-          map.set(network.$key, network.networkCountryId)
+          map.set(network.key, network.payload.val().networkCountryId)
         })
         return map
       })
   }
 
   mapNetworkCountryForLocalAgency(agencyId) {
-    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
+    return this.afd.list<NetworkWithCountryModel>(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
+      .snapshotChanges()
       .map(networks => {
         let map = new Map<string, string>();
         networks.forEach(network => {
-          map.set(network.$key, network.networkCountryId)
+          map.set(network.key, network.payload.val().networkCountryId)
         })
         return map
       })
   }
 
   getLocalNetworksWithCountryForCountry(agencyId, countryId) {
-    return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
+    return this.afd.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
+      .snapshotChanges()
       .map(networks => {
-        let networkKeys = []
+        let networkKeys: string[] = []
         networks.forEach(network => {
-          networkKeys.push(network.$key)
+          networkKeys.push(network.key)
         })
         return networkKeys
       })
   }
 
   getLocalNetworksWithCountryForLocalAgency(agencyId) {
-    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
+    return this.afd.list(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
+      .snapshotChanges()
       .map(networks => {
-        let networkKeys = []
+        let networkKeys: string[] = []
         networks.forEach(network => {
-          networkKeys.push(network.$key)
+          networkKeys.push(network.key)
         })
         return networkKeys
       })
   }
 
   getNetworksForAgency(agencyId) {
-    return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId + "/networks", {preserveSnapshot: true})
+    return this.afd.object<ModelNetwork>(Constants.APP_STATUS + "/agency/" + agencyId + "/networks") //, {preserveSnapshot: true})
+      .snapshotChanges()
       .map(snap => {
         let ids = [];
-        if (snap.val()) {
-          return Object.keys(snap.val());
+        if (snap.payload.val()) {
+          return Object.keys(snap.payload.val());
         }
         return ids;
       })
   }
 
   getRegionIdForCountry(countryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId)
+    return this.afd.object<string>(Constants.APP_STATUS + "/directorRegion/" + countryId)
+      .snapshotChanges()
       .flatMap(id => {
-        if (id && id.$value && id.$value != "null") {
-          return this.af.database.object(Constants.APP_STATUS + "/regionDirector/" + id.$value + "/regionId", {preserveSnapshot: true});
+        if (id && id.payload.val() && id.payload.val() != "null") {
+          return this.afd.object<string>(Constants.APP_STATUS + "/regionDirector/" + id.payload.val() + "/regionId").snapshotChanges() //, {preserveSnapshot: true});
         } else {
-          return observableOf(null);
+          return observableOf<null>(null);
         }
       })
       .map(snap => {
-        if (snap && snap.val()) {
-          return snap.val();
+        if (snap && snap.payload.val()) {
+          return snap.payload.val();
         }
       });
   }
 
   getAgencyCountryOfficesByNetwork(networkId: string) {
     let countryOfficeAgencyMap = new Map<string, string>()
-    return this.af.database.list(Constants.APP_STATUS + '/network/' + networkId + '/agencies')
+    return this.afd.list<ModelAgency>(Constants.APP_STATUS + '/network/' + networkId + '/agencies')
+      .snapshotChanges()
       .map(agencies => {
-        agencies.forEach(agency => {
+        agencies.forEach(agencySnap => {
+          const agency = agencySnap.payload.val()
           if (agency.countryCode && agency.isApproved) {
-            countryOfficeAgencyMap.set(agency.$key, agency.countryCode)
+            countryOfficeAgencyMap.set(agencySnap.key, String(agency.countryCode))
           }
         })
         return countryOfficeAgencyMap;
@@ -967,12 +1005,14 @@ export class NetworkService {
 
   getAgencyCountryOfficesByNetworkCountry(networkCountryId: string, networkId: string) {
     let countryOfficeAgencyMap = new Map<string, string>()
-    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+    return this.afd.list<NetworkCountryModel>(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+      .snapshotChanges()
       .map(agencies => {
-        agencies.forEach(agency => {
+        agencies.forEach(agencySnap => {
+          const agency = agencySnap.payload.val()
           Object.keys(agency).forEach(function (key) {
             if (agency[key].isApproved == true) {
-              countryOfficeAgencyMap.set(agency.$key, key)
+              countryOfficeAgencyMap.set(agencySnap.key, key)
             }
           });
         })
@@ -981,29 +1021,31 @@ export class NetworkService {
   }
 
   getNetworkCountryAgencies(networkId, networkCountryId) {
-    return this.af.database.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
+    return this.afd.list(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId + '/agencyCountries')
 
   }
 
   getNetworkCountriesForNetwork(networkId: string): Observable<string[]> {
-    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
+    return this.afd.list<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry/" + networkId)
+      .snapshotChanges()
       .map(networkCountries => {
-        return networkCountries.map(country => country.$key)
+        return networkCountries.map(country => country.key)
       })
   }
 
   getPrivacySettingForNetworkCountry(networkCountryId): Observable<NetworkPrivacyModel> {
-    return this.af.database.object(Constants.APP_STATUS + "/module/" + networkCountryId, {preserveSnapshot: true})
+    return this.afd.object<ModuleSettingsModel>(Constants.APP_STATUS + "/module/" + networkCountryId) //, {preserveSnapshot: true})
+      .snapshotChanges()
       .map(snap => {
-        if (snap.val()) {
+        if (snap.payload.val()) {
           let privacy = new NetworkPrivacyModel();
-          privacy.mpa = snap.val()[0].privacy;
-          privacy.apa = snap.val()[1].privacy;
-          privacy.chs = snap.val()[2].privacy;
-          privacy.riskMonitoring = snap.val()[3].privacy;
-          privacy.conflictIndicators = snap.val()[4].privacy
-          privacy.officeProfile = snap.val()[5].privacy;
-          privacy.responsePlan = snap.val()[6].privacy;
+          privacy.mpa = snap.payload.val()[0].privacy;
+          privacy.apa = snap.payload.val()[1].privacy;
+          privacy.chs = snap.payload.val()[2].privacy;
+          privacy.riskMonitoring = snap.payload.val()[3].privacy;
+          privacy.conflictIndicators = snap.payload.val()[4].privacy
+          privacy.officeProfile = snap.payload.val()[5].privacy;
+          privacy.responsePlan = snap.payload.val()[6].privacy;
           return privacy;
         }
       });
@@ -1055,21 +1097,22 @@ export class NetworkService {
     update["/module/" + countryId + "/5/privacy"] = countryPrivacy.officeProfile;
     update["/module/" + countryId + "/6/privacy"] = countryPrivacy.responsePlan;
 
-    this.af.database.object(Constants.APP_STATUS).update(update);
+    this.afd.object(Constants.APP_STATUS).update(update);
   }
 
   getPrivacySettingForNetwork(networkId: string): Observable<NetworkPrivacyModel> {
-    return this.af.database.object(Constants.APP_STATUS + "/module/" + networkId, {preserveSnapshot: true})
+    return this.afd.object<ModuleSettingsModel>(Constants.APP_STATUS + "/module/" + networkId) //, {preserveSnapshot: true})
+      .valueChanges()
       .map(snap => {
-        if (snap.val()) {
+        if (snap) {
           let privacy = new NetworkPrivacyModel();
-          privacy.mpa = snap.val()[0].privacy;
-          privacy.apa = snap.val()[1].privacy;
-          privacy.chs = snap.val()[2].privacy;
-          privacy.riskMonitoring = snap.val()[3].privacy;
-          privacy.conflictIndicators = snap.val()[4].privacy;
-          privacy.officeProfile = snap.val()[5].privacy;
-          privacy.responsePlan = snap.val()[6].privacy;
+          privacy.mpa = snap[0].privacy;
+          privacy.apa = snap[1].privacy;
+          privacy.chs = snap[2].privacy;
+          privacy.riskMonitoring = snap[3].privacy;
+          privacy.conflictIndicators = snap[4].privacy;
+          privacy.officeProfile = snap[5].privacy;
+          privacy.responsePlan = snap[6].privacy;
           return privacy;
         }
       });
@@ -1077,15 +1120,17 @@ export class NetworkService {
 
   getAllNetworkCountriesWithSameAgencyMember(networkId, agencyId) {
     return this.getAllNetworkCountriesByNetwork(networkId)
+      .valueChanges()
       .map(networkCountries => {
         return networkCountries.filter(networkCountry => networkCountry.agencyCountries && Object.keys(networkCountry.agencyCountries).indexOf(agencyId) != -1)
       })
   }
 
   mapNetworkOfficesWithSameLocationsInOtherNetworks(location: number) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountry")
+    return this.afd.object<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry")
+      .valueChanges()
       .map(allNetworksObj => {
-        let map = new Map()
+        let map = new Map<string,string>()
         if (allNetworksObj) {
           let networkCountryObjs = Object.keys(allNetworksObj).filter(key => !key.startsWith("$")).map(networkId => {
             let tempObj = {}
@@ -1111,9 +1156,10 @@ export class NetworkService {
 
   getLocalNetworksWithSameLocationsInOtherNetworks(location: number) {
 
-    return this.af.database.object(Constants.APP_STATUS + "/network")
+    return this.afd.object<ModelNetwork>(Constants.APP_STATUS + "/network")
+      .valueChanges()
       .map(allNetworksObj => {
-        let localNetworks = []
+        let localNetworks: string[] = []
         if (allNetworksObj) {
           let networkObjs = Object.keys(allNetworksObj).filter(key => !key.startsWith("$")).map(networkId => {
             let tempObj = allNetworksObj[networkId]
@@ -1128,7 +1174,7 @@ export class NetworkService {
   }
 
   saveIndicatorLog(indicatorId: string, log: LogModel) {
-    return this.af.database.list(Constants.APP_STATUS + '/log/' + indicatorId)
+    return this.afd.list(Constants.APP_STATUS + '/log/' + indicatorId)
       .push(log)
       .catch((error: any) => {
         console.log(error, 'push log failed')
