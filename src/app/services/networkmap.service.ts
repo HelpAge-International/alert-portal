@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Constants} from '../utils/Constants';
 import {Subject, Observable} from 'rxjs';
-import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
+import {AngularFireDatabase} from '@angular/fire/database';
 import {MapService, MapCountry} from './map.service';
 import {ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
 import {CommonService} from './common.service';
@@ -9,6 +9,15 @@ import GeocoderResult = google.maps.GeocoderResult;
 import GeocoderStatus = google.maps.GeocoderStatus;
 import {HazardImages} from '../utils/HazardImages';
 import {PrepActionService} from './prepactions.service';
+import {Action} from "../model/action";
+import {takeUntil} from "rxjs/operators";
+import {ClockSettingModel} from "../model/clock-settings.model";
+import {ModelAlert} from "../model/alert.model";
+import {ModelHazard} from "../model/hazard.model";
+import {NetworkCountryModel} from "../network-country-admin/network-country.model";
+import {ModelNetwork} from "../model/network.model";
+import {ModelCountryOffice} from "../model/countryoffice.model";
+import {ModelAgency} from "../model/agency.model";
 
 /**
  * Network map service
@@ -41,7 +50,7 @@ import {PrepActionService} from './prepactions.service';
 export class NetworkMapService {
 
   private ngUnsubscribe: Subject<void>;
-  private af: AngularFire;
+  private afd: AngularFireDatabase;
 
   /* list of countries that will be populated by this service! */
   public countries: NetworkMapCountry[] = [];
@@ -78,11 +87,11 @@ export class NetworkMapService {
    *               Loads the coloured layer with the countries
    *                   Get the MPA values for each (mpaComplete / mpaTotal)
    */
-  public init(af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
+  public init(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
               done: (countries: NetworkMapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
     this.networkId = networkId;
     this.networkCountryId = networkCountryId;
-    this.af = af;
+    this.afd = afd;
     this.ngUnsubscribe = ngUnsubscribe;
 
     this.systemMpaGreenYellow(systemAdminId, (green, yellow) => {
@@ -169,28 +178,29 @@ export class NetworkMapService {
       //     }
       //     return this.af.database.list(Constants.APP_STATUS + '/actionMandated/' + agencyId, {preserveSnapshot: true});
       //   })
-      this.af.database.list(Constants.APP_STATUS + '/actionMandated/' + agencyId, {preserveSnapshot: true})
+      this.afd.list<Action>(Constants.APP_STATUS + '/actionMandated/' + agencyId) //, {preserveSnapshot: true})
+        .snapshotChanges()
         .flatMap((mandatedSnap) => {
           for (const x of mandatedSnap) {
-            if (x.val().level == ActionLevel.MPA) {
+            if (x.payload.val().level == ActionLevel.MPA) {
               holder.mpaTotal.add(x.key);
             }
           }
-          return this.af.database.list(Constants.APP_STATUS + '/action/' + countryId, {preserveSnapshot: true});
+          return this.afd.list<Action>(Constants.APP_STATUS + '/action/' + countryId).snapshotChanges() //, {preserveSnapshot: true});
         })
         .map((actionSnap) => {
           for (const x of actionSnap) {
-            if (x.val().level == ActionLevel.MPA || holder.mpaTotal.has(x.key)) {
+            if (x.payload.val().level == ActionLevel.MPA || holder.mpaTotal.has(x.key)) {
               let calculatedClock: number = new Date().getTime();
-              if (x.val().hasOwnProperty('frequencyBase') && x.val().hasOwnProperty('frequencyValue')) {
-                calculatedClock = PrepActionService.clockCalculation(x.val().frequencyValue, x.val().frequencyBase);
+              if (x.payload.val().hasOwnProperty('frequencyBase') && x.payload.val().hasOwnProperty('frequencyValue')) {
+                calculatedClock = PrepActionService.clockCalculation(x.payload.val().frequencyValue, x.payload.val().frequencyBase);
               }
               else {
                 calculatedClock = PrepActionService.clockCalculation(value, durationType);
               }
-              if (x.val().isComplete && x.val().isCompleteAt != null &&                    // Has a completed date!
-                !x.val().isArchived &&                                                      // Isn't archived
-                x.val().isCompleteAt + calculatedClock > (new Date()).getTime()) {         // Hasn't expired
+              if (x.payload.val().isComplete && x.payload.val().isCompleteAt != null &&                    // Has a completed date!
+                !x.payload.val().isArchived &&                                                      // Isn't archived
+                x.payload.val().isCompleteAt + calculatedClock > (new Date()).getTime()) {         // Hasn't expired
                 holder.mpaComplete.add(x.key);
               }
               holder.mpaTotal.add(x.key);
@@ -198,18 +208,19 @@ export class NetworkMapService {
           }
           return holder;
         })
-        .takeUntil(this.ngUnsubscribe)
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe((holder) => {
           done(holder);
         });
     });
   }
   private downloadDefaultClockSettings(agencyId: string, fun: (value: number, durationType: number) => void) {
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId + '/clockSettings/preparedness', {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<ClockSettingModel>(Constants.APP_STATUS + '/agency/' + agencyId + '/clockSettings/preparedness')//, {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
-        if (snap.val() != null) {
-          fun(snap.val().value, snap.val().durationType);
+        if (snap.payload.val() != null) {
+          fun(snap.payload.val().value, snap.payload.val().durationType);
         }
       });
   }
@@ -220,45 +231,47 @@ export class NetworkMapService {
   private initHazards() {
     for (const country of this.countries) {
       for (const agency of country.agencies) {
-        this.af.database.list(Constants.APP_STATUS + '/alert/' + agency.countryId, {preserveSnapshot: true})
-          .takeUntil(this.ngUnsubscribe)
+        this.afd.list<ModelAlert>(Constants.APP_STATUS + '/alert/' + agency.countryId) //, {preserveSnapshot: true})
+          .snapshotChanges()
+          .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((snap) => {
             for (const element of snap) {
               let res: boolean = true;
               // let lock: boolean = false;
-              for (const userTypes in element.val().approval) {
-                for (const thisUid in element.val().approval[userTypes]) {
-                  if (element.val().approval[userTypes][thisUid] != 1) {
+              for (const userTypes in element.payload.val().approval) {
+                for (const thisUid in element.payload.val().approval[userTypes]) {
+                  if (element.payload.val().approval[userTypes][thisUid] != 1) {
                     res = false;
                   }
                 }
               }
-              if (element.val().alertLevel != AlertLevels.Red) {
+              if (element.payload.val().alertLevel != AlertLevels.Red) {
                 res = false
               }
               //if (!lock && res) {
               if (res) {
                 // Everyone on the approval list has approved it. Uncomment the three 'lock' comments if you require ALL
                 //   on the approval list to approve
-                const networkMapHazard: NetworkMapHazard = country.getHazard(element.val().hazardScenario, element.val().customHazard);
-                if (element.val().hazardScenario == -1) {
+                const networkMapHazard: NetworkMapHazard = country.getHazard(element.payload.val().hazardScenario, element.payload.val().customHazard);
+                if (element.payload.val().hazardScenario == -1) {
                   // TODO: Check that the custom hazard fields are stored under customHazard!
                   // Swap it out as the reference to it
-                  this.af.database.object(Constants.APP_STATUS + '/hazardOther/' + element.val().customHazard, {preserveSnapshot: true})
-                    .takeUntil(this.ngUnsubscribe)
+                  this.afd.object<ModelHazard>(Constants.APP_STATUS + '/hazardOther/' + element.payload.val().customHazard) //, {preserveSnapshot: true})
+                    .snapshotChanges()
+                    .pipe(takeUntil(this.ngUnsubscribe))
                     .subscribe((hazardSnap) => {
-                      if (hazardSnap.val() != null) {
-                        networkMapHazard.customHazard = hazardSnap.val().name;
+                      if (hazardSnap.payload.val() != null) {
+                        networkMapHazard.customHazard = hazardSnap.payload.val().name;
                       }
                     });
                 }
                 const raised: NetworkMapHazardRaised = new NetworkMapHazardRaised();
                 let lengthOfHazard = networkMapHazard.instancesOfHazard.length;
-                raised.population = element.val().estimatedPopulation;
+                raised.population = element.payload.val().estimatedPopulation;
                 raised.agencyName = agency.name;
                 if (lengthOfHazard != 1) {
                   this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
-                    for (const x of element.val().affectedAreas) {
+                    for (const x of element.payload.val().affectedAreas) {
                       const obj = {
                         country: '',
                         areas: ''
@@ -341,17 +354,18 @@ export class NetworkMapService {
    */
   private getAgencyCountriesOfNetworkCountry(networkId: string, networkCountryId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>, countryCodeLimiter?: number) => void) {
     console.log(">> NETWORK + NETWORK COUNTRY <<");
-    this.af.database
-      .list(Constants.APP_STATUS + "/networkCountry/" + networkId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd
+      .list<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry/" + networkId) //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snapshot) => {
         const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
         for (let snap of snapshot) {
-          if (snap.val().isActive) {
-            if (snap.val().hasOwnProperty("agencyCountries")) {
-              for (const agency in snap.val().agencyCountries) {
-                for (const country in snap.val().agencyCountries[agency]) {
-                  if (snap.val().agencyCountries[agency][country].hasOwnProperty("isApproved") && snap.val().agencyCountries[agency][country].isApproved) {
+          if (snap.payload.val().isActive) {
+            if (snap.payload.val().hasOwnProperty("agencyCountries")) {
+              for (const agency in snap.payload.val().agencyCountries) {
+                for (const country in snap.payload.val().agencyCountries[agency]) {
+                  if (snap.payload.val().agencyCountries[agency][country].hasOwnProperty("isApproved") && snap.payload.val().agencyCountries[agency][country].isApproved) {
                     // agency / country is approved from the Network Country
                     let set: Set<string> = new Set<string>();
                     set.add(country);
@@ -375,21 +389,22 @@ export class NetworkMapService {
    */
   private getAgencyCountriesOfNetwork(networkId: string, done: (agencyHasCountriesMap: Map<string, Set<string>>, countryCodeLimiter?: number) => void) {
     console.log(">> NETWORK <<");
-    this.af.database
-      .object(Constants.APP_STATUS + "/network/" + networkId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd
+      .object<ModelNetwork>(Constants.APP_STATUS + "/network/" + networkId) //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
         let cVal: number = -1;
-        if (snap.val().hasOwnProperty("isGlobal") && !snap.val().isGlobal) {
+        if (snap.payload.val().hasOwnProperty("isGlobal") && !snap.payload.val().isGlobal) {
           // LOCAL NETWORK. Get the country constraint from the leadAgencyId and agency > countryCode
-          cVal = snap.val().countryCode;
+          cVal = snap.payload.val().countryCode;
         }
         this.countryIdFromAgencyIdCounter = 0;
         const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
-        if (snap.val().hasOwnProperty("agencies") != null) {
+        if (snap.payload.val().hasOwnProperty("agencies") != null) {
           let validAgencyIds: string[] = [];
-          for (let x in snap.val().agencies) {
-            if (snap.val().agencies[x].isApproved) {
+          for (let x in snap.payload.val().agencies) {
+            if (snap.payload.val().agencies[x]['isApproved']) {
               validAgencyIds.push(x);
             }
           }
@@ -410,9 +425,10 @@ export class NetworkMapService {
   }
   private countryIdFromAgencyIdCounter = 0;
   private getCountryIdsFromAgencyId(agencyId: string, done: (countries: Set<string>) => void) {
-    this.af.database
-      .list(Constants.APP_STATUS + "/countryOffice/" + agencyId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd
+      .list<ModelCountryOffice>(Constants.APP_STATUS + "/countryOffice/" + agencyId) //, {preserveSnapshot: true})
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
         let keys: Set<string> = new Set<string>();
         for (let x of snap) {
@@ -421,7 +437,7 @@ export class NetworkMapService {
         done(keys);
       })
   }
-  
+
   /**
    * Get the country office of a given country id.
    *  This will build the country -> agency portion of the data structure, populating any data required
@@ -432,30 +448,30 @@ export class NetworkMapService {
   private getCountryOffice(agencyId: string, countryId: string, onlyPickCountryLocationEnum: number, done: () => void) {
     this.mCountryOfficeCounter++;
     const path = agencyId !== countryId ? Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId : Constants.APP_STATUS + '/agency/' + agencyId
-    this.af.database.object(path,
-        {preserveSnapshot: true})
+    this.afd.object<ModelAgency>(path) //,{preserveSnapshot: true})
+      .snapshotChanges()
       .flatMap((snap) => {
         console.log(onlyPickCountryLocationEnum);
-        console.log(snap.val());
-        const actualLocation = agencyId !== countryId ? snap.val().location : snap.val().countryCode
-        if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == undefined || onlyPickCountryLocationEnum == snap.val().location) {
+        console.log(snap.payload.val());
+        const actualLocation = agencyId !== countryId ? snap.payload.val().location : snap.payload.val().countryCode
+        if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == undefined || onlyPickCountryLocationEnum == snap.payload.val().location) {
           this.countryIdToLocation.set(snap.key, actualLocation);
           // Ensure a country object for this country office is created
           const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(actualLocation);
           mapCountry.setAgency(agencyId, new NetworkMapAgency(agencyId, countryId));
         }
-        return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId, {preserveSnapshot: true});
+        return this.afd.object<ModelAgency>(Constants.APP_STATUS + '/agency/' + agencyId).snapshotChanges() //, {preserveSnapshot: true});
       })
-      .takeUntil(this.ngUnsubscribe)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
-        if (snap != null && snap.val() != null) {
-          console.log(snap.val());
+        if (snap != null && snap.payload.val() != null) {
+          console.log(snap.payload.val());
           const mapCountry: NetworkMapCountry = this.findNetworkMapCountry(this.countryIdToLocation.get(countryId));
           if (mapCountry != null) {
             const agency: NetworkMapAgency = mapCountry.getAgency(snap.key);
             if (agency != null) {
-              agency.name = snap.val().name;
-              agency.image = snap.val().logoPath;
+              agency.name = snap.payload.val().name;
+              agency.image = snap.payload.val().logoPath;
               // Save this relationship to the map as well for the potential hazards!
               this.AGENCY_ID_NAME_MAP.set(snap.key, agency.name);
             }
@@ -472,10 +488,11 @@ export class NetworkMapService {
    * Get the System level settings for mpa GREEN and YELLOW
    */
   systemMpaGreenYellow(systemAdminId: string, results: (green: number, yellow: number) => void) {
-    this.af.database.object(Constants.APP_STATUS + '/system/' + systemAdminId + '/minThreshold', {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<number>(Constants.APP_STATUS + '/system/' + systemAdminId + '/minThreshold') //, {preserveSnapshot: true})
+      .valueChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
-        results(snap.val()[0], snap.val()[1]);
+        results(snap[0], snap[1]);
       });
   }
 

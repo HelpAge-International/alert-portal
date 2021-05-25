@@ -31,6 +31,7 @@ export class ModelAgency extends BaseModel{
   public notificationSetting: any = [];
   public clockSettings:{} = {};
   public responsePlanSettings:{} = {};
+  public location?: number;
 
   constructor(name:string) {
     super();

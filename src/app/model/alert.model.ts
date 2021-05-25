@@ -31,6 +31,7 @@ export class ModelAlert extends BaseModel {
   public networkCountryId?: string
   public networkId?: string
   public timeTracking?: {};
+  public customHazard?: string;
 
   public previousIsAmber?: boolean
   public redAlertApproved?: boolean

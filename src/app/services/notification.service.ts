@@ -1,26 +1,28 @@
 
 import {map, first} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import {AngularFireDatabase} from '@angular/fire/database';
 import {Constants} from '../utils/Constants';
 import {Observable} from 'rxjs';
 import {MessageModel} from "../model/message.model";
 import { UserType } from "../utils/Enums";
 import { UserService } from "./user.service";
+import {NotificationSettingsModel} from "../model/notification-settings.model";
 
 @Injectable()
 export class NotificationService {
 
   constructor(private _userService: UserService,
-              private af: AngularFire) {
+              private afd: AngularFireDatabase) {
   }
 
   getNotificationSettings(agencyId: string): Observable<any> {
-    const notificationSettingsSubscription = this.af.database.list(Constants.APP_STATUS + '/agency/' + agencyId + '/notificationSetting')
+    const notificationSettingsSubscription = this.afd.list<NotificationSettingsModel>(Constants.APP_STATUS + '/agency/' + agencyId + '/notificationSetting')
+      .snapshotChanges()
       .map(items => {
         const notificationSettings: any[] = [];
         items.forEach(item => {
-          notificationSettings[item.$key] = false;
+          notificationSettings[item.key] = false;
         });
         return notificationSettings;
       });
@@ -28,7 +30,7 @@ export class NotificationService {
     return notificationSettingsSubscription;
   }
 
-  deleteNetworkAdminNotification(userId, networkId, messageId): firebase.Promise<any>{
+  deleteNetworkAdminNotification(userId, networkId, messageId): Promise<any>{
     let deleteData = {};
 
     let nodesAdministratorNetwork = this.getNetworkAdministratorNodes(networkId, userId);
@@ -40,7 +42,7 @@ export class NotificationService {
     return this.deleteNotification(deleteData);
   }
 
-  deleteNetworkCountryAdminNotification(userId, networkId, networkCountryId, messageId): firebase.Promise<any>{
+  deleteNetworkCountryAdminNotification(userId, networkId, networkCountryId, messageId): Promise<any>{
     let deleteData = {};
 
     let nodesAdministratorNetworkCountry = this.getNetworkCountryAdministratorNodes(networkId, networkCountryId, userId);
@@ -52,7 +54,7 @@ export class NotificationService {
     return this.deleteNotification(deleteData);
   }
 
- deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteAgencyAdminNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesAdministratorAgency = this.getAgencyAdministratorNodes(agencyId);
@@ -64,7 +66,7 @@ export class NotificationService {
   return this.deleteNotification(deleteData);
  }
 
- deleteCountryAdminNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteCountryAdminNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesAdministratorCountry = this.getCountryAdministratorNodes(agencyId, countryId, userId);
@@ -76,7 +78,7 @@ export class NotificationService {
   return this.deleteNotification(deleteData);
  }
 
- deleteCountryDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteCountryDirectorNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesCountryDirector = this.getCountryDirectorNodes(agencyId, countryId, userId);
@@ -88,7 +90,7 @@ export class NotificationService {
   return this.deleteNotification(deleteData);
  }
 
-deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesRegionDirector = this.getRegionDirectorNodes(agencyId, countryId, userId);
@@ -100,7 +102,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   return this.deleteNotification(deleteData);
 }
 
- deleteGlobalDirectorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteGlobalDirectorNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesGlobalDirector = this.getGlobalDirectorNodes(agencyId, countryId, userId);
@@ -112,7 +114,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   return this.deleteNotification(deleteData);
  }
 
- deleteGlobalUserNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteGlobalUserNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesGlobalUser = this.getGlobalUserNodes(agencyId, countryId, userId);
@@ -124,7 +126,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   return this.deleteNotification(deleteData);
  }
 
- deleteDonorNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteDonorNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesDonor = this.getDonorNodes(agencyId, countryId, userId);
@@ -136,7 +138,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   return this.deleteNotification(deleteData);
  }
 
- deleteERTLeadsNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteERTLeadsNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesErtLeader = this.getErtLeaderNodes(agencyId, countryId, userId);
@@ -148,7 +150,7 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   return this.deleteNotification(deleteData);
  }
 
- deleteERTNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deleteERTNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesErt = this.getErtNodes(agencyId, countryId, userId);
@@ -160,11 +162,11 @@ deleteRegionalDirectorNotification(userId, countryId, agencyId, messageId): fire
   return this.deleteNotification(deleteData);
  }
 
- deletePartnerNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+ deletePartnerNotification(userId, countryId, agencyId, messageId): Promise<any>{
    return this.deleteNotification("/messageRef/country/" + countryId + "/partner/" + userId + "/" + messageId);
  }
 
-deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.Promise<any>{
+deleteCountryUserNotification(userId, countryId, agencyId, messageId): Promise<any>{
    let deleteData = {};
 
    let nodesCountryUser = this.getCountryUserNodes(agencyId, countryId, userId);
@@ -175,11 +177,11 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
 
   return this.deleteNotification(deleteData);
  }
-  deleteNotification(deleteData): firebase.Promise<any>{
+  deleteNotification(deleteData): Promise<any>{
     if (!deleteData) {
       Promise.reject('Missing data!');
     }
-    return this.af.database.object(Constants.APP_STATUS).update(deleteData);
+    return this.afd.object(Constants.APP_STATUS).update(deleteData);
   }
 
   saveUserNotificationBasedOnNotificationSetting(message: MessageModel, notificationSetting: number, agencyId: string, countryId: string)
@@ -259,7 +261,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
             });
           }));
   }
-  saveUserNotification(userId: string, message: MessageModel, userType: number, agencyId: string, countryId: string): firebase.Promise<any>{
+  saveUserNotification(userId: string, message: MessageModel, userType: number, agencyId: string, countryId: string): Promise<any>{
     let node = '';
 
     if(!userId || !message || !userType || !agencyId || !countryId)
@@ -309,7 +311,7 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
     return this.saveNotification(node, message);
   }
 
-  saveUserNotificationLocalAgency(userId: string, message: MessageModel, userType: number, agencyId: string): firebase.Promise<any>{
+  saveUserNotificationLocalAgency(userId: string, message: MessageModel, userType: number, agencyId: string): Promise<any>{
     let node = '';
 
     if(!userId || !message || !userType || !agencyId )
@@ -344,20 +346,20 @@ deleteCountryUserNotification(userId, countryId, agencyId, messageId): firebase.
     return this.saveNotification(node, message);
   }
 
-private saveNotification(node: string, message: MessageModel): firebase.Promise<any>{
+private saveNotification(node: string, message: MessageModel): Promise<any>{
   if(!node || !message) {
     console.log('no node or message')
     return;
   }
 
-  return this.af.database.list(Constants.APP_STATUS + '/message').push(message)
+  return this.afd.list(Constants.APP_STATUS + '/message').push(message)
     .then(
       (msg) => {
           let messageRefData = {};
           node = node.replace("{messageId}", msg.key);
           messageRefData[node] = true;
           console.log(messageRefData)
-          this.af.database.object(Constants.APP_STATUS).update(messageRefData);
+          this.afd.object(Constants.APP_STATUS).update(messageRefData);
       }
     );
 }
@@ -367,12 +369,13 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
       return;
     }
 
-    return this.af.database.list(Constants.APP_STATUS + node)
+    return this.afd.list(Constants.APP_STATUS + node)
+      .snapshotChanges()
       .map(list => {
         let messages = [];
         list.forEach((x) => {
-          if(!unreadOnly || (unreadOnly && x.$value === true)) {
-            this.getNotificationMessage(x.$key).subscribe(message => { messages.push(message); });
+          if(!unreadOnly || (unreadOnly && x.payload.val() === true)) {
+            this.getNotificationMessage(x.key).subscribe(message => { messages.push(message); });
           }
         });
         return messages;
@@ -385,24 +388,26 @@ private saveNotification(node: string, message: MessageModel): firebase.Promise<
       return;
     }
 
-    return this.af.database.list(Constants.APP_STATUS + node)
+    return this.afd.list(Constants.APP_STATUS + node)
+      .snapshotChanges()
       .map(list => {
         list.forEach((message) => {
-          if(message.$value === true) {
+          if(message.payload.val() === true) {
             let obj = {};
-            obj[message.$key] = new Date().getTime();
-            return this.af.database.object(Constants.APP_STATUS + node).update(obj);
+            obj[message.key] = new Date().getTime();
+            return this.afd.object(Constants.APP_STATUS + node).update(obj);
           }
         });
       });
   }
 
    getNotificationMessage(messageId: string): Observable<MessageModel>{
-    return this.af.database.object(Constants.APP_STATUS + "/message/" + messageId)
+    return this.afd.object<MessageModel>(Constants.APP_STATUS + "/message/" + messageId)
+      .snapshotChanges()
       .map(item => {
         let message = new MessageModel();
-        message.mapFromObject(item);
-        message.id = item.$key;
+        message.mapFromObject(item.payload.val());
+        message.id = item.key;
         return message;
       });
   }

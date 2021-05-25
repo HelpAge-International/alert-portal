@@ -1,29 +1,32 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {Constants} from "../utils/Constants";
 import {NetworkOfficeModel} from "../network-admin/network-offices/add-edit-network-office/network-office.model";
 import {Observable} from "rxjs";
+import {NetworkCountryModel} from "../network-country-admin/network-country.model";
 
 @Injectable()
 export class NetworkCountryService {
 
-  constructor(private af: AngularFire) {
+  constructor(private afd: AngularFireDatabase) {
   }
 
   getNetworkCountryDetail(networkId, networkCountryId) {
-    return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId)
+    return this.afd.object<NetworkOfficeModel>(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId)
+      .snapshotChanges()
       .map(office => {
         let modelCountryOffice = new NetworkOfficeModel();
-        modelCountryOffice.mapFromObject(office);
-        modelCountryOffice.id = office.$key;
+        modelCountryOffice.mapFromObject(office.payload.val());
+        modelCountryOffice.id = office.key;
         return modelCountryOffice;
       });
   }
 
   getAssignedCountries(networkId, networkCountryId): Observable<number[]> {
-    return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId)
+    return this.afd.list<NetworkCountryModel>(Constants.APP_STATUS + "/networkCountry/" + networkId)
+      .snapshotChanges()
       .map(networkObjs => {
-        return networkCountryId ? networkObjs.filter(networkObj => networkObj.$key != networkCountryId).map(networkObj => Number(networkObj.location)) : networkObjs.map(networkObj => Number(networkObj.location));
+        return networkCountryId ? networkObjs.filter(networkObj => networkObj.key != networkCountryId).map(networkObj => Number(networkObj.payload.val().location)) : networkObjs.map(networkObj => Number(networkObj.payload.val().location));
       });
   }
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import {AngularFireDatabase} from '@angular/fire/database';
 import {Constants} from '../utils/Constants';
 import {Observable, Subject} from 'rxjs';
 import { NoteModel } from "../model/note.model";
@@ -7,16 +7,17 @@ import { NoteModel } from "../model/note.model";
 @Injectable()
 export class NoteService {
 
-  constructor(private af: AngularFire) { }
+  constructor(private afd: AngularFireDatabase) { }
 
     public getNotes(node: string): Observable<NoteModel[]> {
-      const getNotesSubscription = this.af.database.list(Constants.APP_STATUS + node)
+      const getNotesSubscription = this.afd.list<NoteModel>(Constants.APP_STATUS + node)
+        .snapshotChanges()
       .map(items => {
         const notes: NoteModel[] = [];
         items.forEach(item => {
           let note = new NoteModel();
-          note.mapFromObject(item);
-          note.id = item.$key;
+          note.mapFromObject(item.payload.val());
+          note.id = item.key;
           notes.push(note);
         });
         return notes;
@@ -25,7 +26,7 @@ export class NoteService {
     return getNotesSubscription;
     }
 
-  public saveNote(node: string, note: NoteModel): firebase.Promise<any>{
+  public saveNote(node: string, note: NoteModel): Promise<any>{
     if(!node || !note)
     {
       return Promise.reject('Missing node or note');
@@ -38,13 +39,13 @@ export class NoteService {
     {
       const nodeData = {};
       nodeData[node + '/' + note.id] = note;
-      return this.af.database.object(Constants.APP_STATUS).update(nodeData);
+      return this.afd.object(Constants.APP_STATUS).update(nodeData);
     }else{
-      return this.af.database.list(Constants.APP_STATUS + node).push(note);
+      return this.afd.list(Constants.APP_STATUS + node).push(note).then();
     }
   }
 
-  public deleteNote(node: string, note: NoteModel): firebase.Promise<any> {
+  public deleteNote(node: string, note: NoteModel): Promise<any> {
     if(!node || !note || !note.id )
     {
       return Promise.reject('Missing node or note');
@@ -54,6 +55,6 @@ export class NoteService {
 
     nodeData[node + '/' + note.id] = null;
 
-    return this.af.database.object(Constants.APP_STATUS).update(nodeData);
+    return this.afd.object(Constants.APP_STATUS).update(nodeData);
   }
 }

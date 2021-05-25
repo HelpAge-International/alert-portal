@@ -1,9 +1,11 @@
 
 import {takeUntil} from 'rxjs/operators';
 import {PermissionsAgency, UserType} from "../utils/Enums";
-import {AngularFire, AngularFireAuth, FirebaseAuthState} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
+import {AngularFireAuth} from "@angular/fire/auth";
+//import {AngularFire, AngularFireAuth, FirebaseAuthState} from "angularfire2";
 import {UserService} from "./user.service";
-import {Subject, Observable} from "rxjs";
+import {Subject, Observable, from} from "rxjs";
 import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import {Constants} from "../utils/Constants";
 import {Inject, Injectable} from "@angular/core";
@@ -11,7 +13,11 @@ import { DOCUMENT } from "@angular/common";
 import {Pair} from "../utils/bundles";
 import {SettingsService} from "./settings.service";
 import {PermissionSettingsModel} from "../model/permission-settings.model";
-
+import firebase from "firebase";
+import {ModelAdministratorCountry} from "../model/administrator.country.model";
+import {PermissionsModel} from "../model/permissions.model";
+import {ModelCountryOffice} from "../model/countryoffice.model";
+import {ModelAgency} from "../model/agency.model";
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -405,7 +411,7 @@ export class PageControlService {
     return this.moduleControlMap;
   }
 
-  constructor(private af: AngularFire, private userService: UserService) {
+  constructor(private afd: AngularFireDatabase, private afa:AngularFireAuth , private userService: UserService) {
   }
 
 
@@ -416,37 +422,37 @@ export class PageControlService {
    * =============================================================================================
    */
   public auth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, userType: UserType) => void) {
-    PageControlService.auth(this.af, ngUnsubscribe, route, router, func, null);
+    PageControlService.auth(this.afa, ngUnsubscribe, route, router, func, null, this.afd);
   }
 
-  public authObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType) => void) {
-    PageControlService.auth(this.af, ngUnsubscribe, route, router, null, func);
+  public authObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth:  Observable<firebase.User>, userType: UserType) => void) {
+    PageControlService.auth(this.afa, ngUnsubscribe, route, router, null, func, this.afd);
   }
 
-  private static auth(af: AngularFire, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
+  private static auth(afa: AngularFireAuth, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
                       authUser: (auth: firebase.User, userType: UserType) => void,
-                      authObj: (auth: FirebaseAuthState, userType: UserType) => void) {
+                      authObj: (auth: Observable<firebase.User> , userType: UserType) => void, afd: AngularFireDatabase) {
     if (Constants.SHOW_MAINTENANCE_PAGE) {
       router.navigateByUrl(Constants.MAINTENANCE_PAGE_URL);
     }
     else {
       console.log("in page control now***************")
-      af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+      afa.authState.pipe(takeUntil(ngUnsubscribe)).subscribe((auth) => {
           if (auth) {
-            UserService.getUserType(af, auth.auth.uid).pipe(takeUntil(ngUnsubscribe)).subscribe(userType => {
+            UserService.getUserType(afd, auth.uid).pipe(takeUntil(ngUnsubscribe)).subscribe(userType => {
               console.log(userType)
               if (userType == null) {
                 if (authUser != null) {
-                  authUser(auth.auth, null);
+                  authUser(auth, null);
                 }
                 else if (authObj != null) {
-                  authObj(auth, null);
+                  authObj(Observable.of(auth), null);
                 }
               }
               else {
                 let type: PageUserType = PageControlService.initPageControlMap().get(userType);
                 if (PageControlService.checkUrl(route, userType, type)) {
-                  PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, auth.auth.uid, Constants.USER_PATHS[userType], (list) => {
+                  PageControlService.agencyBuildPermissionsMatrix(afd, ngUnsubscribe, auth.uid, Constants.USER_PATHS[userType], (list) => {
                     let s = PageControlService.buildEndUrl(route);
                     let skip = false;
                     // We have [AgencyPermissionObj], need to iterate through those.
@@ -463,10 +469,10 @@ export class PageControlService {
                     }
                     if (!skip) {
                       if (authUser != null) {
-                        authUser(auth.auth, userType);
+                        authUser(auth, userType);
                       }
                       else if (authObj != null) {
-                        authObj(auth, userType);
+                        authObj(Observable.of(auth), userType);
                       }
                     }
                   });
@@ -492,7 +498,7 @@ export class PageControlService {
    * Method to return all the information you may need from firebase regarding admin
    * If it's an agencyAdmin, countryId is a list of countryAdmins!
    */
-  public authUserObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+  public authUserObj(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: Observable<firebase.User>, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
     this.authoriseUser(ngUnsubscribe, route, router, null, func);
   }
 
@@ -502,10 +508,10 @@ export class PageControlService {
 
   private authoriseUser(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router,
                         userCallback: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,
-                        authStateCallback: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
-    this.af.auth.takeUntil(ngUnsubscribe).subscribe((auth) => {
+                        authStateCallback: (auth:  Observable<firebase.User>, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void) {
+    this.afa.authState.pipe(takeUntil(ngUnsubscribe)).subscribe((auth) => {
       if (auth) {
-        this.checkAuth(ngUnsubscribe, auth.auth.uid, ModelUserTypeReturn.list(), 0, (userType, userObj) => {
+        this.checkAuth(ngUnsubscribe, auth.uid, ModelUserTypeReturn.list(), 0, (userType, userObj) => {
           if (userObj != null || userType != null) {
 
             // To make it here we are signed in and we have the user type userType
@@ -520,7 +526,7 @@ export class PageControlService {
               }
             }
             else if (userType == UserType.SystemAdmin) {
-              systemId = auth.auth.uid;
+              systemId = auth.uid;
             }
             if (userObj.hasOwnProperty('agencyAdmin')) {
               for (let x in userObj.agencyAdmin) {
@@ -587,40 +593,40 @@ export class PageControlService {
 
   public networkAuth(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: firebase.User, oldUserType: UserType, networkId: string, networkCountryId: string) => void) {
     // TODO: Implement this functionality
-    this.af.auth
-      .takeUntil(ngUnsubscribe)
+    this.afa.authState
+      .pipe(takeUntil(ngUnsubscribe))
       .subscribe((auth) => {
         if (!auth || !auth.uid) {
           router.navigateByUrl(Constants.LOGIN_PATH);
         } else {
-          func(auth.auth, null, null, null);
+          func(auth, null, null, null);
         }
       });
   }
 
-  public networkAuthState(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: FirebaseAuthState, oldUserType: UserType, networkIds: string[], networkCountryIds: string[]) => void) {
+  public networkAuthState(ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, func: (auth: Observable<firebase.User>, oldUserType: UserType, networkIds: string[], networkCountryIds: string[]) => void) {
     // TODO: Implement this functionality
-    this.af.auth
-      .takeUntil(ngUnsubscribe)
+    this.afa.authState
+      .pipe(takeUntil(ngUnsubscribe))
       .subscribe((auth) => {
         if (!auth || !auth.uid) {
           router.navigateByUrl(Constants.LOGIN_PATH);
         } else {
-          func(auth, null, [], []);
+          func(Observable.of(auth), null, [], []);
         }
       });
   }
 
 
   // Given we are authenticated and valid, check permissions to see if we need to be kicked out
-  private checkPageControl(authState: FirebaseAuthState, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, userType: UserType, countryId: any, agencyId: string, systemId: string,
+  private checkPageControl(authState: firebase.User, ngUnsubscribe: Subject<void>, route: ActivatedRoute, router: Router, userType: UserType, countryId: any, agencyId: string, systemId: string,
                            userCallback: (auth: firebase.User, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,
-                           authStateCallback: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,) {
+                           authStateCallback: (auth: Observable<firebase.User>, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,) {
     let type: PageUserType = PageControlService.initPageControlMap().get(userType);
 
     console.log(userType)
     if (PageControlService.checkUrl(route, userType, type)) {
-      PageControlService.agencyBuildPermissionsMatrix(this.af, ngUnsubscribe, authState.auth.uid, Constants.USER_PATHS[userType], (list) => {
+      PageControlService.agencyBuildPermissionsMatrix(this.afd, ngUnsubscribe, authState.uid, Constants.USER_PATHS[userType], (list) => {
         let s = PageControlService.buildEndUrl(route);
         let skip = false;
         // We have [AgencyPermissionObj], need to iterate through those.
@@ -642,10 +648,10 @@ export class PageControlService {
         }
         if (!skip) {
           if (userCallback != null && authStateCallback == null) {
-            userCallback(authState.auth, userType, countryId, agencyId, systemId);
+            userCallback(authState, userType, countryId, agencyId, systemId);
           }
           else if (userCallback == null && authStateCallback != null) {
-            authStateCallback(authState, userType, countryId, agencyId, systemId);
+            authStateCallback(Observable.of(authState), userType, countryId, agencyId, systemId);
           }
         }
       });
@@ -662,33 +668,36 @@ export class PageControlService {
     if (index == modelTypes.length) {
       fun(null, null);
     } else {
-      this.af.database.object(Constants.APP_STATUS + "/" + modelTypes[index].path + "/" + uid, {preserveSnapshot: true})
-        .takeUntil(ngUnsubscribe)
+      this.afd.object(Constants.APP_STATUS + "/" + modelTypes[index].path + "/" + uid) //, {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(takeUntil(ngUnsubscribe))
         .subscribe((snap) => {
 
-          if (snap.val() != null) {
+          if (snap.payload.val() != null) {
 
             // It's this user type!
             if (modelTypes[index].userType == UserType.AgencyAdmin) { //checks to see if user type is agency admin
 
-              this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
-                .takeUntil(ngUnsubscribe)
+              this.afd.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid) //, {preserveSnapshot: true})
+                .snapshotChanges()
+                .pipe(takeUntil(ngUnsubscribe))
                 .subscribe((innerSnapDirector) => {
 
                   // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
-                  if (innerSnapDirector.val()) {
-                    fun(UserType.LocalAgencyDirector, innerSnapDirector.val());
+                  if (innerSnapDirector.payload.val()) {
+                    fun(UserType.LocalAgencyDirector, innerSnapDirector.payload.val());
                   } else {
                     //checks to make sure it ins't actually a local agency admin as they exist in both nodes
-                    this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
-                      .takeUntil(ngUnsubscribe)
+                    this.afd.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid) //, {preserveSnapshot: true})
+                      .snapshotChanges()
+                      .pipe(takeUntil(ngUnsubscribe))
                       .subscribe((innerSnap) => {
-                        if (innerSnap.val() != null) {
+                        if (innerSnap.payload.val() != null) {
 
-                          fun(UserType.LocalAgencyAdmin, innerSnap.val());
+                          fun(UserType.LocalAgencyAdmin, innerSnap.payload.val());
                         } else {
 
-                          fun(modelTypes[index].userType, snap.val());
+                          fun(modelTypes[index].userType, snap.payload.val());
                         }
 
 
@@ -697,7 +706,7 @@ export class PageControlService {
 
                 })
             } else {
-              fun(modelTypes[index].userType, snap.val());
+              fun(modelTypes[index].userType, snap.payload.val());
             }
 
 
@@ -771,8 +780,9 @@ export class PageControlService {
     return map;
   }
 
-  static agencyBuildPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (list: AgencyPermissionObject[]) => void) {
-    af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
+  static agencyBuildPermissionsMatrix(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (list: AgencyPermissionObject[]) => void) {
+    afd.object<any>(Constants.APP_STATUS + "/" + folder + "/" + uid)
+      .valueChanges()
       .map((admin) => {
         let adminId: string = "";
         if (admin.agencyAdmin) {
@@ -786,9 +796,9 @@ export class PageControlService {
       })
       .flatMap((countryId) => {
         console.log(countryId)
-        return af.database.object(Constants.APP_STATUS + "/module/" + countryId);
+        return afd.object(Constants.APP_STATUS + "/module/" + countryId).valueChanges();
       })
-      .takeUntil(ngUnsubscribe)
+      .pipe(takeUntil(ngUnsubscribe))
       .subscribe((val) => {
         let list = PageControlService.initModuleControlArray();
         for (let x of list) {
@@ -800,9 +810,10 @@ export class PageControlService {
       });
   }
 
-  static localAgencyBuildPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (list: AgencyPermissionObject[]) => void) {
-    af.database.object(Constants.APP_STATUS + "/module/" + countryId)
-      .takeUntil(ngUnsubscribe)
+  static localAgencyBuildPermissionsMatrix(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (list: AgencyPermissionObject[]) => void) {
+    afd.object<any>(Constants.APP_STATUS + "/module/" + countryId)
+      .valueChanges()
+      .pipe(takeUntil(ngUnsubscribe))
       .subscribe((val) => {
         let list = PageControlService.initModuleControlArray();
         for (let x of list) {
@@ -814,8 +825,8 @@ export class PageControlService {
       });
   }
 
-  static agencyQuickEnabledMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
-    PageControlService.agencyBuildPermissionsMatrix(af, ngUnsubscribe, uid, folder, (list) => {
+  static agencyQuickEnabledMatrix(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, uid: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
+    PageControlService.agencyBuildPermissionsMatrix(afd, ngUnsubscribe, uid, folder, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
       for (let x of list) {
         if (x.permission === PermissionsAgency.MinimumPreparedness) {
@@ -841,8 +852,8 @@ export class PageControlService {
     });
   }
 
-  static localAgencyQuickEnabledMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
-    PageControlService.localAgencyBuildPermissionsMatrix(af, ngUnsubscribe, countryId, folder, (list) => {
+  static localAgencyQuickEnabledMatrix(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
+    PageControlService.localAgencyBuildPermissionsMatrix(afd, ngUnsubscribe, countryId, folder, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
       for (let x of list) {
         if (x.permission === PermissionsAgency.MinimumPreparedness) {
@@ -879,9 +890,10 @@ export class PageControlService {
    * @param folder
    * @param fun
    */
-  static agencyModuleListMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, agencyId: string, fun: (list: AgencyPermissionObject[]) => void) {
-    af.database.object(Constants.APP_STATUS + "/module/" + agencyId)
-      .takeUntil(ngUnsubscribe)
+  static agencyModuleListMatrix(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, agencyId: string, fun: (list: AgencyPermissionObject[]) => void) {
+    afd.object(Constants.APP_STATUS + "/module/" + agencyId)
+      .valueChanges()
+      .pipe(takeUntil(ngUnsubscribe))
       .subscribe((val) => {
         let list = PageControlService.initModuleControlArray();
         for (let x of list) {
@@ -893,8 +905,8 @@ export class PageControlService {
       });
   }
 
-  static agencyModuleMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, agencyId: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
-    PageControlService.agencyModuleListMatrix(af, ngUnsubscribe, agencyId, (list) => {
+  static agencyModuleMatrix(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, agencyId: string, fun: (isEnabled: AgencyModulesEnabled) => void) {
+    PageControlService.agencyModuleListMatrix(afd, ngUnsubscribe, agencyId, (list) => {
       let agency: AgencyModulesEnabled = new AgencyModulesEnabled();
       for (let x of list) {
         if (x.permission === PermissionsAgency.MinimumPreparedness) {
@@ -940,54 +952,56 @@ export class PageControlService {
   /**
    * Country Permissions Matrix for the Country Admin Permissions settings
    */
-  static countryPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
+  static countryPermissionsMatrix(afd: AngularFireDatabase, ngUnsubscribe: Subject<void>, uid: string, userType: UserType, fun: (isEnabled: CountryPermissionsMatrix) => void) {
     if (userType == UserType.PartnerUser) {
-      af.database.object(Constants.APP_STATUS + "/partner/" + uid + "/permissions", {preserveSnapshot: true})
-        .takeUntil(ngUnsubscribe)
+      afd.object<PermissionsModel>(Constants.APP_STATUS + "/partner/" + uid + "/permissions") //, {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(takeUntil(ngUnsubscribe))
         .subscribe((snap) => {
           let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
-          x.chsActions.Assign = snap.val().assignCHS;
-          x.countryContacts.New = snap.val().contacts.new;
-          x.countryContacts.Edit = snap.val().contacts.edit;
-          x.countryContacts.Delete = snap.val().contacts.delete;
-          x.customAPA.Assign = snap.val().customApa.assign;
-          x.customAPA.Edit = snap.val().customApa.edit;
-          x.customAPA.New = snap.val().customApa.new;
-          x.customAPA.Delete = snap.val().customApa.delete;
-          x.mandatedAPA.Assign = snap.val().assignMandatedApa;
-          x.customMPA.Assign = snap.val().customMpa.assign;
-          x.customMPA.Edit = snap.val().customMpa.edit;
-          x.customMPA.New = snap.val().customMpa.new;
-          x.customMPA.Delete = snap.val().customMpa.delete;
-          x.mandatedMPA.Assign = snap.val().assignMandatedMpa;
-          x.notes.New = snap.val().notes.new;
-          x.notes.Edit = snap.val().notes.edit;
-          x.notes.Delete = snap.val().notes.delete;
-          x.other.DownloadDocuments = snap.val().other.downloadDoc;
+          x.chsActions.Assign = snap.payload.val().assignCHS;
+          x.countryContacts.New = snap.payload.val().contacts.new;
+          x.countryContacts.Edit = snap.payload.val().contacts.edit;
+          x.countryContacts.Delete = snap.payload.val().contacts.delete;
+          x.customAPA.Assign = snap.payload.val().customApa.assign;
+          x.customAPA.Edit = snap.payload.val().customApa.edit;
+          x.customAPA.New = snap.payload.val().customApa.new;
+          x.customAPA.Delete = snap.payload.val().customApa.delete;
+          x.mandatedAPA.Assign = snap.payload.val().assignMandatedApa;
+          x.customMPA.Assign = snap.payload.val().customMpa.assign;
+          x.customMPA.Edit = snap.payload.val().customMpa.edit;
+          x.customMPA.New = snap.payload.val().customMpa.new;
+          x.customMPA.Delete = snap.payload.val().customMpa.delete;
+          x.mandatedMPA.Assign = snap.payload.val().assignMandatedMpa;
+          x.notes.New = snap.payload.val().notes.new;
+          x.notes.Edit = snap.payload.val().notes.edit;
+          x.notes.Delete = snap.payload.val().notes.delete;
+          x.other.DownloadDocuments = snap.payload.val().other.downloadDoc;
           fun(x);
         });
     }
     else {
-      af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid, {preserveSnapshot: true})
-        .takeUntil(ngUnsubscribe)
+      afd.object<any>(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + "/" + uid) //, {preserveSnapshot: true})
+        .snapshotChanges()
+        .pipe(takeUntil(ngUnsubscribe))
         .map((snap) => {
           let agencyAdmin: string;
-          for (let x in snap.val().agencyAdmin) {
+          for (let x in snap.payload.val().agencyAdmin) {
             agencyAdmin = x;
           }
-          return Pair.create((snap.val().countryId ? snap.val().countryId : agencyAdmin), agencyAdmin);
+          return Pair.create((snap.payload.val().countryId ? snap.payload.val().countryId : agencyAdmin), agencyAdmin);
         })
         .flatMap((pair: Pair) => {
           return pair.f !== pair.s
             ?
-            af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true})
+            afd.object<ModelCountryOffice>(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f).snapshotChanges() //, {preserveSnapshot: true})
             :
-            af.database.object(Constants.APP_STATUS + "/agency/" + pair.s, {preserveSnapshot: true})
+            afd.object<ModelAgency>(Constants.APP_STATUS + "/agency/" + pair.s).snapshotChanges() //, {preserveSnapshot: true})
         })
-        .takeUntil(ngUnsubscribe)
+        .pipe(takeUntil(ngUnsubscribe))
         .subscribe((snap) => {
-          if (snap.val() && snap.val().hasOwnProperty('permissionSettings')) {
-            let s = snap.val().permissionSettings;
+          if (snap.payload.val() && snap.payload.val().hasOwnProperty('permissionSettings')) {
+            let s: any = snap.payload.val().permissionSettings;
             // Build the matrix
             let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
             if (userType == UserType.CountryAdmin || userType == UserType.RegionalDirector || userType == UserType.GlobalUser || userType == UserType.GlobalDirector) {
