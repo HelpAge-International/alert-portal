@@ -6,6 +6,7 @@ export class NoteModel extends BaseModel {
     public content: string;
     public time: number;
     public uploadedBy: string;
+    public uploadBy?: string;
     public agencyId?: string;
     public agencyName?: string;
 

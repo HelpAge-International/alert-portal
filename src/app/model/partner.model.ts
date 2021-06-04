@@ -11,6 +11,7 @@ export class PartnerModel extends BaseModel {
   public permissions: PermissionsModel;
   public hasValidationPermission: string;
   public modifiedAt: number;
+  public orgId?: string;
 
   constructor() {
     super();

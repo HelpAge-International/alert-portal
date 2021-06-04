@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFire} from 'angularfire2';
+import {AngularFireDatabase} from '@angular/fire/database';
 import {Constants} from '../utils/Constants';
 import {Observable} from 'rxjs';
 import {PermissionSettingsModel} from "../model/permission-settings.model";
@@ -14,7 +14,7 @@ import {ModelDepartment} from "../model/department.model";
 @Injectable()
 export class SettingsService {
 
-  constructor(private af: AngularFire) {
+  constructor(private afd: AngularFireDatabase) {
   }
 
   // COUNTRY PERMISSIONS
@@ -23,7 +23,7 @@ export class SettingsService {
     if (!agencyId || !countryId) {
       return null;
     }
-    const permissionSettingsSubscription = this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/permissionSettings')
+    const permissionSettingsSubscription = this.afd.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId + '/permissionSettings')
       .map(items => {
         if (items.$key) {
           let permissions = new PermissionSettingsModel();

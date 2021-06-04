@@ -25,6 +25,8 @@ export class PartnerOrganisationModel extends BaseModel {
   public isActive: boolean;
   public externalPartner: boolean;
   public modifiedAt: number;
+  public validationPartnerUserId?: string;
+
 
   constructor() {
     super();

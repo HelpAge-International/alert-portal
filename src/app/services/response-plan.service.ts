@@ -1,9 +1,9 @@
 
 import {merge as observableMerge, from as observableFrom, Subject, Observable} from 'rxjs';
 
-import {takeUntil, tap, mergeMap} from 'rxjs/operators';
+import {takeUntil, tap, mergeMap, take, flatMap, map} from 'rxjs/operators';
 import {Injectable} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
 import {UserService} from "./user.service";
 import {ApprovalStatus, UserType} from "../utils/Enums";
 import {Constants} from "../utils/Constants";
@@ -13,6 +13,12 @@ import {NotificationService} from "./notification.service";
 import {MessageModel} from "../model/message.model";
 import * as moment from "moment";
 import {ResponsePlan} from "../model/responsePlan";
+import {PartnerOrganisationModel} from "../model/partner-organisation.model";
+import {PartnerModel} from "../model/partner.model";
+import {Snap} from "ol/interaction";
+import {NetworkOfficeAdminModel} from "../network-admin/network-offices/add-edit-network-office/network-office-admin.model";
+import {CountryAdminModel} from "../model/country-admin.model";
+import {NoteModel} from "../model/note.model";
 
 @Injectable()
 export class ResponsePlanService {
@@ -20,7 +26,7 @@ export class ResponsePlanService {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   private validPartnerMap = new Map<string, boolean>();
 
-  constructor(private af: AngularFire,
+  constructor(private afd: AngularFireDatabase,
               private userService: UserService,
               private router: Router,
               private translate: TranslateService,
@@ -41,13 +47,13 @@ export class ResponsePlanService {
 
   }
 
-  private updatePartnerValidation(plan: any, passedCountryId: string) {
-    console.log(plan.$key);
+  private updatePartnerValidation(plan: SnapshotAction<ResponsePlan>, passedCountryId: string) {
+    console.log(plan.key);
     const orgUserMap = new Map<string, string>();
-    const needValidResponsePlanId = plan.$key;
+    const needValidResponsePlanId = plan.key;
 
     let partnerOrgIds = [];
-    plan.partnerOrganisations.forEach(partnerOrg => {
+    plan.payload.val().partnerOrganisations.forEach(partnerOrg => {
       partnerOrgIds.push(partnerOrg);
     });
 
@@ -55,23 +61,25 @@ export class ResponsePlanService {
 
     observableFrom(partnerOrgIds).pipe(
       mergeMap(partnerOrgId => {
-        return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId, {preserveSnapshot: true});
+        return this.afd.object<PartnerOrganisationModel>(Constants.APP_STATUS + "/partnerOrganisation/" + partnerOrgId) //, {preserveSnapshot: true});
+          .snapshotChanges()
       }),
       tap(snap => {
-        if (snap && snap.val()) {
-          noPartnerUserOrg = snap.val();
+        if (snap && snap.payload.val()) {
+          noPartnerUserOrg = snap.payload.val();
           noPartnerUserOrg["key"] = snap.key;
-          this.validPartnerMap.set(snap.key, snap.val().isApproved);
+          this.validPartnerMap.set(snap.key, snap.payload.val().isApproved);
         }
       }),
       mergeMap(snap => {
-        if (snap && snap.val()) {
+        if (snap && snap.payload.val()) {
           orgUserMap.set(snap.key, "");
-          return this.af.database.object(Constants.APP_STATUS + "/partner/" + snap.val().validationPartnerUserId, {preserveSnapshot: true})
-            .map(snap => {
-              if (snap && snap.val()) {
-                snap.val()["orgId"] = snap.key;
-                return snap;
+          return this.afd.object<PartnerModel>(Constants.APP_STATUS + "/partner/" + snap.payload.val().validationPartnerUserId)//, {preserveSnapshot: true})
+            .snapshotChanges()
+            .map(snap2 => {
+              if (snap2 && snap2.payload.val()) {
+                snap2.payload.val().orgId = snap.key;
+                return snap2;
               }
             });
         }
@@ -79,14 +87,14 @@ export class ResponsePlanService {
       takeUntil(this.ngUnsubscribe),)
       .subscribe(snap => {
         console.log(snap);
-        if (snap && snap.val()) {
-          console.log(snap.val());
-          orgUserMap.set(snap.val().partnerOrganisationId, snap.key);
+        if (snap && snap.payload.val()) {
+          console.log(snap.payload.val());
+          orgUserMap.set(snap.payload.val().partnerOrganisationId, snap.key);
 
           let updateData = {};
           updateData["/responsePlan/" + passedCountryId + "/" + needValidResponsePlanId + "/approval/partner/" + snap.key] = ApprovalStatus.WaitingApproval;
           console.log(updateData);
-          this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+          this.afd.object(Constants.APP_STATUS).update(updateData).then(() => {
             console.log("update success")
           }, error => {
             console.log(error.message);
@@ -102,7 +110,7 @@ export class ResponsePlanService {
             }
           });
           console.log(updateData);
-          this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+          this.afd.object(Constants.APP_STATUS).update(updateData).then(() => {
             console.log("update success")
           }, error => {
             console.log(error.message);
@@ -111,14 +119,14 @@ export class ResponsePlanService {
 
         //update response plan status
         if (orgUserMap.size === partnerOrgIds.length) {
-          this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.$key + "/status").set(ApprovalStatus.WaitingApproval);
+          this.afd.object(Constants.APP_STATUS + "/responsePlan/" + passedCountryId + "/" + plan.key + "/status").set(ApprovalStatus.WaitingApproval);
         }
 
       });
   }
 
   getResponsePlan(countryId, responsePlanId) {
-    return this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId);
+    return this.afd.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId);
   }
 
   updateResponsePlanApproval(userType, uid, countryId, responsePlanId, isApproved, rejectNoteContent, isDirector, responsePlanName, agencyId, hasToken) {
@@ -133,11 +141,12 @@ export class ResponsePlanService {
         updateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.NeedsReviewing;
       }
 
-      this.af.database.object(Constants.APP_STATUS).update(updateData).then(() => {
+      this.afd.object(Constants.APP_STATUS).update(updateData).then(() => {
 
         console.log("update after status change")
-        this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
-          .take(1)
+        this.afd.object<any>(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/approval/")
+          .valueChanges()
+          .pipe(take(1))
           .subscribe(result => {
             if (result) {
               console.log(result)
@@ -156,7 +165,7 @@ export class ResponsePlanService {
                 let approveUpdateData = {};
                 approveUpdateData["/responsePlan/" + countryId + "/" + responsePlanId + "/status"] = ApprovalStatus.Approved;
                 approveUpdateData["/responsePlan/" + countryId + "/" + responsePlanId + "/timeUpdated"] = moment().utc().valueOf();
-                this.af.database.object(Constants.APP_STATUS).update(approveUpdateData);
+                this.afd.object(Constants.APP_STATUS).update(approveUpdateData);
                 // this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + responsePlanId + "/status").set(ApprovalStatus.Approved);
               }
 
@@ -203,7 +212,7 @@ export class ResponsePlanService {
     note["content"] = content;
     note["time"] = Date.now();
     note["uploadBy"] = uid;
-    this.af.database.list(Constants.APP_STATUS + "/note/" + responsePlanId).push(note).then(() => {
+    this.afd.list(Constants.APP_STATUS + "/note/" + responsePlanId).push(note).then(() => {
       if (hasToken) {
         this.router.navigateByUrl(Constants.LOGIN_PATH).then();
       } else {
@@ -237,44 +246,41 @@ export class ResponsePlanService {
   }
 
   getPartnerOrgnisation(id) {
-    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + id);
+    return this.afd.object(Constants.APP_STATUS + "/partnerOrganisation/" + id);
   }
 
   getPartnerBasedOnOrgId(orgId) {
-    return this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + orgId)
-      .flatMap(partnerOrg => {
+    return this.afd.object<PartnerOrganisationModel>(Constants.APP_STATUS + "/partnerOrganisation/" + orgId)
+      .valueChanges()
+      .pipe(flatMap(partnerOrg => {
         let partnerIds = [];
         if (partnerOrg.partners) {
           partnerIds = Object.keys(partnerOrg.partners);
         }
         return observableFrom(partnerIds);
-      })
-      .flatMap(partnerId => {
-        return this.af.database.object(Constants.APP_STATUS + "/partner/" + partnerId)
-      })
-      .map(partner => {
-        if (partner.hasValidationPermission) {
-          return partner.$key;
+      }),
+      flatMap(partnerId => {
+        return this.afd.object<PartnerModel>(Constants.APP_STATUS + "/partner/" + partnerId).snapshotChanges()
+      }),
+      map(partner => {
+        if (partner.payload.val().hasValidationPermission) {
+          return partner.key;
         }
         return "";
-      });
+      })
+      );
   }
 
-  getDirectors(countryId, agencyId): Observable<any> {
+  getDirectors(countryId, agencyId): Observable<string | CountryAdminModel[]> {
     console.log(countryId + "/" + agencyId);
-    let directorCountry = this.af.database.object(Constants.APP_STATUS + "/directorCountry/" + countryId);
-    let directorRegion = this.af.database.object(Constants.APP_STATUS + "/directorRegion/" + countryId);
-    let directorGlobal = this.af.database.list(Constants.APP_STATUS + "/globalDirector", {
-      query: {
-        orderByChild: "agencyAdmin/" + agencyId,
-        equalTo: true,
-      }
-    });
+    let directorCountry = this.afd.object<string>(Constants.APP_STATUS + "/directorCountry/" + countryId).valueChanges();
+    let directorRegion = this.afd.object<string | null>(Constants.APP_STATUS + "/directorRegion/" + countryId).valueChanges();
+    let directorGlobal = this.afd.list<CountryAdminModel>(Constants.APP_STATUS + "/globalDirector", ref => ref.orderByChild("agencyAdmin/" + agencyId).equalTo(true)).valueChanges();
     return observableMerge(directorCountry, directorRegion, directorGlobal);
   }
 
-  getLocalAgencyDirector(agencyId): Observable<any> {
-    return this.af.database.object(Constants.APP_STATUS + "/directorLocalAgency/" + agencyId);
+  getLocalAgencyDirector(agencyId): Observable<string> {
+    return this.afd.object<string>(Constants.APP_STATUS + "/directorLocalAgency/" + agencyId).valueChanges();
   }
 
   serviceDestroy() {
@@ -286,71 +292,68 @@ export class ResponsePlanService {
    * network response plan methods here
    */
   getNetworkPlanSetting(networkId) {
-    return this.af.database.list(Constants.APP_STATUS + '/network/' + networkId + '/responsePlanSettings/sections')
-      .map(sections => {
+    return this.afd.list<Map<string,boolean>>(Constants.APP_STATUS + '/network/' + networkId + '/responsePlanSettings/sections').snapshotChanges()
+      .pipe(map(sections => {
         let obj = {};
         let totalSections = 0;
         let responsePlanSettings = {};
         sections.forEach(section => {
-          responsePlanSettings[section.$key] = section.$value;
-          if (section.$value) {
+          responsePlanSettings[section.key] = section.payload.val();
+          if (section.payload.val()) {
             totalSections++;
           }
         });
         obj["totalSections"] = totalSections;
         obj["responsePlanSettings"] = responsePlanSettings;
         return obj;
-      });
+      }));
   }
 
   getSystemGroups(systemId) {
-    return this.af.database.list(Constants.APP_STATUS + "/system/" + systemId + '/groups')
-      .map(groupList => {
-        let groups = [];
+    return this.afd.list<{name: string}>(Constants.APP_STATUS + "/system/" + systemId + '/groups')
+      .valueChanges()
+      .pipe(map(groupList => {
+        let groups:{name: string}[] = [];
         groupList.forEach(group => {
           groups.push(group);
         });
         return groups;
-      });
+      }));
   }
 
   pushNewResponsePlan(networkCountryId, newResponsePlan) {
-    return this.af.database.list(Constants.APP_STATUS + '/responsePlan/' + networkCountryId).push(newResponsePlan)
+    return this.afd.list<ResponsePlan>(Constants.APP_STATUS + '/responsePlan/' + networkCountryId).push(newResponsePlan)
   }
 
   getPlans(countryId) {
-    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId);
+    return this.afd.list<ResponsePlan>(Constants.APP_STATUS + "/responsePlan/" + countryId).valueChanges();
   }
 
   getArchivedPlans(countryId) {
-    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId, {
-      query: {
-        orderByChild: "isActive",
-        equalTo: false
-      }
-    })
+    return this.afd.list<ResponsePlan>(Constants.APP_STATUS + "/responsePlan/" + countryId, ref => ref.orderByChild('isActive').equalTo(false)).valueChanges()
   }
 
   getNotesForPlan(planId) {
-    return this.af.database.list(Constants.APP_STATUS + "/note/" + planId)
+    return this.afd.list<NoteModel>(Constants.APP_STATUS + "/note/" + planId).valueChanges()
   }
 
   expirePlan(networkCountryId, planId) {
-    this.af.database.object(Constants.APP_STATUS + "/responsePlan/" + networkCountryId + "/" + planId + "/isActive").set(false);
+    this.afd.object(Constants.APP_STATUS + "/responsePlan/" + networkCountryId + "/" + planId + "/isActive").set(false);
   }
 
   getPlanApprovalData(countryId, planId) {
-    return this.af.database.list(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + planId + "/approval");
+    return this.afd.list<any>(Constants.APP_STATUS + "/responsePlan/" + countryId + "/" + planId + "/approval").valueChanges();
   }
 
   getPlanById(countryId, planId) {
-    return this.af.database.object(Constants.APP_STATUS + '/responsePlan/' + countryId + '/' + planId)
-      .map(plan => {
+    return this.afd.object<ResponsePlan>(Constants.APP_STATUS + '/responsePlan/' + countryId + '/' + planId)
+      .snapshotChanges()
+      .pipe(map(plan => {
         let model = new ResponsePlan();
-        model.mapFromObject(plan);
-        model.id = plan.$key;
+        model.mapFromObject(plan.payload.val());
+        model.id = plan.key;
         return model;
-      });
+      }));
   }
 
 }

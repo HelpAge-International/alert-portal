@@ -9,6 +9,7 @@ export class NetworkActionModel extends BaseModel {
   public type: ActionType;
   public level: any;
   public createdAt: number;
+  public isComplete?: boolean;
   // public isActive: boolean;
 
   validate(excludedFields: any): AlertMessageModel {
