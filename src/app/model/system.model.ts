@@ -10,5 +10,7 @@ export class ModelSystem {
   // public genericAction: any;
   public minThreshold: number[];
   public groups: string[];
+  public coc?: string;
+  public toc?: string;
 }
 

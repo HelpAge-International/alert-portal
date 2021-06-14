@@ -3,11 +3,14 @@ import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
 import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire, AuthMethods, AuthProviders, FirebaseAuthState} from "angularfire2";
+//import {AngularFire, AuthMethods, AuthProviders, FirebaseAuthState} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
+import {AngularFireAuth} from "@angular/fire/auth";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import firebase from "firebase";
 
 @Component({
   selector: 'app-agency-change-password',
@@ -26,20 +29,22 @@ export class AgencyChangePasswordComponent implements OnInit, OnDestroy {
   private currentPasswordEntered: string;
   private newPasswordEntered: string;
   private confirmPasswordEntered: string;
-  authState: FirebaseAuthState;
+  private user: firebase.User;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router, private af: AngularFire) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private router: Router, private afd: AngularFireDatabase, private afa: AngularFireAuth) {
   }
 
   ngOnInit() {
-    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
-      this.authState = auth;
-      this.uid = auth.auth.uid;
-      console.log('Agency admin uid: ' + this.uid);
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (userObservable, userType) => {
+      userObservable.subscribe(user =>{
+        this.user = user;
+        this.uid = user.uid;
+        console.log('Agency admin uid: ' + this.uid);
+      })
     });
   }
 
@@ -48,20 +53,16 @@ export class AgencyChangePasswordComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  onSubmit() {
+  async onSubmit() {
 
     if (this.validate()) {
 
-      this.af.auth.login({
-          email: this.af.auth.getAuth().auth.email,
-          password: this.currentPasswordEntered
-        },
-        {
-          provider: AuthProviders.Password,
-          method: AuthMethods.Password,
-        })
+      this.afa.signInWithEmailAndPassword(
+        (await this.afa.currentUser).email,
+          this.currentPasswordEntered
+        )
         .then(() => {
-          this.authState.auth.updatePassword(this.newPasswordEntered).then(() => {
+          this.user.updatePassword(this.newPasswordEntered).then(() => {
             this.currentPasswordEntered = '';
             this.newPasswordEntered = '';
             this.confirmPasswordEntered = '';

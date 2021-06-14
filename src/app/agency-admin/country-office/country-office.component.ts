@@ -1,14 +1,17 @@
 
 import {from as observableFrom, Observable, Scheduler, Subject} from 'rxjs';
 
-import {takeUntil, mergeMap} from 'rxjs/operators';
+import {takeUntil, mergeMap, first} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFireDatabase, SnapshotAction} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {AgencyService} from "../../services/agency-service.service";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {UserType} from "../../utils/Enums";
+import {ModelCountryOffice} from "../../model/countryoffice.model";
+import {ModelRegion} from "../../model/region.model";
+import {ModelUserPublic} from "../../model/user-public.model";
 
 declare var jQuery: any;
 
@@ -25,10 +28,10 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   private hideLoader: boolean;
   private uid: string;
   private agencyId: string;
-  private countries: FirebaseListObservable<any[]>;
+  private countries: Observable<SnapshotAction<ModelCountryOffice>[]>;
   private countryNames: string [] = Constants.COUNTRIES;
   private admins: Observable<any>[];
-  private regions: FirebaseListObservable<any[]>;
+  private regions: Observable<SnapshotAction<ModelRegion>[]>;
   private hasRegion: boolean;
   private regionCountries: any = [];
   private tempCountryIdList: string[] = [];
@@ -50,7 +53,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private af: AngularFire, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
+  constructor(private pageControl: PageControlService, private afd: AngularFireDatabase, private router: Router, private route: ActivatedRoute, private agencyService: AgencyService) {
   }
 
   ngOnInit() {
@@ -60,11 +63,11 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       this.systemId = systemId;
       this.userType = userType;
 
-      this.countries = this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId);
-      this.regions = this.af.database.list(Constants.APP_STATUS + '/region/' + this.agencyId);
-      this.regions.takeUntil(this.ngUnsubscribe).subscribe(regions => {
+      this.countries = this.afd.list<ModelCountryOffice>(Constants.APP_STATUS + '/countryOffice/' + this.agencyId).snapshotChanges();
+      this.regions = this.afd.list<ModelRegion>(Constants.APP_STATUS + '/region/' + this.agencyId).snapshotChanges();
+      this.regions.pipe(takeUntil(this.ngUnsubscribe)).subscribe(regions => {
         regions.forEach(region => {
-          this.showRegionMap.set(region.$key, false);
+          this.showRegionMap.set(region.key, false);
         });
       });
 
@@ -80,20 +83,22 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   }
 
   private checkCoCUpdated(){
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<boolean>(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestCoCAgreed")
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
-        if(snap.val() == null || snap.val() == false){
+        if(snap.payload.val() == null || snap.payload.val() == false){
           this.showCoCBanner = true;
         }
       });
   }
 
   private checkToCUpdated(){
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestToCAgreed", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<boolean>(Constants.APP_STATUS + "/userPublic/" + this.uid + "/latestToCAgreed")
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
-        if(snap.val() == null || snap.val() == false){
+        if(snap.payload.val() == null || snap.payload.val() == false){
           this.showToCBanner = true;
         }
       });
@@ -105,30 +110,30 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.otherCountries = [];
     this.regions
       .map(regions => {
-        let countries = new Set();
+        let countries:Set<string> = new Set();
         regions.forEach(region => {
-          Object.keys(region.countries).forEach(countryId => {
+          Object.keys(region.payload.val().countries).forEach(countryId => {
             countries.add(countryId);
           });
         });
         return Array.from(countries);
       })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribeOn(Scheduler.async)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      //.subscribeOn(Scheduler.async)
       .subscribe(result => {
         this.hideLoader = true;
         // console.log(result);
         this.countriesWithRegion = result;
         this.countries
           .map(list => {
-            let countryids = [];
+            let countryids: string[] = [];
             list.forEach(country => {
-              countryids.push(country.$key);
+              countryids.push(country.key);
             });
             return countryids;
           })
-          .takeUntil(this.ngUnsubscribe)
-          .subscribeOn(Scheduler.async)
+          .pipe(takeUntil(this.ngUnsubscribe))
+          //.subscribeOn(Scheduler.async)
           .subscribe(result => {
             // console.log(result);
             this.allCountries = result;
@@ -149,11 +154,11 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     // console.log('do have other countries, fetch data!');
     observableFrom(diff).pipe(
       mergeMap(id => {
-        return this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + id);
+        return this.afd.object<ModelCountryOffice>(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + id).snapshotChanges();
       }),
       takeUntil(this.ngUnsubscribe),)
       .subscribe(result => {
-        let exist = this.otherCountries.filter(country => country.$key == result.$key).length > 0;
+        let exist = this.otherCountries.filter(country => country.$key == result.key).length > 0;
         if (!exist) {
           this.otherCountries.push(result);
         }
@@ -182,7 +187,7 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       }
     });
     // this.otherCountries = [];
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryToUpdate.$key + '/isActive').set(state)
+    this.afd.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + this.countryToUpdate.$key + '/isActive').set(state)
       .then(_ => {
         console.log("Country state updated");
         this.closeModal();
@@ -220,12 +225,13 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
     this.regionCountries = [];
     this.tempCountryIdList = [];
     for (let countryId in region.countries) {
-      this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + countryId)
-        .first()
-        .takeUntil(this.ngUnsubscribe)
+      this.afd.object<ModelCountryOffice>(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + countryId)
+        .valueChanges()
+        .pipe(first())
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(country => {
-          if (!this.tempCountryIdList.includes(country.location)) {
-            this.tempCountryIdList.push(country.location);
+          if (!this.tempCountryIdList.includes(String(country.location))) {
+            this.tempCountryIdList.push(String(country.location));
             this.regionCountries.push(country);
           }
         });
@@ -238,11 +244,12 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
       return;
     }
     let name: string = '';
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + key + '/adminId')
+    this.afd.object<string>(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + key + '/adminId')
+      .valueChanges()
       .flatMap(adminId => {
-        return this.af.database.object(Constants.APP_STATUS + '/userPublic/' + adminId.$value)
+        return this.afd.object<ModelUserPublic>(Constants.APP_STATUS + '/userPublic/' + adminId).valueChanges()
       })
-      .takeUntil(this.ngUnsubscribe)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(user => {
         name = user.firstName + ' ' + user.lastName;
       });
@@ -267,8 +274,9 @@ export class CountryOfficeComponent implements OnInit, OnDestroy {
   getDirectorName(director) {
     this.directorName = "UNASSIGNED";
     if (director && director.directorId && director.directorId != "null") {
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + director.directorId)
-        .takeUntil(this.ngUnsubscribe)
+      this.afd.object<ModelUserPublic>(Constants.APP_STATUS + "/userPublic/" + director.directorId)
+        .valueChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(user => {
           this.directorName = user.firstName + " " + user.lastName;
         });

@@ -126,7 +126,8 @@ export class AgencyOverviewComponent implements OnInit, OnDestroy {
 
   private getAgencyInfo(agencyId: string) {
     this.userService.getAgencyDetail(agencyId)
-      .takeUntil(this.ngUnsubscribe)
+      .valueChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(agency => {
         this.agencyName = agency.name;
       });

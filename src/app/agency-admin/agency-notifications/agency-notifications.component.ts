@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Constants} from "../../utils/Constants";
-import {AngularFire} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Message} from "../../model/message";
 import {Subject} from "rxjs";
@@ -25,7 +24,6 @@ export class AgencyNotificationsComponent implements OnInit, OnDestroy {
   constructor(private pageControl: PageControlService,
               private _notificationService: NotificationService,
               private route: ActivatedRoute,
-              private af: AngularFire,
               private router: Router) {
   }
 

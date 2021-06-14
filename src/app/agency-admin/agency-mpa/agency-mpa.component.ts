@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {Constants} from "../../utils/Constants";
 import {ActionLevel, ActionType} from "../../utils/Enums";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -7,6 +7,8 @@ import {Observable, Subject} from "rxjs";
 import {PageControlService} from "../../services/pagecontrol.service";
 import {ModelDepartment} from "../../model/department.model";
 import {UserService} from "../../services/user.service";
+import {takeUntil} from "rxjs/operators";
+import {MandatedPreparednessAction} from "../../model/mandatedPA";
 
 declare var jQuery: any;
 
@@ -36,7 +38,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
@@ -59,7 +61,7 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   protected deleteMandatedAction() {
-    this.af.database.object(Constants.APP_STATUS + '/actionMandated/' + this.agencyId + '/' + this.actionToDelete).remove()
+    this.afd.object(Constants.APP_STATUS + '/actionMandated/' + this.agencyId + '/' + this.actionToDelete).remove()
       .then(_ => {
           jQuery("#delete-action").modal("hide");
         }
@@ -67,16 +69,17 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   getMandatedPrepActions() {
-    this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId + "/", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.list<MandatedPreparednessAction>(Constants.APP_STATUS + "/actionMandated/" + this.agencyId + "/")
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
         this.actions = [];
         snap.forEach((snapshot) => {
           let x: MandatedListModel = new MandatedListModel();
           x.id = snapshot.key;
-          x.task = snapshot.val().task;
-          x.level = snapshot.val().level;
-          x.department = snapshot.val().department;
+          x.task = snapshot.payload.val().task;
+          x.level = snapshot.payload.val().level;
+          x.department = snapshot.payload.val().department;
           this.actions.push(x);
 
         });
@@ -96,15 +99,16 @@ export class AgencyMpaComponent implements OnInit, OnDestroy {
   }
 
   private getDepartments() {
-    this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/", {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.list<ModelDepartment>(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/")
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
         this.departments = [];
         this.DEPARTMENT_MAP.clear();
         snap.forEach((snapshot) => {
           let x: ModelDepartment = new ModelDepartment();
           x.id = snapshot.key;
-          x.name = snapshot.val().name;
+          x.name = snapshot.payload.val().name;
           this.departments.push(x);
           this.DEPARTMENT_MAP.set(x.id, x.name);
         });

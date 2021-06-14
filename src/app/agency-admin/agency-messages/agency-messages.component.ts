@@ -1,11 +1,14 @@
 
 import {from as observableFrom, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire, FirebaseObjectObservable} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
+//import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {PageControlService} from "../../services/pagecontrol.service";
-import Promise = firebase.Promise;
+import {distinctUntilChanged, flatMap} from "rxjs/internal/operators";
+import {takeUntil} from "rxjs/operators";
+import {MessageModel} from "../../model/message.model";
 declare var jQuery: any;
 
 @Component({
@@ -17,35 +20,36 @@ declare var jQuery: any;
 export class AgencyMessagesComponent implements OnInit, OnDestroy {
 
   private uid: string;
-  private sentMessages: FirebaseObjectObservable<any>[] = [];
+  private sentMessages: Observable<MessageModel>[] = [];
   private messageToDelete;
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private router: Router) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
-        this.af.database.list(Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages')
-          .flatMap(list => {
+        this.afd.list(Constants.APP_STATUS + '/administratorAgency/' + this.uid + '/sentmessages')
+          .snapshotChanges()
+          .pipe(flatMap(list => {
             this.sentMessages = [];
             let tempList = [];
             list.forEach(x => {
-              tempList.push(x);
+              tempList.push(x.payload.val());
             });
             return observableFrom(tempList)
-          })
-          .flatMap(item => {
-            return this.af.database.object(Constants.APP_STATUS + '/message/' + item.$key)
-          })
-          .distinctUntilChanged()
-          .takeUntil(this.ngUnsubscribe)
+          }))
+          .pipe(flatMap(item => {
+            return this.afd.object<MessageModel>(Constants.APP_STATUS + '/message/' + item.key).valueChanges()
+          }))
+          .pipe(distinctUntilChanged())
+          .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe(x => {
-            this.sentMessages.push(x);
+            this.sentMessages.push(Observable.of(x));
           });
     });
   }
@@ -86,15 +90,16 @@ export class AgencyMessagesComponent implements OnInit, OnDestroy {
       let groupPath = agencyGroupPath + group;
       let msgRefPath = agencyMessageRefPath + group;
 
-      this.af.database.list(groupPath)
-        .takeUntil(this.ngUnsubscribe)
+      this.afd.list(groupPath)
+        .snapshotChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(list => {
           list.forEach(item => {
-            msgData[msgRefPath + '/' + item.$key + '/' + this.messageToDelete] = null;
+            msgData[msgRefPath + '/' + item.key + '/' + this.messageToDelete] = null;
           });
 
           if (groups.indexOf(group) == groups.length - 1) {
-            this.af.database.object(Constants.APP_STATUS).update(msgData).then(() => {
+            this.afd.object(Constants.APP_STATUS).update(msgData).then(() => {
               console.log("Message Ref successfully deleted from all nodes");
               jQuery("#delete-message").modal("hide");
             }).catch(error => {

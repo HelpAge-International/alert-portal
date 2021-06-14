@@ -3,12 +3,14 @@ import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
 import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire, FirebaseAuthState} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
+import {AngularFireAuth} from "@angular/fire/auth";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ModelUserPublic} from "../../model/user-public.model";
 import {CustomerValidator} from "../../utils/CustomValidator";
 import {PageControlService} from "../../services/pagecontrol.service";
+import firebase from "firebase";
 
 @Component({
   selector: 'app-agency-account-settings',
@@ -19,7 +21,8 @@ import {PageControlService} from "../../services/pagecontrol.service";
 export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   private uid: string;
-  authState: FirebaseAuthState;
+  //authState: AngularFireAuth.currentUser.auh;
+  private user: firebase.User
   private successInactive: boolean = true;
   private successMessage: string = 'GLOBAL.ACCOUNT_SETTINGS.SUCCESS_PROFILE';
   private errorInactive: boolean = true;
@@ -45,15 +48,17 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private afa: AngularFireAuth, private router: Router) {
   }
 
   ngOnInit() {
-    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
-      this.authState = user;
-      this.uid = user.auth.uid;
-      console.log("Agency admin uid: " + this.uid);
-      this.loadAgencyAdminData(this.uid);
+    this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (userObservable, userType) => {
+      userObservable.subscribe(user=> {
+        this.user = user
+        this.uid = user.uid
+        console.log("Agency admin uid: " + this.uid);
+        this.loadAgencyAdminData(this.uid);
+      })
     });
   }
 
@@ -93,8 +98,9 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
           let emailChanged: boolean = editedUser.email != this.userPublic.email;
 
           if (emailChanged) {
-            this.authState.auth.updateEmail(this.agencyAdminEmail).then(_ => {
-              this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
+            this.afa.authState.forEach(auth =>
+              auth.updateEmail(this.agencyAdminEmail).then(_ => {
+              this.afd.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
                 this.showAlert(false);
               }, error => {
                 this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -102,8 +108,9 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
                 console.log(error.message);
               });
             })
+          )
           } else {
-            this.af.database.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
+            this.afd.object(Constants.APP_STATUS + '/userPublic/' + this.uid).update(editedUser).then(() => {
               this.showAlert(false)
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -120,8 +127,9 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   private loadAgencyAdminData(uid) {
 
-    this.af.database.object(Constants.APP_STATUS + "/userPublic/" + uid)
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<ModelUserPublic>(Constants.APP_STATUS + "/userPublic/" + uid)
+      .valueChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((agencyAdmin: ModelUserPublic) => {
 
         this.userPublic = agencyAdmin;

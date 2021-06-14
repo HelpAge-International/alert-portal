@@ -3,7 +3,8 @@ import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
 import {takeUntil} from 'rxjs/operators';
 import {Component, Inject, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire, FirebaseApp} from "angularfire2";
+import {FirebaseApp} from "@angular/fire";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {Currency} from "../../utils/Enums";
@@ -57,7 +58,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private afd: AngularFireDatabase, private router: Router) {
     this.firebase = firebaseApp;
   }
 
@@ -129,7 +130,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
           if (this.logoFile == null) {
 
-            this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId).update(editedAgency).then(() => {
+            this.afd.object(Constants.APP_STATUS + '/agency/' + this.agencyId).update(editedAgency).then(() => {
               this.showAlert(false)
             }, error => {
               this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -156,7 +157,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
                 catch (error) { /* Log error */
                 }
 
-                this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId).update(editedAgency).then(() => {
+                this.afd.object(Constants.APP_STATUS + '/agency/' + this.agencyId).update(editedAgency).then(() => {
                   this.showAlert(false)
                 }, error => {
                   this.errorMessage = 'GLOBAL.GENERAL_ERROR';
@@ -190,7 +191,7 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
   removeLogoFromStorage() {
     try {
       this.firebase.storage().refFromURL(this.agencyLogo).delete().then(() => {
-        this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/logoPath').remove().then(() => {
+        this.afd.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/logoPath').remove().then(() => {
           jQuery("#delete-logo").modal("hide");
         });
       })
@@ -206,8 +207,9 @@ export class AgencyAccountDetailsComponent implements OnInit, OnDestroy {
 
   private loadAgencyData(uid) {
 
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + uid)
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<ModelAgency>(Constants.APP_STATUS + "/agency/" + uid)
+      .valueChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((agency: ModelAgency) => {
 
         this.modalAgency = agency;

@@ -17,7 +17,7 @@ import {ModelUserPublic} from "../model/user-public.model";
 import {DisplayError} from "../errors/display.error";
 import {UserType} from "../utils/Enums";
 import {ChangePasswordModel} from "../model/change-password.model";
-import {recognize} from "@angular/router/src/recognize";
+//import {recognize} from "@angular/router/src/recognize";
 import {ModelStaff} from "../model/staff.model";
 import {subscribeOn} from "rxjs/operator/subscribeOn";
 import {ModelAgency} from "../model/agency.model";
@@ -757,7 +757,7 @@ export class UserService {
   }
 
   getAgencyDetail(agencyId) {
-    return this.afd.object(Constants.APP_STATUS + "/agency/" + agencyId);
+    return this.afd.object<ModelAgency>(Constants.APP_STATUS + "/agency/" + agencyId);
   }
 
   getNetworkAdminDetail(networkId) {
@@ -796,7 +796,7 @@ export class UserService {
   }
 
   logout() {
-    return this.af.auth.logout();
+    return this.afa.signOut();
   }
 
   saveUserNetworkSelection(uid, userType, networkId) {
