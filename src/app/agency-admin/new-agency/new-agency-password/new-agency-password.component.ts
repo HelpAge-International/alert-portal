@@ -1,14 +1,17 @@
 
 import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
-import {takeUntil} from 'rxjs/operators';
+import {take, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire, FirebaseAuthState} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
+import {AngularFireAuth} from "@angular/fire/auth";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {CustomerValidator} from "../../../utils/CustomValidator";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {UserType} from "../../../utils/Enums";
+import firebase from "firebase";
+import {ModelUserPublic} from "../../../model/user-public.model";
 
 @Component({
   selector: 'app-new-agency-password',
@@ -30,24 +33,28 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
   private passwordEntered: string;
   private confirmPasswordEntered: string;
 
-  private authState: FirebaseAuthState;
+  private user: firebase.User
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private afa: AngularFireAuth, private router: Router) {
   }
 
   ngOnInit() {
     this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (auth, userType) => {
-      this.authState = auth;
-      this.uid = auth.auth.uid;
-      console.log('New agency admin uid: ' + this.uid);
-      this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(user => {
-          this.agencyAdminName = user.firstName;
-        });
+      auth.pipe(take(1)).subscribe(user => {
+        this.user = user;
+        this.uid = user.uid;
+        console.log('New agency admin uid: ' + this.uid);
+        this.afd.object<ModelUserPublic>(Constants.APP_STATUS + "/userPublic/" + this.uid)
+          .valueChanges()
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe(user => {
+            this.agencyAdminName = user.firstName;
+          });
+      })
+
     });
   }
 
@@ -59,7 +66,7 @@ export class NewAgencyPasswordComponent implements OnInit, OnDestroy {
   onSubmit() {
 
     if (this.validate()) {
-      this.authState.auth.updatePassword(this.passwordEntered).then(() => {
+      this.user.updatePassword(this.passwordEntered).then(() => {
         this.successInactive = false;
         observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
           takeUntil(this.ngUnsubscribe)).subscribe(() => {

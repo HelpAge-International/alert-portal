@@ -3,14 +3,16 @@ import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
 import {takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire, FirebaseListObservable} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {UserType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
-import Promise = firebase.Promise;
 import {ModelDepartment} from "../../../model/department.model";
 import {UserService} from "../../../services/user.service";
+import {GenericActionModel} from "../../../network-admin/network-mpa/network-add-generic-action/generic-action.model";
+import {Action} from "../../../model/action";
+import {ModelCountryOffice} from "../../../model/countryoffice.model";
 
 @Component({
   selector: 'app-department',
@@ -43,7 +45,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   @Input() isLocalAgency: boolean;
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private userService: UserService) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private router: Router, private userService: UserService) {
   }
 
   ngOnInit() {
@@ -69,72 +71,72 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   private initDepartments() {
-    this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid, {preserveSnapshot: true})
+    this.afd.object<any>(Constants.APP_STATUS + "/administratorAgency/" + this.uid)
+      .snapshotChanges()
       .map((val) => {
-        console.log(val.val());
-        return val.val().agencyId;
+        console.log(val.payload.val());
+        return val.payload.val().agencyId;
       })
-      .flatMap((agencyId) => {
+      .flatMap((agencyId: string) => {
         this.agencyId = agencyId;
         console.log(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments");
-        return this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true});
+        return this.afd.object<ModelDepartment>(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").snapshotChanges();
       })
-      .takeUntil(this.ngUnsubscribe)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snapshot) => {
         this.depts = [];
         this.editDepts = [];
-        console.log(snapshot.val());
-        snapshot.forEach((snap) => {
-          let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.val().name);
-          this.depts.push(x);
-          let y: ModelDepartment = new ModelDepartment();
-          y.id = snap.key;
-          y.name = snap.val().name;
-          this.editDepts.push(y);
-        });
+        console.log(snapshot.payload.val());
+        let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snapshot.key, snapshot.payload.val().name);
+        this.depts.push(x);
+        let y: ModelDepartment = new ModelDepartment();
+        y.id = snapshot.key;
+        y.name = snapshot.payload.val().name;
+        this.editDepts.push(y);
         this.initCanDeleteDepartments();
       });
   }
 
   private initDepartmentsLocalAgency() {
-    this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + this.uid, {preserveSnapshot: true})
+    this.afd.object<any>(Constants.APP_STATUS + "/administratorLocalAgency/" + this.uid)
+      .snapshotChanges()
       .map((val) => {
-        console.log(val.val());
-        return val.val().agencyId;
+        console.log(val.payload.val());
+        return val.payload.val().agencyId;
       })
-      .flatMap((agencyId) => {
+      .flatMap((agencyId:string) => {
         this.agencyId = agencyId;
         console.log(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments");
-        return this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments", {preserveSnapshot: true});
+        return this.afd.object<ModelDepartment>(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments").snapshotChanges();
       })
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((snapshot) => {
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((snap) => {
         this.depts = [];
         this.editDepts = [];
-        console.log(snapshot.val());
-        snapshot.forEach((snap) => {
-          let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.val().name);
+        console.log(snap.payload.val());
+          let x: ModelDepartmentCanDelete = new ModelDepartmentCanDelete(snap.key, snap.payload.val().name);
           this.depts.push(x);
           let y: ModelDepartment = new ModelDepartment();
           y.id = snap.key;
-          y.name = snap.val().name;
+          y.name = snap.payload.val().name;
           this.editDepts.push(y);
-        });
         this.initCanDeleteDepartments();
       });
   }
 
   private initCanDeleteDepartments() {
-    this.af.database.list(Constants.APP_STATUS + "/actionMandated/" + this.agencyId, {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.list<Action>(Constants.APP_STATUS + "/actionMandated/" + this.agencyId)
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
-          if (snapshot.val().hasOwnProperty('department')) {
-            this.canDeleteItem.set(snapshot.val().department, true);
+          if (snapshot.payload.val().hasOwnProperty('department')) {
+            this.canDeleteItem.set(snapshot.payload.val().department, true);
           }
         });
       });
-    this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + this.agencyId, {preserveSnapshot: true})
+    this.afd.list<ModelCountryOffice>(Constants.APP_STATUS + "/countryOffice/" + this.agencyId)
+      .snapshotChanges()
       .map((snap) => {
         let ids: string[] = [];
         for (let x of snap) {
@@ -142,16 +144,17 @@ export class DepartmentComponent implements OnInit, OnDestroy {
         }
         return ids;
       })
-      .takeUntil(this.ngUnsubscribe)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((countryOffices) => {
         console.log(countryOffices);
         for (let x of countryOffices) {
-          this.af.database.list(Constants.APP_STATUS + "/action/" + x, {preserveSnapshot: true})
-            .takeUntil(this.ngUnsubscribe)
+          this.afd.list<Action>(Constants.APP_STATUS + "/action/" + x)
+            .snapshotChanges()
+            .pipe(takeUntil(this.ngUnsubscribe))
             .subscribe((snap) => {
               for (let x of snap) {
-                if (x.val().hasOwnProperty('department')) {
-                  this.canDeleteItem.set(x.val().department, true);
+                if (x.payload.val().hasOwnProperty('department')) {
+                  this.canDeleteItem.set(x.payload.val().department, true);
                 }
               }
             });
@@ -173,7 +176,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   deleteSelectedDepartments() {
     this.deleting = !this.deleting;
     for (let x in this.deleteCandidates) {
-      this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/" + x).set(null).then(_ => {
+      this.afd.object(Constants.APP_STATUS + "/agency/" + this.agencyId + "/departments/" + x).set(null).then(_ => {
           if (!this.alertShow){
             this.saved = true;
             this.alertSuccess = true;
@@ -225,7 +228,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       let updateObj = {
         name: temps[i].name
       };
-      this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + "/departments/" + temps[i].id).update(updateObj).then(_ => {
+      this.afd.object(Constants.APP_STATUS + '/agency/' + this.agencyId + "/departments/" + temps[i].id).update(updateObj).then(_ => {
         if (!this.alertShow){
           this.flipEditDepartments();
           this.saved = true;
@@ -243,7 +246,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       let updateObj = {
         name: this.departmentName
       };
-      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/departments').push(updateObj).then(_ => {
+      this.afd.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/departments').push(updateObj).then(_ => {
         if (!this.alertShow){
           this.saved = true;
           this.alertSuccess = true;

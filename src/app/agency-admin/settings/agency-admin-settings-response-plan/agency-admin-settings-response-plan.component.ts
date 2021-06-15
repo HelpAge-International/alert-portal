@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {ResponsePlansApprovalSettings, ResponsePlanSectionSettings} from "../../../utils/Enums";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-agency-admin-settings-response-plan',
@@ -32,37 +33,40 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
 
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private router: Router) {
   }
 
   ngOnInit() {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType)  => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
-        .takeUntil(this.ngUnsubscribe)
+      this.afd.object<string>(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        .valueChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(id => {
-          this.agencyId = id.$value;
-          this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
-            .takeUntil(this.ngUnsubscribe)
+          this.agencyId = id;
+          this.afd.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
+            .snapshotChanges()
+            .pipe(takeUntil(this.ngUnsubscribe))
             .subscribe(_ => {
               this.ResponsePlanSectionSettings.map(sectionSetting => {
                 this.sections[sectionSetting] = {$key: sectionSetting, $value: false};
               });
 
               _.map(section => {
-                this.sections[section.$key] = section;
+                this.sections[section.key] = section.payload.val();
               });
             });
 
-          this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/approvalHierachy')
-            .takeUntil(this.ngUnsubscribe)
+          this.afd.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/approvalHierachy')
+            .snapshotChanges()
+            .pipe(takeUntil(this.ngUnsubscribe))
             .subscribe(_ => {
               this.ResponsePlansApprovalSettings.map(approvalSetting => {
                 this.approvals[approvalSetting] = {$key: approvalSetting, $value: false};
               });
 
               _.map(approval => {
-                this.approvals[approval.$key] = approval;
+                this.approvals[approval.key] = approval.payload.val();
               });
             });
         });
@@ -111,7 +115,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
       return this.sections[index];
     });
 
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
+    this.afd.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/sections')
       .set(sectionItems)
       .then(_ => {
         if (!this.alertShow) {
@@ -131,7 +135,7 @@ export class AgencyAdminSettingsResponsePlanComponent implements OnInit, OnDestr
       return this.approvals[index];
     });
 
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/approvalHierachy')
+    this.afd.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/responsePlanSettings/approvalHierachy')
       .set(approvalItems)
       .then(_ => {
         if (!this.alertShow) {

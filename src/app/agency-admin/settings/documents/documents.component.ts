@@ -1,10 +1,13 @@
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Countries, DocumentType, SizeType} from "../../../utils/Enums";
 import {Subject, BehaviorSubject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {takeUntil} from "rxjs/operators";
+import {ModelCountryOffice} from "../../../model/countryoffice.model";
+import {ModelUserPublic} from "../../../model/user-public.model";
 declare var jQuery: any;
 
 @Component({
@@ -48,7 +51,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private router: Router) {
 
     this.docFilterSubject = new BehaviorSubject(undefined);
     this.docFilter = {
@@ -72,21 +75,24 @@ export class DocumentsComponent implements OnInit, OnDestroy {
     this.docFilterSubject.next();
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
       this.uid = user.uid;
-      this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
-        .takeUntil(this.ngUnsubscribe)
+      this.afd.object<string>(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+        .valueChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(id => {
-          this.agencyId = id.$value;
-          this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(_ => {
-              this.countries = _;
+          this.agencyId = id;
+          this.afd.list<ModelCountryOffice>(Constants.APP_STATUS + '/countryOffice/' + this.agencyId)
+            .snapshotChanges()
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe(snaps => {
+              this.countries = snaps.map(snap=>({...snap.payload.val(), $key: snap.key}));
               console.log(this.countries);
               Object.keys(this.countries).map(country => {
                 let key = this.countries[country].$key;
-                this.af.database.list(Constants.APP_STATUS + '/document/' + key, this.docFilter)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(_ => {
-                    let docs = _;
+                this.afd.list<any>(Constants.APP_STATUS + '/document/' + key, this.docFilter)
+                  .snapshotChanges()
+                  .pipe(takeUntil(this.ngUnsubscribe))
+                  .subscribe(snaps => {
+                    let docs = snaps.map(snap=>({...snap.payload.val()}));
                     docs = docs.filter(doc => {
                       if (this.userSelected == "-1")
                         return true;
@@ -96,8 +102,9 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
                     Object.keys(docs).map(doc => {
                       let uploadedBy = docs[doc].uploadedBy;
-                      this.af.database.object(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
-                        .takeUntil(this.ngUnsubscribe)
+                      this.afd.object<ModelUserPublic>(Constants.APP_STATUS + '/userPublic/' + uploadedBy)
+                        .valueChanges()
+                        .pipe(takeUntil(this.ngUnsubscribe))
                         .subscribe(_ => {
                           docs[doc]['uploadedBy'] = _.firstName + " " + _.lastName;
                         });
@@ -109,14 +116,16 @@ export class DocumentsComponent implements OnInit, OnDestroy {
               });
             });
 
-          this.af.database.list(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(_ => {
-              let users = _;
+          this.afd.list<any>(Constants.APP_STATUS + '/group/agency/' + this.agencyId + '/agencyallusersgroup')
+            .snapshotChanges()
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe(snaps => {
+              let users = snaps.map(snap=>({...snap.payload.val(), $key: snap.key}));
               Object.keys(users).map(user => {
                 let userKey = users[user].$key;
-                this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userKey)
-                  .takeUntil(this.ngUnsubscribe)
+                this.afd.object<ModelUserPublic>(Constants.APP_STATUS + '/userPublic/' + userKey)
+                  .valueChanges()
+                  .pipe(takeUntil(this.ngUnsubscribe))
                   .subscribe(_ => {
                     this.users[user] = {key: userKey, fullName: _.firstName + " " + _.lastName};
                   });

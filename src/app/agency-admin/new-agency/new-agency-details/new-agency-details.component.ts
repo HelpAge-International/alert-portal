@@ -3,11 +3,14 @@ import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
 import {takeUntil} from 'rxjs/operators';
 import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire, FirebaseApp} from "angularfire2";
+import {FirebaseApp} from "@angular/fire";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Currency, UserType} from "../../../utils/Enums";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {ModelAgency} from "../../../model/agency.model";
+import {ModelUserPublic} from "../../../model/user-public.model";
 declare var jQuery: any;
 
 @Component({
@@ -52,7 +55,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, @Inject(FirebaseApp) firebaseApp: any, private afd: AngularFireDatabase, private router: Router) {
     this.firebase = firebaseApp;
   }
 
@@ -60,13 +63,15 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
     this.pageControl.auth(this.ngUnsubscribe, this.route, this.router, (user, userType) => {
         this.uid = user.uid;
         this.userType = userType
-        this.af.database.object(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
-          .takeUntil(this.ngUnsubscribe)
+        this.afd.object<string>(Constants.APP_STATUS + "/administratorAgency/" + this.uid + "/agencyId")
+          .snapshotChanges()
+          .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe(id => {
-            this.agencyId = id.$value;
+            this.agencyId = id.payload.val();
             console.log("Agency Id: "+ this.agencyId);
-            this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId)
-              .takeUntil(this.ngUnsubscribe)
+            this.afd.object<ModelAgency>(Constants.APP_STATUS + "/agency/" + this.agencyId)
+              .valueChanges()
+              .pipe(takeUntil(this.ngUnsubscribe))
               .subscribe(agency => {
                 if(agency.logoPath != null){
                   this.agencyLogo = agency.logoPath;
@@ -87,8 +92,9 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
                 }
               });
           });
-       this.af.database.object(Constants.APP_STATUS + "/userPublic/" + this.uid)
-          .takeUntil(this.ngUnsubscribe)
+       this.afd.object<ModelUserPublic>(Constants.APP_STATUS + "/userPublic/" + this.uid)
+          .valueChanges()
+          .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe(user => {
           this.agencyAdminName = user.firstName;
         });
@@ -130,7 +136,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
             this.agencyLogo = result as string;
             agencyData['/agency/' + this.agencyId + '/logoPath'] = this.agencyLogo;
 
-            this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
+            this.afd.object(Constants.APP_STATUS).update(agencyData).then(() => {
               this.successInactive = false;
               observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
                 takeUntil(this.ngUnsubscribe))
@@ -158,7 +164,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
           });
       } else {
 
-        this.af.database.object(Constants.APP_STATUS).update(agencyData).then(() => {
+        this.afd.object(Constants.APP_STATUS).update(agencyData).then(() => {
           this.successInactive = false;
           observableTimer(Constants.ALERT_REDIRECT_DURATION).pipe(
             takeUntil(this.ngUnsubscribe))

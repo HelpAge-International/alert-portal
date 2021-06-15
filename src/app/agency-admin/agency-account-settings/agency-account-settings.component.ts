@@ -1,7 +1,7 @@
 
 import {timer as observableTimer, Observable, Subject} from 'rxjs';
 
-import {takeUntil} from 'rxjs/operators';
+import {take, takeUntil} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
 import {AngularFireDatabase} from "@angular/fire/database";
 import {AngularFireAuth} from "@angular/fire/auth";
@@ -53,7 +53,7 @@ export class AgencyAccountSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.pageControl.authObj(this.ngUnsubscribe, this.route, this.router, (userObservable, userType) => {
-      userObservable.subscribe(user=> {
+      userObservable.pipe(take(1)).subscribe(user=> {
         this.user = user
         this.uid = user.uid
         console.log("Agency admin uid: " + this.uid);

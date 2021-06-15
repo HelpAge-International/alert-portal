@@ -1,11 +1,14 @@
 import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../../utils/Constants";
 import {Frequency} from "../../../utils/Frequency";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {DurationType} from "../../../utils/Enums";
+import {takeUntil} from "rxjs/operators";
+import {ClockSettingsModel} from "../../../model/clock-settings.model";
+import {ModelCountryOffice} from "../../../model/countryoffice.model";
 
 @Component({
   selector: 'app-clock-settings',
@@ -37,7 +40,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router) {
+  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private afd: AngularFireDatabase, private router: Router) {
     let durationsListW = Constants.DURATION_LIST_WEEK;
     let durationsListM = Constants.DURATION_LIST_MONTH;
     let durationsListY = Constants.DURATION_LIST_YEAR;
@@ -51,14 +54,13 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
-      this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
-        .takeUntil(this.ngUnsubscribe)
+      this.afd.list<ClockSettingsModel>(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
+        .snapshotChanges()
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(_ => {
           _.map(setting => {
-            let settingKey = setting.$key;
-            delete setting.$key;
-            delete setting.$exists;
-            this.settings[settingKey] = setting;
+            let settingKey = setting.key;
+            this.settings[settingKey] = setting.payload.val();
           });
 
           this.riskMonitorShowLogForFreq = new Frequency(this.settings['riskMonitoring']['showLogsFrom']);
@@ -144,7 +146,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
 
     this.updateCountriesClockSettings();
 
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
+    this.afd.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/clockSettings/')
       .set(this.settings)
       .then(_ => {
         if (!this.alertShow) {
@@ -163,10 +165,12 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
   }
 
   private updateCountriesClockSettings() {
-    this.af.database.list(Constants.APP_STATUS + '/countryOffice/' + this.agencyId)
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.list<ModelCountryOffice>(Constants.APP_STATUS + '/countryOffice/' + this.agencyId)
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(_ => {
-        _.map(setting => {
+        _.map(settingSnapshot => {
+          const setting = settingSnapshot.payload.val()
           if ('clockSettings' in setting) {
             let clockSettings: any = setting['clockSettings'];
             let update: boolean = false;
@@ -196,7 +200,7 @@ export class ClockSettingsComponent implements OnInit, OnDestroy {
             }
 
             if (update) {
-              this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + setting.$key + '/clockSettings/')
+              this.afd.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyId + '/' + settingSnapshot.key + '/clockSettings/')
                 .set(clockSettings)
                 .catch(err => console.log(err, 'Error occurred!'));
             }
