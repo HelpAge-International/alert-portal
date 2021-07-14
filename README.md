@@ -2,11 +2,174 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0-rc.0. Please install [Angular CLI](https://github.com/angular/angular-cli) before continuing.
 
+* Continuing Angular Update
+
 
 - Setting up the dev environment (information surrounding this)
 - Running the project
 - Deploying the project
 - Backups
+
+
+
+## Continuing Angular Update
+
+This branch has been created to upgrade the project from Angular 4.1 to Angular 11.2 as well as from Node 8 to Node 14.
+
+Through that process some dependency had to be updated, mostly:
+
+- angularfire2 to @angular/fire
+- rxjs 5.1 to rxjs 6.6
+
+These changes lead to a lot of refactoring needed in almost every files of the project. To help with continuing this process, here are the most common changes needed:
+
+#### angularfire2 to @angular/fire
+
+Change all occurrences of 
+
+```typescript
+import {AngularFire} from "angularfire2";
+```
+
+to
+
+```typescript
+import {AngularFireDatabase} from "@angular/fire/database";
+```
+
+Then update the denpendency injection in the constructor from:
+
+```typescript
+private af: AngularFire,
+```
+
+to
+
+```typescript
+private afd: AngularFireDatabase,
+```
+
+Update query, such as:
+
+```typescript
+this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(snap => {
+        snap.forEach((snapshot) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = snapshot.key;
+          x.name = snapshot.val().name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        })
+      });
+```
+
+to
+
+```typescript
+this.afd.object<ModelDepartment[]>(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(snap => {
+        const departments = snap.payload.val()
+        departments.forEach((department) => {
+          let x: ModelDepartment = new ModelDepartment();
+          x.id = department.id;
+          x.name = department.name;
+          this.departments.push(x);
+          this.departmentMap.set(x.id, x.name);
+        })
+      });
+```
+
+let's break down the changes:
+
+```typescript
+this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
+```
+
+to
+
+```typescript
+this.afd.object<ModelDepartment[]>(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
+```
+
+* We use directly the AngularFireDatabase instance by calling `this.afd`. 
+* We provide the type of the data for the object in the database `object<ModelDepartment[]>` 
+* We remove the preserve snapshot option `, {preserveSnapshot: true}`
+* anfularfire2 `object` method used to return an `Observable` but @angular/fire now return a `AngularFireObject` . We need to add either `.snapshotChanges()` or `.valueChanges()` to get an `Observable`. As we need to `preserveSnapshot` we use `.snapshotChanges()` to keep the snapshot information.
+* We now need to use the `.pipe()` operator to use the `takeUntil` function.
+* We can still get the object key by using  `snapshot.key;`
+* But we now need to use `snap.payload.val()` rather than `snap.val()`
+
+
+
+The process is similar for a list. From:
+
+```typescript
+this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
+      .do(list => {
+        list.forEach(item => {
+          this.staffList.push(this.addStaff(item));
+          this.getStaffPublicUser(item.$key);
+        });
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe();
+```
+
+to
+
+```typescript
+this.afd.list<ModelStaff>(Constants.APP_STATUS + '/staff/' + this.countryId)
+      .snapshotChanges()
+      .pipe(tap(snapshotList => {
+          snapshotList.forEach(snapshot => {
+          this.staffList.push(this.addStaff(snapshot.payload.val()));
+          this.getStaffPublicUser(snapshot.key);
+        });
+      }),
+      takeUntil(this.ngUnsubscribe))
+      .subscribe();
+```
+
+
+
+* `do` has been replaced with `tap`
+* the list operator used to return the item value with the key added as $key. now use `snapshot.payload.val()` to get the item value and `snapshot.key ` 
+
+
+
+another example, from:
+
+```typescript
+this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(userPublic => {
+        this.staffPublicUser[userId] =
+          new ModelUserPublic(userPublic.firstName, userPublic.lastName, userPublic.title, userPublic.email);
+
+        this.staffPublicUser[userId].phone = userPublic.phone;
+      });
+```
+
+to
+
+```typescript
+this.afd.object<ModelUserPublic>(Constants.APP_STATUS + '/userPublic/' + userId)
+      .valueChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(userPublic => {
+        this.staffPublicUser[userId] =
+          new ModelUserPublic(userPublic.firstName, userPublic.lastName, userPublic.title, userPublic.email);
+
+        this.staffPublicUser[userId].phone = userPublic.phone;
+      });
+```
+
+
+
 
 
 ## Setting up the dev environment
@@ -77,7 +240,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 Every string in .html templates should be available for translation. This includes image attributes along with paragrpahs or any other element containing text.
 
 For detailed instructions on how to mark text for translation, please refer to [Angular's official documentation on i18n](https://angular.io/docs/ts/latest/cookbook/i18n.html#!#i18n-attribute)
- 
+
 ## Routing
 
 All the routes are defined in the `src/app/app-routing.module.ts`. As an example `/login` route is already defined.

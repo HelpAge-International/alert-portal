@@ -1,9 +1,9 @@
 
 import {from as observableFrom, Observable, Subject} from 'rxjs';
 
-import {takeUntil} from 'rxjs/operators';
+import {first, takeUntil, tap} from 'rxjs/operators';
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AngularFire} from "angularfire2";
+import {AngularFireDatabase} from "@angular/fire/database";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Constants} from "../../utils/Constants";
 import {ModelStaff} from "../../model/staff.model";
@@ -65,7 +65,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private _userService: UserService,
               private _partnerOrganisationService: PartnerOrganisationService,
-              private af: AngularFire,
+              private afd: AngularFireDatabase,
               private fieldService:FieldOfficeService,
               private router: Router) {
   }
@@ -95,25 +95,29 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.departments = [];
     this.departmentMap.clear();
     //agency level
-    this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments', {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<ModelDepartment[]>(Constants.APP_STATUS + '/agency/' + this.agencyAdminId + '/departments')
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(snap => {
-        snap.forEach((snapshot) => {
+        const departments = snap.payload.val()
+        departments.forEach((department) => {
           let x: ModelDepartment = new ModelDepartment();
-          x.id = snapshot.key;
-          x.name = snapshot.val().name;
+          x.id = department.id;
+          x.name = department.name;
           this.departments.push(x);
-          this.departmentMap.set(x.id, x.name);  
+          this.departmentMap.set(x.id, x.name);
         })
       });
     //country level
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments', {preserveSnapshot: true})
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<ModelDepartment[]>(Constants.APP_STATUS + '/countryOffice/' + this.agencyAdminId + "/" + this.countryId + '/departments')
+      .snapshotChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(snap => {
-        snap.forEach((snapshot) => {
+        const departments = snap.payload.val()
+        departments.forEach((department) => {
           let x: ModelDepartment = new ModelDepartment();
-          x.id = snapshot.key;
-          x.name = snapshot.val().name;
+          x.id = department.id;
+          x.name = department.name;
           this.departments.push(x);
           this.departmentMap.set(x.id, x.name);
         })
@@ -121,14 +125,15 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   private getStaffData() {
-    this.af.database.list(Constants.APP_STATUS + '/staff/' + this.countryId)
-      .do(list => {
-        list.forEach(item => {
-          this.staffList.push(this.addStaff(item));
-          this.getStaffPublicUser(item.$key);
+    this.afd.list<ModelStaff>(Constants.APP_STATUS + '/staff/' + this.countryId)
+      .snapshotChanges()
+      .pipe(tap(snapshotList => {
+          snapshotList.forEach(snapshot => {
+          this.staffList.push(this.addStaff(snapshot.payload.val()));
+          this.getStaffPublicUser(snapshot.key);
         });
-      })
-      .takeUntil(this.ngUnsubscribe)
+      }),
+      takeUntil(this.ngUnsubscribe))
       .subscribe();
   }
 
@@ -233,8 +238,9 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
   }
 
   getStaffPublicUser(userId) {
-    this.af.database.object(Constants.APP_STATUS + '/userPublic/' + userId)
-      .takeUntil(this.ngUnsubscribe)
+    this.afd.object<ModelUserPublic>(Constants.APP_STATUS + '/userPublic/' + userId)
+      .valueChanges()
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(userPublic => {
         this.staffPublicUser[userId] =
           new ModelUserPublic(userPublic.firstName, userPublic.lastName, userPublic.title, userPublic.email);
@@ -261,10 +267,11 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.supportSkills = [];
     if (staffId) {
       let path = Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId;
-      let subscription = this.af.database.object(path)
-        .first()
+      let subscription = this.afd.object<ModelStaff>(path)
+        .valueChanges()
+        .pipe(first())
         .map(user => {
-          let userSkill = [];
+          let userSkill: string[] = [];
           if (user.skill) {
             for (let skill of user.skill) {
               userSkill.push(skill);
@@ -276,9 +283,9 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
           return observableFrom(skills);
         })
         .flatMap(skill => {
-          return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
+          return this.afd.object<any>(Constants.APP_STATUS + "/skill/" + skill).valueChanges();
         })
-        .takeUntil(this.ngUnsubscribe)
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(skill => {
           if (skill.type == SkillType.Support) {
             this.supportSkills.push(skill.name);
@@ -292,10 +299,11 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
     this.techSkills = [];
     if (staffId) {
       let path = Constants.APP_STATUS + '/staff/' + officeId + '/' + staffId;
-      let subscription = this.af.database.object(path)
-        .first()
+      let subscription = this.afd.object<ModelStaff>(path)
+        .valueChanges()
+        .pipe(first())
         .map(user => {
-          let userSkill = [];
+          let userSkill: string[] = [];
           if (user.skill) {
             for (let skill of user.skill) {
               userSkill.push(skill)
@@ -307,9 +315,9 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
           return observableFrom(skills);
         })
         .flatMap(skill => {
-          return this.af.database.object(Constants.APP_STATUS + "/skill/" + skill);
+          return this.afd.object<any>(Constants.APP_STATUS + "/skill/" + skill).valueChanges();
         })
-        .takeUntil(this.ngUnsubscribe)
+        .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(skill => {
           if (skill.type == SkillType.Tech) {
             this.techSkills.push(skill.name);
@@ -321,7 +329,7 @@ export class CountryStaffComponent implements OnInit, OnDestroy {
 
   private initFieldOffices() {
     this.fieldService.getFieldOffices(this.countryId)
-      .takeUntil(this.ngUnsubscribe)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(offices => {
         offices.forEach(office => this.fieldOfficeMap.set(office.id, office.name))
       })
