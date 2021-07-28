@@ -846,6 +846,7 @@ export class CountriesMapsSearchInterface {
     countriesSearchList.set(Countries.YE, "Yemen");
     countriesSearchList.set(Countries.ZM, "Zambia");
     countriesSearchList.set(Countries.ZW, "Zimbabwe");
+    countriesSearchList.set(-1, "Unknown");
     return countriesSearchList;
   }
 }

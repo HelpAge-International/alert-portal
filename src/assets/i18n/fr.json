@@ -1,4 +1,5 @@
 {
+  "EXPORT_PERSONAL_DATA": "Export Personal Data",
   "ACTIONS": "Actions",
   "ACTIONS_ASSIGNED_TO": "Actions assignées à",
   "ACTION_STATUS": "État de l'action",
@@ -668,7 +669,8 @@
       "END_DATE": "Date de fin",
       "SEASONAL_CALENDAR": "Calendrier saisonnier",
       "SEASON_NAME": "Nom de la saison",
-      "VIEW_AS_MONTHS": "Voir par mois",
+      "VIEW_AS_THREE_MONTHS": "Voir par 3 mois",
+      "VIEW_AS_SIX_MONTHS": "Voir par 6 mois",
       "VIEW_AS_WEEKS": "Voir par semaines",
       "VIEW_FULL_CALENDAR": "Voir le calendrier complet"
     },

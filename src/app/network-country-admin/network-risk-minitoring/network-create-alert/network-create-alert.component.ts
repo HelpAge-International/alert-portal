@@ -106,6 +106,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
+    console.log(this.networkViewValues)
 
     this.route.params
       .takeUntil(this.ngUnsubscribe)
@@ -518,7 +519,7 @@ export class NetworkCreateAlertComponent implements OnInit, OnDestroy {
       this.locationService.back();
     }else{
       if(this.networkViewValues){
-        this.router.navigateByUrl('/network-country/network-risk-monitoring', this.networkViewValues)
+        this.router.navigate(['/network-country/network-risk-monitoring', this.networkViewValues])
       }else{
         this.router.navigateByUrl('/network-country/network-risk-monitoring')
       }

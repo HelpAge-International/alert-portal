@@ -43,6 +43,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
   private directorCountryID: string;
   private alertData: any;
   public permRiskMonitoring = false;
+  public selectedLevel1Index: number
 
   private alertLevels = Constants.ALERT_LEVELS;
   private alertColors = Constants.ALERT_COLORS;
@@ -136,6 +137,7 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe(country => {
           this.preSelectedCountry = country.location
+          
           this.alertData.affectedAreas.forEach(area => {
             area.country = country.location
           })
@@ -323,10 +325,14 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
     return promise;
   }
 
-  highlightRadio() {
+  highlightRadio(isRed: boolean) {
 
-
-    console.log(this.alertData.alertLevel);
+    if(isRed) {
+      this.alertData.alertLevel = 2
+    }
+    else {
+      this.alertData.alertLevel = 1
+    }
 
   }
 
@@ -440,6 +446,10 @@ export class CreateAlertRiskMonitoringComponent implements OnInit, OnDestroy {
       event.preventDefault();
       this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.ERROR_ONLY_NUMBERS', AlertMessageType.Error);
     }
+  }
+
+  selectedLevel1(country, index) {  
+    this.selectedLevel1Index = this.countryLevelsValues[country].levelOneValues.indexOf(this.countryLevelsValues[country].levelOneValues.filter(l1 => l1.id == index)[0])
   }
 
   isNumber(n) {

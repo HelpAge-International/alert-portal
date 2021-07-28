@@ -7,6 +7,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {ModelAgency} from "../../../model/agency.model";
 import {Subject} from "rxjs";
 import {PageControlService} from "../../../services/pagecontrol.service";
+import {AgencyService} from "../../../services/agency-service.service";
 
 declare var jQuery: any;
 
@@ -50,7 +51,12 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   @Input() isLocalAgency: boolean;
 
-  constructor(private pageControl: PageControlService, private route: ActivatedRoute, private af: AngularFire, private router: Router, private translate: TranslateService) {
+  constructor(private pageControl: PageControlService,
+              private route: ActivatedRoute,
+              private af: AngularFire,
+              private router: Router,
+              private agencyService:AgencyService,
+              private translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -71,8 +77,9 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   selectUserType(settingID: number) {
+    console.log(settingID)
     this.notificationID = settingID;
-    this.loadAgencyData(this.agencyId);
+    // this.loadAgencyData(this.agencyId);
     jQuery("#select-user-type").modal("show");
   }
 
@@ -100,7 +107,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
     });
 
     this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/notificationSetting/' + this.notificationID + '/usersNotified')
-      .set(dataToSend)
+      .update(checkedTypes)
+      // .set(dataToSend)
       .then(() => {
         this.closeModal();
       }).catch((error: any) => {
@@ -112,30 +120,38 @@ export class NotificationComponent implements OnInit, OnDestroy {
     jQuery("#select-user-type").modal("hide");
   }
 
-  private loadAgencyData(uid: string) {
-    this.af.database.object(Constants.APP_STATUS + "/agency/" + uid)
+  private loadAgencyData(agencyId: string) {
+    this.agencyService.getAgencyNotificationSettings(agencyId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe((agency: ModelAgency) => {
-        this.agencyNotificationSettings = agency.notificationSetting;
-        this.notificationSettingsList.forEach((item, iItem) => {
-          var userNotified = this.agencyNotificationSettings[item].usersNotified;
-          var userNotifiedText = [];
-          var allEnable = true;
-          userNotified.forEach((val, iVal) => {
-            if (val) {
-              userNotifiedText.push(this.translate.instant(this.userTypes[iVal + 1]));
-            } else {
-              allEnable = false;
-            }
-          });
-          this.agencyNotificationSettings[item].usersNotified.unshift(allEnable);
-          this.userNotified[iItem] = userNotifiedText;
-        });
-      });
+      .subscribe(notification => this.agencyNotificationSettings = notification)
+
+    // this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
+    //   .takeUntil(this.ngUnsubscribe)
+    //   .subscribe((agency: ModelAgency) => {
+    //     this.agencyNotificationSettings = agency.notificationSetting;
+    //     this.notificationSettingsList.forEach((item, iItem) => {
+    //       var userNotified = this.agencyNotificationSettings[item].usersNotified;
+    //       var userNotifiedText = [];
+    //       var allEnable = true;
+    //       userNotified.forEach((val, iVal) => {
+    //         if (val) {
+    //           userNotifiedText.push(this.translate.instant(this.userTypes[iVal]));
+    //         } else {
+    //           allEnable = false;
+    //         }
+    //       });
+    //       this.agencyNotificationSettings[item].usersNotified.unshift(allEnable);
+    //       this.userNotified[iItem] = userNotifiedText;
+    //     });
+    //   });
   }
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  hasSelection(objSelections:boolean[]) : boolean {
+    return objSelections.filter(item => item==true).length > 0
   }
 
 }

@@ -5,6 +5,7 @@ import {Constants} from "../../utils/Constants";
 import {NetworkService} from "../../services/network.service";
 import * as firebase from "firebase";
 import * as moment from "moment";
+import {AngularFire} from "angularfire2";
 
 @Component({
   selector: 'app-network-agency-validation',
@@ -26,46 +27,44 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
   private countryId: string;
   private isValidated: boolean;
   private network: any;
+  private showLoader: boolean
 
 
   constructor(private route: ActivatedRoute,
               private networkService: NetworkService,
+              private af: AngularFire,
               private router: Router) {
   }
 
   ngOnInit() {
+    this.showLoader = true
     this.route.params
       .takeUntil(this.ngUnsubscribe)
       .subscribe((params: Params) => {
-        if (params["token"] && params["networkId"] && params["agencyId"]) { 
+        if (params["token"] && params["networkId"] && params["agencyId"]) {
           this.accessToken = params["token"];
           this.networkId = params["networkId"];
           this.agencyId = params["agencyId"];
           this.countryId = params["countryId"];
 
-          firebase.auth().signInAnonymously().catch(error => {
-            console.log(error.message);
-          });
+          firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+            .then(() => {
+              this.anonymousLogin();
+            })
 
           firebase.auth().onAuthStateChanged(user => {
-            console.log("onAuthStateChanged");
             if (user) {
-              if (user.isAnonymous) {
-                //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
-                let validationId = this.countryId && this.countryId != 'undefined' ? this.countryId : this.agencyId
-                this.networkService.validateNetworkAgencyToken(validationId, this.accessToken)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(validate => {
-                    console.log(validate);
-                    this.isValidated = validate;
-                    if (validate) {
-                      this.getNetworkInfo(this.networkId);
-                    }
-                  })
-              } else {
-                console.log("user not logged in");
-                this.navigateToLogin();
-              }
+              //Page accessed by the user who doesn't have firebase account. Check the access token and grant the access
+              let validationId = this.countryId && this.countryId != 'undefined' ? this.countryId : this.agencyId
+              this.networkService.validateNetworkAgencyToken(validationId, this.accessToken)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(validate => {
+                  this.isValidated = validate;
+                  if (validate) {
+                    this.getNetworkInfo(this.networkId);
+                  }
+                  this.showLoader = false
+                })
             }
           });
 
@@ -74,6 +73,12 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
           this.navigateToLogin();
         }
       });
+  }
+
+  private anonymousLogin() {
+    firebase.auth().signInAnonymously().catch(error => {
+      console.log(error.message);
+    });
   }
 
   private getNetworkInfo(networkId: string) {
@@ -98,13 +103,18 @@ export class NetworkAgencyValidationComponent implements OnInit, OnDestroy {
     console.log(this.network)
     console.log(this.agencyId)
     update["/network/" + this.networkId + "/agencies/" + this.agencyId + "/isApproved"] = true;
-    update["/agency/" + this.agencyId + "/networks/" + this.networkId] = true;
-    update["/networkAgencyValidation/" + this.agencyId + "/validationToken/expiry"] = moment.utc().valueOf();
-    if (!this.network.isGlobal) {
+    if (this.network.isGlobal) {
+      update["/agency/" + this.agencyId + "/networks/" + this.networkId] = true;
+    } else {
       let countryCode = this.network.agencies[this.agencyId].countryCode;
-      update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
-
+      if (countryCode && countryCode !== this.agencyId) {
+        update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
+        update["/countryOffice/" + this.agencyId + "/" + countryCode + "/localNetworks/" + this.networkId] = true;
+      } else {
+        update["/agency/" + this.agencyId + "/localNetworks/" + this.networkId] = true;
+      }
     }
+    update["/networkAgencyValidation/" + this.agencyId + "/validationToken/expiry"] = moment.utc().valueOf();
     this.networkService.updateNetworkField(update).then(() => {
       this.navigateToThanksPage();
     }).catch(error => {

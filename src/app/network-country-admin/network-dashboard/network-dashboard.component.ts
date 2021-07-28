@@ -297,16 +297,24 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToNetworkIndicator(indicator) {
-    indicator.hazardScenario["key"] == "countryContext" ?
-      this.router.navigate(["/risk-monitoring", {
-        "updateIndicatorID": indicator.$key,
-        "hazardID": indicator.hazardScenario["key"]
-      }])
-      :
-      this.router.navigate(["/risk-monitoring", {
-        "updateIndicatorID": indicator.$key,
-        "hazardID": indicator.hazardScenario["hazardScenario"]
-      }])
+    console.log(indicator)
+    // if (indicator.hazardScenario["key"] !== "countryContext") {
+    //   this.networkViewValues["updateIndicatorID"] = indicator.$key
+    //   this.networkViewValues["hazardID"] = indicator.hazardScenario["key"]
+    //   // this.storageService.remove(Constants.NETWORK_VIEW_SELECTED_ID, Constants.NETWORK_VIEW_VALUES, Constants.NETWORK_VIEW_SELECTED_NETWORK_COUNTRY_ID)
+    // } else {
+    this.networkViewValues["updateIndicatorID"] = indicator.$key
+    this.networkViewValues["hazardID"] = indicator.hazardScenario["key"]
+    // }
+    const path = this.networkCountryId ? "/network-country/network-risk-monitoring" : "network/local-network-risk-monitoring"
+    this.router.navigate([path, this.networkViewValues])
+    // indicator.hazardScenario["key"] == "countryContext" ?
+    //   this.router.navigate(["/network-country/network-risk-monitoring", this.networkViewValues])
+    //   :
+    //   this.router.navigate(["/risk-monitoring", {
+    //     "updateIndicatorID": indicator.$key,
+    //     "hazardID": indicator.hazardScenario["hazardScenario"]
+    //   }])
   }
 
   private initLocalNetworkAccess() {
@@ -481,22 +489,24 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
+        let i = 0;
         this.seasonEvents = [
           ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar())
         ];
-        let i = 2;
+        i++;
         snapshot.forEach((seasonInfo) => {
           let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
           this.seasonEvents.push(x);
           i++;
         });
+        console.log("Agency Country Map:");
+        console.log(this.agencyCountryMap);
         this.agencyCountryMap && this.agencyCountryMap.size == 0 ? this.initCalendar()
           :
           CommonUtils.convertMapToValuesInArray(this.agencyCountryMap).forEach(id => {
             this.af.database.object(Constants.APP_STATUS + "/season/" + id, {preserveSnapshot: true})
               .takeUntil(this.ngUnsubscribe)
               .subscribe(snapshot => {
-                let i = 100;
                 snapshot.forEach((seasonInfo) => {
                   let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
                   this.seasonEvents.push(x);
@@ -1157,8 +1167,21 @@ export class NetworkDashboardComponent implements OnInit, OnDestroy {
 
   toCalendar() {
     if (this.agencyCountryMap.size > 0) {
-      this.storageService.set(Constants.NETWORK_CALENDAR, this.agencyCountryMap)
+      console.log(this.agencyCountryMap);
+      this.storageService.set(Constants.NETWORK_CALENDAR, this.map_to_object(this.agencyCountryMap));
     }
   }
 
+  private map_to_object(map) {
+    const out = Object.create(null);
+    map.forEach((value, key) => {
+      if (value instanceof Map) {
+        out[key] = this.map_to_object(value)
+      }
+      else {
+        out[key] = value
+      }
+    });
+    return out
+  }
 }

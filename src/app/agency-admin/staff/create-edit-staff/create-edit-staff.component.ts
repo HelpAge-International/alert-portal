@@ -44,7 +44,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   userType: number;
   countryOffice: any;
   region: any;
-  department: string;
   position: string;
   officeType: number;
   email: string;
@@ -75,13 +74,17 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
   private skillsMap = new Map();
   private staffSkills: string[] = [];
   private notificationsMap = new Map();
+  private departmentMap = new Map();
   private staffNotifications: number[] = [];
+  private staffDepartments: string[] = [];
+
   private selectedStaffId: string;
   private isEdit: boolean;
   private selectedOfficeId: string;
   private emailInDatabase: string;
   private isUpdateOfficeOnly: boolean;
   private isEmailChange: boolean;
+  private numberOfGlobalDs: number;
 
   private allSkills: any = {};
   private skillKeys: string[] = [];
@@ -148,14 +151,25 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         this.userType = staff.userType;
         this.editInitialUserType = staff.userType;
         this.checkUserType();
-        this.department = staff.department;
         this.position = staff.position;
         this.officeType = staff.officeType;
+
+        if (staff.departments && staff.departments.length > 0) {
+          for (let department of staff.departments) {
+            this.departmentMap.set(department, true);
+          }
+        } else {
+          if(staff.department) {
+            this.departmentMap.set(staff.department, true);
+          }
+        }
+
         if (staff.skill && staff.skill.length > 0) {
           for (let skill of staff.skill) {
             this.skillsMap.set(skill, true);
           }
         }
+
         this.trainingNeeds = staff.training;
         this.isResponseMember = staff.isResponseMember;
         if (staff.notification && staff.notification.length > 0) {
@@ -199,7 +213,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         });
     }
 
-    this.userService.getUserType(staffId).subscribe(userType => {
+    this.userService.getUserType(staffId).takeUntil(this.ngUnsubscribe).subscribe(userType => {
       this.af.database.object(Constants.APP_STATUS + "/" + Constants.USER_PATHS[userType] + '/' + staffId + '/firstLogin')
         .takeUntil(this.ngUnsubscribe)
         .subscribe(value => {
@@ -222,10 +236,16 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
         this.isDonor = snap.val();
         this.userTypeSelection = [];
         Constants.USER_TYPE_SELECTION.forEach(userType => {
-          if (userType != UserType.All && userType != UserType.CountryAdmin && userType != UserType.Donor) {
+
+          if (userType != UserType.All && userType != UserType.GlobalDirector &&  userType != UserType.CountryAdmin && userType != UserType.Donor) {
+            console.log(Constants.USER_TYPE[userType])
             this.userTypeSelection.push(userType);
           }
         });
+
+        if(this.numberOfGlobalDs == 0){
+          this.userTypeSelection.push(UserType.GlobalDirector);
+        }
 
         if (this.isDonor) {
           this.userTypeSelection.push(UserType.Donor);
@@ -289,17 +309,19 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
 
     this.notificationList = this.af.database.list(Constants.APP_STATUS + "/agency/" + this.agencyId + "/notificationSetting");
 
-
     this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params["id"]) {
         this.selectedStaffId = params["id"];
         this.selectedOfficeId = params["officeId"];
         this.isEdit = true;
-
         this.loadStaffInfo(this.selectedStaffId, this.selectedOfficeId);
       }
-    });
 
+      if(params["numOfGlobalDs"]){
+        this.numberOfGlobalDs = params["numOfGlobalDs"];
+      }
+    });
+    console.log(this.numberOfGlobalDs)
   }
 
   validateForm(): boolean {
@@ -334,7 +356,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       this.showAlert();
       return false;
     }
-    else if (!this.department) {
+    else if (!this.departmentSelected()) {
       this.waringMessage = "AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR";
       this.showAlert();
       return false;
@@ -369,8 +391,17 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     }
   }
 
-  submit() {
+  departmentSelected() {
+    var selected = []
+    this.departmentMap.forEach((value, key) => {
+      if (value) {
+        selected.push(value)
+      }
+    });
+    return selected.filter(item => item == true).length > 0
+  }
 
+  submit() {
     if (!CustomerValidator.EmailValidator(this.email)) {
       this.waringMessage = "GLOBAL.EMAIL_NOT_VALID";
       this.showAlert();
@@ -379,7 +410,6 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     if (!this.validateForm()) {
       return;
     }
-    console.log("submit");
     this.collectData();
   }
 
@@ -387,6 +417,11 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     this.skillsMap.forEach((value, key) => {
       if (value) {
         this.staffSkills.push(key);
+      }
+    });
+    this.departmentMap.forEach((value, key) => {
+      if (value) {
+        this.staffDepartments.push(key);
       }
     });
     this.notificationsMap.forEach((value, key) => {
@@ -486,7 +521,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     //staff extra info
     let staff = new ModelStaff();
     staff.userType = Number(this.userType);
-    staff.department = this.department;
+    staff.departments = this.staffDepartments;
     staff.position = this.position;
     staff.officeType = Number(this.officeType);
     staff.skill = this.staffSkills;
@@ -554,6 +589,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     } else if (this.userType == UserType.Ert) {
       staffData["/ert/" + uid] = userData;
     } else if (this.userType == UserType.GlobalDirector) {
+      console.log(userData)
       staffData["/globalDirector/" + uid] = userData;
     } else if (this.userType == UserType.GlobalUser) {
       staffData["/globalUser/" + uid] = userData;
@@ -573,6 +609,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
       } else if (this.editInitialUserType === UserType.RegionalDirector) {
         staffData["/directorRegion/" + this.region.$key] = null;
         staffData["/regionDirector/" + uid] = null;
+        if (this.region.countries) {
+          Object.keys(this.region.countries).forEach(countryId => staffData["/directorRegion/" + countryId] = null)
+        }
+        staffData["/region/" + this.agencyId + "/" + this.region.$key + "/directorId"] = null;
         // staffData["/globalUser/" + this.agencyId + "/" + uid] = null;
       } else if (this.editInitialUserType == UserType.ErtLeader) {
         staffData["/ertLeader/" + uid] = null;
@@ -678,6 +718,10 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     this.skillsMap.set(skill.$key, isCheck);
   }
 
+  departmentCheck(department, isCheck) {
+    this.departmentMap.set(department.id, isCheck)
+  }
+
   notificationCheck(notification, isCheck) {
     this.notificationsMap.set(Number(notification.$key), isCheck);
   }
@@ -710,7 +754,7 @@ export class CreateEditStaffComponent implements OnInit, OnDestroy {
     delData["/staff/" + this.selectedOfficeId + "/" + this.selectedStaffId + "/"] = null;
     delData["/staff/globalUser/" + this.agencyId + "/" + this.selectedStaffId + "/"] = null;
     delData["/donor/" + this.selectedStaffId + "/"] = null;
-
+    delData["/globalDirector/" + this.selectedStaffId + "/"] = null;
     delData["/group/systemadmin/allusersgroup/" + this.selectedStaffId + "/"] = null;
     delData["/group/agency/" + this.agencyId + "/agencyallusersgroup/" + this.selectedStaffId + "/"] = null;
     delData["/group/agency/" + this.agencyId + "/" + Constants.GROUP_PATH_AGENCY[this.userType - 1] + "/" + this.selectedStaffId + "/"] = null;

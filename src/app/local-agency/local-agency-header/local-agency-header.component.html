@@ -13,26 +13,26 @@
            aria-expanded="false">{{agencyDetail?.name}}</a>
         <a *ngIf="isViewingNetwork" class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
            aria-expanded="false">{{selectedNetwork?.name}}</a>
-        <!--<div *ngIf="isViewingNetwork || partnerAgencies.length>1 || networks.length>0 || localNetworks.length>0"-->
-             <!--class="dropdown-menu">-->
-          <!--<ng-container *ngIf="isViewingNetwork">-->
-            <!--<a class="dropdown-item"-->
-               <!--(click)="selectAgency()">{{agencyDetail?.name}}</a>-->
-          <!--</ng-container>-->
-          <!--<ng-container *ngIf="partnerAgencies.length>1">-->
-            <!--<a *ngFor="let agency of partnerAgencies" class="dropdown-item"-->
-               <!--(click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>-->
-          <!--</ng-container>-->
-          <!--<ng-container *ngIf="networks.length > 0">-->
-            <!--<a *ngFor="let network of networks" class="dropdown-item"-->
-               <!--(click)="selectNetwork(network)">{{network.name}}</a>-->
-          <!--</ng-container>-->
-          <!--<ng-container *ngIf="localNetworks.length>0">-->
-            <!--<a class="testtt" *ngFor="let network of localNetworks" class="dropdown-item"-->
-               <!--(click)="selectLocalNetwork(network)">{{network.name}}</a>-->
-          <!--</ng-container>-->
+        <div *ngIf="isViewingNetwork || partnerAgencies.length>1 || networks.length>0 || localNetworks.length>0"
+             class="dropdown-menu">
+          <ng-container *ngIf="isViewingNetwork">
+            <a class="dropdown-item"
+               (click)="selectAgency()">{{agencyDetail?.name}}</a>
+          </ng-container>
+          <ng-container *ngIf="partnerAgencies.length>1">
+            <a *ngFor="let agency of partnerAgencies" class="dropdown-item"
+               (click)="selectAgencyCountryForPartner(agency)">{{agency.name}}</a>
+          </ng-container>
+          <ng-container *ngIf="networks.length > 0">
+            <a *ngFor="let network of networks" class="dropdown-item"
+               (click)="selectNetwork(network)">{{network.name}}</a>
+          </ng-container>
+          <ng-container *ngIf="localNetworks.length>0">
+            <a *ngFor="let network of localNetworks" class="dropdown-item"
+               (click)="selectLocalNetwork(network)">{{network.name}}</a>
+          </ng-container>
 
-        <!--</div>-->
+        </div>
       </li>
 
       <li class="Header_bar__username">
@@ -49,11 +49,12 @@
           <a class="dropdown-item" routerLink="/local-agency/agency-account-settings"
              (click)="clearNetworkLocalStorage()">{{"GLOBAL.ACCOUNT_SETTINGS.TITLE"
             | translate}}</a>
-          <!--<a-->
-            <!--class="dropdown-item" routerLink="/local-agency/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |-->
-            <!--translate}}</a>-->
+          <a
+            class="dropdown-item" (click)="switchOffNetworkView()" routerLink="/local-agency/country-agencies">{{"VIEW_AGENCIES_IN_MY_COUNTRIES" |
+            translate}}</a>
           <a class="dropdown-item" (click)="openLanguageModal()">{{"GLOBAL.SWITCH" | translate}}</a>
           <a class="dropdown-item" (click)="reportProblem()">{{"GLOBAL.REPORT" | translate}}</a>
+          <a class="dropdown-item" (click)="exportPersonalData()">{{"EXPORT_PERSONAL_DATA" | translate}}</a>
           <a class="dropdown-item" (click)="logout()">
             {{"GLOBAL.LOGOUT" | translate}}
           </a>
@@ -92,4 +93,4 @@
   </div>
 </div>
 
-<app-report-problem ></app-report-problem>
+<app-report-problem></app-report-problem>

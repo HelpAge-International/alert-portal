@@ -20,7 +20,8 @@
     <div class="Header-title__wrap">
       <h1 *ngIf="!isEdit">{{"ADD_PARTNER.ADD_A_PARTNER_ORGANISATION"| translate}}</h1>
       <h1 *ngIf="isEdit">{{"ADD_PARTNER.EDIT_PARTNER_ORGANISATION"| translate}}</h1>
-      <button *ngIf="partnerOrganisation.isActive && isEdit" type="button" class="btn btn-outline-primary text-uppercase"
+      <button *ngIf="partnerOrganisation.isActive && isEdit" type="button"
+              class="btn btn-outline-primary text-uppercase"
               (click)="openConfirmationModel()">
         {{ 'DEACTIVATE' | translate }}
       </button>
@@ -59,14 +60,14 @@
 
       <div class="Outline__bubble__wrap Grey" *ngFor="let project of partnerOrganisation?.projects; let pin = index;">
         <div class="row" *ngIf="activeProject != project">
-          <div class="col-sm-6 text-bold">{{ project.title || 'ADD_PARTNER.PROJECT_UNTITLED' | translate }}</div>
+          <div class="col-sm-6 text-bold">{{ project.title || 'ADD_PARTNER.NO_PROJECT' | translate }}</div>
           <div class="col-sm-6 Right-aligned">
-            <a href="javascript:void(0);" (click)="setActiveProject(project)">{{ 'ADD_PARTNER.VIEW_PROJECT' | translate
-              }}</a>
+            <a href="javascript:void(0);" (click)="setActiveProject(project)">{{ project.title? viewProject : 'ADD_PARTNER.ADD_PROJECT' | translate }}</a>
           </div>
         </div>
-        <div *ngIf="activeProject == project">
-          <div class="row">
+
+        <div *ngIf="isEdit && (activeProject == project) || activeProject == project">
+          <div class="row" *ngIf="isEdit && activeProject == project">
             <div class="col-sm-6"><h6>{{ "ADD_PARTNER.SECTOR" | translate }}</h6></div>
             <div class="col-sm-6 Right-aligned">
               <a href="javascript:void(0)" class="text-danger"
@@ -296,7 +297,8 @@
       <br>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="setInactiveState()">{{"SAVE"| translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-inactive')">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-inactive')">
+          {{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>
@@ -317,7 +319,8 @@
       <br>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="setActiveState()">{{"SAVE"| translate}}</button>
-        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-active')">{{"GLOBAL.CANCEL"| translate}}
+        <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmationModel('confirm-active')">
+          {{"GLOBAL.CANCEL"| translate}}
         </button>
       </div>
     </div>

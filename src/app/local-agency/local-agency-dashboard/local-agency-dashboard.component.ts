@@ -119,7 +119,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       this.uid = user.uid;
       this.userType = userType;
       this.agencyId = agencyId;
-      console.log(agencyId)
+      this.systemId = systemId;
 
       this.checkCoCUpdated();
       this.checkToCUpdated();
@@ -129,6 +129,11 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
       } else {
         this.DashboardTypeUsed = DashboardType.default;
       }
+
+      PageControlService.agencyModuleMatrix(this.af, this.ngUnsubscribe, agencyId, (isEnabled => {
+        this.moduleSettings = isEnabled;
+      }));
+
       this.loadData();
     });
   }
@@ -159,7 +164,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   getCSSHazard(hazard: number) {
-    return HazardImages.init().getCSS(hazard);
+    return HazardImages.init().getCSS(Number(hazard));
   }
 
   isNumber(n) {
@@ -225,6 +230,9 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
   }
 
   private initCalendar() {
+    if(this.DashboardTypeUsed == DashboardType.director){
+      return;
+    }
     // Element is removed and re-added upon a data change
     document.getElementById("target2").innerHTML = "";
     this.chronoline = new Chronoline(document.getElementById("target2"), this.seasonEvents,
@@ -502,9 +510,11 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
     if (level == ActionLevel.MPA && !this.moduleSettings.minimumPreparedness) {
       return false;
     }
+
     if (level == ActionLevel.APA && (!this.moduleSettings.advancedPreparedness || !this.isRedAlert)) {
       return false;
     }
+
     if (action == ActionType.chs && !this.moduleSettings.chsPreparedness) {
       return false;
     }
@@ -616,7 +626,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
         if(!action.redAlerts){
           action.redAlerts = [];
         }
-        if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+        if((action.assignedHazards && action.assignedHazards.length == 0) || (action.assignedHazards && action.assignedHazards.includes(alert.hazardScenario))){
           action.redAlerts.push(alertId)
 
           if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
@@ -719,7 +729,7 @@ export class LocalAgencyDashboardComponent implements OnInit, OnDestroy {
           if(!action.redAlerts){
             action.redAlerts = [];
           }
-          if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario)){
+          if(action.assignedHazards && (action.assignedHazards.length == 0 || action.assignedHazards.includes(alert.hazardScenario))){
               action.redAlerts.push(alert.id)
 
               if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){

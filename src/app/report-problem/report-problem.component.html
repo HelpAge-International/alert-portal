@@ -1,6 +1,6 @@
 
 <a class="float" id="container">
-  <img class="img-position" [ngbTooltip]="tooltipDisplay" src="src/assets/images/camera_icon.svg" (click)="screenshot()" >
+  <img class="img-position" [ngbTooltip]="tooltipDisplay" src="/assets/images/camera_icon.svg" (click)="screenshot()" >
 </a>
 
 <!-- Modal for report a bug -->
@@ -21,7 +21,7 @@
         <div class="row">
           <div class="hazard_season_btn__wrap--risk btn btn-info Spaced-above text-gray-dark col-md-7">
             <img src="assets/images/icons/circle_tick.svg">
-            <p>.png attached</p>
+            <p>{{sendEmailModel.file}}.png attached</p>
           </div>
         </div>
       </div>

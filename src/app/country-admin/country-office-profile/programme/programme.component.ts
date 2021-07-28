@@ -10,6 +10,7 @@ import {Subject} from "rxjs/Subject";
 import {AddEditMappingProgrammeComponent} from "./add-edit-mapping/add-edit-mapping.component";
 import {CommonService} from "../../../services/common.service";
 import {AgencyService} from "../../../services/agency-service.service";
+import { TranslateService } from "@ngx-translate/core";
 
 declare var jQuery: any;
 
@@ -75,7 +76,8 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private jsonService: CommonService,
               private agencyService: AgencyService,
-              private af: AngularFire) {
+              private af: AngularFire,
+              private translate: TranslateService) {
 
   }
 
@@ -497,20 +499,90 @@ export class CountryOfficeProgrammeComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
-        if (mapping.where && mapping.where > -1) {
-          obj.country = this.countries[mapping.where];
-        }
-        if (mapping.level1 && mapping.level1 > -1) {
-          obj.areas = ", " + json[mapping.where].levelOneValues[mapping.level1].value
-        }
-        if (mapping.level2 && mapping.level2 > -1) {
-          obj.areas = obj.areas + ", " + json[mapping.where].levelOneValues[mapping.level1].levelTwoValues[mapping.level2].value;
-        }
-        this.locationObjs.push(obj);
+        var l1Index = 0;
+          if (mapping.where && mapping.where > -1) {
+            obj.country = this.countries[mapping.where];
+          }
+          console.log(mapping);
+          if (mapping.where && mapping.level1 && mapping.level1 > -1) {
+            for (var i = 0; i < json[mapping.where].levelOneValues.length; i++) {
+              var x = json[mapping.where].levelOneValues[i];
+              if (x['id'] === +mapping.level1) { 
+                obj.areas = ", " + x.value    
+                l1Index = i;
+              }
+            }
+          }
+          if (mapping.where && mapping.level2 && mapping.level2 > -1) {
+            for (var i = 0; i < json[mapping.where].levelOneValues[l1Index].levelTwoValues.length; i++) { 
+              var x = json[mapping.where].levelOneValues[l1Index].levelTwoValues[i];
+              if (x['id'] === +mapping.level2) {
+                console.log("EQUAL");
+                console.log(x);
+                console.log(mapping);
+                obj.areas = obj.areas + ", " + x.value; 
+              }
+            }
+          }
+          this.locationObjs.push(obj);
       });
     });
   }
+
+  sectorNames(sectors, otherSectorName) {
+    var sectorNames = []
+    if (sectors.length > 0) {
+      for (let sector of sectors) {
+        var sectorName = "" 
+        switch (Number(sector)) {
+          case ResponsePlanSectors.wash: {
+            sectorName = "SECTOR_WASH"
+            break;
+          }
+          case ResponsePlanSectors.health: {
+            sectorName = "SECTOR_HEALTH"
+            break;
+          }
+          case ResponsePlanSectors.shelter: {
+            sectorName = "SECTOR_SHELTER"
+            break;
+          }
+          case ResponsePlanSectors.nutrition: {
+            sectorName = "SECTOR_NUTRITION"
+            break;
+          }
+          case ResponsePlanSectors.foodSecurityAndLivelihoods: {
+            sectorName = "SECTOR_FOOD_SECURITY_LIVELIHOOD" 
+            break;
+          }
+          case ResponsePlanSectors.protection: {
+            sectorName = "SECTOR_PROTECTION" 
+            break;
+          }
+          case ResponsePlanSectors.education: {
+            sectorName = "SECTOR_EDUCATION" 
+            break;
+          }
+          case ResponsePlanSectors.campmanagement: {
+            sectorName = "SECTOR_CAMP_MANAGEMENT" 
+            break;
+          }
+          case ResponsePlanSectors.other: {
+            sectorName = "SECTOR_OTHER" 
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+        sector == ResponsePlanSectors.other ? sectorNames.push(otherSectorName + " (Other)") : sectorNames.push(this.translate.instant(sectorName))
+      }
+      return sectorNames.join(', ')
+    } else {
+      if (sectors == ResponsePlanSectors.other) {
+        return otherSectorName + " (Other)"
+      }
+      return ResponsePlanSectors[sectors]
+    }
+  }
 }
-
-
-

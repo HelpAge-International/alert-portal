@@ -67,6 +67,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   private updateActionId: string;
   public myFirstName: string;
   public myLastName: string;
+  private extension: string;
 
   // Filters
   private filterStatus: number = -1;
@@ -197,6 +198,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       this.systemAdminId = systemId;
 
       this.agencyId = agencyId;
+
       this.countryId = countryId;
 
       this.getStaffDetails(this.uid, true);
@@ -212,6 +214,10 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
       // Initialise the page control information
       PageControlService.agencyQuickEnabledMatrix(this.af, this.ngUnsubscribe, this.uid, Constants.USER_PATHS[userType], (isEnabled) => {
         this.modulesAreEnabled = isEnabled;
+      });
+
+      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled) => {
+        this.permissionsAreEnabled = isEnabled;
       });
 
 
@@ -406,11 +412,20 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/system/" + this.systemAdminId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
+        console.log(snap.val().fileSettings)
         let index = 0;
+        let ext = "";
         for (let x of snap.val().fileSettings) {
           this.fileExtensions[index].allowed = snap.val().fileSettings[index];
+          console.log(this.fileExtensions[index].allowed)
+
+          if (this.fileExtensions[index].allowed){
+            ext = ext.concat(this.fileExtensions[index].extensions[1] ? this.fileExtensions[index].extensions[0] +" "+ this.fileExtensions[index].extensions[1] +" " : this.fileExtensions[index].extensions[0]+ " ");
+          }
           index++;
+
         }
+        this.extension = ext;
         this.fileSize = snap.val().fileType == 1 ? 1000 * snap.val().fileSize : snap.val().fileSize;
         this.fileSize = this.fileSize * 1000 * 1000;
       });
@@ -421,6 +436,16 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   private initCountryAdmin() {
     this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId, {preserveSnapshot: true})
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe((snap) => {
+        if (snap.val() != null) {
+          this.getStaffDetails(snap.val().adminId, false);
+        }
+      });
+  }
+
+  private initAgencyAdmin() {
+    this.af.database.object(Constants.APP_STATUS + "/agency/" + this.agencyId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         if (snap.val() != null) {
@@ -440,6 +465,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
   }
 
   private initStaff() {
+    this.initAgencyAdmin();
     this.initCountryAdmin();
     this.af.database.list(Constants.APP_STATUS + "/staff/" + this.countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
@@ -687,6 +713,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
    */
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
+
     if (action.note == undefined) {
       return;
     }
@@ -770,7 +797,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
     action.noteId = '';
     action.note = '';
   }
-
 
   /**
    * File uploading
@@ -924,7 +950,6 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         }
       }
 
-
       if (action.actualCost || action.actualCost == 0) {
         data["actualCost"] = action.actualCost
       }
@@ -1014,11 +1039,8 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
 
   //Close documents popover
   protected closePopover(action: PreparednessAction) {
-
     let toggleDialog = jQuery("#popover_content_" + action.id);
     toggleDialog.toggle();
-
-
   }
 
   // Uploading a file to Firebase
@@ -1258,6 +1280,7 @@ export class MinimumPreparednessComponent implements OnInit, OnDestroy {
         this.exportDocument(action, "" + index);
         index++;
       }
+      this.closeExportModal()
     }
     else {
       this.alertMessage = new AlertMessageModel("Error exporting your documents");

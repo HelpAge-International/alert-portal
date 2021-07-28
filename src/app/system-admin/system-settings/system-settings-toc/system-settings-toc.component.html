@@ -40,7 +40,7 @@
     </div>
 
     <div class="wrapper" align="left">
-      <p class="coc-text" *ngIf="!isEditing">{{tocText}}</p>
+      <p class="coc-text" *ngIf="!isEditing" [innerHTML]="tocText"></p>
       <textarea *ngIf="isEditing" name="resize" class="resize" rows="10" cols="50" [(ngModel)]="tocText"></textarea>
     </div>
 

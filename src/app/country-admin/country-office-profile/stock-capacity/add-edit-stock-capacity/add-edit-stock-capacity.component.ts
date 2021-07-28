@@ -1,18 +1,18 @@
-import {Component, OnDestroy, OnInit, Input} from "@angular/core";
-import {Constants} from "../../../../utils/Constants";
-import {AlertMessageType, GeoLocation, StockType} from "../../../../utils/Enums";
-import {ActivatedRoute, Params, Router} from "@angular/router";
-import {AlertMessageModel} from "../../../../model/alert-message.model";
-import {DisplayError} from "../../../../errors/display.error";
-import {UserService} from "../../../../services/user.service";
-import {StockCapacityModel} from "../../../../model/stock-capacity.model";
-import {StockService} from "../../../../services/stock.service";
-import {PageControlService} from "../../../../services/pagecontrol.service";
-import {Subject} from "rxjs/Subject";
-import {Indicator} from "../../../../model/indicator";
-import {CommonService} from "../../../../services/common.service";
-import {AngularFire} from "angularfire2";
-import {NoteService} from "../../../../services/note.service";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { AngularFire } from "angularfire2";
+import { Subject } from "rxjs/Subject";
+import { DisplayError } from "../../../../errors/display.error";
+import { AlertMessageModel } from "../../../../model/alert-message.model";
+import { Indicator } from "../../../../model/indicator";
+import { StockCapacityModel } from "../../../../model/stock-capacity.model";
+import { CommonService } from "../../../../services/common.service";
+import { NoteService } from "../../../../services/note.service";
+import { PageControlService } from "../../../../services/pagecontrol.service";
+import { StockService } from "../../../../services/stock.service";
+import { UserService } from "../../../../services/user.service";
+import { Constants } from "../../../../utils/Constants";
+import { AlertMessageType, GeoLocation, StockType } from "../../../../utils/Enums";
 declare var jQuery: any;
 
 @Component({
@@ -54,8 +54,6 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   private geoLocation = Constants.GEO_LOCATION;
   private geoLocationList: number[] = [GeoLocation.national, GeoLocation.subnational];
   private isEdit: boolean = false;
-  private selectedValue: any;
-  private selectedValueL2: any;
   private presetId: any;
   private isPreset: boolean = true;
   private isPresetValue: any;
@@ -66,12 +64,12 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   @Input() isLocalAgency: boolean;
 
   constructor(private pageControl: PageControlService, private _userService: UserService,
-              private _stockService: StockService,
-              private router: Router,
-              private af: AngularFire,
-              private route: ActivatedRoute,
-              private _commonService: CommonService,
-              private _noteService: NoteService) {
+    private _stockService: StockService,
+    private router: Router,
+    private af: AngularFire,
+    private route: ActivatedRoute,
+    private _commonService: CommonService,
+    private _noteService: NoteService) {
     this.stockCapacity = new StockCapacityModel();
     this.stockCapacity.stockType = StockType.Country; // set default stock type
 
@@ -91,7 +89,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
     });
   }
 
-  initLocalAgency(){
+  initLocalAgency() {
     this.route.params.subscribe((params: Params) => {
       if (params['id']) {
         this._stockService.getStockCapacityLocalAgency(this.agencyId, params['id'])
@@ -106,7 +104,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
     });
   }
 
-  initCountryOffice(){
+  initCountryOffice() {
     this.route.params.subscribe((params: Params) => {
       if (params['id']) {
         this._stockService.getStockCapacity(this.countryId, params['id'])
@@ -127,12 +125,12 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   }
 
   submit() {
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this._stockService.saveStockCapacityLocalAgency(this.agencyId, this.stockCapacity)
         .then(() => {
-            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
-            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-          },
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
           err => {
             if (err instanceof DisplayError) {
               this.alertMessage = new AlertMessageModel(err.message);
@@ -140,16 +138,13 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
               this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR');
             }
           });
-    }else{
+    } else {
       var postData = {
-        location: this.selectedCountry,
-        level1: this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null,
-        level2: this.selectedValueL2 ? this.selectedValueL2 : null,
+        location: this.stockCapacity.location,
+        level1: this.stockCapacity.level1 ? this.stockCapacity.level1 : null,
+        level2: this.stockCapacity.level2 ? this.stockCapacity.level2 : null,
         agencyId: this.agencyId
       };
-      this.stockCapacity.location = this.selectedCountry;
-      this.stockCapacity.level1 = this.selectedValue ? this.levelOneDisplay[this.selectedValue].id : null;
-      this.stockCapacity.level2 = this.selectedValueL2 ? this.selectedValueL2 : null;
 
       this._stockService.saveStockCapacity(this.countryId, this.stockCapacity);
 
@@ -157,9 +152,9 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
         .push(this.stockCapacity)
         .update(postData)
         .then(() => {
-            this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
-            setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
-          },
+          this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_SAVED', AlertMessageType.Success);
+          setTimeout(() => this.goBack(), Constants.ALERT_REDIRECT_DURATION);
+        },
           err => {
             if (err instanceof DisplayError) {
               this.alertMessage = new AlertMessageModel(err.message);
@@ -173,7 +168,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   goBack() {
     if (this.isLocalAgency) {
       this.router.navigateByUrl('/local-agency/profile/stock-capacity');
-    }else{
+    } else {
       this.router.navigateByUrl('/country-admin/country-office-profile/stock-capacity');
     }
   }
@@ -185,14 +180,14 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
   deleteAction() {
     this.closeModal();
 
-    if(this.isLocalAgency){
+    if (this.isLocalAgency) {
       this._stockService.deleteStockCapacityLocalAgency(this.agencyId, this.stockCapacity)
         .then(() => {
           this.goBack();
           this.alertMessage = new AlertMessageModel('COUNTRY_ADMIN.PROFILE.STOCK_CAPACITY.SUCCESS_DELETED', AlertMessageType.Success);
         })
         .catch(err => this.alertMessage = new AlertMessageModel('GLOBAL.GENERAL_ERROR'));
-    }else{
+    } else {
       this._stockService.deleteStockCapacity(this.countryId, this.stockCapacity)
         .then(() => {
           this.goBack();
@@ -223,6 +218,7 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       .takeUntil(this.ngUnsubscribe)
       .subscribe(getCountry => {
         this.selectedCountry = getCountry.$value;
+        this.stockCapacity.location = getCountry.$value;
         console.log(getCountry.$value, 'initCountrySelection');
 
         /**
@@ -237,28 +233,25 @@ export class CountryOfficeAddEditStockCapacityComponent implements OnInit, OnDes
       });
   }
 
-  // This function below is to determine the country selected
-  // Return the array of level1 areas in the country selected.
-  setCountryLevel(){
+  resetValue() {
+    this.levelTwoDisplay.length = 0;
+  }
+
+  setCountryLevel(selectedCountry) {
     this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(content => {
         err => console.log(err);
-        // Below needs to return the level1 array of the id selected
-        this.levelOneDisplay = content[this.selectedCountry].levelOneValues;
+        this.levelOneDisplay = content[selectedCountry].levelOneValues;
       });
   }
 
-  resetValue(){
-    console.log('reset selection');
-    // Reset Values to remove level 2 drop down
-    this.levelTwoDisplay.length = 0;
-
-  }
-
-  setLevel1Value(){
-    console.log(this.selectedValue, 'preset value');
-    this.levelTwoDisplay = this.levelOneDisplay[this.selectedValue].levelTwoValues;
-
+  setLevel1Value(selected) {
+    for (var i = 0; i < this.levelOneDisplay.length; i++) {
+      var x = this.levelOneDisplay[i];
+      if (x['id'] == selected) {
+        this.levelTwoDisplay = this.levelOneDisplay[i].levelTwoValues;
+      }
+    }
   }
 }

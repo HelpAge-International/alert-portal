@@ -357,6 +357,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
     this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
 
     this.getStaffDetails(this.uid, true);
+    // this.getCountryAdmin(this.countryId, this.agencyId)
 
     this.prepActionService.initActionsWithInfoNetwork(this.af, this.ngUnsubscribe, this.uid, true,
       this.networkCountryId, this.networkId, this.systemAdminId);
@@ -368,6 +369,18 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
     this.networkViewValues = this.storage.get(Constants.NETWORK_VIEW_VALUES);
 
+    console.log(this.countryId)
+    this.countryId ? this.initForCountry() : this.initForLocalAgency();
+    this.initStaff(this.uid, this.agencyId, this.countryId);
+    PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
+      this.permissionsAreEnabled = isEnabled;
+    });
+
+    // Currency
+    this.calculateCurrency();
+  }
+
+  private initForCountry() {
     this.networkService.mapNetworkWithCountryForCountry(this.agencyId, this.countryId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkMap => {
@@ -392,16 +405,37 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           this.initAgenciesDetails(networkMap)
         }
       })
-    this.initStaff(this.uid, this.agencyId, this.countryId);
-    PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, this.userType, (isEnabled) => {
-      this.permissionsAreEnabled = isEnabled;
-    });
+  }
 
-    // Currency
-    this.calculateCurrency();
+  private initForLocalAgency() {
+    this.networkService.mapNetworkCountryForLocalAgency(this.agencyId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(networkMap => {
+        this.networkIdList = []
+        networkMap.forEach((networkCountryId, networkId) => {
+          this.networkIdList.push(networkId)
+          this.networkService.getNetworkModuleMatrix(networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(matrix => {
+              this.networkModuleMap.set(networkId, matrix)
+            })
+
+          this.networkService.getNetworkDetail(networkId)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(network => {
+              this.networkModelMap.set(networkId, network)
+            })
+        })
+
+        if (networkMap) {
+          // this.initNetworkAdmin(networkMap)
+          this.initAgenciesDetails(networkMap)
+        }
+      })
   }
 
   private initLocalNetworkViewAccess() {
+    console.log("initLocalNetworkViewAccess")
     this.assignActionAsignee = this.uid;
     this.filterAssigned = "0";
     this.currentlyAssignedToo = new PreparednessUser(this.uid, true);
@@ -421,7 +455,8 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkViewValues["isLocalNetworkAdmin"] = this.isLocalNetworkAdmin
     }
 
-    this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId)
+    const service = this.countryId ? this.networkService.getLocalNetworksWithCountryForCountry(this.agencyId, this.countryId) : this.networkService.getLocalNetworksWithCountryForLocalAgency(this.agencyId)
+    service
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkIds => {
         if (networkIds && networkIds.length > 0) {
@@ -542,6 +577,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
           prepUser.firstName = snap.firstName;
           prepUser.lastName = snap.lastName;
           this.CURRENT_USERS.set(uid, prepUser);
+          console.log(this.CURRENT_USERS)
           this.updateUser(prepUser);
 
           if (isMe) {
@@ -639,7 +675,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
 
   private initStaff(uid, agencyId, countryId) {
     this.initCountryAdmin(agencyId, countryId);
-    this.af.database.list(Constants.APP_STATUS + "/staff/" + countryId, {preserveSnapshot: true})
+    this.af.database.list(Constants.APP_STATUS + "/staff/" + (countryId ? countryId : agencyId), {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe((snap) => {
         snap.forEach((snapshot) => {
@@ -816,6 +852,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
    */
   // Adding a note to firebase
   public addNote(action: PreparednessAction) {
+
     if (action.note == undefined) {
       return;
     }
@@ -942,7 +979,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         console.log(action['timeTracking'])
         console.log(action['timeTracking']['timeSpentInAmber'][index])
 
-        if (action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
+        if (index != -1 && action['timeTracking']['timeSpentInAmber'][index].finish == -1) {
           action['timeTracking']['timeSpentInAmber'][index].finish = currentTime
           action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
           data['timeTracking'] = action['timeTracking']
@@ -1297,6 +1334,7 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
         this.exportDocument(action, "" + index);
         index++;
       }
+      this.closeExportModal()
     }
     else {
       this.alertMessage = new AlertMessageModel("Error exporting your documents");
@@ -1392,14 +1430,12 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.networkService.mapAgencyCountryForLocalNetworkCountry(networkId)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(agencyCountryMap => {
-          // agencyCountryMap.forEach((countryId, agencyId) => {
-          //   this.initStaff(this.uid, agencyId, countryId);
-          // })
           CommonUtils.convertMapToKeysInArray(agencyCountryMap).forEach(agencyId => {
             this.userService.getAgencyModel(agencyId)
               .takeUntil(this.ngUnsubscribe)
               .subscribe((agency: ModelAgency) => {
                 this.agencyNamesMap.set(agencyId, agency)
+                console.log(this.agencyNamesMap)
               })
           })
         })
@@ -1420,4 +1456,28 @@ export class NetworkCountryMpaComponent implements OnInit, OnDestroy {
       this.initStaff(this.uid, agencyId, agencyCountryMap.get(agencyId))
     })
   }
+
+  // private getCountryAdmin(countryId: string, agencyId: string) {
+  //   console.log("fetch country admin")
+  //   this.userService.getCountryDetail(countryId, agencyId)
+  //     .flatMap(country => {
+  //       console.log(country)
+  //       return this.userService.getUser(country.adminId)
+  //     })
+  //     .takeUntil(this.ngUnsubscribe)
+  //     .subscribe(admin => {
+  //       console.log(admin)
+  //       const adminModel = new PreparednessUser(admin.id,false)
+  //       adminModel.id = admin.id
+  //       adminModel.firstName = admin.firstName
+  //       adminModel.lastName = admin.lastName
+  //       console.log(adminModel)
+  //       this.CURRENT_USERS.set(admin.id, adminModel)
+  //       console.log(this.CURRENT_USERS)
+  //       const staffAdmin = new ModelStaff()
+  //       staffAdmin.position = "Country Admin"
+  //       staffAdmin.id = admin.id
+  //       this.STAFF.set(staffAdmin.id, staffAdmin)
+  //     })
+  // }
 }

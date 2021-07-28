@@ -20,6 +20,9 @@ import {PageControlService} from "../../services/pagecontrol.service";
 import * as moment from "moment";
 import * as firebase from "firebase";
 import {NetworkService} from "../../services/network.service";
+import {AgencyService} from "../../services/agency-service.service";
+import { SettingsService } from "../../services/settings.service";
+
 
 declare var jQuery: any;
 
@@ -35,6 +38,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private SECTORS = Constants.RESPONSE_PLANS_SECTORS;
   private PresenceInTheCountry = PresenceInTheCountry;
   private MethodOfImplementation = MethodOfImplementation;
+  private PresenceInCountry = Constants.RESPONSE_PLAN_COUNTRY_PRESENCE;
+  private PlanMethod = Constants.RESPONSE_PLAN_METHOD;
   private Gender = Gender;
   private AgeRange = AgeRange;
   private SourcePlan = SourcePlan;
@@ -114,6 +119,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
   private planLocalNetworkId: string;
   private planNetworkCountryId: string;
   private networkId: string;
+  private userType : UserType
+  private expiryDate : number;
   private isViewingFromExternal: boolean;
 
   constructor(private pageControl: PageControlService,
@@ -121,6 +128,8 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
               private router: Router,
               private userService: UserService,
               private networkService: NetworkService,
+              private agencyService : AgencyService,
+              private countryService : SettingsService,
               private route: ActivatedRoute) {
   }
 
@@ -211,7 +220,9 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
           const normalUser = () => {
             this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-
+              this.agencyId = agencyId
+              this.countryId = countryId
+            this.userType = userType
               //get response plan settings from agency
               this.userService.getAgencyDetail(agencyId)
                 .takeUntil(this.ngUnsubscribe)
@@ -239,6 +250,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
             console.log("networkUser")
             this.pageControl.networkAuth(this.ngUnsubscribe, this.route, this.router, (user) => {
               this.uid = user.uid;
+
               this.showingSections = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
               this.handleLoadResponsePlan();
             });
@@ -533,6 +545,7 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
       this.af.database.object(Constants.APP_STATUS + "/" + this.userPath + "/" + this.uid + "/countryId")
         .takeUntil(this.ngUnsubscribe)
         .subscribe((countryId: any) => {
+          console.log(countryId)
           this.countryId = countryId.$value;
           res(true);
         });
@@ -542,9 +555,16 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private loadResponsePlanData() {
     console.log("response plan id: " + this.responsePlanId);
-    let id = this.networkCountryId ? this.networkCountryId : this.networkId ? this.networkId : this.countryId;
+    console.log(this.networkCountryId)
+    console.log(this.networkId)
+    console.log(this.countryId)
+    console.log(this.agencyId)
+    let id = this.networkCountryId ? this.networkCountryId : this.networkId ? this.networkId : this.countryId ? this.countryId : this.agencyId;
+    console.log(id)
     let responsePlansPath: string = Constants.APP_STATUS + '/responsePlan/' + id + '/' + this.responsePlanId;
     console.log(responsePlansPath)
+
+
 
     this.af.database.object(responsePlansPath)
       .takeUntil(this.ngUnsubscribe)
@@ -552,6 +572,27 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         this.responsePlanToShow = responsePlan;
         if (!this.accessToken) {
           this.configGroups(responsePlan);
+        }
+
+        if(id === this.countryId) {
+          this.userService.getAgencyId(this.userPath, this.uid).takeUntil(this.ngUnsubscribe).subscribe(id => {
+            this.countryService.getCountryResponsePlanClockSettingsDuration(id, this.countryId).takeUntil(this.ngUnsubscribe)
+              .subscribe(duration => {
+                this.expiryDate = (duration - 604800000) + responsePlan.timeCreated
+              })
+          })
+        }
+        else if(id === this.networkCountryId) {
+          this.networkService.getNetworkCountryResponsePlanClockSettingsDuration(this.networkId, this.networkCountryId)
+            .takeUntil(this.ngUnsubscribe).subscribe(duration => {
+              this.expiryDate = (duration - 604800000) + responsePlan.timeCreated
+            })
+        }
+        else if(id === this.networkId) {
+          this.networkService.getNetworkResponsePlanClockSettingsDuration(this.networkId)
+            .takeUntil(this.ngUnsubscribe).subscribe(duration => {
+              this.expiryDate = (duration - 604800000) + responsePlan.timeCreated
+            })
         }
 
         this.loadSection1PlanLead(responsePlan);
@@ -576,6 +617,12 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
         if (!this.accessToken) {
           this.configGroups(responsePlan);
         }
+
+        this.agencyService.getAgencyResponsePlanClockSettingsDuration(this.agencyId)
+        .takeUntil(this.ngUnsubscribe)
+        .subscribe(duration => {
+          this.expiryDate = (duration - 604800000) + responsePlan.timeCreated
+        });
 
         this.loadSection1PlanLead(responsePlan);
         this.loadSection3(responsePlan);
@@ -768,5 +815,13 @@ export class ViewResponsePlanComponent implements OnInit, OnDestroy {
 
   private navigateToLogin() {
     this.router.navigateByUrl(Constants.LOGIN_PATH);
+  }
+
+  handleSectors(responsePlan) {
+    let list = []
+    if (responsePlan.sectors) {
+      list = Object.keys(responsePlan.sectors)
+    }
+    return list
   }
 }

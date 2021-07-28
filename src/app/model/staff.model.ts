@@ -9,6 +9,7 @@ export class ModelStaff extends BaseModel {
   public userType: number;
   public region: string;
   public countryOffice: string;
+  public departments: string[] = [];
   public department: string;
   public position: string;
   public officeType: number;

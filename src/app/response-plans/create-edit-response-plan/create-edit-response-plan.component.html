@@ -82,6 +82,7 @@
                 <option *ngFor="let staffMember of staffMembers" [ngValue]="staffMember.$key">
                   {{staffMember.firstName + ' ' + staffMember.lastName}}
                 </option>
+                <option *ngIf="(adminModel | async) as admin" [value]="admin.id">{{admin.firstName +' '+admin.lastName}}</option>
               </select>
             </div>
           </div>
@@ -113,14 +114,12 @@
 
           <div class="row Spaced form-group">
             <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.SUMMARIZE_SCENARIO_TEXT"
-              | translate}}
-              <!--tooltip-->
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
-              </tooltip>
-
-            </label>
+              | translate}}</label>
+            <!--tooltip-->
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT5.LEVEL2'">
+            </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of summarizeScenarioBulletPoints">
               <div class="input-group">
@@ -143,13 +142,12 @@
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
 
           <div class="row Spaced form-group">
-            <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
-              | translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'">
-              </tooltip>
-            </label>
+            <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.IMPACT_OF_CRISIS_TEXT"
+              | translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT6.LEVEL1'">
+            </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of impactOfCrisisBulletPoints">
               <div class="input-group">
@@ -171,12 +169,11 @@
             ({{"GLOBAL.MAXIMUM" | translate}} {{MAX_BULLET_POINTS_VAL_2}})</a>
 
           <div class="row Spaced form-group align-items-center">
-            <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
-              | translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
-              </tooltip>
-            </label>
+            <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.PLAN_CONTEXT.AVAILABILITY_OF_FUNDS_TEXT"
+              | translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT7.LEVEL1'">
+            </tooltip>
 
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of availabilityOfFundsBulletPoints">
               <div class="input-group">
@@ -225,11 +222,10 @@
         </div>
         <div class="Response__content Spaced">
           <div class="form-group Spaced">
-            <label>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
-              </tooltip>
-            </label>
+            <label>{{"WHAT_SECTORS_WILL_THE_INTERVENTION_ACTIVITIES_MOST_RELATE_TO" | translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT8.LEVEL1'">
+            </tooltip>
 
           </div>
           <div class="Selection-row">
@@ -286,12 +282,11 @@
 
           <div class="form-group">
             <label>{{"PRESENCE_IN_COUNTRY" |
-              translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
-              </tooltip>
-            </label>
+              translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT9.LEVEL2'">
+            </tooltip>
           </div>
           <div class="Selection-row Selection-row--column Spaced">
             <label for="C-prog" class="Checkbox--ribbon Left col-lg-4 col-md-5 col-sm-6">
@@ -340,11 +335,10 @@
 
           <div class="row Spaced subitem" *ngIf="isWorkingWithPartners || isWorkingWithStaffAndPartners">
             <div class="col-lg-8 col-md-8">
-              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}
-                <tooltip
-                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
-                </tooltip>
-              </label>
+              <label for="O-relate">{{"GLOBAL.USER_TYPE.PARTNER" | translate}}</label>
+              <tooltip
+                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
+              </tooltip>
               <div class="row align-items-center Small-spaced"
                    *ngFor="let dropDown of partnersDropDowns; let i = index">
                 <div class="col-sm-6">
@@ -405,11 +399,10 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-response">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_PROPOSED_PLAN_TEXT"
-                  | translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT10.LEVEL1'">
-                  </tooltip>
-                </label>
+                  | translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT11.LEVEL1'">
+                </tooltip>
                 <textarea name="n-exp-response" id="n-exp-response" cols="30" rows="5" class="form-control"
                           [(ngModel)]="proposedResponseText"></textarea>
               </div>
@@ -419,11 +412,10 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-act">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITY_SUMMARY.EXPLAIN_ACTIVITIES_PLAN_TEXT"
-                  | translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
-                  </tooltip>
-                </label>
+                  | translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT12.LEVEL1'">
+                </tooltip>
                 <textarea name="n-exp-act" id="n-exp-act" cols="30" rows="5" class="form-control"
                           [(ngModel)]="progressOfActivitiesPlanText"></textarea>
               </div>
@@ -433,11 +425,10 @@
             <div class="col-lg-10 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-exp-coo">{{"HOW_ARE_YOU_CO_ORDINATING"
-                  | translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
-                  </tooltip>
-                </label>
+                  | translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT13.LEVEL1'">
+                </tooltip>
                 <textarea name="n-exp-coo" id="n-exp-coo" cols="30" rows="5" class="form-control"
                           [(ngModel)]="coordinationPlanText"></textarea>
               </div>
@@ -470,12 +461,11 @@
         <div class="Response__content Spaced">
           <div class="form-group">
             <label>{{"HOW_MANY_BENEFICIARIES" |
-              translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
-              </tooltip>
-            </label>
+              translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT14.LEVEL2'">
+            </tooltip>
           </div>
           <div class="row Spaced align-items-center">
             <div class="col-lg-2 col-md-1 col-sm-2 col-4">
@@ -513,17 +503,16 @@
             <div class="col-lg-8 col-md-10 col-sm-12">
               <div class="form-group">
                 <label for="n-Done">{{"WHICH_VULNERABLE_GROUP_TARGETING" |
-                  translate}}
-                  <tooltip
-                    [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
-                    [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
-                  </tooltip>
-                </label>
+                  translate}}</label>
+                <tooltip
+                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL1'"
+                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT15.LEVEL2'">
+                </tooltip>
                 <div class="row" *ngFor="let vulnerableGroupsDropDown of vulnerableGroupsDropDowns; let i = index">
                   <div class="form-group col-sm-6">
                     <select class="form-control" id="ff"
                             (change)="setGroup($event.target.value, vulnerableGroupsDropDown)">
-                      <option hidden disabled>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
+                      <option>{{"GLOBAL.PLEASE_SELECT" | translate}}</option>
                       <option *ngFor="let group of groups"
                               [value]="group.$key"
                               [selected]="group.$key == selectedVulnerableGroups[i]">{{group.name | translate}}
@@ -549,13 +538,12 @@
           </div>
 
           <div class="row Spaced form-group">
-            <label class="Sub-header-label F-width">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
-              | translate}}
-              <tooltip
-                [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
-                [level2]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL2'">
-              </tooltip>
-            </label>
+            <label class="Sub-header-label">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.TARGET_POPULATION.EXPLAIN_TARGET_POPULATION_INVOLVEMENT_TEXT"
+              | translate}}</label>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT16.LEVEL2'">
+            </tooltip>
             <div class="col-lg-8 Spaced-above" *ngFor="let bulletPoint of targetPopulationBulletPoints">
               <div class="input-group">
                 <span class="input-group-addon">{{bulletPoint}}</span>
@@ -650,7 +638,7 @@
                       <div [class]="imgNames[sector]"></div>
                     </div>
                   </div>
-                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{ otherRelatedSector | translate}}
+                  <div class="col-md-5 col-lg-6 col-sm-4 col-4"><h4>{{ (sector == Sector_Enum.other ? otherRelatedSector : SECTORS[sector]) | translate}}
                     {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.TITLE_TEXT" | translate | lowercase}}</h4>
                   </div>
                   <div class="col-md-3 col-lg-3 col-sm-3 col-4 text-right">
@@ -671,7 +659,7 @@
                       <div class="row Outlined Spaced align-items-center"
                            *ngIf="activeActivity && activeActivity[sector] != activity">
                         <div class="col-sm-1 Small-spaced text-bold text-center">{{i+1}}</div>
-                        <div class="col-sm-8 Small-spaced">{{activity.output}}</div>
+                        <div class="col-sm-8 Small-spaced">{{activity.name}}</div>
                         <div class="col-sm-3 Small-spaced text-right"><a href="javascript:void(0)"
                                                                          (click)="viewActivity(sector, activity)"
                                                                          class="text-muted">{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.ACTIVITIES.VIEW_THIS_ACTIVITY"
@@ -809,44 +797,44 @@
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">0-5</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB1 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[0] && activity.furtherBeneficiary[0].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">6-12</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB2 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[1] && activity.furtherBeneficiary[1].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">13-17</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB3 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[2] && activity.furtherBeneficiary[2].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">18-50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB4 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[3] && activity.furtherBeneficiary[3].value">
                                 </div>
                               </div>
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">51-59</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB5 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[4] && activity.furtherBeneficiary[4].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">60-69</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB6 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[5] && activity.furtherBeneficiary[5].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">70-79</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB7 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[6] && activity.furtherBeneficiary[6].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">80+</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFB8 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[7] && activity.furtherBeneficiary[7].value">
                                 </div>
                               </div>
@@ -858,44 +846,44 @@
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">0-5</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB1 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[8] && activity.furtherBeneficiary[8].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">6-12</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB2 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[9] && activity.furtherBeneficiary[9].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">13-17</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB3 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[10] && activity.furtherBeneficiary[10].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">18-50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB4 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[11] && activity.furtherBeneficiary[11].value">
                                 </div>
                               </div>
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">51-59</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB5 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[12] && activity.furtherBeneficiary[12].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">60-69</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB6 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[13] && activity.furtherBeneficiary[13].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">70-79</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB7 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[14] && activity.furtherBeneficiary[14].value">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">80+</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFB8 min="0" value="0"
                                          [(ngModel)]="activity.furtherBeneficiary && activity.furtherBeneficiary[15] && activity.furtherBeneficiary[15].value">
                                 </div>
                               </div>
@@ -917,17 +905,17 @@
                               <div class="row align-items-center no-border">
                                 <div class="col-4">
                                   <div class="col-12 no-padding"><18</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleDB1 min="0" value="0"
                                          [(ngModel)]="activity.disability && activity.disability[0]">
                                 </div>
                                 <div class="col-4">
                                   <div class="col-12 no-padding">18-50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleDB2 min="0" value="0"
                                          [(ngModel)]="activity.disability && activity.disability[1]">
                                 </div>
                                 <div class="col-4">
                                   <div class="col-12 no-padding">>50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleDB3 min="0" value="0"
                                          [(ngModel)]="activity.disability && activity.disability[2]">
                                 </div>
                               </div>
@@ -939,17 +927,17 @@
                               <div class="row align-items-center no-border">
                                 <div class="col-4">
                                   <div class="col-12 no-padding"><18</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleDB1 min="0" value="0"
                                          [(ngModel)]="activity.disability && activity.disability[3]">
                                 </div>
                                 <div class="col-4">
                                   <div class="col-12 no-padding">18-50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleDB2 min="0" value="0"
                                          [(ngModel)]="activity.disability && activity.disability[4]">
                                 </div>
                                 <div class="col-4">
                                   <div class="col-12 no-padding">>50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleDB3 min="0" value="0"
                                          [(ngModel)]="activity.disability && activity.disability[5]">
                                 </div>
                               </div>
@@ -965,44 +953,44 @@
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">0-5</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD1 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[0]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">6-12</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD2 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[1]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">13-17</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD3 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[2]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">18-50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD4 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[3]">
                                 </div>
                               </div>
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">51-59</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD5 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[4]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">60-69</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD6 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[5]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">70-79</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD7 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[6]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">80+</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #femaleFD8 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[7]">
                                 </div>
                               </div>
@@ -1014,50 +1002,48 @@
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">0-5</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD1 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[8]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">6-12</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD2 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[9]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">13-17</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD3 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[10]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">18-50</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD4 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[11]">
                                 </div>
                               </div>
                               <div class="row align-items-center no-border">
                                 <div class="col-3">
                                   <div class="col-12 no-padding">51-59</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD5 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[12]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">60-69</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD6 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[13]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">70-79</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD7 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[14]">
                                 </div>
                                 <div class="col-3">
                                   <div class="col-12 no-padding">80+</div>
-                                  <input type="number" class="form-control" #maleRange2 min="0" value="0"
+                                  <input type="number" class="form-control" #maleFD8 min="0" value="0"
                                          [(ngModel)]="activity.furtherDisability && activity.furtherDisability[15]">
                                 </div>
                               </div>
                             </div>
-
-
                           </div>
 
 
@@ -1243,18 +1229,19 @@
           </div>
         </div>
         <div class="Response__content Spaced">
-
-          <div class="row no-gutters text-bold">
-            {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.CONFIRM_BENEFICIARIES_TEXT" | translate}}
+          <div class="row">
+            <div class="row no-gutters text-bold">
+              {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BENEFICIARIES.CONFIRM_BENEFICIARIES_TEXT" | translate}}
+            </div>
+            <tooltip
+              [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
+              [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
+            </tooltip>
           </div>
 
           <div class="row">
             <div class="col-lg-12">
               <div class="row Demographic__text">
-                <tooltip
-                  [level1]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL1'"
-                  [level2]="'TOOLTIPS.RESPONSE_PLANS.TT19.LEVEL2'">
-                </tooltip>
                 <div class="col-lg-3">
                   <div class="row  align-items-center"></div>
                   <div class="row  align-items-center">
@@ -1404,8 +1391,8 @@
             </div>
             <div *ngIf="sectorsRelatedTo&&sectorsRelatedTo.length != 0" class="row subitem Header Small-spaced">
               <div *ngFor="let sector of sectorsRelatedTo; index as i" class="row Line-row col-lg-12">
-                <div class="col-lg-3 col-4">A-{{i+1}}: {{loadResponsePlan&&loadResponsePlan.sectors?(SECTORS[sector] |
-                  translate):''}}
+                <div class="col-lg-3 col-4">A-{{i+1}}: {{loadResponsePlan && loadResponsePlan.sectors?(SECTORS[sector] |
+                  translate): (SECTORS[sector] | translate)}}
                 </div>
                 <div class="col-lg-2 col-3">
                   <input type="number" class="form-control budget" #budget min="0"

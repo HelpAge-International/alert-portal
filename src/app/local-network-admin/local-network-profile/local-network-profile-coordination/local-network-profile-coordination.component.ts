@@ -112,6 +112,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
               for (var key in coordinationArrangement.agencies) {
 
                 this._agencyService.getAgency(key)
+                  .takeUntil(this.ngUnsubscribe)
                   .subscribe(agency => {
 
                     tempArray.push(agency.name)
@@ -120,6 +121,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
               }
               this._coordinationArrangementService.getCoordinationArrangementNonAlertMembersCountry(this.networkCountryId, coordinationArrangement.id)
+                .takeUntil(this.ngUnsubscribe)
                 .subscribe(coordinationArrangementNonAlert => {
                   if (coordinationArrangementNonAlert.nonAlertMembers) {
                     Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
@@ -160,6 +162,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
                   for (var key in coordinationArrangement.agencies) {
 
                     this._agencyService.getAgency(key)
+                      .takeUntil(this.ngUnsubscribe)
                       .subscribe(agency => {
 
                         tempArray.push(agency.name)
@@ -168,6 +171,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
                   }
                   this._coordinationArrangementService.getCoordinationArrangementNonAlertMembersCountry(this.networkCountryId, coordinationArrangement.id)
+                    .takeUntil(this.ngUnsubscribe)
                     .subscribe(coordinationArrangementNonAlert => {
                       if (coordinationArrangementNonAlert.nonAlertMembers) {
                         Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
@@ -199,6 +203,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
     if (this.isViewing) {
       this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(coordinationArrangements => {
 
           coordinationArrangements.forEach(coordinationArrangement => {
@@ -206,6 +211,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
             for (var key in coordinationArrangement.agencies) {
 
               this._agencyService.getAgency(key)
+                .takeUntil(this.ngUnsubscribe)
                 .subscribe(agency => {
 
                   tempArray.push(agency.name)
@@ -214,6 +220,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
             }
             this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
+              .takeUntil(this.ngUnsubscribe)
               .subscribe(coordinationArrangementNonAlert => {
                 if (coordinationArrangementNonAlert.nonAlertMembers) {
                   Object.keys(coordinationArrangementNonAlert.nonAlertMembers)
@@ -243,6 +250,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
           .subscribe(selection => {
             this.networkId = selection["id"];
             this._coordinationArrangementService.getCoordinationArrangementsNetwork(this.networkId)
+              .takeUntil(this.ngUnsubscribe)
               .subscribe(coordinationArrangements => {
 
                 coordinationArrangements.forEach(coordinationArrangement => {
@@ -250,6 +258,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
                   for (var key in coordinationArrangement.agencies) {
 
                     this._agencyService.getAgency(key)
+                      .takeUntil(this.ngUnsubscribe)
                       .subscribe(agency => {
 
                         tempArray.push(agency.name)
@@ -258,6 +267,7 @@ export class LocalNetworkProfileCoordinationComponent implements OnInit, OnDestr
 
                   }
                   this._coordinationArrangementService.getCoordinationArrangementNonAlertMembers(this.networkId, coordinationArrangement.id)
+                    .takeUntil(this.ngUnsubscribe)
                     .subscribe(coordinationArrangementNonAlert => {
                       if (coordinationArrangementNonAlert.nonAlertMembers) {
                         Object.keys(coordinationArrangementNonAlert.nonAlertMembers)

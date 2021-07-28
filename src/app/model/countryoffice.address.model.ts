@@ -14,6 +14,7 @@ export class CountryOfficeAddressModel extends BaseModel {
   public phone: string;
   public location: number; // Country
   public email: string;
+  public countryCode : number
 
   validate(excludedFields = []): AlertMessageModel {
     if (!this.addressLine1 && !this.isExcluded('addressLine1', excludedFields)) {

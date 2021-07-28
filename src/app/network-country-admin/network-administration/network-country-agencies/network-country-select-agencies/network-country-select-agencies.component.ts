@@ -80,16 +80,24 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
                   this.agencies = [];
                   approvedAgencies.forEach(agency => {
                     agency.takeUntil(this.ngUnsubscribe).subscribe(agencyObj => {
-                      //filter agencies only with same country stay
-                      this.agencyService.countryExistInAgency(networkCountry.location, agencyObj.id)
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(country => {
-                          if (country) {
-                            this.agencies.push(agencyObj);
-                            this.agencyObjMap.set(agencyObj.id, agencyObj)
-                            this.agencyCountryMap.set(agencyObj.id, country.id);
-                          }
-                        })
+                      //handle local agency
+                      if (agencyObj.countryCode) {
+                        if (networkCountry.location == agencyObj.countryCode) {
+                          this.agencies.push(agencyObj)
+                          this.agencyObjMap.set(agencyObj.id, agencyObj)
+                        }
+                      } else {
+                        //filter agencies only with same country stay
+                        this.agencyService.countryExistInAgency(networkCountry.location, agencyObj.id)
+                          .takeUntil(this.ngUnsubscribe)
+                          .subscribe(country => {
+                            if (country) {
+                              this.agencies.push(agencyObj);
+                              this.agencyObjMap.set(agencyObj.id, agencyObj)
+                              this.agencyCountryMap.set(agencyObj.id, country.id);
+                            }
+                          })
+                      }
                     })
                   })
                 })
@@ -148,8 +156,8 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
       jQuery('#leadAgencySelection').modal('show');
       console.log(this.networkModel)
       if (this.agencies.filter(agency => {
-          return agency.id === this.networkModel.leadAgencyId
-        }).length != 0 && this.agencySelectionMap.get(this.networkModel.leadAgencyId)) {
+        return agency.id === this.networkModel.leadAgencyId
+      }).length != 0 && this.agencySelectionMap.get(this.networkModel.leadAgencyId)) {
         this.leadAgencyId = this.networkModel.leadAgencyId
       }
     } else {
@@ -176,7 +184,7 @@ export class NetworkCountrySelectAgenciesComponent implements OnInit, OnDestroy 
 
   }
 
-  checkHaveAvailableAgencies():boolean {
+  checkHaveAvailableAgencies(): boolean {
     if (!this.existingAgencyIds) {
       this.existingAgencyIds = []
     }

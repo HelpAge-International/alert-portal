@@ -33,6 +33,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   private uid: string;
   private agencyId: string;
   private countryId: string;
+  private viewProject: string = "View project";
 
   // Constants and enums
   alertMessageType = AlertMessageType;
@@ -49,6 +50,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
 
   // Other
   private activeProject: PartnerOrganisationProjectModel;
+  private isNewProject: boolean = false;
   private fromResponsePlans: boolean = false;
   private projectEndDate: any[] = [];
   private todayDayMonth = new Date(new Date().getFullYear(), new Date().getMonth());
@@ -75,18 +77,15 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.agencyId = agencyId;
-      this.countryId = countryId;
 
       this.partnerOrganisation.userId = this.uid;
       this.partnerOrganisation.agencyId = this.agencyId;
-      this.partnerOrganisation.countryId = this.countryId;
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
         .takeUntil(this.ngUnsubscribe)
         .subscribe(content => {
           this.countryLevelsValues = content;
-
           this._userService.getAgencyDetail(this.agencyId)
             .first()
             .subscribe(agency => {
@@ -100,7 +99,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
                   }
                   if (params['id']) {
                     this.isEdit = true;
-                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
+                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).takeUntil(this.ngUnsubscribe).subscribe(partnerOrganisation => {
                       this.partnerOrganisation = partnerOrganisation;
                     })
                   }
@@ -144,9 +143,11 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
                   }
                   if (params['id']) {
                     this.isEdit = true;
-                    this._partnerOrganisationService.getPartnerOrganisation(params['id']).subscribe(partnerOrganisation => {
-                      this.partnerOrganisation = partnerOrganisation;
-                    })
+                    this._partnerOrganisationService.getPartnerOrganisation(params['id'])
+                      .takeUntil(this.ngUnsubscribe)
+                      .subscribe(partnerOrganisation => {
+                        this.partnerOrganisation = partnerOrganisation;
+                      })
                   }
                   if (!this.isEdit) {
                     this.activeProject.operationAreas.forEach(area => {
@@ -168,21 +169,28 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   validateForm(): boolean {
     this.alertMessage = this.partnerOrganisation.validate();
 
-    if (!this.alertMessage) {
-      // Validate organisation projects
-      this.partnerOrganisation.projects.forEach(project => {
-        let modelProject = new PartnerOrganisationProjectModel();
-        modelProject.mapFromObject(project);
-        this.alertMessage = this.validateProject(modelProject);
-      });
-    }
+    // if (!this.alertMessage) {
+    //   // Validate organisation projects
+    //   this.partnerOrganisation.projects.forEach(project => {
+    //     let modelProject = new PartnerOrganisationProjectModel();
+    //     modelProject.mapFromObject(project);
+    //     //this.alertMessage = this.validateProject(modelProject);
+    //   });
+    // }
 
     return !this.alertMessage;
   }
 
   submit() {
     // Transforms projects endDate to timestamp
-    this.partnerOrganisation.projects.forEach(project => project.endDate = new Date(project.endDate).getTime());
+    console.log(this.partnerOrganisation.projects)
+
+console.log("in partner org")
+      this.partnerOrganisation.projects.forEach(project => {
+        if(!isNaN(project.endDate)) {
+          project.endDate = new Date(project.endDate).getTime()
+        }
+      });
 
     if (this.isLocalAgency) {
       this._partnerOrganisationService.savePartnerOrganisationLocalAgency(this.agencyId, this.partnerOrganisation)
@@ -208,6 +216,10 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
           }
         });
     } else {
+      if(this.activeProject.title == null && this.activeProject.endDate == null){
+        this.activeProject.operationAreas = null
+      }
+
       this._partnerOrganisationService.savePartnerOrganisation(this.agencyId, this.countryId, this.partnerOrganisation)
         .then(result => {
           this.partnerOrganisation.id = this.partnerOrganisation.id || result.key;
@@ -234,12 +246,15 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   saveSector(pin: number, i: number) {
-    let project = this.partnerOrganisation.projects[pin];
+    console.log(this.partnerOrganisation.projects[pin])
+    if (this.partnerOrganisation.projects[pin]) {
+      let project = this.partnerOrganisation.projects[pin];
 
-    if (project.sector[i]) {
-      this.isEdit ? project.sector[i] = !project.sector[i] : project.sector.splice(i, 1);
-    } else {
-      project.sector[i] = true;
+      if (project.sector[i]) {
+        this.isEdit ? project.sector[i] = !project.sector[i] : project.sector.splice(i, 1);
+      } else {
+        project.sector[i] = true;
+      }
     }
   }
 
@@ -279,7 +294,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     jQuery("#confirm-active").modal("hide");
     this.isActive = true;
     this.partnerOrganisation.isActive = this.isActive;
-    console.log("Active State: "+ this.partnerOrganisation.isActive);
+    console.log("Active State: " + this.partnerOrganisation.isActive);
     this.submit();
   }
 
@@ -287,12 +302,12 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
     jQuery("#confirm-inactive").modal("hide");
     this.isActive = false;
     this.partnerOrganisation.isActive = this.isActive;
-    console.log("InActive State: "+ this.partnerOrganisation.isActive);
+    console.log("InActive State: " + this.partnerOrganisation.isActive);
     this.submit();
   }
 
   openConfirmationModel() {
-    console.log("openConfirmationModel(): "+ this.partnerOrganisation.isActive);
+    console.log("openConfirmationModel(): " + this.partnerOrganisation.isActive);
     if (!this.partnerOrganisation.isActive) {
       jQuery("#confirm-active").modal("show");
     } else {
@@ -301,7 +316,7 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   closeConfirmationModel(key) {
-    jQuery("#"+key).modal("hide");
+    jQuery("#" + key).modal("hide");
   }
 
   goBack() {
@@ -337,22 +352,22 @@ export class AddPartnerOrganisationComponent implements OnInit, OnDestroy {
   }
 
   private validateProject(project: PartnerOrganisationProjectModel): AlertMessageModel {
-    this.alertMessage = project.validate();
+   // this.alertMessage = project.validate();
 
     if (!this.alertMessage) {
       project.operationAreas.forEach(operationArea => {
         let modelArea = new OperationAreaModel();
         modelArea.mapFromObject(operationArea);
-        this.alertMessage = this.validateOperationArea(modelArea);
+       // this.alertMessage = this.validateOperationArea(modelArea);
       });
     }
 
-    if (this.alertMessage) {
-      this.setActiveProject(project);
+   // if (this.alertMessage) {
+      //this.setActiveProject(project);
       return this.alertMessage;
-    }
+  //  }
 
-    return null;
+    ///return null;
   }
 
   private validateOperationArea(operationArea: OperationAreaModel): AlertMessageModel {

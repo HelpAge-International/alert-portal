@@ -12,6 +12,7 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {SettingsService} from "../../../services/settings.service";
 import {ModelAgencyPrivacy} from "../../../model/agency-privacy.model";
 import {CommonService} from "../../../services/common.service";
+import { TranslateService } from "@ngx-translate/core";
 
 declare var jQuery: any;
 
@@ -83,7 +84,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
               private networkService: NetworkService,
               private agencyService: AgencyService,
               private settingService: SettingsService,
-              private af: AngularFire) {
+              private af: AngularFire,
+              private translate: TranslateService) {
 
   }
 
@@ -324,7 +326,8 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
 
   _getProgramme(officeAgencyMap) {
     officeAgencyMap.forEach((value: string, key: string) => {
-      this.af.database.object(Constants.APP_STATUS + "/countryOfficeProfile/programme/" + value)
+      const path = key === value ? Constants.APP_STATUS + "/localAgencyProfile/programme/" + value : Constants.APP_STATUS + "/countryOfficeProfile/programme/" + value
+      this.af.database.object(path)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((programms: any) => {
           this.countriesMap = [];
@@ -535,5 +538,60 @@ export class LocalNetworkProfileProgrammeComponent implements OnInit, OnDestroy 
     });
   }
 
+  sectorNames(sectors, otherSectorName) {
+    var sectorNames = []
+    if (sectors.length > 0) {
+      for (let sector of sectors) {
+        var sectorName = "" 
+        switch (Number(sector)) {
+          case ResponsePlanSectors.wash: {
+            sectorName = "SECTOR_WASH"
+            break;
+          }
+          case ResponsePlanSectors.health: {
+            sectorName = "SECTOR_HEALTH"
+            break;
+          }
+          case ResponsePlanSectors.shelter: {
+            sectorName = "SECTOR_SHELTER"
+            break;
+          }
+          case ResponsePlanSectors.nutrition: {
+            sectorName = "SECTOR_NUTRITION"
+            break;
+          }
+          case ResponsePlanSectors.foodSecurityAndLivelihoods: {
+            sectorName = "SECTOR_FOOD_SECURITY_LIVELIHOOD" 
+            break;
+          }
+          case ResponsePlanSectors.protection: {
+            sectorName = "SECTOR_PROTECTION" 
+            break;
+          }
+          case ResponsePlanSectors.education: {
+            sectorName = "SECTOR_EDUCATION" 
+            break;
+          }
+          case ResponsePlanSectors.campmanagement: {
+            sectorName = "SECTOR_CAMP_MANAGEMENT" 
+            break;
+          }
+          case ResponsePlanSectors.other: {
+            sectorName = "SECTOR_OTHER" 
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+        sector == ResponsePlanSectors.other ? sectorNames.push(otherSectorName + " (Other)") : sectorNames.push(this.translate.instant(sectorName))
+      }
+      return sectorNames.join(', ')
+    } else {
+      if (sectors == ResponsePlanSectors.other) {
+        return otherSectorName + " (Other)"
+      }
+      return ResponsePlanSectors[sectors]
+    }
+  }
 }
-

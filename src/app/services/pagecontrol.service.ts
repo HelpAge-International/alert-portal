@@ -10,6 +10,7 @@ import {Pair} from "../utils/bundles";
 import {SettingsService} from "./settings.service";
 import {PermissionSettingsModel} from "../model/permission-settings.model";
 import {Observable} from "rxjs/Observable";
+
 /**
  * Created by jordan on 16/06/2017.
  */
@@ -208,7 +209,8 @@ export class PageControlService {
     "new-user-password",
     "export-proposal*",
     "network-country*",
-    "network*"
+    "network*",
+    "local-agency*"
   ]);
   public static Ert = PageUserType.create(UserType.Ert, "dashboard", [
     "dashboard*",
@@ -222,7 +224,8 @@ export class PageControlService {
     "new-user-password",
     "export-proposal*",
     "network-country*",
-    "network*"
+    "network*",
+    "local-agency*"
   ]);
   public static PartnerUser = PageUserType.create(UserType.PartnerUser, "dashboard", [
     "dashboard*",
@@ -235,7 +238,8 @@ export class PageControlService {
     "country-admin*",
     "new-user-password",
     "network-country*",
-    "network*"
+    "network*",
+    "local-agency*"
   ]);
   public static Donor = PageUserType.create(UserType.Donor, "donor-module", [
     "donor-module*",
@@ -297,8 +301,13 @@ export class PageControlService {
     "preparedness*",
     "agency-admin*",
     "director*",
+    "country-admin*",
+    "map*",
+    "dashboard*",
+    "risk-monitoring*",
     "system-admin/agency",
-    "dashboard*"
+    "network-country*",
+    "network*"
   ]);
 
   public static LocalAgencyDirector = PageUserType.create(UserType.LocalAgencyDirector, "local-agency/dashboard", [
@@ -307,9 +316,13 @@ export class PageControlService {
     "agency-admin/new-agency/new-agency-details",
     "export-start-fund*",
     "export-proposal*",
+    "dashboard*",
     "new-user-password",
-    "dashboard/review-response-plan*",
-    "dashboard*"
+    "risk-monitoring*",
+    "map*",
+    "country-admin*",
+    "preparedness*",
+    "dashboard/review-response-plan*"
   ]);
 
   public static SystemAdmin = PageUserType.create(UserType.SystemAdmin, "system-admin/agency", [
@@ -604,6 +617,7 @@ export class PageControlService {
                            authStateCallback: (auth: FirebaseAuthState, userType: UserType, countryId: any, agencyId: string, systemAdminId: string) => void,) {
     let type: PageUserType = PageControlService.initPageControlMap().get(userType);
 
+    console.log(userType)
     if (PageControlService.checkUrl(route, userType, type)) {
       PageControlService.agencyBuildPermissionsMatrix(this.af, ngUnsubscribe, authState.auth.uid, Constants.USER_PATHS[userType], (list) => {
         let s = PageControlService.buildEndUrl(route);
@@ -611,12 +625,17 @@ export class PageControlService {
         // We have [AgencyPermissionObj], need to iterate through those.
         //  For every one of those, check if our current URL is contained in one of thise
         //   If so and we're not authorised to view it, kick us out
+
         for (let x of list) {
           for (let y of x.urls) {
             // IF (currenturl == urlmatch OR urlmatch ends with * and currenturl starts with (urlmatch - *))
             if ((s == y) && !x.isAuthorized && !skip) {
-              // router.navigateByUrl(type.redirectTo);
-              // skip = true;
+              if(x.permission == PermissionsAgency.RiskMonitoring){
+                skip = false;
+              }else {
+                router.navigateByUrl(type.redirectTo);
+                skip = true;
+              }
             }
           }
         }
@@ -631,9 +650,9 @@ export class PageControlService {
       });
     }
     else {
-      console.log("check page control*****");
+      console.log("check page control***** NO VALUE RETURNED!");
       /**DONT UNCOMMENT BELOW AS THIS CAUSE ISSUES IN THE LOGIN*/
-     // router.navigateByUrl(type.redirectTo);
+      // router.navigateByUrl(type.redirectTo);
     }
   }
 
@@ -648,39 +667,37 @@ export class PageControlService {
 
           if (snap.val() != null) {
 
-              // It's this user type!
-              if(modelTypes[index].userType == UserType.AgencyAdmin){ //checks to see if user type is agency admin
+            // It's this user type!
+            if (modelTypes[index].userType == UserType.AgencyAdmin) { //checks to see if user type is agency admin
 
-                this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
-                  .takeUntil(ngUnsubscribe)
-                  .subscribe((innerSnapDirector) => {
+              this.af.database.object(Constants.APP_STATUS + "/localAgencyDirector/" + uid, {preserveSnapshot: true})
+                .takeUntil(ngUnsubscribe)
+                .subscribe((innerSnapDirector) => {
 
-                    // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
-                  if(innerSnapDirector.val()){
+                  // let key = Object.keys(innerSnapDirector.val()).find(key => innerSnapDirector.val()[key] == uid)
+                  if (innerSnapDirector.val()) {
                     fun(UserType.LocalAgencyDirector, innerSnapDirector.val());
-                  }else{
+                  } else {
                     //checks to make sure it ins't actually a local agency admin as they exist in both nodes
                     this.af.database.object(Constants.APP_STATUS + "/administratorLocalAgency/" + uid, {preserveSnapshot: true})
-                    .takeUntil(ngUnsubscribe)
-                    .subscribe((innerSnap) => {
-                      if (innerSnap.val() != null) {
+                      .takeUntil(ngUnsubscribe)
+                      .subscribe((innerSnap) => {
+                        if (innerSnap.val() != null) {
 
-                        fun(UserType.LocalAgencyAdmin, innerSnap.val());
-                      }else{
+                          fun(UserType.LocalAgencyAdmin, innerSnap.val());
+                        } else {
 
-                        fun(modelTypes[index].userType, snap.val());
-                      }
+                          fun(modelTypes[index].userType, snap.val());
+                        }
 
 
-
-                    })
+                      })
                   }
 
                 })
-              }else{
-                fun(modelTypes[index].userType, snap.val());
-              }
-
+            } else {
+              fun(modelTypes[index].userType, snap.val());
+            }
 
 
           }
@@ -696,8 +713,8 @@ export class PageControlService {
   // Checking if the URL is within the PageAuth
   private static checkUrl(route: ActivatedRoute, userType: UserType, type: PageUserType): boolean {
     let current: string = PageControlService.buildEndUrl(route);
-    // console.log(current)
-    // console.log(type)
+    console.log(current)
+    console.log(type)
 
     for (let x of type.urls) {
       if (x == current || (x.endsWith("*") && current.startsWith(x.substr(0, x.length - 1)))) {
@@ -757,12 +774,17 @@ export class PageControlService {
     af.database.object(Constants.APP_STATUS + "/" + folder + "/" + uid)
       .map((admin) => {
         let adminId: string = "";
-        for (let x in admin.agencyAdmin) {
-          adminId = x;
+        if (admin.agencyAdmin) {
+          for (let x in admin.agencyAdmin) {
+            adminId = x;
+          }
+        } else {
+          adminId = admin.agencyId
         }
         return adminId;
       })
       .flatMap((countryId) => {
+        console.log(countryId)
         return af.database.object(Constants.APP_STATUS + "/module/" + countryId);
       })
       .takeUntil(ngUnsubscribe)
@@ -780,7 +802,7 @@ export class PageControlService {
   static localAgencyBuildPermissionsMatrix(af: AngularFire, ngUnsubscribe: Subject<void>, countryId: string, folder: string, fun: (list: AgencyPermissionObject[]) => void) {
     af.database.object(Constants.APP_STATUS + "/module/" + countryId)
       .takeUntil(ngUnsubscribe)
-      .subscribe((val) =>{
+      .subscribe((val) => {
         let list = PageControlService.initModuleControlArray();
         for (let x of list) {
           if (val[x.permission] != null) {
@@ -952,10 +974,14 @@ export class PageControlService {
           for (let x in snap.val().agencyAdmin) {
             agencyAdmin = x;
           }
-          return Pair.create(snap.val().countryId, agencyAdmin);
+          return Pair.create((snap.val().countryId ? snap.val().countryId : agencyAdmin), agencyAdmin);
         })
         .flatMap((pair: Pair) => {
-          return af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true});
+          return pair.f !== pair.s
+            ?
+            af.database.object(Constants.APP_STATUS + "/countryOffice/" + pair.s + "/" + pair.f, {preserveSnapshot: true})
+            :
+            af.database.object(Constants.APP_STATUS + "/agency/" + pair.s, {preserveSnapshot: true})
         })
         .takeUntil(ngUnsubscribe)
         .subscribe((snap) => {
@@ -988,6 +1014,12 @@ export class PageControlService {
               x.other.UploadDocuments = (s.other.uploadDoc[userType] ? s.other.uploadDoc[userType] : false);
             }
             fun(x);
+          } else {
+            console.log("no permission node!!!")
+            //if no default all to true
+            let x: CountryPermissionsMatrix = new CountryPermissionsMatrix();
+            x.all(true)
+            fun(x)
           }
         });
     }

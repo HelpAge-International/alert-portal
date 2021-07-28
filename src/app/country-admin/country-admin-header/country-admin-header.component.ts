@@ -23,6 +23,7 @@ import {NetworkWithCountryModel} from "./network-with-country.model";
 import {BugReportingService} from "../../services/bug-reporting.service";
 import {ReportProblemComponent} from "../../report-problem/report-problem.component";
 import * as html2canvas from 'html2canvas'
+import {ExportPersonalService} from "../../services/export-personal";
 declare const jQuery: any;
 
 
@@ -102,7 +103,8 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
               private locationService: Location,
               private http: Http,
               private translate: TranslateService,
-              private bugReport: BugReportingService) {
+              private bugReport: BugReportingService,
+              private exportPersonalService: ExportPersonalService) {
 
     //this.translate.addLangs(["en", "fr", "es", "pt"]);
     translate.setDefaultLang("en");
@@ -374,14 +376,17 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
 
   private buildNetworkViewValues() {
     let values = {};
-
     values["systemId"] = this.systemId;
     values["agencyId"] = this.agencyId;
-    values["countryId"] = this.countryId;
+    if (this.countryId) {
+      values["countryId"] = this.countryId;
+    }
     values["userType"] = this.userType;
     values["uid"] = this.uid;
     values["networkId"] = this.selectedNetwork.id;
-    values["networkCountryId"] = this.networkCountryMap.get(this.selectedNetwork.id);
+    if (this.networkCountryMap.get(this.selectedNetwork.id)) {
+      values["networkCountryId"] = this.networkCountryMap.get(this.selectedNetwork.id);
+    }
     values["isViewing"] = true;
     return values;
   }
@@ -522,5 +527,9 @@ export class CountryAdminHeaderComponent implements OnInit, OnDestroy {
             })
           })
       })
+  }
+
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, this.countryId);
   }
 }

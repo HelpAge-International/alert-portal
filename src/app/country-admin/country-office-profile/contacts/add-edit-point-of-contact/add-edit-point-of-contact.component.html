@@ -37,6 +37,7 @@
                         <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                         <option *ngFor="let staff of staffList"
                                 [value]="staff.id">{{ staffNamesList && staffNamesList[staff.id] }}</option>
+                      <option *ngIf="(admin | async) as admin" [value]="admin.id">{{ admin.firstName + ' ' + admin.lastName }}</option>
                     </select>
                 </div>
             </div><br>

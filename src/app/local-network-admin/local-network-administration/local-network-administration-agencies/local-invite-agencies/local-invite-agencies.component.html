@@ -34,7 +34,7 @@
         <p>{{agency.name}}</p><input type="checkbox" name="Action-type" id="item{{i}}" #selection
                                      (change)="toggleAgencySelection(agency, selection.checked)"></label>
 
-      <div *ngIf="checkHaveAvailableAgencies" class="Empty--ribbon">No agencies available</div>
+      <div *ngIf="checkHaveAvailableAgencies()" class="Empty--ribbon">No agencies available</div>
 
     </div>
 

@@ -1,6 +1,9 @@
 <div class="Header-title__wrap">
   <h1>{{"RESPONSE_PLANS.VIEW_RESPONSE_PLAN.TITLE_TEXT" | translate}}</h1>
 </div>
+<div *ngIf="responsePlanToShow.status == 2" class="Header-title__wrap">
+  <h5>{{"EXPIRES_ON" | translate}} {{ expiryDate | date }}</h5>
+</div>
 
 <div class="Ribbon__section__wrap Spaced">
 
@@ -128,13 +131,13 @@
         <p><b>{{"PRESENCE_IN_COUNTRY" |
           translate}}</b></p>
         <p>
-          {{responsePlanToShow.presenceInTheCountry?PresenceInTheCountry[responsePlanToShow.presenceInTheCountry]:"none"}}</p>
+          {{responsePlanToShow.presenceInTheCountry ? (PresenceInCountry[responsePlanToShow.presenceInTheCountry] | translate):"none"}}</p>
       </div>
 
       <div class="Response__rule__seperator col-sm-12">
         <p><b>{{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.METHOD_OF_IMPLEMENTATION" |
           translate}}</b></p>
-        <p>{{MethodOfImplementation[responsePlanToShow.methodOfImplementation]}}</p>
+        <p>{{PlanMethod[responsePlanToShow.methodOfImplementation] | translate}}</p>
       </div>
 
       <div
@@ -537,15 +540,15 @@
         <p class="col-sm-4"><b>A: {{"RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BUDGET.INPUTS" | translate}}</b></p>
         <p class="col-sm-4">{{CURRENCIES[currency]}}{{totalInputs}}</p>
       </div>
-      <div class="row" *ngFor="let sector of responsePlanToShow.sectorsRelatedTo; index as i">
-        <p class="col-sm-4">A-{{i+1}}: {{responsePlanToShow && responsePlanToShow.sectors ? (SectorsList[sector] |
+      <div class="row" *ngFor="let sector of handleSectors(responsePlanToShow); index as i">
+        <p class="col-sm-4">A-{{i+1}}: {{responsePlanToShow && responsePlanToShow?.sectors ? (SectorsList[sector] |
           translate) : ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
-        <p class="col-sm-4">{{CURRENCIES[currency]}}{{responsePlanToShow && responsePlanToShow.budget &&
-          responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget'] ?
-          (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
-        <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow.budget &&
-          responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative'] ?
-          (responsePlanToShow.budget['item'][BudgetCategory.Inputs][sector]['narrative']) :
+        <p class="col-sm-4">{{CURRENCIES[currency]}}{{responsePlanToShow && responsePlanToShow?.budget &&
+          responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['budget'] ?
+          (responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['budget']) : 0}}</p>
+        <p class="col-sm-4">{{responsePlanToShow && responsePlanToShow?.budget &&
+          responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['narrative'] ?
+          (responsePlanToShow?.budget['item'][BudgetCategory.Inputs][sector]['narrative']) :
           ("RESPONSE_PLANS.NO_INFO_TO_SHOW" | translate)}}</p>
       </div>
       <div class="row">

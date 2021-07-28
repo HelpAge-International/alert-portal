@@ -58,8 +58,7 @@
           <div class="col-sm-11 row">
             <div class="col-sm-3">
               <div class="form-group-risk-frequency row">
-                <select (click)="resetValue()" [(ngModel)]="selectedCountry" (change)="setCountryLevel()" class="form-control" name="CountryArea">
-
+                <select (click)="resetValue()" [(ngModel)]="this.stockCapacity.location" (ngModelChange)="setCountryLevel(this.stockCapacity.location)" class="form-control" name="CountryArea">
                   <option *ngIf="!isLocalAgency" value="undefined" disabled selected hidden>{{ countries[selectedCountry] | translate }}</option>
                   <option *ngIf="isLocalAgency" value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
                   <option *ngFor="let countryKey of countriesList" [value]="countryKey" >{{countries[countryKey] |
@@ -70,12 +69,11 @@
               </div>
             </div>
 
-
             <!--LEVEL 1 START-->
 
             <div *ngIf="levelOneDisplay.length > 1" class="col-sm-3" >
               <div class="form-group-risk-frequency">
-                <select  class="form-control" name="CountryAreaLevelOne" [(ngModel)]="selectedValue" (change)="setLevel1Value()" >
+                <select  class="form-control" name="CountryAreaLevelOne" [(ngModel)]="this.stockCapacity.level1" (ngModelChange)="setLevel1Value(this.stockCapacity.level1)" >
                   <option value="undefined" disabled selected hidden >
                     {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
                   </option>
@@ -91,7 +89,7 @@
 
             <div *ngIf="levelTwoDisplay.length > 1" class="col-sm-3" >
               <div class="form-group-risk-frequency ">
-                <select class="form-control" name="CountryAreaLvOne" [(ngModel)]="selectedValueL2" >
+                <select class="form-control" name="CountryAreaLvOne" [(ngModel)]="this.stockCapacity.level2">
                   <option value="undefined" disabled selected hidden >
                     {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }}
                   </option>

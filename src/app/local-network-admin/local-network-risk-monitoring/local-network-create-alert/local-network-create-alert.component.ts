@@ -268,7 +268,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                     this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkId + '/' + hazard.id + '/timeTracking/' + alert.key)
                     .update({timeSpentInRed: [newTimeObject]})
                   }
-                  
+
                 }
               }else{
                 if(hazardTrackingNode){
@@ -279,8 +279,8 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                   this.af.database.object(Constants.APP_STATUS + '/hazard/' + this.networkId + '/' + hazard.id + '/timeTracking/' + alert.key)
                   .update({timeSpentInAmber: [newTimeObject]})
                 }
-                
-              } 
+
+              }
             }
 
             if(dataToSave.alertLevel == AlertLevels.Red){
@@ -291,7 +291,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
             }else{
                 this.af.database.object(Constants.APP_STATUS + '/alert/' + this.networkId + '/' + alert.key + '/timeTracking/')
                 .update({timeSpentInAmber: [newTimeObject]})
-            } 
+            }
 
             if (dataToSave.alertLevel == 2) {
               // Send notification to users with Red alert notification
@@ -311,7 +311,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
               if(this.UserType == UserType.CountryDirector){
                 apaActions.forEach( action => {
                   if(!action["redAlerts"]){
-                    action["redAlerts"] = []; 
+                    action["redAlerts"] = [];
                   }
                   if(!action["timeTracking"]){
                     action["timeTracking"] = {};
@@ -320,7 +320,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                   if(action.assignedHazards && action.assignedHazards.length == 0 || action.assignedHazards.includes(dataToSave.hazardScenario)){
                     if(action["timeTracking"]["timeSpentInGrey"] && action["timeTracking"]["timeSpentInGrey"].find(x => x.finish == -1)){
                       action["redAlerts"].push(alert.key);
-      
+
 
                       action["timeTracking"]["timeSpentInGrey"][action["timeTracking"]["timeSpentInGrey"].findIndex(x => x.finish == -1)].finish = currentTime;
 
@@ -334,7 +334,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                           action['timeTracking']['timeSpentInGreen'] = [];
                         }
                         action['timeTracking']['timeSpentInGreen'].push(newTimeObject)
-                      }else{ 
+                      }else{
                         if(!action["timeTracking"]["timeSpentInAmber"]){
                           action['timeTracking']['timeSpentInAmber'] = [];
                         }
@@ -344,7 +344,7 @@ export class LocalNetworkCreateAlertComponent implements OnInit, OnDestroy {
                       .update(action)
                     }
                   }
-  
+
                 })
               }
 

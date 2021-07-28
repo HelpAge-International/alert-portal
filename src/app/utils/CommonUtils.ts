@@ -88,13 +88,26 @@ export class CommonUtils {
     let values = {};
     values["systemId"] = model.systemId;
     values["agencyId"] = model.agencyId;
-    values["countryId"] = model.countryId;
+    if (model.countryId) {
+      values["countryId"] = model.countryId;
+    }
     values["userType"] = model.userType;
     values["uid"] = model.uid;
     values["networkId"] = model.networkId;
     values["networkCountryId"] = model.networkCountryId;
     values["isViewing"] = model.isViewing;
     return values;
+  }
+
+  static castToIntCelling(value) : number {
+    return Math.ceil(value)
+  }
+
+  static addOrUpdateListItem(item:any, list:any[]) : Array<any> {
+    const resultList = list.slice()
+    const index = resultList.findIndex(obj => obj.$key === item.$key)
+    index != -1 ? resultList[index] = item : resultList.push(item)
+    return resultList
   }
 
 }

@@ -25,6 +25,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
   private errorMessage: string;
   private alerts = {};
 
+  private agencyName: string;
   private agencyAddressLine1: string = '';
   private agencyAddressLine2: string = '';
   private agencyAddressLine3: string = '';
@@ -67,6 +68,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
                 if(agency.logoPath != null){
                   this.agencyLogo = agency.logoPath;
                 }
+                this.agencyName = agency.name ? agency.name : '';
                 this.agencyAddressLine1 = agency.addressLine1 ? agency.addressLine1 : '';
                 this.agencyAddressLine2 = agency.addressLine2 ? agency.addressLine2 : '';
                 this.agencyAddressLine3 = agency.addressLine3 ? agency.addressLine3 : '';
@@ -101,6 +103,7 @@ export class NewAgencyDetailsComponent implements OnInit, OnDestroy {
 
       let agencyData = {};
 
+      agencyData['/agency/' + this.agencyId + '/name'] = this.agencyName;
       agencyData['/agency/' + this.agencyId + '/addressLine1'] = this.agencyAddressLine1;
       agencyData['/agency/' + this.agencyId + '/addressLine2'] = this.agencyAddressLine2;
       agencyData['/agency/' + this.agencyId + '/addressLine3'] = this.agencyAddressLine3;

@@ -4,10 +4,12 @@
 
 import {BaseModel} from "./base.model";
 import {AlertMessageModel} from "./alert-message.model";
+import { ResponsePlan } from "./responsePlan";
+import {ResponsePlanSectors} from '../utils/Enums';
 
 export class ProgrammeMappingModel extends BaseModel {
   public id: string;
-  public sector: string;
+  public sector: string[];
   public what: number;
   public toWho: string;
   public when: number;
@@ -18,18 +20,22 @@ export class ProgrammeMappingModel extends BaseModel {
   public otherName?: string;
 
   validate(excludedFields = []): AlertMessageModel {
-
-    if (typeof (this.sector) == 'undefined' && !this.isExcluded('sector', excludedFields)) {
+    if (this.sector.length == 0 && !this.isExcluded('sector', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_SECTOR');
+    }
+
+    if (this.sector.length > 0) {
+      for (let sector of this.sector) {
+        var sectorKey = Number(sector)
+        if (sectorKey == ResponsePlanSectors.other && !this.otherName) {
+          return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_SECTOR');
+        } 
+      }
     }
 
     if (!this.what && !this.isExcluded('what', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_WHAT');
     }
-
-    /*if (!this.where && !this.isExcluded('where', excludedFields)) {
-        return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_WHERE');
-    }*/
 
     if (!this.toWho && !this.isExcluded('toWho', excludedFields)) {
       return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.PROGRAMME.NO_TO_WHO');

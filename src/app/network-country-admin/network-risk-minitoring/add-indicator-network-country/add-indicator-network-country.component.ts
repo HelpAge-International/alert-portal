@@ -376,7 +376,7 @@ export class AddIndicatorNetworkCountryComponent implements OnInit, OnDestroy {
         .takeUntil(this.ngUnsubscribe)
         .subscribe((user: ModelUserPublic) => {
           console.log(user)
-          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName};
+          let userToPush = {userID: this.uid, name: user.firstName + " " + user.lastName + "(Network Country Admin)"};
           this.usersForAssign.push(userToPush);
         })
 

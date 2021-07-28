@@ -1,5 +1,5 @@
 <div class="Header-title__wrap">
-  <h1>Network office profile</h1>
+  <h1>{{ "NETWORK_OFFICE_PROFILE" | translate}}</h1>
 </div>
 
 <!--<div class="Page-top__wrap&#45;&#45;w_sub_header&#45;&#45;no-paddng">-->
@@ -10,7 +10,7 @@
   </div>
   <ul class="subnav_country-office-profile">
 
-    <li *ngIf="!isViewing" routerLinkActive="active">
+    <li *ngIf="!isViewing" routerLinkActive="active" id="programmes">
       <a
         routerLink="{{isNetworkCountry ? '/network-country/network-country-office-profile-programme' : '/network/local-network-office-profile/programme'}}">{{
         "SYSTEM_ADMIN.ACTIONS.GENERIC_MPA_APA.CATEGORIES.Programmes" | translate}}</a>

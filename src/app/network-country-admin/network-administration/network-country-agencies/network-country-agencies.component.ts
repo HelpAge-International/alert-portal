@@ -1,16 +1,14 @@
-import {Component, Injectable, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {AlertMessageModel} from "../../../model/alert-message.model";
 import {AlertMessageType} from "../../../utils/Enums";
-import {FirebaseObjectObservable} from "angularfire2";
+import {AngularFire, FirebaseObjectObservable} from "angularfire2";
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NetworkService} from "../../../services/network.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AgencyService} from "../../../services/agency-service.service";
 import {UserService} from "../../../services/user.service";
 import {NetworkAgencyModel} from "../../../network-admin/network-agencies/network-agency.model";
-import {AngularFire} from "angularfire2";
-import {Constants} from "../../../utils/Constants";
 
 @Component({
   selector: 'app-network-country-agencies',
@@ -45,6 +43,7 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
   private forDeletion: Array<any> = [];
   private finalData: Array<any> = [];
   private Loading: boolean = true;
+  // private agencyCountryMapWithNotApproved = new Map<string, string>()
 
 
   constructor(private pageControl: PageControlService,
@@ -68,7 +67,12 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
           this.networkId = selection["id"];
           this.networkCountryId = selection["networkCountryId"];
 
-          this.networkService.mapAgencyCountryForNetworkCountry(this.networkId, this.networkCountryId)
+          // //extra step to get agencyCountryMap with un-approved members
+          // this.networkService.mapAgencyCountryForNetworkCountryWithNotApproved(this.networkId, this.networkCountryId)
+          //   .takeUntil(this.ngUnsubscribe)
+          //   .subscribe(map => this.agencyCountryMapWithNotApproved = map)
+
+          this.networkService.mapAgencyCountryForNetworkCountryWithNotApproved(this.networkId, this.networkCountryId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyMap => {
               this.agencyCountryMap = agencyMap;
@@ -78,27 +82,26 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
               this.networkService.getAgenciesForNetworkCountry(this.networkId, this.networkCountryId, this.agencyCountryMap)
               //extra fetching works
                 .do((agencies: NetworkAgencyModel[]) => {
-                  if (agencies) {
+                  if (agencies.length) {
                     agencies.forEach(model => {
-
                       //get agency detail
                       this.agencyService.getAgency(model.id)
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(agency => {
+                          console.log(agency)
                           model.name = agency.name;
                           model.logoPath = agency.logoPath;
+                          model.adminId = agency.adminId;
+
+                          if (agency.isGlobalAgency) {
+                            this.getCountryAdmin(model);
+                          } else {
+                            this.getLocalAgencyAdmin(model);
+                          }
+
                         });
 
-                      this.agencyService.getCountryOffice(this.agencyCountryMap.get(model.id), model.id)
-                        .flatMap(country => {
-                          return this.userService.getUser(country.adminId);
-                        })
-                        .takeUntil(this.ngUnsubscribe)
-                        .subscribe(user => {
-                          model.adminEmail = user.email;
-                          model.adminName = user.firstName + " " + user.lastName;
-                          model.adminPhone = user.phone;
-                        });
+
                     });
                   }
                 })
@@ -158,16 +161,6 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
       //delete reference in countryOffice node
       let node = "/countryOffice/" + agencyId + "/" + countryId + "/networks/" + this.networkId
       this.networkService.deleteNetworkField(node)
-
-      // Dan's bug fix
-      // this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId)
-      //   .takeUntil(this.ngUnsubscribe)
-      //   .subscribe(countryOffice => {
-      //     let nodeRemove = countryOffice[1].$key;
-      //     let countryOfficePath = "/countryOffice/" + agencyId + "/" + nodeRemove + "/networks/";
-      //     console.log(countryOfficePath, 'delete path');
-      //     this.networkService.deleteNetworks(countryOfficePath);
-      //   });
     }
   }
 
@@ -176,4 +169,27 @@ export class NetworkCountryAgenciesComponent implements OnInit, OnDestroy {
     this.networkService.resendEmailNetworkCountry(this.networkId, this.networkCountryId, agencyId, this.agencyCountryMap.get(agencyId));
   }
 
+  private getCountryAdmin(model) {
+    this.agencyService.getCountryOffice(this.agencyCountryMap.get(model.id), model.id)
+      .flatMap(country => {
+        return this.userService.getUser(country.adminId);
+      })
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(user => {
+        model.adminEmail = user.email;
+        model.adminName = user.firstName + " " + user.lastName;
+        model.adminPhone = user.phone;
+      });
+  }
+
+  private getLocalAgencyAdmin(model: NetworkAgencyModel) {
+    console.log(model)
+    this.userService.getUser(model.adminId)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe(user => {
+        model.adminEmail = user.email;
+        model.adminName = user.firstName + " " + user.lastName;
+        model.adminPhone = user.phone;
+      })
+  }
 }

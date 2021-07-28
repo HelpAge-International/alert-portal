@@ -9,6 +9,7 @@ import {NetworkUserAccountType, UserType} from "../../utils/Enums";
 import {TranslateService} from "@ngx-translate/core";
 import {Http, Response} from '@angular/http';
 import {AngularFire} from "angularfire2";
+import {ExportPersonalService} from "../../services/export-personal";
 
 declare var jQuery: any;
 
@@ -44,7 +45,8 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private af: AngularFire,
               private translate: TranslateService,
-              private http: Http) {
+              private http: Http,
+              private exportPersonalService: ExportPersonalService) {
 
     translate.setDefaultLang("en");
 
@@ -153,5 +155,10 @@ export class NetworkHeaderComponent implements OnInit, OnDestroy {
   goToHome() {
     this.router.navigateByUrl("/network/network-offices");
   }
+
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, null);
+  }
+
 
 }

@@ -11,9 +11,11 @@ export class CoordinationArrangementNetworkModel extends BaseModel {
     public contactPhone: string;
     public updatedAt: number;
     public agencies?: object;
+    public otherName?: string;
 
     validate(excludedFields = []): AlertMessageModel {
-        if (!this.sector && !this.isExcluded('sector', excludedFields)) {
+        console.log("SECTOR " + this.sector);
+        if ((!this.sector && this.sector !== 0) && !this.isExcluded('sector', excludedFields)) {
             return new AlertMessageModel('COUNTRY_ADMIN.PROFILE.COORDINATION.NO_SECTOR');
         }
         if (!this.sectorLead && !this.isExcluded('sectorLead', excludedFields)) {

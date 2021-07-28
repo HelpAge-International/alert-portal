@@ -68,7 +68,6 @@ export class NetworkService {
   getSelectedIdObj(uid: string) {
     return this.af.database.object(Constants.APP_STATUS + "/networkUserSelection/" + uid, {preserveSnapshot: true})
       .flatMap(snap => {
-        console.log(snap.val());
         if (snap.val()) {
           let selection = snap.val();
           let selectData = {};
@@ -114,9 +113,7 @@ export class NetworkService {
     data["/network/" + networkId + "/leadAgencyId"] = leadAgencyId;
 
     let item = {};
-    if (countryCode) {
-      item["countryCode"] = countryCode
-    }
+    item["countryCode"] = countryCode ? countryCode : agencyId
     item["isApproved"] = false;
     data["/network/" + networkId + "/agencies/" + agencyId] = item;
 
@@ -183,6 +180,7 @@ export class NetworkService {
   }
 
   updateNetworkFieldByObject(path, model) {
+    console.log(model)
     return this.af.database.object(Constants.APP_STATUS + path).update(model);
   }
 
@@ -304,11 +302,11 @@ export class NetworkService {
       });
   }
 
-  getUnassignedNetworkActionsForAgency(agencyId:string, networkId:string) : Observable<any> {
+  getUnassignedNetworkActionsForAgency(agencyId: string, networkId: string): Observable<any> {
     return this.af.database.list(Constants.APP_STATUS + "/action/" + networkId, {
-      query : {
-        orderByChild:"agencyAssign",
-        equalTo:agencyId
+      query: {
+        orderByChild: "agencyAssign",
+        equalTo: agencyId
       }
     })
       .map(actions => actions.filter(action => !action.asignee).map(action => {
@@ -671,7 +669,12 @@ export class NetworkService {
     data["/networkCountry/" + networkId + "/" + networkCountryId + "/leadAgencyId"] = leadAgencyId;
     selectedAgencyMap.forEach((v, k) => {
       if (v) {
-        data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + agencyCountryMap.get(k) + "/isApproved"] = false;
+        if (agencyCountryMap.get(k)) {
+          data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + agencyCountryMap.get(k) + "/isApproved"] = false;
+        } else {
+          data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + k + "/isApproved"] = false;
+          data["/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + k + "/" + k + "/isLocalAgency"] = true;
+        }
       }
     });
     return this.af.database.object(Constants.APP_STATUS).update(data);
@@ -685,14 +688,18 @@ export class NetworkService {
   }
 
   getAgenciesForNetworkCountry(networkId, networkCountryId, agencyCountryMap) {
+    console.log(networkId)
+    console.log(networkCountryId)
+    console.log(agencyCountryMap)
     return this.af.database.list(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries")
       .map(agencies => {
         if (agencies) {
           let agencyModels = [];
           agencies.forEach(agency => {
+            console.log(agency)
             let model = new NetworkAgencyModel();
             model.id = agency.$key;
-            model.isApproved = agency[agencyCountryMap.get(agency.$key)]["isApproved"]
+            model.isApproved = agencyCountryMap.get(agency.$key) ? (agency.$key !== agencyCountryMap.get(agency.$key) ? agency[agencyCountryMap.get(agency.$key)]["isApproved"] : agency[agency.$key]["isApproved"]) : false
             agencyModels.push(model);
           });
           return agencyModels;
@@ -703,8 +710,11 @@ export class NetworkService {
   resendEmailNetworkCountry(networkId, networkCountryId, agencyId, countryId) {
     let data = {};
     data["isApproved"] = false;
-    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + countryId).set(null).then(() => {
-      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + countryId).set(data);
+    if (!countryId) {
+      data["isLocalAgency"] = true;
+    }
+    this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(null).then(() => {
+      this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId + "/agencyCountries/" + agencyId + "/" + (countryId ? countryId : agencyId)).set(data);
     });
   }
 
@@ -717,9 +727,32 @@ export class NetworkService {
             let obj = {};
             obj["agencyId"] = key;
             obj["countryId"] = Object.keys(agencyCountries[key])[0];
-            obj["approved"] = Object.keys(agencyCountries[key]).map(id => agencyCountries[key][id])[0]
+            obj["approved"] = agencyCountries[key][obj["countryId"]]
+            // obj["approved"] = Object.keys(agencyCountries[key]).map(id => agencyCountries[key][id])[0]
             return obj;
           }).filter(item => item["approved"]["isApproved"] == true)
+          let agencyCountryMap = new Map<string, string>();
+          agencyCountryList.forEach(item => {
+            agencyCountryMap.set(item["agencyId"], item["countryId"]);
+          });
+          return agencyCountryMap;
+        }
+      });
+  }
+
+  mapAgencyCountryForNetworkCountryWithNotApproved(networkId, networkCountryId) {
+    return this.getNetworkCountry(networkId, networkCountryId)
+      .map(networkCountry => {
+        if (networkCountry.agencyCountries) {
+          let agencyCountries = networkCountry.agencyCountries;
+          let agencyCountryList = Object.keys(agencyCountries).map(key => {
+            let obj = {};
+            obj["agencyId"] = key;
+            obj["countryId"] = Object.keys(agencyCountries[key])[0];
+            obj["approved"] = agencyCountries[key][obj["countryId"]]
+            // obj["approved"] = Object.keys(agencyCountries[key]).map(id => agencyCountries[key][id])[0]
+            return obj;
+          })
           let agencyCountryMap = new Map<string, string>();
           agencyCountryList.forEach(item => {
             agencyCountryMap.set(item["agencyId"], item["countryId"]);
@@ -741,6 +774,27 @@ export class NetworkService {
             obj["approved"] = agencyCountries[key].isApproved
             return obj;
           }).filter(item => item["approved"] == true)
+          let agencyCountryMap = new Map<string, string>();
+          agencyCountryList.forEach(item => {
+            agencyCountryMap.set(item["agencyId"], item["countryId"]);
+          });
+          return agencyCountryMap;
+        }
+      });
+  }
+
+  mapAgencyCountryForLocalNetworkCountryWithNotApproved(networkId) {
+    return this.getLocalNetwork(networkId)
+      .map(localNetwork => {
+        if (localNetwork.agencies) {
+          let agencyCountries = localNetwork.agencies;
+          let agencyCountryList = Object.keys(agencyCountries).map(key => {
+            let obj = {};
+            obj["agencyId"] = key;
+            obj["countryId"] = agencyCountries[key].countryCode;
+            obj["approved"] = agencyCountries[key].isApproved
+            return obj;
+          })
           let agencyCountryMap = new Map<string, string>();
           agencyCountryList.forEach(item => {
             agencyCountryMap.set(item["agencyId"], item["countryId"]);
@@ -789,6 +843,18 @@ export class NetworkService {
       })
   }
 
+  getNetworkWithCountryModelsForLocalAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
+      .map(networks => {
+        return networks.map(network => {
+          let model = new NetworkWithCountryModel();
+          model.networkId = network.$key;
+          model.networkCountryId = network.networkCountryId;
+          return model;
+        })
+      })
+  }
+
   getLocalNetworkModelsForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
       .map(networks => {
@@ -800,6 +866,16 @@ export class NetworkService {
       })
   }
 
+  getLocalNetworkModelsForLocalAgency(agencyId: string) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
+      .map(networks => {
+        return networks.map(network => {
+          let model = new ModelNetwork();
+          model.id = network.$key;
+          return model;
+        })
+      })
+  }
 
   mapNetworkWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/networks")
@@ -812,8 +888,30 @@ export class NetworkService {
       })
   }
 
+  mapNetworkCountryForLocalAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/networksCountry")
+      .map(networks => {
+        let map = new Map<string, string>();
+        networks.forEach(network => {
+          map.set(network.$key, network.networkCountryId)
+        })
+        return map
+      })
+  }
+
   getLocalNetworksWithCountryForCountry(agencyId, countryId) {
     return this.af.database.list(Constants.APP_STATUS + "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks")
+      .map(networks => {
+        let networkKeys = []
+        networks.forEach(network => {
+          networkKeys.push(network.$key)
+        })
+        return networkKeys
+      })
+  }
+
+  getLocalNetworksWithCountryForLocalAgency(agencyId) {
+    return this.af.database.list(Constants.APP_STATUS + "/agency/" + agencyId + "/localNetworks")
       .map(networks => {
         let networkKeys = []
         networks.forEach(network => {
@@ -1034,7 +1132,7 @@ export class NetworkService {
       });
   }
 
-  saveIndicatorLogMoreParams(previousTrigger:number, triggerSelected:number, uid:string, indicatorId: string) {
+  saveIndicatorLogMoreParams(previousTrigger: number, triggerSelected: number, uid: string, indicatorId: string) {
     if (previousTrigger != -1 && previousTrigger != triggerSelected) {
       let content = ""
       switch (triggerSelected) {

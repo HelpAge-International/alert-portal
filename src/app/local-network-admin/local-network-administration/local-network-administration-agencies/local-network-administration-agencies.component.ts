@@ -39,7 +39,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
   private showLoader: boolean;
   private networkCountryCode: number | any;
   private agencyCountryAdminMap = new Map<String, ModelUserPublic>()
-  private agencyCountryMap: Map<string,string>;
+  private agencyCountryMap: Map<string, string>;
 
 
   constructor(private pageControl: PageControlService,
@@ -72,7 +72,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
               }
             })
 
-          this.networkService.mapAgencyCountryForLocalNetworkCountry(this.networkId)
+          this.networkService.mapAgencyCountryForLocalNetworkCountryWithNotApproved(this.networkId)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(agencyCountryMap => this.agencyCountryMap = agencyCountryMap)
 
@@ -80,7 +80,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
           this.networkService.getAgenciesForNetwork(this.networkId)
           //extra fetching works
             .do((agencies: NetworkAgencyModel[]) => {
-              if (agencies) {
+              if (agencies.length > 0) {
                 agencies.forEach(model => {
 
                   //get agency detail
@@ -95,6 +95,7 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
                       this.userService.getUser(model.adminId)
                         .takeUntil(this.ngUnsubscribe)
                         .subscribe(user => {
+                          console.log(user)
                           model.adminEmail = user.email;
                           model.adminName = user.firstName + " " + user.lastName;
                           model.adminPhone = user.phone;
@@ -125,24 +126,51 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
     console.log("is local, need to get country")
     console.log(network)
     if (network.agencies) {
-      Object.keys(network.agencies).map(key => {
-        let temp = {}
-        temp['agencyId'] = key
-        temp['countryId'] = network.agencies[key]['countryCode']
-        return temp
-      })
-        .forEach(obj => {
-          this.userService.getCountryDetail(obj['countryId'], obj['agencyId'])
-            .flatMap(country => {
-              return this.userService.getUser(country.adminId)
-            })
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(countryAdmin => {
-              this.agencyCountryAdminMap.set(obj['agencyId'], countryAdmin)
-              console.log(this.agencyCountryAdminMap)
-            })
-        })
+      this.getNormalCountries(network);
+      this.getLocalAgencies(network);
     }
+  }
+
+  private getNormalCountries(network: ModelNetwork) {
+    Object.keys(network.agencies).map(key => {
+      let temp = {}
+      temp['agencyId'] = key
+      temp['countryId'] = network.agencies[key]['countryCode']
+      return temp
+    })
+      .filter(obj => obj["countryId"] !== obj["agencyId"])
+      .forEach(obj => {
+        this.userService.getCountryDetail(obj['countryId'], obj['agencyId'])
+          .flatMap(country => {
+            return this.userService.getUser(country.adminId)
+          })
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(countryAdmin => {
+            this.agencyCountryAdminMap.set(obj['agencyId'], countryAdmin)
+            console.log(this.agencyCountryAdminMap)
+          })
+      })
+  }
+
+  private getLocalAgencies(network: ModelNetwork) {
+    Object.keys(network.agencies).map(key => {
+      let temp = {}
+      temp['agencyId'] = key
+      temp['countryId'] = network.agencies[key]['countryCode']
+      return temp
+    })
+      .filter(obj => obj["countryId"] === obj["agencyId"])
+      .forEach(obj => {
+        this.userService.getAgencyDetail(obj['agencyId'])
+          .flatMap(agency => {
+            return this.userService.getUser(agency.adminId)
+          })
+          .takeUntil(this.ngUnsubscribe)
+          .subscribe(agencyAdmin => {
+            this.agencyCountryAdminMap.set(obj['agencyId'], agencyAdmin)
+            console.log(this.agencyCountryAdminMap)
+          })
+      })
   }
 
   ngOnDestroy() {
@@ -162,10 +190,10 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
 
   confirmRemove(agencyId) {
     let countryId = this.agencyCountryMap.get(agencyId)
-    if (!countryId) {
-      this.alertMessage = new AlertMessageModel("Agency id not available!");
-      return
-    }
+    // if (!countryId) {
+    //   this.alertMessage = new AlertMessageModel("Agency id not available!");
+    //   return
+    // }
     if (this.leadAgencyId == agencyId) {
       this.alertMessage = new AlertMessageModel("DELETE_LEAD_AGENCY_ERROR");
     } else {
@@ -174,7 +202,10 @@ export class LocalNetworkAdministrationAgenciesComponent implements OnInit, OnDe
       this.networkService.deleteNetworkField(path);
       this.networkService.deleteNetworkField(validationPath);
       //delete reference in countryOffice node
-      let node = "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks/" + this.networkId
+      let node = countryId ?
+        "/countryOffice/" + agencyId + "/" + countryId + "/localNetworks/" + this.networkId
+        :
+        "/agency/" + agencyId + "/localNetworks/" + this.networkId
       this.networkService.deleteNetworkField(node)
     }
   }

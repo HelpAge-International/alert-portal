@@ -123,7 +123,7 @@
               </div>
 
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-                <i div
+                <i
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
@@ -247,7 +247,7 @@
               </div>
 
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-                <i div
+                <i
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
@@ -371,7 +371,7 @@
               </div>
 
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-                <i div
+                <i
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
@@ -492,7 +492,7 @@
               </div>
 
               <div class="col-md-2 Alert-Widget__item Alert-Widget__item--risk">
-                <i div
+                <i
                    class="Icon__circle Icon--sm Icon--b-dark-blue {{(isNumber(alert.hazardScenario) ? getCSSHazard(alert.hazardScenario) : 'Icon--alert')}}"></i>
                 <div>
                   <span>{{"ALERT.RISK" | translate}}:</span>
@@ -676,7 +676,9 @@
     <!--empty rubber for default dashboard only partner user-->
     <div *ngIf="userType==UserType.PartnerUser">
       <div
-        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length==0 && indicatorsToday.length==0 && actionsThisWeek.length==0 && indicatorsThisWeek.length==0 && DashboardTypeUsed == DashboardType.default && approvalPlans.length == 0 && approvalPlansNetwork.length == 0"
+        *ngIf="actionsOverdue.length == 0 && indicatorsOverdue.length == 0 && actionsToday.length == 0
+        && indicatorsToday.length == 0 && actionsThisWeek.length == 0 && indicatorsThisWeek.length == 0
+        && DashboardTypeUsed == DashboardType.default && approvalPlans.length == 0 && approvalPlansNetwork.length == 0"
         class="Widget">
         <h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3>
         <div class="My-Tasks container-fluid">
@@ -702,15 +704,16 @@
         </div>
       </div>
     </div>
+
     <!--my tasks-->
     <div class="Widget"
          *ngIf="actionsOverdue.length > 0 || indicatorsOverdue.length > 0 || actionsToday.length>0 || indicatorsToday.length>0 ||
-         actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0 || approvalPlansNetworkLocal.length>0">
+         actionsThisWeek.length>0 || indicatorsThisWeek.length>0 || approvalPlans.length>0 || approvalPlansNetwork.length>0
+         || approvalPlansNetworkLocal.length>0">
       <div class="col-sm-5"><h3>{{"DASHBOARD.MY_TASKS" | translate}}</h3></div>
       <br>
       <!--director-->
       <div *ngIf="DashboardTypeUsed == DashboardType.director">
-
         <div *ngIf="responsePlansForApproval | async as plans">
           <div *ngFor="let plan of plans" class="row Spaced">
             <div class="col-sm-9" col-md-1>
@@ -772,6 +775,7 @@
         </div>
 
       </div>
+
       <!--partner users-->
       <div *ngIf="userType == UserType.PartnerUser">
         <div *ngIf="responsePlansForApproval | async as plans">
@@ -820,7 +824,6 @@
          indicatorsToday.length>0 || actionsThisWeek.length>0 || indicatorsThisWeek.length>0 ||
           actionsOverdueNetwork.length>0 || actionsTodayNetwork.length>0 || actionsThisWeekNetwork.length>0 ||
           indicatorsOverdueNetwork.length > 0 || indicatorsThisWeekNetwork.length > 0 || indicatorsTodayNetwork.length > 0">
-
         <div *ngFor="let action of actionsOverdue">
           <div *ngIf="shouldShow(action.level, action.action)" class="row Spaced">
             <div class="col-md-1">

@@ -27,6 +27,7 @@ import {NetworkCountryModel} from "../../network-country-admin/network-country.m
 import {ModelNetwork} from "../../model/network.model";
 import {SettingsService} from "../../services/settings.service";
 import {ModuleSettingsModel} from "../../model/module-settings.model";
+import {Observable} from "rxjs/Observable";
 
 declare var jQuery: any;
 
@@ -119,6 +120,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private tmpHazardData: any[] = [];
   private tmpLogData: any[] = [];
   private AllSeasons = [];
+  private selectedHazardSeasons = [];
 
   private successAddHazardMsg: any;
   private countryPermissionsMatrix: CountryPermissionsMatrix = new CountryPermissionsMatrix();
@@ -149,6 +151,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
   private modules: ModuleSettingsModel[];
   private ModuleNameNetwork = ModuleNameNetwork
   private isLocalAgency: boolean;
+  private updateIndicatorId: string;
 
   constructor(private pageControl: PageControlService,
               private af: AngularFire,
@@ -217,6 +220,18 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
         }
         if (params["isLocalAgency"]) {
           this.isLocalAgency = params["isLocalAgency"];
+        }
+        if (params["hazardID"]) {
+          this.hazard = params["hazardID"];
+        }
+        if (params['updateIndicatorID']) {
+          this.updateIndicatorId = params['updateIndicatorID'];
+
+          Observable.timer(5000)
+            .first()
+            .subscribe(() => {
+              this.triggerScrollTo()
+            })
         }
 
         if(this.isViewing){
@@ -359,27 +374,28 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     }
   }
 
-  openSeasonalModal(key) {
-    this._getAllSeasons();
+  openSeasonalModal(key, hazard) {
+    this._getAllSeasons(hazard);
     jQuery("#" + key).modal("show");
   }
 
-  _getAllSeasons() {
-    let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.hazardScenario == this.hazard);
-    let promise = new Promise((res, rej) => {
-      this.af.database.list(Constants.APP_STATUS + "/season/" + this.countryID)
+  _getAllSeasons(selectedHazard) {
+    this.selectedHazardSeasons = selectedHazard.seasons
+    // let promise = new Promise((res, rej) => {
+      this.af.database.list(Constants.APP_STATUS + "/season/" + selectedHazard.parent)
         .takeUntil(this.ngUnsubscribe)
         .subscribe((AllSeasons: any) => {
           this.AllSeasons = AllSeasons;
-          res(true);
+          // res(true);
         });
-    });
-    return promise;
+    // });
+    // return promise;
   }
 
   showSubNationalAreas(areas) {
     for (let area in areas) {
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+        .takeUntil(this.ngUnsubscribe)
         .subscribe(content => {
           this.countryLevelsValues = content;
           // console.log(this.getLocationName(areas[area]));
@@ -588,11 +604,15 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
     this.loadCountryContextIsArchived();
     let promise = new Promise((res, rej) => {
       this.af.database.list(Constants.APP_STATUS + "/hazard/" + this.networkId).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
+
         this.activeHazards = [];
         this.archivedHazards = [];
-        console.log(hazards)
+
         hazards.forEach((hazard: any, key) => {
           hazard.id = hazard.$key;
+
+          hazard.parent = this.networkId;
+
           if (hazard.hazardScenario != -1) {
             hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
           }
@@ -644,6 +664,7 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
                     this.af.database.list(Constants.APP_STATUS + "/hazard/" + value).takeUntil(this.ngUnsubscribe).subscribe((hazards: any) => {
                       hazards.forEach((hazard: any, key) => {
                         hazard.id = hazard.$key;
+                        hazard.parent = value;
                         if (hazard.hazardScenario != -1) {
                           hazard.imgName = this.translate.instant(this.hazardScenario[hazard.hazardScenario]).replace(" ", "_");
                         }
@@ -1396,5 +1417,47 @@ export class LocalNetworkRiskMonitoringComponent implements OnInit, OnDestroy {
       .flatMap(network => this.userService.getUser(network.networkAdminId))
       .takeUntil(this.ngUnsubscribe)
       .subscribe(networkAdmin => this.staffMap.set(networkAdmin.id, networkAdmin))
+  }
+
+  private triggerScrollTo() {
+    if (this.hazard == "countryContext") {
+      let indicatorIndexCC = this.indicatorsCC.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.indicatorsCC[indicatorIndexCC]
+      let indicatorID = "#indicators-to-hazards_CC" + "_" + indicatorIndexCC;
+
+      jQuery("#collapseOne").collapse('show');
+
+      this.changeIndicatorState(true, "countryContext", indicatorIndexCC);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000);
+    } else if (this.hazard == "-1") {
+      let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.$key == this.hazard);
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.activeHazards[hazardIndex].indicators[indicatorIndex]
+      let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
+
+      jQuery("#collapse-active-" + this.activeHazards[hazardIndex].otherName).collapse('show');
+
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000);
+    } else {
+      let hazardIndex = this.activeHazards.findIndex((hazard) => hazard.$key == this.hazard);
+      let indicatorIndex = this.activeHazards[hazardIndex].indicators.findIndex((indicator) => indicator.$key == this.updateIndicatorId);
+      let indicatorToUpdate = this.activeHazards[hazardIndex].indicators[indicatorIndex]
+      let indicatorID = "#indicators-to-hazards_" + hazardIndex + "_" + indicatorIndex;
+
+      jQuery("#collapse-active-" + this.hazard).collapse('show');
+
+      this.changeIndicatorState(true, this.activeHazards[hazardIndex].$key, indicatorIndex);
+      this.setCheckedTrigger(indicatorToUpdate.$key, indicatorToUpdate.triggerSelected)
+      jQuery('html, body').animate({
+        scrollTop: jQuery(indicatorID).offset().top - 20
+      }, 2000);
+    }
   }
 }

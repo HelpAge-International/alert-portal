@@ -21,6 +21,7 @@ import {NotificationService} from "../../services/notification.service";
 import {TranslateService} from "@ngx-translate/core";
 import {MessageModel} from "../../model/message.model";
 import {takeUntil} from "rxjs/operator/takeUntil";
+import * as moment from "moment";
 
 declare var jQuery: any;
 
@@ -127,13 +128,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log("edit apa");
-
     this.route.params.takeUntil(this.ngUnsubscribe).subscribe((params: Params) => {
       if (params['id']) {
         this.action.id = params['id'];
         this.editDisableLoading = true;
       }
+      console.log("Action Id: "+this.action.id);
+
       this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
         this.uid = user.uid;
         this.userType = userType;
@@ -233,6 +234,7 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
   public initFromExistingActionIdLocalAgency(canEditMPA: boolean, canEditAPA: boolean) {
     this.prepActionService.initOneActionLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.userType, this.action.id, (action) => {
+      console.log(action)
       if ((action.level == ActionLevel.MPA && !canEditMPA) || (action.level == ActionLevel.APA && !canEditAPA)) {
         if (this.action.level == ActionLevel.MPA) {
           this.router.navigateByUrl("/local-agency/preparedness/minimum")
@@ -703,7 +705,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/local-agency/preparedness/minimum")
+                }
+                else {
+                  this.router.navigateByUrl("/local-agency/preparedness/advanced")
+                }
               })
             })
         } else {
@@ -780,12 +788,17 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/preparedness/minimum");
+                }
+                else {
+                  this.router.navigateByUrl("/preparedness/advanced");
+                }
               })
             })
         }
-      }
-      else {
+      } else {
         // Saving
 
         updateObj['timeTracking'] = {}
@@ -841,7 +854,14 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/local-agency/preparedness/minimum")
+                }
+                else {
+                  this.router.navigateByUrl("/local-agency/preparedness/advanced")
+                }
+
               });
 
 
@@ -900,7 +920,13 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
                   });
                 }
 
-                this._location.back();
+                //this._location.back();
+                if (this.action.level == ActionLevel.MPA) {
+                  this.router.navigateByUrl("/preparedness/minimum");
+                }
+                else {
+                  this.router.navigateByUrl("/preparedness/advanced");
+                }
               });
 
             })
@@ -1078,7 +1104,21 @@ export class CreateEditPreparednessComponent implements OnInit, OnDestroy {
 
 
   protected backButtonAction() {
-    this._location.back();
+    if(this.isLocalAgency){
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/local-agency/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/local-agency/preparedness/advanced");
+      }
+    }else{
+      if (this.action.level == ActionLevel.MPA) {
+        this.router.navigateByUrl("/preparedness/minimum");
+      }
+      else {
+        this.router.navigateByUrl("/preparedness/advanced");
+      }
+    }
   }
 }
 
@@ -1100,6 +1140,8 @@ export class CreateEditPrepActionHolder {
   public department: string;
   public requireDoc: boolean;
   public type: number = -1;
+  public createdAt: any;
+  public updatedAt: any;
 
   public isComplete;
   public isCompleteAt;
@@ -1116,6 +1158,8 @@ export class CreateEditPrepActionHolder {
 
   constructor() {
     this.type = ActionType.custom;
+    this.createdAt = new Date().getTime();
+    this.updatedAt = new Date().getTime();
   }
 
   public validate(amShowingDueDate: boolean) {
@@ -1129,7 +1173,7 @@ export class CreateEditPrepActionHolder {
       console.log("Failed level check");
       return false;
     }
-    if ((this.dueDate == undefined || this.dueDate == 0) && amShowingDueDate) {
+    if ((this.dueDate == undefined || this.dueDate == 0 || this.dueDate < moment().utc().valueOf()) && amShowingDueDate) {
       console.log("Failed dueDate check");
       return false;
     }

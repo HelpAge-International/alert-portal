@@ -740,9 +740,14 @@ export class UserService {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId);
   }
 
+  getNetworkAdminDetail(networkId) {
+    return this.af.database.object(Constants.APP_STATUS + "/network/" + networkId);
+  }
+
   getNetworkCountryDetail(networkId, networkCountryId) {
     return this.af.database.object(Constants.APP_STATUS + "/networkCountry/" + networkId + "/" + networkCountryId);
   }
+
 
   getAgencyModel(agencyId) {
     return this.af.database.object(Constants.APP_STATUS + "/agency/" + agencyId)
@@ -792,4 +797,9 @@ export class UserService {
   getSkill(skillId) {
     return this.af.database.object(Constants.APP_STATUS + "/skill/" + skillId)
   }
+
+  getCountryAdminOrLocalAgencyAdmin(agencyId:string, countryId?:string) : Observable<ModelUserPublic> {
+    return countryId ? this.getCountryAdmin(agencyId, countryId) : this.getLocalAgencyAdmin(agencyId)
+  }
+
 }

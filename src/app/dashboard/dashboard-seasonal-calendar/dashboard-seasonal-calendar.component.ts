@@ -23,6 +23,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
   private static WEEK_SPAN_DAY_MULTIPLIER = 30;
   private static MONTH_SPAN_DAY_MULTIPLIER = 91;
+  private static HALFYEAR_SPAN_DAY_MULTIPLIER = 182;
   private static RANGE_SPAN_DAYS = 365;
 
   // TODO - Check when other users are implemented
@@ -48,6 +49,9 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   public addSeasonEndDate: number;
   public addSeasonStartDate: number;
 
+  private CalendarSpans = Object.freeze({"Days":0, "Months":1, "Year":2});
+  private currentSpan: number;
+
   //for network
   @Input() isNetworkCountry: boolean;
   @Input() isLocalNetworkAdmin: boolean;
@@ -64,6 +68,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.currentSpan = this.CalendarSpans.Months;
     this.route.params.subscribe((params: Params) => {
       if (params["isViewing"] && params["systemId"] && params["agencyId"] && params["countryId"] && params["userType"] && params["networkId"] && params["networkCountryId"]) {
         this.isViewing = params["isViewing"];
@@ -120,10 +125,18 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
 
   /**
-   * Ran when "View as months" is clicked. Changes filter and re-initialised the Chronoline map
+   * Ran when "View as 6 months" is clicked. Changes filter and re-initialised the Chronoline map
+   */
+  public setHalfYearView() {
+    this.currentSpan = this.CalendarSpans.Year;
+    this.reinitCalendar();
+  }
+
+  /**
+   * Ran when "View as 3 months" is clicked. Changes filter and re-initialised the Chronoline map
    */
   public setMonthView() {
-    this.currentSpanMultiplierIsMonth = true;
+    this.currentSpan = this.CalendarSpans.Months;
     this.reinitCalendar();
   }
 
@@ -131,7 +144,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    * Ran when "View as weeks" is clicked. Changes filter and re-initialised the Chronoline map
    */
   public setWeekView() {
-    this.currentSpanMultiplierIsMonth = false;
+    this.currentSpan = this.CalendarSpans.Days;
     this.reinitCalendar();
   }
 
@@ -153,29 +166,31 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
    */
   public getAllSeasonsForCountryId(countryId: string) {
     let agencyCountry = this.storageService.get(Constants.NETWORK_CALENDAR);
+    console.log(agencyCountry);
     this.af.database.object(Constants.APP_STATUS + "/season/" + countryId, {preserveSnapshot: true})
       .takeUntil(this.ngUnsubscribe)
       .subscribe(snapshot => {
+        let i = 0;
         this.seasonEvents = [
           ChronolineEvent.create(1, DashboardSeasonalCalendarComponent.spanModelCalendar(), <DashboardSeasonalCalendarComponent> this)
         ];
-        let i = 2;
+        i++;
         snapshot.forEach((seasonInfo) => {
           let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val(), <DashboardSeasonalCalendarComponent> this, seasonInfo.key);
           this.seasonEvents.push(x);
           i++;
         });
-        !agencyCountry ? this.initCalendar()
-          :
+
+        if(!this.isNetworkCountry && !this.isLocalNetworkAdmin){
+          this.initCalendar();
+        }else{
+          console.log(agencyCountry);
           Object.keys(agencyCountry).forEach(agencyId => {
-            console.log(agencyId)
-            console.log(agencyCountry[agencyId])
-            console.log(agencyCountry[agencyId][1])
-            //data pulled from storage is strange, need to check
-            this.af.database.object(Constants.APP_STATUS + "/season/" + agencyCountry[agencyId][1], {preserveSnapshot: true})
+            console.log(agencyCountry[agencyId]);
+
+            this.af.database.object(Constants.APP_STATUS + "/season/" + agencyCountry[agencyId], {preserveSnapshot: true})
               .takeUntil(this.ngUnsubscribe)
               .subscribe(snapshot => {
-                let i = 100;
                 snapshot.forEach((seasonInfo) => {
                   let x: ChronolineEvent = ChronolineEvent.create(i, seasonInfo.val());
                   this.seasonEvents.push(x);
@@ -184,6 +199,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
                 this.initCalendar();
               })
           })
+        }
       });
   }
 
@@ -205,9 +221,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
     document.getElementById("target2").innerHTML = "";
     this.currentChronolineInstance = new Chronoline(document.getElementById("target2"), this.seasonEvents,
       {
-        visibleSpan: DAY_IN_MILLISECONDS * (this.currentSpanMultiplierIsMonth ?
-          DashboardSeasonalCalendarComponent.MONTH_SPAN_DAY_MULTIPLIER :
-          DashboardSeasonalCalendarComponent.WEEK_SPAN_DAY_MULTIPLIER),
+        visibleSpan: this.setCalendarSpan(this.currentSpan),
         animated: true,
         tooltips: true,
         sectionLabelAttrs: {'fill': '#997e3d', 'font-weight': 'bold'},
@@ -215,11 +229,23 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
         hashInterval: isFifthDay,
         scrollLeft: prevMonth,
         scrollRight: nextMonth,
+        eventHeight: 15,
         // markToday: 'labelBox',
         draggable: true
       });
     this.currentChronolineInstance.goToDate(new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 7)), 1);
     this.init = true;
+  }
+
+  private setCalendarSpan(spanName) {
+    switch(spanName){
+      case this.CalendarSpans.Days :
+        return DAY_IN_MILLISECONDS * DashboardSeasonalCalendarComponent.WEEK_SPAN_DAY_MULTIPLIER;
+      case this.CalendarSpans.Months :
+        return DAY_IN_MILLISECONDS * DashboardSeasonalCalendarComponent.MONTH_SPAN_DAY_MULTIPLIER;
+      case this.CalendarSpans.Year :
+        return DAY_IN_MILLISECONDS * DashboardSeasonalCalendarComponent.HALFYEAR_SPAN_DAY_MULTIPLIER;
+    }
   }
 
   private navigateToLogin() {
@@ -297,7 +323,43 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
 
   public deleteSeason() {
     let id = this.isNetworkCountry || this.isLocalNetworkAdmin ? this.networkCountryId : this.countryId;
-    this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).remove();
+
+    var foundIndex = false;
+    var index = 0;
+    this.af.database.list(Constants.APP_STATUS + "/season/" + id)
+      .take(1)
+      .subscribe(allSeasons => {
+        allSeasons.forEach(season => {
+          if(season.$key == this.editSeasonKey){
+            foundIndex = true;
+          }
+          if(foundIndex == false){
+            index = index + 1;
+          }
+        });
+
+        this.af.database.list(Constants.APP_STATUS + "/hazard/" + id)
+          .take(1)
+          .subscribe(hazards =>{
+            console.log(hazards);
+            hazards.forEach(hazard => {
+              if(hazard.seasons){
+                var indexSetToNull = false;
+                Object.keys(hazard.seasons).forEach(seasonId =>{
+                  if(parseInt(seasonId) == index){
+                    hazard.seasons[index] = null;
+                    indexSetToNull = true;
+                  }
+                });
+                if(hazard.seasons.length == 1 && indexSetToNull){
+                  hazard.isSeasonal = false;
+                }
+              }
+              this.af.database.object(Constants.APP_STATUS + "/hazard/" + id + "/" + hazard.$key).update(hazard);
+            });
+            this.af.database.object(Constants.APP_STATUS + "/season/" + id + "/" + this.editSeasonKey).remove();
+          });
+      });
   }
 
   public setCurrentColour(colourCode: string) {
@@ -337,6 +399,7 @@ export class DashboardSeasonalCalendarComponent implements OnInit, OnDestroy {
  * Model chonoline Event item - The objects need to match the info below
  */
 export class ChronolineEvent {
+
   private dates: Date[];
   private title: string;
   private eventHeight: number;
@@ -377,5 +440,18 @@ export class ChronolineEvent {
       }
     };
     return event;
+  }
+
+  private map_to_object(map) {
+    const out = Object.create(null);
+    map.forEach((value, key) => {
+      if (value instanceof Map) {
+        out[key] = this.map_to_object(value)
+      }
+      else {
+        out[key] = value
+      }
+    });
+    return out
   }
 }

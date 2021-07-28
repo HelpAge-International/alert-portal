@@ -65,7 +65,7 @@
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
         <input type="radio" name="alert1" id="RT_yes" [(ngModel)]="alertData.alertLevel" [value]="1">
       </label>
-      <button class="btn btn-warning Left" id="amberAlert" (click)="highlightRadio()">{{alertLevels[1] | translate}}
+      <button class="btn btn-warning Left" id="amberAlert" (click)="highlightRadio(false)">{{alertLevels[1] | translate}}
       </button>
 
       <!--red alert -->
@@ -73,7 +73,7 @@
              class="alert_level__wrap--risk row_expanded__wrap--risk col-sm-0 align-self-center text-center">
         <input type="radio" name="alert1" id="radioRed" [(ngModel)]="alertData.alertLevel" [value]="2">
       </label>
-      <button id="redAlert" (click)="highlightRadio()" class="btn btn-danger Left">{{alertLevels[2] | translate}}
+      <button id="redAlert" (click)="highlightRadio(true)" class="btn btn-danger Left">{{alertLevels[2] | translate}}
       </button>
     </div>
 
@@ -94,40 +94,37 @@
       <div class="col-sm-12 row" *ngFor="let location of alertData.affectedAreas; let locationKey = index">
         <div class="col-sm-3">
           <div class="form-group-risk-frequency ">
-            <select class="form-control" name="CountryArea"
-                    [(ngModel)]="location.country">
+            <select class="form-control" name="CountryArea" [(ngModel)]="location.country">
               <option value="undefined" disabled selected hidden>{{'GLOBAL.PLEASE_SELECT'| translate}}</option>
-              <option *ngFor="let countryKey of countriesList" [value]="countryKey">{{countries[countryKey] |
+              <option *ngFor="let countryKey of countriesList" [selected]='countryKey === preSelectedCountry' [value]="countryKey">{{countries[countryKey] |
                 translate}}
               </option>
             </select>
           </div>
         </div>
         <div class="col-sm-3" *ngIf="checkTypeof(location.country)">
-          <div class="form-group-risk-frequency ">
-            <select class="form-control" name="CountryAreaLevelOne"
-                    [(ngModel)]="location.level1">
-              <option value="undefined" disabled selected hidden>
-                {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
-                countryLevels[location.country]?.levels[0].value | translate }}
-              </option>
-              <option
-                *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
-                [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
-              </option>
-            </select>
-          </div>
+        <div class="form-group-risk-frequency ">
+          <select class="form-control" name="CountryAreaLevelOne" [(ngModel)]="location.level1" (ngModelChange)="selectedLevel1(location.country, location.level1)">
+            <option value="undefined" disabled selected hidden>
+              {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
+              countryLevels[location.country]?.levels[0].value | translate }}
+            </option>
+            <option
+              *ngFor="let countryLevel1Value of countryLevelsValues[location.country]?.levelOneValues"
+              [ngValue]="countryLevel1Value.id">{{countryLevel1Value.value}}
+            </option>
+          </select>
         </div>
+      </div>
         <div class="col-sm-3" *ngIf="checkTypeof(location.level1)">
           <div class="form-group-risk-frequency ">
-            <select class="form-control" name="CountryAreaLevelTwo"
-                    [(ngModel)]="location.level2">
+            <select class="form-control" name="CountryAreaLevelTwo" [(ngModel)]="location.level2">
               <option value="undefined" disabled selected hidden>
                 {{ "ADD_PARTNER.AREAS_OF_OPERATION_SELECT_A" | translate }} {{
                 countryLevels[location.country]?.levels[1].value | translate }}
               </option>
               <option
-                *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[location.level1].levelTwoValues"
+                *ngFor="let countryLevel2Value of countryLevelsValues[location.country]?.levelOneValues[selectedLevel1Index].levelTwoValues"
                 [ngValue]="countryLevel2Value.id">{{countryLevel2Value.value}}
               </option>
             </select>

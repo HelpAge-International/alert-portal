@@ -74,33 +74,20 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  ngOnInit() {
-    this.route.params
-      .takeUntil(this.ngUnsubscribe)
-      .subscribe((params: Params) => {
-        if (params["countryId"]) {
-          this.countryId = params["countryId"];
-        }
-        if (params["isViewing"]) {
-          this.isViewing = params["isViewing"];
-        }
-        if (params["agencyId"]) {
-          this.agencyId = params["agencyId"];
-        }
-
-        if (this.countryId && this.agencyId && this.isViewing) {
-          this.loadViewData();
-        } else {
-          this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
-        }
-
-      })
+  ngOnInit() {    
+    this.isLocalAgency ? this.initLocalAgency() : this.initCountryOffice()
   }
 
-  private loadViewData() {
+  private initCountryOffice() {
+    this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
+      this.uid = user.uid;
+      this.userType = userType;
+      this.countryId = countryId
+      this.agencyId = agencyId
+
     this._stockService.getStockCapacities(this.countryId)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe(stockCapacities => {
+      .subscribe(stockCapacities => {        
         this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
         this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
         this.generateLocations();
@@ -128,10 +115,10 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           });
         })
       });
+    });
   }
 
   private initLocalAgency() {
-
     this.pageControl.authUserObj(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
       this.uid = user.uid;
       this.userType = userType;
@@ -157,67 +144,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
         })
       });
     });
-  }
-
-  private initCountryOffice() {
-
-    this.pageControl.authUser(this.ngUnsubscribe, this.route, this.router, (user, userType, countryId, agencyId, systemId) => {
-      this.uid = user.uid;
-      this.userType = userType;
-      this.userAgencyId = agencyId;
-
-      this.countryId = countryId;
-      this.agencyId = agencyId;
-
-      this._stockService.getStockCapacities(this.countryId).takeUntil(this.ngUnsubscribe).subscribe(stockCapacities => {
-        this.stockCapacitiesIN = stockCapacities.filter(x => x.stockType == StockType.Country);
-        this.stockCapacitiesOUT = stockCapacities.filter(x => x.stockType == StockType.External);
-        this.generateLocations();
-
-        // Get notes
-        stockCapacities.forEach(stockCapacity => {
-          const stockCapacityNode = Constants.STOCK_CAPACITY_NODE
-            .replace('{countryId}', this.countryId)
-            .replace('{id}', stockCapacity.id);
-          this._noteService.getNotes(stockCapacityNode).takeUntil(this.ngUnsubscribe).subscribe(notes => {
-            notes.forEach(note => {
-              if (this.agencyId && (note.agencyId && note.agencyId != this.agencyId) || !this.agencyId && (note.agencyId != this.userAgencyId)) {
-                this.agencyService.getAgency(note.agencyId)
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe(agency => {
-                    note.agencyName = agency.name;
-                  })
-              }
-            })
-            stockCapacity.notes = notes;
-
-            // Create the new note model for partner organisation
-            this.newNote[stockCapacity.id] = new NoteModel();
-            this.newNote[stockCapacity.id].uploadedBy = this.uid;
-          });
-        })
-      });
-
-      this.af.database.object(Constants.APP_STATUS + "/countryOffice/" + this.agencyId + "/" + this.countryId + "/location")
-        .takeUntil(this.ngUnsubscribe)
-        .subscribe(getCountry => {
-          this.selectedCountry = getCountry.$value;
-
-          this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(pre => {
-              console.log(pre[this.selectedCountry], 'in here');
-
-
-            })
-
-        });
-
-      PageControlService.countryPermissionsMatrix(this.af, this.ngUnsubscribe, this.uid, userType, (isEnabled => {
-        this.countryPermissionsMatrix = isEnabled;
-      }));
-    });
-
   }
 
   goBack() {
@@ -253,7 +179,6 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
   }
 
   addEditStockCapacity(stockType: StockType, stockCapacityId?: string) {
-    console.log(stockType)
     if (this.isLocalAgency) {
       if (stockCapacityId) {
         this.router.navigate(['/local-agency/profile/stock-capacity/add-edit-stock-capacity',
@@ -376,14 +301,28 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
+
+        var l1Index = 0;
+
         if (stockCapacity.location && stockCapacity.location > -1) {
           obj.country = this.countries[stockCapacity.location];
         }
-        if (stockCapacity.level1 && stockCapacity.level1 > -1) {
-          obj.areas = ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].value
+        if (stockCapacity.location && stockCapacity.level1 && stockCapacity.level1 > -1) {
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues.length; i++) {
+            var x = json[stockCapacity.location].levelOneValues[i];
+            if (x['id'] === +stockCapacity.level1) { 
+              obj.areas = ", " + x.value    
+              l1Index = i;
+            }
+          }
         }
-        if (stockCapacity.level2) {
-          obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
+        if (stockCapacity.location && stockCapacity.level2) {
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues.length; i++) { 
+            var x = json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues[i];
+            if (x['id'] === +stockCapacity.level2) {
+              obj.areas = obj.areas + ", " + x.value; 
+            }
+          }
         }
         this.locationObjsStocksIn.push(obj);
       });
@@ -393,17 +332,32 @@ export class CountryOfficeStockCapacityComponent implements OnInit, OnDestroy {
           country: "",
           areas: ""
         };
+
+        var l1Index = 0;
+
         if (stockCapacity.location && stockCapacity.location > -1) {
           obj.country = this.countries[stockCapacity.location];
         }
-        if (stockCapacity.level1 && stockCapacity.level1 > -1) {
-          obj.areas = ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].value
+        if (stockCapacity.location && stockCapacity.level1 && stockCapacity.level1 > -1) {
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues.length; i++) {
+            var x = json[stockCapacity.location].levelOneValues[i];
+            if (x['id'] === +stockCapacity.level1) { 
+              obj.areas = ", " + x.value    
+              l1Index = i;
+            }
+          }
         }
         if (stockCapacity.level2) {
-          obj.areas = obj.areas + ", " + json[stockCapacity.location].levelOneValues[stockCapacity.level1].levelTwoValues[stockCapacity.level2].value;
+          for (var i = 0; i < json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues.length; i++) { 
+            var x = json[stockCapacity.location].levelOneValues[l1Index].levelTwoValues[i];
+            if (x['id'] === +stockCapacity.level2) {
+              obj.areas = obj.areas + ", " + x.value; 
+            }
+          }
         }
         this.locationObjsStocksOut.push(obj);
       });
+
     });
   }
 }

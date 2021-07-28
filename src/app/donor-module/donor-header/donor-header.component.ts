@@ -10,6 +10,7 @@ import {MessageModel} from "../../model/message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Http, Response} from '@angular/http';
 import {EXPORT_FROM, ExportDataService} from "../../services/export-data.service";
+import {ExportPersonalService} from "../../services/export-personal";
 declare var jQuery: any;
 
 @Component({
@@ -53,7 +54,8 @@ export class DonorHeaderComponent implements OnInit {
               private userService: UserService,
               private translate: TranslateService,
               private exportService:ExportDataService,
-              private http: Http) {
+              private http: Http,
+              private exportPersonalService: ExportPersonalService) {
 
     translate.setDefaultLang("en");
 
@@ -175,6 +177,9 @@ export class DonorHeaderComponent implements OnInit {
           this.agencyName = agencyName ? agencyName.$value : this.translate.instant("AGENCY");
         });
     }
+  }
+  private exportPersonalData() {
+    this.exportPersonalService.exportPersonalData(this.uid, this.countryId);
   }
 
 }

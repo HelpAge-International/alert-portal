@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Constants} from '../utils/Constants';
 import {Subject} from 'rxjs/Subject';
 import {AngularFire, FirebaseObjectObservable} from 'angularfire2';
-import {MapService} from './map.service';
+import {MapService, MapCountry} from './map.service';
 import {ActionLevel, ActionType, AlertLevels, Countries, CountriesMapsSearchInterface} from '../utils/Enums';
 import {CommonService} from './common.service';
 import GeocoderResult = google.maps.GeocoderResult;
@@ -79,24 +79,16 @@ export class NetworkMapService {
    *               Loads the coloured layer with the countries
    *                   Get the MPA values for each (mpaComplete / mpaTotal)
    */
-  public init(elementId: string, af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
-              done: () => void, countryClicked: (country: string) => void) {
-    console.log("NetworkId: " + networkId);
-    console.log("Network Country Id: " + networkCountryId);
+  public init(af: AngularFire, ngUnsubscribe: Subject<void>, systemAdminId: string, networkId: string, networkCountryId: string,
+              done: (countries: NetworkMapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
     this.networkId = networkId;
     this.networkCountryId = networkCountryId;
     this.af = af;
     this.ngUnsubscribe = ngUnsubscribe;
-    // Get the agencies of a network
-    //TODO: When Network
-    if (elementId != null) {
-      this.initMap(elementId);
-    }
+
     this.systemMpaGreenYellow(systemAdminId, (green, yellow) => {
       this.minGreen = green;
       this.minYellow = yellow;
-      console.log("Min Green: " + this.minGreen);
-      console.log("Min Yellow: " + this.minYellow);
       if (networkCountryId == null || networkCountryId == undefined) {
         this.getAgencyCountriesOfNetwork(networkId,
           ((agencyHasCountriesMap, cVal) => {
@@ -113,8 +105,7 @@ export class NetworkMapService {
   }
 
   private process(agencyHasCountriesMap: Map<string, Set<string>>, cVal: number, systemAdminId: string,
-                  done: () => void, countryClicked: (country: string) => void) {
-    console.log(agencyHasCountriesMap);
+                  done: (countries: NetworkMapCountry[], minGreen: number, minYellow: number) => void, countryClicked: (country: string) => void) {
     agencyHasCountriesMap.forEach((value, key) => {
       value.forEach(item => {
         // Fire off a request to get the countryOffice for every country
@@ -123,14 +114,13 @@ export class NetworkMapService {
            *   Even though we're in a forEach, counter is maintained so this method fires when
            *   they are all done */
           this.initHazards();
-          this.loadColoredLayers(countryClicked);
           for (const x of this.countries) {
             for (const agencyX of x.agencies) {
               this.getAllMPAValuesToCountries(agencyX.countryId, agencyX.id, systemAdminId, () => {
                 /* ALL MPA VALUES FOUND FOR ALL COUNTRY OFFICES
                  *   Even though we're in a two for loops, counter is maintained inside getAllMPAValuesToCountries
                  *   so this method fires when they are all done */
-                done();
+                done(this.countries, this.minGreen, this.minYellow);
               });
             }
           }
@@ -432,55 +422,7 @@ export class NetworkMapService {
         done(keys);
       })
   }
-  // private getAgencyCountriesOfNetwork(networkId: string, networkCountryId: string,
-  //                                     done: (agencyHasCountriesMap: Map<string, Set<string>>) => void) {
-    // console.log('Accessing ' + Constants.APP_STATUS + '/networkCountry/' + networkId + '/');
-    // this.af.database.object(Constants.APP_STATUS + '/networkCountry/' + networkId + '/' + networkCountryId,
-    //   {preserveSnapshot: true})
-    //   .takeUntil(this.ngUnsubscribe)
-    //   .subscribe((snap) => {
-    //     // snap.val() contains object under networkCountry/<networkId>/<networkCountryId>
-    //     if (snap.val() == null) {
-    //       console.log('TODO: Show an error here. No network countries found');
-    //     }
-    //     else {
-    //       const agencyHasCountriesMap: Map<string, Set<string>> = new Map<string, Set<string>>();
-    //       if (snap.val().hasOwnProperty('agencyCountries')) {
-    //         for (const agencyId in snap.val().agencyCountries) {
-    //           for (const countryId in snap.val().agencyCountries[agencyId]) {
-    //             if (snap.val().agencyCountries[agencyId][countryId].hasOwnProperty('isApproved')) {
-    //               if (snap.val().agencyCountries[agencyId][countryId].isApproved) {
-    //                 let countriesSet: Set<string> = agencyHasCountriesMap.get(agencyId);
-    //                 if (countriesSet == null) {
-    //                   countriesSet = new Set<string>();
-    //                 }
-    //                 countriesSet.add(countryId);
-    //                 agencyHasCountriesMap.set(agencyId, countriesSet);
-    //               }
-    //               else {
-    //                 // Country is not approved. Leave it from the set
-    //               }
-    //             }
-    //             else {
-    //               // Reference doesn't have an 'isApproved' flag. We don't know if it's approved it not
-    //               // - Assume not, leave the set
-    //             }
-    //           }
-    //         }
-    //       }
-    //       else {
-    //         // Network country doesn't have any countries ! Set should remain empty
-    //         agencyHasCountriesMap.clear();
-    //       }
-    //
-    //       /* At the end of this method;
-    //         this.agencyHasCountriesMap should contain a list of agency -> [countries] that are approved!
-    //        */
-    //       done(agencyHasCountriesMap);
-    //     }
-    //   });
-  // }
-
+  
   /**
    * Get the country office of a given country id.
    *  This will build the country -> agency portion of the data structure, populating any data required
@@ -490,15 +432,17 @@ export class NetworkMapService {
    */
   private getCountryOffice(agencyId: string, countryId: string, onlyPickCountryLocationEnum: number, done: () => void) {
     this.mCountryOfficeCounter++;
-    this.af.database.object(Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId,
+    const path = agencyId !== countryId ? Constants.APP_STATUS + '/countryOffice/' + agencyId + '/' + countryId : Constants.APP_STATUS + '/agency/' + agencyId
+    this.af.database.object(path,
         {preserveSnapshot: true})
       .flatMap((snap) => {
         console.log(onlyPickCountryLocationEnum);
         console.log(snap.val());
+        const actualLocation = agencyId !== countryId ? snap.val().location : snap.val().countryCode
         if (onlyPickCountryLocationEnum == null || onlyPickCountryLocationEnum == undefined || onlyPickCountryLocationEnum == snap.val().location) {
-          this.countryIdToLocation.set(snap.key, snap.val().location);
+          this.countryIdToLocation.set(snap.key, actualLocation);
           // Ensure a country object for this country office is created
-          const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(snap.val().location);
+          const mapCountry: NetworkMapCountry = this.findOrCreateNetworkMapCountry(actualLocation);
           mapCountry.setAgency(agencyId, new NetworkMapAgency(agencyId, countryId));
         }
         return this.af.database.object(Constants.APP_STATUS + '/agency/' + agencyId, {preserveSnapshot: true});
@@ -535,480 +479,6 @@ export class NetworkMapService {
         results(snap.val()[0], snap.val()[1]);
       });
   }
-
-  //region Map initialisation and fusion layer logic
-
-  /**
-   * Load the coloured layers onto the map based on this.countries
-   */
-  public loadColoredLayers(countryClicked: (country: string) => void) {
-    const blue: string[] = [];
-    const red: string[] = [];
-    const yellow: string[] = [];
-    const green: string[] = [];
-    console.log(this.countries);
-    for (const x of this.countries) {
-      if (x.overall(this.minGreen) == -1) {
-        blue.push(Countries[x.location]);
-      }
-      else if (x.overall(this.minGreen) >= this.minGreen) {
-        green.push(Countries[x.location]);
-      }
-      else if (x.overall(this.minGreen) >= this.minYellow) {
-        yellow.push(Countries[x.location]);
-      }
-      else {
-        red.push(Countries[x.location]);
-      }
-      console.log(x.location);
-    }
-
-    const layer = new google.maps.FusionTablesLayer({
-      suppressInfoWindows: true,
-      query: {
-        select: '*',
-        from: '1Y4YEcr06223cs93DmixwCGOsz4jzXW_p4UTWzPyi',
-        where: MapService.arrayToQuote(red.concat(yellow.concat(green.concat(blue))))
-      },
-      styles: [
-        {
-          polygonOptions: {
-            fillColor: '#f00ff9',
-            strokeOpacity: 0.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(blue),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_BLUE,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: '#FFFFFF'
-          },
-          polylineOptions: {
-            strokeColor: '#FFFFFF',
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(red),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_RED,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: '#FFFFFF'
-          },
-          polylineOptions: {
-            strokeColor: '#FFFFFF',
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(yellow),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_YELLOW,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: '#FFFFFF'
-          },
-          polylineOptions: {
-            strokeColor: '#FFFFFF',
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        },
-        {
-          where: MapService.arrayToQuote(green),
-          polygonOptions: {
-            fillColor: MapService.COLOUR_GREEN,
-            fillOpacity: 1.0,
-            strokeOpacity: 0.0,
-            strokeColor: '#FFFFFF'
-          },
-          polylineOptions: {
-            strokeColor: '#FFFFFF',
-            strokeOpacity: 1.0,
-            strokeWeight: 1.0
-          }
-        }
-      ]
-    });
-    layer.setMap(this.map);
-    google.maps.event.addListener(layer, 'click', function (e) {
-      console.log(e.row.ISO_2DIGIT.value);
-      countryClicked(e.row.ISO_2DIGIT.value);
-      // let c: Countries = <Countries>Countries["GB"];
-
-    });
-  }
-
-  /**
-   * Initialise a blank map
-   */
-  private initMap(elementId: string) {
-    const uluru = {lat: 20, lng: 0};
-    this.map = new google.maps.Map(document.getElementById(elementId), {
-      zoom: 2,
-      center: uluru,
-      mapTypeControlOptions: {
-        mapTypeIds: []
-      },
-      streetViewControl: false,
-      styles: [
-        {
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#b0b1b3'
-            }
-          ]
-        },
-        {
-          elementType: 'labels',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              'color': '#523735'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative',
-          elementType: 'geometry.stroke',
-          stylers: [
-            {
-              'color': '#c9b2a6'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.country',
-          elementType: 'geometry.stroke',
-          stylers: [
-            {
-              'color': '#f0f0f1'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.country',
-          elementType: 'labels',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.land_parcel',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.land_parcel',
-          elementType: 'geometry.stroke',
-          stylers: [
-            {
-              'color': '#dcd2be'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.land_parcel',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              'color': '#ae9e90'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.locality',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.neighborhood',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'administrative.province',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'landscape.man_made',
-          stylers: [
-            {
-              'color': '#b0b1b3'
-            }
-          ]
-        },
-        {
-          featureType: 'landscape.natural',
-          elementType: 'geometry.fill',
-          stylers: [
-            {
-              'color': '#b0b1b3'
-            }
-          ]
-        },
-        {
-          featureType: 'landscape.natural.terrain',
-          stylers: [
-            {
-              'color': '#b0b1b3'
-            }
-          ]
-        },
-        {
-          featureType: 'poi',
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#dfd2ae'
-            }
-          ]
-        },
-        {
-          featureType: 'poi',
-          elementType: 'labels.text',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'poi',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              'color': '#93817c'
-            }
-          ]
-        },
-        {
-          featureType: 'poi.park',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'poi.business',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'poi.park',
-          elementType: 'geometry.fill',
-          stylers: [
-            {
-              'color': '#a5b076'
-            }
-          ]
-        },
-        {
-          featureType: 'poi.park',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              'color': '#447530'
-            }
-          ]
-        },
-        {
-          featureType: 'road',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'road',
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#f5f1e6'
-            }
-          ]
-        },
-        {
-          featureType: 'road',
-          elementType: 'labels',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'road',
-          elementType: 'labels.icon',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'road.arterial',
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#fdfcf8'
-            }
-          ]
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#f8c967'
-            }
-          ]
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry.stroke',
-          stylers: [
-            {
-              'color': '#e9bc62'
-            }
-          ]
-        },
-        {
-          featureType: 'road.highway.controlled_access',
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#e98d58'
-            }
-          ]
-        },
-        {
-          featureType: 'road.highway.controlled_access',
-          elementType: 'geometry.stroke',
-          stylers: [
-            {
-              'color': '#db8555'
-            }
-          ]
-        },
-        {
-          featureType: 'road.local',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              'color': '#806b63'
-            }
-          ]
-        },
-        {
-          featureType: 'transit',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'transit.line',
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#dfd2ae'
-            }
-          ]
-        },
-        {
-          featureType: 'transit.line',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              'color': '#8f7d77'
-            }
-          ]
-        },
-        {
-          featureType: 'transit.line',
-          elementType: 'labels.text.stroke',
-          stylers: [
-            {
-              'color': '#ebe3cd'
-            }
-          ]
-        },
-        {
-          featureType: 'transit.station',
-          elementType: 'geometry',
-          stylers: [
-            {
-              'color': '#dfd2ae'
-            }
-          ]
-        },
-        {
-          featureType: 'water',
-          elementType: 'geometry.fill',
-          stylers: [
-            {
-              'color': '#e5eff7'
-            }
-          ]
-        },
-        {
-          featureType: 'water',
-          elementType: 'labels.text',
-          stylers: [
-            {
-              'visibility': 'off'
-            }
-          ]
-        },
-        {
-          featureType: 'water',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              'color': '#92998d'
-            }
-          ]
-        }
-      ]
-    });
-  }
-
-  //end region
 
   /**
    * Utility methods to interact with the below datastructure

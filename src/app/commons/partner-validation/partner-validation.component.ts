@@ -42,7 +42,7 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
               private orgService: PartnerOrganisationService,
               private commonService: CommonService,
               private route: ActivatedRoute,
-              private translate : TranslateService) {
+              private translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -53,49 +53,46 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
           this.accessToken = params["token"];
           this.partnerOrgId = params["partnerId"];
 
-          firebase.auth().signInAnonymously().catch(error => {
-            console.log(error.message);
-          });
+          firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+            .then(() => {
+              firebase.auth().signInAnonymously().catch(error => {
+                console.log(error.message);
+              });
+            })
+
 
           firebase.auth().onAuthStateChanged(user => {
-            console.log("onAuthStateChanged");
-            console.log(user.isAnonymous);
             if (user) {
-              if (user.isAnonymous) {
-                //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
-                this.af.database.object(Constants.APP_STATUS + "/partnerOrganisationValidation/" + this.partnerOrgId + "/validationToken")
-                  .takeUntil(this.ngUnsubscribe)
-                  .subscribe((validationToken) => {
-                    if (validationToken) {
-                      if (this.accessToken === validationToken.token) {
-                        let expiry = validationToken.expiry;
-                        let currentTime = moment.utc();
-                        let tokenExpiryTime = moment.utc(expiry);
+              //Page accessed by the partner who doesn't have firebase account. Check the access token and grant the access
+              this.af.database.object(Constants.APP_STATUS + "/partnerOrganisationValidation/" + this.partnerOrgId + "/validationToken")
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe((validationToken) => {
+                  if (validationToken) {
+                    if (this.accessToken === validationToken.token) {
+                      let expiry = validationToken.expiry;
+                      let currentTime = moment.utc();
+                      let tokenExpiryTime = moment.utc(expiry);
 
-                        if (currentTime.isAfter(tokenExpiryTime)) {
-                          this.navigateToLogin();
-                          return;
-                        }
-
-                        this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
-                          .takeUntil(this.ngUnsubscribe)
-                          .subscribe(areaJson => {
-                            this.areaJson = areaJson;
-                            this.loadPartnerOrgInfo(this.partnerOrgId);
-                          });
-
-
-                      } else {
+                      if (currentTime.isAfter(tokenExpiryTime)) {
                         this.navigateToLogin();
+                        return;
                       }
+
+                      this.commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
+                        .takeUntil(this.ngUnsubscribe)
+                        .subscribe(areaJson => {
+                          this.areaJson = areaJson;
+                          this.loadPartnerOrgInfo(this.partnerOrgId);
+                        });
+
+
                     } else {
                       this.navigateToLogin();
                     }
-                  });
-              } else {
-                console.log("not anonymous login");
-                this.navigateToLogin();
-              }
+                  } else {
+                    this.navigateToLogin();
+                  }
+                });
 
             } else {
               console.log("user not logged in");
@@ -118,7 +115,7 @@ export class PartnerValidationComponent implements OnInit, OnDestroy {
     this.af.database.object(Constants.APP_STATUS + "/partnerOrganisation/" + this.partnerOrgId + "/isApproved").set(true).then(() => {
       this.alertMessage = new AlertMessageModel(this.translate.instant("SUCCESSFULLY_VALIDATE_PARTNERSHIP"), AlertMessageType.Success);
       setTimeout(() => {
-        this.router.navigate(["/after-validation", {"partner":true}], {skipLocationChange:true});
+        this.router.navigate(["/after-validation", {"partner": true}], {skipLocationChange: true});
       }, Constants.ALERT_REDIRECT_DURATION)
     }, error => {
       this.alertMessage = new AlertMessageModel(error.message);

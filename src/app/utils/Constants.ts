@@ -7,6 +7,9 @@ import {
 } from "./Enums";
 
 export class Constants {
+  //TODO CHANGE APP MODULE AS WELL FOR LIVE
+  static APP_STATUS = "/test";
+  static VERSION = "1.2.1.4";
 
   /* ENABLING THE MAINTENANCE PAGE */
   static SHOW_MAINTENANCE_PAGE: boolean = false;
@@ -20,8 +23,6 @@ export class Constants {
   static INFORM_WORKFLOW: number = 261;
 
   /*PATHS*/
-  //TODO CHANGE APP MODULE AS WELL FOR LIVE
-  static APP_STATUS = "/sand";
   static LOGIN_PATH = "/login";
   // static COUNTRY_LEVELS_FILE = "/assets/json/country_levels.json";
   static COUNTRY_LEVELS_VALUES_FILE = "/assets/json/country_levels_values.json";
@@ -62,9 +63,9 @@ export class Constants {
 
   static LOCAL_AGENCY_ADMIN_HOME = "/local-agency/dashboard";
   static LOCAL_AGENCY_ADMIN_USER_TYPE = ["GLOBAL.USER_TYPE.ALL_USERS", "GLOBAL.USER_TYPE.NON_ALERT", "GLOBAL.USER_TYPE.LOCAL_AGENCY_DIRECTORS", "GLOBAL.USER_TYPE.AGENCY_USER",
-    "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT"];
+    "GLOBAL.USER_TYPE.ERT_LEAD", "GLOBAL.USER_TYPE.ERT", "GLOBAL.USER_TYPE.LOCAL_AGENCY_ADMIN"];
   static LOCAL_AGENCY_ADMIN_USER_TYPE_SELECTION = [UserType.All, UserType.NonAlert, UserType.LocalAgencyDirector, UserType.AgencyUser,
-    UserType.ErtLeader, UserType.Ert];
+    UserType.ErtLeader, UserType.Ert, UserType.LocalAgencyAdmin];
   static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_SELECTION = [UserType.All, UserType.LocalAgencyDirector, UserType.LocalAgencyAdmin,
     UserType.ErtLeader, UserType.Ert, UserType.Donor];
   static LOCAL_AGENCY_ADMIN_MESSAGES_USER_TYPE_NODES = ["countryallusersgroup", "partner", "localagencydirectors", "localagencyadmins", "ertleads", "erts", "donor"];
@@ -353,6 +354,9 @@ export class Constants {
   ];
 
   static RESPONSE_PLAN_STATUS = ["RESPONSE_PLANS.HOME.IN_PROGRESS", "RESPONSE_PLANS.HOME.WAITING_APPROVAL", "RESPONSE_PLANS.HOME.APPROVED", "RESPONSE_PLANS.HOME.NEEDS_REVIEWING"]
+
+  static RESPONSE_PLAN_COUNTRY_PRESENCE = ["CURRENT_PROGRAMMES", "PRE_EXISITING_PARTNER", "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.NO_PRE-EXISTING_PRESENCE"]
+  static RESPONSE_PLAN_METHOD = ["DIRECTLY_THROUGH_STAFF", "WORKING_WITH_PARTNERS", "RESPONSE_PLANS.CREATE_NEW_RESPONSE_PLAN.BASIC_INFORMATION.WORKING_WITH_BOTH"]
 
   static DOCUMENT_TYPE = [
     "MPA",
@@ -1000,6 +1004,7 @@ export class Constants {
   static STAFF_NODE = '/staff/{countryId}/{staffId}/notes';
   static SURGE_CAPACITY_NODE = '/countryOfficeProfile/capacity/surgeCapacity/{countryId}/{id}/notes';
   static SURGE_CAPACITY_NODE_LOCAL_AGENCY = '/localAgencyProfile/capacity/surgeCapacity/{agencyId}/{id}/notes';
+  static ADMIN_NODE = '/adminNotes/{adminId}';
 
   static MONTH = [
     null,

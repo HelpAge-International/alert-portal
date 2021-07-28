@@ -179,7 +179,7 @@ export class ActionsService {
   }
 
   getAlerts(countryId, isLocalAgency?) {
-
+    console.log(countryId)
     return this.af.database.list(Constants.APP_STATUS + "/alert/" + countryId, {
       query: {
         orderByChild: "alertLevel",
@@ -187,6 +187,7 @@ export class ActionsService {
       }
     })
       .map(alerts => {
+        console.log(alerts)
         let alertList = [];
         alerts.forEach(alert => {
           let modelAlert = new ModelAlert();
@@ -200,6 +201,7 @@ export class ActionsService {
           modelAlert.timeCreated = alert.timeCreated;
           modelAlert.timeUpdated = alert.timeUpdated;
           modelAlert.createdBy = alert.createdBy;
+          modelAlert.approvalStatus = alert.approval.countryDirector ? Object.keys(alert.approval.countryDirector).map(key => alert.approval.countryDirector[key])[0] : alert.approval.localAgencyDirector ? Object.keys(alert.approval.localAgencyDirector).map(key => alert.approval.localAgencyDirector[key])[0] : AlertStatus.WaitingResponse
           if (alert.updatedBy) {
             modelAlert.updatedBy = alert.updatedBy;
           }
@@ -226,10 +228,12 @@ export class ActionsService {
               modelAlert.affectedAreas = affectedAreas;
             });
           }
-          if (isLocalAgency) {
-            modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
-            modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
-          } else {
+          if(isLocalAgency){
+            if (alert.approval && alert.approval['localAgencyDirector']) {
+              modelAlert.approvalDirectorId = Object.keys(alert.approval['localAgencyDirector'])[0];
+              modelAlert.approvalStatus = alert.approval['localAgencyDirector'][modelAlert.approvalDirectorId];
+            }
+          } else{
             if (alert.approval && alert.approval['countryDirector']) {
               modelAlert.approvalDirectorId = Object.keys(alert.approval['countryDirector'])[0];
               modelAlert.approvalStatus = alert.approval['countryDirector'][modelAlert.approvalDirectorId];
@@ -276,7 +280,7 @@ export class ActionsService {
         alertList.forEach(alert => {
           let affectedAreasToDisplay: any[] = [];
           alert.affectedAreas.forEach(affectedArea => {
-            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).subscribe((value) => {
+            this.jsonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE).takeUntil(this.ngUnsubscribe).subscribe((value) => {
               let obj = {
                 country: "",
                 areas: ""
@@ -285,10 +289,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
-              if (affectedArea.affectedLevel2 > -1 && value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1]) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+              if (affectedArea.affectedLevel2 > -1) {
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -402,10 +411,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -439,7 +453,6 @@ export class ActionsService {
         modelAlert.timeUpdated = alert.timeUpdated ? alert.timeUpdated : -1;
         modelAlert.createdBy = alert.createdBy;
         modelAlert.timeTracking = alert.timeTracking;
-        ;
 
         let affectedAreas: ModelAffectedArea[] = [];
         let ids: string[] = Object.keys(alert.affectedAreas);
@@ -682,11 +695,13 @@ export class ActionsService {
     updateData["timeCreated"] = alert.timeCreated;
     updateData["timeUpdated"] = alert.timeUpdated;
     updateData["updatedBy"] = alert.updatedBy;
-    updateData["timeTracking"] = alert.timeTracking;
+    if (alert.timeTracking) {
+      updateData["timeTracking"] = alert.timeTracking;
+    }
 
     updateData["previousIsAmber"] = alert.previousIsAmber ? alert.previousIsAmber : null
 
-
+    console.log(updateData)
     this.af.database.object(Constants.APP_STATUS + "/alert/" + agencyId + "/" + alert.id).set(updateData).then(() => {
       // Send notification to users with Alert level changed notification
       const alertChangedNotificationSetting = 0;
@@ -803,10 +818,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -901,10 +921,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                    .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                    .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -912,6 +937,25 @@ export class ActionsService {
           alert.affectedAreasDisplay = affectedAreasToDisplay;
         });
       });
+  }
+
+  /**
+   * Get the item at a given id field { "Id":"1" }
+   *
+   * value[level] won't work, we want when the child value under "Id" is id, not the index of it!
+   * This method finds the index of the item in the list with a given "Id" field
+   *
+   * @param {number} id the id of the object
+   * @param {any[]} item
+   * @return the position of that object
+   */
+  getItemAtIdField(id: number, item: any[]): number {
+    for (let i = 0; i < item.length; i++) {
+      let x = item[i];
+      if (x.id === id) {
+        return i;
+      }
+    }
   }
 
   getAlertsForDirectorToApproveNetwork(countryId, networkCountryId, networkId) {
@@ -1000,10 +1044,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });
@@ -1098,10 +1147,15 @@ export class ActionsService {
                 obj.country = this.getCountryNameById(affectedArea.affectedCountry);
               }
               if (affectedArea.affectedLevel1 > -1) {
-                obj.areas = ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].value
+                obj.areas = ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .value
               }
               if (affectedArea.affectedLevel2 > -1) {
-                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry].levelOneValues[affectedArea.affectedLevel1].levelTwoValues[affectedArea.affectedLevel2].value;
+                obj.areas = obj.areas + ", " + value[affectedArea.affectedCountry]
+                  .levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]
+                  .levelTwoValues[affectedArea.affectedLevel2, value[affectedArea.affectedCountry].levelOneValues[this.getItemAtIdField(affectedArea.affectedLevel1, value[affectedArea.affectedCountry].levelOneValues)]]
+                  .value;
               }
               affectedAreasToDisplay.push(obj);
             });

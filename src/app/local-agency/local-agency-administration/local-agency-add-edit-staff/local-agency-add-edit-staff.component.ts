@@ -55,15 +55,16 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
   private notificationSettings: boolean[] = [];
   private skillsMap = new Map();
   private notificationsMap = new Map();
+  private departmentMap = new Map();
   private staffSkills: string[] = [];
   private staffNotifications: number[] = [];
+  private staffDepartments: string[] = [];
 
   title: number;
   firstName: string;
   lastName: string;
   userType: number;
   countryOffice: any;
-  department: string;
   position: string;
   officeType: number;
   email: string;
@@ -130,8 +131,6 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
   }
 
   private initData() {
-
-
     this.countryList = this.af.database.list(Constants.APP_STATUS + '/agency/' + this.agencyId);
     console.log(Constants.APP_STATUS + '/agency/' + this.agencyId + '/departments')
     this.departmentList = this.af.database.object(Constants.APP_STATUS + '/agency/' + this.agencyId + '/departments', {preserveSnapshot: true})
@@ -197,8 +196,6 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
   }
 
   validateForm() {
-
-
     if (!this.title) {
       this.warningMessage = 'GLOBAL.ACCOUNT_SETTINGS.NO_TITLE';
       return false;
@@ -215,7 +212,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_USER_TYPE';
       return false;
     }
-    if (!this.department) {
+    if (!this.departmentSelected()) {
       this.warningMessage = 'AGENCY_ADMIN.MANDATED_PA.NO_DEPARTMENT_ERROR';
       return false;
     }
@@ -246,6 +243,16 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     return true;
   }
 
+  departmentSelected() {
+    var selected = []
+    this.departmentMap.forEach((value, key) => {
+      if (value) {
+        selected.push(value)
+      }
+    });
+    return selected.filter(item => item == true).length > 0
+  }
+
   submit() {
     if (this.validateForm()) {
       this.collectData();
@@ -263,6 +270,11 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
     this.notificationsMap.forEach((value, key) => {
       if (value) {
         this.staffNotifications.push(Number(key));
+      }
+    });
+    this.departmentMap.forEach((value, key) => {
+      if (value) {
+        this.staffDepartments.push(key);
       }
     });
     if (!this.isEdit) {
@@ -296,6 +308,10 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
 
   notificationCheck(notification, isCheck) {
     this.notificationsMap.set(Number(notification.$key), isCheck);
+  }
+
+  departmentCheck(department, isCheck) {
+    this.departmentMap.set(department.id, isCheck)
   }
 
   private updateWithNewEmail() {
@@ -349,7 +365,7 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
 
     staff.userType = Number(this.userType);
 
-    staff.department = this.department;
+    staff.departments = this.staffDepartments;
     staff.position = this.position;
     staff.officeType = Number(this.officeType);
     staff.skill = this.staffSkills;
@@ -469,9 +485,19 @@ export class LocalAgencyAddEditStaffComponent implements OnInit {
         this.userType = staff.userType;
         this.editInitialUserType = staff.userType;
         this.checkUserType();
-        this.department = staff.department;
         this.position = staff.position;
         this.officeType = staff.officeType;
+
+        if (staff.departments && staff.departments.length > 0) {
+          for (let department of staff.departments) {
+            this.departmentMap.set(department, true);
+          }
+        } else {
+          if(staff.department) {
+            this.departmentMap.set(staff.department, true);
+          }
+        }
+
         if (staff.skill && staff.skill.length > 0) {
           for (let skill of staff.skill) {
             this.skillsMap.set(skill, true);

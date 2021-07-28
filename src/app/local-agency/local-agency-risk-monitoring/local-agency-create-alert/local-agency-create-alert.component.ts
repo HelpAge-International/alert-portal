@@ -10,11 +10,13 @@ import {AlertMessageModel} from "../../../model/alert-message.model";
 import {TranslateService} from "@ngx-translate/core";
 import {Subject} from "rxjs/Subject";
 import {UserService} from "../../../services/user.service";
+import {AgencyService} from "../../../services/agency-service.service"
 import {PageControlService} from "../../../services/pagecontrol.service";
 import {NotificationService} from "../../../services/notification.service";
 import {MessageModel} from "../../../model/message.model";
 import {HazardImages} from "../../../utils/HazardImages";
 import {PrepActionService} from "../../../services/prepactions.service";
+import {INT_TYPE} from "@angular/compiler/src/output/output_ast";
 declare var jQuery: any;
 
 @Component({
@@ -48,7 +50,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   private countries = Constants.COUNTRIES;
   private countriesList = Constants.COUNTRY_SELECTION;
   private frequency = new Array(100);
-
+  private initialLocation : number;
   private countryLevels: any[] = [];
   private countryLevelsValues: any[] = [];
 
@@ -67,7 +69,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
               private translate: TranslateService,
               private userService: UserService,
               private prepActionService: PrepActionService,
-              private notificationService: NotificationService) {
+              private notificationService: NotificationService,
+              private agencyService : AgencyService) {
+
     this.initAlertData();
   }
 
@@ -77,7 +81,9 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
   addAnotherAreas() {
-    this.alertData.affectedAreas.push(new OperationAreaModel());
+    var area = new OperationAreaModel()
+    area.country = this.initialLocation
+    this.alertData.affectedAreas.push(area);
   }
 
   removeAnotherArea(key: number,) {
@@ -90,14 +96,24 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
       this.uid = user.uid;
       this.UserType = userType;
       this.agencyId = agencyId;
-      this.countryID = countryId;
+
       this._getHazards();
       this._getDirectorLocalAgencyId();
 
-      console.log(this.prepActionService.actions)
       this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId)
+      
+      this.agencyService.getAgency(this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(agency => {
+        this.initialLocation = agency.countryCode;
+        this.alertData.affectedAreas[0].country = this.initialLocation;
+      })
+      // this.userService.getCountryDetail(this.countryID, this.agencyId).takeUntil(this.ngUnsubscribe).subscribe(detail => {
+      //   console.log(detail)
+      //   this.initialLocation = detail.location;
+      // });
 
 
+      console.log(this.prepActionService.actions)
+      this.prepActionService.initActionsWithInfoLocalAgency(this.af, this.ngUnsubscribe, this.uid, this.UserType, false, this.agencyId, systemId);
 
       // get the country levels values
       this._commonService.getJsonContent(Constants.COUNTRY_LEVELS_VALUES_FILE)
@@ -144,7 +160,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
         this.af.database.list(Constants.APP_STATUS + '/alert/' + this.agencyId)
           .push(dataToSave)
           .then(alert => {
-
+            
             let hazard = this.hazards.find(x => x.hazardScenario == dataToSave.hazardScenario)
             let hazardTrackingNode;
 
@@ -272,7 +288,7 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
             }
 
             this.alertMessage = new AlertMessageModel('RISK_MONITORING.ADD_ALERT.SUCCESS_MESSAGE_ADD_ALERT', AlertMessageType.Success);
-            this.router.navigateByUrl('dashboard');
+            this.router.navigateByUrl('local-agency/dashboard');
           }).catch((error: any) => {
           console.log(error, 'You do not have access!')
         });
@@ -281,10 +297,14 @@ export class LocalAgencyCreateAlertComponent implements OnInit {
   }
 
 
-  highlightRadio(){
+  highlightRadio(isRed : boolean){
 
-
-    console.log(this.alertData.alertLevel);
+    if(isRed) {
+      this.alertData.alertLevel = 2
+    }
+    else {
+      this.alertData.alertLevel = 1
+    }
 
   }
 
