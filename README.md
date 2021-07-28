@@ -11,6 +11,13 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Setting up the dev environment
 
+---
+### IMPORTANT
+The frontend portion of this project at the moment can only be built (for dev and production) using node 8 due to angularfire2 not being supported with later versions.
+However, in order do deploy the frontend (through firebase deploy --only hosting) node 10 or superior is needed (for firebase-tools).
+We recommend using Node Version Manager (NVM) in order to easily switch between the version.
+---
+
 Run `ng serve` in root folder of the project for a dev server. Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files. Note: Typescript 2.3.x and node version 9.9.x or below is required. See below for configuring this
 
 > If `ng serve` fails, try running `npm install` first. Make sure you are on a supported branch (master is not supported)

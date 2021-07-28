@@ -93,7 +93,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
   private editedSkills: any = [];
   private SupportSkill = SkillType.Support;
   private TechSkill = SkillType.Tech;
-  
+
   public fieldOffices: Array<fieldOffice>
 
   private ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -173,7 +173,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
               names.push(ModelDepartment.create(key, department.val()[key]["name"]));
             })
           }
-        }); 
+        });
         return names;
       })
 
@@ -268,7 +268,7 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
       this.warningMessage = 'COUNTRY_ADMIN.STAFF.NO_EMAIL';
       return false;
     }
-    if (!this.fieldOffice && this.officeType == this.officeTypeEnum.FieldOffice) {
+    if (!this.fieldOffice && this.officeType == this.officeTypeEnum.FieldOffice && this.fieldOffices.length > 0) {
       this.warningMessage = 'Please select a field office.';
       return false;
     }
@@ -540,11 +540,11 @@ export class CountryAddEditStaffComponent implements OnInit, OnDestroy {
         this.userType = staff.userType;
         this.editInitialUserType = staff.userType;
         this.checkUserType();
-        
+
         this.position = staff.position;
         this.officeType = staff.officeType;
         this.fieldOffice = staff.fieldOffice;
-        
+
         if (staff.departments && staff.departments.length > 0) {
           for (let department of staff.departments) {
             this.departmentMap.set(department, true);
